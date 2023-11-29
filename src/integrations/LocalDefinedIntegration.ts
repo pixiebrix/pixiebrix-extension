@@ -47,7 +47,7 @@ import { missingProperties } from "@/utils/schemaUtils";
  * access to authenticate secrets.
  */
 export class LocalDefinedIntegration<
-  TDefinition extends IntegrationDefinition = IntegrationDefinition
+  TDefinition extends IntegrationDefinition = IntegrationDefinition,
 > extends IntegrationABC {
   private readonly _definition: TDefinition;
 
@@ -374,7 +374,7 @@ export class LocalDefinedIntegration<
 }
 
 export function fromJS(
-  component: IntegrationDefinition
+  component: IntegrationDefinition,
 ): LocalDefinedIntegration {
   return new LocalDefinedIntegration(component);
 }

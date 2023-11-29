@@ -147,7 +147,7 @@ const AuthWidgetContent: React.FC<AuthWidgetContentProps> = ({
 
   const options = useMemo(
     () => authOptions.filter((x) => x.serviceId === integration.id),
-    [authOptions, integration.id]
+    [authOptions, integration.id],
   );
 
   const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
@@ -203,7 +203,7 @@ const AuthWidgetContent: React.FC<AuthWidgetContentProps> = ({
       // The IntegrationEditorModal will call the onClose function after
       // calling onSave, so we don't need to close anything manually here.
     },
-    [dispatch, integration.id, syncIntegrations, helpers, sanitizeConfigArgs]
+    [dispatch, integration.id, syncIntegrations, helpers, sanitizeConfigArgs],
   );
 
   const launchAuthorizationGrantFlow = useAuthorizationGrantFlow();
@@ -220,7 +220,7 @@ const AuthWidgetContent: React.FC<AuthWidgetContentProps> = ({
     if (integration.id in autoConfigurations) {
       const label = freshIdentifier(
         `${integration.name} Config` as SafeString,
-        integrationConfigs.map(({ label }) => label)
+        integrationConfigs.map(({ label }) => label),
       );
       void autoConfigureIntegration(integration, label, {
         upsertIntegrationConfig(config: IntegrationConfig) {
@@ -270,7 +270,7 @@ const AuthWidgetContent: React.FC<AuthWidgetContentProps> = ({
             config: convertSchemaToConfigState(integration.schema),
           } as IntegrationConfig)
         : null,
-    [integration.id, integration.schema, showEditorModal]
+    [integration.id, integration.schema, showEditorModal],
   );
 
   return (
@@ -341,7 +341,7 @@ const AuthWidget: React.FunctionComponent<{
 }> = ({ name, integrationId, isOptional, authOptions, onRefresh }) => {
   const definitionAsyncState = useAsyncState(
     async () => registry.lookup(integrationId),
-    []
+    [],
   );
 
   return (

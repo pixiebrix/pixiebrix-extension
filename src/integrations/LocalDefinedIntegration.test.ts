@@ -29,7 +29,7 @@ import {
 describe("LocalDefinedIntegration", () => {
   test("includes version", () => {
     const integration = fromJS(
-      automationAnywhere as unknown as IntegrationDefinition
+      automationAnywhere as unknown as IntegrationDefinition,
     );
     expect(integration.version).toBe("1.0.0");
     expect(integration.uiSchema["ui:order"]).toBeArrayOfSize(5);
@@ -37,7 +37,7 @@ describe("LocalDefinedIntegration", () => {
 
   test("get origins for oauth2 integration", () => {
     const integration = fromJS(
-      automationAnywhereOAuth2 as unknown as IntegrationDefinition
+      automationAnywhereOAuth2 as unknown as IntegrationDefinition,
     );
     const origins = integration.getOrigins({
       controlRoomUrl: "https://controlroom.example.com",
@@ -54,7 +54,7 @@ describe("LocalDefinedIntegration", () => {
     const authConfigOrigin = "https://authconfig.example.com";
 
     const integration = fromJS(
-      automationAnywhereOAuth2 as unknown as IntegrationDefinition
+      automationAnywhereOAuth2 as unknown as IntegrationDefinition,
     );
     const origins = integration.getOrigins({
       controlRoomUrl: "https://controlroom.example.com",
@@ -70,7 +70,7 @@ describe("LocalDefinedIntegration", () => {
 
   test("excludes invalid base URL", () => {
     const integration = fromJS(
-      automationAnywhereOAuth2 as unknown as IntegrationDefinition
+      automationAnywhereOAuth2 as unknown as IntegrationDefinition,
     );
     const origins = integration.getOrigins({
       controlRoomUrl: "",
@@ -85,7 +85,7 @@ describe("LocalDefinedIntegration", () => {
 
   test("default client ID", () => {
     const integration = fromJS(
-      automationAnywhereOAuth2 as unknown as IntegrationDefinition
+      automationAnywhereOAuth2 as unknown as IntegrationDefinition,
     );
     const oauth2 = integration.getOAuth2Context({} as unknown as SecretsConfig);
     expect(oauth2.client_id).toBe("g2qrB2fvyLYbotkb3zi9wwO5qjmje3eM");
@@ -95,7 +95,7 @@ describe("LocalDefinedIntegration", () => {
     const clientId = "12345";
 
     const integration = fromJS(
-      automationAnywhereOAuth2 as unknown as IntegrationDefinition
+      automationAnywhereOAuth2 as unknown as IntegrationDefinition,
     );
     const oauth2 = integration.getOAuth2Context({
       clientId,
