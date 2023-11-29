@@ -283,8 +283,8 @@ export const selectCollapsedNodes = createSelector(
 const activeElementNodeInfoSelector = createSelector(
   selectActiveElementUIState,
   (state: EditorRootState, instanceId: UUID) => instanceId,
-  // eslint-disable-next-line security/detect-object-injection -- using a node uuid
   (uiState: ElementUIState, instanceId: UUID) =>
+    // eslint-disable-next-line security/detect-object-injection -- using a node uuid
     uiState.pipelineMap[instanceId],
 );
 
