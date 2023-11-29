@@ -286,15 +286,13 @@ function useInitialFormState({
   // extension within an existing recipe, is selected
   if (recipeMetadata) {
     let newId = generateScopeBrickId(scope, recipeMetadata.id);
-    let newName = recipeMetadata.name;
     if (newId === recipeMetadata.id) {
-      newName = `${recipeMetadata.name} (Copy)`;
       newId = validateRegistryId(newId + "-copy");
     }
 
     return {
       id: newId,
-      name: newName,
+      name: `${recipeMetadata.name} (Copy)`,
       version: validateSemVerString("1.0.0"),
       description: recipeMetadata.description,
     };
