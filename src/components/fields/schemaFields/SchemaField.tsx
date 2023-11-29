@@ -52,7 +52,7 @@ const SchemaField: SchemaFieldComponent = (props) => {
   if (hasCustomWidget(uiSchema)) {
     const widget = get(
       customWidgets,
-      uiSchema["ui:widget"] as keyof CustomWidgetRegistry
+      uiSchema["ui:widget"] as keyof CustomWidgetRegistry,
     );
 
     // If the uiWidget is registered, render it. Otherwise, render the default field.

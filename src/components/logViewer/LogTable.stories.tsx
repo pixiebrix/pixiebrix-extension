@@ -93,7 +93,7 @@ const NESTED_ERROR_MESSAGE: LogEntry = {
   error: serializeError(
     new Error("Simple error", {
       cause: new Error("Cause error", { cause: new Error("Cause error #2") }),
-    })
+    }),
   ),
 };
 
@@ -117,7 +117,7 @@ const validationError = new InputValidationError(
       keyword: "required",
       keywordLocation: "#/required",
     },
-  ]
+  ],
 );
 
 const CONTEXT_ERROR_MESSAGE: LogEntry = {
@@ -135,7 +135,7 @@ const CONTEXT_ERROR_MESSAGE: LogEntry = {
       context: {
         blockId,
       },
-    })
+    }),
   ),
 };
 

@@ -24,14 +24,14 @@ import { useCallback } from "react";
 import { type Permissions } from "webextension-polyfill";
 
 function useRequestPermissionsCallback(
-  permissions: Permissions.Permissions | null
+  permissions: Permissions.Permissions | null,
 ): () => Promise<boolean> {
   return useCallback(async () => {
     let accepted = false;
 
     try {
       accepted = await ensurePermissionsFromUserGesture(
-        permissions ?? emptyPermissionsFactory()
+        permissions ?? emptyPermissionsFactory(),
       );
     } catch (error) {
       notify.error({

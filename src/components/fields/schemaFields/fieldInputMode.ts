@@ -59,7 +59,7 @@ export function inferInputMode(
   options: {
     safeDefault?: boolean;
     isRequired?: boolean;
-  } = DEFAULT_OPTIONS
+  } = DEFAULT_OPTIONS,
 ): FieldInputMode {
   const { safeDefault = true, isRequired } = options;
 
@@ -88,8 +88,8 @@ export function inferInputMode(
           inferInputMode(fieldConfig, fieldName, subSchema as Schema, {
             safeDefault: false,
             isRequired: required.includes(fieldName),
-          })
-        )
+          }),
+        ),
     );
     if (!isEmpty(inputModes)) {
       return inputModes[0];

@@ -125,7 +125,7 @@ describe("ensureContentScript", () => {
 
     messageListener(
       { type: ENSURE_CONTENT_SCRIPT_READY },
-      { id: RUNTIME_ID, tab: { id: 1 }, frameId: 0 }
+      { id: RUNTIME_ID, tab: { id: 1 }, frameId: 0 },
     );
     await Promise.all([first, second]);
   });
@@ -143,7 +143,7 @@ describe("ensureContentScript", () => {
 
     messageListener(
       { type: ENSURE_CONTENT_SCRIPT_READY },
-      { id: RUNTIME_ID, tab: { id: 1 }, frameId: 0 }
+      { id: RUNTIME_ID, tab: { id: 1 }, frameId: 0 },
     );
     await Promise.all([first, second]);
 
@@ -168,7 +168,7 @@ describe("ensureContentScript", () => {
 
     messageListener(
       { type: ENSURE_CONTENT_SCRIPT_READY },
-      { id: RUNTIME_ID, tab: { id: 1 }, frameId: 0 }
+      { id: RUNTIME_ID, tab: { id: 1 }, frameId: 0 },
     );
     await Promise.all([first, second]);
 

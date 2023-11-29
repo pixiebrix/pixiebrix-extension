@@ -46,7 +46,7 @@ export function hasCKEditorClass(element: HTMLElement): boolean {
  * @see hasCKEditorClass
  */
 export function isCKEditorElement(
-  element: HTMLElement
+  element: HTMLElement,
 ): element is HTMLElement & { ckeditorInstance: CKEditor5Instance } {
   expectContext("web", "Element properties only available in web context");
 
@@ -62,7 +62,7 @@ export function setCKEditorData(element: HTMLElement, value: string): void {
 
   if (!isCKEditorElement(element)) {
     throw new BusinessError(
-      "Element is not a CKEditor instance, or PixieBrix does not support setting the value for this version of CKEditor"
+      "Element is not a CKEditor instance, or PixieBrix does not support setting the value for this version of CKEditor",
     );
   }
 

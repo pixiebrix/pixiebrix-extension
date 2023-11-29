@@ -90,7 +90,7 @@ export class InvalidPathError extends Error {
 export function getPropByPath(
   obj: UnknownObject,
   path: string,
-  { args = {}, proxy = noopProxy, maxDepth }: GetPropOptions | undefined = {}
+  { args = {}, proxy = noopProxy, maxDepth }: GetPropOptions | undefined = {},
 ): unknown {
   // Consider using jsonpath syntax https://www.npmjs.com/package/jsonpath-plus
 
@@ -136,7 +136,7 @@ export function getPropByPath(
         value = value.apply(previous, args);
       } catch (error) {
         throw new Error(
-          `Error running method ${part}: ${getErrorMessage(error)}`
+          `Error running method ${part}: ${getErrorMessage(error)}`,
         );
       }
     }
@@ -146,7 +146,7 @@ export function getPropByPath(
 }
 
 export function getFieldNamesFromPathString(
-  name: string
+  name: string,
 ): [parentFieldName: string | undefined, fieldName: string] {
   const path = toPath(name);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- The path always has at least one item

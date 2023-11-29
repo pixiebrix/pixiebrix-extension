@@ -27,7 +27,7 @@ export class Readable extends TransformerABC {
       "@pixiebrix/extract/readable",
       "Extract Article or Readable Content",
       "Extract the article or other readable content from a web page",
-      "faCode"
+      "faCode",
     );
   }
 
@@ -67,7 +67,7 @@ export class Readable extends TransformerABC {
 
   async transform(
     _args: never,
-    { root = document }: BrickOptions
+    { root = document }: BrickOptions,
   ): Promise<unknown> {
     if (root !== document) {
       throw new BusinessError("Only document target is supported");

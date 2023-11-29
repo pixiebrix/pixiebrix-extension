@@ -32,7 +32,7 @@ export type ItRendersOptions<TProps> = {
 };
 
 function testItRenders<TProps = unknown>(
-  options: ItRendersOptions<TProps> | (() => ItRendersOptions<TProps>)
+  options: ItRendersOptions<TProps> | (() => ItRendersOptions<TProps>),
 ) {
   const {
     Component,

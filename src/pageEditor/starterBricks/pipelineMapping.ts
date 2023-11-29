@@ -39,7 +39,7 @@ class NormalizePipelineVisitor extends PipelineVisitor {
   override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
-    extra: VisitResolvedBlockExtra
+    extra: VisitResolvedBlockExtra,
   ): void {
     // Generate an instanceId for the block
     blockConfig.instanceId = uuidv4();
@@ -51,7 +51,7 @@ class NormalizePipelineVisitor extends PipelineVisitor {
       console.warn(
         "Brick not found in block map: %s",
         blockConfig.id,
-        this.blockMap
+        this.blockMap,
       );
     } else {
       const propertiesSchema = typedBlock.block?.inputSchema?.properties ?? {};
@@ -60,7 +60,7 @@ class NormalizePipelineVisitor extends PipelineVisitor {
           ([prop, fieldSchema]) =>
             typeof fieldSchema === "object" &&
             fieldSchema.$ref === pipelineSchema.$id &&
-            !isPipelineExpression(blockConfig.config[prop])
+            !isPipelineExpression(blockConfig.config[prop]),
         )
         .map(([prop]) => prop);
 
@@ -81,7 +81,7 @@ class NormalizePipelineVisitor extends PipelineVisitor {
  * and normalize sub pipelines
  */
 export async function normalizePipelineForEditor(
-  pipeline: BrickPipeline
+  pipeline: BrickPipeline,
 ): Promise<BrickPipeline> {
   const blockMap = await blockRegistry.allTyped();
   return produce(pipeline, (pipeline: Draft<BrickPipeline>) => {
@@ -90,7 +90,7 @@ export async function normalizePipelineForEditor(
       pipeline,
       {
         flavor: PipelineFlavor.AllBlocks,
-      }
+      },
     );
   });
 }
@@ -99,7 +99,7 @@ class OmitEditorMetadataVisitor extends PipelineVisitor {
   override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
-    extra: VisitResolvedBlockExtra
+    extra: VisitResolvedBlockExtra,
   ): void {
     // Remove up instanceIds
     delete blockConfig.instanceId;

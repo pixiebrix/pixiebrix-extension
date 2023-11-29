@@ -43,7 +43,7 @@ const MOD_TAB_KEYS = [
   "public",
   "getStarted",
 ] as const;
-type ModTabKey = typeof MOD_TAB_KEYS[number];
+type ModTabKey = (typeof MOD_TAB_KEYS)[number];
 type ModTabsMap = {
   [key in ModTabKey]: ActiveTab;
 };
@@ -97,7 +97,7 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
     useGetStarterBlueprintsQuery();
   const [activeTab, setActiveTab] = useReduxState(
     selectActiveTab,
-    modsPageSlice.actions.setActiveTab
+    modsPageSlice.actions.setActiveTab,
   );
   const { data: modViewItems } = tableInstance;
 
@@ -124,7 +124,7 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
 
     const isStarterMod = starterBlueprints?.some(
       (starterBlueprint) =>
-        modViewItem.sharing.packageId === starterBlueprint.metadata.id
+        modViewItem.sharing.packageId === starterBlueprint.metadata.id,
     );
 
     return modViewItem.status === "Active" && !isStarterMod;
@@ -184,11 +184,11 @@ const ModsPageSidebar: React.FunctionComponent<ModsPageSidebarProps> = ({
   } = tableInstance;
   const [activeTab, setActiveTab] = useReduxState(
     selectActiveTab,
-    modsPageSlice.actions.setActiveTab
+    modsPageSlice.actions.setActiveTab,
   );
   const [_, setSearchQuery] = useReduxState(
     selectSearchQuery,
-    modsPageSlice.actions.setSearchQuery
+    modsPageSlice.actions.setSearchQuery,
   );
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearchInput] = useDebounce(searchInput, 300, {

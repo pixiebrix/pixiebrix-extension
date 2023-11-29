@@ -27,5 +27,5 @@ const icon =
 export const icons = new Map<IconLibrary, Map<string, string>>();
 icons.set(
   "bootstrap",
-  new Map([["box", "data:image/svg+xml;base64," + btoa(icon)]])
+  new Map([["box", "data:image/svg+xml;base64," + btoa(icon)]]),
 );

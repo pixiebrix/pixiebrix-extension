@@ -44,7 +44,7 @@ export const activateTab = getMethod("ACTIVATE_TAB", bg);
 export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
 export const removeExtensionForEveryTab = getNotifier(
   "REMOVE_EXTENSION_EVERY_TAB",
-  bg
+  bg,
 );
 
 export const closeTab = getMethod("CLOSE_TAB", bg);
@@ -104,10 +104,10 @@ export const services = {
 // `getMethod` currently strips generics, so we must copy the function signature here
 export const performConfiguredRequestInBackground = getMethod(
   "CONFIGURED_REQUEST",
-  bg
+  bg,
 ) as <TData>(
   integrationConfig: SanitizedIntegrationConfig | null,
-  requestConfig: AxiosRequestConfig
+  requestConfig: AxiosRequestConfig,
 ) => Promise<RemoteResponse<TData>>;
 
 // Use this instead: `import reportError from "@/telemetry/reportError"`
@@ -122,7 +122,7 @@ export const clearLogs = getMethod("CLEAR_LOGS", bg);
 export const clearLog = getMethod("CLEAR_LOG", bg);
 export const clearExtensionDebugLogs = getMethod(
   "CLEAR_EXTENSION_DEBUG_LOGS",
-  bg
+  bg,
 );
 
 export const traces = {
@@ -141,12 +141,12 @@ export const getUserData = getMethod("GET_USER_DATA", bg);
 
 export const installStarterBlueprints = getMethod(
   "INSTALL_STARTER_BLUEPRINTS",
-  bg
+  bg,
 );
 
 export const ping = getMethod("PING", bg);
 
 export const collectPerformanceDiagnostics = getMethod(
   "COLLECT_PERFORMANCE_DIAGNOSTICS",
-  bg
+  bg,
 );

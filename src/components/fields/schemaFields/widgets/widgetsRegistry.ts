@@ -53,7 +53,7 @@ type Widgets = {
 function unsetWidgetFactory(label: string): React.VFC {
   const UnsetWidget: React.VFC = () => {
     throw new Error(
-      `Input widget ${label} not set. Did you forget to register it in registerDefaultWidgets?`
+      `Input widget ${label} not set. Did you forget to register it in registerDefaultWidgets?`,
     );
   };
 

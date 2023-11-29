@@ -92,7 +92,7 @@ describe("contextMenus", () => {
         documentUrlPatterns: ["*://*/*", "https://www.mySite1.com/*"],
         title: "Test Menu",
         type: "normal",
-      }
+      },
     );
 
     expect(createMenuMock).toHaveBeenCalledWith({

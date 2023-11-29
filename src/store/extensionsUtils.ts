@@ -27,7 +27,7 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
  * @see installRecipe
  */
 export function inferRecipeOptions(
-  extensions: Array<Pick<ModComponentBase, "optionsArgs">>
+  extensions: Array<Pick<ModComponentBase, "optionsArgs">>,
 ): OptionsArgs {
   // For a given recipe, all the extensions receive the same options during the install process (even if they don't
   // use the options), so we can just take the optionsArgs for any of the extensions
@@ -45,7 +45,7 @@ export function inferRecipeOptions(
  */
 export function inferConfiguredModIntegrations(
   modComponents: Array<Pick<ModComponentBase, "integrationDependencies">>,
-  { optional = false }: { optional?: boolean } = {}
+  { optional = false }: { optional?: boolean } = {},
 ): IntegrationDependency[] {
   // The mod components will only have the integration dependencies that are
   // declared on each extension. So we have to take the union of the integration
@@ -55,20 +55,20 @@ export function inferConfiguredModIntegrations(
 
   const dependenciesByIntegrationId = groupBy(
     modComponents.flatMap(
-      ({ integrationDependencies }) => integrationDependencies ?? []
+      ({ integrationDependencies }) => integrationDependencies ?? [],
     ),
-    ({ integrationId }) => integrationId
+    ({ integrationId }) => integrationId,
   );
   const result: IntegrationDependency[] = [];
   for (const [id, dependencies] of Object.entries(
-    dependenciesByIntegrationId
+    dependenciesByIntegrationId,
   )) {
     const configuredDependencies = uniqBy(
       dependencies.filter(
         ({ integrationId, configId }) =>
-          configId != null || integrationId === PIXIEBRIX_INTEGRATION_ID
+          configId != null || integrationId === PIXIEBRIX_INTEGRATION_ID,
       ),
-      ({ configId }) => configId
+      ({ configId }) => configId,
     );
 
     // PIXIEBRIX_INTEGRATION_ID will never have empty dependencies here, they aren't filtered out above
@@ -102,7 +102,7 @@ export function inferConfiguredModIntegrations(
  */
 export function inferRecipeDependencies(
   installedRecipeExtensions: ModComponentBase[],
-  dirtyRecipeElements: ModComponentFormState[]
+  dirtyRecipeElements: ModComponentFormState[],
 ): IntegrationDependency[] {
   const withIntegrations: Array<{
     integrationDependencies?: IntegrationDependency[];
@@ -110,9 +110,9 @@ export function inferRecipeDependencies(
   return uniqBy(
     flatten(
       withIntegrations.map(
-        ({ integrationDependencies }) => integrationDependencies ?? []
-      )
+        ({ integrationDependencies }) => integrationDependencies ?? [],
+      ),
     ),
-    JSON.stringify
+    JSON.stringify,
   );
 }

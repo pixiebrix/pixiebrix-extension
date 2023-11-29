@@ -40,7 +40,7 @@ describe("useAsyncExternalStore", () => {
     expect(wrapper.result.current).toEqual(
       expect.objectContaining({
         isLoading: true,
-      })
+      }),
     );
 
     await waitForEffect();
@@ -49,7 +49,7 @@ describe("useAsyncExternalStore", () => {
       expect.objectContaining({
         isSuccess: true,
         data: 42,
-      })
+      }),
     );
 
     wrapper.unmount();

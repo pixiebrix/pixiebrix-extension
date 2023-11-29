@@ -41,7 +41,7 @@ export async function getModComponentState(): Promise<ModComponentState> {
     STORAGE_KEY,
     migrations,
     initialState,
-    inferModComponentStateVersion
+    inferModComponentStateVersion,
   );
 }
 
@@ -56,7 +56,7 @@ export async function getActivatedModIds(): Promise<Set<RegistryId>> {
   }
 
   return new Set(
-    compact(modComponentState.extensions.map(({ _recipe }) => _recipe?.id))
+    compact(modComponentState.extensions.map(({ _recipe }) => _recipe?.id)),
   );
 }
 
@@ -64,12 +64,12 @@ export async function getActivatedModIds(): Promise<Set<RegistryId>> {
  * Save mod component state to local storage (without going through redux-persistor).
  */
 export async function saveModComponentState(
-  state: ModComponentState
+  state: ModComponentState,
 ): Promise<void> {
   await setReduxStorage(
     STORAGE_KEY,
     state,
-    getMaxMigrationsVersion(migrations)
+    getMaxMigrationsVersion(migrations),
   );
 }
 

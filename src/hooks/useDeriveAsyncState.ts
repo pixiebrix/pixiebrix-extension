@@ -45,7 +45,7 @@ const warnNullValueOnce = once(() => {
   // This will warn once per module -- not once per instance of useAsyncState. We might want to track in the slice
   // instead. But this is sufficient for now, and keeps the reducer state clean.
   console.warn(
-    "useAsyncState:promiseOrGenerator produced a null value. Avoid returning null for async state values."
+    "useAsyncState:promiseOrGenerator produced a null value. Avoid returning null for async state values.",
   );
 });
 
@@ -104,7 +104,7 @@ const promiseSlice = createSlice({
 function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
   ...args: [
     ...AsyncStateArray,
-    (...args: AsyncValueArray<AsyncStates>) => Promise<Result>
+    (...args: AsyncValueArray<AsyncStates>) => Promise<Result>,
   ]
 ): AsyncState<Result> {
   // Ref to track if this is the initial mount
@@ -120,7 +120,7 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
 
   const [promiseState, dispatch] = useReducer(
     promiseSlice.reducer,
-    initialAsyncState
+    initialAsyncState,
   );
 
   // @ts-expect-error -- getting args except last element
@@ -153,7 +153,7 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
 
     try {
       const promiseResult = await merge(
-        ...(datums as AsyncValueArray<AsyncStates>)
+        ...(datums as AsyncValueArray<AsyncStates>),
       );
       if (checkIsMounted() && promiseNonce.current === nonce) {
         dispatch(promiseSlice.actions.success({ data: promiseResult }));

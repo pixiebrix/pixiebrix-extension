@@ -26,7 +26,7 @@ import { type SafeString } from "@/types/stringTypes";
 export function freshIdentifier(
   root: SafeString,
   identifiers: string[],
-  options: { includeFirstNumber?: boolean; startNumber?: number } = {}
+  options: { includeFirstNumber?: boolean; startNumber?: number } = {},
 ): string {
   const { includeFirstNumber, startNumber } = {
     includeFirstNumber: false,
@@ -41,7 +41,7 @@ export function freshIdentifier(
     .map((identifier) =>
       identifier === root
         ? startNumber
-        : regexp.exec(identifier)?.groups?.number
+        : regexp.exec(identifier)?.groups?.number,
     )
     .filter((x) => x != null)
     .map(Number);

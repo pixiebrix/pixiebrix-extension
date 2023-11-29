@@ -102,7 +102,7 @@ export const ModalProvider: React.FunctionComponent<{
     () => () => {
       callback?.(false);
     },
-    [callback]
+    [callback],
   );
 
   const showConfirmation = useCallback(
@@ -121,7 +121,7 @@ export const ModalProvider: React.FunctionComponent<{
         setCallback((_prevState: Callback) => newCallback);
       });
     },
-    [callback, setModalProps]
+    [callback, setModalProps],
   );
 
   return (

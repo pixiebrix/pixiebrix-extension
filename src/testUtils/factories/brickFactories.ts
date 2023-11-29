@@ -40,7 +40,7 @@ export const brickConfigFactory = define<BrickConfig>({
 });
 
 export const pipelineFactory: (
-  blockConfigOverride?: FactoryConfig<BrickConfig>
+  blockConfigOverride?: FactoryConfig<BrickConfig>,
 ) => BrickPipeline = (blockConfigProps) => {
   const brickConfig1 = brickConfigFactory(blockConfigProps);
   const brickConfig2 = brickConfigFactory(blockConfigProps);

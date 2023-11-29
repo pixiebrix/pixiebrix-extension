@@ -29,7 +29,7 @@ export class ElementEvent extends EffectABC {
     super(
       "@pixiebrix/dom/trigger-event",
       "Simulate a DOM event",
-      "Simulate a DOM element event, e.g., click"
+      "Simulate a DOM element event, e.g., click",
     );
   }
 
@@ -59,7 +59,7 @@ export class ElementEvent extends EffectABC {
       isRootAware,
       event,
     }: BrickArgs<{ selector: string; isRootAware: boolean; event: string }>,
-    { logger, root }: BrickOptions
+    { logger, root }: BrickOptions,
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({
       selector,

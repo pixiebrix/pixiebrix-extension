@@ -98,21 +98,21 @@ export function unsetReadyInThisDocument(uuid: UUID): void {
 export async function getTargetState(target: Target): Promise<TargetState> {
   forbidContext(
     "web",
-    "chrome.tabs is only available in chrome-extension:// pages"
+    "chrome.tabs is only available in chrome-extension:// pages",
   );
 
   return executeFunction(target, () => {
     // This function does not have access to globals, the outside scope, nor `import()`
     // These two symbols must be repeated inline
     const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for(
-      "content-script-injected"
+      "content-script-injected",
     );
     const CONTENT_SCRIPT_READY_ATTRIBUTE = "data-pb-ready";
     return {
       url: location.href,
       installed: CONTENT_SCRIPT_INJECTED_SYMBOL in globalThis,
       ready: document.documentElement.hasAttribute(
-        CONTENT_SCRIPT_READY_ATTRIBUTE
+        CONTENT_SCRIPT_READY_ATTRIBUTE,
       ),
     };
   });

@@ -23,7 +23,7 @@ import { PromiseCancelled } from "@/errors/genericErrors";
  */
 export async function rejectOnCancelled<T>(
   promise: Promise<T>,
-  isCancelled: () => boolean
+  isCancelled: () => boolean,
 ): Promise<T> {
   let rv: T;
   try {

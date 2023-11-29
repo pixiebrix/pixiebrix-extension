@@ -25,7 +25,7 @@ class TimestampReader extends ReaderABC {
     super(
       "@pixiebrix/timestamp",
       "Generate a timestamp",
-      "Get the current date-time in multiple formats"
+      "Get the current date-time in multiple formats",
     );
   }
 

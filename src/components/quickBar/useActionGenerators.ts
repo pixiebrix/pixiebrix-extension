@@ -34,7 +34,7 @@ function useActionGenerators(): void {
     ({ searchQuery, currentRootActionId }) => ({
       searchQuery,
       currentRootActionId,
-    })
+    }),
   );
 
   useEffect(
@@ -45,7 +45,7 @@ function useActionGenerators(): void {
       });
     },
     // eslint-disable-next-line -- generate immediately on mount, and when root changes (because some actions only show when their parent is active)
-    [currentRootActionId]
+    [currentRootActionId],
   );
 
   useDebouncedEffect(
@@ -70,7 +70,7 @@ function useActionGenerators(): void {
       trailing: true,
       // Only check searchQuery, because changes in currentRootActionId are handled by the useEffect above
       equalityFn: (lhs, rhs) => lhs.searchQuery === rhs.searchQuery,
-    }
+    },
   );
 }
 

@@ -46,7 +46,7 @@ export function getLikelyVariableAtPosition(
   {
     clampPosition = false,
     includeBoundary = false,
-  }: { clampPosition?: boolean; includeBoundary?: boolean } = {}
+  }: { clampPosition?: boolean; includeBoundary?: boolean } = {},
 ): LikelyVariable {
   // Cursor is at whitespace, detect if the cursor is at the end of the variable
   const matchPosition =
@@ -100,7 +100,7 @@ export function getLikelyVariableAtPosition(
 
 function getOpeningBracesLeftOfIndex(
   template: string,
-  index: number
+  index: number,
 ): "{{" | "{%" | null {
   const templatePartLeft = template.slice(0, index);
   let openingBraces = null;
@@ -123,7 +123,7 @@ function getOpeningBracesLeftOfIndex(
 
 function getClosingBracesRightOfIndex(
   template: string,
-  index: number
+  index: number,
 ): "}}" | "%}" | null {
   const templatePartRight = template.slice(index);
   let closingBraces = null;
@@ -147,14 +147,14 @@ function getClosingBracesRightOfIndex(
 export function replaceLikelyVariable(
   template: string,
   position: number,
-  replacement: string
+  replacement: string,
 ): {
   newTemplate: string;
   newCursorPosition: number;
 } {
   let { startIndex, endIndex } = getLikelyVariableAtPosition(
     template,
-    position
+    position,
   );
 
   if (startIndex === -1 || endIndex === -1) {

@@ -37,7 +37,7 @@ class BackgroundLogger implements Logger {
   constructor(context: MessageContext = null) {
     expectContext(
       "extension",
-      "BackgroundLogger requires access to the background messenger API"
+      "BackgroundLogger requires access to the background messenger API",
     );
 
     this.context = context ?? {};

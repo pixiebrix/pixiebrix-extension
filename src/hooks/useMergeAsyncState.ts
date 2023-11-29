@@ -35,11 +35,11 @@ import deepEquals from "fast-deep-equal";
  */
 export function useMergeAsyncState<
   AsyncStates extends FetchableAsyncStateArray,
-  Result
+  Result,
 >(
   ...args: [
     ...FetchableAsyncStateArray,
-    (...args: AsyncValueArray<AsyncStates>) => Result
+    (...args: AsyncValueArray<AsyncStates>) => Result,
   ]
 ): FetchableAsyncState<Result> {
   // @ts-expect-error -- getting last element
@@ -59,7 +59,7 @@ export function useMergeAsyncState<
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- depends on individual refetchCallbacks
-    refetchCallbacks
+    refetchCallbacks,
   );
 
   const result = {

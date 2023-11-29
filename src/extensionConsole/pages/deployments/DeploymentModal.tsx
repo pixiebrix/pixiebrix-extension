@@ -74,7 +74,7 @@ export const CountdownTimer: React.FunctionComponent<{
   if (remaining > 0) {
     const minutes = Math.floor(remaining / MINUTES_TO_MILLIS);
     const seconds = Math.floor(
-      (remaining - minutes * MINUTES_TO_MILLIS) / 1000
+      (remaining - minutes * MINUTES_TO_MILLIS) / 1000,
     );
     return (
       <Alert variant="info">
@@ -105,7 +105,7 @@ const SnoozeButton: React.FC<{
   timeRemaining: number | null;
 }> = ({ disabled, snooze, timeRemaining }) => {
   const validOptions = SNOOZE_OPTIONS.filter(
-    ({ value }) => timeRemaining == null || timeRemaining >= value
+    ({ value }) => timeRemaining == null || timeRemaining >= value,
   );
 
   return (
@@ -149,7 +149,7 @@ const DeploymentModal: React.FC<
 
   const { isSnoozed, isUpdateOverdue, updatePromptTimestamp, timeRemaining } =
     useSelector((state: SettingsRootState) =>
-      selectUpdatePromptState(state, { now: currentTime, enforceUpdateMillis })
+      selectUpdatePromptState(state, { now: currentTime, enforceUpdateMillis }),
     );
 
   // Keep track of this modal in case they snooze and leave the tab open
@@ -180,7 +180,7 @@ const DeploymentModal: React.FC<
       dispatch(settingsSlice.actions.snoozeUpdates({ durationMillis }));
       setSnoozedModal(true);
     },
-    [dispatch, setSnoozedModal]
+    [dispatch, setSnoozedModal],
   );
 
   if (hideModal || (snoozedModal && !isUpdateOverdue)) {

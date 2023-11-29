@@ -49,11 +49,11 @@ function elementSelector(rootSelector: string | null, selector: string | null) {
 }
 
 export function frameworkReadFactory(
-  framework: Framework
+  framework: Framework,
 ): Read<FrameworkConfig> {
   async function read(
     reader: FrameworkConfig,
-    root: SelectorRoot
+    root: SelectorRoot,
   ): Promise<JsonObject> {
     const {
       selector,
@@ -83,7 +83,7 @@ export function frameworkReadFactory(
             castArray(attributes).map((attribute) => [
               attribute,
               `attrs.${attribute}`,
-            ])
+            ]),
           )
         : pathSpec,
     });

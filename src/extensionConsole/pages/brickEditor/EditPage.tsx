@@ -63,7 +63,7 @@ function useParseBrick(config: string | null): ParsedBrickInfo {
       return {
         isBlueprint: true,
         isInstalled: extensions.some(
-          (x) => x._recipe?.id === configJSON.metadata?.id
+          (x) => x._recipe?.id === configJSON.metadata?.id,
         ),
         config: configJSON,
       };
@@ -133,7 +133,7 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
 
   const name = rawConfig.metadata?.name;
   useSetDocumentTitle(
-    name ? `Edit ${truncate(name, { length: 15 })}` : "Edit Brick"
+    name ? `Edit ${truncate(name, { length: 15 })}` : "Edit Brick",
   );
 
   return (

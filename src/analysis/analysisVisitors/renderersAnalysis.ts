@@ -37,7 +37,7 @@ class RenderersAnalysis extends AnalysisVisitorWithResolvedBricksABC {
   public override visitPipeline(
     position: BrickPosition,
     pipeline: BrickConfig[],
-    extra: VisitPipelineExtra
+    extra: VisitPipelineExtra,
   ): void {
     // Validating position only if renderers are allowed in this pipeline
     // A non-renderer pipeline can't have sub-pipelines that allow renderers

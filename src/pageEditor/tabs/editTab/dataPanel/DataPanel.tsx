@@ -107,7 +107,7 @@ const DataPanel: React.FC = () => {
     const tracedInput = currentInput.map(
       (block) =>
         traces.find((trace) => trace.blockInstanceId === block.instanceId)
-          ?.blockConfig
+          ?.blockConfig,
     );
 
     return !isEqual(currentInput, tracedInput);
@@ -127,12 +127,12 @@ const DataPanel: React.FC = () => {
 
   const relevantContext = useMemo(
     () => pickBy(record?.templateContext ?? {}, contextFilter),
-    [record?.templateContext]
+    [record?.templateContext],
   );
 
   const { data: showPageState } = fallbackValue(
     useAsyncState(async () => block?.block.isPageStateAware() ?? true, [block]),
-    true
+    true,
   );
 
   const documentBodyName = joinPathParts(blockPath, "config.body");
@@ -155,12 +155,12 @@ const DataPanel: React.FC = () => {
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
     showFormPreview || showDocumentPreview
       ? DataPanelTabKey.Preview
-      : DataPanelTabKey.Output
+      : DataPanelTabKey.Output,
   );
 
   const [nodePreviewActiveElement, setNodePreviewActiveElement] = useReduxState(
     selectNodePreviewActiveElement,
-    editorActions.setNodePreviewActiveElement
+    editorActions.setNodePreviewActiveElement,
   );
 
   const popupBoundary = showDocumentPreview
@@ -177,7 +177,7 @@ const DataPanel: React.FC = () => {
     }
 
     const trace = traces.find(
-      (trace) => trace.blockInstanceId === activeNodeId
+      (trace) => trace.blockInstanceId === activeNodeId,
     );
 
     // No traces or no changes since the last render, we are good, no alert

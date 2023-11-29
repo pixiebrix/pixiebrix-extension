@@ -41,7 +41,7 @@ type RecipePermissionsState = AsyncState<PermissionsStatus> & {
  */
 function useModPermissions(
   blueprint: ModDefinition,
-  configuredDependencies: IntegrationDependency[]
+  configuredDependencies: IntegrationDependency[],
 ): RecipePermissionsState {
   const { data: browserPermissions } = useExtensionPermissions();
 
@@ -57,11 +57,11 @@ function useModPermissions(
         hasPermissions: true,
         permissions: emptyPermissionsFactory(),
       } as PermissionsStatus,
-    }
+    },
   );
 
   const request = useRequestPermissionsCallback(
-    permissionsState.data?.permissions
+    permissionsState.data?.permissions,
   );
 
   return {

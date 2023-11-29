@@ -45,7 +45,7 @@ const OwnerLabel: React.FunctionComponent<{ blueprintId: RegistryId }> = ({
   }
 
   const ownerOrganization = sortedOrganizations.find(
-    (x) => x.scope === recipeScope
+    (x) => x.scope === recipeScope,
   );
 
   if (!ownerOrganization) {

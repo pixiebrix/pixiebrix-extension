@@ -136,28 +136,28 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
   });
 
   async getBricks(
-    extension: ResolvedModComponent<TourConfig>
+    extension: ResolvedModComponent<TourConfig>,
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.tour);
   }
 
   private async runExtensionTour(
     extension: ResolvedModComponent<TourConfig>,
-    abortController: AbortController
+    abortController: AbortController,
   ): Promise<void> {
     const reader = await this.defaultReader();
     const { tour: tourConfig } = extension.config;
     const ctxt = await reader.read(document);
 
     const extensionLogger = this.logger.childLogger(
-      selectExtensionContext(extension)
+      selectExtensionContext(extension),
     );
 
     const initialValues: InitialValues = {
       input: ctxt,
       root: document,
       serviceContext: await makeServiceContextFromDependencies(
-        extension.integrationDependencies
+        extension.integrationDependencies,
       ),
       optionsArgs: extension.optionsArgs,
     };
@@ -175,7 +175,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
    * @private
    */
   private async registerTour(
-    extension: ResolvedModComponent<TourConfig>
+    extension: ResolvedModComponent<TourConfig>,
   ): Promise<void> {
     const tour = await registerTour({
       blueprintId: extension._recipe?.id,
@@ -225,12 +225,12 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     });
 
     const latest = mapValues(matching, (xs) =>
-      max(xs.map((x) => Date.parse(x.updatedAt)))
+      max(xs.map((x) => Date.parse(x.updatedAt))),
     );
 
     const [someRun, neverRun] = partition(
       this.modComponents,
-      (x) => latest[x.id]
+      (x) => latest[x.id],
     );
 
     if (neverRun.length > 0) {
@@ -254,7 +254,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     await Promise.all(
       this.modComponents.map(async (modComponent) => {
         await this.registerTour(modComponent);
-      })
+      }),
     );
 
     // User requested the tour run from the Page Editor. Ignore RunReason.MANUAL here, since we don't want
@@ -327,7 +327,7 @@ class RemoteTourExtensionPoint extends TourStarterBrickABC {
 }
 
 export function fromJS(
-  config: StarterBrickConfig<TourDefinition>
+  config: StarterBrickConfig<TourDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "tour") {

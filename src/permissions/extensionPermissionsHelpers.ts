@@ -56,7 +56,7 @@ type PermissionOptions = {
  */
 export async function collectExtensionPermissions(
   extension: ModComponentBase,
-  options: PermissionOptions = {}
+  options: PermissionOptions = {},
 ): Promise<Permissions.Permissions> {
   const { includeExtensionPoint = true, includeServices = true } = options;
   const resolved = await resolveExtensionInnerDefinitions(extension);
@@ -72,8 +72,8 @@ export async function collectExtensionPermissions(
       (resolved.integrationDependencies ?? [])
         .filter(({ configId }) => configId)
         .map(async (integrationDependency) =>
-          collectIntegrationOriginPermissions(integrationDependency)
-        )
+          collectIntegrationOriginPermissions(integrationDependency),
+        ),
     );
   }
 
@@ -86,7 +86,7 @@ export async function collectExtensionPermissions(
       includeExtensionPoint ? extensionPoint.permissions : null,
       ...servicePermissions,
       ...blockPermissions,
-    ])
+    ]),
   );
 }
 
@@ -95,14 +95,14 @@ export async function collectExtensionPermissions(
  * @param extensionOrExtensions the extension or extensions to check
  */
 export async function checkExtensionPermissions(
-  extensionOrExtensions: ModComponentBase | ModComponentBase[]
+  extensionOrExtensions: ModComponentBase | ModComponentBase[],
 ): Promise<PermissionsStatus> {
   const permissions = mergePermissions(
     await Promise.all(
       castArray(extensionOrExtensions).map(async (x) =>
-        collectExtensionPermissions(x)
-      )
-    )
+        collectExtensionPermissions(x),
+      ),
+    ),
   );
 
   return {

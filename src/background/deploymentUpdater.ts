@@ -81,14 +81,14 @@ async function setExtensionsState(state: ModComponentState): Promise<void> {
 function uninstallExtensionFromStates(
   optionsState: ModComponentState,
   editorState: EditorState | undefined,
-  extensionId: UUID
+  extensionId: UUID,
 ): {
   options: ModComponentState;
   editor: EditorState;
 } {
   const options = optionsReducer(
     optionsState,
-    optionsActions.removeExtension({ extensionId })
+    optionsActions.removeExtension({ extensionId }),
   );
   const editor = editorState
     ? editorReducer(editorState, editorActions.removeElement(extensionId))
@@ -101,21 +101,21 @@ async function uninstallExtensionsAndSaveState(
   {
     editorState,
     optionsState,
-  }: { editorState: EditorState; optionsState: ModComponentState }
+  }: { editorState: EditorState; optionsState: ModComponentState },
 ): Promise<void> {
   // Uninstall existing versions of the extensions
   for (const extension of toUninstall) {
     const result = uninstallExtensionFromStates(
       optionsState,
       editorState,
-      extension.id
+      extension.id,
     );
     optionsState = result.options;
     editorState = result.editor;
   }
 
   await Promise.allSettled(
-    toUninstall.map(async ({ id }) => removeExtensionForEveryTab(id))
+    toUninstall.map(async ({ id }) => removeExtensionForEveryTab(id)),
   );
 
   await setExtensionsState(optionsState);
@@ -133,7 +133,7 @@ export async function uninstallAllDeployments(): Promise<void> {
   const installed = selectExtensions({ options: optionsState });
 
   const toUninstall = installed.filter(
-    (extension) => !isEmpty(extension._deployment)
+    (extension) => !isEmpty(extension._deployment),
   );
 
   if (toUninstall.length === 0) {
@@ -153,7 +153,7 @@ export async function uninstallAllDeployments(): Promise<void> {
 }
 
 async function uninstallUnmatchedDeployments(
-  deployments: Deployment[]
+  deployments: Deployment[],
 ): Promise<void> {
   const [optionsState, editorState] = await Promise.all([
     getModComponentState(),
@@ -162,13 +162,13 @@ async function uninstallUnmatchedDeployments(
   const installed = selectExtensions({ options: optionsState });
 
   const deploymentRecipeIds = new Set(
-    deployments.map((deployment) => deployment.package.package_id)
+    deployments.map((deployment) => deployment.package.package_id),
   );
 
   const toUninstall = installed.filter(
     (extension) =>
       !isEmpty(extension._deployment) &&
-      !deploymentRecipeIds.has(extension._recipe?.id)
+      !deploymentRecipeIds.has(extension._recipe?.id),
   );
 
   if (toUninstall.length === 0) {
@@ -190,7 +190,7 @@ async function uninstallUnmatchedDeployments(
 async function uninstallRecipe(
   optionsState: ModComponentState,
   editorState: EditorState | undefined,
-  recipeId: RegistryId
+  recipeId: RegistryId,
 ): Promise<{
   options: ModComponentState;
   editor: EditorState | undefined;
@@ -214,7 +214,7 @@ async function uninstallRecipe(
 async function installDeployment(
   optionsState: ModComponentState,
   editorState: EditorState | undefined,
-  deployment: Deployment
+  deployment: Deployment,
 ): Promise<{
   options: ModComponentState;
   editor: EditorState | undefined;
@@ -223,14 +223,14 @@ async function installDeployment(
   let editor = editorState;
 
   const isReinstall = optionsState.extensions.some(
-    (x) => x._deployment?.id === deployment.id
+    (x) => x._deployment?.id === deployment.id,
   );
 
   // Uninstall existing versions of the extensions
   const result = await uninstallRecipe(
     options,
     editor,
-    deployment.package.package_id
+    deployment.package.package_id,
   );
 
   options = result.options;
@@ -244,13 +244,13 @@ async function installDeployment(
       deployment,
       configuredDependencies: await mergeDeploymentIntegrationDependencies(
         deployment,
-        locateAllForService
+        locateAllForService,
       ),
       // Assume backend properly validates the options
       optionsArgs: deployment.options_config as OptionsArgs,
       screen: "background",
       isReinstall,
-    })
+    }),
   );
 
   reportEvent(Events.DEPLOYMENT_ACTIVATE, {
@@ -276,7 +276,7 @@ async function installDeployments(deployments: Deployment[]): Promise<void> {
     const result = await installDeployment(
       optionsState,
       editorState,
-      deployment
+      deployment,
     );
     optionsState = result.options;
     editorState = result.editor;
@@ -317,7 +317,7 @@ async function canAutomaticallyInstall({
   const personalConfigs =
     await findLocalDeploymentConfiguredIntegrationDependencies(
       deployment,
-      locateAllForService
+      locateAllForService,
     );
   return personalConfigs.every(({ configs }) => configs.length === 1);
 }
@@ -329,7 +329,7 @@ async function canAutomaticallyInstall({
  */
 async function selectUpdatedDeployments(
   deployments: Deployment[],
-  { restricted }: { restricted: boolean }
+  { restricted }: { restricted: boolean },
 ): Promise<Deployment[]> {
   // Always get the freshest options slice from the local storage
   const { extensions } = await getModComponentState();
@@ -341,7 +341,7 @@ async function markAllAsInstalled() {
   const settings = await getSettingsState();
   const next = settingsSlice.reducer(
     settings,
-    settingsSlice.actions.resetUpdatePromptTimestamp()
+    settingsSlice.actions.resetUpdatePromptTimestamp(),
   );
   await saveSettingsState(next);
 }
@@ -434,14 +434,13 @@ export async function updateDeployments(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
-      "Skipping deployments update because the extension is not linked to the PixieBrix service"
+      "Skipping deployments update because the extension is not linked to the PixieBrix service",
     );
     return;
   }
 
-  const { data: profile, status: profileResponseStatus } = await client.get<Me>(
-    "/api/me/"
-  );
+  const { data: profile, status: profileResponseStatus } =
+    await client.get<Me>("/api/me/");
 
   const { isSnoozed, isUpdateOverdue, updatePromptTimestamp } =
     selectUpdatePromptState(
@@ -449,13 +448,13 @@ export async function updateDeployments(): Promise<void> {
       {
         now,
         enforceUpdateMillis: profile.enforce_update_millis,
-      }
+      },
     );
 
   if (profileResponseStatus >= 400) {
     // If our server is acting up, check again later
     console.debug(
-      "Skipping deployments update because /api/me/ request failed"
+      "Skipping deployments update because /api/me/ request failed",
     );
 
     return;
@@ -475,7 +474,7 @@ export async function updateDeployments(): Promise<void> {
   if (deploymentResponseStatus >= 400) {
     // Our server is active up, check again later
     console.debug(
-      "Skipping deployments update because /api/deployments/ request failed"
+      "Skipping deployments update because /api/deployments/ request failed",
     );
     return;
   }
@@ -537,7 +536,7 @@ export async function updateDeployments(): Promise<void> {
     updatedDeployments.map(async (deployment) => ({
       deployment,
       ...(await checkDeploymentPermissions(deployment, locateAllForService)),
-    }))
+    })),
   );
 
   const installability = await Promise.all(
@@ -547,7 +546,7 @@ export async function updateDeployments(): Promise<void> {
         ...requirement,
         extensionVersion,
       }),
-    }))
+    })),
   );
 
   const [automatic, manual] = partition(installability, (x) => x.isAutomatic);

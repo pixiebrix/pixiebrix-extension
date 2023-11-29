@@ -27,7 +27,7 @@ describe("useMemoCompare", () => {
       (props) => useMemoCompare(props, deepEquals),
       {
         initialProps: initial,
-      }
+      },
     );
 
     expect(result.current).toBe(initial);
@@ -44,7 +44,7 @@ describe("useMemoCompare", () => {
       (props) => useMemoCompare(props, () => false),
       {
         initialProps: initial,
-      }
+      },
     );
 
     expect(result.current).toBe(initial);

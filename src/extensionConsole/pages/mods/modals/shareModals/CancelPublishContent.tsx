@@ -58,7 +58,7 @@ const CancelPublishContent: React.FunctionComponent = () => {
       });
 
       const packageId = editablePackages.find(
-        (x) => x.name === newRecipe.metadata.id
+        (x) => x.name === newRecipe.metadata.id,
       )?.id;
 
       await updateRecipe({

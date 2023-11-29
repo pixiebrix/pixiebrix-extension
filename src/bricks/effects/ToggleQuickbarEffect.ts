@@ -24,7 +24,7 @@ class ToggleQuickbarEffect extends EffectABC {
     super(
       "@pixiebrix/quickbar/toggle",
       "Toggle Quick Bar",
-      "Show/Hide the PixieBrix Quick Bar"
+      "Show/Hide the PixieBrix Quick Bar",
     );
   }
 

@@ -82,7 +82,7 @@ export class UiPathAppRenderer extends RendererABC {
     super(
       "@pixiebrix/uipath/app",
       "UiPath App",
-      "Render a UiPath App with optional parameters"
+      "Render a UiPath App with optional parameters",
     );
   }
 
@@ -130,7 +130,7 @@ export class UiPathAppRenderer extends RendererABC {
       height = 400,
       width = "100%",
     }: BrickArgs,
-    { logger, meta }: BrickOptions
+    { logger, meta }: BrickOptions,
   ): Promise<SafeHTML> {
     const nonce = uuidv4();
 

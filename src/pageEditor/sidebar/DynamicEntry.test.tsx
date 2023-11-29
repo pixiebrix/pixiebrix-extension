@@ -54,7 +54,7 @@ describe("DynamicEntry", () => {
           // Remove the active element and stay with one inactive item
           dispatch(editorActions.removeElement(formState.uuid));
         },
-      }).asFragment()
+      }).asFragment(),
     ).toMatchSnapshot();
   });
 
@@ -68,7 +68,7 @@ describe("DynamicEntry", () => {
           // The addElement also sets the active element
           dispatch(editorActions.addElement(formState));
         },
-      }).asFragment()
+      }).asFragment(),
     ).toMatchSnapshot();
   });
 });

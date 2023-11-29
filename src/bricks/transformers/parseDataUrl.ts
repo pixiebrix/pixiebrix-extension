@@ -34,7 +34,7 @@ export class ParseDataUrl extends TransformerABC {
     super(
       "@pixiebrix/data-url",
       "Parse Data URL",
-      "Parse and decode a data: URL, e.g., from a file upload or screenshot"
+      "Parse and decode a data: URL, e.g., from a file upload or screenshot",
     );
   }
 
@@ -56,7 +56,7 @@ export class ParseDataUrl extends TransformerABC {
         description: "Decode the body into text",
       },
     },
-    ["url"]
+    ["url"],
   );
 
   override outputSchema: Schema = propertiesToSchema({
@@ -91,7 +91,7 @@ export class ParseDataUrl extends TransformerABC {
         truncate(url, {
           length: ERROR_MAX_URL_LENGTH,
           omission: `[${url.length - ERROR_MAX_URL_LENGTH} characters clipped]`,
-        })
+        }),
       );
     }
 
@@ -108,7 +108,7 @@ export class ParseDataUrl extends TransformerABC {
       const decoder = new TextDecoder(charset);
       // https://github.com/ashtuchkin/iconv-lite/blob/4a7086f81a3793d8184ce0835008e4f8c7b3ef41/lib/index.js#L35
       body = decoder.decode(
-        Buffer.from(decodeURIComponent(decodedBody), "binary")
+        Buffer.from(decodeURIComponent(decodedBody), "binary"),
       );
     }
 

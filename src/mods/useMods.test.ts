@@ -72,7 +72,7 @@ describe("useMods", () => {
                 sharing: { public: false, organizations: [] },
               },
             }),
-          ])
+          ]),
         );
       },
     });
@@ -104,9 +104,9 @@ describe("useMods", () => {
                   updated_at: validateTimestamp(new Date().toISOString()),
                   sharing: { public: false, organizations: [] },
                 },
-              })
-            )
-          )
+              }),
+            ),
+          ),
         );
       },
     });
@@ -143,7 +143,7 @@ describe("useMods", () => {
                 sharing: { public: false, organizations: [] },
               },
             }),
-          ])
+          ]),
         );
       },
     });
@@ -195,7 +195,7 @@ describe("useMods", () => {
           extensionsSlice.actions.UNSAFE_setExtensions([
             // Content doesn't matter, just need to match the ID
             activatedModComponentFactory({ id: standaloneModDefinition.id }),
-          ])
+          ]),
         );
       },
     });

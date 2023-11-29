@@ -105,7 +105,7 @@ type SubPipeline = {
 
 function getNodePreviewElementId(
   brickConfig: BrickConfig,
-  path: string
+  path: string,
 ): string | null {
   if (brickConfig.id === DocumentRenderer.BLOCK_ID) {
     // The Document Preview element name is a substring of the header node path, e.g.
@@ -128,7 +128,7 @@ function getNodePreviewElementId(
  */
 function getSubPipelinesForBlock(
   block: Brick | null,
-  blockConfig: BrickConfig
+  blockConfig: BrickConfig,
 ): SubPipeline[] {
   const subPipelines: SubPipeline[] = [];
   if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
@@ -168,7 +168,7 @@ function getSubPipelinesForBlock(
 
       const inputKey = getVariableKeyForSubPipeline(
         blockConfig,
-        pipelinePropName
+        pipelinePropName,
       );
 
       if (inputKey) {
@@ -199,10 +199,10 @@ const usePipelineNodes = (): {
   const collapsedNodes = useSelector(selectCollapsedNodes);
 
   const annotations = useSelector(
-    selectExtensionAnnotations(activeElement.uuid)
+    selectExtensionAnnotations(activeElement.uuid),
   );
   const activeNodePreviewElementId = useSelector(
-    selectNodePreviewActiveElement
+    selectNodePreviewActiveElement,
   );
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
@@ -250,7 +250,7 @@ const usePipelineNodes = (): {
       actions.moveNode({
         nodeId,
         direction: "up",
-      })
+      }),
     );
   }
 
@@ -259,7 +259,7 @@ const usePipelineNodes = (): {
       actions.moveNode({
         nodeId,
         direction: "down",
-      })
+      }),
     );
   }
 
@@ -297,7 +297,7 @@ const usePipelineNodes = (): {
 
     const traceRecord = getLatestBrickCall(
       filterTracesByCall(traces, latestPipelineCall),
-      blockConfig.instanceId
+      blockConfig.instanceId,
     );
 
     let extensionHasTraces = extensionHasTracesInput || traceRecord != null;
@@ -323,7 +323,7 @@ const usePipelineNodes = (): {
 
       if (hasSubPipelines) {
         dispatch(
-          actions.toggleCollapseBrickPipelineNode(blockConfig.instanceId)
+          actions.toggleCollapseBrickPipelineNode(blockConfig.instanceId),
         );
       }
     };
@@ -373,7 +373,7 @@ const usePipelineNodes = (): {
               path: pipelinePath,
               flavor,
               index: index + 1,
-            })
+            }),
           );
         },
       });
@@ -423,7 +423,7 @@ const usePipelineNodes = (): {
         : subPipelines.some(
             ({ path }) =>
               activeNodePreviewElementId ===
-              getNodePreviewElementId(blockConfig, path)
+              getNodePreviewElementId(blockConfig, path),
           );
 
     const restBrickNodeProps: Except<
@@ -479,7 +479,7 @@ const usePipelineNodes = (): {
                   path: fullSubPath,
                   flavor,
                   index: 0,
-                })
+                }),
               );
             },
           },
@@ -511,13 +511,13 @@ const usePipelineNodes = (): {
                   setActiveNodeId(blockConfig.instanceId);
                   dispatch(
                     editorActions.setNodePreviewActiveElement(
-                      nodePreviewElementId
-                    )
+                      nodePreviewElementId,
+                    ),
                   );
                   window.dispatchEvent(
                     new Event(
-                      `${SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT}-${nodePreviewElementId}`
-                    )
+                      `${SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT}-${nodePreviewElementId}`,
+                    ),
                   );
                 },
                 active: nodePreviewElementId === activeNodePreviewElementId,
@@ -551,7 +551,7 @@ const usePipelineNodes = (): {
             key: fullSubPath,
             ...headerNodeProps,
           },
-          ...subPipelineNodes
+          ...subPipelineNodes,
         );
 
         extensionHasTraces = extensionHasTraces || subPipelineHasTraces;
@@ -620,7 +620,7 @@ const usePipelineNodes = (): {
       // Use first block in pipeline to determine the latest run
       latestPipelineCall = getLatestBrickCall(
         latestTraces,
-        pipeline[0].instanceId
+        pipeline[0].instanceId,
       )?.branches;
     }
 
@@ -676,7 +676,7 @@ const usePipelineNodes = (): {
               path: PIPELINE_BLOCKS_FIELD_NAME,
               flavor: pipelineFlavor,
               index: 0,
-            })
+            }),
           );
         },
       },

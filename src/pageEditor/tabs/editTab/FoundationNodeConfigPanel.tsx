@@ -66,7 +66,7 @@ const FoundationNodeConfigPanel: React.FC = () => {
   // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
     () => !isInnerDefinitionRegistryId(extensionPoint.metadata.id),
-    [extensionPoint.metadata.id]
+    [extensionPoint.metadata.id],
   );
 
   const { EditorNode } = ADAPTERS.get(extensionPoint.definition.type);

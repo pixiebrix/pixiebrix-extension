@@ -41,15 +41,15 @@ type DefaultFactoryArgs = {
 
 export type AsyncOptionsFactory<
   Args extends DefaultFactoryArgs = DefaultFactoryArgs,
-  T = unknown
+  T = unknown,
 > = (
   config: SanitizedIntegrationConfig,
-  factoryArgs?: Args
+  factoryArgs?: Args,
 ) => Promise<Array<Option<T>>>;
 
 type AsyncRemoteSelectWidgetProps<
   Args extends DefaultFactoryArgs = DefaultFactoryArgs,
-  T = unknown
+  T = unknown,
 > = CustomFieldWidgetProps<T, SelectLike<Option<T>>> & {
   isClearable?: boolean;
   optionsFactory: AsyncOptionsFactory<Args, T>;
@@ -93,16 +93,16 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
 
           if (Array.isArray(rawOptions)) {
             setKnownOptions((prev) =>
-              uniqBy([...prev, ...rawOptions], (x) => x.value)
+              uniqBy([...prev, ...rawOptions], (x) => x.value),
             );
           } else {
             // Throw locally, to translate into error for AsyncSelect
             console.error(
               `Expected array of options, got ${typeof rawOptions}`,
-              rawOptions
+              rawOptions,
             );
             throw new TypeError(
-              `Expected array of options, got ${typeof rawOptions}`
+              `Expected array of options, got ${typeof rawOptions}`,
             );
           }
 
@@ -126,7 +126,7 @@ const AsyncRemoteSelectWidget: React.FC<AsyncRemoteSelectWidgetProps> = ({
       void generate();
     },
     150,
-    { leading: false, trailing: true, maxWait: 750 }
+    { leading: false, trailing: true, maxWait: 750 },
   );
 
   // Option will be null when the select is "cleared"

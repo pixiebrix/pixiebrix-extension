@@ -37,7 +37,7 @@ describe("ParseJson block", () => {
     const brick = new ParseJson();
     const result = await brick.run(
       unsafeAssumeValidArg({ content: '{"foo": 42,}' }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toEqual({
@@ -50,7 +50,7 @@ describe("ParseJson block", () => {
     await expect(async () => {
       await brick.run(
         unsafeAssumeValidArg({ content: '{"foo":}' }),
-        brickOptionsFactory()
+        brickOptionsFactory(),
       );
     }).rejects.toThrow(BusinessError);
   });
@@ -60,7 +60,7 @@ describe("ParseJson block", () => {
     await expect(async () => {
       await brick.run(
         unsafeAssumeValidArg({ content: '{"foo": 42,}', allowJson5: false }),
-        brickOptionsFactory()
+        brickOptionsFactory(),
       );
     }).rejects.toThrow(BusinessError);
   });
@@ -69,7 +69,7 @@ describe("ParseJson block", () => {
     const brick = new ParseJson();
     const result = await brick.run(
       unsafeAssumeValidArg({ content: "{foo: 42}" }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toEqual({
@@ -84,7 +84,7 @@ describe("ParseJson block", () => {
         lenient: true,
         content: 'Sure, here\'s your response: {"foo": 42}. What do you think?',
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toEqual({
@@ -100,7 +100,7 @@ describe("ParseJson block", () => {
           lenient: true,
           content: 'abc {"foo": 42} {"bar": 421}',
         }),
-        brickOptionsFactory()
+        brickOptionsFactory(),
       );
     }).rejects.toThrow(BusinessError);
   });
@@ -112,7 +112,7 @@ describe("ParseJson block", () => {
         lenient: true,
         content: 'abc [{"foo": 42}, {"bar": 421}] def',
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toEqual([
@@ -130,7 +130,7 @@ describe("ParseJson block", () => {
         lenient: true,
         content: 'abc [[{"foo": 42}], {"bar": 421}] def',
       }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     expect(result).toEqual([

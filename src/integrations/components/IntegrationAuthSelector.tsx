@@ -83,14 +83,14 @@ const IntegrationAuthSelector: React.FunctionComponent<{
   const [field, , helpers] = useField<UUID | null>(props);
   const options = useMemo(
     () => authOptions.filter((x) => x.serviceId === serviceId),
-    [authOptions, serviceId]
+    [authOptions, serviceId],
   );
 
   const integrationConfigs = useSelector(selectIntegrationConfigMap);
 
   const reportSelectEvent = async (
     option: AuthOption,
-    isUserAction: boolean
+    isUserAction: boolean,
   ) => {
     const { value, label, sharingType, local } = option;
 
@@ -117,7 +117,7 @@ const IntegrationAuthSelector: React.FunctionComponent<{
   // `react-select` barfs on undefined component overrides
   const components = useMemo(
     () => (CustomMenuList ? { MenuList: CustomMenuList } : {}),
-    [CustomMenuList]
+    [CustomMenuList],
   );
 
   useAsyncEffect(async () => {
@@ -133,7 +133,7 @@ const IntegrationAuthSelector: React.FunctionComponent<{
 
   const value = useMemo(
     () => authOptions.find((x) => x.value === field.value) ?? null,
-    [field.value, authOptions]
+    [field.value, authOptions],
   );
 
   if (serviceId === PIXIEBRIX_INTEGRATION_ID) {

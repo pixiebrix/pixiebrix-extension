@@ -160,7 +160,7 @@ function traverse(ast: any, inLoop = false): Variable[] {
 function parseCompare(node: any, inLoop = false): any {
   if (!(node instanceof Compare)) {
     throw new TypeError(
-      `Current node type is not Compare, it is ${node.typename}`
+      `Current node type is not Compare, it is ${node.typename}`,
     );
   }
 
@@ -172,7 +172,7 @@ function parseCompare(node: any, inLoop = false): any {
 function parseFnOrFilter(node: any, inLoop = false) {
   if (!(node instanceof FunCall) && !(node instanceof Filter)) {
     throw new TypeError(
-      `Current node type is not FunCall or Filter, it is ${node.typename}`
+      `Current node type is not FunCall or Filter, it is ${node.typename}`,
     );
   }
 
@@ -184,7 +184,7 @@ function parseFnOrFilter(node: any, inLoop = false) {
 function parseExpression(node: any, inLoop = false) {
   if (!expressionTags.includes(String(node.typename))) {
     throw new TypeError(
-      `Current node type is not in Expression, it is ${node.typename}`
+      `Current node type is not in Expression, it is ${node.typename}`,
     );
   }
 
@@ -196,7 +196,7 @@ function parseExpression(node: any, inLoop = false) {
 function parseIf(node: any, inLoop = false) {
   if (!(node instanceof If)) {
     throw new TypeError(
-      `Current node type is not LookupVal, it is ${node.typename}`
+      `Current node type is not LookupVal, it is ${node.typename}`,
     );
   }
 
@@ -214,7 +214,7 @@ function parseIf(node: any, inLoop = false) {
 function parseLookUp(node: any, inLoop = false): Variable[] {
   if (!(node instanceof LookupVal)) {
     throw new TypeError(
-      `Current node type is not LookupVal, it is ${node.typename}`
+      `Current node type is not LookupVal, it is ${node.typename}`,
     );
   }
 
@@ -250,7 +250,7 @@ function parseLookUp(node: any, inLoop = false): Variable[] {
 function parsePair(node: any, inLoop = false) {
   if (!(node instanceof Pair)) {
     throw new TypeError(
-      `Current node type is not Pair, it is ${node.typename}`
+      `Current node type is not Pair, it is ${node.typename}`,
     );
   }
 
@@ -306,7 +306,7 @@ function parseFor(node: any) {
       }
 
       return true;
-    })
+    }),
   );
 
   variables.push(...bodyVarsFromContext);

@@ -35,7 +35,7 @@ function extractJsonString(content: string): string {
 
   const sorted = sortBy(
     [...objectMatches, ...arrayMatches].flatMap((x) => x[0]),
-    (x) => -x.length
+    (x) => -x.length,
   );
 
   if (sorted.length === 0) {
@@ -91,7 +91,7 @@ class ParseJson extends TransformerABC {
       "@pixiebrix/parse/json",
       "Parse JSON",
       "Parse a JSON string, with JSON5 support",
-      "faCode"
+      "faCode",
     );
   }
 
@@ -120,7 +120,7 @@ class ParseJson extends TransformerABC {
         default: false,
       },
     },
-    ["content"]
+    ["content"],
   );
 
   async transform({

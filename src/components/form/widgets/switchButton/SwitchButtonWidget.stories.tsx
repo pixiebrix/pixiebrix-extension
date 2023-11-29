@@ -32,7 +32,7 @@ const componentMeta: Meta<typeof SwitchButtonWidget> = {
 };
 
 const SwitchButtonTemplate: StoryFn<typeof SwitchButtonWidget> = (
-  args: CustomFieldWidgetProps<boolean, CheckBoxLike>
+  args: CustomFieldWidgetProps<boolean, CheckBoxLike>,
 ) => <SwitchButtonWidget {...args} />;
 export const Default = SwitchButtonTemplate.bind({});
 Default.args = {

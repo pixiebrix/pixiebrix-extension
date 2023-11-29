@@ -54,7 +54,7 @@ describe("makeUpdatedFilter", () => {
 
       const filter = makeUpdatedFilter(modComponents, { restricted });
       expect(filter(deploymentFactory())).toBeTrue();
-    }
+    },
   );
 
   test.each([[{ restricted: true }, { restricted: false }]])(
@@ -74,7 +74,7 @@ describe("makeUpdatedFilter", () => {
 
       const filter = makeUpdatedFilter(extensions, { restricted });
       expect(filter(deployment)).toBeFalse();
-    }
+    },
   );
 
   test.each([[{ restricted: true }, { restricted: false }]])(
@@ -94,7 +94,7 @@ describe("makeUpdatedFilter", () => {
 
       const filter = makeUpdatedFilter(extensions, { restricted });
       expect(filter(deployment)).toBeTrue();
-    }
+    },
   );
 
   test("matched blueprint for restricted user", () => {
@@ -192,7 +192,7 @@ describe("isDeploymentActive", () => {
       });
 
       expect(isDeploymentActive(modComponent)).toBe(active);
-    }
+    },
   );
 });
 
@@ -214,7 +214,7 @@ describe("getIntegrationIds", () => {
     });
 
     expect(
-      getModDefinitionIntegrationIds(deployment.package.config)
+      getModDefinitionIntegrationIds(deployment.package.config),
     ).toStrictEqual([CONTROL_ROOM_OAUTH_INTEGRATION_ID]);
   });
 });
@@ -239,8 +239,8 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
     expect(
       await findLocalDeploymentConfiguredIntegrationDependencies(
         deployment,
-        locator
-      )
+        locator,
+      ),
     ).toStrictEqual([
       {
         integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
@@ -275,8 +275,8 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
     expect(
       await findLocalDeploymentConfiguredIntegrationDependencies(
         deployment,
-        locator
-      )
+        locator,
+      ),
     ).toStrictEqual([
       {
         integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
@@ -314,8 +314,8 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
     expect(
       await findLocalDeploymentConfiguredIntegrationDependencies(
         deployment,
-        locator
-      )
+        locator,
+      ),
     ).toBeArrayOfSize(0);
   });
 
@@ -342,8 +342,8 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
     expect(
       await findLocalDeploymentConfiguredIntegrationDependencies(
         deployment,
-        locator
-      )
+        locator,
+      ),
     ).toBeArrayOfSize(0);
   });
 });
@@ -374,7 +374,7 @@ describe("mergeDeploymentIntegrationDependencies", () => {
 
     const locator = async () => [auth];
     expect(
-      await mergeDeploymentIntegrationDependencies(deployment, locator)
+      await mergeDeploymentIntegrationDependencies(deployment, locator),
     ).toStrictEqual([
       {
         integrationId: registryId,
@@ -407,7 +407,7 @@ describe("mergeDeploymentIntegrationDependencies", () => {
 
     const locator = async () => [auth];
     expect(
-      await mergeDeploymentIntegrationDependencies(deployment, locator)
+      await mergeDeploymentIntegrationDependencies(deployment, locator),
     ).toStrictEqual([
       {
         integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
@@ -441,7 +441,7 @@ describe("mergeDeploymentIntegrationDependencies", () => {
 
     const locator = async () => [auth];
     await expect(
-      mergeDeploymentIntegrationDependencies(deployment, locator)
+      mergeDeploymentIntegrationDependencies(deployment, locator),
     ).rejects.toThrow("No configuration found for integration");
   });
 
@@ -471,7 +471,7 @@ describe("mergeDeploymentIntegrationDependencies", () => {
       }),
     ];
     await expect(
-      mergeDeploymentIntegrationDependencies(deployment, locator)
+      mergeDeploymentIntegrationDependencies(deployment, locator),
     ).rejects.toThrow("Multiple local configurations found for integration:");
   });
 
@@ -497,7 +497,7 @@ describe("mergeDeploymentIntegrationDependencies", () => {
 
     const locator = async () => [auth];
     expect(
-      await mergeDeploymentIntegrationDependencies(deployment, locator)
+      await mergeDeploymentIntegrationDependencies(deployment, locator),
     ).toStrictEqual([
       {
         integrationId: PIXIEBRIX_INTEGRATION_ID,

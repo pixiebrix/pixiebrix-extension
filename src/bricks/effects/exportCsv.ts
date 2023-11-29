@@ -26,7 +26,7 @@ export class ExportCsv extends EffectABC {
     super(
       "@pixiebrix/export/csv",
       "Export as CSV",
-      "Export records as a CSV file"
+      "Export records as a CSV file",
     );
   }
 
@@ -58,7 +58,7 @@ export class ExportCsv extends EffectABC {
 
   async effect(
     { filename = "exported", useBOM = false, data }: BrickArgs,
-    { ctxt }: BrickOptions
+    { ctxt }: BrickOptions,
   ): Promise<void> {
     const { mkConfig, generateCsv, download } = await import(
       /* webpackChunkName: "export-to-csv" */ "export-to-csv"
@@ -78,7 +78,7 @@ export class ExportCsv extends EffectABC {
         `Expected array for data, got ${typeof rows}`,
         this.id,
         "data",
-        null
+        null,
       );
     }
 
@@ -88,7 +88,7 @@ export class ExportCsv extends EffectABC {
         `Expected array of array for data, got ${typeof rows[0]}`,
         this.id,
         "data",
-        null
+        null,
       );
     }
 

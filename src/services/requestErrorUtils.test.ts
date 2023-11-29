@@ -31,13 +31,13 @@ describe("safeGuessStatusText", () => {
 describe("selectAbsoluteUrl", () => {
   it("combines URL", () => {
     expect(
-      selectAbsoluteUrl({ url: "/foo", baseURL: "https://example.com" })
+      selectAbsoluteUrl({ url: "/foo", baseURL: "https://example.com" }),
     ).toBe("https://example.com/foo");
   });
 
   it("handles trailing baseURL slash", () => {
     expect(
-      selectAbsoluteUrl({ url: "/foo", baseURL: "https://example.com/" })
+      selectAbsoluteUrl({ url: "/foo", baseURL: "https://example.com/" }),
     ).toBe("https://example.com/foo");
   });
 
@@ -46,7 +46,7 @@ describe("selectAbsoluteUrl", () => {
       selectAbsoluteUrl({
         url: "https://example.com/foo",
         baseURL: "https://example.com/",
-      })
+      }),
     ).toBe("https://example.com/foo");
   });
 });

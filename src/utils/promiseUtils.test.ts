@@ -43,7 +43,7 @@ test("groupPromisesByStatus", async () => {
   ];
 
   const { fulfilled, rejected } = groupPromisesByStatus(
-    await Promise.allSettled(promises)
+    await Promise.allSettled(promises),
   );
 
   expect(fulfilled).toStrictEqual([1, 2]);
@@ -105,7 +105,7 @@ describe("retryWithJitter", () => {
     await expect(
       retryWithJitter(fn, {
         retries: 3,
-      })
+      }),
     ).rejects.toThrow("error");
     expect(fn).toHaveBeenCalledTimes(3);
   });
@@ -124,7 +124,7 @@ describe("retryWithJitter", () => {
         retries: 3,
         shouldRetry: (error) =>
           (error as Error).message.includes("a specified error"),
-      })
+      }),
     ).rejects.toThrow("different non-specified error");
     expect(fn).toHaveBeenCalledTimes(2);
   });
@@ -137,7 +137,7 @@ describe("asyncMapValues", () => {
         a: 1,
         b: 2,
       },
-      async (value): Promise<number> => value * 2
+      async (value): Promise<number> => value * 2,
     );
 
     expect(result).toStrictEqual({

@@ -83,7 +83,7 @@ export const KIND_SCHEMAS = {
 
 export async function validateKind(
   instance: Record<string, unknown>,
-  kind: keyof typeof KIND_SCHEMAS
+  kind: keyof typeof KIND_SCHEMAS,
 ): Promise<ValidationResult> {
   const finalSchema = await dereference(KIND_SCHEMAS[kind] as Schema);
   const validator = new Validator(finalSchema as ValidatorSchema);
@@ -98,7 +98,7 @@ export async function validateKind(
  */
 export async function validateOutput(
   schema: Schema,
-  instance: unknown
+  instance: unknown,
 ): Promise<ValidationResult> {
   const validator = new Validator({
     $id: urljoin(BASE_SCHEMA_URI, "block"),
@@ -120,7 +120,7 @@ export async function validateOutput(
  */
 export async function validateInput(
   schema: Schema,
-  instance: unknown
+  instance: unknown,
 ): Promise<ValidationResult> {
   const validator = new Validator({
     $id: urljoin(BASE_SCHEMA_URI, "block"),
@@ -146,7 +146,7 @@ export async function validateInput(
       // @ts-expect-error: getting confused about schema types
       properties: pickBy(
         inputProperties(service.schema),
-        (x: JSONSchema7) => !REF_SECRETS.includes(x.$ref)
+        (x: JSONSchema7) => !REF_SECRETS.includes(x.$ref),
       ),
     });
   }
@@ -159,7 +159,7 @@ export async function validateInput(
  */
 export function propertiesToSchema(
   properties: SchemaProperties,
-  required?: string[]
+  required?: string[],
 ): Schema {
   return {
     $schema: "https://json-schema.org/draft/2019-09/schema#",

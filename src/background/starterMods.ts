@@ -54,7 +54,7 @@ export async function getBuiltInIntegrationConfigs(): Promise<
     >("/api/services/shared/?meta=1");
 
     return integrationConfigs.filter(
-      (auth) => getSharingType(auth) === "built-in"
+      (auth) => getSharingType(auth) === "built-in",
     );
   } catch (error) {
     reportError(error);
@@ -65,7 +65,7 @@ export async function getBuiltInIntegrationConfigs(): Promise<
 function installModInOptionsState(
   state: ModComponentState,
   modDefinition: ModDefinition,
-  configuredDependencies: IntegrationDependency[]
+  configuredDependencies: IntegrationDependency[],
 ): ModComponentState {
   return reducer(
     state,
@@ -74,7 +74,7 @@ function installModInOptionsState(
       configuredDependencies,
       screen: "starterMod",
       isReinstall: false,
-    })
+    }),
   );
 }
 
@@ -96,12 +96,12 @@ async function installMods(modDefinitions: ModDefinition[]): Promise<boolean> {
       const builtInConfig = builtInIntegrationConfigs.find(
         (config) =>
           config.service.config.metadata.id ===
-          unconfiguredDependency.integrationId
+          unconfiguredDependency.integrationId,
       );
 
       if (!builtInConfig && !unconfiguredDependency.isOptional) {
         throw new Error(
-          `No built-in config found for integration ${unconfiguredDependency.integrationId}. Check that starter mods have built-in configuration options for all required integrations.`
+          `No built-in config found for integration ${unconfiguredDependency.integrationId}. Check that starter mods have built-in configuration options for all required integrations.`,
         );
       }
 
@@ -109,20 +109,20 @@ async function installMods(modDefinitions: ModDefinition[]): Promise<boolean> {
         ...unconfiguredDependency,
         configId: builtInConfig?.id,
       };
-    }
+    },
   );
   let optionsState = await getModComponentState();
 
   for (const modDefinition of modDefinitions) {
     const modAlreadyInstalled = optionsState.extensions.some(
-      (mod) => mod._recipe?.id === modDefinition.metadata.id
+      (mod) => mod._recipe?.id === modDefinition.metadata.id,
     );
 
     if (!modAlreadyInstalled) {
       optionsState = installModInOptionsState(
         optionsState,
         modDefinition,
-        builtInDependencies
+        builtInDependencies,
       );
       installed = true;
     }
@@ -137,7 +137,7 @@ async function getStarterMods(): Promise<ModDefinition[]> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
-      "Skipping starter mod installation because the mod is not linked to the PixieBrix service"
+      "Skipping starter mod installation because the mod is not linked to the PixieBrix service",
     );
     return [];
   }
@@ -145,7 +145,7 @@ async function getStarterMods(): Promise<ModDefinition[]> {
   try {
     const { data: starterMods } = await client.get<ModDefinition[]>(
       "/api/onboarding/starter-blueprints/",
-      { params: { ignore_user_state: true } }
+      { params: { ignore_user_state: true } },
     );
     return starterMods;
   } catch (error) {
@@ -183,7 +183,7 @@ export const debouncedInstallStarterMods = debounce(
     leading: true,
     trailing: false,
     maxWait: MOD_INSTALLATION_MAX_MS,
-  }
+  },
 );
 
 function initStarterMods(): void {

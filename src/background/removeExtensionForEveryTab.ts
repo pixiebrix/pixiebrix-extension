@@ -10,7 +10,7 @@ import { clearExtensionTraces } from "@/telemetry/trace";
 import { clearLog } from "@/telemetry/logging";
 
 export async function removeExtensionForEveryTab(
-  extensionId: UUID
+  extensionId: UUID,
 ): Promise<void> {
   console.debug("Remove extension for all tabs", { extensionId });
 

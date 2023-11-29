@@ -65,7 +65,7 @@ interface GeocodeData {
 
 async function geocodeAddress(
   service: SanitizedIntegrationConfig,
-  address: string
+  address: string,
 ): Promise<GeocodedAddress> {
   if (isEmpty(address)) {
     return {};
@@ -76,7 +76,7 @@ async function geocodeAddress(
     {
       url: "https://maps.googleapis.com/maps/api/geocode/json",
       params: { address },
-    }
+    },
   );
 
   const { results } = data;
@@ -87,7 +87,7 @@ async function geocodeAddress(
 
   const findComponent = (type: AddressComponentType) =>
     results[0].address_components.find((x: AddressComponent) =>
-      x.types.includes(type)
+      x.types.includes(type),
     )?.long_name;
 
   return {
@@ -106,7 +106,7 @@ export class GeocodeTransformer extends TransformerABC {
     super(
       "google/geocode",
       "Google Geocode",
-      "Geocode an address using the Google Geocode API"
+      "Geocode an address using the Google Geocode API",
     );
   }
 

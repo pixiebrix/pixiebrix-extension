@@ -60,18 +60,18 @@ export const migrations: MigrationManifest = {
 };
 
 function migrateModComponentStateV0ToV1(
-  state: ModComponentStateV0 & PersistedState
+  state: ModComponentStateV0 & PersistedState,
 ): ModComponentStateV1 & PersistedState {
   return {
     ...state,
     extensions: Object.values(state.extensions).flatMap((extension) =>
-      Object.values(extension)
+      Object.values(extension),
     ),
   };
 }
 
 function migrateModComponentStateV1ToV2(
-  state: ModComponentStateV1 & PersistedState
+  state: ModComponentStateV1 & PersistedState,
 ): ModComponentStateV2 & PersistedState {
   const now = new Date().toISOString();
   return {
@@ -86,21 +86,21 @@ function migrateModComponentStateV1ToV2(
 }
 
 function migrateModComponentStateV2toV3(
-  state: ModComponentStateV2 & PersistedState
+  state: ModComponentStateV2 & PersistedState,
 ): ModComponentStateV3 & PersistedState {
   return {
     ...state,
     extensions: state.extensions.map((extension) => ({
       ...omit(extension, "services"),
       integrationDependencies: migrateIntegrationDependenciesV1toV2(
-        extension.services
+        extension.services,
       ),
     })),
   };
 }
 
 export function inferModComponentStateVersion(
-  state: ModComponentStateVersions
+  state: ModComponentStateVersions,
 ): number {
   if (isModComponentStateV3(state)) {
     return 3;

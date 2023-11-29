@@ -72,7 +72,7 @@ const ExtensionPointPreview: React.FunctionComponent<{
 }> = ({ element, previewRefreshMillis }) => {
   const [{ isRunning, output, error }, dispatch] = useReducer(
     previewSlice.reducer,
-    initialState
+    initialState,
   );
 
   const run = useCallback(async (element: ModComponentFormState) => {
@@ -93,7 +93,7 @@ const ExtensionPointPreview: React.FunctionComponent<{
       const data = await runExtensionPointReader(
         thisTab,
         factory(element),
-        rootSelector
+        rootSelector,
       );
       dispatch(previewSlice.actions.runSuccess({ "@input": data }));
     } catch (error) {
@@ -104,7 +104,7 @@ const ExtensionPointPreview: React.FunctionComponent<{
   const debouncedRun = useDebouncedCallback(
     async (element: ModComponentFormState) => run(element),
     previewRefreshMillis,
-    { trailing: true, leading: false }
+    { trailing: true, leading: false },
   );
 
   useEffect(() => {

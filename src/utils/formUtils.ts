@@ -35,7 +35,7 @@ export function joinName(
 
   if (fieldNames.length === 0) {
     throw new Error(
-      "Expected one or more field names to join with the main path"
+      "Expected one or more field names to join with the main path",
     );
   }
 

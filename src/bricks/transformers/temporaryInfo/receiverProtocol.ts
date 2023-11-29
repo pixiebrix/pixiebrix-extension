@@ -61,14 +61,14 @@ function runListeners<Method extends keyof PanelListener>(
   method: Method,
   sequence: number,
   data: Parameters<PanelListener[Method]>[0],
-  { force = false }: { force?: boolean } = {}
+  { force = false }: { force?: boolean } = {},
 ): void {
   if (sequence < lastMessageSeen && !force) {
     console.debug(
       "Skipping stale message (seq: %d, current: %d)",
       sequence,
       lastMessageSeen,
-      { data }
+      { data },
     );
     return;
   }
@@ -93,14 +93,14 @@ function runListeners<Method extends keyof PanelListener>(
 
 export async function updateTemporaryPanel(
   sequence: number,
-  entry: TemporaryPanelEntry
+  entry: TemporaryPanelEntry,
 ) {
   runListeners("onUpdateTemporaryPanel", sequence, entry);
 }
 
 export async function setTemporaryPanelNonce(
   sequence: number,
-  payload: { frameNonce: UUID; panelNonce: UUID }
+  payload: { frameNonce: UUID; panelNonce: UUID },
 ) {
   runListeners("onSetPanelNonce", sequence, payload);
 }

@@ -33,7 +33,7 @@ describe("PipelineToggleField", () => {
         initialValues: {
           test: null,
         },
-      }
+      },
     );
 
     // eslint-disable-next-line testing-library/no-node-access -- screen doesn't have class selector
@@ -58,7 +58,7 @@ describe("PipelineToggleField", () => {
         initialValues: {
           test: makePipelineExpression([]),
         },
-      }
+      },
     );
 
     // eslint-disable-next-line testing-library/no-node-access -- screen doesn't have class selector

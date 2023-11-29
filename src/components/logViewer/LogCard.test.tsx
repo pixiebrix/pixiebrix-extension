@@ -41,7 +41,7 @@ function renderLogCard(state?: LogState) {
   return render(
     <Provider store={store}>
       <LogCard />
-    </Provider>
+    </Provider>,
   );
 }
 

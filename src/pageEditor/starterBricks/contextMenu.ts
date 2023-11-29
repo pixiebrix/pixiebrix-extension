@@ -46,7 +46,7 @@ import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
 
 function fromNativeElement(
   url: string,
-  metadata: Metadata
+  metadata: Metadata,
 ): ContextMenuFormState {
   const base = makeInitialBaseState();
 
@@ -80,7 +80,7 @@ function fromNativeElement(
 }
 
 function selectExtensionPointConfig(
-  formState: ContextMenuFormState
+  formState: ContextMenuFormState,
 ): StarterBrickConfig<MenuDefinition> {
   const { extensionPoint } = formState;
   const {
@@ -107,7 +107,7 @@ function selectExtensionPointConfig(
 
 function selectExtension(
   state: ContextMenuFormState,
-  options: { includeInstanceIds?: boolean } = {}
+  options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<ContextMenuConfig> {
   const { extension } = state;
   const config: ContextMenuConfig = {
@@ -124,7 +124,7 @@ function selectExtension(
 }
 
 async function fromExtension(
-  config: ModComponentBase<ContextMenuConfig>
+  config: ModComponentBase<ContextMenuConfig>,
 ): Promise<ContextMenuFormState> {
   const extensionPoint = await lookupExtensionPoint<
     MenuDefinition,
@@ -137,7 +137,7 @@ async function fromExtension(
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = await extensionWithNormalizedPipeline(
     config.config,
-    "action"
+    "action",
   );
 
   return {

@@ -46,7 +46,7 @@ export function getRootPipelineFlavor(extensionPointType: StarterBrickType) {
 
 export function getSubPipelineFlavor(
   parentNodeId: RegistryId,
-  pipelinePath: string
+  pipelinePath: string,
 ): PipelineFlavor {
   if (
     parentNodeId === DocumentRenderer.BLOCK_ID &&
@@ -77,7 +77,7 @@ export function getSubPipelineFlavor(
 }
 
 export function makeIsBlockAllowedForPipeline(
-  pipelineFlavor: PipelineFlavor
+  pipelineFlavor: PipelineFlavor,
 ): IsBlockAllowedPredicate {
   if (pipelineFlavor === PipelineFlavor.AllBlocks) {
     return stubTrue;
@@ -99,7 +99,7 @@ export function makeIsBlockAllowedForPipeline(
     default: {
       console.warn(
         "Unknown pipeline flavor, allowing all bricks",
-        pipelineFlavor
+        pipelineFlavor,
       );
       return stubTrue;
     }

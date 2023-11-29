@@ -39,7 +39,7 @@ export default function useHasEditPermissions(blueprintId: RegistryId) {
     hasEditPermissions = true;
   } else {
     const ownerOrganization = sortedOrganizations.find(
-      (x) => x.scope === recipeScope
+      (x) => x.scope === recipeScope,
     );
 
     if (ownerOrganization) {

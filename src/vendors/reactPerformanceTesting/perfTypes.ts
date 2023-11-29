@@ -13,8 +13,8 @@ export type PerfToolsMutation<T, U> = {
   [K in keyof T]: T[K] extends unknown[]
     ? U[]
     : U extends unknown
-    ? U
-    : U | U[] | undefined;
+      ? U
+      : U | U[] | undefined;
 };
 
 export interface PerfTools<T = DefaultPerfToolsField> {

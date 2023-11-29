@@ -29,7 +29,7 @@ describe("useOnChangeEffect", () => {
       ({ value }) => {
         useOnChangeEffect(value, effect);
       },
-      { initialProps: { value } }
+      { initialProps: { value } },
     );
 
     // Not called on the initial render
@@ -53,7 +53,7 @@ describe("useOnChangeEffect", () => {
       ({ value }) => {
         useOnChangeEffect(value, effect);
       },
-      { initialProps: { value } }
+      { initialProps: { value } },
     );
 
     hookish.rerender({ value: { foo: 42 } });
@@ -71,7 +71,7 @@ describe("useOnChangeEffect", () => {
       ({ value }) => {
         useOnChangeEffect(value, effect, isEqual);
       },
-      { initialProps: { value } }
+      { initialProps: { value } },
     );
 
     hookish.rerender({ value: { foo: 42 } });

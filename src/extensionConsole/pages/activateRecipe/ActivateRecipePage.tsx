@@ -74,7 +74,7 @@ const ActivateRecipePage: React.FunctionComponent = () => {
   const recipeId = useRecipeIdParam();
   const history = useHistory();
   const isReinstall = useSelector(
-    selectRecipeHasAnyExtensionsInstalled(recipeId)
+    selectRecipeHasAnyExtensionsInstalled(recipeId),
   );
 
   const { isFetching, error } = useGetRecipeQuery(
@@ -82,7 +82,7 @@ const ActivateRecipePage: React.FunctionComponent = () => {
     {
       // Force-refetch the latest data for this recipe before activation
       refetchOnMountOrArgChange: true,
-    }
+    },
   );
 
   const notFoundError = isAxiosError(error)
@@ -94,7 +94,7 @@ const ActivateRecipePage: React.FunctionComponent = () => {
       notify.error({
         message: "Hmm... we couldn't find that mod",
         error: new Error(
-          "Double-check the mod url or contact a team admin to gain access to this mod."
+          "Double-check the mod url or contact a team admin to gain access to this mod.",
         ),
       });
       history.push("/mods");

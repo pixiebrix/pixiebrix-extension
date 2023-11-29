@@ -43,7 +43,7 @@ sessionChangesListenerMiddleware.startListening({
     extensionsSlice.actions.removeExtensions,
     extensionsSlice.actions.attachExtension,
     extensionsSlice.actions.installMod,
-    extensionsSlice.actions.removeRecipeById
+    extensionsSlice.actions.removeRecipeById,
   ),
   effect(action, { dispatch, getState }) {
     const { sessionId } = (getState() as SessionRootState).session;

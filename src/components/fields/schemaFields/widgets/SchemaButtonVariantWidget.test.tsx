@@ -56,7 +56,7 @@ const renderSelect = (value: string, onSubmit?: (formVals: any) => void) =>
         schema={schema}
         description={fieldDescription}
       />
-    </Formik>
+    </Formik>,
   );
 
 describe("SchemaButtonVariantWidget", () => {
@@ -68,7 +68,7 @@ describe("SchemaButtonVariantWidget", () => {
 
     // Selected variant matches preview
     expect(screen.getByTestId("selected-variant")).toHaveClass(
-      "btn-outline-primary"
+      "btn-outline-primary",
     );
   });
 

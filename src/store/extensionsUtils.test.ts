@@ -41,7 +41,7 @@ describe("inferRecipeOptions", () => {
 describe("inferConfiguredModIntegrations", () => {
   it("handles undefined integrationDependencies", () => {
     expect(
-      inferConfiguredModIntegrations([{ integrationDependencies: undefined }])
+      inferConfiguredModIntegrations([{ integrationDependencies: undefined }]),
     ).toStrictEqual([]);
   });
 
@@ -58,7 +58,7 @@ describe("inferConfiguredModIntegrations", () => {
       inferConfiguredModIntegrations([
         { integrationDependencies: [integrationDependency] },
         { integrationDependencies: [integrationDependency] },
-      ])
+      ]),
     ).toStrictEqual([integrationDependency]);
   });
 
@@ -79,7 +79,7 @@ describe("inferConfiguredModIntegrations", () => {
             { ...integrationDependency, configId: uuidv4() },
           ],
         },
-      ])
+      ]),
     ).toThrow(/has multiple configurations/);
   });
 
@@ -93,7 +93,7 @@ describe("inferConfiguredModIntegrations", () => {
     expect(() =>
       inferConfiguredModIntegrations([
         { integrationDependencies: [unconfiguredDependency] },
-      ])
+      ]),
     ).toThrow(/is not configured/);
   });
 
@@ -105,8 +105,8 @@ describe("inferConfiguredModIntegrations", () => {
         [{ integrationDependencies: [unconfigured] }],
         {
           optional: true,
-        }
-      )
+        },
+      ),
     ).toBeEmpty();
   });
 
@@ -115,7 +115,9 @@ describe("inferConfiguredModIntegrations", () => {
       integrationId: PIXIEBRIX_INTEGRATION_ID,
     });
     expect(
-      inferConfiguredModIntegrations([{ integrationDependencies: [pixiebrix] }])
+      inferConfiguredModIntegrations([
+        { integrationDependencies: [pixiebrix] },
+      ]),
     ).toStrictEqual([pixiebrix]);
   });
 
@@ -137,8 +139,8 @@ describe("inferConfiguredModIntegrations", () => {
           { integrationDependencies: [configured, pixiebrix, optional] },
           { integrationDependencies: [configured, optional] },
         ],
-        { optional: true }
-      )
+        { optional: true },
+      ),
     ).toStrictEqual([pixiebrix, configured]);
   });
 });

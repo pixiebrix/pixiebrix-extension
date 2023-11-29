@@ -55,7 +55,7 @@ export function emptyPermissionsFactory(): Required<Permissions.Permissions> {
  * that's in the permissions, but not the optional_permissions
  */
 function normalizeOptionalPermissions(
-  permissions: Permissions.Permissions
+  permissions: Permissions.Permissions,
 ): Required<Permissions.Permissions> {
   if (permissions == null) {
     return emptyPermissionsFactory();
@@ -65,19 +65,19 @@ function normalizeOptionalPermissions(
     origins: uniq(castArray(permissions.origins ?? [])),
     permissions: uniq(
       castArray(permissions.permissions ?? []).filter(
-        (permission) => !MANDATORY_PERMISSIONS.has(permission)
-      )
+        (permission) => !MANDATORY_PERMISSIONS.has(permission),
+      ),
     ),
   };
 }
 
 /** Filters to only include permissions that are part of `optional_permissions` */
 export function selectOptionalPermissions(
-  permissions: string[] = []
+  permissions: string[] = [],
 ): Manifest.OptionalPermission[] {
   const { optional_permissions } = browser.runtime.getManifest();
   return permissions.filter((requestedPermission) =>
-    optional_permissions.includes(requestedPermission)
+    optional_permissions.includes(requestedPermission),
   ) as Manifest.OptionalPermission[];
 }
 
@@ -86,7 +86,7 @@ export function selectOptionalPermissions(
  * @see mergePermissionsStatuses
  */
 export function mergePermissions(
-  permissions: Permissions.Permissions[] = []
+  permissions: Permissions.Permissions[] = [],
 ): Required<Permissions.Permissions> {
   return {
     origins: uniq(permissions.flatMap((x) => x.origins ?? [])),
@@ -99,7 +99,7 @@ export function mergePermissions(
  * @see mergePermissions
  */
 export function mergePermissionsStatuses(
-  statuses: PermissionsStatus[]
+  statuses: PermissionsStatus[],
 ): PermissionsStatus {
   return {
     permissions: mergePermissions(statuses.map((x) => x.permissions)),
@@ -113,7 +113,7 @@ export function mergePermissionsStatuses(
  * the new permissions.
  */
 export async function ensurePermissionsFromUserGesture(
-  permissionsOrStatus: Permissions.Permissions | PermissionsStatus
+  permissionsOrStatus: Permissions.Permissions | PermissionsStatus,
 ): Promise<boolean> {
   if (
     isPermissionsStatus(permissionsOrStatus) &&
@@ -128,7 +128,7 @@ export async function ensurePermissionsFromUserGesture(
 
   // `normalize` to ensure the request will succeed on Firefox. See normalizeOptionalPermissions
   return requestPermissionsFromUserGesture(
-    normalizeOptionalPermissions(permissions)
+    normalizeOptionalPermissions(permissions),
   );
 }
 
@@ -137,7 +137,7 @@ export async function ensurePermissionsFromUserGesture(
  * @see ensurePermissionsFromUserGesture
  */
 async function requestPermissionsFromUserGesture(
-  permissions: Permissions.Permissions
+  permissions: Permissions.Permissions,
 ): Promise<boolean> {
   // TODO: Make requestPermissionsFromUserGesture work in contentScripts, or any context that doesn't have the extension API
 

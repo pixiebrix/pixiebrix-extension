@@ -35,7 +35,7 @@ function useDeleteElement(documentBodyName: string) {
       dispatch(editorActions.setNodePreviewActiveElement(null));
 
       const { collectionName, elementIndex } = getElementCollectionName(
-        [documentBodyName, elementName].join(".")
+        [documentBodyName, elementName].join("."),
       );
 
       // Remove the element from the form state
@@ -49,7 +49,7 @@ function useDeleteElement(documentBodyName: string) {
 
       await setFormState(nextState);
     },
-    [setFormState, formState, dispatch, documentBodyName]
+    [setFormState, formState, dispatch, documentBodyName],
   );
 }
 

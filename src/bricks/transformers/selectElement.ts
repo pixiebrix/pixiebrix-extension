@@ -25,7 +25,7 @@ export class SelectElement extends TransformerABC {
     super(
       "@pixiebrix/html/select",
       "Select Element on Page",
-      "Prompt the user to select an element on the page"
+      "Prompt the user to select an element on the page",
     );
   }
 
@@ -58,7 +58,7 @@ export class SelectElement extends TransformerABC {
     const { elements } = await userSelectElement();
 
     const elementRefs = elements.map((element) =>
-      getReferenceForElement(element)
+      getReferenceForElement(element),
     );
 
     return {

@@ -60,7 +60,7 @@ describe("migrateEditorStateV1", () => {
   });
 
   function unmigrateServices(
-    integrationDependencies: IntegrationDependencyV2[] = []
+    integrationDependencies: IntegrationDependencyV2[] = [],
   ): IntegrationDependencyV1[] {
     return integrationDependencies.map(
       ({ integrationId, outputKey, configId, isOptional, apiVersion }) => ({
@@ -69,7 +69,7 @@ describe("migrateEditorStateV1", () => {
         config: configId,
         isOptional,
         apiVersion,
-      })
+      }),
     );
   }
 
@@ -81,21 +81,21 @@ describe("migrateEditorStateV1", () => {
   }
 
   function unmigrateDeletedElements(
-    deletedElements: Record<string, BaseFormStateV2[]>
+    deletedElements: Record<string, BaseFormStateV2[]>,
   ): Record<string, BaseFormStateV1[]> {
     return mapValues(deletedElements, (formStates) =>
-      formStates.map((formState) => unmigrateFormState(formState))
+      formStates.map((formState) => unmigrateFormState(formState)),
     );
   }
 
   function unmigrateEditorState(
-    state: PersistedEditorStateV2
+    state: PersistedEditorStateV2,
   ): PersistedEditorStateV1 {
     return {
       ...omit(state, "elements", "deletedElementsByRecipeId"),
       elements: state.elements.map((element) => unmigrateFormState(element)),
       deletedElementsByRecipeId: unmigrateDeletedElements(
-        state.deletedElementsByRecipeId
+        state.deletedElementsByRecipeId,
       ),
     };
   }

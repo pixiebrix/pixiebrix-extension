@@ -88,7 +88,7 @@ if (typeof createLogger === "function") {
     createLogger({
       // Do not log polling actions (they happen too often)
       predicate: (getState, action) => !action.type.includes("logs/polling"),
-    })
+    }),
   );
 }
 
@@ -98,12 +98,12 @@ const store = configureStore({
     auth: persistReducer(persistAuthConfig, authSlice.reducer),
     options: persistReducer(
       persistExtensionOptionsConfig,
-      extensionsSlice.reducer
+      extensionsSlice.reducer,
     ),
     modsPage: persistReducer(persistModsConfig, modsPageSlice.reducer),
     integrations: persistReducer(
       persistIntegrationsConfig,
-      integrationsSlice.reducer
+      integrationsSlice.reducer,
     ),
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
@@ -114,7 +114,7 @@ const store = configureStore({
     session: sessionSlice.reducer,
     sessionChanges: persistReducer(
       persistSessionChangesConfig,
-      sessionChangesSlice.reducer
+      sessionChangesSlice.reducer,
     ),
     [appApi.reducerPath]: appApi.reducer,
   },
@@ -131,7 +131,7 @@ const store = configureStore({
           ...defaultCreateStateSyncMiddlewareConfig,
           // In the future: concat whitelisted sync action lists here
           whitelist: sessionChangesStateSyncActions,
-        })
+        }),
       );
     /* eslint-enable unicorn/prefer-spread */
   },

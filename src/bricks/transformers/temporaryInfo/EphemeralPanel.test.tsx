@@ -34,7 +34,7 @@ jest.mock(
   () => ({
     __esModule: true,
     default: jest.fn(),
-  })
+  }),
 );
 
 jest.mock("@/contentScript/messenger/api", () => ({
@@ -128,7 +128,7 @@ describe("EphemeralPanel", () => {
       expect(asFragment()).toMatchSnapshot();
 
       await userEvent.click(
-        screen.getByRole("button", { name: /test click/i })
+        screen.getByRole("button", { name: /test click/i }),
       );
 
       expect(cancelTemporaryPanelMock).not.toHaveBeenCalled();
@@ -136,6 +136,6 @@ describe("EphemeralPanel", () => {
         type: "testClick",
         variant: "light",
       });
-    }
+    },
   );
 });

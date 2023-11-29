@@ -147,15 +147,15 @@ describe("debouncedInstallStarterMods", () => {
     const installedComponent = modComponents[0];
 
     expect(installedComponent.extensionPointId).toBe(
-      modDefinition.extensionPoints[0].id
+      modDefinition.extensionPoints[0].id,
     );
     expect(installedComponent.integrationDependencies).toBeArrayOfSize(2);
 
     const dependency1 = installedComponent.integrationDependencies.find(
-      ({ integrationId }) => integrationId === "@pixiebrix/service1"
+      ({ integrationId }) => integrationId === "@pixiebrix/service1",
     );
     const dependency2 = installedComponent.integrationDependencies.find(
-      ({ integrationId }) => integrationId === "@pixiebrix/service2"
+      ({ integrationId }) => integrationId === "@pixiebrix/service2",
     );
 
     expect(dependency1.configId).toBe(builtInIntegrationConfigs[0].id);
@@ -234,7 +234,7 @@ describe("debouncedInstallStarterMods", () => {
     expect(installedComponent.integrationDependencies).toBeArrayOfSize(1);
     // Expect the optional dependency NOT to be configured
     expect(
-      installedComponent.integrationDependencies[0].configId
+      installedComponent.integrationDependencies[0].configId,
     ).toBeUndefined();
   });
 
@@ -270,15 +270,15 @@ describe("debouncedInstallStarterMods", () => {
 
     const installedComponent1 = modComponents[0];
     expect(installedComponent1.extensionPointId).toBe(
-      modDefinition.extensionPoints[0].id
+      modDefinition.extensionPoints[0].id,
     );
     expect(installedComponent1.integrationDependencies).toBeArrayOfSize(2);
 
     const dependency1 = installedComponent1.integrationDependencies.find(
-      ({ integrationId }) => integrationId === "@pixiebrix/service1"
+      ({ integrationId }) => integrationId === "@pixiebrix/service1",
     );
     const dependency2 = installedComponent1.integrationDependencies.find(
-      ({ integrationId }) => integrationId === "@pixiebrix/service2"
+      ({ integrationId }) => integrationId === "@pixiebrix/service2",
     );
 
     // Expect the optional dependency NOT to be configured

@@ -39,7 +39,7 @@ export const migrations: MigrationManifest = {
 };
 
 function migrateIntegrationsStateV1(
-  state: IntegrationsStateV1 & PersistedState
+  state: IntegrationsStateV1 & PersistedState,
 ): IntegrationsStateV2 & PersistedState {
   return {
     ...state,
@@ -50,7 +50,7 @@ function migrateIntegrationsStateV1(
           ...config,
           integrationId: config.serviceId,
         },
-      ])
+      ]),
     ),
   };
 }

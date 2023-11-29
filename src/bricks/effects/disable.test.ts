@@ -43,11 +43,11 @@ describe("DisableEffect", () => {
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
         brickOptionsFactory({
           root: document,
-        })
+        }),
       );
 
       expect(document.querySelector("button")).toBeDisabled();
-    }
+    },
   );
 
   test("it disables element for isRootAware: true", async () => {
@@ -55,7 +55,7 @@ describe("DisableEffect", () => {
       unsafeAssumeValidArg({ isRootAware: true }),
       brickOptionsFactory({
         root: document.querySelector("button"),
-      })
+      }),
     );
 
     expect(document.querySelector("button")).toBeDisabled();

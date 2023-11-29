@@ -31,7 +31,7 @@ import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPer
  */
 export async function checkCloudExtensionPermissions(
   extension: StandaloneModDefinition,
-  integrationDependencies: IntegrationDependency[]
+  integrationDependencies: IntegrationDependency[],
 ): Promise<PermissionsStatus> {
   const resolved = await resolveExtensionInnerDefinitions({
     ...extension,
@@ -50,7 +50,7 @@ export async function checkCloudExtensionPermissions(
           integrationDependencies.map(({ outputKey, integrationId }) => [
             outputKey,
             integrationId,
-          ])
+          ]),
         ),
       } as ResolvedModComponentDefinition,
     ],

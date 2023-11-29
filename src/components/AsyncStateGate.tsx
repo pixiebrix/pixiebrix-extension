@@ -78,7 +78,7 @@ type AsyncStateGateProps<Data> = PropsWithoutRef<{
  * @see useAsyncState
  */
 function AsyncStateGate<Data>(
-  props: AsyncStateGateProps<Data>
+  props: AsyncStateGateProps<Data>,
 ): React.ReactElement {
   const { children, state, renderError, renderLoader } = props;
   const { data, isLoading, isUninitialized, isFetching, isError, error } =

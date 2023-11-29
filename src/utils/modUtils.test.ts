@@ -38,7 +38,7 @@ describe("getSharingType", () => {
         organizations: [],
         scope: "test_scope",
         installedExtensions: [],
-      })
+      }),
     ).toThrow(InvalidTypeError);
   });
 

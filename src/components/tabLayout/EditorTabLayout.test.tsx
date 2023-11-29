@@ -81,8 +81,8 @@ describe("EditorTabLayout", () => {
   test("it renders", () => {
     expect(
       render(
-        <EditorTabLayout tabs={sampleTabItems} actionButtons={sampleButtons} />
-      ).asFragment()
+        <EditorTabLayout tabs={sampleTabItems} actionButtons={sampleButtons} />,
+      ).asFragment(),
     ).toMatchSnapshot();
   });
 });

@@ -53,7 +53,7 @@ export class ParseDate extends TransformerABC {
       "@pixiebrix/parse-date",
       "Parse date",
       "Parse a date string and return multiple formats",
-      "faCalendarDay"
+      "faCalendarDay",
     );
   }
 
@@ -65,7 +65,7 @@ export class ParseDate extends TransformerABC {
         description: "A textual date in any format",
       },
     },
-    ["date"]
+    ["date"],
   );
 
   // The brick returns date and time in locale, so it may not match the format that JSON Schema is expecting

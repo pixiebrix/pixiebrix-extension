@@ -29,7 +29,7 @@ export class EnableEffect extends EffectABC {
     super(
       "@pixiebrix/enable",
       "Enable Element",
-      "Enable an element (e.g., button, input)"
+      "Enable an element (e.g., button, input)",
     );
   }
 
@@ -41,12 +41,12 @@ export class EnableEffect extends EffectABC {
       },
       ...IS_ROOT_AWARE_BRICK_PROPS,
     },
-    []
+    [],
   );
 
   async effect(
     args: BrickArgs<{ selector: string; isRootAware?: boolean }>,
-    { root }: BrickOptions
+    { root }: BrickOptions,
   ): Promise<void> {
     const elements = $safeFindElementsWithRootMode({
       ...args,

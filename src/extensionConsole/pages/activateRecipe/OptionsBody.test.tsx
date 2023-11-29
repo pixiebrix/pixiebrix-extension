@@ -47,7 +47,7 @@ describe("Marketplace Activate Wizard OptionsBody", () => {
             }}
           />
         </Formik>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText("Text Field")).not.toBeNull();

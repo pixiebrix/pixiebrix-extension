@@ -60,12 +60,12 @@ function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
       const extensionIds = uniq(
         [...extensions, ...elements]
           .filter((x) => getRecipeIdForElement(x) === recipeId)
-          .map((x) => getIdForElement(x))
+          .map((x) => getIdForElement(x)),
       );
       await Promise.all(
         extensionIds.map(async (extensionId) =>
-          removeExtension({ extensionId, shouldShowConfirmation: false })
-        )
+          removeExtension({ extensionId, shouldShowConfirmation: false }),
+        ),
       );
 
       void clearLog({
@@ -74,7 +74,7 @@ function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
 
       dispatch(actions.removeRecipeData(recipeId));
     },
-    [dispatch, elements, extensions, removeExtension, showConfirmation]
+    [dispatch, elements, extensions, removeExtension, showConfirmation],
   );
 }
 

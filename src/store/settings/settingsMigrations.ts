@@ -30,7 +30,7 @@ export const migrations: MigrationManifest = {
 };
 
 function migrateSettingsStateV1(
-  state: SettingsStateV1 & PersistedState
+  state: SettingsStateV1 & PersistedState,
 ): SettingsStateV2 & PersistedState {
   return {
     ...state,

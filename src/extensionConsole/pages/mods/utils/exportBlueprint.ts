@@ -46,7 +46,7 @@ function inferOptionsSchema(optionsArgs: OptionsArgs): ModOptionsDefinition {
 
 export function makeBlueprint(
   extension: UnresolvedModComponent,
-  metadata: Metadata
+  metadata: Metadata,
 ): UnsavedModDefinition {
   const {
     extensionPointId,
@@ -78,7 +78,7 @@ export function makeBlueprint(
         services: Object.fromEntries(
           integrationDependencies
             .filter(({ outputKey }) => !isNullOrBlank(outputKey))
-            .map(({ outputKey, integrationId }) => [outputKey, integrationId])
+            .map(({ outputKey, integrationId }) => [outputKey, integrationId]),
         ),
         templateEngine,
         permissions,

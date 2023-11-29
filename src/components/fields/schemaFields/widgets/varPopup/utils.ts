@@ -24,18 +24,18 @@ import { getTextareaCaretCoordinates } from "@/utils/textAreaUtils";
  * Used to position the floating UI menu.
  */
 export function getSelectedLineVirtualElement(
-  textarea: HTMLTextAreaElement
+  textarea: HTMLTextAreaElement,
 ): VirtualElement {
   const inputRect = textarea.getBoundingClientRect();
 
   const caretOffset = getTextareaCaretCoordinates(
     textarea,
-    textarea.selectionEnd
+    textarea.selectionEnd,
   ).top;
 
   const lineHeight = Number.parseInt(
     getComputedStyle(textarea).getPropertyValue("line-height"),
-    10
+    10,
   );
 
   const lineTop = caretOffset;

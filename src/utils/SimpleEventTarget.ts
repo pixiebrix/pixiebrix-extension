@@ -33,7 +33,7 @@ export class SimpleEventTarget<Detail> extends EventTarget {
   // This acts as a memoization/deduplication which matches the native behavior.
   // Calling `add(cb); add(cb); remove(cb)` should only add it once and remove it once.
   private getNativeListener(
-    callback: SimpleEventListener<Detail>
+    callback: SimpleEventListener<Detail>,
   ): EventListener {
     if (this.weakEvents.has(callback)) {
       return this.weakEvents.get(callback);

@@ -31,7 +31,7 @@ export class DetectElement extends TransformerABC {
     super(
       "@pixiebrix/dom/detect",
       "Detect an element on a page",
-      "Detect and/or count an element using a jQuery selector"
+      "Detect and/or count an element using a jQuery selector",
     );
   }
 
@@ -43,7 +43,7 @@ export class DetectElement extends TransformerABC {
       },
       ...IS_ROOT_AWARE_BRICK_PROPS,
     },
-    ["selector"]
+    ["selector"],
   );
 
   override outputSchema: Schema = {
@@ -68,7 +68,7 @@ export class DetectElement extends TransformerABC {
 
   async transform(
     { selector, isRootAware }: BrickArgs,
-    { root }: BrickOptions
+    { root }: BrickOptions,
   ): Promise<Record<string, unknown>> {
     const $result = $safeFindElementsWithRootMode({
       selector,

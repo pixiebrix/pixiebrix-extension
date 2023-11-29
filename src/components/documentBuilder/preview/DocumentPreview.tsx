@@ -87,7 +87,7 @@ const DocumentPreview = ({
   } = useDocumentPreviewRunBlock(activeNodeId);
 
   const traceRecord = useSelector(
-    selectActiveElementTraceForBlock(activeNodeId)
+    selectActiveElementTraceForBlock(activeNodeId),
   );
   const doesNotHaveTrace = traceRecord == null;
 
@@ -127,7 +127,7 @@ const DocumentPreview = ({
           {
             [previewStyles.hovered]: isHovered,
             [styles.empty]: body.length === 0,
-          }
+          },
         )}
         /* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events -- TODO */
         onMouseOver={onMouseOver}

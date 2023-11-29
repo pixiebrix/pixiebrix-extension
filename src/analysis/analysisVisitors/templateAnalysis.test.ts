@@ -37,7 +37,7 @@ describe("TemplateAnalysis", () => {
       analysis.visitExpression(position, toExpression("nunjucks", template));
 
       expect(analysis.getAnnotations()).toHaveLength(0);
-    }
+    },
   );
 
   const mustacheOnlyTemplates = [
@@ -51,7 +51,7 @@ describe("TemplateAnalysis", () => {
       analysis.visitExpression(position, toExpression("mustache", template));
 
       expect(analysis.getAnnotations()).toHaveLength(0);
-    }
+    },
   );
 
   test.each(mustacheOnlyTemplates)(
@@ -61,7 +61,7 @@ describe("TemplateAnalysis", () => {
       analysis.visitExpression(position, toExpression("nunjucks", template));
 
       expect(analysis.getAnnotations()).toHaveLength(1);
-    }
+    },
   );
 
   const invalidNunjucksTemplates = ["{{ foo", "{{ foo | capitalize | }}"];
@@ -72,6 +72,6 @@ describe("TemplateAnalysis", () => {
       const analysis = new TemplateAnalysis();
       analysis.visitExpression(position, toExpression("nunjucks", template));
       expect(analysis.getAnnotations()).toHaveLength(1);
-    }
+    },
   );
 });

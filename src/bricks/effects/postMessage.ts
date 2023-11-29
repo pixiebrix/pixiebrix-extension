@@ -29,7 +29,7 @@ class PostMessageEffect extends EffectABC {
     super(
       "@pixiebrix/dom/post-message",
       "Post message to a frame",
-      "Post a message to an iframe on the page"
+      "Post a message to an iframe on the page",
     );
   }
 
@@ -69,7 +69,7 @@ class PostMessageEffect extends EffectABC {
       message: UnknownObject;
       targetOrigin?: string;
     }>,
-    { logger, root }: BrickOptions
+    { logger, root }: BrickOptions,
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({
       selector,
@@ -84,7 +84,7 @@ class PostMessageEffect extends EffectABC {
           "Element is not an iframe",
           this.id,
           "selector",
-          selector
+          selector,
         );
       }
 

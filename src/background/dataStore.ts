@@ -31,7 +31,7 @@ export async function getRecord(primaryKey: string): Promise<unknown> {
 
 export async function setRecord(
   primaryKey: string,
-  value: JsonObject
+  value: JsonObject,
 ): Promise<void> {
   const data = await localDataStore.get();
   data[`${KEY_PREFIX}${primaryKey}`] = value;

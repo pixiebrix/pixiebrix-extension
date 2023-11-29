@@ -42,7 +42,7 @@ export function queryLoadingFactory(): UseQueryHookResult<
  */
 export function querySuccessFactory<T>(
   data: T,
-  { isFetching }: { isFetching?: boolean } = {}
+  { isFetching }: { isFetching?: boolean } = {},
 ): UseQueryHookResult<QueryDefinition<any, any, any, T>> {
   // Define as function instead of `define` to enforce valid state.
 
@@ -76,7 +76,7 @@ export function querySuccessFactory<T>(
  */
 export function queryErrorFactory(
   error: unknown,
-  { isFetching }: { isFetching?: boolean } = {}
+  { isFetching }: { isFetching?: boolean } = {},
 ): UseQueryHookResult<QueryDefinition<any, any, any, any>> {
   // Define as function instead of `define` to enforce valid state.
   return {

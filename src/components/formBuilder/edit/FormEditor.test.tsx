@@ -175,7 +175,7 @@ describe("FormEditor", () => {
     render(
       <FormikTemplate>
         <FormEditor activeField={fieldName} {...defaultProps} />
-      </FormikTemplate>
+      </FormikTemplate>,
     );
 
     await waitForEffect();
@@ -187,7 +187,7 @@ describe("FormEditor", () => {
     await waitForEffect();
 
     const errorMessage = screen.queryByText(
-      `Name must be unique. Another property "${activeFieldTitle}" already has the name "${fieldName}".`
+      `Name must be unique. Another property "${activeFieldTitle}" already has the name "${fieldName}".`,
     );
     expect(errorMessage).toBeNull();
 
@@ -224,7 +224,7 @@ describe("FormEditor", () => {
     render(
       <FormikTemplate>
         <FormEditor activeField={fieldName} {...defaultProps} />
-      </FormikTemplate>
+      </FormikTemplate>,
     );
 
     const fieldNameInput = screen.getByLabelText("Name");
@@ -233,7 +233,7 @@ describe("FormEditor", () => {
     await waitForEffect();
 
     const errorMessage = screen.getByText(
-      `Name must be unique. Another property "${anotherFieldTitle}" already has the name "${anotherFieldName}".`
+      `Name must be unique. Another property "${anotherFieldTitle}" already has the name "${anotherFieldName}".`,
     );
     expect(errorMessage).not.toBeNull();
 
@@ -248,26 +248,26 @@ describe("FormEditor", () => {
 
       const FormikTemplate = createFormikTemplate(
         { [RJSF_SCHEMA_PROPERTY_NAME]: initialSchema },
-        onSubmitMock
+        onSubmitMock,
       );
 
       render(
         <FormikTemplate>
           <FormEditor activeField={activeField} {...defaultProps} />
-        </FormikTemplate>
+        </FormikTemplate>,
       );
 
       fireEvent.click(
         screen.getByRole("button", {
           name: /add new field/i,
-        })
+        }),
       );
       await fireFormSubmit();
 
       expect(onSubmitMock).toHaveBeenCalledWith({
         [RJSF_SCHEMA_PROPERTY_NAME]: expectedSchema,
       });
-    }
+    },
   );
 
   test("switches the required field", async () => {
@@ -275,13 +275,13 @@ describe("FormEditor", () => {
     const onSubmitMock = jest.fn();
     const FormikTemplate = createFormikTemplate(
       { [RJSF_SCHEMA_PROPERTY_NAME]: initOneFieldSchemaCase(fieldName) },
-      onSubmitMock
+      onSubmitMock,
     );
 
     const { container } = render(
       <FormikTemplate>
         <FormEditor activeField={fieldName} {...defaultProps} />
-      </FormikTemplate>
+      </FormikTemplate>,
     );
 
     const getRequiredFieldFromMock = (callNumber: number) =>
@@ -321,13 +321,13 @@ describe("FormEditor", () => {
       const onSubmitMock = jest.fn();
       const FormikTemplate = createFormikTemplate(
         { [RJSF_SCHEMA_PROPERTY_NAME]: initialSchema },
-        onSubmitMock
+        onSubmitMock,
       );
 
       render(
         <FormikTemplate>
           <FormEditor activeField={fieldName} {...defaultProps} />
-        </FormikTemplate>
+        </FormikTemplate>,
       );
 
       const fieldNameInput = screen.getByLabelText("Name");
@@ -338,7 +338,7 @@ describe("FormEditor", () => {
       expect(onSubmitMock).toHaveBeenCalledWith({
         [RJSF_SCHEMA_PROPERTY_NAME]: expectedSchema,
       });
-    }
+    },
   );
 
   test("clears the default value when switches uiType", async () => {
@@ -346,18 +346,18 @@ describe("FormEditor", () => {
     const onSubmitMock = jest.fn();
     const FormikTemplate = createFormikTemplate(
       { [RJSF_SCHEMA_PROPERTY_NAME]: initOneFieldSchemaCase(fieldName) },
-      onSubmitMock
+      onSubmitMock,
     );
 
     render(
       <FormikTemplate>
         <FormEditor activeField={fieldName} {...defaultProps} />
-      </FormikTemplate>
+      </FormikTemplate>,
     );
 
     await selectSchemaFieldInputMode(
       `${RJSF_SCHEMA_PROPERTY_NAME}.schema.properties.${fieldName}.default`,
-      "string"
+      "string",
     );
 
     const defaultValue = "Initial default value";
@@ -390,7 +390,7 @@ describe("FormEditor", () => {
       (
         (onSubmitMock.mock.calls[1][0][RJSF_SCHEMA_PROPERTY_NAME] as RJSFSchema)
           .schema.properties[fieldName] as Schema
-      ).default
+      ).default,
     ).toBeUndefined();
   });
 });

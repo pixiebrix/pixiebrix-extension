@@ -26,7 +26,7 @@ interface RenderOptions {
 export function render(
   root: HTMLElement,
   body: RendererOutput,
-  { shadowDOM }: RenderOptions
+  { shadowDOM }: RenderOptions,
 ): void {
   console.debug("render: panel body");
 

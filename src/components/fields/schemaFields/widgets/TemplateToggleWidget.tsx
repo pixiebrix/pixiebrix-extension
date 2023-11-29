@@ -39,7 +39,7 @@ import { isTemplateExpression } from "@/utils/expressionUtils";
 
 export function getOptionForInputMode(
   options: InputModeOption[],
-  inputMode: FieldInputMode
+  inputMode: FieldInputMode,
 ): InputModeOption | null {
   return options.find((option) => option.value === inputMode) ?? null;
 }
@@ -63,14 +63,14 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
   const { inputMode, onOmitField } = useToggleFormField(
     schemaFieldProps.name,
     schemaFieldProps.schema,
-    schemaFieldProps.isRequired
+    schemaFieldProps.isRequired,
   );
 
   const defaultInputRef = useRef<HTMLElement>();
   const inputRef = inputRefProp ?? defaultInputRef;
   const selectedOption = useMemo(
     () => getOptionForInputMode(inputModeOptions, inputMode),
-    [inputMode, inputModeOptions]
+    [inputMode, inputModeOptions],
   );
   const Widget = selectedOption?.Widget ?? WidgetLoadingIndicator;
   const [focusInput, setFocusInput] = useState(false);
@@ -100,14 +100,14 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
 
       const { interpretValue } = getOptionForInputMode(
         inputModeOptions,
-        newInputMode
+        newInputMode,
       );
 
       // Already handled "omit" and returned above
       await setValue(interpretValue(value));
       setFocusInput(true);
     },
-    [inputMode, inputModeOptions, setValue, value, onOmitField]
+    [inputMode, inputModeOptions, setValue, value, onOmitField],
   );
 
   const widgetProps = {
@@ -118,7 +118,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
 
   if (inputMode === "omit") {
     const optionValues = new Set(
-      inputModeOptions.map((option) => option.value)
+      inputModeOptions.map((option) => option.value),
     );
     widgetProps.onClick = async (event) => {
       if (defaultType != null) {
@@ -154,7 +154,7 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
 
       await setValue(selectedOption.interpretValue(newValue));
     },
-    [inputMode, selectedOption, setValue]
+    [inputMode, selectedOption, setValue],
   );
 
   const renderVarPopup = inputMode === "var" || inputMode === "string";

@@ -65,11 +65,10 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         },
         {
           ...simpleInput({}),
-          serviceContext: await makeServiceContextFromDependencies(
-            dependencies
-          ),
+          serviceContext:
+            await makeServiceContextFromDependencies(dependencies),
         },
-        testOptions(apiVersion)
+        testOptions(apiVersion),
       );
 
       expect(result).toStrictEqual({
@@ -81,7 +80,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         ...extraEmptyModStateContext(apiVersion),
       });
     });
-  }
+  },
 );
 
 describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
@@ -106,7 +105,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         ...simpleInput({}),
         serviceContext: await makeServiceContextFromDependencies(dependencies),
       },
-      testOptions(apiVersion)
+      testOptions(apiVersion),
     );
     expect(result).toStrictEqual({
       data: await pixiebrixConfigurationFactory(),
@@ -142,7 +141,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         ...simpleInput({}),
         serviceContext: await makeServiceContextFromDependencies(dependencies),
       },
-      testOptions(apiVersion)
+      testOptions(apiVersion),
     );
     expect(result).toStrictEqual({
       data: "abc123",
@@ -177,7 +176,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         ...simpleInput({}),
         serviceContext: await makeServiceContextFromDependencies(dependencies),
       },
-      testOptions(apiVersion)
+      testOptions(apiVersion),
     );
     expect(result).toStrictEqual({
       data: await pixiebrixConfigurationFactory(),
@@ -218,7 +217,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         ...simpleInput({}),
         serviceContext: await makeServiceContextFromDependencies(dependencies),
       },
-      testOptions(apiVersion)
+      testOptions(apiVersion),
     );
     expect(result).toStrictEqual({
       data: "abc123",
@@ -263,11 +262,10 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         },
         {
           ...simpleInput({}),
-          serviceContext: await makeServiceContextFromDependencies(
-            dependencies
-          ),
+          serviceContext:
+            await makeServiceContextFromDependencies(dependencies),
         },
-        testOptions(apiVersion)
+        testOptions(apiVersion),
       );
       expect(result).toStrictEqual({
         data: "abc123",

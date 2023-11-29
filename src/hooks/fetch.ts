@@ -36,12 +36,12 @@ type FetchOptions = {
  */
 export async function fetch<TData = unknown>(
   relativeOrAbsoluteUrl: string,
-  options: FetchOptions = {}
+  options: FetchOptions = {},
 ): Promise<TData> {
   expectContext("extension");
   forbidContext(
     "contentScript",
-    "fetch should not be called from the contentScript due to CSP"
+    "fetch should not be called from the contentScript due to CSP",
   );
 
   const absolute = isAbsoluteUrl(relativeOrAbsoluteUrl);
@@ -61,7 +61,7 @@ export async function fetch<TData = unknown>(
       "fetch calls for the PixieBrix API should use relative URLs to support a dynamic base URL",
       {
         relativeOrAbsoluteUrl,
-      }
+      },
     );
   }
 

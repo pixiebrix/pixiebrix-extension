@@ -36,10 +36,10 @@ import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
 async function collectModComponentDefinitionPermissions(
   modComponentDefinitions: ResolvedModComponentDefinition[],
-  configuredDependencies: IntegrationDependency[]
+  configuredDependencies: IntegrationDependency[],
 ): Promise<Permissions.Permissions> {
   const integrationsPromises = configuredDependencies.map(async (dependency) =>
-    collectIntegrationOriginPermissions(dependency)
+    collectIntegrationOriginPermissions(dependency),
   );
 
   const modComponentPromises = modComponentDefinitions.map(
@@ -60,7 +60,7 @@ async function collectModComponentDefinitionPermissions(
           { config } as unknown as ModComponentBase,
           {
             extensionPoint,
-          }
+          },
         );
       } catch (error) {
         console.warn("Error getting blocks for extensionPoint %s", id, {
@@ -70,7 +70,7 @@ async function collectModComponentDefinitionPermissions(
       }
 
       return mergePermissions([extensionPoint.permissions, permissions, inner]);
-    }
+    },
   );
 
   const permissionsList = await Promise.all([
@@ -89,14 +89,13 @@ async function collectModComponentDefinitionPermissions(
  */
 export async function checkModDefinitionPermissions(
   modDefinition: Pick<ModDefinition, "definitions" | "extensionPoints">,
-  configuredDependencies: IntegrationDependency[]
+  configuredDependencies: IntegrationDependency[],
 ): Promise<PermissionsStatus> {
-  const extensionDefinitions = await resolveRecipeInnerDefinitions(
-    modDefinition
-  );
+  const extensionDefinitions =
+    await resolveRecipeInnerDefinitions(modDefinition);
   const permissions = await collectModComponentDefinitionPermissions(
     extensionDefinitions,
-    configuredDependencies
+    configuredDependencies,
   );
 
   if (isEmpty(permissions)) {
@@ -122,10 +121,10 @@ export async function checkModDefinitionPermissions(
  */
 export async function ensureModDefinitionPermissionsFromUserGesture(
   modDefinition: ModDefinition,
-  configuredDependencies: IntegrationDependency[]
+  configuredDependencies: IntegrationDependency[],
 ): Promise<boolean> {
   // Single method to make mocking in tests easier
   return ensurePermissionsFromUserGesture(
-    await checkModDefinitionPermissions(modDefinition, configuredDependencies)
+    await checkModDefinitionPermissions(modDefinition, configuredDependencies),
   );
 }

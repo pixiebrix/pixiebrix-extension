@@ -35,7 +35,7 @@ export class ElementReader extends ReaderABC {
     super(
       "@pixiebrix/html/element",
       "HTML element reader",
-      "Read all attributes and jQuery data from an HTML element"
+      "Read all attributes and jQuery data from an HTML element",
     );
   }
 
@@ -51,7 +51,7 @@ export class ElementReader extends ReaderABC {
       isVisible: isVisible(element),
       tagName: element.tagName,
       attrs: Object.fromEntries(
-        Object.values(element.attributes).map((x) => [x.name, x.value])
+        Object.values(element.attributes).map((x) => [x.name, x.value]),
       ),
       text: $elements.text().trim(),
       data: $elements.data(),

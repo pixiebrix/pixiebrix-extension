@@ -254,7 +254,7 @@ const CssClassWidget: React.VFC<
 
   const { classes, isVar, includesTemplate } = useMemo(
     () => parseValue(value),
-    [value]
+    [value],
   );
 
   const toggleClass = useCallback(
@@ -262,7 +262,7 @@ const CssClassWidget: React.VFC<
       await setValue(calculateNextValue(value, className, on, group));
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Formik bug where setValue changes on each render
-    [value]
+    [value],
   );
 
   const disableControls = isVar || includesTemplate;
@@ -315,7 +315,7 @@ const CssClassWidget: React.VFC<
                 <span
                   className={
                     optionsGroups.textVariant.find((x) =>
-                      classes.includes(x.className)
+                      classes.includes(x.className),
                     )?.className
                   }
                 >
@@ -346,7 +346,7 @@ const CssClassWidget: React.VFC<
                 <span
                   className={
                     optionsGroups.backgroundColor.find((x) =>
-                      classes.includes(x.className)
+                      classes.includes(x.className),
                     )?.className
                   }
                 >

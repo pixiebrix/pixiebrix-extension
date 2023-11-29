@@ -50,7 +50,7 @@ const List: React.FunctionComponent<ListProps> = ({
       className={cx(
         className,
         documentTreeStyles.container,
-        documentTreeStyles.listContainer
+        documentTreeStyles.listContainer,
       )}
       ref={elementRef}
       {...restPreviewProps}

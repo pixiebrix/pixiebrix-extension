@@ -38,10 +38,10 @@ describe("RemoteServiceError", () => {
     cause.stack = "";
     const error = new RemoteServiceError(
       "You Must Construct Additional Pylons",
-      { cause }
+      { cause },
     );
     expect(serializeError(error, { useToJSON: false }).cause).toStrictEqual(
-      serializeError(cause, { useToJSON: false })
+      serializeError(cause, { useToJSON: false }),
     );
   });
 
@@ -63,7 +63,7 @@ describe("RemoteServiceError", () => {
 
     const error = new RemoteServiceError(
       "You Must Construct Additional Pylons",
-      { cause }
+      { cause },
     );
 
     const serialized = serializeError(error, { useToJSON: false });
@@ -81,10 +81,10 @@ describe("ClientRequestError", () => {
     // In practice, AxiosErrors actually have stacks: https://github.com/axios/axios/issues/2387
     const error = new ClientRequestError(
       "You Must Construct Additional Pylons",
-      { cause }
+      { cause },
     );
     expect(serializeError(error, { useToJSON: false }).cause).toStrictEqual(
-      serializeError(cause, { useToJSON: false })
+      serializeError(cause, { useToJSON: false }),
     );
   });
 });

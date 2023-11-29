@@ -54,7 +54,7 @@ function schemaSupportsTemplates(schema: Schema): boolean {
     allowExpressions: true,
   });
   return options.some(
-    (option) => option.value === "string" && option.label === "Text"
+    (option) => option.value === "string" && option.label === "Text",
   );
 }
 
@@ -161,7 +161,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
 
   const supportsTemplates = useMemo(
     () => schemaSupportsTemplates(schema),
-    [schema]
+    [schema],
   );
 
   const undo = useUndo(value, setValue);
@@ -203,7 +203,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
 
       return onChange;
     },
-    [setValue, supportsTemplates]
+    [setValue, supportsTemplates],
   );
 
   const [fieldInputValue, fieldOnChange] = useMemo(() => {

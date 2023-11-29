@@ -23,7 +23,7 @@ export const selectUpdatePromptState = createSelector(
     ({ settings }: SettingsRootState) => settings,
     (
       state: SettingsRootState,
-      args: { now: number; enforceUpdateMillis: number | null }
+      args: { now: number; enforceUpdateMillis: number | null },
     ) => args,
   ],
   (state, { now, enforceUpdateMillis }) => {
@@ -42,7 +42,7 @@ export const selectUpdatePromptState = createSelector(
       updatePromptTimestamp,
       timeRemaining,
     };
-  }
+  },
 );
 
 export const selectSettings = ({ settings }: SettingsRootState) => settings;

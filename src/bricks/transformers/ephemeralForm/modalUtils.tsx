@@ -40,7 +40,7 @@ export function showModal({
           () => {
             controller.abort();
           },
-          { once: true }
+          { once: true },
         );
 
         // This doesn't work below the modal, because the Shadow Root extends
@@ -68,7 +68,7 @@ export function showModal({
         }}
       />
     </dialog>,
-    shadowRoot
+    shadowRoot,
   );
 
   controller.signal.addEventListener("abort", () => {

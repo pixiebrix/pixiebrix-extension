@@ -79,7 +79,7 @@ describe("expandGridRows", () => {
     const expandedRows = expandGridRows(
       // @ts-expect-error - omit full ModViewItem type for testing purposes
       groupedTestRows,
-      indivisibleColumnCount
+      indivisibleColumnCount,
     );
     const expected = [
       {

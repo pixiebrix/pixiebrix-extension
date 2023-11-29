@@ -69,7 +69,7 @@ export async function runRendererPipeline({
         headless: true,
         ...options,
         ...meta,
-      }
+      },
     );
   } catch (error) {
     if (error instanceof HeadlessModeError) {
@@ -123,7 +123,7 @@ export async function runHeadlessPipeline({
       ...meta,
       logger: new BackgroundLogger(messageContext),
       headless: true,
-    }
+    },
   );
 }
 

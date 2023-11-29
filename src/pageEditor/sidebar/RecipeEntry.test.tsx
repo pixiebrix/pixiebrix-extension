@@ -110,7 +110,7 @@ test("renders the warning icon when has update", () => {
   });
 
   const warningIcon = screen.getByTitle(
-    "You are editing version 1.0.0 of this mod, the latest version is 2.0.0."
+    "You are editing version 1.0.0 of this mod, the latest version is 2.0.0.",
   );
 
   expect(warningIcon).toBeInTheDocument();

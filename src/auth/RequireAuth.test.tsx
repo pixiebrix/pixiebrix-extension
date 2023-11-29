@@ -35,7 +35,7 @@ function optionsStore(initialState?: any) {
       auth: persistReducer(persistAuthConfig, authSlice.reducer),
       integrations: persistReducer(
         persistIntegrationsConfig,
-        integrationsSlice.reducer
+        integrationsSlice.reducer,
       ),
       settings: settingsSlice.reducer,
     },
@@ -76,12 +76,12 @@ describe("RequireAuth", () => {
         <RequireAuth LoginPage={MockLoginPage}>
           Only authenticated users should see me!
         </RequireAuth>
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.queryByTestId("loader")).toBeNull();
     expect(
-      screen.getByText("Only authenticated users should see me!")
+      screen.getByText("Only authenticated users should see me!"),
     ).not.toBeNull();
   });
 
@@ -96,13 +96,13 @@ describe("RequireAuth", () => {
         <RequireAuth LoginPage={MockLoginPage}>
           Only authenticated users should see me!
         </RequireAuth>
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.queryByTestId("loader")).toBeNull();
     expect(screen.getByText("Login")).not.toBeNull();
     expect(
-      screen.queryByText("Only authenticated users should see me!")
+      screen.queryByText("Only authenticated users should see me!"),
     ).toBeNull();
   });
 
@@ -118,12 +118,12 @@ describe("RequireAuth", () => {
         <RequireAuth LoginPage={MockLoginPage}>
           Only authenticated users should see me!
         </RequireAuth>
-      </Provider>
+      </Provider>,
     );
 
     expect(screen.getByTestId("loader")).not.toBeNull();
     expect(
-      screen.queryByText("Only authenticated users should see me!")
+      screen.queryByText("Only authenticated users should see me!"),
     ).toBeNull();
   });
 });

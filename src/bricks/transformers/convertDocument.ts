@@ -45,7 +45,7 @@ class ConvertDocument extends TransformerABC {
       "@pixiebrix/convert",
       "Convert Document",
       "Convert between document formats (e.g., HTML to Text)",
-      "faCode"
+      "faCode",
     );
   }
 
@@ -75,7 +75,7 @@ class ConvertDocument extends TransformerABC {
         enum: ["text", "html"],
       },
     },
-    ["input", "sourceFormat", "targetFormat"]
+    ["input", "sourceFormat", "targetFormat"],
   );
 
   override outputSchema: Schema = {

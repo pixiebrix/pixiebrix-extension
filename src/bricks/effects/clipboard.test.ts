@@ -58,7 +58,7 @@ describe("CopyToClipboard", () => {
   it("copies null to clipboard", async () => {
     await brick.run(
       unsafeAssumeValidArg({ text: null, contentType: "infer" }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
     expect(writeTextMock).toHaveBeenCalledWith("null");
   });
@@ -66,7 +66,7 @@ describe("CopyToClipboard", () => {
   it("copies boolean clipboard", async () => {
     await brick.run(
       unsafeAssumeValidArg({ text: false, contentType: "infer" }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
     expect(writeTextMock).toHaveBeenCalledWith("false");
   });
@@ -74,7 +74,7 @@ describe("CopyToClipboard", () => {
   it("copies image to clipboard", async () => {
     await brick.run(
       unsafeAssumeValidArg({ text: SMALL_RED_DOT_URI, contentType: "infer" }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
     expect(writeTextMock).not.toHaveBeenCalled();
     expect(writeMock).toHaveBeenCalled();
@@ -87,8 +87,8 @@ describe("CopyToClipboard", () => {
     await expect(async () =>
       brick.run(
         unsafeAssumeValidArg({ text: false, contentType: "image" }),
-        brickOptionsFactory()
-      )
+        brickOptionsFactory(),
+      ),
     ).rejects.toThrow(PropError);
   });
 
@@ -97,7 +97,7 @@ describe("CopyToClipboard", () => {
 
     const brickPromise = brick.run(
       unsafeAssumeValidArg({ text: SMALL_RED_DOT_URI, contentType: "image" }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     writeMock.mockResolvedValue();
@@ -115,7 +115,7 @@ describe("CopyToClipboard", () => {
 
     const brickPromise = brick.run(
       unsafeAssumeValidArg({ text: SMALL_RED_DOT_URI, contentType: "image" }),
-      brickOptionsFactory()
+      brickOptionsFactory(),
     );
 
     await userEvent.click(document.body);

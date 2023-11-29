@@ -97,11 +97,11 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         const result = await reducePipeline(
           { id: rootReader.id, config: {} },
           { ...simpleInput({}), optionsArgs: {}, root: element },
-          testOptions(apiVersion)
+          testOptions(apiVersion),
         );
 
         expect(result).toStrictEqual({ isDocument: false, tagName: "IMG" });
-      }
+      },
     );
 
     test.each([[undefined], ["inherit"]])(
@@ -112,11 +112,11 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         const result = await reducePipeline(
           { id: rootBlock.id, config: {} },
           { ...simpleInput({}), optionsArgs: {}, root: element },
-          testOptions(apiVersion)
+          testOptions(apiVersion),
         );
 
         expect(result).toStrictEqual({ isDocument: false, tagName: "IMG" });
-      }
+      },
     );
 
     test("root-aware block in pipeline", async () => {
@@ -125,7 +125,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
       const result = await reducePipeline(
         { id: rootBlock.id, config: {}, rootMode: "document" },
         { ...simpleInput({}), optionsArgs: {}, root: element },
-        testOptions(apiVersion)
+        testOptions(apiVersion),
       );
 
       expect(result).toStrictEqual({ isDocument: true, tagName: undefined });
@@ -140,11 +140,11 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         const result = await reducePipeline(
           { id: blockId, config: {}, rootMode: "document", root: "img" },
           { ...simpleInput({}), optionsArgs: {}, root: document },
-          testOptions(apiVersion)
+          testOptions(apiVersion),
         );
 
         expect(result).toStrictEqual({ isDocument: false, tagName: "IMG" });
-      }
+      },
     );
 
     test.each([rootBlock.id, rootReader.id])(
@@ -161,11 +161,11 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         const result = await reducePipeline(
           { id: blockId, config: {}, rootMode: "inherit", root: "img" },
           { ...simpleInput({}), optionsArgs: {}, root: div },
-          testOptions(apiVersion)
+          testOptions(apiVersion),
         );
 
         expect(result).toStrictEqual({ isDocument: false, tagName: "IMG" });
-      }
+      },
     );
 
     test.each([rootBlock.id, rootReader.id])(
@@ -183,10 +183,10 @@ describe.each([["v1"], ["v2"], ["v3"]])(
             // Force document as starting point for the selector
             { id: blockId, config: {}, rootMode: "document", root: "img" },
             { ...simpleInput({}), optionsArgs: {}, root: div },
-            testOptions(apiVersion)
-          )
+            testOptions(apiVersion),
+          ),
         ).rejects.toThrow(/Multiple roots found/);
-      }
+      },
     );
 
     test.each([rootBlock.id, rootReader.id])(
@@ -197,10 +197,10 @@ describe.each([["v1"], ["v2"], ["v3"]])(
             // Force document as starting point for the selector
             { id: blockId, config: {}, rootMode: "document", root: "a" },
             { ...simpleInput({}), optionsArgs: {} },
-            testOptions(apiVersion)
-          )
+            testOptions(apiVersion),
+          ),
         ).rejects.toThrow(/No roots found/);
-      }
+      },
     );
 
     test("pass hard-coded root reference", async () => {
@@ -214,11 +214,11 @@ describe.each([["v1"], ["v2"], ["v3"]])(
           // Force document as starting point for the selector
           { id: rootBlock.id, config: {}, rootMode: "element", root: ref },
           { ...simpleInput({}), optionsArgs: {}, root: document },
-          testOptions(apiVersion)
-        )
+          testOptions(apiVersion),
+        ),
       ).resolves.toStrictEqual({ isDocument: false, tagName: "DIV" });
     });
-  }
+  },
 );
 
 describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
@@ -241,8 +241,8 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
           } as Expression,
         },
         { ...simpleInput({}), optionsArgs: { element: ref }, root: document },
-        testOptions(apiVersion)
-      )
+        testOptions(apiVersion),
+      ),
     ).resolves.toStrictEqual({ isDocument: false, tagName: "DIV" });
   });
 });

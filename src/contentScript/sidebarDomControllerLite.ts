@@ -40,13 +40,13 @@ function storeOriginalCSSOnce() {
   // Store the original margin so it can be reused in future calculations. It must also persist across sessions
   html.style.setProperty(
     ORIGINAL_MARGIN_CSS_PROPERTY,
-    getComputedStyle(html).getPropertyValue("margin-right")
+    getComputedStyle(html).getPropertyValue("margin-right"),
   );
 
   // Make margin dynamic so it always follows the original margin AND the sidebar width, if open
   html.style.setProperty(
     "margin-right",
-    `calc(var(${ORIGINAL_MARGIN_CSS_PROPERTY}) + var(${SIDEBAR_WIDTH_CSS_PROPERTY}))`
+    `calc(var(${ORIGINAL_MARGIN_CSS_PROPERTY}) + var(${SIDEBAR_WIDTH_CSS_PROPERTY}))`,
   );
 }
 
@@ -134,7 +134,7 @@ export function insertSidebarFrame(): boolean {
 
   if (!isSidebarFrameVisible()) {
     console.error(
-      "Post-condition failed: isSidebarFrameVisible is false after insertSidebarFrame"
+      "Post-condition failed: isSidebarFrameVisible is false after insertSidebarFrame",
     );
   }
 

@@ -18,4 +18,4 @@
 export const DEFAULT_THEME = "default";
 export const THEMES = [DEFAULT_THEME, "automation-anywhere"] as const;
 
-export type Theme = typeof THEMES[number];
+export type Theme = (typeof THEMES)[number];

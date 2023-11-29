@@ -32,9 +32,9 @@ const iconOptions: IconOption[] = sortBy(
     [...libraryCache].map(([id]) => ({
       value: { library, id },
       label: id,
-    }))
+    })),
   ),
-  (x) => x.label
+  (x) => x.label,
 );
 
 // https://github.com/JedWatson/react-select/issues/3480#issuecomment-481566579
@@ -68,7 +68,7 @@ const IconSelector: React.FunctionComponent<OwnProps> = ({
   const selectedOption = useMemo(() => {
     if (value) {
       return iconOptions.find(
-        (x) => x.value.library === value.library && x.value.id === value.id
+        (x) => x.value.library === value.library && x.value.id === value.id,
       );
     }
 

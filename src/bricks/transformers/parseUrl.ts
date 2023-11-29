@@ -52,7 +52,7 @@ export class UrlParser extends TransformerABC {
       "@pixiebrix/parse-url",
       "Parse URL",
       "Parse a URL into its components",
-      "faCode"
+      "faCode",
     );
   }
 
@@ -68,7 +68,7 @@ export class UrlParser extends TransformerABC {
           "The base URL to use in cases where the url is a relative URL",
       },
     },
-    ["url"]
+    ["url"],
   );
 
   override outputSchema: Schema = {
@@ -88,7 +88,7 @@ export class UrlParser extends TransformerABC {
           {
             type: "string",
           },
-        ])
+        ]),
       ),
     },
   };

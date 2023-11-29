@@ -52,7 +52,7 @@ async function getInProgressModActivation(): Promise<RegistryId[] | null> {
 }
 
 async function showSidebarActivationForMods(
-  modIds: RegistryId[]
+  modIds: RegistryId[],
 ): Promise<void> {
   const controller = new AbortController();
 
@@ -68,7 +68,7 @@ async function showSidebarActivationForMods(
     },
     {
       signal: controller.signal,
-    }
+    },
   );
   controller.signal.addEventListener("abort", () => {
     hideModActivationInSidebar();
@@ -86,7 +86,7 @@ function addActivateModsListener(): void {
   window.removeEventListener("ActivateMods", listener);
 
   listener = async (
-    event: CustomEvent<{ modIds: RegistryId[]; activateUrl: string }>
+    event: CustomEvent<{ modIds: RegistryId[]; activateUrl: string }>,
   ) => {
     const { modIds, activateUrl } = event.detail;
     const nextUrl = getNextUrlFromActivateUrl(activateUrl);

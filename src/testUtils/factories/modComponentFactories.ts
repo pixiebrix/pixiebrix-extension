@@ -37,7 +37,7 @@ export const modMetadataFactory = extend<Metadata, ModComponentBase["_recipe"]>(
   {
     updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
     sharing: sharingDefinitionFactory,
-  }
+  },
 );
 
 const modComponentConfigFactory = define<ModComponentBase["config"]>({
@@ -100,10 +100,10 @@ export const activatedModComponentFactory = extend<
 
 // StandaloneModDefinition is a type in contract.ts. But it's really defined based on the ModComponentBase type not the backend API.
 export const standaloneModDefinitionFactory = (
-  override?: Partial<Config<StandaloneModDefinition>>
+  override?: Partial<Config<StandaloneModDefinition>>,
 ) => {
   const modComponent = modComponentFactory(
-    override as Config<ModComponentBase>
+    override as Config<ModComponentBase>,
   ) as StandaloneModDefinition;
 
   // @ts-expect-error -- removing the ModComponentBase property that is not in the StandaloneModDefinition type

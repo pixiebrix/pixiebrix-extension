@@ -44,7 +44,7 @@ export async function collectIntegrationOriginPermissions({
     configId,
     {
       retry: true,
-    }
+    },
   );
 
   if (localConfig.proxy) {

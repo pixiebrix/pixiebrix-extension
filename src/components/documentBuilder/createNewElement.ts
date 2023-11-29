@@ -30,7 +30,7 @@ const elementExtras: Record<"form", DocumentElementType> = {
 };
 
 export function createNewElement(
-  elementType: DocumentElementType | keyof typeof elementExtras
+  elementType: DocumentElementType | keyof typeof elementExtras,
 ): DocumentElement {
   const element: DocumentElement = {
     // Writing as map to make it easier to add similar shortcuts in the future
@@ -153,7 +153,7 @@ export function createNewElement(
 
     default: {
       throw new Error(
-        `Can't create new element. Type "${elementType} is not supported.`
+        `Can't create new element. Type "${elementType} is not supported.`,
       );
     }
   }

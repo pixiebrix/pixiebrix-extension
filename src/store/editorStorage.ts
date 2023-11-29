@@ -48,7 +48,7 @@ export async function getEditorState(): Promise<EditorState | undefined> {
  * @param state the editorSlice state to save
  */
 export async function saveEditorState(
-  state: EditorState | undefined
+  state: EditorState | undefined,
 ): Promise<void> {
   if (state == null) {
     return;
@@ -57,7 +57,7 @@ export async function saveEditorState(
   await setReduxStorage(
     STORAGE_KEY,
     state,
-    getMaxMigrationsVersion(migrations)
+    getMaxMigrationsVersion(migrations),
   );
 }
 
@@ -93,7 +93,7 @@ export async function removeDynamicElements(elementIds: UUID[]): Promise<void> {
  * @returns The UUIDs of removed elements
  */
 export async function removeDynamicElementsForRecipe(
-  recipeId: RegistryId
+  recipeId: RegistryId,
 ): Promise<UUID[]> {
   const removedDynamicElements: UUID[] = [];
   const state = await getEditorState();

@@ -161,11 +161,11 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
         ],
       },
     },
-    ["title", "action"]
+    ["title", "action"],
   );
 
   async getBricks(
-    extension: ResolvedModComponent<ContextMenuConfig>
+    extension: ResolvedModComponent<ContextMenuConfig>,
   ): Promise<Brick[]> {
     return selectAllBlocks(extension.config.action);
   }
@@ -225,7 +225,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     extension: Pick<
       ResolvedModComponent<ContextMenuConfig>,
       "id" | "config" | "_deployment"
-    >
+    >,
   ): Promise<void> {
     const { title = "Untitled menu item" } = extension.config;
 
@@ -236,7 +236,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     }
 
     const patterns = compact(
-      uniq([...this.documentUrlPatterns, ...(this.permissions?.origins ?? [])])
+      uniq([...this.documentUrlPatterns, ...(this.permissions?.origins ?? [])]),
     );
 
     await ensureContextMenu({
@@ -251,7 +251,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     console.debug(
       "Registering",
       this.modComponents.length,
-      "contextMenu starter bricks"
+      "contextMenu starter bricks",
     );
 
     const results = await Promise.allSettled(
@@ -268,13 +268,13 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
           });
           throw error;
         }
-      })
+      }),
     );
 
     const numErrors = results.filter((x) => x.status === "rejected").length;
     if (numErrors > 0) {
       notify.error(
-        `An error occurred adding ${numErrors} context menu item(s)`
+        `An error occurred adding ${numErrors} context menu item(s)`,
       );
     }
   }
@@ -316,14 +316,14 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   }
 
   private async registerExtension(
-    extension: ResolvedModComponent<ContextMenuConfig>
+    extension: ResolvedModComponent<ContextMenuConfig>,
   ): Promise<void> {
     const { action: actionConfig, onSuccess = {} } = extension.config;
 
     await this.ensureMenu(extension);
 
     const extensionLogger = this.logger.childLogger(
-      selectExtensionContext(extension)
+      selectExtensionContext(extension),
     );
 
     console.debug(
@@ -332,7 +332,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       extension.label ?? "No Label",
       {
         extension,
-      }
+      },
     );
 
     registerHandler(extension.id, async (clickData) => {
@@ -341,7 +341,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       try {
         const reader = await this.getBaseReader();
         const serviceContext = await makeServiceContextFromDependencies(
-          extension.integrationDependencies
+          extension.integrationDependencies,
         );
 
         const targetElement =
@@ -463,7 +463,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
 }
 
 export function fromJS(
-  config: StarterBrickConfig<MenuDefinition>
+  config: StarterBrickConfig<MenuDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
   if (type !== "contextMenu") {

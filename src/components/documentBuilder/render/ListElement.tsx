@@ -72,7 +72,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
 
     if (Object.hasOwn(documentContext.options.ctxt, elementVariableReference)) {
       documentContext.options.logger.warn(
-        `List key ${elementVariableReference} shadows an existing variable name`
+        `List key ${elementVariableReference} shadows an existing variable name`,
       );
     }
 
@@ -94,7 +94,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
               context: elementContext.options.ctxt,
               options: apiVersionOptions("v3"),
               blueprintId: documentContext.options.logger.context.blueprintId,
-            }
+            },
           )) as DocumentElement;
         } else {
           // Must be a constant at this point. Non-deferred templates would have already been rendered.
@@ -105,7 +105,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
           documentElement,
           elementContext,
         };
-      })
+      }),
     );
   }, [array, elementKey, config, documentContext]);
 
@@ -127,7 +127,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
         <pre className="mt-2">
           {((error as Error).stack ?? "").replaceAll(
             `chrome-extension://${process.env.CHROME_EXTENSION_ID}/`,
-            ""
+            "",
           )}
         </pre>
       </details>
@@ -142,7 +142,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
           {
             staticId: joinPathParts(staticId, "list", "children"),
             branches: [...branches, { staticId, index }],
-          }
+          },
         );
         return (
           <DocumentContext.Provider key={index} value={elementContext}>

@@ -154,7 +154,7 @@ type TriggerExtensionPointState = BaseExtensionPointState & {
 };
 
 export function isTriggerExtensionPoint(
-  extensionPoint: BaseExtensionPointState
+  extensionPoint: BaseExtensionPointState,
 ): extensionPoint is TriggerExtensionPointState {
   return extensionPoint.definition.type === "trigger";
 }
@@ -245,10 +245,10 @@ type QuickBarProviderExtensionPointState = BaseExtensionPointState & {
 };
 
 export function isQuickBarExtensionPoint(
-  extensionPoint: BaseExtensionPointState
+  extensionPoint: BaseExtensionPointState,
 ): extensionPoint is QuickBarExtensionPointState {
   return ["quickBar", "quickBarProvider"].includes(
-    extensionPoint.definition.type
+    extensionPoint.definition.type,
   );
 }
 
@@ -295,7 +295,7 @@ export type ModComponentFormState =
   | TourFormState;
 
 export function isModComponentFormState(
-  formState: unknown
+  formState: unknown,
 ): formState is ModComponentFormState {
   if (
     typeof formState !== "object" ||

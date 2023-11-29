@@ -21,7 +21,7 @@ import { toUint8Array, uint8ArrayToString } from "uint8array-extras";
 
 test("parseDataUrl", () => {
   expect(
-    parseDataUrl("data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==")
+    parseDataUrl("data:text/plain;base64,SGVsbG8sIFdvcmxkIQ=="),
   ).toStrictEqual({
     mimeType: "text/plain",
     mimeTypeEssence: "text/plain",
@@ -39,7 +39,7 @@ test("parseDataUrl", () => {
     body: "Hello, World!",
   });
   expect(
-    parseDataUrl("data:text/html;charset=utf-8;base64,SGVsbG8sIFdvcmxkIQ==")
+    parseDataUrl("data:text/html;charset=utf-8;base64,SGVsbG8sIFdvcmxkIQ=="),
   ).toStrictEqual({
     mimeType: "text/html;charset=utf-8",
     mimeTypeEssence: "text/html",
@@ -49,7 +49,7 @@ test("parseDataUrl", () => {
     body: "Hello, World!",
   });
   expect(
-    parseDataUrl("data:text/html;charset=utf-8,Hello%2C%20World%21")
+    parseDataUrl("data:text/html;charset=utf-8,Hello%2C%20World%21"),
   ).toStrictEqual({
     mimeType: "text/html;charset=utf-8",
     mimeTypeEssence: "text/html",
@@ -64,7 +64,7 @@ describe("convertDataUrl", () => {
   it("should convert base64 data url to Blob", async () => {
     const blob = convertDataUrl(
       "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
-      "Blob"
+      "Blob",
     );
     expect(blob).toBeInstanceOf(Blob);
     expect(blob.type).toBe("text/plain");
@@ -74,7 +74,7 @@ describe("convertDataUrl", () => {
   it("should convert base64 data url to ArrayBuffer", () => {
     const arrayBuffer = convertDataUrl(
       "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
-      "ArrayBuffer"
+      "ArrayBuffer",
     );
     expect(arrayBuffer).toBeInstanceOf(ArrayBuffer);
     expect(arrayBuffer.byteLength).toBe(13);

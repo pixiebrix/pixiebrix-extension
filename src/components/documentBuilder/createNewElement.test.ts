@@ -21,8 +21,8 @@ import { type BrickPipeline } from "@/bricks/types";
 
 test.each(
   DOCUMENT_ELEMENT_TYPES.filter(
-    (x) => !["header_1", "header_2", "header_3"].includes(x)
-  )
+    (x) => !["header_1", "header_2", "header_3"].includes(x),
+  ),
 )("sets correct element type for %s", (elementType) => {
   const actual = createNewElement(elementType);
   expect(actual.type).toBe(elementType);
@@ -116,9 +116,9 @@ test("sets padding to zero for form", () => {
   const actual = createNewElement("form");
   expect(actual.type).toBe("pipeline");
   expect((actual.config as any).pipeline.__value__[0].id).toBe(
-    "@pixiebrix/form"
+    "@pixiebrix/form",
   );
   expect((actual.config as any).pipeline.__value__[0].config.className).toBe(
-    "p-0"
+    "p-0",
   );
 });

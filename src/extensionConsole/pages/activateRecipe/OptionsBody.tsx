@@ -36,9 +36,9 @@ const OptionsBody: React.FunctionComponent<{
     () =>
       genericOptionsFactory(
         blueprint.options.schema,
-        blueprint.options.uiSchema
+        blueprint.options.uiSchema,
       ),
-    [blueprint.options.schema, blueprint.options.uiSchema]
+    [blueprint.options.schema, blueprint.options.uiSchema],
   );
 
   return (

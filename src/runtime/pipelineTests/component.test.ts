@@ -82,7 +82,7 @@ describe("component block v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v2")
+      testOptions("v2"),
     );
 
     expect(result).toStrictEqual({ message: "hello" });
@@ -116,7 +116,7 @@ describe("component block v1", () => {
     const result = await reducePipeline(
       pipeline,
       simpleInput({ inputArg: "hello" }),
-      testOptions("v3")
+      testOptions("v3"),
     );
 
     expect(result).toStrictEqual({ message: "hello" });

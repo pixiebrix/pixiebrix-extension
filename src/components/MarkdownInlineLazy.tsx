@@ -23,7 +23,7 @@ const MarkdownInlineLoader = React.lazy(
     import(
       /* webpackChunkName: "components-lazy" */
       "./MarkdownInline"
-    )
+    ),
 );
 
 const MarkdownInlineLazy: React.FC<MarkdownProps> = (props) => (

@@ -110,7 +110,7 @@ type ClientErrorData = {
 };
 
 export function isBadRequestObjectData(
-  data: unknown
+  data: unknown,
 ): data is BadRequestObjectData {
   if (!isObject(data)) {
     return false;
@@ -119,7 +119,7 @@ export function isBadRequestObjectData(
   return Object.values(data).every(
     (errors) =>
       Array.isArray(errors) &&
-      errors.every((error) => typeof error === "string")
+      errors.every((error) => typeof error === "string"),
   );
 }
 
@@ -133,7 +133,7 @@ function isClientErrorData(data: unknown): data is ClientErrorData {
  * @param response the API response
  */
 function isBadRequestResponse(
-  response?: AxiosResponse
+  response?: AxiosResponse,
 ): response is AxiosResponse<BadRequestData> {
   if (!response) {
     return false;
@@ -156,7 +156,7 @@ function isBadRequestResponse(
  * @param error the API error
  */
 export function isSingleObjectBadRequestError(
-  error: unknown
+  error: unknown,
 ): error is AxiosError<BadRequestObjectData> {
   if (!isAxiosError(error)) {
     return false;
@@ -176,7 +176,7 @@ export function isSingleObjectBadRequestError(
  * @see isBadRequestResponse
  */
 function isClientErrorResponse(
-  response: AxiosResponse
+  response: AxiosResponse,
 ): response is AxiosResponse<ClientErrorData> {
   return isClientErrorData(response.data);
 }
@@ -234,7 +234,7 @@ function selectServerErrorMessage(response: AxiosResponse): string | null {
     typeof response.data === "string" &&
     typeof response.headers["content-type"] === "string" &&
     ["text/plain", "application/json"].includes(
-      response.headers["content-type"]
+      response.headers["content-type"],
     )
   ) {
     return response.data;

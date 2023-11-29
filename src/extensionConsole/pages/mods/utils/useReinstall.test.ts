@@ -46,12 +46,12 @@ test("uninstalls recipe mod components", async () => {
       dispatch(
         extensionActions.installCloudExtension({
           extension: standaloneModDefinition,
-        })
+        }),
       );
       dispatch(
         extensionActions.installCloudExtension({
           extension: anotherStandaloneModDefinition,
-        })
+        }),
       );
     },
   });
@@ -65,7 +65,7 @@ test("uninstalls recipe mod components", async () => {
   expect(uninstallRecipe).toHaveBeenCalledWith(
     modDefinition.metadata.id,
     [expectedExtension],
-    expect.any(Function)
+    expect.any(Function),
   );
 });
 
@@ -87,7 +87,7 @@ test("dispatches install recipe action", async () => {
       dispatch(
         extensionActions.installCloudExtension({
           extension: standaloneModDefinition,
-        })
+        }),
       );
     },
   });

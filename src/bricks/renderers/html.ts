@@ -26,7 +26,7 @@ export class HtmlRenderer extends RendererABC {
     super(
       "@pixiebrix/html",
       "HTML Renderer",
-      "Render HTML, sanitizing it first"
+      "Render HTML, sanitizing it first",
     );
   }
 

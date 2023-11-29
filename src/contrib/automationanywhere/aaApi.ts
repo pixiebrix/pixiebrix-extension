@@ -76,7 +76,7 @@ const SORT_BY_NAME = {
 async function fetchPages<TData>(
   config: SanitizedIntegrationConfig,
   requestConfig: AxiosRequestConfig,
-  { maxPages = Number.MAX_SAFE_INTEGER }: { maxPages?: number } = {}
+  { maxPages = Number.MAX_SAFE_INTEGER }: { maxPages?: number } = {},
 ): Promise<TData[]> {
   // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
 
@@ -127,7 +127,7 @@ async function fetchPages<TData>(
  */
 async function fetchBotFile(
   config: SanitizedIntegrationConfig,
-  fileId: string
+  fileId: string,
 ): Promise<Bot> {
   // The same API endpoint can be used for any file, but for now assume it's a bot
   const response = await performConfiguredRequestInBackground<Bot>(config, {
@@ -139,7 +139,7 @@ async function fetchBotFile(
 
 export const cachedFetchBotFile = cachePromiseMethod(
   ["aa:fetchBotFile"],
-  fetchBotFile
+  fetchBotFile,
 );
 
 /**
@@ -147,7 +147,7 @@ export const cachedFetchBotFile = cachePromiseMethod(
  */
 async function fetchFolder(
   config: SanitizedIntegrationConfig,
-  folderId: string
+  folderId: string,
 ): Promise<Folder> {
   // The same API endpoint can be used for any file, but for now assume it's a bot
   const response = await performConfiguredRequestInBackground<Folder>(config, {
@@ -159,12 +159,16 @@ async function fetchFolder(
 
 export const cachedFetchFolder = cachePromiseMethod(
   ["aa:fetchFolder"],
-  fetchFolder
+  fetchFolder,
 );
 
 async function searchBots(
   config: SanitizedIntegrationConfig,
-  options: { workspaceType: WorkspaceType; query: string; value: string | null }
+  options: {
+    workspaceType: WorkspaceType;
+    query: string;
+    value: string | null;
+  },
 ): Promise<Option[]> {
   if (isNullOrBlank(options.workspaceType)) {
     throw new TypeError("workspaceType is required");
@@ -225,7 +229,7 @@ async function searchBots(
         method: "POST",
         data: searchPayload,
       },
-      { maxPages: 1 }
+      { maxPages: 1 },
     );
   } else {
     // The /folders/:id/list endpoint works on both community and Enterprise. The /v2/repository/file/list doesn't
@@ -237,7 +241,7 @@ async function searchBots(
         method: "POST",
         data: searchPayload,
       },
-      { maxPages: 1 }
+      { maxPages: 1 },
     );
   }
 
@@ -249,11 +253,11 @@ async function searchBots(
 
 export const cachedSearchBots = cachePromiseMethod(
   ["aa:fetchBots"],
-  searchBots
+  searchBots,
 );
 
 async function fetchDevices(
-  config: SanitizedIntegrationConfig
+  config: SanitizedIntegrationConfig,
 ): Promise<Option[]> {
   const devices = await fetchPages<Device>(config, {
     url: "/v2/devices/list",
@@ -271,17 +275,17 @@ async function fetchDevices(
       value: device.id,
       label: selectLabel(device),
     })),
-    (option) => option.label
+    (option) => option.label,
   );
 }
 
 export const cachedFetchDevices = cachePromiseMethod(
   ["aa:fetchDevices"],
-  fetchDevices
+  fetchDevices,
 );
 
 async function fetchDevicePools(
-  config: SanitizedIntegrationConfig
+  config: SanitizedIntegrationConfig,
 ): Promise<Option[]> {
   const devicePools = await fetchPages<DevicePool>(config, {
     url: "/v2/devices/pools/list",
@@ -296,11 +300,11 @@ async function fetchDevicePools(
 
 export const cachedFetchDevicePools = cachePromiseMethod(
   ["aa:fetchDevicePools"],
-  fetchDevicePools
+  fetchDevicePools,
 );
 
 async function fetchRunAsUsers(
-  config: SanitizedIntegrationConfig
+  config: SanitizedIntegrationConfig,
 ): Promise<Option[]> {
   const users = await fetchPages<RunAsUser>(config, {
     url: "/v1/devices/runasusers/list",
@@ -315,7 +319,7 @@ async function fetchRunAsUsers(
 
 export const cachedFetchRunAsUsers = cachePromiseMethod(
   ["aa:fetchRunAsUsers"],
-  fetchRunAsUsers
+  fetchRunAsUsers,
 );
 
 async function fetchSchema(config: SanitizedIntegrationConfig, fileId: string) {
@@ -325,7 +329,7 @@ async function fetchSchema(config: SanitizedIntegrationConfig, fileId: string) {
       {
         url: `/v1/filecontent/${fileId}/interface`,
         method: "GET",
-      }
+      },
     );
 
     return interfaceToInputSchema(response.data);
@@ -334,7 +338,7 @@ async function fetchSchema(config: SanitizedIntegrationConfig, fileId: string) {
 
 export const cachedFetchSchema = cachePromiseMethod(
   ["aa:fetchSchema"],
-  fetchSchema
+  fetchSchema,
 );
 
 export async function runCommunityBot({
@@ -433,10 +437,10 @@ export async function pollEnterpriseResult({
         {
           deploymentId,
           activities: activityList.list,
-        }
+        },
       );
       throw new BusinessError(
-        "Multiple activity instances found for bot deployment"
+        "Multiple activity instances found for bot deployment",
       );
     }
 
@@ -464,7 +468,7 @@ export async function pollEnterpriseResult({
       deploymentId,
     });
     throw new BusinessError(
-      `Activity not found for deployment in ${maxWaitSeconds} seconds`
+      `Activity not found for deployment in ${maxWaitSeconds} seconds`,
     );
   }
 

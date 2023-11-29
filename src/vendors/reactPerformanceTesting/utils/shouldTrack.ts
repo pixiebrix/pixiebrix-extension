@@ -4,7 +4,7 @@ import { isForwardRefComponent } from "./isForwardRefComponent";
 import { ReactSymbol } from "./symbols";
 
 export const shouldTrack = (
-  component: any
+  component: any,
 ): component is React.ElementType<
   React.ComponentClass | React.FunctionComponent
 > & { $$typeof: ReactSymbol } =>

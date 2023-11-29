@@ -83,7 +83,7 @@ const SelectionToolPopover: React.FC<{
               {`Selection Tool: ${matchingCount} ${pluralize(
                 matchingCount,
                 "matching element",
-                "matching elements"
+                "matching elements",
               )}`}
             </div>
             <div className="d-flex align-items-center popover-wrapper-body">
@@ -164,7 +164,7 @@ export const showSelectionToolPopover = ({
       onChangeSimilarSelection={handleSimilarChange}
       setSelectionHandler={setSelectionHandler}
     />,
-    rootElement
+    rootElement,
   );
 };
 

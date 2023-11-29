@@ -31,7 +31,7 @@ export class JQueryReader extends TransformerABC {
     super(
       JQueryReader.BRICK_ID,
       "Extract from Page",
-      "Get data from the page using jQuery selectors"
+      "Get data from the page using jQuery selectors",
     );
   }
 
@@ -127,7 +127,7 @@ export class JQueryReader extends TransformerABC {
 
   async transform(
     { selectors }: BrickArgs<{ selectors: SelectorConfigMap }>,
-    { root }: BrickOptions
+    { root }: BrickOptions,
   ): Promise<unknown> {
     return readJQuery({ type: "jquery", selectors }, root);
   }

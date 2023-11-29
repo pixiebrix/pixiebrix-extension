@@ -91,7 +91,7 @@ test("load mod definitions and save one", async () => {
     // - return all the mod definitions from the registry to the caller
     const { data: allModDefinitions, isFetching } = defaultInitialValue(
       useAllModDefinitions(),
-      []
+      [],
     );
 
     const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
@@ -144,7 +144,7 @@ test("load mod definitions and save one", async () => {
 
   // Validate the config sent to server
   const validationResult = await validateSchema(
-    resultModDefinition.config as string
+    resultModDefinition.config as string,
   );
   expect(validationResult).toEqual({});
 });

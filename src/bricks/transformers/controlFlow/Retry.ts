@@ -62,7 +62,7 @@ class Retry extends TransformerABC {
         default: 3,
       },
     },
-    ["body"]
+    ["body"],
   );
 
   async transform(
@@ -75,7 +75,7 @@ class Retry extends TransformerABC {
       intervalMillis?: number;
       maxRetries?: number;
     }>,
-    options: BrickOptions
+    options: BrickOptions,
   ): Promise<unknown> {
     let lastError: unknown;
     let retryCount = 0;

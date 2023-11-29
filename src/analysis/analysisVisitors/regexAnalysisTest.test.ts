@@ -38,7 +38,7 @@ describe("RegexAnalysis", () => {
           },
         },
       },
-      {} as VisitBlockExtra
+      {} as VisitBlockExtra,
     );
 
     expect(analysis.getAnnotations()).toHaveLength(0);
@@ -54,7 +54,7 @@ describe("RegexAnalysis", () => {
           regex: "(?<foo>abc",
         },
       },
-      {} as VisitBlockExtra
+      {} as VisitBlockExtra,
     );
 
     expect(analysis.getAnnotations()).toHaveLength(1);
@@ -73,12 +73,12 @@ describe("RegexAnalysis", () => {
           },
         },
       },
-      {} as VisitBlockExtra
+      {} as VisitBlockExtra,
     );
 
     expect(analysis.getAnnotations()).toHaveLength(1);
     expect(analysis.getAnnotations()[0].message).toBe(
-      "Invalid regular expression: /(?<foo>abc/: Unterminated group"
+      "Invalid regular expression: /(?<foo>abc/: Unterminated group",
     );
   });
 
@@ -100,7 +100,7 @@ describe("RegexAnalysis", () => {
           },
         },
       },
-      {} as VisitBlockExtra
+      {} as VisitBlockExtra,
     );
 
     expect(analysis.getAnnotations()).toHaveLength(0);

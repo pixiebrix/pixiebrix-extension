@@ -85,7 +85,7 @@ import getType from "@/runtime/getType";
 let brickRegistry: RegistryProtocol<RegistryId, Brick> = {
   async lookup(): Promise<Brick> {
     throw new Error(
-      "Runtime was not initialized. Call initRuntime before running mods."
+      "Runtime was not initialized. Call initRuntime before running mods.",
     );
   },
 };
@@ -96,7 +96,7 @@ let brickRegistry: RegistryProtocol<RegistryId, Brick> = {
  * @since 1.8.2 introduced to eliminate circular dependency between runtime and registry
  */
 export function initRuntime(
-  registry: RegistryProtocol<RegistryId, Brick>
+  registry: RegistryProtocol<RegistryId, Brick>,
 ): void {
   brickRegistry = registry;
 }
@@ -279,7 +279,7 @@ function getPipelineLexicalEnvironment({
 }
 
 export async function resolveBlockConfig(
-  config: BrickConfig
+  config: BrickConfig,
 ): Promise<ResolvedBrickConfig> {
   const block = await brickRegistry.lookup(config.id);
   return {
@@ -295,7 +295,7 @@ export async function resolveBlockConfig(
 async function executeBlockWithValidatedProps(
   { config, block }: ResolvedBrickConfig,
   { args, context, root, previousOutput }: BlockProps<BrickArgs>,
-  options: RunBlockOptions
+  options: RunBlockOptions,
 ): Promise<unknown> {
   const commonOptions = {
     // This condition of what to pass to the brick is wacky, but seemingly necessary to replicate behavior in v1 where
@@ -368,7 +368,7 @@ async function executeBlockWithValidatedProps(
               runId,
               extensionId,
               branches: [...branches, branch],
-            }
+            },
           );
         },
         /**
@@ -383,7 +383,7 @@ async function executeBlockWithValidatedProps(
           pipeline,
           branch,
           extraContext,
-          rootOverride
+          rootOverride,
         ) {
           if (!isObject(commonOptions.ctxt)) {
             throw new Error("Expected object context for v3+ runtime");
@@ -407,7 +407,7 @@ async function executeBlockWithValidatedProps(
                 runId,
                 extensionId,
                 branches: [...branches, branch],
-              }
+              },
             );
             // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
             // noinspection ExceptionCaughtLocallyJS
@@ -446,7 +446,7 @@ async function executeBlockWithValidatedProps(
 async function renderBlockArg(
   resolvedConfig: ResolvedBrickConfig,
   state: IntermediateState,
-  options: RunBlockOptions
+  options: RunBlockOptions,
 ): Promise<RenderedArgs> {
   const { config, type } = resolvedConfig;
 
@@ -476,7 +476,7 @@ async function renderBlockArg(
     logger.debug(
       `Passed blank root to reader ${config.id} (window=${
         config.window ?? "self"
-      })`
+      })`,
     );
 
     return {} as RenderedArgs;
@@ -497,7 +497,7 @@ async function renderBlockArg(
     ? null
     : engineRenderer(
         config.templateEngine ?? DEFAULT_IMPLICIT_TEMPLATE_ENGINE,
-        { autoescape }
+        { autoescape },
       );
 
   const blockArgs = (await mapArgs(stageTemplate, ctxt, {
@@ -513,7 +513,7 @@ async function renderBlockArg(
         template: stageTemplate,
         templateContext: state.context,
         renderedArgs: blockArgs,
-      }
+      },
     );
   }
 
@@ -522,7 +522,7 @@ async function renderBlockArg(
 
 function selectTraceRecordMeta(
   resolvedConfig: ResolvedBrickConfig,
-  options: RunBlockOptions
+  options: RunBlockOptions,
 ): TraceRecordMeta {
   return {
     ...options.trace,
@@ -545,7 +545,7 @@ function selectTraceEnabled({
 export async function runBlock(
   resolvedConfig: ResolvedBrickConfig,
   props: BlockProps,
-  options: RunBlockOptions
+  options: RunBlockOptions,
 ): Promise<unknown> {
   const { validateInput, logger, headless, trace } = options;
 
@@ -583,7 +583,7 @@ export async function runBlock(
       // Call to throwIfInvalidInput above ensures args are valid for the brick
       unsafeAssumeValidArg(props.args),
       props.context,
-      logger.context
+      logger.context,
     );
   }
 
@@ -602,7 +602,7 @@ export async function runBlock(
     return await executeBlockWithValidatedProps(
       resolvedConfig,
       validatedProps,
-      options
+      options,
     );
   } finally {
     if (stage.notifyProgress) {
@@ -649,7 +649,7 @@ async function applyReduceDefaults({
 export async function blockReducer(
   blockConfig: BrickConfig,
   state: IntermediateState,
-  options: ReduceOptions
+  options: ReduceOptions,
 ): Promise<BlockOutput> {
   const { index, isLastBlock, previousOutput, context, root } = state;
   const { runId, extensionId, explicitDataFlow, logValues, logger, branches } =
@@ -680,7 +680,7 @@ export async function blockReducer(
     blockConfig,
     root,
     context,
-    options
+    options,
   );
 
   let renderedArgs: RenderedArgs;
@@ -692,7 +692,7 @@ export async function blockReducer(
       renderedArgs = await renderBlockArg(
         resolvedConfig,
         { ...state, root: blockRoot },
-        optionsWithTraceRef
+        optionsWithTraceRef,
       );
     } catch (error) {
       renderError = error;
@@ -813,7 +813,7 @@ export async function blockReducer(
   if (!isLastBlock && explicitDataFlow) {
     // Force correct use of outputKey in `apiVersion: v2` usage
     throw new BusinessError(
-      "outputKey is required for bricks that return data (since apiVersion: v2)"
+      "outputKey is required for bricks that return data (since apiVersion: v2)",
     );
   }
 
@@ -824,7 +824,7 @@ function throwBlockError(
   blockConfig: BrickConfig,
   state: IntermediateState,
   error: unknown,
-  options: ReduceOptions
+  options: ReduceOptions,
 ) {
   const { index, context } = state;
 
@@ -871,13 +871,13 @@ function throwBlockError(
     {
       cause: error,
       context: logger.context,
-    }
+    },
   );
 }
 
 async function getStepLogger(
   blockConfig: BrickConfig,
-  pipelineLogger: Logger
+  pipelineLogger: Logger,
 ): Promise<Logger> {
   let resolvedConfig: ResolvedBrickConfig;
 
@@ -910,7 +910,7 @@ async function getStepLogger(
 export async function reduceExtensionPipeline(
   pipeline: BrickConfig | BrickPipeline,
   initialValues: InitialValues,
-  partialOptions: Partial<ReduceOptions> = {}
+  partialOptions: Partial<ReduceOptions> = {},
 ): Promise<unknown> {
   const pipelineLogger = partialOptions.logger ?? new ConsoleLogger();
 
@@ -932,7 +932,7 @@ export async function reduceExtensionPipeline(
 export async function reducePipeline(
   pipeline: BrickConfig | BrickPipeline,
   initialValues: InitialValues,
-  partialOptions: Partial<ReduceOptions>
+  partialOptions: Partial<ReduceOptions>,
 ): Promise<unknown> {
   const options = await applyReduceDefaults(partialOptions);
 
@@ -980,7 +980,7 @@ export async function reducePipeline(
         blockConfig,
         state,
         new CancelError("Run automatically cancelled"),
-        stepOptions
+        stepOptions,
       );
     }
 
@@ -1007,13 +1007,13 @@ export async function reducePipelineExpression(
   pipeline: BrickPipeline,
   context: UnknownObject,
   root: SelectorRoot,
-  options: ReduceOptions
+  options: ReduceOptions,
 ): Promise<unknown> {
   const { explicitDataFlow, logger: pipelineLogger } = options;
 
   if (!explicitDataFlow) {
     throw new Error(
-      "reducePipelineExpression requires explicitDataFlow runtime setting"
+      "reducePipelineExpression requires explicitDataFlow runtime setting",
     );
   }
 

@@ -52,8 +52,8 @@ describe("getOAuth2AuthData", () => {
       getOAuth2AuthData(
         {} as unknown as Integration,
         integrationConfigFactory(),
-        sanitizedConfig
-      )
+        sanitizedConfig,
+      ),
     ).resolves.toEqual(data);
     expect(getCachedAuthDataMock).toHaveBeenCalledWith(sanitizedConfig.id);
     expect(launchOAuth2FlowMock).not.toHaveBeenCalled();
@@ -74,10 +74,10 @@ describe("getOAuth2AuthData", () => {
     getCachedAuthDataMock.mockResolvedValue(undefined);
     launchOAuth2FlowMock.mockResolvedValue(data);
     await expect(
-      getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig)
+      getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig),
     ).resolves.toEqual(data);
     expect(getCachedAuthDataMock).toHaveBeenCalledWith(
-      sanitizedIntegrationConfig.id
+      sanitizedIntegrationConfig.id,
     );
     expect(launchOAuth2FlowMock).toHaveBeenCalledWith(integration, localConfig);
   });
@@ -98,19 +98,19 @@ describe("getOAuth2AuthData", () => {
     launchOAuth2FlowMock.mockResolvedValue(data);
     await Promise.all([
       expect(
-        getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig)
+        getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig),
       ).resolves.toEqual(data),
       expect(
-        getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig)
+        getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig),
       ).resolves.toEqual(data),
       expect(
-        getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig)
+        getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig),
       ).resolves.toEqual(data),
       expect(
-        getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig)
+        getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig),
       ).resolves.toEqual(data),
       expect(
-        getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig)
+        getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig),
       ).resolves.toEqual(data),
     ]);
     expect(getCachedAuthDataMock).toHaveBeenCalledTimes(1);

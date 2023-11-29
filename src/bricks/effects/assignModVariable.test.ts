@@ -50,22 +50,22 @@ describe("@pixiebrix/state/assign", () => {
   test("replaces value", async () => {
     await brick.run(
       unsafeAssumeValidArg({ variableName: "foo", value: { foo: 42 } }),
-      brickOptions
+      brickOptions,
     );
 
     await brick.run(
       unsafeAssumeValidArg({ variableName: "foo", value: { bar: 42 } }),
-      brickOptions
+      brickOptions,
     );
 
     expect(
-      getPageState({ namespace: "blueprint", blueprintId, extensionId })
+      getPageState({ namespace: "blueprint", blueprintId, extensionId }),
     ).toEqual({ foo: { bar: 42 } });
   });
 
   test("null is valid input", async () => {
     await expect(
-      validateInput(brick.inputSchema, { variableName: "foo", value: null })
+      validateInput(brick.inputSchema, { variableName: "foo", value: null }),
     ).resolves.toStrictEqual({
       errors: [],
       valid: true,
@@ -78,31 +78,31 @@ describe("@pixiebrix/state/assign", () => {
 
     await brick.run(
       unsafeAssumeValidArg({ variableName: "foo", value: 42 }),
-      brickOptions
+      brickOptions,
     );
     await brick.run(
       unsafeAssumeValidArg({ variableName: "foo", value: null }),
-      brickOptions
+      brickOptions,
     );
 
     expect(
-      getPageState({ namespace: "blueprint", blueprintId, extensionId })
+      getPageState({ namespace: "blueprint", blueprintId, extensionId }),
     ).toEqual({ foo: null });
   });
 
   test("only sets variable", async () => {
     await brick.run(
       unsafeAssumeValidArg({ variableName: "foo", value: 42 }),
-      brickOptions
+      brickOptions,
     );
 
     await brick.run(
       unsafeAssumeValidArg({ variableName: "bar", value: 0 }),
-      brickOptions
+      brickOptions,
     );
 
     expect(
-      getPageState({ namespace: "blueprint", blueprintId, extensionId })
+      getPageState({ namespace: "blueprint", blueprintId, extensionId }),
     ).toEqual({ foo: 42, bar: 0 });
   });
 
@@ -111,7 +111,7 @@ describe("@pixiebrix/state/assign", () => {
       brick.getModVariableSchema({
         id: brick.id,
         config: { variableName: "foo" },
-      })
+      }),
     ).resolves.toEqual({
       type: "object",
       additionalProperties: false,

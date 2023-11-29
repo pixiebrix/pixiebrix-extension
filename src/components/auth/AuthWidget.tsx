@@ -148,12 +148,12 @@ const AuthWidget: React.FunctionComponent<{
   }, [integrationId]);
 
   const sanitizeConfigArgs = curry(sanitizeIntegrationConfig)(
-    serviceDefinition
+    serviceDefinition,
   );
 
   const options = useMemo(
     () => authOptions.filter((x) => x.serviceId === integrationId),
-    [authOptions, integrationId]
+    [authOptions, integrationId],
   );
 
   const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
@@ -184,7 +184,7 @@ const AuthWidget: React.FunctionComponent<{
           ...values,
           integrationId,
           id,
-        })
+        }),
       );
 
       await syncIntegrations();
@@ -209,7 +209,7 @@ const AuthWidget: React.FunctionComponent<{
       // The IntegrationEditorModal will call the onClose function after
       // calling onSave, so we don't need to close anything manually here.
     },
-    [dispatch, integrationId, syncIntegrations, helpers, sanitizeConfigArgs]
+    [dispatch, integrationId, syncIntegrations, helpers, sanitizeConfigArgs],
   );
 
   const launchAuthorizationGrantFlow = useAuthorizationGrantFlow();
@@ -226,7 +226,7 @@ const AuthWidget: React.FunctionComponent<{
     if (integrationId in autoConfigurations) {
       const label = freshIdentifier(
         `${serviceDefinition.name} Config` as SafeString,
-        integrationConfigs.map(({ label }) => label)
+        integrationConfigs.map(({ label }) => label),
       );
       void autoConfigureIntegration(serviceDefinition, label, {
         upsertIntegrationConfig(config: IntegrationConfig) {
@@ -265,7 +265,7 @@ const AuthWidget: React.FunctionComponent<{
 
   const CustomMenuList = useMemo(
     () => createMenuListWithAddButton(onClickNew),
-    [onClickNew]
+    [onClickNew],
   );
 
   const initialConfiguration = useMemo<IntegrationConfig | null>(
@@ -277,7 +277,7 @@ const AuthWidget: React.FunctionComponent<{
             config: convertSchemaToConfigState(serviceDefinition.schema),
           } as IntegrationConfig)
         : null,
-    [integrationId, serviceDefinition?.schema, showServiceEditorModal]
+    [integrationId, serviceDefinition?.schema, showServiceEditorModal],
   );
 
   return (
