@@ -30,6 +30,14 @@ import {
 } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
 import { isEqual } from "lodash";
 
+function usePrevious<T>(value: T) {
+  const ref = useRef<T | null>();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
+
 /**
  * Hook to navigate the variable popover menu using the keyboard from the input field
  * @param inputElementRef the input field the popover is attached to
@@ -53,18 +61,23 @@ function useKeyboardNavigation({
 }) {
   // User's current selection in the variable menu
   const [activeKeyPath, setActiveKeyPath] = useState<KeyPath | null>();
-  const prevMenuOptions = useRef(menuOptions);
+  const prevMenuOptions = usePrevious(menuOptions);
+  const prevLikelyVariable = usePrevious(likelyVariable);
 
   // Set the default active key path
-  // menuOptions is not guaranteed to be referentially equal, so we store the previous value
-  // and compare it to the current value to determine if we need to update the active key path
+  // menuOptions is not guaranteed to be referentially equal
+  // need to deep compare menuOptions against the previous run
+  // this causes us to need to manually compare likelyVariable as well
   // See https://github.com/pixiebrix/pixiebrix-extension/issues/7006
   useEffect(() => {
-    if (!activeKeyPath || !isEqual(prevMenuOptions.current, menuOptions)) {
+    if (
+      !isEqual(prevMenuOptions, menuOptions) ||
+      prevLikelyVariable !== likelyVariable
+    ) {
       setActiveKeyPath(defaultMenuOption(menuOptions, likelyVariable));
-      prevMenuOptions.current = menuOptions;
     }
-  }, [activeKeyPath, likelyVariable, menuOptions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only trigger when the menuOptions or likelyVariable changes
+  }, [likelyVariable, menuOptions]);
 
   const move = useCallback(
     (offset: number) => {

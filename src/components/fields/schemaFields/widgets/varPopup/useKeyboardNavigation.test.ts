@@ -51,11 +51,8 @@ describe("useKeyboardNavigation", () => {
     expect(result.all).toHaveLength(2);
 
     rerender({
-      inputElementRef,
-      isVisible: true,
-      likelyVariable: "@inpu",
+      ...initialProps,
       menuOptions: cloneDeep(menuOptions),
-      onSelect,
     });
 
     expect(result.all).toHaveLength(3);
@@ -67,5 +64,40 @@ describe("useKeyboardNavigation", () => {
     }
 
     expect(prevResult.activeKeyPath).toBe(result.current.activeKeyPath);
+  });
+
+  test("it sets the default active key path when the likely variable changes", async () => {
+    const onSelect = jest.fn();
+    const menuOptions: MenuOptions = [
+      ["input", { "@input": { description: {}, icon: {} } }],
+    ];
+    const inputElementRef = { current: document.createElement("input") };
+
+    const initialProps = {
+      inputElementRef,
+      isVisible: true,
+      likelyVariable: "@input.",
+      menuOptions,
+      onSelect,
+    };
+
+    const { result, rerender } = renderHook(
+      (props) => useKeyboardNavigation(props),
+      {
+        initialProps,
+      },
+    );
+
+    expect(result.current.activeKeyPath).toStrictEqual([
+      "description",
+      "@input",
+    ]);
+
+    rerender({
+      ...initialProps,
+      likelyVariable: "@input",
+    });
+
+    expect(result.current.activeKeyPath).toStrictEqual(["@input"]);
   });
 });
