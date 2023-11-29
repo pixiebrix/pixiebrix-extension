@@ -463,6 +463,7 @@
     "./utils/getOptionsArgForFieldValue.ts",
     "./utils/idbUtils.ts",
     "./utils/iframeUtils.ts",
+    "./utils/inference/selectorInference.ts",
     "./utils/inference/selectorInferenceUtils.ts",
     "./utils/inference/selectorTypes.ts",
     "./utils/inference/siteSelectorHints.ts",
