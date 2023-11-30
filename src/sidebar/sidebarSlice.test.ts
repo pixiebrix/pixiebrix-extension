@@ -28,6 +28,7 @@ import type { SidebarState } from "@/types/sidebarTypes";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
+import { event } from "jquery";
 
 jest.mock("@/sidebar/messenger/api", () => ({
   // :shrug: imported via testUtils/factories
@@ -132,6 +133,29 @@ describe("sidebarSlice.addTemporaryPanel", () => {
       // Only the panel with the same extensionId should be cancelled
       [existingPanel.nonce],
     );
+  });
+
+  it("closes the mod launcher if it is open", async () => {
+    const newPanel = sidebarEntryFactory("temporaryPanel");
+
+    const state = {
+      ...sidebarSlice.getInitialState(),
+      temporaryPanels: [],
+      staticPanels: [MOD_LAUNCHER],
+    } as SidebarState;
+
+    expect(state.closedTabs).toStrictEqual({});
+
+    const newState = sidebarSlice.reducer(
+      state,
+      sidebarSlice.actions.addTemporaryPanel({ panel: newPanel }),
+    );
+
+    expect(newState.activeKey).toBe(eventKeyForEntry(newPanel));
+
+    expect(newState.closedTabs).toStrictEqual({
+      [eventKeyForEntry(MOD_LAUNCHER)]: true,
+    });
   });
 });
 
