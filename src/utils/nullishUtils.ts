@@ -23,6 +23,13 @@ export type Optional<T> = T | undefined;
 
 export type Nullable<T> = T | null;
 
+// Inspired by: https://itnext.io/typescript-isnullish-nonnullish-and-assertnonnullish-557deb6e8b17
+export const isNullish = <T>(value: T | Nullish): value is Nullish =>
+  value == null;
+
+export const isNonNullish = <T>(value: T | Nullish): value is T =>
+  !isNullish(value);
+
 export function assertNonNullish<T>(
   value: T,
   assertionMessage: string,
