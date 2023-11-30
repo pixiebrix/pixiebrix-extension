@@ -19,7 +19,7 @@ import { sheets } from "@/background/messenger/api";
 import { GoogleSheetsLookup } from "@/contrib/google/sheets/bricks/lookup";
 import { type ValueRange } from "@/contrib/google/sheets/core/types";
 import { type UnknownObject } from "@/types/objectTypes";
-import { BusinessError } from "@/errors/businessErrors";
+import { BusinessError, PropError } from "@/errors/businessErrors";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 
 const getAllRowsMock = jest.mocked(sheets.getAllRows);
@@ -61,6 +61,14 @@ describe("Google sheets lookup brick logic", () => {
         multi: false,
       }),
     ).rejects.toThrowWithMessage(BusinessError, "Header ColumnA not found");
+  });
+
+  it("throws prop error if googleAccount is not set", async () => {
+    await expect(
+      runLookup({
+        googleAccount: undefined,
+      }),
+    ).rejects.toThrow(PropError);
   });
 
   it("throws error if query is set and filterRows is true and header is not found", async () => {
