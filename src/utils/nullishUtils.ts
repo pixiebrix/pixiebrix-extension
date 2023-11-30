@@ -17,24 +17,22 @@
 
 export type Nullish = null | undefined;
 
-// TODO: Pick between Maybe, Nullishable, or another name
-export type Maybe<T> = T | Nullish;
 export type Nullishable<T> = T | Nullish;
 
 export type Optional<T> = T | undefined;
 
 export type Nullable<T> = T | null;
 
-// TODO: create lint rule to enforce use of NonNullish or Some over NonNullable
+// TODO: create lint rule to enforce use of NonNullish over NonNullable
 export type NonNullish<T> = T extends Nullish ? never : T;
-export type Some<T> = T extends Nullish ? never : T;
 
 // Inspired by: https://itnext.io/typescript-isnullish-nonnullish-and-assertnonnullish-557deb6e8b17
-export const isNullish = <T>(value: Maybe<T>): value is Nullish =>
+export const isNullish = <T>(value: Nullishable<T>): value is Nullish =>
   value == null;
 
-export const isNonNullish = <T>(value: Maybe<T>): value is T =>
-  !isNullish(value);
+export const isNonNullish = <T>(
+  value: Nullishable<T>,
+): value is NonNullish<T> => !isNullish(value);
 
 export function assertNonNullish<T>(
   value: T,
