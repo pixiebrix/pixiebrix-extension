@@ -272,13 +272,16 @@ export function updateAvailable(
     return false;
   }
 
-  // Allow unversioned recipes through without version comparisons
-  if (
-    !availableRecipe.metadata.version ||
-    !installedExtension._recipe.version
-  ) {
-    return true;
-  }
+  // TODO: Drop assertions once the types are tighter
+  // https://github.com/pixiebrix/pixiebrix-extension/pull/7010#discussion_r1410080332
+  assert(
+    installedExtension._recipe.version,
+    "The requested extension doesn't have a version",
+  );
+  assert(
+    availableRecipe.metadata.version,
+    "The extension's recipe doesn't have a version",
+  );
 
   if (
     semver.gt(
