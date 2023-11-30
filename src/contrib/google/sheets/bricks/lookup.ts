@@ -160,7 +160,7 @@ export class GoogleSheetsLookup extends TransformerABC {
         "A Google Configuration is now required. See the migration guide: https://docs.pixiebrix.com/integrations/google-drive/migrating-from-google-sheet-to-google-drive-integration",
         GOOGLE_SHEETS_LOOKUP_ID,
         "googleAccount",
-        googleAccount
+        googleAccount,
       );
     }
 
