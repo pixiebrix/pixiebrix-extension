@@ -20,6 +20,7 @@ import { GoogleSheetsLookup } from "@/contrib/google/sheets/bricks/lookup";
 import { type ValueRange } from "@/contrib/google/sheets/core/types";
 import { type UnknownObject } from "@/types/objectTypes";
 import { BusinessError } from "@/errors/businessErrors";
+import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 
 const getAllRowsMock = jest.mocked(sheets.getAllRows);
 
@@ -32,6 +33,7 @@ describe("Google sheets lookup brick logic", () => {
   ): Promise<UnknownObject | UnknownObject[]> {
     return lookupBrick.transform(
       {
+        googleAccount: sanitizedIntegrationConfigFactory(),
         spreadsheetId: "abc",
         tabName: "Sheet1",
         ...input,
