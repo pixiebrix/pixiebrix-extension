@@ -31,29 +31,35 @@ import { type Brick } from "@/types/brickTypes";
 import { type SafeString } from "@/types/stringTypes";
 import { freshIdentifier } from "@/utils/variableUtils";
 
-export function showOutputKey(blockType: BrickType): boolean {
-  return blockType !== "effect" && blockType !== "renderer";
+/**
+ * Return true if the Page Editor should show an output field for the brick.
+ * @param brickType
+ */
+export function showOutputKey(brickType: BrickType): boolean {
+  // Output keys for effects are ignored by the runtime (and generate a warning at runtime)
+  // Renderers are always the last brick in a pipeline, so they don't need an output key
+  return brickType !== "effect" && brickType !== "renderer";
 }
 
 /**
- * Generate a fresh outputKey for `block`
- * @param block the block
+ * Generate a fresh outputKey for `brick`
+ * @param brick the brick
  * @param outputKeys existing outputKeys already being used
  */
 export async function generateFreshOutputKey(
-  block: Brick,
+  brick: Brick,
   outputKeys: OutputKey[],
 ): Promise<OutputKey | undefined> {
-  const type = await getType(block);
+  const type = await getType(brick);
 
   if (!showOutputKey(type)) {
     // Output keys for effects are ignored by the runtime (and generate a warning at runtime)
     return undefined;
   }
 
-  if (block.defaultOutputKey) {
+  if (brick.defaultOutputKey) {
     return freshIdentifier(
-      block.defaultOutputKey as SafeString,
+      brick.defaultOutputKey as SafeString,
       outputKeys,
     ) as OutputKey;
   }
@@ -63,10 +69,7 @@ export async function generateFreshOutputKey(
   }
 
   if (type === "transform") {
-    return freshIdentifier(
-      "transformed" as SafeString,
-      outputKeys,
-    ) as OutputKey;
+    return freshIdentifier("output" as SafeString, outputKeys) as OutputKey;
   }
 
   return freshIdentifier(type as SafeString, outputKeys) as OutputKey;
