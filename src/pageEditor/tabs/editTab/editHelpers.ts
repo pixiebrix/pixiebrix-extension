@@ -32,6 +32,11 @@ import { type SafeString } from "@/types/stringTypes";
 import { freshIdentifier } from "@/utils/variableUtils";
 
 /**
+ * Default brick output key, if the brick doesn't define its own default output key.
+ */
+const DEFAULT_OUTPUT_KEY = "output" as SafeString;
+
+/**
  * Return true if the Page Editor should show an output field for the brick.
  * @param brickType
  */
@@ -50,7 +55,9 @@ export async function generateFreshOutputKey(
   brick: Brick,
   outputKeys: OutputKey[],
 ): Promise<OutputKey | undefined> {
-  const type = await getType(brick);
+  // In practice, getType will always be able to infer a type. However, if the brick directly extends
+  // BrickABC so there's only a run method (e.g., in test cases), then getType will return null.
+  const type = (await getType(brick)) ?? "transform";
 
   if (!showOutputKey(type)) {
     // Output keys for effects are ignored by the runtime (and generate a warning at runtime)
@@ -64,12 +71,8 @@ export async function generateFreshOutputKey(
     ) as OutputKey;
   }
 
-  if (type === "reader") {
-    return freshIdentifier("data" as SafeString, outputKeys) as OutputKey;
-  }
-
-  if (type === "transform") {
-    return freshIdentifier("output" as SafeString, outputKeys) as OutputKey;
+  if (["reader", "transform"].includes(type)) {
+    return freshIdentifier(DEFAULT_OUTPUT_KEY, outputKeys) as OutputKey;
   }
 
   return freshIdentifier(type as SafeString, outputKeys) as OutputKey;

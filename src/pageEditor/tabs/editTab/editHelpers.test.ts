@@ -19,13 +19,19 @@ import { DocumentRenderer } from "@/bricks/renderers/document";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import { type PipelineExpression } from "@/types/runtimeTypes";
+import { BrickArgs, type PipelineExpression } from "@/types/runtimeTypes";
 import { toExpression } from "@/testUtils/testHelpers";
-import { getPipelineMap } from "./editHelpers";
+import { generateFreshOutputKey, getPipelineMap } from "./editHelpers";
 import {
   brickConfigFactory,
   pipelineFactory,
 } from "@/testUtils/factories/brickFactories";
+import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { BrickABC } from "@/types/brickTypes";
+import { validateRegistryId } from "@/types/helpers";
+import { propertiesToSchema } from "@/validators/generic";
+import { TransformerABC } from "@/types/bricks/transformerTypes";
+import { EffectABC } from "@/types/bricks/effectTypes";
 
 describe("getPipelineMap", () => {
   test("should map plain pipeline", () => {
@@ -136,5 +142,70 @@ describe("getPipelineMap", () => {
       pipelinePath: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.onClick.__value__`,
       parentNodeId: documentBrick.instanceId,
     });
+  });
+});
+
+describe("generateFreshOutputKey", () => {
+  it("should fallback to output if can't infer type", async () => {
+    await expect(generateFreshOutputKey(new EchoBrick(), [])).resolves.toBe(
+      "output",
+    );
+  });
+
+  it("should default to output for transformer", async () => {
+    class TransformerBrick extends TransformerABC {
+      static BLOCK_ID = validateRegistryId("test/transformer");
+      constructor() {
+        super(TransformerBrick.BLOCK_ID, "Transformer Brick");
+      }
+
+      inputSchema = {};
+
+      async transform() {
+        return 42;
+      }
+    }
+
+    await expect(
+      generateFreshOutputKey(new TransformerBrick(), []),
+    ).resolves.toBe("output");
+  });
+
+  it("should use declared key", async () => {
+    class TransformerBrick extends TransformerABC {
+      static BLOCK_ID = validateRegistryId("test/transformer");
+      constructor() {
+        super(TransformerBrick.BLOCK_ID, "Transformer Brick");
+      }
+
+      defaultOutputKey = "foo";
+
+      inputSchema = {};
+
+      async transform() {
+        return 42;
+      }
+    }
+
+    await expect(
+      generateFreshOutputKey(new TransformerBrick(), []),
+    ).resolves.toBe("foo");
+  });
+
+  it("should return undefined for effect", async () => {
+    class EffectBrick extends EffectABC {
+      static BLOCK_ID = validateRegistryId("test/effect");
+      constructor() {
+        super(EffectBrick.BLOCK_ID, "Effect Brick");
+      }
+
+      inputSchema = {};
+
+      async effect() {}
+    }
+
+    await expect(
+      generateFreshOutputKey(new EffectBrick(), []),
+    ).resolves.toBeUndefined();
   });
 });
