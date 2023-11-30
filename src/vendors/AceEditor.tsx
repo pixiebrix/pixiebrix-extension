@@ -22,7 +22,7 @@ const AceEditor = React.lazy(
     import(
       /* webpackChunkName: "ace-editor" */
       "./AceEditorSync"
-    )
+    ),
 );
 
 export default AceEditor;

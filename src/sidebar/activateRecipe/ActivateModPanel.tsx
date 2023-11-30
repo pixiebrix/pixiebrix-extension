@@ -225,12 +225,12 @@ const ActivateRecipePanelContent: React.FC<
 
   const [state, stateDispatch] = useReducer(
     activationSlice.reducer,
-    initialState
+    initialState,
   );
 
   const optionsWizardStep = useMemo(
     () => wizardSteps.find(({ key }) => key === "options"),
-    [wizardSteps]
+    [wizardSteps],
   );
 
   async function handleActivationDecision() {
@@ -242,12 +242,12 @@ const ActivateRecipePanelContent: React.FC<
   async function checkPermissions() {
     const configuredDependencies =
       formValuesRef.current.integrationDependencies.filter(
-        ({ configId }) => !isEmpty(configId)
+        ({ configId }) => !isEmpty(configId),
       );
 
     const { hasPermissions } = await checkModDefinitionPermissions(
       modDefinition,
-      configuredDependencies
+      configuredDependencies,
     );
 
     stateDispatch(setNeedsPermissions(!hasPermissions));
@@ -268,7 +268,7 @@ const ActivateRecipePanelContent: React.FC<
 
     const { success, error } = await marketplaceActivateRecipe(
       formValuesRef.current,
-      modDefinition
+      modDefinition,
     );
 
     if (success) {
@@ -368,7 +368,7 @@ const ActivateRecipePanelContent: React.FC<
 const ActivateModWizardPanel: React.FC<RequiredModDefinition> = (modState) => {
   const wizardState = useActivateRecipeWizard(
     modState.modDefinition,
-    modState.defaultAuthOptions
+    modState.defaultAuthOptions,
   );
   return (
     <AsyncStateGate state={wizardState}>

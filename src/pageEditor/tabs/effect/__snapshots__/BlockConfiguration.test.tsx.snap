@@ -64,6 +64,7 @@ exports[`renders 1`] = `
       class="root"
     >
       <div
+        aria-expanded="false"
         class="header"
         role="button"
         tabindex="0"

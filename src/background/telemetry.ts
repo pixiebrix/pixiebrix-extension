@@ -185,11 +185,11 @@ async function openTelemetryDB() {
       },
       terminated() {
         console.debug(
-          "Telemetry database connection was unexpectedly terminated"
+          "Telemetry database connection was unexpectedly terminated",
         );
         database = null;
       },
-    }
+    },
   );
 
   database.addEventListener("close", () => {
@@ -337,10 +337,10 @@ async function collectUserSummary(): Promise<UserSummary> {
     const { extensions } = await getModComponentState();
     numActiveExtensions = extensions.length;
     numActiveBlueprints = uniq(
-      compact(extensions.map((x) => x._recipe?.id))
+      compact(extensions.map((x) => x._recipe?.id)),
     ).length;
     numActiveExtensionPoints = uniq(
-      extensions.map((x) => x.extensionPointId)
+      extensions.map((x) => x.extensionPointId),
     ).length;
   } catch (error) {
     console.warn("Cannot get number of extensions", { error });

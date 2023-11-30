@@ -35,8 +35,10 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 
 const sortedStarterBricks = sortBy(
   [...ADAPTERS.values()],
-  (x) => x.displayOrder
+  (x) => x.displayOrder,
 );
+
+const TEMPLATE_TELEMETRY_SOURCE = "starter_brick_menu";
 
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
@@ -72,7 +74,7 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
         }
 
         return flagOn(config.flag);
-      })
+      }),
     );
 
     return (
@@ -108,9 +110,10 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
         onClick={() => {
           reportEvent(Events.PAGE_EDITOR_VIEW_TEMPLATES, {
             sessionId,
+            source: TEMPLATE_TELEMETRY_SOURCE,
           });
           navigateTab(thisTab, {
-            url: "https://www.pixiebrix.com/templates-gallery?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=starter_brick_menu",
+            url: `https://www.pixiebrix.com/templates-gallery?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=${TEMPLATE_TELEMETRY_SOURCE}`,
           });
         }}
       >

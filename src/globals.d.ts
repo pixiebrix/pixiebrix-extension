@@ -98,13 +98,13 @@ declare module "@/vendors/page-metadata-parser/parser" {
 
   export type PageMetadataRule = [
     string,
-    (element: HTMLElement) => string | null
+    (element: HTMLElement) => string | null,
   ];
 
   export function getMetadata(
     doc: Document | HTMLElement,
     url: string,
-    customRuleSets?: Record<string, PageMetadataRule>
+    customRuleSets?: Record<string, PageMetadataRule>,
   ): IPageMetadata;
 }
 
@@ -117,9 +117,9 @@ declare module "@/vendors/initialize" {
     callback: (
       this: Element,
       index: number,
-      element: Element
+      element: Element,
     ) => Promisable<void | false>,
-    options: { target: Element | Document; observer?: MutationObserverInit }
+    options: { target: Element | Document; observer?: MutationObserverInit },
   ) => MutationObserver;
 
   export default initialize;
@@ -176,7 +176,7 @@ interface Promise<T> {
     onrejected?:
       | ((reason: unknown) => TResult | PromiseLike<TResult>)
       | undefined
-      | null
+      | null,
   ): Promise<T | TResult>;
 }
 
@@ -204,7 +204,7 @@ interface JSON {
    */
   parse(
     text: string,
-    reviver?: (this: unknown, key: string, value: unknown) => unknown
+    reviver?: (this: unknown, key: string, value: unknown) => unknown,
   ): import("type-fest").JsonValue;
 }
 

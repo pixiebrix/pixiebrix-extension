@@ -43,7 +43,7 @@ import { integrationDependencyFactory } from "@/testUtils/factories/integrationF
 
 function getTabState(
   state: EditorState,
-  tabKey: DataPanelTabKey = DataPanelTabKey.Context
+  tabKey: DataPanelTabKey = DataPanelTabKey.Context,
 ) {
   return state.elementUIStates[state.activeElementId].nodeUIStates[
     FOUNDATION_NODE_ID
@@ -74,7 +74,7 @@ describe("DataPanel state", () => {
   beforeEach(() => {
     state = editorSlice.reducer(
       initialState,
-      actions.selectInstalled(formStateFactory())
+      actions.selectInstalled(formStateFactory()),
     );
   });
 
@@ -84,7 +84,7 @@ describe("DataPanel state", () => {
       actions.setNodeDataPanelTabSearchQuery({
         tabKey: DataPanelTabKey.Context,
         query: "test query",
-      })
+      }),
     );
 
     expect(getTabState(editorState).query).toBe("test query");
@@ -102,22 +102,22 @@ describe("DataPanel state", () => {
       actions.setNodeDataPanelTabExpandedState({
         tabKey: DataPanelTabKey.Context,
         expandedState: nextExpandedState,
-      })
+      }),
     );
 
     expect(getTabState(editorState).treeExpandedState).toEqual(
-      nextExpandedState
+      nextExpandedState,
     );
   });
 
   test("should set the active element", () => {
     const editorState = editorSlice.reducer(
       state,
-      actions.setNodePreviewActiveElement("test-field")
+      actions.setNodePreviewActiveElement("test-field"),
     );
 
     expect(
-      getTabState(editorState, DataPanelTabKey.Preview).activeElement
+      getTabState(editorState, DataPanelTabKey.Preview).activeElement,
     ).toBe("test-field");
   });
 });
@@ -136,7 +136,7 @@ describe("Add/Remove Bricks", () => {
         }),
       ],
     },
-    [brickWithService, standardBrick]
+    [brickWithService, standardBrick],
   );
 
   beforeEach(() => {
@@ -157,12 +157,12 @@ describe("Add/Remove Bricks", () => {
         block: standardBrick,
         pipelinePath: "extension.blockPipeline",
         pipelineIndex: 0,
-      })
+      }),
     );
 
     // Ensure we have one more brick than we started with
     expect(editor.elements[0].extension.blockPipeline).toBeArrayOfSize(
-      initialBricks.length + 1
+      initialBricks.length + 1,
     );
   });
 
@@ -175,15 +175,15 @@ describe("Add/Remove Bricks", () => {
     // Remove the brick with integration dependency
     editor = editorSlice.reducer(
       editor,
-      actions.removeNode(brickWithService.instanceId)
+      actions.removeNode(brickWithService.instanceId),
     );
 
     // Ensure Integration Dependency was removed
     expect(editor.elements[0].extension.blockPipeline).toBeArrayOfSize(
-      initialBricks.length - 1
+      initialBricks.length - 1,
     );
     expect(editor.elements[0].integrationDependencies).toBeArrayOfSize(
-      initialIntegrationDependencies.length - 1
+      initialIntegrationDependencies.length - 1,
     );
   });
 
@@ -196,15 +196,15 @@ describe("Add/Remove Bricks", () => {
     // Remove the brick with service
     editor = editorSlice.reducer(
       editor,
-      actions.removeNode(standardBrick.instanceId)
+      actions.removeNode(standardBrick.instanceId),
     );
 
     // Ensure Service was NOT removed
     expect(editor.elements[0].extension.blockPipeline).toBeArrayOfSize(
-      initialBricks.length - 1
+      initialBricks.length - 1,
     );
     expect(editor.elements[0].integrationDependencies).toBeArrayOfSize(
-      initialIntegrationDependencies.length
+      initialIntegrationDependencies.length,
     );
   });
 
@@ -224,7 +224,7 @@ describe("Add/Remove Bricks", () => {
     const action1 = dispatch.mock.calls[0][0];
     expect(action1).toHaveProperty(
       "type",
-      "editor/cloneActiveExtension/pending"
+      "editor/cloneActiveExtension/pending",
     );
 
     const action2 = dispatch.mock.calls[1][0];
@@ -232,15 +232,15 @@ describe("Add/Remove Bricks", () => {
     expect(action2.payload).toEqual(
       expect.objectContaining({
         uuid: expect.not.stringMatching(source.uuid),
-        label: "Test Extension - copy",
-      })
+        label: "Test Extension (Copy)",
+      }),
     );
     expect(action2.payload).not.toHaveProperty("recipe");
 
     const action3 = dispatch.mock.calls[2][0];
     expect(action3).toHaveProperty(
       "type",
-      "editor/cloneActiveExtension/fulfilled"
+      "editor/cloneActiveExtension/fulfilled",
     );
   });
 });

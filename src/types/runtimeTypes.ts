@@ -122,7 +122,7 @@ export type Expression<
   // pipeline at this time, though.
   TTemplateOrPipeline = string,
   // The type tag (without the !-prefix of the YAML simple tag)
-  TTypeTag extends ExpressionType = ExpressionType
+  TTypeTag extends ExpressionType = ExpressionType,
 > = {
   __type__: TTypeTag;
   __value__: TTemplateOrPipeline;
@@ -134,6 +134,26 @@ export type DeferExpression<TValue = UnknownObject> = Expression<
   TValue,
   "defer"
 >;
+
+/**
+ * A branch in an execution trace.
+ */
+type TraceBranch = {
+  /**
+   * A locally unique key for the branch.
+   *
+   * Generally corresponds to the pipeline argument name for a control-flow brick.
+   *
+   * @example "if", "else", "try", "except", "body"
+   */
+  key: string;
+  /**
+   * The branch counter, e.g., the iteration of a loop.
+   *
+   * Generally should be 0 for non-looping control-flow.
+   */
+  counter: number;
+};
 
 /**
  * The ModComponent run reason.
@@ -230,7 +250,7 @@ export function validateBrickArgsContext(obj: UnknownObject): BrickArgsContext {
  */
 export type BrickArgs<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- brick is responsible for providing shape
-  T extends Record<string, any> = Record<string, any>
+  T extends Record<string, any> = Record<string, any>,
 > = T & {
   _blockArgBrand: never;
 };
@@ -299,7 +319,7 @@ export interface RunMetadata {
 // the inputs using yup/jsonschema, so the types should match what's expected.
 export type BrickOptions<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see comment above
-  TCtxt extends Record<string, any> = Record<string, any>
+  TCtxt extends Record<string, any> = Record<string, any>,
 > = {
   /**
    * The variable context, e.g., @input, @options, service definitions, and any output keys from other bricks
@@ -320,37 +340,39 @@ export type BrickOptions<
 
   /**
    * True if the brick is executing in headless mode.
+   *
+   * @see HeadlessModeError
    */
   headless?: boolean;
 
   /**
    * Callback to run a sub-pipeline.
+   * @param pipeline the pipeline to run
+   * @param branch the branch for tracing. Used to determine order of pipeline runs
+   * @param extraContext additional context to pass to the pipeline, e.g., `@error`
+   * @param root the root element to use for selectors
    * @since 1.6.4
    */
   runPipeline: (
     pipeline: PipelineExpression,
-    // The branch for tracing. Used to determine order of pipeline runs
-    branch: {
-      key: string;
-      counter: number;
-    },
+    branch: TraceBranch,
     extraContext?: UnknownObject,
-    root?: SelectorRoot
+    root?: SelectorRoot,
   ) => Promise<unknown>;
 
   /**
    * Callback to run a renderer pipeline.
+   * @param pipeline the pipeline to run
+   * @param branch the branch for tracing. Used to determine order of pipeline runs
+   * @param extraContext additional context to pass to the pipeline, e.g., `@error`
+   * @param root the root element to use for selectors
    * @since 1.7.13
    */
   runRendererPipeline: (
     pipeline: PipelineExpression,
-    // The branch for tracing. Used to determine order of pipeline runs
-    branch: {
-      key: string;
-      counter: number;
-    },
+    branch: TraceBranch,
     extraContext?: UnknownObject,
-    root?: SelectorRoot
+    root?: SelectorRoot,
   ) => Promise<unknown>; // Should be PanelPayload
 
   /**

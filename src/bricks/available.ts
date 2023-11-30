@@ -24,7 +24,7 @@ import { $safeFind } from "@/utils/domUtils";
 
 export function testMatchPatterns(
   patterns: string[],
-  url: string = document.location.href
+  url: string = document.location.href,
 ): boolean {
   for (const pattern of patterns) {
     try {
@@ -33,7 +33,7 @@ export function testMatchPatterns(
       }
     } catch {
       throw new BusinessError(
-        `Pattern not recognized as valid match pattern: ${pattern}`
+        `Pattern not recognized as valid match pattern: ${pattern}`,
       );
     }
   }
@@ -43,7 +43,7 @@ export function testMatchPatterns(
 
 function testUrlPattern(
   pattern: string | URLPatternInit,
-  url: string = document.location.href
+  url: string = document.location.href,
 ): boolean {
   let compiled;
 
@@ -58,7 +58,7 @@ function testUrlPattern(
           void new URLPattern({ [key]: entry });
         } catch {
           throw new BusinessError(
-            `Pattern for ${key} not recognized as a valid url pattern: ${entry}`
+            `Pattern for ${key} not recognized as a valid url pattern: ${entry}`,
           );
         }
       }
@@ -67,8 +67,8 @@ function testUrlPattern(
     // If pattern is an object, one of the entries should trigger the exception above
     throw new BusinessError(
       `Pattern not recognized as a valid url pattern: ${JSON.stringify(
-        pattern
-      )}`
+        pattern,
+      )}`,
     );
   }
 
@@ -81,7 +81,7 @@ function testSelector(selector: string): boolean {
 
 export async function checkAvailable(
   availability: Availability,
-  url?: string
+  url?: string,
 ): Promise<boolean> {
   const {
     matchPatterns: rawMatchPatterns = [],
@@ -111,7 +111,7 @@ export async function checkAvailable(
       "vs.",
       availability,
       "had result",
-      result
+      result,
     );
   }
 

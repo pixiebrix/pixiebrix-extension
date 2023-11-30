@@ -31,7 +31,7 @@ describe("AsyncStateGate", () => {
     render(
       <AsyncStateGate state={state}>
         {({ data }) => <div>{data}</div>}
-      </AsyncStateGate>
+      </AsyncStateGate>,
     );
 
     expect(screen.getByTestId("loader")).toBeVisible();
@@ -42,7 +42,7 @@ describe("AsyncStateGate", () => {
     render(
       <AsyncStateGate state={state}>
         {({ data }) => <div>{data}</div>}
-      </AsyncStateGate>
+      </AsyncStateGate>,
     );
 
     expect(screen.getByText("foo")).toBeVisible();
@@ -53,7 +53,7 @@ describe("AsyncStateGate", () => {
     render(
       <AsyncStateGate state={state}>
         {({ data }) => <div>{data}</div>}
-      </AsyncStateGate>
+      </AsyncStateGate>,
     );
 
     expect(screen.getByTestId("loader")).toBeVisible();
@@ -65,8 +65,8 @@ describe("AsyncStateGate", () => {
       render(
         <AsyncStateGate state={state}>
           {() => <div>Hello world!</div>}
-        </AsyncStateGate>
-      )
+        </AsyncStateGate>,
+      ),
     ).toThrow("test error");
   });
 
@@ -78,16 +78,16 @@ describe("AsyncStateGate", () => {
         renderError={(props) => <StandardError {...props} />}
       >
         {({ data }) => <div>{data}</div>}
-      </AsyncStateGate>
+      </AsyncStateGate>,
     );
 
     expect(screen.getByText(/error fetching data: test error/i)).toHaveClass(
-      "text-danger"
+      "text-danger",
     );
     expect(
       screen.getByRole("button", {
         name: /try again/i,
-      })
+      }),
     ).toBeVisible();
   });
 });

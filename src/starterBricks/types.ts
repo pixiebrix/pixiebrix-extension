@@ -71,7 +71,7 @@ export interface StarterBrickDefinition {
 }
 
 export interface StarterBrickConfig<
-  T extends StarterBrickDefinition = StarterBrickDefinition
+  T extends StarterBrickDefinition = StarterBrickDefinition,
 > {
   apiVersion?: ApiVersion;
   metadata: Metadata;
@@ -80,7 +80,7 @@ export interface StarterBrickConfig<
 }
 
 export function assertStarterBrickConfig(
-  maybeStarterBrickConfig: unknown
+  maybeStarterBrickConfig: unknown,
 ): asserts maybeStarterBrickConfig is StarterBrickConfig {
   const errorContext = { value: maybeStarterBrickConfig };
 
@@ -94,7 +94,7 @@ export function assertStarterBrickConfig(
   if (config.kind !== "extensionPoint") {
     console.warn("Expected extension point", errorContext);
     throw new TypeError(
-      "Expected kind 'extensionPoint' for StarterBrickConfig"
+      "Expected kind 'extensionPoint' for StarterBrickConfig",
     );
   }
 
@@ -179,17 +179,17 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
    * @see removeModComponent
    */
   protected abstract clearModComponentInterfaceAndEvents(
-    componentIds: UUID[]
+    componentIds: UUID[],
   ): void;
 
   synchronizeModComponents(
-    components: Array<ResolvedModComponent<TConfig>>
+    components: Array<ResolvedModComponent<TConfig>>,
   ): void {
     const before = this.modComponents.map((x) => x.id);
 
     const updatedIds = new Set(components.map((x) => x.id));
     const removed = this.modComponents.filter(
-      (currentComponent) => !updatedIds.has(currentComponent.id)
+      (currentComponent) => !updatedIds.has(currentComponent.id),
     );
     this.clearModComponentInterfaceAndEvents(removed.map((x) => x.id));
 
@@ -206,7 +206,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
 
   removeModComponent(componentId: UUID): void {
     this.synchronizeModComponents(
-      this.modComponents.filter((x) => x.id !== componentId)
+      this.modComponents.filter((x) => x.id !== componentId),
     );
   }
 
@@ -214,7 +214,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     const index = this.modComponents.findIndex((x) => x.id === component.id);
     if (index >= 0) {
       console.warn(
-        `Component ${component.id} already registered for the starter brick ${this.id}`
+        `Component ${component.id} already registered for the starter brick ${this.id}`,
       );
       // Index is guaranteed to be a number, and this.extensions is an array
       // eslint-disable-next-line security/detect-object-injection
@@ -231,7 +231,7 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
   }
 
   abstract getBricks(
-    extension: ResolvedModComponent<TConfig>
+    extension: ResolvedModComponent<TConfig>,
   ): Promise<Brick[]>;
 
   abstract isAvailable(): Promise<boolean>;

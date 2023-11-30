@@ -47,7 +47,7 @@ type RegistryModDefinition = ModDefinition & {
  * Fix hand-crafted mod options from the workshop
  */
 function normalizeModOptions(
-  options?: ModOptionsDefinition
+  options?: ModOptionsDefinition,
 ): ModOptionsDefinition {
   if (options == null) {
     return {
@@ -80,7 +80,7 @@ function fromJS(rawModDefinition: UnnormalizedModDefinition) {
 
 const registry = new BaseRegistry<RegistryId, RegistryModDefinition>(
   ["recipe"],
-  fromJS
+  fromJS,
 );
 
 export default registry;

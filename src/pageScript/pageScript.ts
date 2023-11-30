@@ -74,7 +74,7 @@ declare global {
 if (window[PAGESCRIPT_SYMBOL]) {
   throw new Error(
     // eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
-    `PixieBrix pageScript already installed: ${window[PAGESCRIPT_SYMBOL]}`
+    `PixieBrix pageScript already installed: ${window[PAGESCRIPT_SYMBOL]}`,
   );
 }
 
@@ -90,7 +90,7 @@ function readPathSpec(
   // eslint-disable-next-line @typescript-eslint/ban-types -- object because we need to pass in window
   obj: object,
   pathSpec?: PathSpec,
-  proxy: ReadProxy = noopProxy
+  proxy: ReadProxy = noopProxy,
 ) {
   const { toJS = noopProxy.toJS, get = noopProxy.get } = proxy;
 
@@ -100,7 +100,7 @@ function readPathSpec(
 
   if (Array.isArray(pathSpec) || typeof pathSpec === "string") {
     return Object.fromEntries(
-      castArray(pathSpec).map((prop) => [prop, toJS(get(obj, prop))])
+      castArray(pathSpec).map((prop) => [prop, toJS(get(obj, prop))]),
     );
   }
 
@@ -143,13 +143,13 @@ attachListener(
     };
 
     return awaitValue(factory, { waitMillis }) as SerializableResponse;
-  }
+  },
 );
 
 async function read<TComponent>(
   adapter: ReadableComponentAdapter<TComponent>,
   selector: string,
-  options: ReadOptions
+  options: ReadOptions,
 ) {
   const {
     pathSpec,
@@ -187,7 +187,7 @@ async function read<TComponent>(
   } catch (error) {
     if (error instanceof TimeoutError) {
       console.warn(
-        `Could not find framework component for selector ${selector} in ${waitMillis}ms`
+        `Could not find framework component for selector ${selector} in ${waitMillis}ms`,
       );
       return {};
     }
@@ -202,7 +202,7 @@ async function read<TComponent>(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, security/detect-object-injection
     rootProp ? (rawData as any)[rootProp] : rawData,
     pathSpec,
-    adapter.proxy
+    adapter.proxy,
   );
 
   // If (process.env.DEBUG) {
@@ -237,7 +237,7 @@ attachListener(
     }
 
     return read(adapter, selector, options) as SerializableResponse;
-  }
+  },
 );
 
 attachListener(
@@ -256,7 +256,7 @@ attachListener(
     const element = findSingleElement(selector);
     const component = adapter.getComponent(element);
     adapter.setData(component, valueMap);
-  }
+  },
 );
 
 attachListener(
@@ -266,7 +266,7 @@ attachListener(
     const info = await elementInfo(element, [selector], 0);
     console.debug("Element info", { element, selector, info });
     return info;
-  }
+  },
 );
 
 attachListener(
@@ -274,7 +274,7 @@ attachListener(
   async ({ selector, value }: { selector: string; value: string }) => {
     const element = findSingleElement(selector);
     setCKEditorData(element, value);
-  }
+  },
 );
 
 console.debug(`DISPATCH: ${SCRIPT_LOADED} (Injected Script Run)`);

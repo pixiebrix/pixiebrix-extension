@@ -37,7 +37,7 @@ function useAddElement(): AddElement {
   const dispatch = useDispatch();
   const { flagOff } = useFlags();
   const suggestElements = useSelector<{ settings: SettingsState }, boolean>(
-    (x) => x.settings.suggestElements
+    (x) => x.settings.suggestElements,
   );
 
   return useCallback(
@@ -57,7 +57,7 @@ function useAddElement(): AddElement {
       try {
         const element = await config.selectNativeElement(
           thisTab,
-          suggestElements
+          suggestElements,
         );
         const url = await getCurrentURL();
 
@@ -67,7 +67,7 @@ function useAddElement(): AddElement {
 
         await updateDynamicElement(
           thisTab,
-          config.asDynamicElement(initialState)
+          config.asDynamicElement(initialState),
         );
 
         dispatch(actions.addElement(initialState as ModComponentFormState));
@@ -89,7 +89,7 @@ function useAddElement(): AddElement {
         dispatch(actions.toggleInsert(null));
       }
     },
-    [dispatch, flagOff, suggestElements]
+    [dispatch, flagOff, suggestElements],
   );
 }
 

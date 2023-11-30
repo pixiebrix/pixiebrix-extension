@@ -40,7 +40,7 @@ export async function deleteDatabase(databaseName: string): Promise<void> {
 export function isIDBConnectionError(error: unknown): boolean {
   const message = getErrorMessage(error);
   return connectionErrors.some((connectionError) =>
-    message.includes(connectionError)
+    message.includes(connectionError),
   );
 }
 

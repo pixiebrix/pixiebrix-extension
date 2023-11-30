@@ -21,7 +21,7 @@ import { isVarExpression } from "@/utils/expressionUtils";
 
 export function getOptionsArgForFieldValue(
   fieldValue: string | Expression,
-  optionsArgs: OptionsArgs
+  optionsArgs: OptionsArgs,
 ): string | null {
   if (
     isEmpty(optionsArgs) ||

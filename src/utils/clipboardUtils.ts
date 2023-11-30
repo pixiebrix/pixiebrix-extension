@@ -51,7 +51,7 @@ function isPermissionError(error: unknown): boolean {
  */
 async function interactiveWriteToClipboard(
   clipboardFn: () => Promise<void>,
-  { type }: { type: "text" | "image" }
+  { type }: { type: "text" | "image" },
 ): Promise<void> {
   try {
     await clipboardFn();
@@ -74,8 +74,8 @@ async function interactiveWriteToClipboard(
           if (isDocumentFocusError(error)) {
             copyPromise.reject(
               new BusinessError(
-                "Your Browser was unable to determine the user action that initiated the clipboard write."
-              )
+                "Your Browser was unable to determine the user action that initiated the clipboard write.",
+              ),
             );
             return;
           }
@@ -108,7 +108,7 @@ export async function writeTextToClipboard(text: string): Promise<void> {
       async () => navigator.clipboard.writeText(text),
       {
         type: "text",
-      }
+      },
     );
   } catch (error) {
     if (isPermissionError(error)) {
@@ -131,6 +131,6 @@ export async function writeToClipboard(items: ClipboardItems): Promise<void> {
     async () => navigator.clipboard.write(items),
     {
       type: "image",
-    }
+    },
   );
 }

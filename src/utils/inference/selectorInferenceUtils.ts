@@ -30,6 +30,6 @@
 export function getAttributeSelectorRegex(...attributes: string[]): RegExp {
   // eslint-disable-next-line security/detect-non-literal-regexp -- Not user-provided
   return new RegExp(
-    attributes.map((attribute) => `^\\[${attribute}(=|]$)`).join("|")
+    attributes.map((attribute) => `^\\[${attribute}(=|]$)`).join("|"),
   );
 }

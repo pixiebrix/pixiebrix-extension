@@ -51,7 +51,7 @@ import {
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
-import Logo from "./Logo";
+import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
 import AddStarterBrickButton from "./AddStarterBrickButton";
 import ExtensionEntry from "./ExtensionEntry";
@@ -79,7 +79,7 @@ const SidebarExpanded: React.FunctionComponent<{
   const installed = useSelector(selectNotDeletedExtensions);
   const elements = useSelector(selectNotDeletedElements);
   const { availableInstalledIds, availableDynamicIds } = useSelector(
-    selectExtensionAvailability
+    selectExtensionAvailability,
   );
 
   const recipes = useMemo(() => {
@@ -87,8 +87,8 @@ const SidebarExpanded: React.FunctionComponent<{
     return (
       allRecipes?.filter((recipe) =>
         installedAndElements.some(
-          (element) => getRecipeIdForElement(element) === recipe.metadata.id
-        )
+          (element) => getRecipeIdForElement(element) === recipe.metadata.id,
+        ),
       ) ?? []
     );
   }, [allRecipes, elements, installed]);
@@ -109,14 +109,14 @@ const SidebarExpanded: React.FunctionComponent<{
     sortBy(
       elements.map(
         (formState) =>
-          `${formState.uuid}-${formState.label}-${formState.recipe?.id ?? ""}`
-      )
-    )
+          `${formState.uuid}-${formState.label}-${formState.recipe?.id ?? ""}`,
+      ),
+    ),
   );
   const recipeHash = hash(
     recipes
       ? recipes.map((recipe) => `${recipe.metadata.id}-${recipe.metadata.name}`)
-      : ""
+      : "",
   );
   const sortedElements = useMemo(
     () =>
@@ -136,7 +136,7 @@ const SidebarExpanded: React.FunctionComponent<{
       activeElementId,
       activeRecipeId,
       debouncedQuery,
-    ]
+    ],
   );
 
   const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
@@ -153,8 +153,8 @@ const SidebarExpanded: React.FunctionComponent<{
           ? // If there's no extensions in the Blueprint (empty Blueprint?), use the Blueprint's version
             recipe?.metadata?.version
           : isModComponentBase(firstElement)
-          ? firstElement._recipe.version
-          : firstElement.recipe.version;
+            ? firstElement._recipe.version
+            : firstElement.recipe.version;
 
       return (
         <RecipeEntry
@@ -206,13 +206,7 @@ const SidebarExpanded: React.FunctionComponent<{
       <div className={styles.header}>
         <div className={styles.actions}>
           <div className={styles.actionsLeft}>
-            <a
-              href="/options.html"
-              target="_blank"
-              title="Open PixieBrix Options"
-            >
-              <Logo />
-            </a>
+            <HomeButton />
 
             <AddStarterBrickButton />
 

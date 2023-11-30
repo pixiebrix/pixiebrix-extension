@@ -62,7 +62,7 @@ class CollectEventNamesVisitor extends PipelineVisitor {
   }
 
   private visitStarterBrick(
-    extensionPoint: ModComponentFormState["extensionPoint"]
+    extensionPoint: ModComponentFormState["extensionPoint"],
   ) {
     if (isTriggerExtensionPoint(extensionPoint)) {
       const eventName = extensionPoint.definition.customEvent?.eventName;
@@ -76,7 +76,7 @@ class CollectEventNamesVisitor extends PipelineVisitor {
   override visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
-    extra: VisitBlockExtra
+    extra: VisitBlockExtra,
   ): void {
     super.visitBrick(position, blockConfig, extra);
 
@@ -94,7 +94,7 @@ class CollectEventNamesVisitor extends PipelineVisitor {
   }
 
   static collectNames(
-    formState: ModComponentFormState
+    formState: ModComponentFormState,
   ): EventNameAnalysisResult {
     const visitor = new CollectEventNamesVisitor();
 

@@ -24,7 +24,7 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 describe("getUnconfiguredComponentIntegrations", () => {
   it("returns empty if no integrations", () => {
     expect(
-      getUnconfiguredComponentIntegrations({ extensionPoints: [] })
+      getUnconfiguredComponentIntegrations({ extensionPoints: [] }),
     ).toStrictEqual([]);
   });
 
@@ -55,7 +55,7 @@ describe("getUnconfiguredComponentIntegrations", () => {
     expect(
       getUnconfiguredComponentIntegrations({
         extensionPoints: [modComponentDefinition1, modComponentDefinition2],
-      })
+      }),
     ).toEqual([
       {
         integrationId: serviceId1,
@@ -109,7 +109,7 @@ describe("getUnconfiguredComponentIntegrations", () => {
     expect(
       getUnconfiguredComponentIntegrations({
         extensionPoints: [modComponentDefinition1, modComponentDefinition2],
-      })
+      }),
     ).toEqual(
       expect.arrayContaining([
         {
@@ -124,7 +124,7 @@ describe("getUnconfiguredComponentIntegrations", () => {
           isOptional: false,
           apiVersion: "v2",
         },
-      ])
+      ]),
     );
   });
 
@@ -155,7 +155,7 @@ describe("getUnconfiguredComponentIntegrations", () => {
     expect(
       getUnconfiguredComponentIntegrations({
         extensionPoints: [modComponentDefinition1, modComponentDefinition2],
-      })
+      }),
     ).toEqual(
       expect.arrayContaining([
         {
@@ -170,7 +170,7 @@ describe("getUnconfiguredComponentIntegrations", () => {
           isOptional: true,
           apiVersion: "v2",
         },
-      ])
+      ]),
     );
   });
 });

@@ -36,7 +36,7 @@ function useReinstall(): Reinstall {
     async (modDefinition: ModDefinition) => {
       const modId = modDefinition.metadata.id;
       const modComponents = allComponents.filter(
-        (x) => x._recipe?.id === modId
+        (x) => x._recipe?.id === modId,
       );
 
       if (modComponents.length === 0) {
@@ -57,10 +57,10 @@ function useReinstall(): Reinstall {
           optionsArgs: currentOptions,
           screen: "extensionConsole",
           isReinstall: true,
-        })
+        }),
       );
     },
-    [allComponents, dispatch]
+    [allComponents, dispatch],
   );
 }
 

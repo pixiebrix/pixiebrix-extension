@@ -104,7 +104,7 @@ function hasTextNodeChild(element: Element): boolean {
 
 function commonAttribute(items: Element[], attribute: string) {
   const attributeValues = items.map(
-    (x) => x.attributes.getNamedItem(attribute)?.value
+    (x) => x.attributes.getNamedItem(attribute)?.value,
   );
 
   let unfiltered: string[];
@@ -123,7 +123,7 @@ function commonAttribute(items: Element[], attribute: string) {
   const exclude = TEMPLATE_VALUE_EXCLUDE_PATTERNS.get(attribute) ?? [];
 
   const filtered = unfiltered.filter(
-    (value) => !matchesAnyPattern(value, exclude)
+    (value) => !matchesAnyPattern(value, exclude),
   );
 
   return filtered.length > 0 ? filtered.join(" ") : null;
@@ -146,7 +146,7 @@ function setCommonAttributes(common: Element, items: Element[]) {
           .some((value) => matchesAnyPattern(value, ATTR_SKIP_ELEMENT_PATTERNS))
       ) {
         throw new SkipElement(
-          "Attribute value contains value in the skip list"
+          "Attribute value contains value in the skip list",
         );
       }
 
@@ -170,7 +170,7 @@ function removeUnstyledLayout(node: Node): Node | null {
   if (node.nodeType === Node.ELEMENT_NODE) {
     const element = node as HTMLElement;
     const nonEmptyChildren = [...node.childNodes].filter(
-      (x) => !ignoreDivChildNode(x)
+      (x) => !ignoreDivChildNode(x),
     );
     if (
       // This is a bit of a hack - the DIV element may impact layout because it's a block element
@@ -203,7 +203,7 @@ function removeUnstyledLayout(node: Node): Node | null {
  */
 function commonButtonStructure(
   items: Element[],
-  captioned = false
+  captioned = false,
 ): [Element | string, boolean] {
   let currentCaptioned = captioned;
 
@@ -250,12 +250,12 @@ function commonButtonStructure(
       uniq(items.map((x) => x.children.item(elementIndex).tagName)).length === 1
     ) {
       const children = items.map((element) =>
-        element.children.item(elementIndex)
+        element.children.item(elementIndex),
       );
 
       const [child, childCaptioned] = commonButtonStructure(
         children,
-        currentCaptioned
+        currentCaptioned,
       );
       common.append(child);
       currentCaptioned ||= childCaptioned;
@@ -297,7 +297,7 @@ function commonPanelStructure(
     inHeader = false,
     headingInserted = false,
     bodyInserted = false,
-  }: PanelStructureState = {} as PanelStructureState
+  }: PanelStructureState = {} as PanelStructureState,
 ): [Element | string, PanelStructureState] {
   const proto = $items.get(0);
   inHeader = inHeader || HEADER_TAGS.includes(proto.tagName.toLowerCase());
@@ -409,7 +409,7 @@ function buildBody(proto: HTMLElement): [Element | string, boolean] {
 
 function buildSinglePanelElement(
   proto: HTMLElement,
-  { headingInserted = false }: PanelStructureState = {} as PanelStructureState
+  { headingInserted = false }: PanelStructureState = {} as PanelStructureState,
 ): [Element, PanelStructureState] {
   let bodyInserted = false;
 
@@ -469,7 +469,7 @@ function commonPanelHTML(tag: string, $items: JQuery): string {
 
 function inferSinglePanelHTML(
   container: HTMLElement,
-  selected: HTMLElement
+  selected: HTMLElement,
 ): string {
   const $container = $(container);
   const child = containerChildren($container, [selected])[0];
@@ -479,7 +479,7 @@ function inferSinglePanelHTML(
 
 export function inferPanelHTML(
   container: HTMLElement,
-  selected: HTMLElement[]
+  selected: HTMLElement[],
 ): string {
   const $container = $(container);
 
@@ -493,13 +493,13 @@ export function inferPanelHTML(
 
 export function inferButtonHTML(
   container: HTMLElement,
-  selected: HTMLElement[]
+  selected: HTMLElement[],
 ): string {
   const $container = $(container);
 
   if (selected.length === 0) {
     throw new BusinessError(
-      "One or more prototype button-like elements required"
+      "One or more prototype button-like elements required",
     );
   }
 
@@ -530,7 +530,7 @@ export function inferButtonHTML(
   }
 
   throw new BusinessError(
-    `Did not find any button-like tags in container ${container.tagName}`
+    `Did not find any button-like tags in container ${container.tagName}`,
   );
 }
 
@@ -541,7 +541,7 @@ export function inferButtonHTML(
  */
 function containerChildren(
   $container: JQuery,
-  selected: HTMLElement[]
+  selected: HTMLElement[],
 ): HTMLElement[] {
   return selected.map((element) => {
     const exactMatch = $container.children().filter(function () {

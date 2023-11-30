@@ -33,7 +33,7 @@ describe("ExtraPermissionsSection", () => {
           origins: [],
           permissions: [],
         }),
-      }).asFragment()
+      }).asFragment(),
     ).toMatchSnapshot();
   });
 
@@ -46,7 +46,7 @@ describe("ExtraPermissionsSection", () => {
           ],
           permissions: [],
         }),
-      }).asFragment()
+      }).asFragment(),
     ).toMatchSnapshot();
   });
 });

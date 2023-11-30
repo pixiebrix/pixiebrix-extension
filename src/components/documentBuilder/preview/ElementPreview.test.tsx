@@ -42,7 +42,7 @@ window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
 const renderElementPreview = (
   element: DocumentElement,
-  elementPreviewProps?: Partial<ElementPreviewProps>
+  elementPreviewProps?: Partial<ElementPreviewProps>,
 ) => {
   const props: ElementPreviewProps = {
     documentBodyName: "",
@@ -74,8 +74,8 @@ const renderElementPreview = (
       dispatch(actions.selectElement(formState.uuid));
       dispatch(
         actions.setElementActiveNodeId(
-          formState.extension.blockPipeline[0].instanceId
-        )
+          formState.extension.blockPipeline[0].instanceId,
+        ),
       );
       dispatch(actions.setNodePreviewActiveElement("0"));
     },
@@ -159,8 +159,8 @@ test("adds a CSS class to a hovered element", async () => {
 
 test.each(
   DOCUMENT_ELEMENT_TYPES.filter(
-    (x) => !["header_1", "header_2", "header_3"].includes(x)
-  )
+    (x) => !["header_1", "header_2", "header_3"].includes(x),
+  ),
 )("can preview default %s", (elementType: DocumentElementType) => {
   const element = createNewElement(elementType);
   const { asFragment } = renderElementPreview(element);

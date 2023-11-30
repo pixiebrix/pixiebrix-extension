@@ -19,7 +19,9 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
 import React, { useCallback, useState } from "react";
 import { validateRegistryId } from "@/types/helpers";
-import FormEditor from "@/components/formBuilder/edit/FormEditor";
+import FormEditor, {
+  FormIntroFields,
+} from "@/components/formBuilder/edit/FormEditor";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
@@ -39,6 +41,8 @@ import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import databaseSchema from "@schemas/database.json";
 import { joinName } from "@/utils/formUtils";
 import useAsyncEffect from "use-async-effect";
+import PipelineToggleField from "@/pageEditor/fields/PipelineToggleField";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
@@ -68,36 +72,21 @@ type StringOption = {
 };
 
 const storageTypeOptions: Options<StringOption> = [
-  { value: "state", label: "Page State" },
+  { value: "state", label: "Mod Variables / Page State" },
   { value: "database", label: "Database" },
   { value: "localStorage", label: "Local Storage (Deprecated)" },
 ];
 
 const DEFAULT_STORAGE_TYPE = "state";
 
-const FormRendererOptions: React.FC<{
-  name: string;
-  configKey: string;
-}> = ({ name, configKey }) => {
-  const makeName = partial(joinName, name, configKey);
-  const configName = makeName();
-
+const FormDataBindingOptions: React.FC<{
+  makeName: (...names: string[]) => string;
+}> = ({ makeName }) => {
   const pruneDependencies = usePruneUnusedServiceDependencies();
 
-  const [activeElement, setActiveElement] = useReduxState(
-    selectNodePreviewActiveElement,
-    editorActions.setNodePreviewActiveElement
-  );
-
-  const [{ value: autoSave }] = useField<boolean>(makeName("autoSave"));
-  const hideSubmitButtonName = makeName(
-    "uiSchema",
-    "ui:submitButtonOptions",
-    "norender"
-  );
-  const [{ value: hideSubmitButton }] = useField<boolean>(hideSubmitButtonName);
   const [{ value: storage }, , { setValue: setStorageValue }] =
     useField<Storage>(makeName("storage"));
+
   const storageType = storage?.type;
 
   // Sets the storage type and clears out any other values the user might have configured
@@ -134,10 +123,10 @@ const FormRendererOptions: React.FC<{
   }, [storageType, changeStorageType]);
 
   return (
-    <div>
+    <>
       <FieldTemplate
         name={makeName("storage", "type")}
-        label="Storage Location"
+        label="Data Location"
         description="The location to submit/store the form data"
         as={Select}
         options={storageTypeOptions}
@@ -164,7 +153,7 @@ const FormRendererOptions: React.FC<{
       {storageType === "state" && (
         <SchemaField
           name={makeName("storage", "namespace")}
-          label="State Namespace"
+          label="Namespace"
           isRequired
           schema={
             customFormRendererSchema.properties.storage.oneOf[1].properties
@@ -181,10 +170,26 @@ const FormRendererOptions: React.FC<{
           isRequired
         />
       )}
+    </>
+  );
+};
 
+const FormSubmissionOptions: React.FC<{
+  makeName: (...names: string[]) => string;
+}> = ({ makeName }) => {
+  const [{ value: autoSave }] = useField<boolean>(makeName("autoSave"));
+  const hideSubmitButtonName = makeName(
+    "uiSchema",
+    "ui:submitButtonOptions",
+    "norender",
+  );
+  const [{ value: hideSubmitButton }] = useField<boolean>(hideSubmitButtonName);
+
+  return (
+    <>
       <SchemaField
         name={makeName("autoSave")}
-        label="Auto Save"
+        label="Auto Save/Submit"
         schema={customFormRendererSchema.properties.autoSave as Schema}
       />
 
@@ -204,7 +209,7 @@ const FormRendererOptions: React.FC<{
           {!hideSubmitButton && (
             <SchemaField
               name={makeName("submitCaption")}
-              label="Submit Caption"
+              label="Submit Button Caption"
               schema={
                 customFormRendererSchema.properties.submitCaption as Schema
               }
@@ -219,9 +224,51 @@ const FormRendererOptions: React.FC<{
         schema={customFormRendererSchema.properties.successMessage as Schema}
       />
 
+      <PipelineToggleField
+        label="Custom Submit Handler"
+        description="Toggle on to run custom actions before the data is saved. Edit the actions in the Brick Actions Panel"
+        name={makeName("onSubmit")}
+      />
+    </>
+  );
+};
+
+const FormRendererOptions: React.FC<{
+  name: string;
+  configKey: string;
+}> = ({ name, configKey }) => {
+  const makeName = partial(joinName, name, configKey);
+  const configName = makeName();
+
+  const [activeElement, setActiveElement] = useReduxState(
+    selectNodePreviewActiveElement,
+    editorActions.setNodePreviewActiveElement,
+  );
+
+  return (
+    <div>
+      <ConnectedCollapsibleFieldSection
+        title="Form Title/Description"
+        initialExpanded
+      >
+        <FormIntroFields name={configName} />
+      </ConnectedCollapsibleFieldSection>
+
+      <ConnectedCollapsibleFieldSection title="Data Binding" initialExpanded>
+        <FormDataBindingOptions makeName={makeName} />
+      </ConnectedCollapsibleFieldSection>
+
+      <ConnectedCollapsibleFieldSection title="Form Submission" initialExpanded>
+        <FormSubmissionOptions makeName={makeName} />
+      </ConnectedCollapsibleFieldSection>
+
+      <hr />
+
       <ConfigErrorBoundary>
         <FormEditor
           name={configName}
+          // Showing the section above manually
+          showFormIntroFields={false}
           activeField={activeElement}
           setActiveField={setActiveElement}
           fieldTypes={FORM_FIELD_TYPE_OPTIONS}

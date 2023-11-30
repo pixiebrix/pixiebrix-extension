@@ -89,7 +89,7 @@ const { actions: optionsActions } = extensionsSlice;
 
 function selectRecipeMetadata(
   unsavedRecipe: UnsavedModDefinition,
-  response: PackageUpsertResponse
+  response: PackageUpsertResponse,
 ): ModComponentBase["_recipe"] {
   return {
     ...unsavedRecipe.metadata,
@@ -161,7 +161,7 @@ function useSaveCallbacks({
               shouldShowConfirmation: false,
             });
           }
-        }
+        },
       ),
     [
       activeElement,
@@ -170,7 +170,7 @@ function useSaveCallbacks({
       dispatch,
       keepLocalCopy,
       removeExtension,
-    ]
+    ],
   );
 
   const createRecipeFromRecipe = useCallback(
@@ -179,22 +179,22 @@ function useSaveCallbacks({
       // eslint-disable-next-line security/detect-object-injection -- recipeId
       const deletedElements = deletedElementsByRecipeId[recipeId] ?? [];
       const deletedElementIds = new Set(
-        deletedElements.map(({ uuid }) => uuid)
+        deletedElements.map(({ uuid }) => uuid),
       );
 
       const dirtyRecipeElements = editorFormElements.filter(
         (element) =>
           element.recipe?.id === recipeId &&
           isDirtyByElementId[element.uuid] &&
-          !deletedElementIds.has(element.uuid)
+          !deletedElementIds.has(element.uuid),
       );
       const cleanRecipeExtensions = installedExtensions.filter(
         (extension) =>
           extension._recipe?.id === recipeId &&
           !dirtyRecipeElements.some(
-            (element) => element.uuid === extension.id
+            (element) => element.uuid === extension.id,
           ) &&
-          !deletedElementIds.has(extension.id)
+          !deletedElementIds.has(extension.id),
       );
       // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
       const options = dirtyRecipeOptions[recipeId];
@@ -235,7 +235,7 @@ function useSaveCallbacks({
           optionsArgs: inferRecipeOptions(modComponents),
           screen: "pageEditor",
           isReinstall: false,
-        })
+        }),
       );
 
       dispatch(
@@ -244,7 +244,7 @@ function useSaveCallbacks({
           newRecipeId: savedRecipe.metadata.id,
           metadata,
           options,
-        })
+        }),
       );
     },
     [
@@ -257,7 +257,7 @@ function useSaveCallbacks({
       isDirtyByElementId,
       keepLocalCopy,
       removeRecipe,
-    ]
+    ],
   );
 
   return {
@@ -278,7 +278,7 @@ function useInitialFormState({
   const activeRecipeId =
     activeElement?.recipe?.id ?? activeRecipe?.metadata?.id;
   const dirtyMetadata = useSelector(
-    selectDirtyMetadataForRecipeId(activeRecipeId)
+    selectDirtyMetadataForRecipeId(activeRecipeId),
   );
   const recipeMetadata = dirtyMetadata ?? activeRecipe?.metadata;
 
@@ -292,7 +292,7 @@ function useInitialFormState({
 
     return {
       id: newId,
-      name: recipeMetadata.name,
+      name: `${recipeMetadata.name} (Copy)`,
       version: validateSemVerString("1.0.0"),
       description: recipeMetadata.description,
     };
@@ -315,7 +315,7 @@ function useFormSchema() {
   const newRecipeIds = useSelector(selectNewRecipeIds);
   const { data: recipes } = useAllModDefinitions();
   const savedRecipeIds: RegistryId[] = (recipes ?? []).map(
-    (x) => x.metadata.id
+    (x) => x.metadata.id,
   );
   const allRecipeIds = [...newRecipeIds, ...savedRecipeIds];
 
@@ -325,7 +325,7 @@ function useFormSchema() {
     id: string()
       .matches(
         PACKAGE_REGEX,
-        "Mod ID is required, and may only include lowercase letters, numbers, and the symbols - _ ~"
+        "Mod ID is required, and may only include lowercase letters, numbers, and the symbols - _ ~",
       )
       .notOneOf(allRecipeIds, "Mod ID is already in use")
       .required("Mod ID is required"),
@@ -334,7 +334,7 @@ function useFormSchema() {
       .test(
         "semver",
         "Version must follow the X.Y.Z semantic version format, without a leading 'v'",
-        (value: string) => testIsSemVerString(value, { allowLeadingV: false })
+        (value: string) => testIsSemVerString(value, { allowLeadingV: false }),
       )
       .required(),
     description: string(),
@@ -460,7 +460,7 @@ const CreateRecipeModalBody: React.FC = () => {
 
 const CreateRecipeModal: React.FunctionComponent = () => {
   const { isCreateRecipeModalVisible: show } = useSelector(
-    selectEditorModalVisibilities
+    selectEditorModalVisibilities,
   );
 
   const dispatch = useDispatch();

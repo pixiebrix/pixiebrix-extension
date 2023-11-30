@@ -64,7 +64,7 @@ let savingDeferred: DeferredPromise<void>;
 
 export function selectRecipeMetadata(
   unsavedRecipe: UnsavedModDefinition,
-  response: PackageUpsertResponse
+  response: PackageUpsertResponse,
 ): ModComponentBase["_recipe"] {
   return {
     ...unsavedRecipe.metadata,
@@ -97,7 +97,7 @@ const useSavingWizard = () => {
       const recipe = recipes.find((x) => x.metadata.id === element.recipe.id);
       if (!recipe) {
         notify.error(
-          "You no longer have edit permissions for the mod. Please reload the Page Editor."
+          "You no longer have edit permissions for the mod. Please reload the Page Editor.",
         );
         return;
       }
@@ -169,7 +169,7 @@ const useSavingWizard = () => {
    * 3. Saves the changes of the element.
    */
   const saveElementAndCreateNewRecipe = async (
-    recipeMeta: RecipeConfiguration
+    recipeMeta: RecipeConfiguration,
   ) => {
     dispatch(savingExtensionActions.setSavingInProgress());
 
@@ -190,7 +190,7 @@ const useSavingWizard = () => {
       recipe,
       newMeta,
       extensions,
-      element
+      element,
     );
 
     const createRecipeResponse = await createRecipe({
@@ -231,7 +231,7 @@ const useSavingWizard = () => {
       recipe.metadata.id,
       selectRecipeMetadata(newRecipe, createRecipeResponse.data),
       // Unlink the installed extensions from the deployment
-      { _deployment: null as ModComponentBase["_deployment"] }
+      { _deployment: null as ModComponentBase["_deployment"] },
     );
 
     closeWizard(createExtensionError);
@@ -243,7 +243,7 @@ const useSavingWizard = () => {
    * 3. Saves the changes of the element
    */
   const saveElementAndUpdateRecipe = async (
-    recipeMeta: RecipeConfiguration
+    recipeMeta: RecipeConfiguration,
   ) => {
     dispatch(savingExtensionActions.setSavingInProgress());
 
@@ -254,12 +254,12 @@ const useSavingWizard = () => {
       recipe,
       recipeMeta,
       extensions,
-      element
+      element,
     );
 
     const packageId = editablePackages.find(
       // Bricks endpoint uses "name" instead of id
-      (x) => x.name === newRecipe.metadata.id
+      (x) => x.name === newRecipe.metadata.id,
     )?.id;
 
     const updateRecipeResponse = await updateRecipe({
@@ -294,7 +294,7 @@ const useSavingWizard = () => {
 
     updateExtensionRecipeLinks(
       recipe.metadata.id,
-      selectRecipeMetadata(newRecipe, updateRecipeResponse.data)
+      selectRecipeMetadata(newRecipe, updateRecipeResponse.data),
     );
 
     closeWizard(error);
@@ -303,11 +303,11 @@ const useSavingWizard = () => {
   function updateExtensionRecipeLinks(
     recipeId: RegistryId,
     recipeMetadata: ModComponentBase["_recipe"],
-    extraUpdate: Partial<ActivatedModComponent> = {}
+    extraUpdate: Partial<ActivatedModComponent> = {},
   ) {
     // 1) Update the extensions in the Redux optionsSlice
     const recipeExtensions = extensions.filter(
-      (x) => x._recipe?.id === recipeId
+      (x) => x._recipe?.id === recipeId,
     );
 
     for (const recipeExtension of recipeExtensions) {

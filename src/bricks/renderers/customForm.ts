@@ -24,21 +24,29 @@ import notify from "@/utils/notify";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
-import { isEmpty, set } from "lodash";
+import { isEmpty, isPlainObject, set } from "lodash";
 import { getTopLevelFrame } from "webext-messenger";
 import { type UUID } from "@/types/stringTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { type Schema, type UiSchema } from "@/types/schemaTypes";
+import {
+  type Schema,
+  SCHEMA_ALLOW_ANY,
+  type UiSchema,
+} from "@/types/schemaTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {
   type BrickArgs,
   type BrickOptions,
   type ComponentRef,
+  type PipelineExpression,
 } from "@/types/runtimeTypes";
 import { RendererABC } from "@/types/bricks/rendererTypes";
 import { namespaceOptions } from "@/bricks/effects/pageState";
 import { ensureJsonObject, isObject } from "@/utils/objectUtils";
+import { getOutputReference, validateOutputKey } from "@/runtime/runtimeTypes";
+import { type BrickConfig } from "@/bricks/types";
+import { isExpression } from "@/utils/expressionUtils";
 
 interface DatabaseResult {
   success: boolean;
@@ -133,6 +141,10 @@ export const customFormRendererSchema = {
       description: "The submit button caption (default='Submit')",
       default: "Submit",
     },
+    onSubmit: {
+      $ref: "https://app.pixiebrix.com/schemas/pipeline#",
+      description: "Action to perform when the form is submitted",
+    },
     successMessage: {
       type: "string",
       default: "Successfully submitted form",
@@ -163,11 +175,14 @@ export const customFormRendererSchema = {
 
 export class CustomFormRenderer extends RendererABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/form");
+
+  static ON_SUBMIT_VARIABLE_NAME = validateOutputKey("values");
+
   constructor() {
     super(
       CustomFormRenderer.BLOCK_ID,
       "Custom Form",
-      "Show a custom form connected to a data source"
+      "Show a custom form connected to a data source",
     );
   }
 
@@ -175,6 +190,24 @@ export class CustomFormRenderer extends RendererABC {
 
   override async isPageStateAware(): Promise<boolean> {
     return true;
+  }
+
+  override getPipelineVariableSchema(
+    _config: BrickConfig,
+    pipelineName: string,
+  ): Schema | undefined {
+    if (pipelineName === "onSubmit") {
+      if (
+        isPlainObject(_config.config.schema) &&
+        !isExpression(_config.config.schema)
+      ) {
+        return _config.config.schema;
+      }
+
+      return SCHEMA_ALLOW_ANY;
+    }
+
+    return super.getPipelineVariableSchema(_config, pipelineName);
   }
 
   async render(
@@ -187,17 +220,19 @@ export class CustomFormRenderer extends RendererABC {
       successMessage,
       submitCaption = "Submit",
       className,
+      onSubmit,
     }: BrickArgs<{
       storage?: Storage;
-      successMessage?: string;
       recordId?: string | null;
-      autoSave?: boolean;
-      submitCaption?: string;
       schema: Schema;
       uiSchema?: UiSchema;
       className?: string;
+      autoSave?: boolean;
+      onSubmit?: PipelineExpression;
+      submitCaption?: string;
+      successMessage?: string;
     }>,
-    { logger }: BrickOptions
+    { logger, runPipeline }: BrickOptions,
   ): Promise<ComponentRef> {
     if (logger.context.extensionId == null) {
       throw new Error("extensionId is required");
@@ -211,7 +246,7 @@ export class CustomFormRenderer extends RendererABC {
         "recordId is required for database and localStorage",
         this.id,
         "recordId",
-        recordId
+        recordId,
       );
     }
 
@@ -245,13 +280,37 @@ export class CustomFormRenderer extends RendererABC {
         autoSave,
         submitCaption,
         className,
-        async onSubmit(values: JsonObject) {
+        async onSubmit(
+          values: JsonObject,
+          { submissionCount }: { submissionCount: number },
+        ) {
           try {
             const normalizedValues = normalizeOutgoingFormData(schema, values);
+
+            // Note that we're running the onSubmit handler before setting the data. Given that we're passing the values
+            // to the submit handler, the handler shouldn't be relying on the data being set yet.
+            // This ordering also has more obvious behavior when the onSubmit handler throws an error (the data won't
+            // be saved).
+            if (onSubmit) {
+              await runPipeline(
+                onSubmit,
+                {
+                  key: "onSubmit",
+                  counter: submissionCount,
+                },
+                {
+                  [getOutputReference(
+                    CustomFormRenderer.ON_SUBMIT_VARIABLE_NAME,
+                  )]: normalizedValues,
+                },
+              );
+            }
+
             await setData(storage, recordId, normalizedValues, {
               blueprintId,
               extensionId,
             });
+
             if (!isEmpty(successMessage)) {
               notify.success(successMessage);
             }
@@ -271,7 +330,7 @@ export class CustomFormRenderer extends RendererABC {
 async function getInitialData(
   storage: Storage,
   recordId: string,
-  { blueprintId, extensionId }: Context
+  { blueprintId, extensionId }: Context,
 ): Promise<UnknownObject> {
   switch (storage.type) {
     case "localStorage": {
@@ -304,7 +363,7 @@ async function getInitialData(
           params: {
             missing_key: "blank",
           },
-        }
+        },
       );
       assertObject(data);
       return data;
@@ -315,7 +374,7 @@ async function getInitialData(
         "Invalid storage type",
         CustomFormRenderer.BLOCK_ID,
         "storage",
-        storage
+        storage,
       );
     }
   }
@@ -325,7 +384,7 @@ async function setData(
   storage: Storage,
   recordId: string,
   values: UnknownObject,
-  { blueprintId, extensionId }: Context
+  { blueprintId, extensionId }: Context,
 ): Promise<void> {
   const cleanValues = ensureJsonObject(values);
 
@@ -370,7 +429,7 @@ async function setData(
         "Invalid storage type",
         CustomFormRenderer.BLOCK_ID,
         "storage",
-        storage
+        storage,
       );
     }
   }

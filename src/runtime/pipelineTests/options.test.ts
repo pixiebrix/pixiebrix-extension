@@ -44,7 +44,7 @@ describe.each([["v1"], ["v2"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     const result = await reducePipeline(
       pipeline,
       { ...simpleInput({}), optionsArgs: { message: "Test message" } },
-      testOptions(apiVersion)
+      testOptions(apiVersion),
     );
     expect(result).toStrictEqual({ message: "Test message" });
   });
@@ -63,7 +63,7 @@ describe.each([["v1"], ["v2"], ["v3"]])(
       const result = await reducePipeline(
         pipeline,
         { ...simpleInput({}), optionsArgs: { message: "Test message" } },
-        testOptions(apiVersion)
+        testOptions(apiVersion),
       );
 
       expect(result).toStrictEqual({
@@ -72,5 +72,5 @@ describe.each([["v1"], ["v2"], ["v3"]])(
         ...extraEmptyModStateContext(apiVersion),
       });
     });
-  }
+  },
 );

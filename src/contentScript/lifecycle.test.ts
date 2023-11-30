@@ -52,7 +52,7 @@ const starterBrickConfigFactory = (definitionOverrides: UnknownObject = {}) =>
       ({
         id: validateRegistryId(`test/starter-brick-${n}`),
         name: "Test Starter Brick",
-      } as Metadata),
+      }) as Metadata,
     definition: define<TriggerDefinition>({
       type: "trigger",
       background: false,
@@ -128,7 +128,7 @@ describe("lifecycle", () => {
     const starterBrick = fromJS(
       starterBrickConfigFactory({
         trigger: "load",
-      })()
+      })(),
     );
 
     starterBrickRegistry.register([starterBrick]);
@@ -151,7 +151,7 @@ describe("lifecycle", () => {
     const starterBrick = fromJS(
       starterBrickConfigFactory({
         trigger: "load",
-      })()
+      })(),
     );
 
     const modComponent = activatedModComponentFactory({
@@ -159,7 +159,7 @@ describe("lifecycle", () => {
     });
 
     starterBrick.registerModComponent(
-      await resolveExtensionInnerDefinitions(modComponent)
+      await resolveExtensionInnerDefinitions(modComponent),
     );
 
     await lifecycleModule.runEditorExtension(modComponent.id, starterBrick);
@@ -173,7 +173,7 @@ describe("lifecycle", () => {
     const starterBrick = fromJS(
       starterBrickConfigFactory({
         trigger: "load",
-      })()
+      })(),
     );
 
     starterBrickRegistry.register([starterBrick]);
@@ -195,7 +195,7 @@ describe("lifecycle", () => {
     expect(lifecycleModule.getActiveExtensionPoints()).toEqual([starterBrick]);
 
     starterBrick.registerModComponent(
-      await resolveExtensionInnerDefinitions(modComponent)
+      await resolveExtensionInnerDefinitions(modComponent),
     );
 
     await lifecycleModule.runEditorExtension(modComponent.id, starterBrick);
@@ -218,7 +218,7 @@ describe("lifecycle", () => {
     const starterBrick = fromJS(
       starterBrickConfigFactory({
         trigger: "load",
-      })()
+      })(),
     );
 
     starterBrickRegistry.register([starterBrick]);
@@ -238,7 +238,7 @@ describe("lifecycle", () => {
     const updatedStarterBrick = fromJS(
       starterBrickConfigFactory({
         trigger: "initialize",
-      })()
+      })(),
     );
 
     // @ts-expect-error -- There's some weirdness going on with this extensionPointFactory;

@@ -107,7 +107,7 @@ const SpacingControl: React.VFC<{
 
   const spacing = useMemo(
     () => extractSpacing(prefix, classes),
-    [prefix, classes]
+    [prefix, classes],
   );
 
   return (
@@ -191,7 +191,7 @@ const CssSpacingWidget: React.VFC<
 
   const { classes, isVar, includesTemplate } = useMemo(
     () => parseValue(value),
-    [value]
+    [value],
   );
 
   const disableControls = isVar || includesTemplate;

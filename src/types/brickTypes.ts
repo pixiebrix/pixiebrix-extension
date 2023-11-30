@@ -66,6 +66,17 @@ export interface Brick extends Metadata {
   getModVariableSchema?: (config: BrickConfig) => Promise<Schema | undefined>;
 
   /**
+   * Returns a JSON Schema for the shape of a variable introduced by a sub-pipeline.
+   * @param _config
+   * @param pipelineName the pipeline name
+   * @since 1.8.4
+   */
+  getPipelineVariableSchema?(
+    _config: BrickConfig,
+    pipelineName: string,
+  ): Schema | undefined;
+
+  /**
    * Returns the optional permissions required to run this brick.
    *
    * Only includes this brick's permissions, not the permissions of any bricks passed as inputs to the brick.
@@ -164,8 +175,21 @@ export abstract class BrickABC implements Brick {
   }
 
   async getModVariableSchema(
-    _config: BrickConfig
+    _config: BrickConfig,
   ): Promise<Schema | undefined> {
+    return undefined;
+  }
+
+  /**
+   * Returns a JSON Schema for the shape of a variable introduced by a sub-pipeline.
+   * @param _config
+   * @param pipelineName the pipeline name
+   * @since 1.8.4
+   */
+  getPipelineVariableSchema(
+    _config: BrickConfig,
+    pipelineName: string,
+  ): Schema | undefined {
     return undefined;
   }
 
@@ -173,7 +197,7 @@ export abstract class BrickABC implements Brick {
     id: string,
     name: string,
     description?: string,
-    icon?: BrickIcon
+    icon?: BrickIcon,
   ) {
     this.id = validateRegistryId(id);
     this.name = name;

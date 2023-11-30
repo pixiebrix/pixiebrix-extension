@@ -142,7 +142,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   const hasControlRoom =
     Boolean(organization?.control_room?.id) || Boolean(managedControlRoomUrl);
   const isCommunityEditionUser = (me?.milestones ?? []).some(
-    ({ key }) => key === "aa_community_edition_register"
+    ({ key }) => key === "aa_community_edition_register",
   );
   const hasPartner =
     Boolean(partner) ||
@@ -162,7 +162,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   });
 
   const partnerConfiguration = integrationConfigs.find((integrationConfig) =>
-    partnerIntegrationIds.has(integrationConfig.integrationId)
+    partnerIntegrationIds.has(integrationConfig.integrationId),
   );
 
   // WARNING: the logic in this method must match the logic in usePartnerLoginMode

@@ -39,9 +39,13 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { sortedFields } from "@/components/fields/schemaFields/schemaFieldUtils";
-import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
+import {
+  castTextLiteralOrThrow,
+  isPipelineExpression,
+} from "@/utils/expressionUtils";
 import { inputProperties } from "@/utils/schemaUtils";
 import { joinPathParts } from "@/utils/formUtils";
+import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");
@@ -63,20 +67,20 @@ export const thisTab: Target = {
 };
 
 export function getIdForElement(
-  element: ModComponentBase | ModComponentFormState
+  element: ModComponentBase | ModComponentFormState,
 ): UUID {
   return isModComponentBase(element) ? element.id : element.uuid;
 }
 
 export function getRecipeIdForElement(
-  element: ModComponentBase | ModComponentFormState
+  element: ModComponentBase | ModComponentFormState,
 ): RegistryId {
   return isModComponentBase(element) ? element._recipe?.id : element.recipe?.id;
 }
 
 export function getRecipeById(
   recipes: ModDefinition[],
-  id: RegistryId
+  id: RegistryId,
 ): ModDefinition | undefined {
   return recipes.find((recipe) => recipe.metadata.id === id);
 }
@@ -88,10 +92,12 @@ export function getRecipeById(
  *
  * @param block the block, or null if resolved block not available yet
  * @param blockConfig the block configuration
+ *
+ * @see PipelineToggleField
  */
 export function getPipelinePropNames(
   block: Brick | null,
-  blockConfig: BrickConfig
+  blockConfig: BrickConfig,
 ): string[] {
   switch (blockConfig.id) {
     // Special handling for tour step to avoid clutter and input type alternatives
@@ -116,6 +122,17 @@ export function getPipelinePropNames(
       return propNames;
     }
 
+    case CustomFormRenderer.BLOCK_ID: {
+      const propNames = [];
+
+      // Only show onSubmit if it's provided, to avoid cluttering the UI
+      if (blockConfig.config.onSubmit != null) {
+        propNames.push("onSubmit");
+      }
+
+      return propNames;
+    }
+
     default: {
       if (block == null) {
         return [];
@@ -125,7 +142,7 @@ export function getPipelinePropNames(
         inputProperties(block.inputSchema),
         (value) =>
           typeof value === "object" &&
-          value.$ref === "https://app.pixiebrix.com/schemas/pipeline#"
+          value.$ref === "https://app.pixiebrix.com/schemas/pipeline#",
       );
 
       return sortedFields(pipelineProperties, block.uiSchema, {
@@ -137,37 +154,54 @@ export function getPipelinePropNames(
   }
 }
 
+/**
+ * Returns the variable name passed to a pipeline.
+ * @param brickConfig the brick configuration
+ * @param pipelinePropName the query pipelinePropName
+ */
 export function getVariableKeyForSubPipeline(
-  blockConfig: BrickConfig,
-  pipelinePropName: string
+  brickConfig: BrickConfig,
+  pipelinePropName: string,
+  // NOTE: does not return an OutputKey because a user-entered value may not be a valid OutputKey at this point
 ): string | null {
   let keyPropName: string = null;
 
   if (
-    [ForEach.BLOCK_ID, ForEachElement.BLOCK_ID].includes(blockConfig.id) &&
+    [ForEach.BLOCK_ID, ForEachElement.BLOCK_ID].includes(brickConfig.id) &&
     pipelinePropName === "body"
   ) {
     keyPropName = "elementKey";
   }
 
-  if (blockConfig.id === TryExcept.BLOCK_ID && pipelinePropName === "except") {
+  if (brickConfig.id === TryExcept.BLOCK_ID && pipelinePropName === "except") {
     keyPropName = "errorKey";
+  }
+
+  if (
+    brickConfig.id === CustomFormRenderer.BLOCK_ID &&
+    pipelinePropName === "onSubmit"
+  ) {
+    // We currently don't allow the user to rename the variable for the onSubmit pipeline because it'd add another
+    // option to an already cluttered UI.
+    return CustomFormRenderer.ON_SUBMIT_VARIABLE_NAME;
   }
 
   if (!keyPropName) {
     return null;
   }
 
-  // eslint-disable-next-line security/detect-object-injection -- not from user input
-  const keyValue = blockConfig.config[keyPropName];
+  // eslint-disable-next-line security/detect-object-injection -- is from user input, but extracting string
+  const keyValue = brickConfig.config[keyPropName];
 
   if (!keyValue) {
     return null;
   }
 
-  const realValue = isExpression(keyValue) ? keyValue.__value__ : keyValue;
-
-  return realValue as string;
+  try {
+    return castTextLiteralOrThrow(keyValue);
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -177,7 +211,7 @@ export function getVariableKeyForSubPipeline(
  */
 function getElementsPipelinePropNames(
   parentPath: string,
-  elements: DocumentElement | DocumentElement[]
+  elements: DocumentElement | DocumentElement[],
 ): string[] {
   const isArray = Array.isArray(elements);
 
@@ -193,15 +227,15 @@ function getElementsPipelinePropNames(
       propNames.push(
         ...getElementsPipelinePropNames(
           joinPathParts(parentPath, index, "config", "element", "__value__"),
-          element.config.element.__value__
-        )
+          element.config.element.__value__,
+        ),
       );
     } else if (element.children?.length > 0) {
       propNames.push(
         ...getElementsPipelinePropNames(
           joinPathParts(parentPath, index, "children"),
-          element.children
-        )
+          element.children,
+        ),
       );
     }
   }
@@ -212,27 +246,27 @@ function getElementsPipelinePropNames(
 export function getDocumentPipelinePaths(block: BrickConfig): string[] {
   return getElementsPipelinePropNames(
     "config.body",
-    (block.config.body ?? []) as DocumentElement[]
+    (block.config.body ?? []) as DocumentElement[],
   );
 }
 
 export function getFoundationNodeAnnotations(
-  annotations: AnalysisAnnotation[]
+  annotations: AnalysisAnnotation[],
 ): AnalysisAnnotation[] {
   return annotations.filter(
     (annotation) =>
-      !annotation.position.path.startsWith(PIPELINE_BLOCKS_FIELD_NAME)
+      !annotation.position.path.startsWith(PIPELINE_BLOCKS_FIELD_NAME),
   );
 }
 
 export function getBlockAnnotations(
   blockPath: string,
-  annotations: AnalysisAnnotation[]
+  annotations: AnalysisAnnotation[],
 ): AnalysisAnnotation[] {
   const pathLength = blockPath.length;
 
   const relatedAnnotations = annotations.filter((annotation) =>
-    annotation.position.path.startsWith(blockPath)
+    annotation.position.path.startsWith(blockPath),
   );
 
   return relatedAnnotations.filter((annotation) => {

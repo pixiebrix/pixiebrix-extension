@@ -89,7 +89,7 @@ describe("checkAvailableInstalledExtensions", () => {
       },
     }) as StarterBrickConfig<MenuDefinition>;
     const availableButtonExtensionPoint = new RemoteMenuItemExtensionPoint(
-      availableButtonStarterBrickConfig
+      availableButtonStarterBrickConfig,
     );
 
     const availableQuickbarStarterBrickConfig = starterBrickConfigFactory({
@@ -112,7 +112,7 @@ describe("checkAvailableInstalledExtensions", () => {
       },
     }) as StarterBrickConfig<QuickBarDefinition>;
     const availableQuickbarExtensionPoint = new RemoteQuickBarExtensionPoint(
-      availableQuickbarStarterBrickConfig
+      availableQuickbarStarterBrickConfig,
     );
     (getInstalledExtensionPoints as jest.Mock).mockResolvedValue([
       availableButtonExtensionPoint,
@@ -127,29 +127,27 @@ describe("checkAvailableInstalledExtensions", () => {
     });
 
     store.dispatch(
-      optionsActions.installCloudExtension({ extension: availableButton })
+      optionsActions.installCloudExtension({ extension: availableButton }),
     );
     store.dispatch(
-      optionsActions.installCloudExtension({ extension: unavailableButton })
+      optionsActions.installCloudExtension({ extension: unavailableButton }),
     );
     store.dispatch(
-      optionsActions.installCloudExtension({ extension: availableQb })
+      optionsActions.installCloudExtension({ extension: availableQb }),
     );
     store.dispatch(
-      optionsActions.installCloudExtension({ extension: unavailableQb })
+      optionsActions.installCloudExtension({ extension: unavailableQb }),
     );
 
     await store.dispatch(actions.checkAvailableInstalledExtensions());
 
     const state = store.getState();
 
-    const { availableInstalledIds, unavailableInstalledCount } =
-      selectExtensionAvailability(state);
+    const { availableInstalledIds } = selectExtensionAvailability(state);
 
     expect(availableInstalledIds).toStrictEqual([
       availableButton.id,
       availableQb.id,
     ]);
-    expect(unavailableInstalledCount).toBe(2);
   });
 });

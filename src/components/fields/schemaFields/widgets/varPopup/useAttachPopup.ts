@@ -17,7 +17,12 @@
 
 import { useSelector } from "react-redux";
 import { selectSettings } from "@/store/settings/settingsSelectors";
-import { useEffect, useReducer, type MutableRefObject } from "react";
+import {
+  useEffect,
+  useReducer,
+  type MutableRefObject,
+  useCallback,
+} from "react";
 import {
   getLikelyVariableAtPosition,
   getVariableAtPosition,
@@ -84,7 +89,7 @@ function useAttachPopup({ inputMode, inputElementRef, value }: Props) {
   const { varAutosuggest } = useSelector(selectSettings);
   const [{ isMenuShowing, likelyVariable }, dispatch] = useReducer(
     popupSlice.reducer,
-    initialState
+    initialState,
   );
 
   const autosuggestEnabled = varAutosuggest && analysisSliceExists;
@@ -184,16 +189,18 @@ function useAttachPopup({ inputMode, inputElementRef, value }: Props) {
     },
     {
       delayMillis: 50,
-    }
+    },
   );
+
+  const hideMenu = useCallback(() => {
+    dispatch(popupSlice.actions.hideMenu());
+  }, []);
 
   return {
     isMenuAvailable,
     isMenuShowing,
     likelyVariable,
-    hideMenu() {
-      dispatch(popupSlice.actions.hideMenu());
-    },
+    hideMenu,
   };
 }
 

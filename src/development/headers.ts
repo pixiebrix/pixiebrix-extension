@@ -56,13 +56,13 @@ if (brickDefinitions.length === 0) {
 
 if (brickDefinitions.length > EXPECTED_HEADER_COUNT) {
   throw new Error(
-    `Expected ${EXPECTED_HEADER_COUNT} brick definitions. Actual: ${brickDefinitions.length}. Did you forget to bump the EXPECTED_HEADER_COUNT constant?`
+    `Expected ${EXPECTED_HEADER_COUNT} brick definitions. Actual: ${brickDefinitions.length}. Did you forget to bump the EXPECTED_HEADER_COUNT constant?`,
   );
 }
 
 if (brickDefinitions.length < EXPECTED_HEADER_COUNT) {
   throw new Error(
-    `Expected ${EXPECTED_HEADER_COUNT} brick definitions. Actual: ${brickDefinitions.length}. Did you forget to register a brick definition?`
+    `Expected ${EXPECTED_HEADER_COUNT} brick definitions. Actual: ${brickDefinitions.length}. Did you forget to register a brick definition?`,
   );
 }
 

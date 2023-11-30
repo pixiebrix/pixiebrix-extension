@@ -66,7 +66,7 @@ let modActivationPanelEntry: ModActivationPanelEntry | null = null;
  * @param activateOptions options controlling the visible panel in the sidebar
  */
 export async function showSidebar(
-  activateOptions: ActivatePanelOptions = {}
+  activateOptions: ActivatePanelOptions = {},
 ): Promise<void> {
   console.debug("sidebarController:showSidebar", {
     isSidebarFrameVisible: isSidebarFrameVisible(),
@@ -93,7 +93,7 @@ export async function showSidebar(
     // we're not awaiting their resolution (because they may contain long-running bricks).
     if (!isSidebarFrameVisible()) {
       console.error(
-        "Pre-condition failed: sidebar is not attached in the page for call to sidebarShowEvents.emit"
+        "Pre-condition failed: sidebar is not attached in the page for call to sidebarShowEvents.emit",
       );
     }
 
@@ -120,7 +120,7 @@ export async function showSidebar(
       // eslint-disable-next-line promise/prefer-await-to-then -- not in an async method
       .catch((error: unknown) => {
         reportError(
-          new Error("Error activating sidebar panel", { cause: error })
+          new Error("Error activating sidebar panel", { cause: error }),
         );
       });
   }
@@ -233,7 +233,7 @@ function renderPanelsIfVisible(): void {
     void sidebarInThisTab.renderPanels(seqNum, panels);
   } else {
     console.debug(
-      "sidebarController:renderPanelsIfVisible: skipping renderPanels because the sidebar is not visible"
+      "sidebarController:renderPanelsIfVisible: skipping renderPanels because the sidebar is not visible",
     );
   }
 }
@@ -264,13 +264,13 @@ export function hideSidebarForm(nonce: UUID): void {
 }
 
 export function showTemporarySidebarPanel(
-  entry: Except<TemporaryPanelEntry, "type">
+  entry: Except<TemporaryPanelEntry, "type">,
 ): void {
   expectContext("contentScript");
 
   if (!isSidebarFrameVisible()) {
     throw new Error(
-      "Cannot add temporary sidebar panel if the sidebar is not visible"
+      "Cannot add temporary sidebar panel if the sidebar is not visible",
     );
   }
 
@@ -282,13 +282,13 @@ export function showTemporarySidebarPanel(
 }
 
 export function updateTemporarySidebarPanel(
-  entry: Except<TemporaryPanelEntry, "type">
+  entry: Except<TemporaryPanelEntry, "type">,
 ): void {
   expectContext("contentScript");
 
   if (!isSidebarFrameVisible()) {
     throw new Error(
-      "Cannot add temporary sidebar panel if the sidebar is not visible"
+      "Cannot add temporary sidebar panel if the sidebar is not visible",
     );
   }
 
@@ -333,7 +333,7 @@ export function removeExtensions(extensionIds: UUID[]): void {
  */
 export function removeExtensionPoint(
   extensionPointId: RegistryId,
-  { preserveExtensionIds = [] }: { preserveExtensionIds?: UUID[] } = {}
+  { preserveExtensionIds = [] }: { preserveExtensionIds?: UUID[] } = {},
 ): void {
   expectContext("contentScript");
 
@@ -348,8 +348,8 @@ export function removeExtensionPoint(
     ...current.filter(
       (x) =>
         x.extensionPointId !== extensionPointId ||
-        preserveExtensionIds.includes(x.extensionId)
-    )
+        preserveExtensionIds.includes(x.extensionId),
+    ),
   );
 
   renderPanelsIfVisible();
@@ -380,7 +380,7 @@ export function reservePanels(refs: ModComponentRef[]): void {
         extensionId,
         extensionPointId,
         blueprintId,
-        { ...entry }
+        { ...entry },
       );
 
       panels.push(entry);
@@ -404,13 +404,13 @@ export function updateHeading(extensionId: UUID, heading: string): void {
       "updateHeading: update heading for panel %s for %s",
       extensionId,
       entry.extensionPointId,
-      { ...entry }
+      { ...entry },
     );
     renderPanelsIfVisible();
   } else {
     console.warn(
       "updateHeading: No panel exists for extension %s",
-      extensionId
+      extensionId,
     );
   }
 }
@@ -418,7 +418,7 @@ export function updateHeading(extensionId: UUID, heading: string): void {
 export function upsertPanel(
   { extensionId, extensionPointId, blueprintId }: ModComponentRef,
   heading: string,
-  payload: PanelPayload
+  payload: PanelPayload,
 ): void {
   const entry = panels.find((panel) => panel.extensionId === extensionId);
   if (entry) {
@@ -429,7 +429,7 @@ export function upsertPanel(
       extensionId,
       extensionPointId,
       blueprintId,
-      { ...entry }
+      { ...entry },
     );
   } else {
     console.debug(
@@ -442,7 +442,7 @@ export function upsertPanel(
         extensionPointId,
         heading,
         payload,
-      }
+      },
     );
     panels.push({
       type: "panel",
@@ -464,13 +464,13 @@ export function upsertPanel(
  * @throws Error if the sidebar frame is not visible
  */
 export function showModActivationInSidebar(
-  entry: Except<ModActivationPanelEntry, "type">
+  entry: Except<ModActivationPanelEntry, "type">,
 ): void {
   expectContext("contentScript");
 
   if (!isSidebarFrameVisible()) {
     throw new Error(
-      "Cannot activate mods in the sidebar if the sidebar is not visible"
+      "Cannot activate mods in the sidebar if the sidebar is not visible",
     );
   }
 
@@ -482,7 +482,7 @@ export function showModActivationInSidebar(
   const sequence = renderSequenceNumber++;
   void sidebarInThisTab.showModActivationPanel(
     sequence,
-    modActivationPanelEntry
+    modActivationPanelEntry,
   );
 }
 

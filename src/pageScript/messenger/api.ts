@@ -53,7 +53,7 @@ export interface WritePayload {
 }
 
 export const setComponentData = createSendScriptMessage<void, WritePayload>(
-  SET_COMPONENT_DATA
+  SET_COMPONENT_DATA,
 );
 
 /**

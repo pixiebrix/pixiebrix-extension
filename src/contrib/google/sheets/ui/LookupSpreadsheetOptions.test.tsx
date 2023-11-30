@@ -181,10 +181,10 @@ async function expectTabsAndHeadersToBeLoaded() {
 beforeAll(() => {
   registerDefaultWidgets();
   servicesLocateMock.mockImplementation(
-    async (serviceId) => servicesLookup[serviceId]
+    async (serviceId) => servicesLookup[serviceId],
   );
   useAuthOptionsMock.mockReturnValue(
-    valueToAsyncState([googlePKCEAuthOption, testSpreadsheetAuthOption])
+    valueToAsyncState([googlePKCEAuthOption, testSpreadsheetAuthOption]),
   );
   isLoggedInMock.mockResolvedValue(true);
   getAllSpreadsheetsMock.mockResolvedValue(fileListResponse);
@@ -204,7 +204,7 @@ const renderWithValuesAndWait = async (initialValues: FormikValues) => {
     {
       initialValues,
       wrapper: IntegrationsSliceModIntegrationsContextAdapter,
-    }
+    },
   );
 
   await waitForEffect();

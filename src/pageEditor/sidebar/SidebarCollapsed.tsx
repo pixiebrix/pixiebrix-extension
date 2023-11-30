@@ -23,7 +23,7 @@ import { faAngleDoubleRight } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import useFlags from "@/hooks/useFlags";
 import ReloadButton from "./ReloadButton";
-import Logo from "./Logo";
+import HomeButton from "./HomeButton";
 
 const SidebarCollapsed: React.VoidFunctionComponent<{
   expandSidebar: () => void;
@@ -42,7 +42,7 @@ const SidebarCollapsed: React.VoidFunctionComponent<{
         type="button"
         onClick={expandSidebar}
       >
-        <Logo />
+        <HomeButton />
         <FontAwesomeIcon icon={faAngleDoubleRight} />
       </Button>
       {showDeveloperUI && <ReloadButton />}

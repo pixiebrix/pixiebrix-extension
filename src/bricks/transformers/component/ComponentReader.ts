@@ -26,7 +26,7 @@ import { KNOWN_READERS } from "@/pageScript/messenger/constants";
 import { validateRegistryId } from "@/types/helpers";
 
 export const COMPONENT_READER_ID = validateRegistryId(
-  "@pixiebrix/component-reader"
+  "@pixiebrix/component-reader",
 );
 
 export class ComponentReader extends TransformerABC {
@@ -34,7 +34,7 @@ export class ComponentReader extends TransformerABC {
     super(
       COMPONENT_READER_ID,
       "[Deprecated] Component Reader",
-      "Extract data from a front-end component (e.g., React, Vue, Ember, etc.)"
+      "Extract data from a front-end component (e.g., React, Vue, Ember, etc.)",
     );
   }
 
@@ -77,11 +77,11 @@ export class ComponentReader extends TransformerABC {
 
   async transform(
     args: BrickArgs<FrameworkConfig>,
-    { root }: BrickOptions
+    { root }: BrickOptions,
   ): Promise<unknown> {
     return frameworkReadFactory(args.framework)(
       args as unknown as FrameworkConfig,
-      root
+      root,
     );
   }
 }

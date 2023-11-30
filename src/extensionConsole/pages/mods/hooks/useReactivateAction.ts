@@ -47,7 +47,7 @@ const useReactivateAction = (modViewItem: ModViewItem): (() => void | null) => {
       });
 
       const reactivatePath = `marketplace/activate/${encodeURIComponent(
-        blueprintId
+        blueprintId,
       )}?reinstall=1`;
 
       dispatch(push(reactivatePath));

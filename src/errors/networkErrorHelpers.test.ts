@@ -108,7 +108,7 @@ describe("selectNetworkErrorMessage", () => {
     } catch (error) {
       expect(isAxiosError(error)).toBe(true);
       expect(selectNetworkErrorMessage(error)).toBe(
-        "These aren't the droids you're looking for"
+        "These aren't the droids you're looking for",
       );
     }
   });

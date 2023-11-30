@@ -24,7 +24,7 @@ import { type JSONSchema7Array } from "json-schema";
 
 interface InputModeOptionBase<
   TValue extends FieldInputMode,
-  As extends React.ElementType = React.ElementType
+  As extends React.ElementType = React.ElementType,
 > {
   label: string;
   value: TValue;

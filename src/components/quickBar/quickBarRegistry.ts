@@ -198,7 +198,7 @@ class QuickBarRegistry {
     this.generatorAbortController = new AbortController();
     const abortSignal = this.generatorAbortController.signal;
     await Promise.allSettled(
-      this.actionGenerators.map(async (x) => x({ ...args, abortSignal }))
+      this.actionGenerators.map(async (x) => x({ ...args, abortSignal })),
     );
   }
 }

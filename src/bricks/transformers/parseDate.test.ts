@@ -46,7 +46,7 @@ describe("ParseDate block", () => {
       const result = getLocalISOString(input);
       expect(result).toStrictEqual(expected);
       unregister();
-    }
+    },
   );
 
   test("Results snapshot - EST input", async () => {
@@ -71,7 +71,7 @@ describe("ParseDate block", () => {
     await expect(async () => {
       await brick.run(
         unsafeAssumeValidArg({ date: "   " }),
-        brickOptionsFactory()
+        brickOptionsFactory(),
       );
     }).rejects.toThrow(BusinessError);
   });
@@ -82,7 +82,7 @@ describe("ParseDate block", () => {
     await expect(async () => {
       await brick.run(
         unsafeAssumeValidArg({ date: "foo" }),
-        brickOptionsFactory()
+        brickOptionsFactory(),
       );
     }).rejects.toThrow(BusinessError);
   });

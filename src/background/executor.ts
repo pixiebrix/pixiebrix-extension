@@ -33,8 +33,13 @@ import { SessionMap } from "@/mv3/SessionStorage";
 import { groupPromisesByStatus } from "@/utils/promiseUtils";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 import { forEachTab } from "@/utils/extensionUtils";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 type TabId = number;
+
+// Arbitrary number of tabs above which performance *might* be degraded
+const LARGE_AMOUNT_OF_TABS = 20;
 
 // TODO: One tab could have multiple targets, but `tabToTarget` currently only supports one at a time
 const tabToTarget = new SessionMap<TabId>("tabToTarget", import.meta.url);
@@ -51,7 +56,7 @@ function rememberOpener(newTabId: TabId, openerTabId: TabId): void {
 
 async function safelyRunBrick(
   { tabId, frameId }: Target,
-  request: RunBrickRequest
+  request: RunBrickRequest,
 ): Promise<unknown> {
   try {
     return await runBrick({ tabId, frameId }, request);
@@ -93,7 +98,7 @@ export async function waitForTargetByUrl(url: string): Promise<Target> {
  */
 export async function requestRunInOpener(
   this: MessengerMeta,
-  request: RunBrickRequest
+  request: RunBrickRequest,
 ): Promise<unknown> {
   let { id: sourceTabId, openerTabId } = this.trace[0].tab;
 
@@ -119,7 +124,7 @@ export async function requestRunInOpener(
  */
 export async function requestRunInTarget(
   this: MessengerMeta,
-  request: RunBrickRequest
+  request: RunBrickRequest,
 ): Promise<unknown> {
   const sourceTabId = this.trace[0].tab.id;
   const target = await tabToTarget.get(String(sourceTabId));
@@ -131,7 +136,7 @@ export async function requestRunInTarget(
   const subRequest = { ...request, sourceTabId };
   return safelyRunBrick(
     { tabId: target, frameId: TOP_LEVEL_FRAME_ID },
-    subRequest
+    subRequest,
   );
 }
 
@@ -140,14 +145,14 @@ export async function requestRunInTarget(
  */
 export async function requestRunInTop(
   this: MessengerMeta,
-  request: RunBrickRequest
+  request: RunBrickRequest,
 ): Promise<unknown> {
   const sourceTabId = this.trace[0].tab.id;
 
   const subRequest = { ...request, sourceTabId };
   return safelyRunBrick(
     { tabId: sourceTabId, frameId: TOP_LEVEL_FRAME_ID },
-    subRequest
+    subRequest,
   );
 }
 
@@ -157,7 +162,7 @@ export async function requestRunInTop(
  */
 export async function requestRunInOtherTabs(
   this: MessengerMeta,
-  request: RunBrickRequest
+  request: RunBrickRequest,
 ): Promise<unknown[]> {
   const sourceTabId = this.trace[0].tab.id;
   const subRequest = { ...request, sourceTabId };
@@ -167,8 +172,14 @@ export async function requestRunInOtherTabs(
       safelyRunBrick({ tabId, frameId: TOP_LEVEL_FRAME_ID }, subRequest),
     {
       exclude: sourceTabId,
-    }
+    },
   );
+
+  if (results.length > LARGE_AMOUNT_OF_TABS) {
+    reportEvent(Events.PERFORMANCE_MESSENGER_MANY_TABS_BROADCAST, {
+      tabCount: results.length,
+    });
+  }
 
   const { rejected, fulfilled } = groupPromisesByStatus(results);
 
@@ -183,7 +194,7 @@ export async function requestRunInOtherTabs(
 
 export async function requestRunInAllFrames(
   this: MessengerMeta,
-  request: RunBrickRequest
+  request: RunBrickRequest,
 ): Promise<unknown[]> {
   const sourceTabId = this.trace[0].tab.id;
   const subRequest = { ...request, sourceTabId };
@@ -194,8 +205,8 @@ export async function requestRunInAllFrames(
 
   const results = await Promise.allSettled(
     frames.map(async ({ frameId }) =>
-      safelyRunBrick({ tabId: sourceTabId, frameId }, subRequest)
-    )
+      safelyRunBrick({ tabId: sourceTabId, frameId }, subRequest),
+    ),
   );
 
   const { rejected, fulfilled } = groupPromisesByStatus(results);
@@ -211,7 +222,7 @@ export async function requestRunInAllFrames(
 
 export async function openTab(
   this: MessengerMeta,
-  createProperties: Tabs.CreateCreatePropertiesType
+  createProperties: Tabs.CreateCreatePropertiesType,
 ): Promise<void> {
   // Natively links the new tab to its opener + opens it right next to it
   const openerTabId = this.trace[0].tab?.id;

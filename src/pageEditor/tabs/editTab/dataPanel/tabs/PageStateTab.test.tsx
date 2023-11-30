@@ -45,7 +45,7 @@ describe("PageStateTab", () => {
           dispatch(actions.addElement(formState));
           dispatch(actions.selectElement(formState.uuid));
         },
-      }
+      },
     );
 
     await waitForEffect();

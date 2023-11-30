@@ -33,7 +33,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 
 export type OptionsFactory<T = unknown> = (
   config: SanitizedIntegrationConfig,
-  factoryArgs?: UnknownObject
+  factoryArgs?: UnknownObject,
 ) => Promise<Array<Option<T>>>;
 
 type RemoteSelectWidgetProps<T = unknown> = CustomFieldWidgetProps<
@@ -50,7 +50,7 @@ type RemoteSelectWidgetProps<T = unknown> = CustomFieldWidgetProps<
 export function useOptionsResolver<T>(
   config: SanitizedIntegrationConfig,
   optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>,
-  factoryArgs: UnknownObject
+  factoryArgs: UnknownObject,
 ): AsyncState<Array<Option<T>>> {
   return useAsyncState<Array<Option<T>>>(async () => {
     if (isPromise(optionsFactory)) {
@@ -82,7 +82,7 @@ const RemoteSelectWidget: React.FC<RemoteSelectWidgetProps> = ({
   const [options, isLoading, error, refreshOptions] = useOptionsResolver(
     config,
     optionsFactory,
-    factoryArgs
+    factoryArgs,
   );
 
   useReportError(error);

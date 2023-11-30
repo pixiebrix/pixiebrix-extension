@@ -38,12 +38,12 @@ import { type IntegrationDependency } from "@/integrations/integrationTypes";
  */
 export async function checkDeploymentPermissions(
   deployment: Deployment,
-  locate: Locate
+  locate: Locate,
 ): Promise<PermissionsStatus> {
   const modDefinition = deployment.package.config;
   const localAuths = await findLocalDeploymentConfiguredIntegrationDependencies(
     deployment,
-    locate
+    locate,
   );
 
   const integrationDependencies: IntegrationDependency[] = localAuths.flatMap(
@@ -53,7 +53,7 @@ export async function checkDeploymentPermissions(
         outputKey,
         isOptional,
         configId: config.id,
-      }))
+      })),
   );
 
   return checkModDefinitionPermissions(modDefinition, integrationDependencies);

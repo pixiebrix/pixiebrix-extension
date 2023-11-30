@@ -52,7 +52,7 @@ afterEach(() => {
 
 function renderBlockConfiguration(
   element: React.ReactElement,
-  initialValues: ModComponentFormState
+  initialValues: ModComponentFormState,
 ) {
   return render(element, {
     initialValues,
@@ -61,8 +61,8 @@ function renderBlockConfiguration(
       dispatch(actions.selectElement(initialValues.uuid));
       dispatch(
         actions.setElementActiveNodeId(
-          initialValues.extension.blockPipeline[0].instanceId
-        )
+          initialValues.extension.blockPipeline[0].instanceId,
+        ),
       );
     },
   });
@@ -76,7 +76,7 @@ test("renders", async () => {
   ]);
   const { asFragment } = renderBlockConfiguration(
     <BlockConfiguration name="extension.blockPipeline[0]" blockId={block.id} />,
-    initialState
+    initialState,
   );
 
   await waitForEffect();
@@ -102,7 +102,7 @@ describe("shows root mode", () => {
         name="extension.blockPipeline[0]"
         blockId={block.id}
       />,
-      initialState
+      initialState,
     );
 
     await waitForEffect();
@@ -123,7 +123,7 @@ describe("shows root mode", () => {
         name="extension.blockPipeline[0]"
         blockId={block.id}
       />,
-      initialState
+      initialState,
     );
 
     await waitForEffect();
@@ -161,7 +161,7 @@ test.each`
         name="extension.blockPipeline[0]"
         blockId={block.id}
       />,
-      initialState
+      initialState,
     );
 
     await waitForEffect();
@@ -176,5 +176,5 @@ test.each`
       expect(conditionInput).toBeNull();
       expect(targetInput).toBeNull();
     }
-  }
+  },
 );

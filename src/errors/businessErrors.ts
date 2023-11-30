@@ -84,7 +84,7 @@ export class MultipleElementsFoundError extends BusinessError {
 
   constructor(
     selector: string,
-    message = "Multiple elements found for selector"
+    message = "Multiple elements found for selector",
   ) {
     super(message);
     this.selector = selector;
@@ -102,7 +102,7 @@ export class InvalidSelectorError extends BusinessError {
   constructor(message: string, selector: string) {
     // Make the error message more specific than "Syntax error"
     super(
-      "Invalid selector: " + message.replace(JQUERY_INVALID_SELECTOR_ERROR, "")
+      "Invalid selector: " + message.replace(JQUERY_INVALID_SELECTOR_ERROR, ""),
     );
     this.selector = selector;
   }
@@ -127,7 +127,7 @@ export class PropError extends BusinessError {
     message: string,
     blockId: RegistryId,
     prop: string,
-    value: unknown
+    value: unknown,
   ) {
     super(message);
     this.blockId = blockId;
@@ -176,7 +176,7 @@ export class NotConfiguredError extends BusinessError {
   constructor(
     message: string,
     serviceId: string,
-    missingProperties: string[] = []
+    missingProperties: string[] = [],
   ) {
     super(message);
     this.serviceId = serviceId;

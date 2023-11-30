@@ -64,7 +64,7 @@ const NumberWidget: React.VFC<
     ({ target }) => {
       setValue(target.value);
     },
-    []
+    [],
   );
 
   const onBlur: FocusEventHandler<HTMLInputElement> = useCallback(async () => {

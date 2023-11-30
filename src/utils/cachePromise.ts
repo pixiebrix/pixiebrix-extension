@@ -29,7 +29,7 @@ const promises: SharedPromise[] = [];
 
 async function cachePromise<T = unknown>(
   dependencies: unknown[],
-  defaultFactory: () => Promise<T>
+  defaultFactory: () => Promise<T>,
 ): Promise<T> {
   const match = promises.find((x) => isEqual(x.dependencies, dependencies));
 
@@ -54,7 +54,7 @@ type PromiseFactory<T = unknown> = (...args: unknown[]) => Promise<T>;
 
 export function cachePromiseMethod<T extends PromiseFactory>(
   keys: unknown[],
-  promiseFactory: T
+  promiseFactory: T,
 ): T {
   return (async (...args: unknown[]) =>
     cachePromise([...keys, ...args], async () => promiseFactory(...args))) as T;

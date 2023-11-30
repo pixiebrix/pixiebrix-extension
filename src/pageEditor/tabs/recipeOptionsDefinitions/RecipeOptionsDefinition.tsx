@@ -51,7 +51,7 @@ import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 
 const fieldTypes = [
   ...FORM_FIELD_TYPE_OPTIONS.filter(
-    (type) => !["File", "Image crop"].includes(type.label)
+    (type) => !["File", "Image crop"].includes(type.label),
   ),
   {
     label: "Database selector",
@@ -95,7 +95,7 @@ const RecipeOptionsDefinition: React.VFC = () => {
 
   const savedOptions = recipe?.options;
   const dirtyOptions = useSelector(
-    selectDirtyOptionDefinitionsForRecipeId(recipeId)
+    selectDirtyOptionDefinitionsForRecipeId(recipeId),
   );
 
   const optionsDefinition =
@@ -108,7 +108,7 @@ const RecipeOptionsDefinition: React.VFC = () => {
     (options: ModOptionsDefinition) => {
       dispatch(actions.editRecipeOptionsDefinitions(options));
     },
-    [dispatch]
+    [dispatch],
   );
 
   if (isFetching || error) {
@@ -136,7 +136,7 @@ const RecipeOptionsDefinition: React.VFC = () => {
           initialValues={initialValues}
           onSubmit={() => {
             console.error(
-              "Formik's submit should not be called to save recipe options. Use 'saveRecipe' from 'useRecipeSaver' instead."
+              "Formik's submit should not be called to save recipe options. Use 'saveRecipe' from 'useRecipeSaver' instead.",
             );
           }}
         >
@@ -161,7 +161,7 @@ const RecipeOptionsDefinition: React.VFC = () => {
                     <FieldRuntimeContext.Provider value={formRuntimeContext}>
                       <FormEditor
                         name="optionsDefinition"
-                        showFormTitle={false}
+                        showFormIntroFields={false}
                         activeField={activeField}
                         setActiveField={setActiveField}
                         fieldTypes={fieldTypes}
@@ -184,7 +184,7 @@ const RecipeOptionsDefinition: React.VFC = () => {
                         eventKey="preview"
                         className={cx(
                           dataPanelStyles.tabPane,
-                          dataPanelStyles.selectablePreviewContainer
+                          dataPanelStyles.selectablePreviewContainer,
                         )}
                       >
                         <ErrorBoundary>

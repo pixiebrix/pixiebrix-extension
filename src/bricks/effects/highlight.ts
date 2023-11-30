@@ -38,7 +38,7 @@ export class HighlightEffect extends EffectABC {
     super(
       "@pixiebrix/highlight",
       "Highlight",
-      "Highlight one or more elements on a page"
+      "Highlight one or more elements on a page",
     );
   }
 
@@ -107,7 +107,7 @@ export class HighlightEffect extends EffectABC {
         },
       },
     },
-    []
+    [],
   );
 
   override async isRootAware(): Promise<boolean> {
@@ -130,7 +130,7 @@ export class HighlightEffect extends EffectABC {
       rootSelector: string | undefined;
       elements: ColorRule[];
     }>,
-    { root }: BrickOptions
+    { root }: BrickOptions,
   ): Promise<void> {
     if (condition !== undefined && !boolean(condition)) {
       return;

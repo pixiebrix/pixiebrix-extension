@@ -9,6 +9,7 @@ exports[`MatchRulesSection render empty section 1`] = `
       class="root"
     >
       <div
+        aria-expanded="false"
         class="header"
         role="button"
         tabindex="0"
@@ -139,6 +140,7 @@ exports[`MatchRulesSection render populated section 1`] = `
       class="root"
     >
       <div
+        aria-expanded="false"
         class="header"
         role="button"
         tabindex="0"

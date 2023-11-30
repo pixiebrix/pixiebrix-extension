@@ -28,7 +28,7 @@ export class RunSubTourEffect extends EffectABC {
     super(
       "@pixiebrix/tour/run",
       "Run Sub-tour",
-      "Run a tour from the same mod"
+      "Run a tour from the same mod",
     );
   }
 
@@ -39,12 +39,12 @@ export class RunSubTourEffect extends EffectABC {
         description: "The name of the tour to run",
       },
     },
-    ["tour"]
+    ["tour"],
   );
 
   async effect(
     { tour }: BrickArgs<{ tour: string }>,
-    { logger }: BrickOptions
+    { logger }: BrickOptions,
   ): Promise<void> {
     if (isEmpty(logger.context.blueprintId)) {
       throw new BusinessError("Can only run sub-tours in the same mod");

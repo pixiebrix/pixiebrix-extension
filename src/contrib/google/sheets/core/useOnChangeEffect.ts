@@ -27,7 +27,7 @@ import { useEffect, useRef } from "react";
 export function useOnChangeEffect<T = unknown>(
   value: T,
   effect: (newValue: T, oldValue: T) => void,
-  isEqual?: (a: T, b: T) => boolean
+  isEqual?: (a: T, b: T) => boolean,
 ): void {
   const valueRef = useRef(value);
 

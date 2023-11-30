@@ -33,7 +33,7 @@ import { isNullOrBlank } from "@/utils/stringUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 
 export const GOOGLE_SHEETS_LOOKUP_ID = validateRegistryId(
-  "@pixiebrix/google/sheets-lookup"
+  "@pixiebrix/google/sheets-lookup",
 );
 
 export const LOOKUP_SCHEMA: Schema = {
@@ -135,7 +135,7 @@ export class GoogleSheetsLookup extends TransformerABC {
     super(
       GOOGLE_SHEETS_LOOKUP_ID,
       "Lookup Google Sheet row",
-      "Lookup rows in in a Google Sheet"
+      "Lookup rows in in a Google Sheet",
     );
   }
 
@@ -153,7 +153,7 @@ export class GoogleSheetsLookup extends TransformerABC {
       query,
       multi,
     }: BrickArgs<BrickArgsType>,
-    { logger }: BrickOptions
+    { logger }: BrickOptions,
   ): Promise<UnknownObject | UnknownObject[]> {
     if (googleAccount == null) {
       throw new PropError(
@@ -190,8 +190,8 @@ export class GoogleSheetsLookup extends TransformerABC {
       : rows.filter((x) => x.at(columnIndex) === query);
     const matchRecords = matchData.map((row) =>
       Object.fromEntries(
-        zip(headers, row).filter(([rowHeader]) => !isNullOrBlank(rowHeader))
-      )
+        zip(headers, row).filter(([rowHeader]) => !isNullOrBlank(rowHeader)),
+      ),
     );
 
     if (multi || returnAllRows) {

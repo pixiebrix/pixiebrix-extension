@@ -34,48 +34,48 @@ const liftExternal = isChrome()
   : // Firefox doesn't support web-to-background communication, so it must be travel via the content script.
     <TArguments extends unknown[], R extends SerializableResponse>(
       type: string,
-      method: (...args: TArguments) => Promise<R>
+      method: (...args: TArguments) => Promise<R>,
     ) => {
       const liftedToBackground = _liftBackground(`BACKGROUND_${type}`, method);
       return liftExternalToContentScript(type, liftedToBackground);
     };
 
 export const connectPage = liftExternal("CONNECT_PAGE", async () =>
-  browser.runtime.getManifest()
+  browser.runtime.getManifest(),
 );
 
 export const setExtensionAuth = liftExternal(
   "SET_EXTENSION_AUTH",
-  local.setExtensionAuth
+  local.setExtensionAuth,
 );
 
 export const setActivatingMods = liftExternal(
   // Can't change SET_ACTIVATING_BLUEPRINT constant due to backward compatability.
   "SET_ACTIVATING_BLUEPRINT",
-  local.setActivatingMods
+  local.setActivatingMods,
 );
 
 export const openMarketplace = liftExternal(
   "OPEN_MARKETPLACE",
-  local.openMarketplace
+  local.openMarketplace,
 );
 
 export const openActivateBlueprint = liftExternal(
   "OPEN_ACTIVATE_BLUEPRINT",
-  local.openActivateModPage
+  local.openActivateModPage,
 );
 
 export const openExtensionOptions = liftExternal(
   "OPEN_OPTIONS",
-  local.openExtensionConsole
+  local.openExtensionConsole,
 );
 
 export const getPartnerToken = liftExternal(
   "GET_PARTNER_TOKEN",
-  readPartnerAuthData
+  readPartnerAuthData,
 );
 
 export const installStarterBlueprints = liftExternal(
   "INSTALL_STARTER_BLUEPRINTS",
-  local.activateStarterMods
+  local.activateStarterMods,
 );

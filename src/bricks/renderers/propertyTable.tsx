@@ -47,7 +47,7 @@ function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
   if (isPlainObject(inputs)) {
     return sortBy(
       Object.entries(inputs).map(([name, value]) => ({ name, value })),
-      (x) => x.name
+      (x) => x.name,
     ).map(({ name, value }) => {
       const key = `${keyPrefix}-${name}`;
       if (Array.isArray(value) || isPlainObject(value)) {
@@ -100,7 +100,7 @@ export class PropertyTableRenderer extends RendererABC {
     super(
       "@pixiebrix/property-table",
       "Property Table",
-      "Shows all properties and their values"
+      "Shows all properties and their values",
     );
   }
 
@@ -111,7 +111,7 @@ export class PropertyTableRenderer extends RendererABC {
           "The data to show in the table, or null/blank to show the implicit data",
       },
     },
-    []
+    [],
   );
 
   async render({ data }: BrickArgs, { ctxt }: BrickOptions) {

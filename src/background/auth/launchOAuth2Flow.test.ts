@@ -75,11 +75,11 @@ describe("oauth2 event reporting", () => {
     expect(reportEventMock).toHaveBeenCalledTimes(2);
     expect(reportEventMock).toHaveBeenCalledWith(
       Events.OAUTH2_LOGIN_START,
-      expectedEventPayload
+      expectedEventPayload,
     );
     expect(reportEventMock).toHaveBeenCalledWith(
       Events.OAUTH2_LOGIN_SUCCESS,
-      expectedEventPayload
+      expectedEventPayload,
     );
   });
 
@@ -115,7 +115,7 @@ describe("oauth2 event reporting", () => {
     expect(reportEventMock).toHaveBeenCalledTimes(2);
     expect(reportEventMock).toHaveBeenCalledWith(
       Events.OAUTH2_LOGIN_START,
-      expectedEventPayload
+      expectedEventPayload,
     );
     expect(reportEventMock).toHaveBeenCalledWith(Events.OAUTH2_LOGIN_ERROR, {
       ...expectedEventPayload,

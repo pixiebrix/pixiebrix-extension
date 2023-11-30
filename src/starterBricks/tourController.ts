@@ -132,7 +132,7 @@ export function markTourStart(
     promise?: Promise<void>;
     abortController: AbortController;
     context: MessageContext;
-  }
+  },
 ): void {
   if (tourStack.some((x) => x.extensionId === extension.id)) {
     throw new BusinessError(`Tour already in progress: ${extension.id}`);
@@ -167,7 +167,7 @@ export function markTourStart(
  */
 export function markTourStep(
   nonce: UUID,
-  { step, context }: { step: string; context: MessageContext }
+  { step, context }: { step: string; context: MessageContext },
 ): void {
   reportEvent(Events.TOUR_STEP, {
     nonce,
@@ -188,7 +188,7 @@ export function markTourStep(
  */
 export function markTourEnd(
   nonce: UUID,
-  { error, context }: { error?: unknown; context: MessageContext }
+  { error, context }: { error?: unknown; context: MessageContext },
 ) {
   let skipped = false;
 

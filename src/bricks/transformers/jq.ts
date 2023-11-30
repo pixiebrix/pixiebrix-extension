@@ -81,7 +81,7 @@ export class JQTransformer extends TransformerABC {
       "@pixiebrix/jq",
       "jq - JSON processor",
       "Apply a jq expression: https://stedolan.github.io/jq/",
-      "faCode"
+      "faCode",
     );
   }
 
@@ -96,12 +96,12 @@ export class JQTransformer extends TransformerABC {
           "The input data, or blank to process the data from the previous step",
       },
     },
-    ["filter"]
+    ["filter"],
   );
 
   async transform(
     { filter, data }: BrickArgs,
-    { ctxt }: BrickOptions
+    { ctxt }: BrickOptions,
   ): Promise<unknown> {
     // This is the legacy behavior, back from runtime v1 when there wasn't explicit data flow.
     const input = isNullOrBlank(data) ? ctxt : data;
@@ -126,7 +126,7 @@ export class JQTransformer extends TransformerABC {
           // For example, this error can occur for a `.[]` filter when the data is an empty array.
           throw new BusinessError(
             "Unexpected end of JSON input, ensure the jq filter produces a result for the data",
-            { cause: error }
+            { cause: error },
           );
         }
 
@@ -159,7 +159,7 @@ export class JQTransformer extends TransformerABC {
                 instanceLocation: "#/filter",
                 error: error.stack,
               },
-            ]
+            ],
           );
         }
 

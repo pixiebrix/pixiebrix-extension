@@ -34,11 +34,11 @@ import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelect
 
 const useScrollIntoViewEffect = (
   active: boolean,
-  isSubPipelineHeaderActive: boolean
+  isSubPipelineHeaderActive: boolean,
 ) => {
   const nodeRef = useRef<HTMLDivElement>(null);
   const activeNodePreviewElementId = useSelector(
-    selectNodePreviewActiveElement
+    selectNodePreviewActiveElement,
   );
 
   useEffect(() => {

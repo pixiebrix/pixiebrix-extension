@@ -27,11 +27,11 @@ export const objToYaml = (obj: object) =>
 
 function orderKeys<T extends Record<string, unknown>>(
   obj: T,
-  keys: Array<keyof T>
+  keys: Array<keyof T>,
 ): T {
   const lookup = new Map(keys.map((key, index) => [key, index]));
   return Object.fromEntries(
-    sortBy(Object.entries(obj), ([key]) => lookup.get(key) ?? keys.length)
+    sortBy(Object.entries(obj), ([key]) => lookup.get(key) ?? keys.length),
   ) as T;
 }
 
@@ -43,5 +43,5 @@ export const brickToYaml = (brickConfig: Record<string, unknown>) =>
       "metadata",
       "inputSchema",
       "outputSchema",
-    ])
+    ]),
   );

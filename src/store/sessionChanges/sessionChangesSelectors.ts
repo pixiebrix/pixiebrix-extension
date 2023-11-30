@@ -28,16 +28,16 @@ import { createSelector } from "reselect";
  * @returns true if there are newer changes in another editor instance in a different browser tab
  */
 export const selectIsStaleSession: (
-  state: SessionRootState & SessionChangesRootState
+  state: SessionRootState & SessionChangesRootState,
 ) => boolean = createSelector(
   ({ sessionChanges }: SessionChangesRootState) => sessionChanges.latestChanges,
   ({ session }: SessionRootState) => session,
   (
     latestChanges,
-    { sessionId: thisSessionId, sessionStart: thisSessionStart }
+    { sessionId: thisSessionId, sessionStart: thisSessionStart },
   ) => {
     for (const [latestChangeSessionId, latestChangeDate] of Object.entries(
-      latestChanges
+      latestChanges,
     )) {
       if (
         thisSessionStart < latestChangeDate &&
@@ -48,5 +48,5 @@ export const selectIsStaleSession: (
     }
 
     return false;
-  }
+  },
 );

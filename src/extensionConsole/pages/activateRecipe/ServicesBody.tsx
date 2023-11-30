@@ -57,7 +57,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
 }) => {
   const { data: authOptions, refetch: refreshAuthOptions } = fallbackValue(
     useAuthOptions(),
-    emptyAuthOptions
+    emptyAuthOptions,
   );
   const [
     integrationDependenciesField,
@@ -68,7 +68,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
   const requiredServiceIds = useMemo(
     // The PixieBrix service gets automatically configured, so no need to include it
     () => getModDefinitionIntegrationIds(blueprint, { excludePixieBrix: true }),
-    [blueprint]
+    [blueprint],
   );
 
   function shouldShowField(serviceId: RegistryId): boolean {
@@ -77,7 +77,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
     }
 
     const serviceOptions = authOptions.filter(
-      (option) => option.serviceId === serviceId
+      (option) => option.serviceId === serviceId,
     );
 
     // Always show field if there are no options available for the service
@@ -89,7 +89,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
       // Show the field if there are options for the service that are not built-in
       return authOptions.some(
         (option) =>
-          option.serviceId === serviceId && option.sharingType !== "built-in"
+          option.serviceId === serviceId && option.sharingType !== "built-in",
       );
     }
 
@@ -138,7 +138,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
               name={joinName(
                 integrationDependenciesField.name,
                 String(index),
-                "configId"
+                "configId",
               )}
               onRefresh={refreshAuthOptions}
             />

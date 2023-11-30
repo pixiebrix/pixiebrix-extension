@@ -114,7 +114,7 @@ export const APPEND_SCHEMA: Schema = propertiesToSchema(
     },
   },
   // For backwards compatibility, googleAccount is not required
-  ["spreadsheetId", "tabName", "rowValues"]
+  ["spreadsheetId", "tabName", "rowValues"],
 );
 
 function makeRowCells(headerRow: string[], rowEntries: Entry[]): CellValue[] {
@@ -127,7 +127,7 @@ function makeRowCells(headerRow: string[], rowEntries: Entry[]): CellValue[] {
   for (const header of fields) {
     const normalizedHeader = normalizeHeader(header);
     const rowValue = rowEntries.find(
-      (x) => normalizeHeader(x.header) === normalizedHeader
+      (x) => normalizeHeader(x.header) === normalizedHeader,
     );
     if (rowValue) {
       matched.add(rowValue.header);
@@ -142,7 +142,7 @@ function makeRowCells(headerRow: string[], rowEntries: Entry[]): CellValue[] {
     .filter((x) => !matched.has(x));
   if (unmatched.length > 0) {
     console.warn(
-      `${unmatched.length} field(s) were unmatched: ${unmatched.join(", ")}`
+      `${unmatched.length} field(s) were unmatched: ${unmatched.join(", ")}`,
     );
   }
 
@@ -150,7 +150,7 @@ function makeRowCells(headerRow: string[], rowEntries: Entry[]): CellValue[] {
 }
 
 export const GOOGLE_SHEETS_APPEND_ID = validateRegistryId(
-  "@pixiebrix/google/sheets-append"
+  "@pixiebrix/google/sheets-append",
 );
 
 function isAuthError(error: unknown): boolean {
@@ -163,7 +163,7 @@ export function detectShape(rowValues: RowValues): KnownShape {
     if (
       rowValues.every(
         (entry) =>
-          isObject(entry) && isEqual(new Set(Object.keys(entry)), entryKeys)
+          isObject(entry) && isEqual(new Set(Object.keys(entry)), entryKeys),
       )
     ) {
       return "entries";
@@ -185,7 +185,7 @@ export function validateShape(shape: KnownShape, rowValues: RowValues) {
         !Array.isArray(rowValues) ||
         !rowValues.every(
           (entry) =>
-            isObject(entry) && isEqual(new Set(Object.keys(entry)), entryKeys)
+            isObject(entry) && isEqual(new Set(Object.keys(entry)), entryKeys),
         )
       ) {
         throw new BusinessError("Expected array of header/value entries");
@@ -259,7 +259,7 @@ export class GoogleSheetsAppend extends EffectABC {
       GOOGLE_SHEETS_APPEND_ID,
       "Add Google sheet row",
       "Add a row of data to a Google sheet with headings",
-      "faTable"
+      "faTable",
     );
   }
 
@@ -279,7 +279,7 @@ export class GoogleSheetsAppend extends EffectABC {
       shape: Shape;
       rowValues: RowValues;
     }>,
-    { logger }: BrickOptions
+    { logger }: BrickOptions,
   ): Promise<void> {
     if (googleAccount == null) {
       throw new PropError(
@@ -301,14 +301,14 @@ export class GoogleSheetsAppend extends EffectABC {
     };
     const rows = normalizeShape(shape, rawValues);
     const valueHeaders = uniq(
-      rows.flatMap((row) => row.map((x: Entry) => x.header))
+      rows.flatMap((row) => row.map((x: Entry) => x.header)),
     );
 
     let currentHeaders: string[];
     try {
       currentHeaders = await sheets.getHeaders(target);
       console.debug(
-        `Found headers for ${tabName}: ${currentHeaders.join(", ")}`
+        `Found headers for ${tabName}: ${currentHeaders.join(", ")}`,
       );
     } catch (error) {
       logger.warn(`Error retrieving headers: ${getErrorMessage(error)}`, {
@@ -330,7 +330,7 @@ export class GoogleSheetsAppend extends EffectABC {
 
     await sheets.appendRows(
       target,
-      rows.map((row) => makeRowCells(currentHeaders, row))
+      rows.map((row) => makeRowCells(currentHeaders, row)),
     );
   }
 }

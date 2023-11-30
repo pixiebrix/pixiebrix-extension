@@ -21,7 +21,7 @@ import useAsyncEffect from "use-async-effect";
 
 export default function useUpdatableAsyncState<S = undefined>(
   getter: () => Promise<S>,
-  setter: (value: S) => Promisable<void>
+  setter: (value: S) => Promisable<void>,
   // TODO: Accept dependencies
 ): [S | undefined, (value: SetStateAction<S | undefined>) => Promise<void>] {
   const [value, setValue] = useState<S>();
@@ -33,7 +33,7 @@ export default function useUpdatableAsyncState<S = undefined>(
         setValue(value);
       }
     },
-    [setValue]
+    [setValue],
   );
 
   const update = useCallback(
@@ -41,7 +41,7 @@ export default function useUpdatableAsyncState<S = undefined>(
       await setter(newValue);
       setValue(newValue);
     },
-    [setValue, setter]
+    [setValue, setter],
   );
 
   return [value, update];

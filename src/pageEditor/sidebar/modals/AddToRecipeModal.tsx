@@ -59,7 +59,7 @@ const formStateSchema = object({
 
 const AddToRecipeModal: React.FC = () => {
   const { isAddToRecipeModalVisible: show } = useSelector(
-    selectEditorModalVisibilities
+    selectEditorModalVisibilities,
   );
   const recipeMetadatas = useSelector(selectInstalledRecipeMetadatas);
   const activeElement = useSelector(selectActiveElement);
@@ -82,7 +82,7 @@ const AddToRecipeModal: React.FC = () => {
 
   const onSubmit: OnSubmit<FormState> = async (
     { recipeId, moveOrCopy },
-    helpers
+    helpers,
   ) => {
     const keepLocalCopy = moveOrCopy === "copy";
 
@@ -101,7 +101,7 @@ const AddToRecipeModal: React.FC = () => {
           elementId,
           recipeMetadata,
           keepLocalCopy,
-        })
+        }),
       );
       if (!keepLocalCopy) {
         await removeExtension({

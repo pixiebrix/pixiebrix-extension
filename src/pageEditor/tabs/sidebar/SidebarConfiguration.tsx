@@ -37,7 +37,7 @@ const SidebarConfiguration: React.FC<{
   const [{ value: trigger }] = useField<Trigger>(fieldName("trigger"));
 
   const [{ value: debounce }] = useField<DebounceOptions | null>(
-    fieldName("debounce")
+    fieldName("debounce"),
   );
 
   const { setFieldValue } = useFormikContext<TriggerFormState>();

@@ -29,7 +29,7 @@ describe("extractIntegrationIdsFromSchema", () => {
 
   it("can suppress error", () => {
     expect(
-      extractIntegrationIdsFromSchema({}, { suppressNotFoundError: true })
+      extractIntegrationIdsFromSchema({}, { suppressNotFoundError: true }),
     ).toEqual([]);
   });
 
@@ -55,7 +55,7 @@ describe("extractIntegrationIdsFromSchema", () => {
     // Returns empty because the $ref is https://app.pixiebrix.com/schemas/service#/definitions/configuredService
     // which is not a specific service schema.
     expect(
-      extractIntegrationIdsFromSchema(httpInputProperties.service)
+      extractIntegrationIdsFromSchema(httpInputProperties.service),
     ).toEqual([]);
   });
 });

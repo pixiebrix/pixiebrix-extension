@@ -18,7 +18,7 @@
 import { type Expression } from "@/types/runtimeTypes";
 
 export function getSheetIdIntegrationOutputKey(
-  fieldValue: Expression
+  fieldValue: Expression,
 ): string | undefined {
   const parts = fieldValue.__value__
     // Remove the leading @

@@ -41,7 +41,7 @@ import {
 } from "@/testUtils/factories/marketplaceFactories";
 import * as messengerApi from "@/contentScript/messenger/api";
 import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
-import ErrorBoundary from "@/sidebar/ErrorBoundary";
+import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 
@@ -55,13 +55,13 @@ jest.mock("@/sidebar/sidebarSelectors", () => ({
 
 const useRequiredModDefinitionsMock = jest.mocked(useRequiredModDefinitions);
 const checkModDefinitionPermissionsMock = jest.mocked(
-  checkModDefinitionPermissions
+  checkModDefinitionPermissions,
 );
 const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
 
 jest.mock("@/starterBricks/starterBrickModUtils", () => {
   const actualUtils = jest.requireActual(
-    "@/starterBricks/starterBrickModUtils"
+    "@/starterBricks/starterBrickModUtils",
   );
 
   return {
@@ -96,7 +96,7 @@ beforeAll(() => {
 
 function setupMocksAndRender(
   modDefinitionOverride?: Partial<ModDefinition>,
-  { componentOverride }: { componentOverride?: React.ReactElement } = {}
+  { componentOverride }: { componentOverride?: React.ReactElement } = {},
 ) {
   const modDefinition = defaultModDefinitionFactory({
     ...modDefinitionOverride,
@@ -106,7 +106,7 @@ function setupMocksAndRender(
     },
   });
   useRequiredModDefinitionsMock.mockReturnValue(
-    valueToAsyncCacheState([modDefinition])
+    valueToAsyncCacheState([modDefinition]),
   );
   const listing = marketplaceListingFactory({
     // Consistent user-visible name for snapshots
@@ -266,11 +266,11 @@ describe("ActivateRecipePanel", () => {
     expect(
       screen.getByText(
         "We're almost there. This mod has a few settings to configure before using.",
-        { exact: false }
-      )
+        { exact: false },
+      ),
     ).toBeVisible();
     expect(
-      screen.getByRole("button", { name: "Finish Activating" })
+      screen.getByRole("button", { name: "Finish Activating" }),
     ).toBeVisible();
   });
 
@@ -324,7 +324,7 @@ describe("ActivateRecipePanel", () => {
     expect(asFragment()).toMatchSnapshot();
     expect(
       // eslint-disable-next-line testing-library/no-container
-      container.querySelector(".actionButton")
+      container.querySelector(".actionButton"),
     ).not.toBeDisabled();
   });
 
@@ -391,8 +391,8 @@ describe("ActivateMultipleModsPanel", () => {
 
     expect(
       screen.getByText(
-        "One or more mods require configuration. Activate the mods individually to configure them."
-      )
+        "One or more mods require configuration. Activate the mods individually to configure them.",
+      ),
     ).toBeInTheDocument();
   });
 });

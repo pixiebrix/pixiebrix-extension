@@ -76,7 +76,7 @@ const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
   const serviceURL = useAdminConsoleUrl();
 
   const mode = useSelector<{ settings: SettingsState }, string>(
-    ({ settings }) => settings.mode
+    ({ settings }) => settings.mode,
   );
 
   // Use `connectedPending` to optimistically show the toggle

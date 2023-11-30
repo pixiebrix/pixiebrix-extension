@@ -41,7 +41,7 @@ type ModsState = {
 };
 
 export function selectUnavailableRecipe(
-  extension: ModComponentBase
+  extension: ModComponentBase,
 ): UnavailableMod {
   return {
     metadata: extension._recipe,
@@ -66,13 +66,13 @@ function useMods(): ModsState {
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
       installedExtensionIds: new Set<UUID>(
-        unresolvedExtensions.map((extension) => extension.id)
+        unresolvedExtensions.map((extension) => extension.id),
       ),
       installedRecipeIds: new Set(
-        unresolvedExtensions.map((extension) => extension._recipe?.id)
+        unresolvedExtensions.map((extension) => extension._recipe?.id),
       ),
     }),
-    [unresolvedExtensions]
+    [unresolvedExtensions],
   );
 
   const knownPersonalOrTeamRecipes = useMemo(
@@ -84,9 +84,9 @@ function useMods(): ModsState {
           // Is blueprint shared with user
           recipe.sharing.organizations.length > 0 ||
           // Is blueprint active, e.g. installed via marketplace
-          installedRecipeIds.has(recipe.metadata.id)
+          installedRecipeIds.has(recipe.metadata.id),
       ),
-    [installedRecipeIds, knownRecipes, scope]
+    [installedRecipeIds, knownRecipes, scope],
   );
 
   const allExtensions = useMemo(() => {
@@ -102,11 +102,11 @@ function useMods(): ModsState {
     async () =>
       Promise.all(
         allExtensions.map(async (extension) =>
-          resolveExtensionInnerDefinitions(extension)
-        )
+          resolveExtensionInnerDefinitions(extension),
+        ),
       ),
     [allExtensions],
-    { initialValue: [] }
+    { initialValue: [] },
   );
 
   const extensionsWithoutRecipe = useMemo(
@@ -115,28 +115,28 @@ function useMods(): ModsState {
       (resolvedExtensions ?? []).filter((extension) =>
         extension._recipe?.id
           ? !installedRecipeIds.has(extension._recipe?.id)
-          : true
+          : true,
       ),
-    [installedRecipeIds, resolvedExtensions]
+    [installedRecipeIds, resolvedExtensions],
   );
 
   // Find extensions that were installed by a recipe that's no longer available to the user, e.g., because it was
   // deleted, or because the user no longer has access to it.
   const unavailableRecipes: UnavailableMod[] = useMemo(() => {
     const knownRecipeIds = new Set(
-      (knownRecipes ?? []).map((x) => x.metadata.id)
+      (knownRecipes ?? []).map((x) => x.metadata.id),
     );
 
     // `resolvedExtensions` can be undefined if resolveDefinitions errors above
     const unavailable = (resolvedExtensions ?? []).filter(
       (extension) =>
-        extension._recipe?.id && !knownRecipeIds.has(extension._recipe?.id)
+        extension._recipe?.id && !knownRecipeIds.has(extension._recipe?.id),
     );
 
     // Show one entry per missing recipe
     return uniqBy(
       unavailable.map((x) => selectUnavailableRecipe(x)),
-      (x) => x.metadata.id
+      (x) => x.metadata.id,
     );
   }, [knownRecipes, resolvedExtensions]);
 

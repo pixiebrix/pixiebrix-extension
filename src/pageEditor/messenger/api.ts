@@ -21,7 +21,7 @@ import { getNotifier } from "webext-messenger";
 
 if (isDevToolsPage()) {
   throw new Error(
-    "This should not have been imported in the pageEditor. Use the API directly instead."
+    "This should not have been imported in the pageEditor. Use the API directly instead.",
   );
 }
 

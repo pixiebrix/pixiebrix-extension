@@ -42,7 +42,7 @@ type Mode = "modal" | "panel";
 
 export async function createFrameSource(
   nonce: string,
-  mode: Mode
+  mode: Mode,
 ): Promise<URL> {
   const target = await getThisFrame();
 
@@ -62,7 +62,7 @@ export class FormTransformer extends TransformerABC {
       FormTransformer.BLOCK_ID,
       "Show a modal or sidebar form",
       "Show a form as a modal or in the sidebar, and return the input",
-      "faCode"
+      "faCode",
     );
   }
 
@@ -123,7 +123,7 @@ export class FormTransformer extends TransformerABC {
       submitCaption = "Submit",
       location = "modal",
     }: BrickArgs<FormDefinition>,
-    { logger, abortSignal }: BrickOptions
+    { logger, abortSignal }: BrickOptions,
   ): Promise<unknown> {
     expectContext("contentScript");
 
@@ -177,7 +177,7 @@ export class FormTransformer extends TransformerABC {
           // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
           // The listener will be removed when the given AbortSignal object's abort() method is called.
           signal: controller.signal,
-        }
+        },
       );
 
       controller.signal.addEventListener("abort", () => {

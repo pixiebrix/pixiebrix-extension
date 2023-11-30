@@ -82,7 +82,7 @@ async function waitExtensionLoaded(): Promise<void> {
       message: `The extension did not load within ${
         POLL_READY_TIMEOUT / 1000
       }s`,
-    }
+    },
   );
 }
 
@@ -97,7 +97,7 @@ function sendMessageToOtherSide(message: Message | Response) {
 
 /** Content script handler for messages from app */
 async function onContentScriptReceiveMessage(
-  event: MessageEvent<Message<UnknownObject>>
+  event: MessageEvent<Message<UnknownObject>>,
 ): Promise<void> {
   expectContext("contentScript");
 
@@ -158,11 +158,11 @@ async function oneResponse<R>(nonce: string): Promise<R> {
 
 export function liftExternalToContentScript<
   TArguments extends unknown[],
-  R extends SerializableResponse
+  R extends SerializableResponse,
 >(
   type: string,
   method: (...args: TArguments) => Promise<R>,
-  options?: HandlerOptions
+  options?: HandlerOptions,
 ): (...args: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
   // Set defaults
@@ -175,7 +175,7 @@ export function liftExternalToContentScript<
     // Register global handler; Automatically deduplicated
     document.defaultView.addEventListener(
       "message",
-      onContentScriptReceiveMessage
+      onContentScriptReceiveMessage,
     );
 
     contentScriptHandlers.set(fullType, { handler: method, options });

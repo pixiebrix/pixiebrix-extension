@@ -63,11 +63,11 @@ export const UNIQUE_ATTRIBUTES: string[] = [
 
 // eslint-disable-next-line security/detect-non-literal-regexp -- Not user-provided
 const UNIQUE_ATTRIBUTES_REGEX = new RegExp(
-  UNIQUE_ATTRIBUTES.map((attribute) => `^\\[${attribute}=`).join("|")
+  UNIQUE_ATTRIBUTES.map((attribute) => `^\\[${attribute}=`).join("|"),
 );
 
 const UNIQUE_ATTRIBUTES_SELECTOR = UNIQUE_ATTRIBUTES.map(
-  (attribute) => `[${attribute}]`
+  (attribute) => `[${attribute}]`,
 ).join(",");
 
 const UNSTABLE_SELECTORS = [
@@ -82,23 +82,23 @@ const UNSTABLE_SELECTORS = [
     EXTENSION_POINT_DATA_ATTR,
     PIXIEBRIX_DATA_ATTR,
     CONTENT_SCRIPT_READY_ATTRIBUTE,
-    "style"
+    "style",
   ),
 ];
 
 function getUniqueAttributeSelectors(
   element: HTMLElement,
-  siteSelectorHint: SiteSelectorHint
+  siteSelectorHint: SiteSelectorHint,
 ): string[] {
   return UNIQUE_ATTRIBUTES.map((attribute) =>
-    getAttributeSelector(attribute, element.getAttribute(attribute))
+    getAttributeSelector(attribute, element.getAttribute(attribute)),
   ).filter(
     (selector) =>
       !matchesAnyPattern(selector, [
         ...UNSTABLE_SELECTORS,
         // We need to include salesforce BAD_PATTERNS here as well since this function is used to get inferSelectorsIncludingStableAncestors
         ...siteSelectorHint.badPatterns,
-      ])
+      ]),
   );
 }
 
@@ -130,17 +130,17 @@ function isSelectorUsuallyUnique(selector: string): boolean {
 export function sortBySelector(selectors: string[]): string[];
 export function sortBySelector<Item>(
   selectors: Item[],
-  iteratee: (selector: Item) => string
+  iteratee: (selector: Item) => string,
 ): Item[];
 export function sortBySelector<Item = string>(
   selectors: Item[],
-  iteratee?: (selector: Item) => string
+  iteratee?: (selector: Item) => string,
 ): Item[] {
   const select = iteratee ?? identity;
   return sortBy(
     selectors,
     (x) => getSelectorPreference(select(x)),
-    (x) => select(x).length
+    (x) => select(x).length,
   );
 }
 
@@ -165,7 +165,7 @@ export function getSelectorPreference(selector: string): number {
   const tokenized = $.find.tokenize(selector);
   if (tokenized.length > 1) {
     throw new TypeError(
-      "Expected single selector, received selector list: " + selector
+      "Expected single selector, received selector list: " + selector,
     );
   }
 
@@ -226,7 +226,7 @@ export function safeCssSelector(
     selectors = DEFAULT_SELECTOR_PRIORITIES,
     excludeRandomClasses = false,
     root = undefined,
-  }: SafeCssSelectorOptions = {}
+  }: SafeCssSelectorOptions = {},
 ): string {
   // https://github.com/fczbkk/css-selector-generator
   const siteSelectorHint = getSiteSelectorHint(elements[0]);
@@ -276,7 +276,7 @@ export function safeCssSelector(
 function selectorsOverlap(
   lhs: string,
   rhs: string,
-  root?: HTMLElement
+  root?: HTMLElement,
 ): boolean {
   return (
     intersection($safeFind(lhs, root).get(), $safeFind(rhs, root).get())
@@ -302,7 +302,7 @@ export function expandedCssSelector(
     selectors = DEFAULT_SELECTOR_PRIORITIES,
     excludeRandomClasses = false,
     root = undefined,
-  }: SafeCssSelectorOptions = {}
+  }: SafeCssSelectorOptions = {},
 ): string {
   // All elements are on the same page, so just use first element for siteSelectorHint
   // https://github.com/fczbkk/css-selector-generator
@@ -338,9 +338,9 @@ export function expandedCssSelector(
       .filter(
         [...UNIQUE_ATTRIBUTES, "class"]
           .map((attribute) => `[${attribute}]`)
-          .join(",")
+          .join(","),
       )
-      .get()
+      .get(),
   );
 
   // Get an arbitrary common ancestor. (Will likely be first element because parentsUntil works from the element upward)
@@ -370,7 +370,7 @@ export function expandedCssSelector(
   // TODO: look for all common attributes that could be non-unique, e.g., aria-role="button"
   // TODO: right now this is picking an arbitrary class name
   const [commonParentClassName] = intersection(
-    ...elements.map((element) => [$(element).parent().attr("class")])
+    ...elements.map((element) => [$(element).parent().attr("class")]),
   );
 
   const commonSelector =
@@ -378,7 +378,7 @@ export function expandedCssSelector(
     commonParentClassName &&
     !selectorsOverlap(
       commonAncestorSelector,
-      getSelectorFromClass(commonParentClassName)
+      getSelectorFromClass(commonParentClassName),
     )
       ? [
           commonAncestorSelector,
@@ -391,12 +391,12 @@ export function expandedCssSelector(
   // TODO: look for all common attribute values that would be non-unique: e.g., aria-role="button"
   // TODO: right now this is picking an arbitrary class name
   const [commonElementClassName] = intersection(
-    ...elements.map((element) => element.className.split(" "))
+    ...elements.map((element) => element.className.split(" ")),
   );
 
   if (commonElementClassName) {
     return [commonSelector, getSelectorFromClass(commonElementClassName)].join(
-      " "
+      " ",
     );
   }
 
@@ -409,7 +409,7 @@ export function expandedCssSelector(
 
 function findAncestorsWithIdLikeSelectors(
   element: HTMLElement,
-  root?: Element
+  root?: Element,
 ): HTMLElement[] {
   // eslint-disable-next-line unicorn/no-array-callback-reference -- jQuery false positive
   return $(element).parentsUntil(root).filter(UNIQUE_ATTRIBUTES_SELECTOR).get();
@@ -418,21 +418,21 @@ function findAncestorsWithIdLikeSelectors(
 export function inferSelectorsIncludingStableAncestors(
   element: HTMLElement,
   root?: Element,
-  excludeRandomClasses?: boolean
+  excludeRandomClasses?: boolean,
 ): string[] {
   const siteSelectorHint = getSiteSelectorHint(element);
   const stableAncestors = findAncestorsWithIdLikeSelectors(
     element,
-    root
+    root,
   ).flatMap((stableAncestor) =>
     inferSelectors(element, stableAncestor, excludeRandomClasses).flatMap(
       (selector) =>
         getUniqueAttributeSelectors(stableAncestor, siteSelectorHint)
           .filter(Boolean)
           .map((stableAttributeSelector) =>
-            [stableAttributeSelector, selector].join(" ")
-          )
-    )
+            [stableAttributeSelector, selector].join(" "),
+          ),
+    ),
   );
 
   return sortBySelector(
@@ -440,8 +440,8 @@ export function inferSelectorsIncludingStableAncestors(
       uniq([
         ...inferSelectors(element, root, excludeRandomClasses),
         ...stableAncestors,
-      ])
-    )
+      ]),
+    ),
   );
 }
 
@@ -451,7 +451,7 @@ export function inferSelectorsIncludingStableAncestors(
 export function inferSelectors(
   element: HTMLElement,
   root?: Element,
-  excludeRandomClasses?: boolean
+  excludeRandomClasses?: boolean,
 ): string[] {
   const makeSelector = (allowed?: CssSelectorType[]) => {
     try {
@@ -479,8 +479,8 @@ export function inferSelectors(
         makeSelector(["id", "tag", "attribute"]),
         makeSelector(["class", "tag", "attribute"]),
         makeSelector(),
-      ])
-    )
+      ]),
+    ),
   );
 }
 
@@ -541,7 +541,7 @@ export function inferMultiElementSelector({
  */
 export function doesSelectOneElement(
   selector: string,
-  parent?: HTMLElement | Document | JQuery<HTMLElement | Document>
+  parent?: HTMLElement | Document | JQuery<HTMLElement | Document>,
 ): boolean {
   return $safeFind(selector, parent).length === 1;
 }
@@ -595,14 +595,14 @@ function findContainerForElement(element: HTMLElement): {
     if (element.tagName === "INPUT") {
       extra.push(
         `${container.tagName.toLowerCase()}:has(${descendent} input[value='${escapeSingleQuotes(
-          element.getAttribute("value")
-        )}'])`
+          element.getAttribute("value"),
+        )}'])`,
       );
     } else {
       extra.push(
         `${container.tagName.toLowerCase()}:has(${descendent} ${element.tagName.toLowerCase()}:contains('${escapeSingleQuotes(
-          $(element).text().trim()
-        )}'))`
+          $(element).text().trim(),
+        )}'))`,
       );
     }
   }
@@ -642,7 +642,7 @@ export function findContainer(elements: HTMLElement[]): {
  */
 export function getAttributeSelector(
   name: string,
-  value: string | null
+  value: string | null,
 ): string | null {
   if (!value) {
     return;
@@ -676,10 +676,10 @@ function getClassSelector(className: string): string | null {
  */
 function getElementSelectors(target: Element): string[] {
   const attributeSelectors = [...target.attributes].map(({ name, value }) =>
-    getAttributeSelector(name, value)
+    getAttributeSelector(name, value),
   );
   const classSelectors = [...target.classList].map((className) =>
-    getClassSelector(className)
+    getClassSelector(className),
   );
 
   return compact([

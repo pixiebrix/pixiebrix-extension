@@ -50,7 +50,7 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
   }
 
   override visitExtensionPoint(
-    extensionPoint: ModComponentFormState["extensionPoint"]
+    extensionPoint: ModComponentFormState["extensionPoint"],
   ) {
     super.visitExtensionPoint(extensionPoint);
 
@@ -70,7 +70,7 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
       } else if (
         !DOM_EVENTS.includes(eventName) &&
         !this.collectedEvents.knownEmittedNames.includes(
-          extensionPoint.definition.customEvent.eventName
+          extensionPoint.definition.customEvent.eventName,
         )
       ) {
         if (this.collectedEvents.hasDynamicEventName) {
@@ -100,15 +100,15 @@ class CheckEventNamesAnalysis extends AnalysisVisitorABC {
 
   override async run(extension: ModComponentFormState) {
     const results = this.formStates.map((x) =>
-      CollectEventNamesVisitor.collectNames(x)
+      CollectEventNamesVisitor.collectNames(x),
     );
 
     this.collectedEvents = {
       knownEmittedNames: uniq(
-        flatten(results.map((result) => result.knownEmittedNames))
+        flatten(results.map((result) => result.knownEmittedNames)),
       ),
       knownTriggerNames: uniq(
-        flatten(results.map((result) => result.knownTriggerNames))
+        flatten(results.map((result) => result.knownTriggerNames)),
       ),
       hasDynamicEventName: results.some((result) => result.hasDynamicEventName),
     };

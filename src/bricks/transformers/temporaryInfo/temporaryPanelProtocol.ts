@@ -66,7 +66,7 @@ export function getTemporaryPanelSidebarEntries(): TemporaryPanelEntry[] {
   return [...panels.values()]
     .filter(
       (panel): panel is RegisteredPanel =>
-        Boolean(panel.entry) && panel.location === "panel"
+        Boolean(panel.entry) && panel.location === "panel",
     )
     .map((panel) => ({
       type: "temporaryPanel",
@@ -79,7 +79,7 @@ export function getTemporaryPanelSidebarEntries(): TemporaryPanelEntry[] {
  * @param nonce the panel nonce
  */
 export async function getPanelDefinition(
-  nonce: UUID
+  nonce: UUID,
 ): Promise<TemporaryPanelEntry> {
   expectContext("contentScript");
 
@@ -102,7 +102,7 @@ export async function getPanelDefinition(
  * @param entry the panel definition
  */
 export function updatePanelDefinition(
-  entry: Except<TemporaryPanelEntry, "type">
+  entry: Except<TemporaryPanelEntry, "type">,
 ): void {
   expectContext("contentScript");
 
@@ -141,7 +141,7 @@ export function registerEmptyTemporaryPanel({
 
   if (panels.has(nonce)) {
     console.error(
-      `A temporary panel was already registered with nonce ${nonce}`
+      `A temporary panel was already registered with nonce ${nonce}`,
     );
     return;
   }
@@ -184,7 +184,7 @@ export async function waitForTemporaryPanel({
 
   if (panels.has(nonce)) {
     console.warn(
-      `A temporary panel was already registered with nonce ${nonce}`
+      `A temporary panel was already registered with nonce ${nonce}`,
     );
   }
 
@@ -241,7 +241,7 @@ export async function stopWaitingForTemporaryPanels(nonces: UUID[]) {
  */
 export async function resolveTemporaryPanel(
   nonce: UUID,
-  action: PanelAction
+  action: PanelAction,
 ): Promise<void> {
   expectContext("contentScript");
 
@@ -256,7 +256,7 @@ export async function resolveTemporaryPanel(
  */
 export async function cancelTemporaryPanels(
   nonces: UUID[],
-  error?: unknown
+  error?: unknown,
 ): Promise<void> {
   expectContext("contentScript");
 
@@ -279,7 +279,7 @@ export async function cancelTemporaryPanels(
  * @see cancelTemporaryPanels
  */
 export async function cancelTemporaryPanelsForExtension(
-  extensionId: UUID
+  extensionId: UUID,
 ): Promise<void> {
   const nonces = extensionNonces.get(extensionId) ?? new Set();
   await cancelTemporaryPanels([...nonces]);

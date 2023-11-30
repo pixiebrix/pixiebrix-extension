@@ -84,8 +84,8 @@ const BrickDetail = <T extends Metadata>({
     "schema" in brick
       ? brick.schema
       : "inputSchema" in brick
-      ? brick.inputSchema
-      : {};
+        ? brick.inputSchema
+        : {};
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const outputSchema = (brick as any).outputSchema as Schema;
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
@@ -100,7 +100,7 @@ const BrickDetail = <T extends Metadata>({
       successMessage: "Copied input argument YAML to clipboard",
       errorMessage: "Error copying YAML to clipboard",
     },
-    [schema]
+    [schema],
   );
 
   return (

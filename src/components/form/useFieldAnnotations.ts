@@ -37,7 +37,7 @@ import { type Expression } from "@/types/runtimeTypes";
 
 function makeFieldActionForAnnotationAction(
   action: AnalysisAnnotationAction,
-  formik: FormikContextType<ModComponentFormState>
+  formik: FormikContextType<ModComponentFormState>,
 ): FieldAnnotationAction {
   return {
     caption: action.caption,
@@ -79,7 +79,7 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
   if (shouldUseAnalysis) {
     // eslint-disable-next-line react-hooks/rules-of-hooks -- Conditional is based on a Context that won't change at runtime
     const analysisAnnotations = useSelector(
-      selectAnnotationsForPath(fieldPath)
+      selectAnnotationsForPath(fieldPath),
     );
 
     // eslint-disable-next-line react-hooks/rules-of-hooks -- Conditional is based on a Context that won't change at runtime
@@ -105,7 +105,7 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
           };
           if (showFieldActions && !isEmpty(actions)) {
             fieldAnnotation.actions = actions.map((action) =>
-              makeFieldActionForAnnotationAction(action, formik)
+              makeFieldActionForAnnotationAction(action, formik),
             );
           }
 

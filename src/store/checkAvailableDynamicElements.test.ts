@@ -96,8 +96,8 @@ describe("checkAvailableDynamicElements", () => {
       async (
         target: Target | PageTarget,
         availability: Availability,
-        url: string
-      ) => backgroundCheckAvailable(availability, url)
+        url: string,
+      ) => backgroundCheckAvailable(availability, url),
     );
 
     await store.dispatch(actions.checkAvailableDynamicElements());
@@ -105,10 +105,8 @@ describe("checkAvailableDynamicElements", () => {
 
     const state = store.getState();
 
-    const { availableDynamicIds, unavailableDynamicCount } =
-      selectExtensionAvailability(state);
+    const { availableDynamicIds } = selectExtensionAvailability(state);
 
     expect(availableDynamicIds).toStrictEqual([availableDynamicExtension.uuid]);
-    expect(unavailableDynamicCount).toBe(1);
   });
 });

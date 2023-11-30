@@ -23,12 +23,12 @@ describe("isContextInvalidatedError", () => {
   test("base test", () => {
     expect(isContextInvalidatedError(invalidated)).toBeTrue();
     expect(
-      isContextInvalidatedError(new Error("Parent", { cause: invalidated }))
+      isContextInvalidatedError(new Error("Parent", { cause: invalidated })),
     ).toBeTrue();
 
     expect(isContextInvalidatedError(unrelated)).toBeFalse();
     expect(
-      isContextInvalidatedError(new Error("Parent", { cause: unrelated }))
+      isContextInvalidatedError(new Error("Parent", { cause: unrelated })),
     ).toBeFalse();
   });
 });

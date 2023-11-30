@@ -24,7 +24,7 @@ import { pick } from "lodash";
  * @see ModComponentBase._recipe
  */
 export function pickModDefinitionMetadata(
-  modDefinition: ModDefinition
+  modDefinition: ModDefinition,
 ): ModComponentBase["_recipe"] {
   if (modDefinition.metadata?.id == null) {
     throw new TypeError("ModDefinition metadata id is required");

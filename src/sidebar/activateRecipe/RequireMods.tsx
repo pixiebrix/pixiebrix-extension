@@ -70,11 +70,11 @@ type Props = {
  */
 export function requiresUserConfiguration(
   modDefinition: ModDefinition,
-  authOptions: AuthOption[]
+  authOptions: AuthOption[],
 ): boolean {
   const defaultAuthOptionsByIntegrationId = getDefaultAuthOptionsForMod(
     modDefinition,
-    authOptions
+    authOptions,
   );
 
   const { properties: modOptions, required: requiredOptions = [] } =
@@ -114,7 +114,7 @@ export function requiresUserConfiguration(
 
       // Needs user configuration if there are any non-built-in options available
       return defaultOption?.sharingType !== "built-in";
-    }
+    },
   );
 
   return needsOptionsInputs || needsIntegrationAuths;
@@ -138,7 +138,7 @@ const RequireMods: React.FC<Props> = ({ modIds, children }) => {
         modDefinitions.map(async (modDefinition) => {
           const defaultAuthOptions = getDefaultAuthOptionsForMod(
             modDefinition,
-            authOptions
+            authOptions,
           );
 
           return {
@@ -146,15 +146,15 @@ const RequireMods: React.FC<Props> = ({ modIds, children }) => {
             defaultAuthOptions,
             requiresConfiguration: requiresUserConfiguration(
               modDefinition,
-              authOptions
+              authOptions,
             ),
             includesQuickBar: await includesQuickBarStarterBrick(modDefinition),
             isActive: modComponents.some(
-              (x) => x._recipe?.id === modDefinition.metadata.id
+              (x) => x._recipe?.id === modDefinition.metadata.id,
             ),
           };
-        })
-      )
+        }),
+      ),
   );
 
   // Throw error to hit error boundary

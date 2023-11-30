@@ -46,6 +46,6 @@ export const brickOptionsFactory = define<BrickOptions>({
       extensionId: options.logger.context.extensionId,
       branches: [],
     }),
-    "logger"
+    "logger",
   ),
 });

@@ -25,7 +25,7 @@ describe("parseUrl", () => {
 
     // Use `toMatchInlineSnapshot` since we can't spread the URL instance to get its properties
     await expect(
-      new UrlParser().transform(unsafeAssumeValidArg({ url: url.href }))
+      new UrlParser().transform(unsafeAssumeValidArg({ url: url.href })),
     ).resolves.toMatchInlineSnapshot(`
       {
         "hash": "",
@@ -51,8 +51,8 @@ describe("parseUrl", () => {
         unsafeAssumeValidArg({
           url: "/api/foo/?bar=42",
           base: "https://www.example.com",
-        })
-      )
+        }),
+      ),
     ).resolves.toMatchInlineSnapshot(`
       {
         "hash": "",
@@ -75,7 +75,7 @@ describe("parseUrl", () => {
 
   it("throws BusinessError for malformed URL", async () => {
     const promise = new UrlParser().transform(
-      unsafeAssumeValidArg({ url: "42" })
+      unsafeAssumeValidArg({ url: "42" }),
     );
     await expect(promise).rejects.toThrow(BusinessError);
     await expect(promise).rejects.toThrow("Invalid URL: 42");

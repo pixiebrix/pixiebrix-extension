@@ -33,7 +33,7 @@ describe("UrlPatternWidget", () => {
         initialValues: {
           pattern: [],
         },
-      }).asFragment()
+      }).asFragment(),
     ).toMatchSnapshot();
   });
 
@@ -47,7 +47,7 @@ describe("UrlPatternWidget", () => {
             },
           ],
         },
-      }).asFragment()
+      }).asFragment(),
     ).toMatchSnapshot();
   });
 });

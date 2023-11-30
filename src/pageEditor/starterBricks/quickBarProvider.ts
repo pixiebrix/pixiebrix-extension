@@ -46,7 +46,7 @@ import { type SingleLayerReaderConfig } from "@/pageEditor/baseFormStateTypes";
 
 function fromNativeElement(
   url: string,
-  metadata: Metadata
+  metadata: Metadata,
 ): QuickBarProviderFormState {
   const base = makeInitialBaseState();
 
@@ -77,7 +77,7 @@ function fromNativeElement(
 }
 
 function selectExtensionPointConfig(
-  formState: QuickBarProviderFormState
+  formState: QuickBarProviderFormState,
 ): StarterBrickConfig<QuickBarProviderDefinition> {
   const { extensionPoint } = formState;
   const {
@@ -96,7 +96,7 @@ function selectExtensionPointConfig(
 
 function selectExtension(
   state: QuickBarProviderFormState,
-  options: { includeInstanceIds?: boolean } = {}
+  options: { includeInstanceIds?: boolean } = {},
 ): ModComponentBase<QuickBarProviderConfig> {
   const { extension } = state;
   const config: QuickBarProviderConfig = {
@@ -112,7 +112,7 @@ function selectExtension(
 }
 
 async function fromExtension(
-  config: ModComponentBase<QuickBarProviderConfig>
+  config: ModComponentBase<QuickBarProviderConfig>,
 ): Promise<QuickBarProviderFormState> {
   const extensionPoint = await lookupExtensionPoint<
     QuickBarProviderDefinition,
@@ -126,7 +126,7 @@ async function fromExtension(
   const base = baseFromExtension(config, extensionPoint.definition.type);
   const extension = await extensionWithNormalizedPipeline(
     config.config,
-    "generator"
+    "generator",
   );
 
   return {
@@ -149,7 +149,7 @@ async function fromExtension(
 }
 
 function asDynamicElement(
-  element: QuickBarProviderFormState
+  element: QuickBarProviderFormState,
 ): DynamicDefinition {
   return {
     type: "quickBarProvider",

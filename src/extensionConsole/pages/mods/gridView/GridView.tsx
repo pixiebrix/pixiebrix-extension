@@ -44,7 +44,7 @@ import { type ModsPageContentProps } from "@/extensionConsole/pages/mods/ModsPag
  */
 export function expandGridRows(
   rows: Array<Row<ModViewItem>>,
-  columnCount: number
+  columnCount: number,
 ): Array<Row<ModViewItem> | Array<Row<ModViewItem>>> {
   const gridRows = [];
   let nextGridRow = [];
@@ -91,12 +91,12 @@ const GridView: React.VoidFunctionComponent<ModsPageContentProps> = ({
 
   const columnCount = useMemo(
     () => Math.floor(width / MIN_CARD_WIDTH_PX),
-    [width]
+    [width],
   );
 
   const expandedGridRows = useMemo(
     () => expandGridRows(tableInstance.rows, columnCount),
-    [columnCount, tableInstance.rows]
+    [columnCount, tableInstance.rows],
   );
 
   const getItemSize = useCallback(
@@ -104,7 +104,7 @@ const GridView: React.VoidFunctionComponent<ModsPageContentProps> = ({
       const row = expandedGridRows.at(index);
       return "isGrouped" in row ? HEADER_ROW_HEIGHT_PX : CARD_HEIGHT_PX;
     },
-    [expandedGridRows]
+    [expandedGridRows],
   );
 
   // `react-window` caches itemSize which causes inconsistent
@@ -150,7 +150,7 @@ const GridView: React.VoidFunctionComponent<ModsPageContentProps> = ({
         </div>
       );
     },
-    [expandedGridRows, tableInstance]
+    [expandedGridRows, tableInstance],
   );
 
   return (

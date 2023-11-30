@@ -30,7 +30,7 @@ test("unmatched returns empty dict", async () => {
     unsafeAssumeValidArg({
       regex: "(?<name>ABC)",
       input: "XYZ",
-    })
+    }),
   );
   expect(result).toEqual({});
 });
@@ -40,7 +40,7 @@ test("matches name", async () => {
     unsafeAssumeValidArg({
       regex: "(?<name>ABC)",
       input: "ABC",
-    })
+    }),
   );
   expect(result).toEqual({ name: "ABC" });
 });
@@ -51,7 +51,7 @@ test("ignore case", async () => {
       regex: "ab",
       input: "ABC",
       ignoreCase: true,
-    })
+    }),
   );
   expect(result).toEqual({ match: "AB" });
 });
@@ -61,7 +61,7 @@ test("default case-sensitive", async () => {
     unsafeAssumeValidArg({
       regex: "ab",
       input: "ABC",
-    })
+    }),
   );
   expect(result).toEqual({});
 });
@@ -71,7 +71,7 @@ test("handle multiple", async () => {
     unsafeAssumeValidArg({
       regex: "(?<name>ABC)",
       input: ["ABC", "XYZ"],
-    })
+    }),
   );
   expect(result).toEqual([{ name: "ABC" }, {}]);
 });
@@ -82,14 +82,14 @@ test("invalid regex is business error", async () => {
   const promise = transformer.transform(
     unsafeAssumeValidArg({
       regex: "BOOM\\",
-    })
+    }),
   );
 
   await expect(promise).rejects.toThrow(BusinessError);
   await expect(promise).rejects.toThrow(
     new BusinessError(
-      "Invalid regular expression: /BOOM\\/: \\ at end of pattern"
-    )
+      "Invalid regular expression: /BOOM\\/: \\ at end of pattern",
+    ),
   );
 });
 
@@ -98,7 +98,7 @@ test("unnamed match group", async () => {
     unsafeAssumeValidArg({
       regex: "AB",
       input: "ABC",
-    })
+    }),
   );
 
   expect(result).toEqual({
@@ -111,7 +111,7 @@ test("unmatched optional named match group", async () => {
     unsafeAssumeValidArg({
       regex: "(?<foo>AZ)?BC",
       input: "ABC",
-    })
+    }),
   );
 
   expect(result).toEqual({
@@ -125,7 +125,7 @@ test("matched optional named match group", async () => {
     unsafeAssumeValidArg({
       regex: "(?<foo>AZ)?BC",
       input: "AZBC",
-    })
+    }),
   );
 
   expect(result).toEqual({

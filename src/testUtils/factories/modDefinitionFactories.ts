@@ -121,7 +121,7 @@ export const modDefinitionWithVersionedStarterBrickFactory = ({
  * Factory to create a ModDefinition with a definitions section and resolved mod components
  */
 export const versionedModDefinitionWithResolvedModComponents = (
-  modComponentCount = 1
+  modComponentCount = 1,
 ) => {
   const modComponentDefinitions: ModComponentDefinition[] = [];
   for (let i = 0; i < modComponentCount; i++) {

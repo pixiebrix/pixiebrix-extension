@@ -34,7 +34,7 @@ class IfElse extends TransformerABC {
     super(
       IfElse.BLOCK_ID,
       "If-Else",
-      "Run multiple bricks if a condition is met"
+      "Run multiple bricks if a condition is met",
     );
   }
 
@@ -63,7 +63,7 @@ class IfElse extends TransformerABC {
         description: "The bricks to run if the condition is not met",
       },
     },
-    ["condition", "if"]
+    ["condition", "if"],
   );
 
   async transform(
@@ -76,7 +76,7 @@ class IfElse extends TransformerABC {
       if: PipelineExpression;
       else?: PipelineExpression;
     }>,
-    options: BrickOptions
+    options: BrickOptions,
   ): Promise<unknown> {
     const condition = boolean(rawCondition);
 

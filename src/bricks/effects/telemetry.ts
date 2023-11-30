@@ -29,7 +29,7 @@ export class TelemetryEffect extends EffectABC {
     super(
       "@pixiebrix/telemetry",
       "Send Telemetry",
-      "Sends event telemetry to PixieBrix"
+      "Sends event telemetry to PixieBrix",
     );
   }
 
@@ -56,14 +56,14 @@ export class TelemetryEffect extends EffectABC {
       eventName,
       data = {},
     }: BrickArgs<{ eventName: string; data: JsonObject }>,
-    { logger }: BrickOptions
+    { logger }: BrickOptions,
   ): Promise<void> {
     if ("$eventName" in data) {
       throw new PropError(
         "$eventName is a reserved value for eventName",
         this.id,
         "eventName",
-        eventName
+        eventName,
       );
     }
 

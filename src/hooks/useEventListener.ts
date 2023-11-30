@@ -22,7 +22,7 @@ type Handler = (event: Event) => void;
 export function useEventListener(
   eventName: string,
   handler: Handler,
-  element: HTMLElement | Window = window
+  element: HTMLElement | Window = window,
 ) {
   const savedHandler = useRef<Handler>();
 

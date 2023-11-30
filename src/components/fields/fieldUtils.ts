@@ -62,7 +62,7 @@ export function createTypePredicate(predicate: TypePredicate): TypePredicate {
  * Mutates the given object.
  */
 export function unwrapTemplateExpressions<
-  T extends UnknownObject | ArrayLike<unknown>
+  T extends UnknownObject | ArrayLike<unknown>,
 >(mutableObj: Draft<T | null>) {
   if (mutableObj === null || typeof mutableObj !== "object") {
     return;
@@ -79,7 +79,7 @@ export function unwrapTemplateExpressions<
 }
 
 export function getPreviewValues<
-  T extends UnknownObject | ArrayLike<unknown> = UnknownObject
+  T extends UnknownObject | ArrayLike<unknown> = UnknownObject,
 >(obj: T): T {
   return produce(obj, (draft) => {
     unwrapTemplateExpressions(draft);
@@ -93,7 +93,7 @@ export function isMustacheOnly(value: string): boolean {
 }
 
 export function getFieldValidator(
-  validationSchema: Yup.AnySchema | undefined
+  validationSchema: Yup.AnySchema | undefined,
 ): FieldValidator | undefined {
   if (validationSchema == null) {
     return undefined;
@@ -113,7 +113,7 @@ export function getFieldValidator(
 // parameter of buildYup
 // See https://github.com/kristianmandrup/schema-to-yup#quick-start
 export const getValidationErrMessages = (
-  schema: Schema | undefined
+  schema: Schema | undefined,
 ): Record<string, Record<string, string>> => {
   const errMessages: Record<string, Record<string, string>> = {};
 

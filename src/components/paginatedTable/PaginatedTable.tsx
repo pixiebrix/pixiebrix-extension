@@ -37,7 +37,7 @@ type RowProps = {
 };
 interface TableProps<
   Row extends Record<string, unknown>,
-  Actions extends Record<string, Action>
+  Actions extends Record<string, Action>,
 > {
   data: Row[];
   columns: Array<Column<Row>>;
@@ -86,7 +86,7 @@ function readPageIndex(location: Location): number {
   const value =
     Number.parseInt(
       new URLSearchParams(location.search).get("page") ?? "1",
-      10
+      10,
     ) - 1;
   return Number.isNaN(value) || value < 0 ? 0 : value;
 }
@@ -94,7 +94,7 @@ function readPageIndex(location: Location): number {
 function setSearchParams(
   location: Location,
   history: History,
-  update: Record<string, string>
+  update: Record<string, string>,
 ) {
   const params = new URLSearchParams(location.search);
   for (const [param, value] of Object.entries(update)) {
@@ -146,7 +146,7 @@ function findPageIndex<TRow extends Record<string, unknown>>({
 
 function PaginatedTable<
   Row extends Record<string, unknown>,
-  Actions extends Record<string, Action>
+  Actions extends Record<string, Action>,
 >({
   data,
   columns,
@@ -189,7 +189,7 @@ function PaginatedTable<
     useSortBy,
     usePagination,
     useResizeColumns,
-    useFlexLayout
+    useFlexLayout,
   );
 
   const rowNumber = rows.length > 0 ? pageIndex * pageSize + 1 : 0; // Show 0 for empty table
@@ -292,7 +292,7 @@ function PaginatedTable<
               // eslint-disable-next-line react/jsx-key -- handled by getRowProps
               <tr
                 {...row.getRowProps(
-                  rowProps ? rowProps(row.original) : undefined
+                  rowProps ? rowProps(row.original) : undefined,
                 )}
               >
                 {row.cells.map((cell) => (

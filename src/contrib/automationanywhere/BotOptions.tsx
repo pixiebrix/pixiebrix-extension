@@ -76,7 +76,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   //        gate as well as inside it?
   const { data: controlRoomConfig } =
     useSanitizedIntegrationConfigFormikAdapter(
-      CONTROL_ROOM_TOKEN_INTEGRATION_ID
+      CONTROL_ROOM_TOKEN_INTEGRATION_ID,
     );
 
   const [{ value: workspaceType }, , { setValue: setWorkspaceType }] =
@@ -85,11 +85,11 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   const [{ value: fileId }] = useField<string>(configName("fileId"));
 
   const [{ value: isAttended = false }] = useField<boolean>(
-    configName("isAttended")
+    configName("isAttended"),
   );
 
   const [{ value: awaitResult }] = useField<boolean | null>(
-    configName("awaitResult")
+    configName("awaitResult"),
   );
 
   // Default the workspaceType based on the file id
@@ -117,7 +117,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
       }
     },
     // Leave setWorkspaceType off the dependency list because Formik changes reference on each render
-    [controlRoomConfig, fileId, workspaceType]
+    [controlRoomConfig, fileId, workspaceType],
   );
 
   const remoteSchemaState = useAsyncState(async () => {
@@ -133,7 +133,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
     if (controlRoomConfig?.config.folderId) {
       return cachedFetchFolder(
         controlRoomConfig,
-        controlRoomConfig.config.folderId
+        controlRoomConfig.config.folderId,
       );
     }
 
@@ -147,7 +147,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
       // The workspaceType can be temporarily null when switching between CR configurations
       workspaceType: (workspaceType as WorkspaceType) ?? "private",
     }),
-    [workspaceType]
+    [workspaceType],
   );
 
   return (

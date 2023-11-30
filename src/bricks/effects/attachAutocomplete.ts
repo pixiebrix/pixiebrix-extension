@@ -32,7 +32,7 @@ export class AttachAutocomplete extends EffectABC {
     super(
       "@pixiebrix/forms/autocomplete",
       "Attach Autocomplete",
-      "Attach autocomplete to an input"
+      "Attach autocomplete to an input",
     );
   }
 
@@ -54,7 +54,7 @@ export class AttachAutocomplete extends EffectABC {
       },
       ...IS_ROOT_AWARE_BRICK_PROPS,
     },
-    ["options"]
+    ["options"],
   );
 
   async effect(
@@ -67,7 +67,7 @@ export class AttachAutocomplete extends EffectABC {
       options: string[];
       isRootAware?: boolean;
     }>,
-    { logger, root }: BrickOptions
+    { logger, root }: BrickOptions,
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({
       selector,
@@ -107,7 +107,7 @@ export class AttachAutocomplete extends EffectABC {
           update(
             options
               .filter((x) => x.toLowerCase().includes(normalized))
-              .map((label) => ({ label }))
+              .map((label) => ({ label })),
           );
         },
       });

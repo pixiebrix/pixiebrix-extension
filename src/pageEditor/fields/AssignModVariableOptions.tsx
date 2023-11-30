@@ -35,7 +35,7 @@ function schemaWithKnownVariableNames(varMap: VarMap | null): Schema {
   const modVars = map[KnownSources.MOD]?.[MOD_VARIABLE_REFERENCE];
   // Filter out the symbols on the ExistenceNode
   const knownVariableNames = Object.keys(modVars ?? {}).filter(
-    (x) => typeof x === "string"
+    (x) => typeof x === "string",
   );
 
   const schema = new AssignModVariable().inputSchema;
@@ -62,7 +62,7 @@ const AssignModVariableOptions: React.FC<BlockOptionProps> = ({
   // Add examples to the schema
   const { properties } = useMemo(
     () => schemaWithKnownVariableNames(varMap),
-    [varMap]
+    [varMap],
   );
 
   return (

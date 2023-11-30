@@ -47,7 +47,7 @@ export function useDNT(): [boolean, (enabled: boolean) => Promise<void>] {
       await setDNT(enabled);
       setEnabled(enabled);
     },
-    [setEnabled]
+    [setEnabled],
   );
 
   return [enabled, toggle];

@@ -71,7 +71,7 @@ export function $safeFindElementsWithRootMode({
       "Selector is required",
       blockId,
       selectorProp,
-      selector
+      selector,
     );
   }
 

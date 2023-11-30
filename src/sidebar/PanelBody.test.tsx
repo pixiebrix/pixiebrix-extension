@@ -52,7 +52,7 @@ describe("PanelBody", () => {
         onAction={jest.fn()}
         context={{ extensionId, blueprintId }}
         payload={payload}
-      />
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -72,7 +72,7 @@ describe("PanelBody", () => {
         onAction={jest.fn()}
         context={{ extensionId, blueprintId }}
         payload={payload}
-      />
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -92,7 +92,7 @@ describe("PanelBody", () => {
         onAction={jest.fn()}
         context={{ extensionId, blueprintId }}
         payload={payload}
-      />
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -116,7 +116,7 @@ describe("PanelBody", () => {
         onAction={jest.fn()}
         context={{ extensionId, blueprintId }}
         payload={payload}
-      />
+      />,
     );
 
     await waitForEffect();
@@ -143,7 +143,7 @@ describe("PanelBody", () => {
         onAction={jest.fn()}
         context={{ extensionId, blueprintId }}
         payload={payload}
-      />
+      />,
     );
 
     expect(screen.queryByShadowText("Test")).not.toBeInTheDocument();

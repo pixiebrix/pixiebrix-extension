@@ -29,7 +29,7 @@ export class HideEffect extends EffectABC {
     super(
       "@pixiebrix/hide",
       "Hide",
-      "Hide or remove one or more elements on a page"
+      "Hide or remove one or more elements on a page",
     );
   }
 
@@ -50,7 +50,7 @@ export class HideEffect extends EffectABC {
       },
       ...IS_ROOT_AWARE_BRICK_PROPS,
     },
-    []
+    [],
   );
 
   async effect(
@@ -63,7 +63,7 @@ export class HideEffect extends EffectABC {
       mode?: "hide" | "remove";
       isRootAware: boolean;
     }>,
-    { root }: BrickOptions
+    { root }: BrickOptions,
   ): Promise<void> {
     const $elements = $safeFindElementsWithRootMode({
       selector,

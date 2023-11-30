@@ -20,7 +20,7 @@ import parseTemplateVariables from "./parseTemplateVariables";
 describe("parseTemplateVariables", () => {
   test("simple template", () => {
     const result = parseTemplateVariables(
-      "a {{@variableA}} {{ @variableB }} template"
+      "a {{@variableA}} {{ @variableB }} template",
     );
 
     expect(result[0]).toBe("@variableA");
@@ -29,7 +29,7 @@ describe("parseTemplateVariables", () => {
 
   test("access with .", () => {
     const result = parseTemplateVariables(
-      "a {{@foo.bar}} {{ @foo.baz}} {{ @foo.bar.baz }} {{ @qux.quux }} template"
+      "a {{@foo.bar}} {{ @foo.baz}} {{ @foo.bar.baz }} {{ @qux.quux }} template",
     );
 
     expect(result).toEqual([

@@ -150,6 +150,6 @@ describe("isMustacheOnly()", () => {
     "'%s' contains mustache-only syntax? %s",
     (value, expectedIsMustacheOnly) => {
       expect(isMustacheOnly(value)).toStrictEqual(expectedIsMustacheOnly);
-    }
+    },
   );
 });

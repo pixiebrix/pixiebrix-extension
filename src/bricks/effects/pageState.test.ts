@@ -37,7 +37,7 @@ describe("@pixiebrix/state/get", () => {
     });
     await brick.transform(
       unsafeAssumeValidArg({}),
-      brickOptionsFactory({ logger })
+      brickOptionsFactory({ logger }),
     );
   });
 
@@ -60,13 +60,13 @@ describe("@pixiebrix/state/set", () => {
 
     let result = await brick.transform(
       { data: { foo: 42, bar: 42 } } as any,
-      brickOptionsFactory({ logger })
+      brickOptionsFactory({ logger }),
     );
     expect(result).toStrictEqual({ foo: 42, bar: 42 });
 
     result = await brick.transform(
       unsafeAssumeValidArg({ data: { foo: 1 }, mergeStrategy: "shallow" }),
-      brickOptionsFactory({ logger })
+      brickOptionsFactory({ logger }),
     );
     expect(result).toStrictEqual({ foo: 1, bar: 42 });
   });
@@ -89,7 +89,7 @@ describe("@pixiebrix/state/set", () => {
 
     let result = await brick.transform(
       { data: original } as any,
-      brickOptionsFactory({ logger })
+      brickOptionsFactory({ logger }),
     );
     expect(result).toStrictEqual(original);
 
@@ -103,7 +103,7 @@ describe("@pixiebrix/state/set", () => {
         },
         mergeStrategy: "deep",
       }),
-      brickOptionsFactory({ logger })
+      brickOptionsFactory({ logger }),
     );
 
     // NOTE: lodash's `merge` behavior is different from deepmerge from Python. Lodash will zip the list items together
@@ -128,7 +128,7 @@ describe("@pixiebrix/state/set", () => {
             foo: makeTemplateExpression("nunjucks", "{{ @hello }}"),
           },
         },
-      })
+      }),
     ).resolves.toEqual({
       type: "object",
       additionalProperties: false,
@@ -152,7 +152,7 @@ describe("@pixiebrix/state/set", () => {
             foo: makeTemplateExpression("nunjucks", "{{ @hello }}"),
           },
         },
-      })
+      }),
     ).resolves.toBeUndefined();
   });
 });
@@ -172,24 +172,24 @@ describe("set and get", () => {
 
     await setState.transform(
       unsafeAssumeValidArg({ data: { foo: 42 } }),
-      brickOptionsFactory({ logger })
+      brickOptionsFactory({ logger }),
     );
     let result = await getState.transform(
       unsafeAssumeValidArg({}),
-      brickOptionsFactory({ logger })
+      brickOptionsFactory({ logger }),
     );
 
     expect(result).toStrictEqual({ foo: 42 });
 
     result = await getState.transform(
       unsafeAssumeValidArg({ namespace: "extension" }),
-      brickOptionsFactory({ logger })
+      brickOptionsFactory({ logger }),
     );
     expect(result).toStrictEqual({});
 
     result = await getState.transform(
       unsafeAssumeValidArg({ namespace: "shared" }),
-      brickOptionsFactory({ logger })
+      brickOptionsFactory({ logger }),
     );
     expect(result).toStrictEqual({});
   });
@@ -207,24 +207,24 @@ describe("set and get", () => {
 
     await setState.transform(
       unsafeAssumeValidArg({ data: { foo: 42 } }),
-      brickOptionsFactory({ logger })
+      brickOptionsFactory({ logger }),
     );
     let result = await getState.transform(
       unsafeAssumeValidArg({}),
-      brickOptionsFactory({ logger })
+      brickOptionsFactory({ logger }),
     );
 
     expect(result).toStrictEqual({ foo: 42 });
 
     result = await getState.transform(
       unsafeAssumeValidArg({ namespace: "extension" }),
-      brickOptionsFactory({ logger })
+      brickOptionsFactory({ logger }),
     );
     expect(result).toStrictEqual({});
 
     result = await getState.transform(
       unsafeAssumeValidArg({ namespace: "shared" }),
-      brickOptionsFactory({ logger })
+      brickOptionsFactory({ logger }),
     );
     expect(result).toStrictEqual({ foo: 42 });
   });

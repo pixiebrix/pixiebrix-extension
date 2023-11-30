@@ -65,7 +65,7 @@ export class UrlParams extends TransformerABC {
       "@pixiebrix/url-params",
       "Construct URL",
       "Construct a URL with encoded search parameter",
-      "faCode"
+      "faCode",
     );
   }
 

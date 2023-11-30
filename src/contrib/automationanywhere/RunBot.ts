@@ -40,7 +40,7 @@ import {
 } from "@/integrations/constants";
 
 export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
-  "@pixiebrix/automation-anywhere/run-bot"
+  "@pixiebrix/automation-anywhere/run-bot",
 );
 
 export const COMMON_PROPERTIES: SchemaProperties = {
@@ -120,7 +120,7 @@ export class RunBot extends TransformerABC {
     super(
       AUTOMATION_ANYWHERE_RUN_BOT_ID,
       "Run Automation Anywhere Bot",
-      "Run an Automation Anywhere Bot via the Control Room API"
+      "Run an Automation Anywhere Bot via the Control Room API",
     );
   }
 
@@ -162,7 +162,7 @@ export class RunBot extends TransformerABC {
 
   async transform(
     args: BrickArgs<BotArgs>,
-    { logger }: BrickOptions
+    { logger }: BrickOptions,
   ): Promise<UnknownObject> {
     const {
       awaitResult,
@@ -176,7 +176,7 @@ export class RunBot extends TransformerABC {
           "deviceId is required for Community Edition",
           this.id,
           "deviceId",
-          undefined
+          undefined,
         );
       }
 
@@ -185,7 +185,7 @@ export class RunBot extends TransformerABC {
           "Cannot await result with Community Edition",
           this.id,
           "awaitResult",
-          awaitResult
+          awaitResult,
         );
       }
 
@@ -194,7 +194,7 @@ export class RunBot extends TransformerABC {
     }
 
     const enterpriseBotArgs: EnterpriseBotArgs = cloneDeep(
-      args as unknown as EnterpriseBotArgs
+      args as unknown as EnterpriseBotArgs,
     );
 
     let runAsUserIds: number[] = enterpriseBotArgs.runAsUserIds ?? [];
@@ -207,14 +207,14 @@ export class RunBot extends TransformerABC {
       const { partnerPrincipals = [] } = await getUserData();
 
       const principal = partnerPrincipals.find(
-        (x) => x.control_room_url === service.config.controlRoomUrl
+        (x) => x.control_room_url === service.config.controlRoomUrl,
       );
       if (!principal) {
         throw new PropError(
           "No OAuth2 principal data found for Control Room",
           this.id,
           "isAttended",
-          enterpriseBotArgs.isAttended
+          enterpriseBotArgs.isAttended,
         );
       }
 
@@ -233,7 +233,7 @@ export class RunBot extends TransformerABC {
       };
       if (!userData) {
         throw new BusinessError(
-          "User profile for Control Room not found. Reconnect the Control Room integration"
+          "User profile for Control Room not found. Reconnect the Control Room integration",
         );
       }
 
@@ -258,7 +258,7 @@ export class RunBot extends TransformerABC {
 
     if (deployment.deploymentId == null) {
       throw new BusinessError(
-        "Bot Deployment ID not found in Control Room response"
+        "Bot Deployment ID not found in Control Room response",
       );
     }
 

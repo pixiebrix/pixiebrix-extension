@@ -25,7 +25,7 @@ import {
   TourStepTransformer,
 } from "@/bricks/transformers/tourStep/tourStep";
 import { useField, useFormikContext } from "formik";
-import { type Expression, type PipelineExpression } from "@/types/runtimeTypes";
+import { type Expression } from "@/types/runtimeTypes";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import SwitchButtonWidget, {
@@ -34,11 +34,12 @@ import SwitchButtonWidget, {
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
 import { DocumentRenderer } from "@/bricks/renderers/document";
-
-import styles from "./TourStepOptions.module.scss";
 import { isPipelineExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
 import { getSubSchema } from "@/utils/schemaUtils";
+import PipelineToggleField from "@/pageEditor/fields/PipelineToggleField";
+
+import styles from "./TourStepOptions.module.scss";
 
 const Section: React.FunctionComponent<{ title: string }> = ({
   title,
@@ -63,14 +64,8 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
   });
 
   const [{ value: body }] = useField<Expression>(configName("body"));
-  const [{ value: onBeforeShow }] = useField<PipelineExpression | null>(
-    configName("onBeforeShow")
-  );
-  const [{ value: onAfterShow }] = useField<PipelineExpression | null>(
-    configName("onAfterShow")
-  );
   const [{ value: appearance }] = useField<StepInputs["appearance"] | null>(
-    configName("appearance")
+    configName("appearance"),
   );
 
   return (
@@ -104,7 +99,7 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
                 });
                 await setFieldValue(
                   configName("appearance", "refreshTrigger"),
-                  "manual"
+                  "manual",
                 );
               } else {
                 await setFieldValue(configName("body"), {
@@ -170,40 +165,16 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
         </Section>
 
         <Section title="Step Actions">
-          <FieldTemplate
-            as={SwitchButtonWidget}
+          <PipelineToggleField
             label="Pre-Step Actions"
             description="Toggle on to run actions before the step is shown. Edit the actions in the Outline Panel"
             name={configName("onBeforeShow")}
-            value={onBeforeShow != null}
-            onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
-              if (target.value) {
-                await setFieldValue(configName("onBeforeShow"), {
-                  __type__: "pipeline",
-                  __value__: [],
-                });
-              } else {
-                await setFieldValue(configName("onBeforeShow"), null);
-              }
-            }}
           />
 
-          <FieldTemplate
-            as={SwitchButtonWidget}
+          <PipelineToggleField
             label="Post-Step Actions"
             description="Toggle on to run actions after the step is completed. Edit the actions in the Outline Panel"
             name={configName("onAfterShow")}
-            value={onAfterShow != null}
-            onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
-              if (target.value) {
-                await setFieldValue(configName("onAfterShow"), {
-                  __type__: "pipeline",
-                  __value__: [],
-                });
-              } else {
-                await setFieldValue(configName("onAfterShow"), null);
-              }
-            }}
           />
         </Section>
 

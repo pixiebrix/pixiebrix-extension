@@ -253,7 +253,7 @@ export interface IntegrationDefinition<
     | OAuth2AuthenticationDefinition
     | OAuth2AuthorizationGrantDefinition
     | TokenAuthenticationDefinition
-    | BasicAuthenticationDefinition
+    | BasicAuthenticationDefinition,
 > {
   metadata: Metadata;
   inputSchema: Schema;
@@ -293,7 +293,7 @@ export interface Integration<
   TConfig extends IntegrationConfigArgs = IntegrationConfigArgs,
   TSanitized = TConfig & { _sanitizedConfigBrand: null },
   TSecret = TConfig & { _integrationConfigBrand: null },
-  TOAuth extends AuthData = AuthData
+  TOAuth extends AuthData = AuthData,
 > extends Metadata {
   schema: Schema;
 
@@ -326,7 +326,7 @@ export interface Integration<
   authenticateRequest: (
     integrationConfig: TSecret,
     requestConfig: AxiosRequestConfig,
-    oauthConfig?: TOAuth
+    oauthConfig?: TOAuth,
   ) => AxiosRequestConfig;
 }
 
@@ -335,7 +335,7 @@ export interface Integration<
  */
 export abstract class IntegrationABC<
   TConfig extends IntegrationConfigArgs = IntegrationConfigArgs,
-  TOAuth extends AuthData = AuthData
+  TOAuth extends AuthData = AuthData,
 > implements Integration<TConfig>
 {
   abstract schema: Schema;
@@ -360,7 +360,7 @@ export abstract class IntegrationABC<
     public id: RegistryId,
     public name: string,
     public description?: string,
-    public icon?: BrickIcon
+    public icon?: BrickIcon,
   ) {
     // No body necessary https://www.typescriptlang.org/docs/handbook/2/classes.html#parameter-properties
   }
@@ -368,16 +368,16 @@ export abstract class IntegrationABC<
   abstract getOrigins(integrationConfig: TConfig & SanitizedBrand): string[];
 
   abstract getOAuth2Context(
-    integrationConfig: TConfig & SecretBrand
+    integrationConfig: TConfig & SecretBrand,
   ): OAuth2Context;
 
   abstract getTokenContext(
-    integrationConfig: TConfig & SecretBrand
+    integrationConfig: TConfig & SecretBrand,
   ): TokenContext;
 
   abstract authenticateRequest(
     integrationConfig: TConfig & SecretBrand,
     requestConfig: AxiosRequestConfig,
-    authConfig?: TOAuth
+    authConfig?: TOAuth,
   ): AxiosRequestConfig;
 }

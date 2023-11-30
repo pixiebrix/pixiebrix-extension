@@ -80,7 +80,7 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
   if (!hasPermissions) {
     throw new ClientNetworkPermissionError(
       "Insufficient browser permissions to make request.",
-      { cause: error }
+      { cause: error },
     );
   }
 

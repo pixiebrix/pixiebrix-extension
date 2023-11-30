@@ -34,7 +34,7 @@ const renderWidget = (value: string | Expression) =>
       label="spacing"
       name="cssClass"
     />,
-    { initialValues: { cssClass: value } }
+    { initialValues: { cssClass: value } },
   );
 
 beforeAll(() => {
@@ -50,7 +50,7 @@ describe("CssClassWidget", () => {
     renderWidget("");
 
     expect(
-      screen.queryByRole("combobox", { name: "Top" })
+      screen.queryByRole("combobox", { name: "Top" }),
     ).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("button", { name: "Margin" }));
@@ -61,7 +61,7 @@ describe("CssClassWidget", () => {
     const { getFormState } = renderWidget("test mr-1 mb-1");
     await selectEvent.select(
       screen.getByRole("combobox", { name: "Margin" }),
-      "1"
+      "1",
     );
 
     expect(getFormState()).toStrictEqual({ cssClass: "test m-1" });
@@ -74,7 +74,7 @@ describe("CssClassWidget", () => {
 
     await selectEvent.select(
       screen.getByRole("combobox", { name: "Top" }),
-      "3"
+      "3",
     );
 
     expect(getFormState()).toStrictEqual({ cssClass: "test mt-3" });

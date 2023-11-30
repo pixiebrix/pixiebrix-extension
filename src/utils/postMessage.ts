@@ -78,7 +78,7 @@ export default async function postMessage({
           resolve(data.response);
         }
       },
-      { once: true }
+      { once: true },
     );
 
     log("SANDBOX:", type, "Posting payload:", payload);
@@ -102,7 +102,7 @@ export default async function postMessage({
 export function addPostMessageListener(
   type: string,
   listener: PostMessageListener,
-  { signal }: { signal?: AbortSignal } = {}
+  { signal }: { signal?: AbortSignal } = {},
 ): void {
   const rawListener = async ({
     data,

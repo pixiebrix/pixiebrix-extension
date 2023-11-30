@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Component } from "react";
+import React from "react";
 import { ListGroup } from "react-bootstrap";
-import { getErrorMessage } from "@/errors/errorHelpers";
 import { type ModViewItem } from "@/types/modTypes";
 
 import styles from "./ListItem.module.scss";
@@ -25,6 +24,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { DEFAULT_TEXT_ICON_COLOR } from "@/mods/ModIcon";
 import cx from "classnames";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 type Props = {
   /**
@@ -37,28 +37,7 @@ type Props = {
   style: React.CSSProperties;
 };
 
-type State = {
-  hasError: boolean;
-  errorMessage: string | undefined;
-  stack: string | undefined;
-};
-
-class ListItemErrorBoundary extends Component<Props, State> {
-  override state: State = {
-    hasError: false,
-    errorMessage: undefined,
-    stack: undefined,
-  };
-
-  static getDerivedStateFromError(error: Error) {
-    // Update state so the next render will show the fallback UI.
-    return {
-      hasError: true,
-      errorMessage: getErrorMessage(error),
-      stack: error.stack,
-    };
-  }
-
+class ListItemErrorBoundary extends ErrorBoundary<Props> {
   override render(): React.ReactNode {
     if (this.state.hasError) {
       return (

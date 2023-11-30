@@ -33,7 +33,7 @@ type ElementArgs = {
 
 function getChildren(
   element: DocumentElement,
-  elementName: string
+  elementName: string,
 ): Array<{ element: DocumentElement; elementName: string }> {
   if (isListElement(element)) {
     return [
@@ -43,7 +43,7 @@ function getChildren(
           elementName,
           "config",
           "element",
-          "__value__"
+          "__value__",
         ),
       },
     ];
@@ -86,21 +86,21 @@ function selectTreeEntries({
         element: child.element,
         elementName: child.elementName,
         treeExpandedState,
-      })
+      }),
     ),
   ];
 }
 
 export function selectTreeData(
   body: DocumentElement[],
-  treeExpandedState: TreeExpandedState
+  treeExpandedState: TreeExpandedState,
 ): TreeData {
   const children = body.flatMap((element, index) =>
     selectTreeEntries({
       element,
       elementName: String(index),
       treeExpandedState,
-    })
+    }),
   );
 
   const entries: Array<[ItemId, TreeItem]> = [

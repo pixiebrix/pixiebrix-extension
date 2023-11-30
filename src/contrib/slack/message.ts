@@ -27,7 +27,7 @@ export class SendSimpleSlackMessage extends EffectABC {
     super(
       "slack/simple-message",
       "[Deprecated] Send a Slack message via Incoming WebHook",
-      "Send a Slack message via its Incoming WebHooks App"
+      "Send a Slack message via its Incoming WebHooks App",
     );
   }
 
@@ -95,7 +95,7 @@ export class SendAdvancedSlackMessage extends EffectABC {
     super(
       "slack/advanced-message",
       "[Deprecated] Send a Slack richly-formatted message via Incoming WebHook",
-      "Send a Slack richly-formatted message via its Incoming WebHooks App"
+      "Send a Slack richly-formatted message via its Incoming WebHooks App",
     );
   }
 

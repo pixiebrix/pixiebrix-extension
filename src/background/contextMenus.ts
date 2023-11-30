@@ -64,7 +64,7 @@ function makeMenuId(extensionId: UUID): string {
  */
 async function dispatchMenu(
   info: Menus.OnClickData,
-  tab: Tabs.Tab
+  tab: Tabs.Tab,
 ): Promise<void> {
   expectContext("background");
 
@@ -181,7 +181,7 @@ async function _ensureContextMenu({
  * @param extensions the ModComponent to preload.
  */
 export async function preloadContextMenus(
-  extensions: ModComponentBase[]
+  extensions: ModComponentBase[],
 ): Promise<void> {
   expectContext("background");
   await Promise.allSettled(
@@ -189,21 +189,21 @@ export async function preloadContextMenus(
       const resolved = await resolveExtensionInnerDefinitions(definition);
 
       const extensionPoint = await extensionPointRegistry.lookup(
-        resolved.extensionPointId
+        resolved.extensionPointId,
       );
       if (extensionPoint instanceof ContextMenuStarterBrickABC) {
         await extensionPoint.ensureMenu(
-          definition as unknown as ResolvedModComponent<ContextMenuConfig>
+          definition as unknown as ResolvedModComponent<ContextMenuConfig>,
         );
       }
-    })
+    }),
   );
 }
 
 async function preloadAllContextMenus(): Promise<void> {
   const { extensions } = await getModComponentState();
   const resolved = await allSettledValues(
-    extensions.map(async (x) => resolveExtensionInnerDefinitions(x))
+    extensions.map(async (x) => resolveExtensionInnerDefinitions(x)),
   );
   await preloadContextMenus(resolved);
 }

@@ -36,7 +36,7 @@ const optionalFetchReleases = optionalFactory(fetchReleases);
 type ReleaseOption = Option & { data: Release };
 
 async function fetchReleases(
-  config: SanitizedIntegrationConfig
+  config: SanitizedIntegrationConfig,
 ): Promise<ReleaseOption[]> {
   const response = await performConfiguredRequestInBackground<
     ODataResponseData<Release>
@@ -61,15 +61,15 @@ export function useSelectedRelease(releaseKeyFieldName: string) {
   const releasesPromise = useMemo(
     async () =>
       cachePromise(["uipath:useSelectedRelease", sanitizedConfig], async () =>
-        optionalFetchReleases(sanitizedConfig)
+        optionalFetchReleases(sanitizedConfig),
       ),
-    [sanitizedConfig]
+    [sanitizedConfig],
   );
 
   const [selectedRelease] = useAsyncState(async () => {
     const options = await releasesPromise;
     const { data: release } = (options as ReleaseOption[]).find(
-      (option) => option.data.Key === releaseKey
+      (option) => option.data.Key === releaseKey,
     );
     const schema = release ? releaseSchema(release) : null;
     return {

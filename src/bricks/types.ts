@@ -100,7 +100,7 @@ export type BrickWindow =
  * The runtime will return an array of results (one for each successful target)
  */
 export function hasMultipleTargets(
-  window: BrickWindow
+  window: BrickWindow,
 ): window is "broadcast" | "all_frames" {
   return window === "broadcast" || window === "all_frames";
 }

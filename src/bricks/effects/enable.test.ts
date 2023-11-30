@@ -37,17 +37,17 @@ describe("EnableEffect", () => {
     async (isRootAware) => {
       await brick.run(
         unsafeAssumeValidArg({ selector: "button", isRootAware }),
-        brickOptionsFactory()
+        brickOptionsFactory(),
       );
 
       expect(document.querySelector("button")).not.toBeDisabled();
-    }
+    },
   );
 
   test("it enables element for isRootAware: true", async () => {
     await brick.run(
       unsafeAssumeValidArg({ isRootAware: true }),
-      brickOptionsFactory({ root: document.querySelector("button") })
+      brickOptionsFactory({ root: document.querySelector("button") }),
     );
 
     expect(document.querySelector("button")).not.toBeDisabled();

@@ -44,7 +44,7 @@ const AdvancedLinks: React.FC<AdvancedLinksProps> = ({ name, scrollToRef }) => {
   const configName = partial(joinName, name);
 
   const [{ value: templateEngineValue }] = useField<TemplateEngine>(
-    configName("templateEngine")
+    configName("templateEngine"),
   );
   const [{ value: ifFieldValue }] = useField<BlockIf>(configName("if"));
   const [{ value: windowValue }] = useField<BrickWindow>(configName("window"));
