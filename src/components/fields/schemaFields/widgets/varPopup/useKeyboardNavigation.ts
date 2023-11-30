@@ -30,14 +30,6 @@ import {
 } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
 import { isEqual } from "lodash";
 
-function usePrevious<T>(value: T) {
-  const ref = useRef<T | null>();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-}
-
 /**
  * Hook to navigate the variable popover menu using the keyboard from the input field
  * @param inputElementRef the input field the popover is attached to
@@ -61,23 +53,7 @@ function useKeyboardNavigation({
 }) {
   // User's current selection in the variable menu
   const [activeKeyPath, setActiveKeyPath] = useState<KeyPath | null>();
-  const prevMenuOptions = usePrevious(menuOptions);
-  const prevLikelyVariable = usePrevious(likelyVariable);
-
-  // Set the default active key path
-  // menuOptions is not guaranteed to be referentially equal
-  // need to deep compare menuOptions against the previous run
-  // this causes us to need to manually compare likelyVariable as well
-  // See https://github.com/pixiebrix/pixiebrix-extension/issues/7006
-  useEffect(() => {
-    if (
-      !isEqual(prevMenuOptions, menuOptions) ||
-      prevLikelyVariable !== likelyVariable
-    ) {
-      setActiveKeyPath(defaultMenuOption(menuOptions, likelyVariable));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only trigger when the menuOptions or likelyVariable changes
-  }, [likelyVariable, menuOptions]);
+  useResetActiveKeyPath({ menuOptions, likelyVariable, setActiveKeyPath });
 
   const move = useCallback(
     (offset: number) => {
@@ -128,6 +104,42 @@ function useKeyboardNavigation({
   return {
     activeKeyPath,
   };
+}
+
+// Set the default active key path
+// menuOptions is not guaranteed to be referentially equal
+// need to deep compare menuOptions against the previous run
+// this causes us to need to manually compare likelyVariable as well
+// See https://github.com/pixiebrix/pixiebrix-extension/issues/7006
+function useResetActiveKeyPath({
+  menuOptions,
+  likelyVariable,
+  setActiveKeyPath,
+}: {
+  menuOptions: MenuOptions;
+  likelyVariable: string;
+  setActiveKeyPath: React.Dispatch<React.SetStateAction<KeyPath>>;
+}) {
+  const prevMenuOptions = usePrevious(menuOptions);
+  const prevLikelyVariable = usePrevious(likelyVariable);
+
+  useEffect(() => {
+    if (
+      !isEqual(prevMenuOptions, menuOptions) ||
+      prevLikelyVariable !== likelyVariable
+    ) {
+      setActiveKeyPath(defaultMenuOption(menuOptions, likelyVariable));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only trigger when the menuOptions or likelyVariable changes
+  }, [likelyVariable, menuOptions, setActiveKeyPath]);
+}
+
+function usePrevious<T>(value: T) {
+  const ref = useRef<T | null>();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
 }
 
 export default useKeyboardNavigation;
