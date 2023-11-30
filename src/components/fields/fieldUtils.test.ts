@@ -156,6 +156,10 @@ describe("isMustacheOnly()", () => {
 });
 
 describe("fieldLabel()", () => {
+  it("takes last part", () => {
+    expect(fieldLabel("foo.bar.baz")).toBe("Baz");
+  });
+
   it("title cases single word", () => {
     expect(fieldLabel("foo")).toBe("Foo");
   });
