@@ -17,6 +17,7 @@
 
 import { type Expression } from "@/types/runtimeTypes";
 import {
+  fieldLabel,
   getPreviewValues,
   isMustacheOnly,
 } from "@/components/fields/fieldUtils";
@@ -152,4 +153,22 @@ describe("isMustacheOnly()", () => {
       expect(isMustacheOnly(value)).toStrictEqual(expectedIsMustacheOnly);
     },
   );
+});
+
+describe("fieldLabel()", () => {
+  it("title cases single word", () => {
+    expect(fieldLabel("foo")).toBe("Foo");
+  });
+
+  it("title cases multi-part name", () => {
+    expect(fieldLabel("fooBarBaz")).toBe("Foo Bar Baz");
+  });
+
+  it("preserves acronyms", () => {
+    expect(fieldLabel("fooBARBaz")).toBe("Foo BAR Baz");
+  });
+
+  it("handles common acronym", () => {
+    expect(fieldLabel("fooUrlBar")).toBe("Foo URL Bar");
+  });
 });
