@@ -453,7 +453,7 @@ describe("SchemaField", () => {
       );
 
       // Renders switch HTML element
-      expect(screen.getByText(/isrootaware/i)).toBeInTheDocument();
+      expect(screen.getByText(/is root aware/i)).toBeInTheDocument();
       await expectToggleOptions("", []);
     },
   );
@@ -508,7 +508,7 @@ describe("SchemaField", () => {
       schema: {
         type: "string",
       },
-      assertion: () => screen.getByRole("combobox", { name: "testField" }),
+      assertion: () => screen.getByRole("combobox", { name: "Test Field" }),
     },
   ])("renders ui:widget $widget", async ({ widget, schema, assertion }) => {
     render(
