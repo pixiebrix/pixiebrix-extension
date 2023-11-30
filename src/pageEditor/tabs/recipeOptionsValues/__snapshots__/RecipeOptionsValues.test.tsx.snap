@@ -40,7 +40,7 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="myDatabase"
                 >
-                  myDatabase
+                  My Database
                 </label>
                 <div
                   class="col-xl-10 col-lg-9"
@@ -96,7 +96,7 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="myBool"
                 >
-                  myBool
+                  My Bool
                 </label>
                 <div
                   class="col-xl-10 col-lg-9"
@@ -152,7 +152,7 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="myNum"
                 >
-                  myNum
+                  My Num
                 </label>
                 <div
                   class="col-xl-10 col-lg-9"
@@ -208,7 +208,7 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="myArray"
                 >
-                  myArray
+                  My Array
                 </label>
                 <div
                   class="col-xl-10 col-lg-9"
@@ -264,7 +264,7 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="myGoogleSheet"
                 >
-                  myGoogleSheet
+                  My Google Sheet
                 </label>
                 <div
                   class="col-xl-10 col-lg-9"
@@ -320,7 +320,7 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="myObject"
                 >
-                  myObject
+                  My Object
                 </label>
                 <div
                   class="col-xl-10 col-lg-9"
@@ -376,7 +376,7 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="myStr"
                 >
-                  myStr
+                  My Str
                 </label>
                 <div
                   class="col-xl-10 col-lg-9"
@@ -467,7 +467,7 @@ exports[`ActivationOptions renders blueprint options with additional props 1`] =
                   class="label form-label col-form-label col-xl-2 col-lg-3"
                   for="additionalProperties"
                 >
-                  additionalProperties
+                  Additional Properties
                 </label>
                 <div
                   class="col-xl-10 col-lg-9"

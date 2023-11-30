@@ -27,6 +27,10 @@ import { fireTextInput } from "@/testUtils/formHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
 import { type SchemaFieldProps } from "./propTypes";
+import {
+  makeTemplateExpression,
+  makeVariableExpression,
+} from "@/runtime/expressionCreators";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -56,16 +60,13 @@ describe("option mode switching", () => {
       "test",
       { type: "string" },
       {
-        test: {
-          __type__: "var",
-          __value__: "@data",
-        },
+        test: makeVariableExpression("@data"),
       },
     );
 
     expectToggleMode(container, "Variable");
 
-    const inputElement = screen.getByLabelText("test");
+    const inputElement = screen.getByLabelText("Test");
     fireTextInput(inputElement, "text");
     await waitForEffect();
 
@@ -77,16 +78,13 @@ describe("option mode switching", () => {
       "test",
       { type: "string", enum: ["option 1", "option 2"] },
       {
-        test: {
-          __type__: "var",
-          __value__: "@data",
-        },
+        test: makeVariableExpression("@data"),
       },
     );
 
     expectToggleMode(container, "Variable");
 
-    const inputElement = screen.getByLabelText("test");
+    const inputElement = screen.getByLabelText("Test");
     fireTextInput(inputElement, "text");
     await waitForEffect();
 
@@ -98,16 +96,13 @@ describe("option mode switching", () => {
       "test",
       { type: "string" },
       {
-        test: {
-          __type__: "nunjucks",
-          __value__: "",
-        },
+        test: makeTemplateExpression("nunjucks", ""),
       },
     );
 
     expectToggleMode(container, "Text");
 
-    const inputElement = screen.getByLabelText("test");
+    const inputElement = screen.getByLabelText("Test");
     fireTextInput(inputElement, "@data.foo");
     await waitForEffect();
 
@@ -119,16 +114,13 @@ describe("option mode switching", () => {
       "test",
       { type: "string" },
       {
-        test: {
-          __type__: "var",
-          __value__: "@data.foo",
-        },
+        test: makeVariableExpression("@data.foo"),
       },
     );
 
     expectToggleMode(container, "Variable");
 
-    const inputElement: HTMLInputElement = screen.getByLabelText("test");
+    const inputElement: HTMLInputElement = screen.getByLabelText("Test");
     fireTextInput(inputElement, "@data.foo ");
     await waitForEffect();
 
@@ -144,10 +136,7 @@ test("omit if empty", async () => {
       type: ["string", "number", "boolean"],
     },
     {
-      test: {
-        __type__: "var",
-        __value__: "@data.foo",
-      },
+      test: makeVariableExpression("@data.foo"),
     },
     {
       omitIfEmpty: true,
