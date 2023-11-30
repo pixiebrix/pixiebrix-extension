@@ -19,7 +19,7 @@ import { DocumentRenderer } from "@/bricks/renderers/document";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import { BrickArgs, type PipelineExpression } from "@/types/runtimeTypes";
+import { type PipelineExpression } from "@/types/runtimeTypes";
 import { toExpression } from "@/testUtils/testHelpers";
 import { generateFreshOutputKey, getPipelineMap } from "./editHelpers";
 import {
@@ -27,9 +27,7 @@ import {
   pipelineFactory,
 } from "@/testUtils/factories/brickFactories";
 import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { BrickABC } from "@/types/brickTypes";
 import { validateRegistryId } from "@/types/helpers";
-import { propertiesToSchema } from "@/validators/generic";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
 
