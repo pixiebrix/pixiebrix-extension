@@ -38,6 +38,9 @@ import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { getAttributeSelectorRegex } from "@/utils/inference/selectorInferenceUtils";
 import { assert } from "@/utils/typeUtils";
 
+export const NON_EXISTENT_TAG_NAME = "selectnothing";
+/** Valid selector that never returns any element (no `<selectnothing>` element exists) */
+export const SELECTOR_THAT_MATCHES_NOTHING = NON_EXISTENT_TAG_NAME;
 export const BUTTON_TAGS: string[] = [
   "li",
   "button",
@@ -236,7 +239,9 @@ export function safeCssSelector(
 ): string {
   // https://github.com/fczbkk/css-selector-generator
   const firstElement = elements[0];
-  assert(firstElement, "No element was selected");
+  if (!firstElement) {
+    return SELECTOR_THAT_MATCHES_NOTHING;
+  }
 
   const siteSelectorHint = getSiteSelectorHint(firstElement);
 
@@ -525,7 +530,14 @@ export function inferMultiElementSelector({
   shouldSelectSimilar?: boolean;
 }): ElementInfo {
   const firstElement = elements[0];
-  assert(firstElement, "No element was selected");
+  if (!firstElement) {
+    return {
+      selectors: [SELECTOR_THAT_MATCHES_NOTHING],
+      tagName: NON_EXISTENT_TAG_NAME,
+      parent: null,
+      isMulti: true,
+    };
+  }
 
   const selector = shouldSelectSimilar
     ? expandedCssSelector(elements, {
