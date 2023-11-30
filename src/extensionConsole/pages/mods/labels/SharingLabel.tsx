@@ -23,6 +23,8 @@ import {
   faEyeSlash,
   faGlobe,
   faUsers,
+  faQuestion,
+  type IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import cx from "classnames";
@@ -33,7 +35,8 @@ const sharingIcons = {
   Team: faUsers,
   Public: faGlobe,
   Deployment: faUsers,
-};
+  Unknown: faQuestion,
+} satisfies Record<string, IconDefinition>;
 
 // Omitted OverlayTrigger attributes aren't required
 // noinspection RequiredAttributes

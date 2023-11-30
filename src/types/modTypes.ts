@@ -35,7 +35,12 @@ export type UnavailableMod = Pick<
 // XXX: should this be UnresolvedModComponent instead of ResolvedModComponent? The old screens used ResolvedModComponent
 export type Mod = ModDefinition | ResolvedModComponent | UnavailableMod;
 
-export type SharingType = "Personal" | "Team" | "Public" | "Deployment";
+export type SharingType =
+  | "Personal"
+  | "Team"
+  | "Public"
+  | "Deployment"
+  | "Unknown";
 export type SharingSource = {
   type: SharingType;
   label: string;

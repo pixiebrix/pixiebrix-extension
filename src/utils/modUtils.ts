@@ -233,9 +233,9 @@ export function getSharingSource({
     label = organization.name;
   } else if (isPublic(mod)) {
     sharingType = "Public";
+  } else {
+    sharingType = "Unknown";
   }
-
-  assert(sharingType, "Sharing type could not be determined");
 
   label ??= sharingType;
 
