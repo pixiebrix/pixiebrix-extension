@@ -39,7 +39,7 @@ export type SharingType = "Personal" | "Team" | "Public" | "Deployment";
 export type SharingSource = {
   type: SharingType;
   label: string;
-  organization: Organization;
+  organization?: Organization;
 };
 
 export type ModStatus =
