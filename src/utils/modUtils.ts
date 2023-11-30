@@ -95,7 +95,7 @@ export const getDescription = (mod: Mod): string => {
 };
 
 /**
- * Return the registry id associated with a mod, or null
+ * Return the registry id associated with a mod, or undefined
  */
 export function getPackageId(mod: Mod): RegistryId | undefined {
   return isResolvedModComponent(mod) ? mod._recipe?.id : mod.metadata.id;
@@ -223,7 +223,7 @@ export function getSharingSource({
     sharingType = "Personal";
   } else if (isDeployment(mod, installedExtensions)) {
     sharingType = "Deployment";
-    // There's a corner case for team deployments of public market bricks. The organization will come through as
+    // There's a corner case for team deployments of marketplace bricks. The organization will come through as
     // nullish here.
     if (organization?.name) {
       label = organization.name;
