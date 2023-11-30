@@ -15,26 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "@/pageEditor/panes/Pane.module.scss";
-
 import React from "react";
-import Centered from "@/components/Centered";
-import IntroButtons from "./IntroButtons";
+import { useDispatch } from "react-redux";
+import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import home from "@img/home.svg";
 
-const NoModSelectedPane: React.FunctionComponent = () => (
-  <Centered>
-    <div className={styles.title}>No mod selected</div>
+import styles from "./HomeButton.module.scss";
+import { Button } from "react-bootstrap";
 
-    <div className="text-left">
-      <p>Select a mod in the sidebar to edit</p>
-      <p>
-        Or, click the <span className="text-info">Add</span> button in the Mods
-        Panel to add a mod to the page.
-      </p>
+const HomeButton: React.FunctionComponent = () => {
+  const dispatch = useDispatch();
 
-      <IntroButtons />
-    </div>
-  </Centered>
-);
+  return (
+    <Button
+      size="sm"
+      className={styles.button}
+      title="Home"
+      onClick={() => {
+        dispatch(editorSlice.actions.showHomePane());
+      }}
+    >
+      <img src={home} alt="Return to Page Editor Home" />
+    </Button>
+  );
+};
 
-export default NoModSelectedPane;
+export default HomeButton;

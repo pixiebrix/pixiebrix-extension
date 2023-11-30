@@ -15,25 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "@/pageEditor/panes/Pane.module.scss";
-
 import React from "react";
-import Centered from "@/components/Centered";
-import IntroButtons from "./IntroButtons";
+import { type Meta, type StoryObj } from "@storybook/react";
 
-const WelcomePane: React.FunctionComponent = () => (
-  <Centered isScrollable>
-    <div className={styles.title}>Welcome to the PixieBrix Page Editor!</div>
+import HomePane from "@/pageEditor/panes/HomePane";
+import { Provider } from "react-redux";
+import { editorStore } from "@/testUtils/storyUtils";
 
-    <div className="text-center">
-      <p>
-        Click <span className="text-info">Add</span> in the sidebar to edit the
-        page.
-      </p>
+type HomePagePropsAndCustomArgs = React.ComponentProps<typeof HomePane> &
+  Record<string, unknown>;
 
-      <IntroButtons />
-    </div>
-  </Centered>
-);
+const meta: Meta<HomePagePropsAndCustomArgs> = {
+  title: "PageEditor/HomePane",
+  component: HomePane,
+  render: (args) => (
+    <Provider store={editorStore()}>
+      <HomePane {...args} />
+    </Provider>
+  ),
+};
 
-export default WelcomePane;
+export default meta;
+
+type Story = StoryObj<HomePagePropsAndCustomArgs>;
+
+export const Default: Story = { args: {} };
