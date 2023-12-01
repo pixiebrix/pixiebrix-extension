@@ -52,6 +52,7 @@ import { RunSubTourEffect } from "@/bricks/effects/runSubTour";
 import { type Brick } from "@/types/brickTypes";
 import PostMessageEffect from "@/bricks/effects/postMessage";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
+import CommentEffect from "@/bricks/effects/comment";
 
 function getAllEffects(): Brick[] {
   return [
@@ -97,6 +98,7 @@ function getAllEffects(): Brick[] {
     new ToggleQuickbarEffect(),
     new SubmitPanelEffect(),
     new RunSubTourEffect(),
+    new CommentEffect(),
   ];
 }
 

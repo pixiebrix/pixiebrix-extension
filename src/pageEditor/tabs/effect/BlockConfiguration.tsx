@@ -42,6 +42,7 @@ import {
   windowOptions,
 } from "@/pageEditor/tabs/effect/configurationConstants";
 import useAsyncEffect from "use-async-effect";
+import CommentEffect from "@/bricks/effects/comment";
 
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
@@ -55,10 +56,11 @@ const BlockConfiguration: React.FunctionComponent<{
     configName("root"),
   );
   const blockErrors = getIn(context.errors, name);
+  const isComment = blockId === CommentEffect.BRICK_ID;
 
   const [{ block, error }, BlockOptions] = useBrickOptions(blockId);
 
-  // Conditionally show Advanced options "Condition" and "Target" depending on the value of blockType.
+  // Conditionally show Advanced Options "Condition" and "Target" depending on the value of blockType.
   // If blockType is undefined, don't show the options.
   // If error happens, behavior is undefined.
   const [blockType] = useAsyncState(async () => getType(block), [block]);
@@ -135,6 +137,7 @@ const BlockConfiguration: React.FunctionComponent<{
   // Include tour because the Show Tour Step brick passes the target through to its pipeline
   const showRootMode =
     isRootAware &&
+    !isComment &&
     [
       "trigger",
       "contextMenu",
@@ -143,8 +146,8 @@ const BlockConfiguration: React.FunctionComponent<{
       "menuItem",
       "tour",
     ].includes(context.values.type);
-  const showIfAndTarget = blockType && blockType !== "renderer";
-  const noAdvancedOptions = !showRootMode && !showIfAndTarget;
+  const showIfAndTarget = blockType && blockType !== "renderer" && !isComment;
+  const noAdvancedOptions = (!showRootMode && !showIfAndTarget) || isComment;
 
   return (
     <>
@@ -154,7 +157,7 @@ const BlockConfiguration: React.FunctionComponent<{
         <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
           {blockErrors?.id && (
             <div className="invalid-feedback d-block mb-4">
-              Unknown block {blockId}
+              Unknown brick: {blockId}
             </div>
           )}
           {BlockOptions ? (

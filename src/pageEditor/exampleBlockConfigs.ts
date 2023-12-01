@@ -35,6 +35,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
 import { IdentityTransformer } from "@/bricks/transformers/identity";
+import CommentEffect from "@/bricks/effects/comment";
 
 /**
  * Get a default block config for a block
@@ -46,6 +47,12 @@ export function getExampleBlockConfig(
   { parentBlockId }: { parentBlockId?: RegistryId } = {},
 ): UnknownObject | null {
   switch (blockId) {
+    case CommentEffect.BRICK_ID: {
+      return {
+        comment: "",
+      };
+    }
+
     case COMPONENT_READER_ID: {
       return {
         selector: "",
