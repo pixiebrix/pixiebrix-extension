@@ -60,7 +60,7 @@ class NormalizePipelineVisitor extends PipelineVisitor {
           ([prop, fieldSchema]) =>
             typeof fieldSchema === "object" &&
             fieldSchema.$ref === pipelineSchema.$id &&
-            prop !== "onSubmit" &&
+            prop in blockConfig.config &&
             !isPipelineExpression(blockConfig.config[prop]),
         )
         .map(([prop]) => prop);
