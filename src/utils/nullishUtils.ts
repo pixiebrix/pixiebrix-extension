@@ -19,14 +19,17 @@ export type Nullish = null | undefined;
 
 export type Nullishable<T> = T | Nullish;
 
+// Discussion: Do we even want to allow Optional? Or should we enforce Nullishable only?
 export type Optional<T> = T | undefined;
 
+// Discussion: Do we even want to allow Nullable? Or should we enforce Nullishable only?
 export type Nullable<T> = T | null;
 
 // TODO: create lint rule to enforce use of NonNullish over NonNullable
-export type NonNullish<T> = T extends Nullish ? never : T;
+export type NonNullish<T> = Exclude<T, Nullish>;
 
 // Inspired by: https://itnext.io/typescript-isnullish-nonnullish-and-assertnonnullish-557deb6e8b17
+// As pointed out, do we even want this typeguard or should we just use `value == null` everywhere?
 export const isNullish = <T>(value: Nullishable<T>): value is Nullish =>
   value == null;
 
