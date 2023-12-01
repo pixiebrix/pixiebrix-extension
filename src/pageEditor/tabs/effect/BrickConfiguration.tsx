@@ -44,10 +44,10 @@ import {
 import useAsyncEffect from "use-async-effect";
 import CommentEffect from "@/bricks/effects/comment";
 
-const BlockConfiguration: React.FunctionComponent<{
+const BrickConfiguration: React.FunctionComponent<{
   name: string;
-  blockId: RegistryId;
-}> = ({ name, blockId }) => {
+  brickId: RegistryId;
+}> = ({ name, brickId }) => {
   const configName = partial(joinName, name);
 
   const context = useFormikContext<ModComponentFormState>();
@@ -55,25 +55,25 @@ const BlockConfiguration: React.FunctionComponent<{
   const [_rootField, _rootFieldMeta, rootFieldHelpers] = useField<BrickConfig>(
     configName("root"),
   );
-  const blockErrors = getIn(context.errors, name);
-  const isComment = blockId === CommentEffect.BRICK_ID;
+  const brickErrors = getIn(context.errors, name);
+  const isComment = brickId === CommentEffect.BRICK_ID;
 
-  const [{ block, error }, BlockOptions] = useBrickOptions(blockId);
+  const [{ block: brick, error }, BrickOptions] = useBrickOptions(brickId);
 
-  // Conditionally show Advanced Options "Condition" and "Target" depending on the value of blockType.
-  // If blockType is undefined, don't show the options.
+  // Conditionally show Advanced Options "Condition" and "Target" depending on the value of brickType.
+  // If brickType is undefined, don't show the options.
   // If error happens, behavior is undefined.
-  const [blockType] = useAsyncState(async () => getType(block), [block]);
+  const [brickType] = useAsyncState(async () => getType(brick), [brick]);
 
   const [isRootAware] = useAsyncState(async () => {
-    const inputSchema = inputProperties(block.inputSchema);
+    const inputSchema = inputProperties(brick.inputSchema);
     // Handle DOM bricks that were upgraded to be root-aware
     if ("isRootAware" in inputSchema) {
       return Boolean(config.value.config.isRootAware);
     }
 
-    return block.isRootAware();
-  }, [block, config.value.config.isRootAware]);
+    return brick.isRootAware();
+  }, [brick, config.value.config.isRootAware]);
 
   const advancedOptionsRef = useRef<HTMLDivElement>();
 
@@ -146,7 +146,7 @@ const BlockConfiguration: React.FunctionComponent<{
       "menuItem",
       "tour",
     ].includes(context.values.type);
-  const showIfAndTarget = blockType && blockType !== "renderer" && !isComment;
+  const showIfAndTarget = brickType && brickType !== "renderer" && !isComment;
   const noAdvancedOptions = (!showRootMode && !showIfAndTarget) || isComment;
 
   return (
@@ -155,13 +155,13 @@ const BlockConfiguration: React.FunctionComponent<{
 
       <>
         <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
-          {blockErrors?.id && (
+          {brickErrors?.id && (
             <div className="invalid-feedback d-block mb-4">
-              Unknown brick: {blockId}
+              Unknown brick: {brickId}
             </div>
           )}
-          {BlockOptions ? (
-            <BlockOptions name={name} configKey="config" />
+          {BrickOptions ? (
+            <BrickOptions name={name} configKey="config" />
           ) : error ? (
             <div className="invalid-feedback d-block mb-4">{error}</div>
           ) : (
@@ -210,4 +210,4 @@ const BlockConfiguration: React.FunctionComponent<{
   );
 };
 
-export default BlockConfiguration;
+export default BrickConfiguration;

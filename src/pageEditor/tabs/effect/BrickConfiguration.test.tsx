@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import BlockConfiguration from "./BlockConfiguration";
-import blockRegistry from "@/bricks/registry";
+import BrickConfiguration from "./BrickConfiguration";
+import brickRegistry from "@/bricks/registry";
 import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { screen } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -36,21 +36,21 @@ import {
 } from "@/testUtils/factories/pageEditorFactories";
 import {
   brickConfigFactory,
-  brickFactory as brick,
+  brickFactory,
 } from "@/testUtils/factories/brickFactories";
 
 beforeAll(() => {
   registerDefaultWidgets();
   // Precaution
-  blockRegistry.clear();
+  brickRegistry.clear();
 });
 
 afterEach(() => {
   // Being nice to other tests
-  blockRegistry.clear();
+  brickRegistry.clear();
 });
 
-function renderBlockConfiguration(
+function renderBrickConfiguration(
   element: React.ReactElement,
   initialValues: ModComponentFormState,
 ) {
@@ -69,13 +69,13 @@ function renderBlockConfiguration(
 }
 
 test("renders", async () => {
-  const block = echoBrick;
-  blockRegistry.register([block]);
+  const brick = echoBrick;
+  brickRegistry.register([brick]);
   const initialState = formStateFactory({ apiVersion: "v3" }, [
-    brickConfigFactory({ id: block.id }),
+    brickConfigFactory({ id: brick.id }),
   ]);
-  const { asFragment } = renderBlockConfiguration(
-    <BlockConfiguration name="extension.blockPipeline[0]" blockId={block.id} />,
+  const { asFragment } = renderBrickConfiguration(
+    <BrickConfiguration name="extension.blockPipeline[0]" brickId={brick.id} />,
     initialState,
   );
 
@@ -92,15 +92,15 @@ describe("shows root mode", () => {
     // `menuItem` must show root mode because root mode is used if the location matches multiple elements on the page
     ["menuItem", menuItemFormStateFactory],
   ])("shows root mode for %s", async (type, factory) => {
-    const block = echoBrick;
-    blockRegistry.register([block]);
+    const brick = echoBrick;
+    brickRegistry.register([brick]);
     const initialState = factory({ apiVersion: "v3" }, [
-      brickConfigFactory({ id: block.id }),
+      brickConfigFactory({ id: brick.id }),
     ]);
-    renderBlockConfiguration(
-      <BlockConfiguration
+    renderBrickConfiguration(
+      <BrickConfiguration
         name="extension.blockPipeline[0]"
-        blockId={block.id}
+        brickId={brick.id}
       />,
       initialState,
     );
@@ -113,15 +113,15 @@ describe("shows root mode", () => {
   });
 
   test("don't show root mode for sidebar panel", async () => {
-    const block = echoBrick;
-    blockRegistry.register([block]);
+    const brick = echoBrick;
+    brickRegistry.register([brick]);
     const initialState = sidebarPanelFormStateFactory({ apiVersion: "v3" }, [
-      brickConfigFactory({ id: block.id }),
+      brickConfigFactory({ id: brick.id }),
     ]);
-    renderBlockConfiguration(
-      <BlockConfiguration
+    renderBrickConfiguration(
+      <BrickConfiguration
         name="extension.blockPipeline[0]"
-        blockId={block.id}
+        brickId={brick.id}
       />,
       initialState,
     );
@@ -135,15 +135,15 @@ describe("shows root mode", () => {
 });
 
 test.each`
-  blockName      | propertyName   | expected | readableExpected
+  brickName      | propertyName   | expected | readableExpected
   ${"reader"}    | ${"read"}      | ${true}  | ${"should"}
   ${"effect"}    | ${"effect"}    | ${true}  | ${"should"}
   ${"transform"} | ${"transform"} | ${true}  | ${"should"}
   ${"renderer"}  | ${"render"}    | ${false} | ${"should not"}
 `(
-  "$readableExpected show Condition and Target settings for $blockName",
+  "$readableExpected show Condition and Target settings for $brickName",
   async ({ propertyName, expected }) => {
-    const block = brick({
+    const brick = brickFactory({
       [propertyName]: jest.fn(),
       inputSchema: propertiesToSchema({
         message: {
@@ -152,14 +152,14 @@ test.each`
       }),
     });
 
-    blockRegistry.register([block]);
+    brickRegistry.register([brick]);
     const initialState = triggerFormStateFactory({ apiVersion: "v3" }, [
-      brickConfigFactory({ id: block.id }),
+      brickConfigFactory({ id: brick.id }),
     ]);
-    renderBlockConfiguration(
-      <BlockConfiguration
+    renderBrickConfiguration(
+      <BrickConfiguration
         name="extension.blockPipeline[0]"
-        blockId={block.id}
+        brickId={brick.id}
       />,
       initialState,
     );
