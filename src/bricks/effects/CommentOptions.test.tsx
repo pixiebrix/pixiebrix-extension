@@ -26,7 +26,7 @@ beforeAll(() => {
 });
 
 describe("CommentOptions", () => {
-  it("renders a comment without crashing", async () => {
+  it("renders a comment in a textarea", async () => {
     render(<CommentOptions name="test" configKey="test" />, {
       initialValues: {
         test: {
