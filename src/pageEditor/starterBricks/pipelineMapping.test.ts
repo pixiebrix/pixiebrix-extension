@@ -21,10 +21,9 @@ import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
 import { type BrickConfig } from "@/bricks/types";
 import {
   echoBrick,
-  pipelineBrick,
   teapotBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { EMPTY_PIPELINE, toExpression } from "@/testUtils/testHelpers";
+import { toExpression } from "@/testUtils/testHelpers";
 import {
   normalizePipelineForEditor,
   omitEditorMetadata,
