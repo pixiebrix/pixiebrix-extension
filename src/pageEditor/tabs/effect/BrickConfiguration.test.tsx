@@ -38,6 +38,7 @@ import {
   brickConfigFactory,
   brickFactory,
 } from "@/testUtils/factories/brickFactories";
+import CommentEffect from "@/bricks/effects/comment";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -131,6 +132,25 @@ describe("shows root mode", () => {
     const rootModeSelect = screen.queryByLabelText("Target Root Mode");
 
     expect(rootModeSelect).toBeNull();
+  });
+
+  test("don't show options for comment brick", async () => {
+    const brick = new CommentEffect();
+    brickRegistry.register([brick]);
+    const initialState = sidebarPanelFormStateFactory({ apiVersion: "v3" }, [
+      brickConfigFactory({ id: brick.id }),
+    ]);
+    renderBrickConfiguration(
+      <BrickConfiguration
+        name="extension.blockPipeline[0]"
+        brickId={brick.id}
+      />,
+      initialState,
+    );
+
+    await expect(
+      screen.findByText("No options to show"),
+    ).resolves.toBeInTheDocument();
   });
 });
 

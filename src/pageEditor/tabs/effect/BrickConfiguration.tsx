@@ -23,7 +23,6 @@ import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldCont
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import Loader from "@/components/Loader";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { useAsyncState } from "@/hooks/common";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { partial } from "lodash";
 import { type BrickConfig } from "@/bricks/types";
@@ -43,6 +42,7 @@ import {
 } from "@/pageEditor/tabs/effect/configurationConstants";
 import useAsyncEffect from "use-async-effect";
 import CommentEffect from "@/bricks/effects/comment";
+import useAsyncState from "@/hooks/useAsyncState";
 
 const BrickConfiguration: React.FunctionComponent<{
   name: string;
@@ -63,9 +63,12 @@ const BrickConfiguration: React.FunctionComponent<{
   // Conditionally show Advanced Options "Condition" and "Target" depending on the value of brickType.
   // If brickType is undefined, don't show the options.
   // If error happens, behavior is undefined.
-  const [brickType] = useAsyncState(async () => getType(brick), [brick]);
+  const { data: brickType } = useAsyncState(
+    async () => getType(brick),
+    [brick],
+  );
 
-  const [isRootAware] = useAsyncState(async () => {
+  const { data: isRootAware } = useAsyncState(async () => {
     const inputSchema = inputProperties(brick.inputSchema);
     // Handle DOM bricks that were upgraded to be root-aware
     if ("isRootAware" in inputSchema) {
