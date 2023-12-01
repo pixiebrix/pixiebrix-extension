@@ -29,6 +29,7 @@ import userEvent from "@testing-library/user-event";
 import { type IntegrationConfig } from "@/integrations/integrationTypes";
 import { convertSchemaToConfigState } from "@/components/auth/AuthWidget";
 import { within } from "@testing-library/react";
+import { fieldLabel } from "@/components/fields/fieldUtils";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -63,7 +64,9 @@ describe("IntegrationConfigEditorModal", () => {
 
     const dialogRoot = screen.getByRole("dialog");
     for (const property of Object.keys(service.schema.properties)) {
-      expect(within(dialogRoot).getByLabelText(property)).toBeVisible();
+      expect(
+        within(dialogRoot).getByLabelText(fieldLabel(property)),
+      ).toBeVisible();
     }
   });
 
@@ -85,16 +88,16 @@ describe("IntegrationConfigEditorModal", () => {
 
     await user.click(
       screen.getByRole("textbox", {
-        name: "controlRoomUrl",
+        name: "Control Room URL",
       }),
     );
     await user.type(
       screen.getByRole("textbox", {
-        name: "controlRoomUrl",
+        name: "Control Room URL",
       }),
       "https://invalid.control.room/",
     );
-    await user.click(screen.getByRole("textbox", { name: "username" }));
+    await user.click(screen.getByRole("textbox", { name: "Username" }));
 
     expect(screen.getByText("Invalid controlRoomUrl format")).toBeVisible();
   });
