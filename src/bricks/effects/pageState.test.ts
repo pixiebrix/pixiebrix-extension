@@ -18,8 +18,8 @@
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { makeTemplateExpression } from "@/utils/expressionUtils";
 
 beforeEach(() => {
   // Isolate extension state between test

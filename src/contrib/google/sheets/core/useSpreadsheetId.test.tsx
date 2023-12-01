@@ -19,7 +19,6 @@ import { renderHook } from "@/sidebar/testHelpers";
 import useSpreadsheetId from "@/contrib/google/sheets/core/useSpreadsheetId";
 import { services } from "@/background/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
@@ -28,6 +27,7 @@ import {
 } from "@/testUtils/factories/integrationFactories";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { makeVariableExpression } from "@/utils/expressionUtils";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");

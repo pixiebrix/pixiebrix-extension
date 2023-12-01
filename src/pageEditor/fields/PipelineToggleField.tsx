@@ -23,7 +23,8 @@ import React, { type ChangeEvent } from "react";
 import { useField, useFormikContext } from "formik";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { makePipelineExpression } from "@/runtime/expressionCreators";
+
+import { makePipelineExpression } from "@/utils/expressionUtils";
 
 /**
  * A Formik field for toggling a pipeline expression on or off.

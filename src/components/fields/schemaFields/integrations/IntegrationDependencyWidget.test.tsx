@@ -35,7 +35,8 @@ import {
 } from "@/utils/asyncStateUtils";
 import selectEvent from "react-select-event";
 import { act, screen } from "@testing-library/react";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
+
+import { makeVariableExpression } from "@/utils/expressionUtils";
 
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),

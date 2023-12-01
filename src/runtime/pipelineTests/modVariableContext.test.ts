@@ -24,13 +24,13 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { setPageState } from "@/contentScript/pageState";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
-import {
-  makeTemplateExpression,
-  makeVariableExpression,
-} from "@/runtime/expressionCreators";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { type UnknownObject } from "@/types/objectTypes";
+import {
+  makeTemplateExpression,
+  makeVariableExpression,
+} from "@/utils/expressionUtils";
 
 beforeEach(() => {
   blockRegistry.clear();

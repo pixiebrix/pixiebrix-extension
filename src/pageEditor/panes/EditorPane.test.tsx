@@ -38,10 +38,6 @@ import userEvent from "@testing-library/user-event";
 import { JQTransformer } from "@/bricks/transformers/jq";
 import { AlertEffect } from "@/bricks/effects/alert";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
-import {
-  makePipelineExpression,
-  makeTemplateExpression,
-} from "@/runtime/expressionCreators";
 import { type OutputKey, type PipelineExpression } from "@/types/runtimeTypes";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import { type EditablePackageMetadata } from "@/types/contract";
@@ -69,6 +65,10 @@ import {
   marketplaceTagFactory,
 } from "@/testUtils/factories/marketplaceFactories";
 import { partnerUserFactory } from "@/testUtils/factories/authFactories";
+import {
+  makePipelineExpression,
+  makeTemplateExpression,
+} from "@/utils/expressionUtils";
 
 jest.setTimeout(15_000); // This test is flaky with the default timeout of 5000 ms
 

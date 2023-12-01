@@ -24,11 +24,6 @@ import { validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import IfElse from "@/bricks/transformers/controlFlow/IfElse";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
-import {
-  makePipelineExpression,
-  makeTemplateExpression,
-  makeVariableExpression,
-} from "@/runtime/expressionCreators";
 import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import recipeRegistry from "@/modDefinitions/registry";
@@ -58,6 +53,11 @@ import {
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
+import {
+  makePipelineExpression,
+  makeTemplateExpression,
+  makeVariableExpression,
+} from "@/utils/expressionUtils";
 
 jest.mocked(services.locate).mockResolvedValue(
   sanitizedIntegrationConfigFactory({

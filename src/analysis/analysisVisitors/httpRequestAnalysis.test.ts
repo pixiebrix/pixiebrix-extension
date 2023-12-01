@@ -20,7 +20,8 @@ import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
 import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
 import { RemoteMethod } from "@/bricks/transformers/remoteMethod";
 import { AnnotationType } from "@/types/annotationTypes";
-import { makeTemplateExpression } from "@/runtime/expressionCreators";
+
+import { makeTemplateExpression } from "@/utils/expressionUtils";
 
 const position: BrickPosition = {
   path: "test.path",

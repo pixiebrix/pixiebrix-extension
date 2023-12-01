@@ -22,11 +22,11 @@ import {
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
+import MapValues from "@/bricks/transformers/controlFlow/MapValues";
 import {
   makePipelineExpression,
   makeTemplateExpression,
-} from "@/runtime/expressionCreators";
-import MapValues from "@/bricks/transformers/controlFlow/MapValues";
+} from "@/utils/expressionUtils";
 
 const mapValueBrick = new MapValues();
 

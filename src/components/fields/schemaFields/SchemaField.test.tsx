@@ -30,8 +30,8 @@ import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
 import databaseSchema from "@schemas/database.json";
 import { type Schema } from "@/types/schemaTypes";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { type CustomWidgetRegistry } from "@/components/fields/schemaFields/schemaFieldTypes";
+import { makeTemplateExpression } from "@/utils/expressionUtils";
 
 jest.mock("@/hooks/useDatabaseOptions", () => ({
   __esModule: true,

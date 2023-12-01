@@ -34,12 +34,12 @@ import {
 import { type OutputKey } from "@/types/runtimeTypes";
 import { defaultBlockConfig } from "@/bricks/util";
 import { validateRegistryId } from "@/types/helpers";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import { makeVariableExpression } from "@/utils/expressionUtils";
 
 function getTabState(
   state: EditorState,

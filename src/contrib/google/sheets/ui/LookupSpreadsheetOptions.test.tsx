@@ -20,10 +20,6 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { waitForEffect } from "@/testUtils/testHelpers";
 import LookupSpreadsheetOptions from "@/contrib/google/sheets/ui/LookupSpreadsheetOptions";
 import { act, screen } from "@testing-library/react";
-import {
-  makeTemplateExpression,
-  makeVariableExpression,
-} from "@/runtime/expressionCreators";
 import { validateRegistryId } from "@/types/helpers";
 import selectEvent from "react-select-event";
 import { render } from "@/pageEditor/testHelpers";
@@ -44,6 +40,10 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { type FormikValues } from "formik";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
+import {
+  makeTemplateExpression,
+  makeVariableExpression,
+} from "@/utils/expressionUtils";
 
 let idSequence = 0;
 function newId(): UUID {

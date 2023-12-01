@@ -19,10 +19,11 @@ import {
   isSelectField,
   isIntegrationDependencyValueFormat,
 } from "@/components/fields/schemaFields/fieldTypeCheckers";
+
 import {
   makeTemplateExpression,
   makeVariableExpression,
-} from "@/runtime/expressionCreators";
+} from "@/utils/expressionUtils";
 
 describe("isServiceValue", () => {
   it("null is service value", () => {

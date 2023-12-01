@@ -25,8 +25,8 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import IfElse from "@/bricks/transformers/controlFlow/IfElse";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { makePipelineExpression } from "@/runtime/expressionCreators";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { makePipelineExpression } from "@/utils/expressionUtils";
 
 const ifElseBlock = new IfElse();
 

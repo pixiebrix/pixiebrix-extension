@@ -18,10 +18,11 @@
 import { RegexTransformer } from "./regex";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { BusinessError } from "@/errors/businessErrors";
+
 import {
   makeTemplateExpression,
   makeVariableExpression,
-} from "@/runtime/expressionCreators";
+} from "@/utils/expressionUtils";
 
 const transformer = new RegexTransformer();
 

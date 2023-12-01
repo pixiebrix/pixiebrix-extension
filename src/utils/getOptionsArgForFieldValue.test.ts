@@ -16,7 +16,8 @@
  */
 
 import { getOptionsArgForFieldValue } from "@/utils/getOptionsArgForFieldValue";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
+
+import { makeVariableExpression } from "@/utils/expressionUtils";
 
 describe("getOptionsArgForFieldValue", () => {
   it("returns null when optionsArgs is empty", () => {

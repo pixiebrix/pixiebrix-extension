@@ -22,8 +22,8 @@ import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
 import Form from "@/components/form/Form";
-import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { type Expression } from "@/types/runtimeTypes";
+import { makeTemplateExpression } from "@/utils/expressionUtils";
 
 type TextWidgetPropsAndCustomArgs = React.ComponentProps<typeof TextWidget> & {
   exampleValue: string | Expression;

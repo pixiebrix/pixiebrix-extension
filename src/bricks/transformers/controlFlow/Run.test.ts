@@ -24,9 +24,9 @@ import {
   throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { makePipelineExpression } from "@/runtime/expressionCreators";
 import Run from "@/bricks/transformers/controlFlow/Run";
 import pDefer from "p-defer";
+import { makePipelineExpression } from "@/utils/expressionUtils";
 
 const runBlock = new Run();
 

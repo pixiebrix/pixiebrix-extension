@@ -16,7 +16,8 @@
  */
 
 import { getSheetIdIntegrationOutputKey } from "@/contrib/google/sheets/core/getSheetIdIntegrationOutputKey";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
+
+import { makeVariableExpression } from "@/utils/expressionUtils";
 
 describe("getSheetServiceOutputKey", () => {
   test("abc", () => {

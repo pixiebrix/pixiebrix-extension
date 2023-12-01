@@ -26,7 +26,6 @@ import {
   testOptions,
   throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { makePipelineExpression } from "@/runtime/expressionCreators";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { getExampleBlockConfig } from "@/pageEditor/exampleBlockConfigs";
 import { reducePipeline } from "@/runtime/reducePipeline";
@@ -56,6 +55,7 @@ import { type RendererErrorPayload } from "@/types/rendererTypes";
 import { setPageState } from "@/contentScript/pageState";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { unary } from "lodash";
+import { makePipelineExpression } from "@/utils/expressionUtils";
 
 (browser.runtime as any).getURL = jest.fn(
   (path) => `chrome-extension://abc/${path}`,

@@ -23,8 +23,8 @@ import {
   throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { makePipelineExpression } from "@/runtime/expressionCreators";
 import Retry from "@/bricks/transformers/controlFlow/Retry";
+import { makePipelineExpression } from "@/utils/expressionUtils";
 
 const retryBlock = new Retry();
 

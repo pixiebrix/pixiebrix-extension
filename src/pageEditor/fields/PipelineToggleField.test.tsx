@@ -19,7 +19,8 @@ import React from "react";
 import { render } from "@/pageEditor/testHelpers";
 import PipelineToggleField from "@/pageEditor/fields/PipelineToggleField";
 import userEvent from "@testing-library/user-event";
-import { makePipelineExpression } from "@/runtime/expressionCreators";
+
+import { makePipelineExpression } from "@/utils/expressionUtils";
 
 describe("PipelineToggleField", () => {
   it("toggles formik state", async () => {

@@ -28,15 +28,15 @@ import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactor
 import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import {
-  makeTemplateExpression,
-  makeVariableExpression,
-} from "@/runtime/expressionCreators";
 import { getAttributeExamples } from "@/contentScript/messenger/api";
 import { screen } from "@testing-library/react";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import userEvent from "@testing-library/user-event";
+import {
+  makeTemplateExpression,
+  makeVariableExpression,
+} from "@/utils/expressionUtils";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   getAttributeExamples: jest.fn(),

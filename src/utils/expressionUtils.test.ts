@@ -19,8 +19,8 @@ import {
   castTextLiteralOrThrow,
   containsTemplateExpression,
   isTextLiteralOrNull,
+  makeTemplateExpression,
 } from "@/utils/expressionUtils";
-import { makeTemplateExpression } from "@/runtime/expressionCreators";
 
 describe("containsTemplateExpression", () => {
   it("finds simple template expressions", () => {

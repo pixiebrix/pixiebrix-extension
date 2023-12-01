@@ -16,7 +16,8 @@
  */
 
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
+
+import { makeVariableExpression } from "@/utils/expressionUtils";
 
 const brick = new FormTransformer();
 

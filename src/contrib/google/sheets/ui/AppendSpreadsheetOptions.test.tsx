@@ -23,10 +23,6 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import {
-  makeTemplateExpression,
-  makeVariableExpression,
-} from "@/runtime/expressionCreators";
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
 import { dereference } from "@/validators/generic";
 import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
@@ -52,6 +48,10 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import selectEvent from "react-select-event";
 import { type FormikValues } from "formik";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
+import {
+  makeTemplateExpression,
+  makeVariableExpression,
+} from "@/utils/expressionUtils";
 
 let idSequence = 0;
 function newId(): UUID {

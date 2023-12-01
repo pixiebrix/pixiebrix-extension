@@ -28,10 +28,6 @@ import { render } from "@/pageEditor/testHelpers";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import {
-  makePipelineExpression,
-  makeTemplateExpression,
-} from "@/runtime/expressionCreators";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import blockRegistry from "@/bricks/registry";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -39,6 +35,10 @@ import { type PipelineExpression } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import {
+  makePipelineExpression,
+  makeTemplateExpression,
+} from "@/utils/expressionUtils";
 
 function renderDocumentPreview(documentElement: DocumentElement) {
   const formState = formStateFactory(undefined, [

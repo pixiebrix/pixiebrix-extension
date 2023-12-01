@@ -36,24 +36,16 @@ import {
 } from "@reduxjs/toolkit";
 
 import {
-  // eslint-disable-next-line no-restricted-imports
   Form,
-  // eslint-disable-next-line no-restricted-imports
   Formik,
-  type FormikHelpers,
   type FormikErrors,
+  type FormikHelpers,
   type FormikValues,
 } from "formik";
 import { type Middleware } from "redux";
 import { noop } from "lodash";
 import { type ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
 import { type UnknownObject } from "@/types/objectTypes";
-import {
-  type Expression,
-  type ExpressionType,
-  type PipelineExpression,
-} from "@/types/runtimeTypes";
-import { type BrickPipeline } from "@/bricks/types";
 import {
   act as actHook,
   renderHook,
@@ -367,20 +359,3 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
     };
   };
 }
-
-export function toExpression<
-  TTemplateOrPipeline,
-  TTypeTag extends ExpressionType,
->(
-  type: TTypeTag,
-  value: TTemplateOrPipeline,
-): Expression<TTemplateOrPipeline, TTypeTag> {
-  return {
-    __type__: type,
-    __value__: value,
-  };
-}
-
-export const EMPTY_PIPELINE: PipelineExpression = Object.freeze(
-  toExpression("pipeline", [] as BrickPipeline),
-);

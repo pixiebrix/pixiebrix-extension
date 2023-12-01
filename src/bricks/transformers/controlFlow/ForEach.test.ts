@@ -23,10 +23,11 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
+
 import {
   makePipelineExpression,
   makeTemplateExpression,
-} from "@/runtime/expressionCreators";
+} from "@/utils/expressionUtils";
 
 const forEachBlock = new ForEach();
 

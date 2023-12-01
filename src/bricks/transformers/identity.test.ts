@@ -18,9 +18,9 @@
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { IdentityTransformer } from "@/bricks/transformers/identity";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
 import { validateInput } from "@/validators/generic";
 import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
+import { makeVariableExpression } from "@/utils/expressionUtils";
 
 const brick = new IdentityTransformer();
 

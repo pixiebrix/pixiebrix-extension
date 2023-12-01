@@ -16,7 +16,8 @@
  */
 
 import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
+
+import { makeVariableExpression } from "@/utils/expressionUtils";
 
 const brick = new JQueryReader();
 

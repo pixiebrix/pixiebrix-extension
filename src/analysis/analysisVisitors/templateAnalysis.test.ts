@@ -16,8 +16,8 @@
  */
 
 import { type BrickPosition } from "@/bricks/types";
-import { toExpression } from "@/testUtils/testHelpers";
 import TemplateAnalysis from "./templateAnalysis";
+import { toExpression } from "@/utils/expressionUtils";
 
 const position: BrickPosition = {
   path: "test.path.property",

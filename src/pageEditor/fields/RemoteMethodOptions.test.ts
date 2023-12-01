@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { isJsonString } from "./RemoteMethodOptions";
+import { makeTemplateExpression } from "@/utils/expressionUtils";
 
 describe("isJsonString", () => {
   test("returns true when field value is JSON sting", () => {

@@ -21,7 +21,8 @@ import {
 } from "@/testUtils/factories/pageEditorFactories";
 import CustomEventEffect from "@/bricks/effects/customEvent";
 import CollectEventNamesVisitor from "@/analysis/analysisVisitors/eventNameAnalysis/collectEventNamesVisitor";
-import { makeTemplateExpression } from "@/runtime/expressionCreators";
+
+import { makeTemplateExpression } from "@/utils/expressionUtils";
 
 describe("collectEventNamesAnalysis", () => {
   it("collects event name from literal", () => {

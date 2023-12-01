@@ -24,7 +24,8 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
-import { makePipelineExpression } from "@/runtime/expressionCreators";
+
+import { makePipelineExpression } from "@/utils/expressionUtils";
 
 const tryExceptBlock = new TryExcept();
 

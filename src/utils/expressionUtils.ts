@@ -24,6 +24,7 @@ import {
 } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isObject } from "./objectUtils";
+import { type BrickPipeline } from "@/bricks/types";
 
 const templateTypes: TemplateEngine[] = [
   "mustache",
@@ -63,7 +64,7 @@ export function isTemplateExpression(
 export function isVarExpression(
   value: unknown,
 ): value is Expression<string, "var"> {
-  return isExpression(value) && (value as Expression).__type__ === "var";
+  return isExpression(value) && value.__type__ === "var";
 }
 
 /**
@@ -73,7 +74,7 @@ export function isVarExpression(
 export function isNunjucksExpression(
   value: unknown,
 ): value is Expression<string, "nunjucks"> {
-  return isExpression(value) && (value as Expression).__type__ === "nunjucks";
+  return isExpression(value) && value.__type__ === "nunjucks";
 }
 
 export function isPipelineExpression(
@@ -159,3 +160,79 @@ export function castTextLiteralOrThrow(
 
   return literalOrTemplate.__value__;
 }
+
+/**
+ * Returns a text template expression with the given value.
+ * @param template the template engine
+ * @param value the value
+ */
+export function makeTemplateExpression(
+  template: TemplateEngine,
+  value: string,
+): Expression {
+  return {
+    __type__: template,
+    __value__: value,
+  };
+}
+
+/**
+ * Returns a PipelineExpression with the given pipeline.
+ * @param value the brick pipeline.
+ */
+export function makePipelineExpression(
+  value: BrickPipeline,
+): PipelineExpression {
+  return {
+    __type__: "pipeline",
+    __value__: value,
+  };
+}
+
+/**
+ * Returns a variable expression with the given value.
+ * @param value
+ */
+export function makeVariableExpression(
+  value: string,
+): Expression<string, "var"> {
+  // eslint-disable-next-line -- recommended constructor
+  return {
+    __type__: "var",
+    __value__: value,
+  };
+}
+
+/**
+ * Create an expression from a expression type and value.
+ * @param type
+ * @param value
+ */
+export function toExpression<TEngine extends TemplateEngine>(
+  type: TEngine,
+  value: string,
+): Expression<string, TEngine>;
+export function toExpression(
+  type: "pipeline",
+  value: BrickPipeline,
+): PipelineExpression;
+export function toExpression<TValue extends UnknownObject>(
+  type: "defer",
+  value: TValue,
+): DeferExpression;
+export function toExpression<
+  TTemplateOrPipeline,
+  TTypeTag extends ExpressionType,
+>(
+  type: TTypeTag,
+  value: TTemplateOrPipeline,
+): Expression<TTemplateOrPipeline, TTypeTag> {
+  return {
+    __type__: type,
+    __value__: value,
+  };
+}
+
+export const EMPTY_PIPELINE: PipelineExpression = Object.freeze(
+  toExpression("pipeline", [] as BrickPipeline),
+);

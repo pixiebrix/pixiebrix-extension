@@ -35,8 +35,8 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import MockDate from "mockdate";
 import { type BrickPipeline } from "@/bricks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { type OutputKey, type RenderedArgs } from "@/types/runtimeTypes";
+import { makeTemplateExpression } from "@/utils/expressionUtils";
 
 const addEntryMock = jest.mocked(traces.addEntry);
 const addExitMock = jest.mocked(traces.addExit);

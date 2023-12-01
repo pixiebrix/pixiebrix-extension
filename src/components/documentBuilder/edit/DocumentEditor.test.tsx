@@ -22,7 +22,6 @@ import { type DocumentElement } from "@/components/documentBuilder/documentBuild
 import DocumentEditor from "./DocumentEditor";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
-import { toExpression } from "@/testUtils/testHelpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { render, screen } from "@/pageEditor/testHelpers";
@@ -37,6 +36,7 @@ import {
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 beforeAll(() => {
   registerDefaultWidgets();

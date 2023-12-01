@@ -21,12 +21,12 @@ import { type BrickPosition, type BrickConfig } from "@/bricks/types";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { type PipelineExpression } from "@/types/runtimeTypes";
-import { toExpression } from "@/testUtils/testHelpers";
 import PipelineVisitor, { type VisitBlockExtra } from "./PipelineVisitor";
 import {
   brickConfigFactory,
   pipelineFactory,
 } from "@/testUtils/factories/brickFactories";
+import { toExpression } from "@/utils/expressionUtils";
 
 test("should invoke the callback for the pipeline bricks", () => {
   const pipeline = pipelineFactory();

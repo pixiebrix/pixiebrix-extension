@@ -17,7 +17,6 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { toExpression } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { selectIntegrationDependencyVariables } from "./integrationDependencyFieldUtils";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
@@ -29,6 +28,7 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {

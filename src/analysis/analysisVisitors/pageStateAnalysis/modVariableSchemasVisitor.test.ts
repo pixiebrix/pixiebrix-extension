@@ -18,8 +18,8 @@
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import ModVariableSchemasVisitor from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
-import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
+import { makeTemplateExpression } from "@/utils/expressionUtils";
 
 beforeAll(() => {
   registerBuiltinBlocks();

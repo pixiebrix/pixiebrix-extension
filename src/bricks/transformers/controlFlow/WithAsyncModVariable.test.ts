@@ -16,7 +16,6 @@
  */
 
 import { WithAsyncModVariable } from "@/bricks/transformers/controlFlow/WithAsyncModVariable";
-import { makePipelineExpression } from "@/runtime/expressionCreators";
 import {
   DeferredEchoBrick,
   simpleInput,
@@ -37,6 +36,7 @@ import {
 import { type UUID } from "@/types/stringTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type Expression } from "@/types/runtimeTypes";
+import { makePipelineExpression } from "@/utils/expressionUtils";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 

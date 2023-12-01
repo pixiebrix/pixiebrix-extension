@@ -22,9 +22,9 @@ import {
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { makePipelineExpression } from "@/runtime/expressionCreators";
 import ForEachElement from "./ForEachElement";
 import { getReferenceForElement } from "@/contentScript/elementReference";
+import { makePipelineExpression } from "@/utils/expressionUtils";
 
 const forEachBlock = new ForEachElement();
 
