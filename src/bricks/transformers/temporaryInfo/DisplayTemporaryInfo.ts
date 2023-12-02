@@ -297,15 +297,14 @@ export async function displayTemporaryInfo({
   }
 
   try {
-    return (
-      (await waitForTemporaryPanel({
-        nonce,
-        location,
-        entry,
-        extensionId: entry.extensionId,
-        onRegister: onReady,
-      })) ?? {}
-    );
+    const panelAction = await waitForTemporaryPanel({
+      nonce,
+      location,
+      entry,
+      extensionId: entry.extensionId,
+      onRegister: onReady,
+    });
+    return panelAction ?? {};
   } catch (error) {
     if (isSpecificError(error, ClosePanelAction)) {
       onCloseClick?.(nonce);
