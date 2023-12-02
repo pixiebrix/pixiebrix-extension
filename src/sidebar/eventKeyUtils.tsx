@@ -29,7 +29,7 @@ import hash from "object-hash";
 import { sortBy } from "lodash";
 
 export function eventKeyForEntry(
-  entry: SidebarEntry | undefined,
+  entry: SidebarEntry | undefined | null,
 ): string | null {
   if (entry == null) {
     return null;

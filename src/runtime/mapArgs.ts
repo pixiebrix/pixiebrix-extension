@@ -53,7 +53,7 @@ export async function renderExplicit(
     }
 
     const render = engineRenderer(config.__type__, options);
-    return render(config.__value__, ctxt);
+    return render?.(config.__value__, ctxt);
   }
 
   if (isPipelineExpression(config) || isDeferExpression(config)) {
