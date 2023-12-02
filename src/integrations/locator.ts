@@ -204,7 +204,9 @@ class LazyLocatorFactory {
    *
    * @param authId UUID of the integration configuration
    */
-  async findIntegrationConfig(authId: UUID): Promise<IntegrationConfig | null> {
+  async findIntegrationConfig(
+    authId: UUID,
+  ): Promise<IntegrationConfig | undefined> {
     if (!this.initialized) {
       await this.refresh();
     }

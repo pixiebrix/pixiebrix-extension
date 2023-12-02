@@ -41,6 +41,10 @@ import {
 import { type SemVerString } from "@/types/registryTypes";
 import { isAbsoluteUrl, safeParseUrl } from "@/utils/urlUtils";
 import { missingProperties } from "@/utils/schemaUtils";
+import { type SetRequired } from "type-fest";
+import { assertNotNull } from "@/utils/typeUtils.js";
+
+type RequestConfig = SetRequired<AxiosRequestConfig, "url">;
 
 /**
  * A service created from a local definition. Has the ability to authenticate requests because it has
@@ -52,11 +56,11 @@ export class LocalDefinedService<
   private readonly _definition: TDefinition;
 
   public readonly schema: Schema;
-  public readonly uiSchema: UiSchema;
+  public readonly uiSchema?: UiSchema;
 
   public readonly hasAuth: boolean;
 
-  public readonly version: SemVerString;
+  public readonly version?: SemVerString;
 
   constructor(definition: TDefinition) {
     const { id, name, description, icon, version } = definition.metadata;
@@ -141,12 +145,11 @@ export class LocalDefinedService<
       this._definition.isAvailable?.matchPatterns ?? [],
     );
 
-    if (
-      this._definition.authentication != null &&
-      "baseURL" in this._definition.authentication
-    ) {
+    const baseUrlTemplate =
+      "baseURL" in this._definition.authentication &&
+      this._definition.authentication.baseURL;
+    if (baseUrlTemplate) {
       // Convert into a real match pattern: https://developer.chrome.com/docs/extensions/mv3/match_patterns/
-      const baseUrlTemplate = this._definition.authentication.baseURL;
       const baseUrl = safeParseUrl(
         renderMustache(baseUrlTemplate, serviceConfig),
       );
@@ -184,7 +187,7 @@ export class LocalDefinedService<
     return uniq(compact(patterns));
   }
 
-  getTokenContext(serviceConfig: SecretsConfig): TokenContext {
+  getTokenContext(serviceConfig: SecretsConfig): TokenContext | undefined {
     if (this.isToken) {
       const definition: TokenContext = (
         this._definition.authentication as TokenAuthenticationDefinition
@@ -196,7 +199,7 @@ export class LocalDefinedService<
     return undefined;
   }
 
-  getOAuth2Context(serviceConfig: SecretsConfig): OAuth2Context {
+  getOAuth2Context(serviceConfig: SecretsConfig): OAuth2Context | undefined {
     if (this.isOAuth2) {
       const definition: OAuth2Context = (
         this._definition.authentication as OAuth2AuthenticationDefinition
@@ -213,8 +216,8 @@ export class LocalDefinedService<
    * @throws IncompatibleServiceError if the resulting URL cannot by called by this service
    */
   private checkRequestUrl(
-    baseURL: string | null,
-    requestConfig: AxiosRequestConfig,
+    baseURL: string | undefined,
+    requestConfig: RequestConfig,
   ): void {
     const absoluteURL =
       baseURL && !isAbsoluteUrl(requestConfig.url)
@@ -230,8 +233,8 @@ export class LocalDefinedService<
 
   private authenticateRequestKey(
     serviceConfig: SecretsConfig,
-    requestConfig: AxiosRequestConfig,
-  ): AxiosRequestConfig {
+    requestConfig: RequestConfig,
+  ): RequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
       throw new IncompatibleServiceError(
         `Service ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`,
@@ -266,8 +269,8 @@ export class LocalDefinedService<
 
   private authenticateBasicRequest(
     serviceConfig: SecretsConfig,
-    requestConfig: AxiosRequestConfig,
-  ): AxiosRequestConfig {
+    requestConfig: RequestConfig,
+  ): RequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
       throw new IncompatibleServiceError(
         `Service ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`,
@@ -313,9 +316,9 @@ export class LocalDefinedService<
 
   private authenticateRequestToken(
     serviceConfig: SecretsConfig,
-    requestConfig: AxiosRequestConfig,
+    requestConfig: RequestConfig,
     tokenData: AuthData,
-  ): AxiosRequestConfig {
+  ): RequestConfig {
     if (isEmpty(tokenData)) {
       throw new Error("Empty token data provided");
     }
@@ -345,9 +348,9 @@ export class LocalDefinedService<
 
   authenticateRequest(
     serviceConfig: SecretsConfig,
-    requestConfig: AxiosRequestConfig,
+    requestConfig: RequestConfig,
     authData?: AuthData,
-  ): AxiosRequestConfig {
+  ): RequestConfig {
     const missing = missingProperties(this.schema, serviceConfig);
     if (missing.length > 0) {
       throw new NotConfiguredError(
@@ -358,6 +361,10 @@ export class LocalDefinedService<
     }
 
     if (this.isOAuth2 || this.isToken) {
+      assertNotNull(
+        authData,
+        "This service requires authentication data but it was not provided",
+      );
       return this.authenticateRequestToken(
         serviceConfig,
         requestConfig,
