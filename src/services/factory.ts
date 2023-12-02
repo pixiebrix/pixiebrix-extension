@@ -42,7 +42,7 @@ import { type SemVerString } from "@/types/registryTypes";
 import { isAbsoluteUrl, safeParseUrl } from "@/utils/urlUtils";
 import { missingProperties } from "@/utils/schemaUtils";
 import { type SetRequired } from "type-fest";
-import { assertNotNull } from "@/utils/typeUtils.js";
+import { assertNotNull } from "@/utils/typeUtils";
 
 type RequestConfig = SetRequired<AxiosRequestConfig, "url">;
 
