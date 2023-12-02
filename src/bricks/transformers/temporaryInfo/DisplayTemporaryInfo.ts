@@ -435,7 +435,7 @@ class DisplayTemporaryInfo extends TransformerABC {
 
       counter++;
 
-      return result as PanelPayload;
+      return result;
     };
 
     return displayTemporaryInfo({

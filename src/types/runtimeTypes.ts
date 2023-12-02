@@ -374,7 +374,7 @@ export type BrickOptions<
     branch: TraceBranch,
     extraContext?: UnknownObject,
     root?: SelectorRoot,
-  ) => Promise<PanelPayload>; // Should be PanelPayload
+  ) => Promise<PanelPayload>;
 
   /**
    * A signal to abort the current brick's execution.
