@@ -17,7 +17,10 @@
 
 import { compact, identity, intersection, sortBy, uniq } from "lodash";
 import { getCssSelector } from "css-selector-generator";
-import type { CssSelectorType } from "css-selector-generator/types/types.js";
+import type {
+  CssSelectorMatch,
+  CssSelectorType,
+} from "css-selector-generator/types/types.js";
 import {
   CONTENT_SCRIPT_READY_ATTRIBUTE,
   EXTENSION_POINT_DATA_ATTR,
@@ -33,7 +36,11 @@ import { escapeSingleQuotes, matchesAnyPattern } from "@/utils/stringUtils";
 import { $safeFind } from "@/utils/domUtils";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { getAttributeSelectorRegex } from "@/utils/inference/selectorInferenceUtils";
+import { assertNotNull } from "@/utils/typeUtils";
 
+export const NON_EXISTENT_TAG_NAME = "selectnothing";
+/** Valid selector that never returns any element (no `<selectnothing>` element exists) */
+export const SELECTOR_THAT_MATCHES_NOTHING = NON_EXISTENT_TAG_NAME;
 export const BUTTON_TAGS: string[] = [
   "li",
   "button",
@@ -92,14 +99,16 @@ function getUniqueAttributeSelectors(
 ): string[] {
   return UNIQUE_ATTRIBUTES.map((attribute) =>
     getAttributeSelector(attribute, element.getAttribute(attribute)),
-  ).filter(
-    (selector) =>
-      !matchesAnyPattern(selector, [
-        ...UNSTABLE_SELECTORS,
-        // We need to include salesforce BAD_PATTERNS here as well since this function is used to get inferSelectorsIncludingStableAncestors
-        ...siteSelectorHint.badPatterns,
-      ]),
-  );
+  )
+    .filter(Boolean)
+    .filter(
+      (selector) =>
+        !matchesAnyPattern(selector, [
+          ...UNSTABLE_SELECTORS,
+          // We need to include salesforce BAD_PATTERNS here as well since this function is used to get inferSelectorsIncludingStableAncestors
+          ...siteSelectorHint.badPatterns,
+        ]),
+    );
 }
 
 /**
@@ -134,13 +143,12 @@ export function sortBySelector<Item>(
 ): Item[];
 export function sortBySelector<Item = string>(
   selectors: Item[],
-  iteratee?: (selector: Item) => string,
+  iteratee: (selector: Item) => string = identity,
 ): Item[] {
-  const select = iteratee ?? identity;
   return sortBy(
     selectors,
-    (x) => getSelectorPreference(select(x)),
-    (x) => select(x).length,
+    (x) => getSelectorPreference(iteratee(x)),
+    (x) => iteratee(x).length,
   );
 }
 
@@ -163,13 +171,14 @@ export function sortBySelector<Item = string>(
  */
 export function getSelectorPreference(selector: string): number {
   const tokenized = $.find.tokenize(selector);
-  if (tokenized.length > 1) {
+  if (tokenized.length !== 1) {
     throw new TypeError(
       "Expected single selector, received selector list: " + selector,
     );
   }
 
-  const tokenCount = tokenized[0].length;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Just checked
+  const tokenCount = tokenized[0]!.length;
 
   if (selector.includes(":nth-child")) {
     // Structural selectors are fragile to page changes, so give low score
@@ -211,7 +220,7 @@ const DEFAULT_SELECTOR_PRIORITIES: CssSelectorType[] = [
 
 interface SafeCssSelectorOptions {
   selectors?: CssSelectorType[];
-  root?: Element;
+  root?: Element | null;
   excludeRandomClasses?: boolean;
   allowMultiSelection?: boolean;
 }
@@ -229,24 +238,26 @@ export function safeCssSelector(
   }: SafeCssSelectorOptions = {},
 ): string {
   // https://github.com/fczbkk/css-selector-generator
-  const siteSelectorHint = getSiteSelectorHint(elements[0]);
+  const firstElement = elements[0];
+  if (!firstElement) {
+    return SELECTOR_THAT_MATCHES_NOTHING;
+  }
 
-  const blacklist = [
-    ...UNSTABLE_SELECTORS,
-    ...siteSelectorHint.badPatterns,
+  const siteSelectorHint = getSiteSelectorHint(firstElement);
 
-    excludeRandomClasses
-      ? (selector: string) => {
-          if (!selector.startsWith(".")) {
-            return false;
-          }
+  const blacklist = [...UNSTABLE_SELECTORS, ...siteSelectorHint.badPatterns];
+  if (excludeRandomClasses) {
+    blacklist.push((selector: string) => {
+      if (!selector.startsWith(".")) {
+        return false;
+      }
 
-          const usefulness = guessUsefulness(selector);
-          console.debug("css-selector-generator:  ", usefulness);
-          return usefulness.isRandom;
-        }
-      : undefined,
-  ];
+      const usefulness = guessUsefulness(selector);
+      console.debug("css-selector-generator:  ", usefulness);
+      return usefulness.isRandom;
+    });
+  }
+
   const whitelist = [
     getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES),
     ...siteSelectorHint.stableAnchors,
@@ -301,29 +312,35 @@ export function expandedCssSelector(
   {
     selectors = DEFAULT_SELECTOR_PRIORITIES,
     excludeRandomClasses = false,
-    root = undefined,
+    root = null,
   }: SafeCssSelectorOptions = {},
-): string {
+): string | undefined {
   // All elements are on the same page, so just use first element for siteSelectorHint
   // https://github.com/fczbkk/css-selector-generator
-  const siteSelectorHint = getSiteSelectorHint(elements[0]);
+  const firstElement = elements[0];
 
-  const blacklist = [
+  if (!firstElement) {
+    return;
+  }
+
+  const siteSelectorHint = getSiteSelectorHint(firstElement);
+
+  const blacklist: CssSelectorMatch[] = [
     ...UNSTABLE_SELECTORS,
     ...siteSelectorHint.badPatterns,
-
-    excludeRandomClasses
-      ? (selector: string) => {
-          if (!selector.startsWith(".")) {
-            return false;
-          }
-
-          const usefulness = guessUsefulness(selector);
-          console.debug("css-selector-generator:  ", usefulness);
-          return usefulness.isRandom;
-        }
-      : undefined,
   ];
+  if (excludeRandomClasses) {
+    blacklist.push((selector: string) => {
+      if (!selector.startsWith(".")) {
+        return false;
+      }
+
+      const usefulness = guessUsefulness(selector);
+      console.debug("css-selector-generator:  ", usefulness);
+      return usefulness.isRandom;
+    });
+  }
+
   const whitelist = [
     getAttributeSelectorRegex(...UNIQUE_ATTRIBUTES),
     ...siteSelectorHint.stableAnchors,
@@ -334,7 +351,7 @@ export function expandedCssSelector(
   // unique attributes and classnames (classnames might not be stable).
   const elementAncestors = elements.map((element) =>
     $(element)
-      .parentsUntil(root)
+      .parentsUntil(root ?? undefined)
       .filter(
         [...UNIQUE_ATTRIBUTES, "class"]
           .map((attribute) => `[${attribute}]`)
@@ -512,6 +529,16 @@ export function inferMultiElementSelector({
   elements: HTMLElement[];
   shouldSelectSimilar?: boolean;
 }): ElementInfo {
+  const firstElement = elements[0];
+  if (!firstElement) {
+    return {
+      selectors: [SELECTOR_THAT_MATCHES_NOTHING],
+      tagName: NON_EXISTENT_TAG_NAME,
+      parent: null,
+      isMulti: true,
+    };
+  }
+
   const selector = shouldSelectSimilar
     ? expandedCssSelector(elements, {
         root,
@@ -526,11 +553,11 @@ export function inferMultiElementSelector({
     selector,
     // TODO: Discuss if it's worth to include stableAncestors for multi-element selector
     // ...inferSelectorsIncludingStableAncestors(elements[0]),
-  ]);
+  ]).filter(Boolean);
 
   return {
     selectors: inferredSelectors,
-    tagName: elements[0].tagName, // Will first element tag be enough/same for all elements?
+    tagName: firstElement.tagName, // Will first element tag be enough/same for all elements?
     parent: null,
     isMulti: true,
   };
@@ -546,18 +573,19 @@ export function doesSelectOneElement(
   return $safeFind(selector, parent).length === 1;
 }
 
-export function getCommonAncestor(...args: HTMLElement[]): HTMLElement {
+export function getCommonAncestor(...args: HTMLElement[]): HTMLElement | null {
   if (args.length === 1) {
-    return args[0].parentElement;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Just checked
+    return args[0]!.parentElement!;
   }
 
   const [node, ...otherNodes] = args;
 
-  let currentNode = node;
+  let currentNode: HTMLElement | undefined | null = node;
 
   while (currentNode) {
-    // eslint-disable-next-line @typescript-eslint/no-loop-func -- The function is used immediately
-    if (otherNodes.every((x) => currentNode.contains(x))) {
+    // eslint-disable-next-line @typescript-eslint/no-loop-func, @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Called immediately
+    if (otherNodes.every((x) => currentNode!.contains(x))) {
       return currentNode;
     }
 
@@ -571,21 +599,24 @@ function findContainerForElement(element: HTMLElement): {
   container: HTMLElement;
   selectors: string[];
 } {
-  let container = element;
+  /* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion */
+  /* We assume that the checked elements are not `html` and are attached to the page, so they all have a parentElement */
+  let container: HTMLElement = element;
   let level = 0;
 
   if (BUTTON_TAGS.includes(element.tagName.toLowerCase())) {
-    container = element.parentElement;
+    container = element.parentElement!;
     level++;
   }
 
   /**
    * If the direct parent is a list item or column, that's most li
    */
-  if (MENU_TAGS.includes(container.parentElement.tagName.toLowerCase())) {
-    container = container.parentElement;
+  if (MENU_TAGS.includes(container.parentElement!.tagName.toLowerCase())) {
+    container = container.parentElement!;
     level++;
   }
+  /* eslint-enable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion */
 
   const extra: string[] = [];
 
@@ -595,7 +626,7 @@ function findContainerForElement(element: HTMLElement): {
     if (element.tagName === "INPUT") {
       extra.push(
         `${container.tagName.toLowerCase()}:has(${descendent} input[value='${escapeSingleQuotes(
-          element.getAttribute("value"),
+          element.getAttribute("value") ?? "",
         )}'])`,
       );
     } else {
@@ -620,6 +651,9 @@ export function findContainer(elements: HTMLElement[]): {
   container: HTMLElement;
   selectors: string[];
 } {
+  const firstElement = elements[0];
+  assertNotNull(firstElement, "No element was selected");
+
   if (elements.length > 1) {
     const container = getCommonAncestor(...elements);
     if (!container) {
@@ -632,7 +666,7 @@ export function findContainer(elements: HTMLElement[]): {
     };
   }
 
-  return findContainerForElement(elements[0]);
+  return findContainerForElement(firstElement);
 }
 
 /**
@@ -643,7 +677,7 @@ export function findContainer(elements: HTMLElement[]): {
 export function getAttributeSelector(
   name: string,
   value: string | null,
-): string | null {
+): string | undefined {
   if (!value) {
     return;
   }
@@ -663,7 +697,7 @@ export function getAttributeSelector(
   }
 }
 
-function getClassSelector(className: string): string | null {
+function getClassSelector(className: string): string | undefined {
   if (!isRandomString(className)) {
     return "." + CSS.escape(className);
   }
