@@ -43,7 +43,7 @@ type WalkthroughModalStep = {
 
 const steps: WalkthroughModalStep[] = [
   {
-    title: "Opening the Chrome DevTools",
+    title: "Open the Page Editor to start building",
     body: (
       <>
         <Row>
