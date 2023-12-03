@@ -26,6 +26,8 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { isObject } from "./objectUtils";
 import { type BrickPipeline } from "@/bricks/types";
 
+export const VARIABLE_REFERENCE_REGEX = /^@\S+$/;
+
 const templateTypes: TemplateEngine[] = [
   "mustache",
   "nunjucks",
@@ -162,48 +164,6 @@ export function castTextLiteralOrThrow(
 }
 
 /**
- * Returns a text template expression with the given value.
- * @param template the template engine
- * @param value the value
- */
-export function makeTemplateExpression(
-  template: TemplateEngine,
-  value: string,
-): Expression {
-  return {
-    __type__: template,
-    __value__: value,
-  };
-}
-
-/**
- * Returns a PipelineExpression with the given pipeline.
- * @param value the brick pipeline.
- */
-export function makePipelineExpression(
-  value: BrickPipeline,
-): PipelineExpression {
-  return {
-    __type__: "pipeline",
-    __value__: value,
-  };
-}
-
-/**
- * Returns a variable expression with the given value.
- * @param value
- */
-export function makeVariableExpression(
-  value: string,
-): Expression<string, "var"> {
-  // eslint-disable-next-line -- recommended constructor
-  return {
-    __type__: "var",
-    __value__: value,
-  };
-}
-
-/**
  * Create an expression from a expression type and value.
  * @param type
  * @param value
@@ -236,3 +196,14 @@ export function toExpression<
 export const EMPTY_PIPELINE: PipelineExpression = Object.freeze(
   toExpression("pipeline", [] as BrickPipeline),
 );
+
+/**
+ * Return true if literalOrTemplate contains a variable or template expression
+ */
+export function isTemplateString(literalOrTemplate: string): boolean {
+  if (VARIABLE_REFERENCE_REGEX.test(literalOrTemplate)) {
+    return true;
+  }
+
+  return literalOrTemplate.includes("{{") || literalOrTemplate.includes("{%");
+}

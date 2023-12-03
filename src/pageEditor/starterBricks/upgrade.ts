@@ -24,8 +24,11 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
 import { type SchemaDefinition } from "@/types/schemaTypes";
 import { inputProperties } from "@/utils/schemaUtils";
-
-const VARIABLE_REGEX = /^@\S+$/;
+import {
+  isTemplateString,
+  toExpression,
+  VARIABLE_REFERENCE_REGEX,
+} from "@/utils/expressionUtils";
 
 /**
  * Brick to fieldName mapping of fields that should be kept as a literal if it's a literal.
@@ -52,7 +55,17 @@ const PRESERVE_LITERAL_VALUES = new Map<RegistryId, Set<string>>(
   }) as Array<[RegistryId, Set<string>]>,
 );
 
-export function stringToExpression(
+/**
+ * Convert a string literal to an expression for use in apiVersion 3. If `value` is detected as a variable reference,
+ * uses "var" instead of templateEngine
+ *
+ * For use when upgrading apiVersion v1/2 to v3. Otherwise, use toExpression.
+ *
+ * @param value the string
+ * @param templateEngine the template to use for text templates
+ * @see toExpression
+ */
+export function upgradeStringToExpression(
   value: unknown,
   templateEngine: TemplateEngine,
 ): Expression {
@@ -60,22 +73,8 @@ export function stringToExpression(
     throw new TypeError("Expected string for value");
   }
 
-  const type = VARIABLE_REGEX.test(value) ? "var" : templateEngine;
-  return {
-    __type__: type,
-    __value__: value,
-  };
-}
-
-/**
- * Return true if literalOrTemplate contains a variable or template expression
- */
-export function isTemplateString(literalOrTemplate: string): boolean {
-  if (VARIABLE_REGEX.test(literalOrTemplate)) {
-    return true;
-  }
-
-  return literalOrTemplate.includes("{{") || literalOrTemplate.includes("{%");
+  const type = VARIABLE_REFERENCE_REGEX.test(value) ? "var" : templateEngine;
+  return toExpression(type, value);
 }
 
 async function upgradeBlock(blockConfig: BrickConfig): Promise<void> {
@@ -99,7 +98,7 @@ async function upgradeBlock(blockConfig: BrickConfig): Promise<void> {
   );
 
   if (blockConfig.if) {
-    blockConfig.if = stringToExpression(blockConfig.if, templateEngine);
+    blockConfig.if = upgradeStringToExpression(blockConfig.if, templateEngine);
   }
 
   // Top-level `templateEngine` not supported in v3
@@ -344,7 +343,7 @@ async function upgradeValue({
     // NOP: the Page Editor doesn't support templated selectors, and we don't want to convert enum values
   } else if (typeof value === "string") {
     // eslint-disable-next-line security/detect-object-injection -- caller iterates over keys
-    config[fieldName] = stringToExpression(value, templateEngine);
+    config[fieldName] = upgradeStringToExpression(value, templateEngine);
   }
 }
 

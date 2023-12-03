@@ -39,7 +39,7 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
-import { makeVariableExpression } from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 function getTabState(
   state: EditorState,
@@ -62,7 +62,7 @@ const brickWithService = brickConfigFactory({
   id: echoBrick.id,
   outputKey: "echoOutput" as OutputKey,
   config: {
-    spreadsheetId: makeVariableExpression("@google"),
+    spreadsheetId: toExpression("var", "@google"),
     tabName: null,
     rowValues: {},
   },

@@ -17,7 +17,7 @@
 
 import { getOptionsArgForFieldValue } from "@/utils/getOptionsArgForFieldValue";
 
-import { makeVariableExpression } from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("getOptionsArgForFieldValue", () => {
   it("returns null when optionsArgs is empty", () => {
@@ -30,7 +30,7 @@ describe("getOptionsArgForFieldValue", () => {
 
   it("returns null when fieldValue is not an options var expression", () => {
     expect(
-      getOptionsArgForFieldValue(makeVariableExpression("@foo"), {
+      getOptionsArgForFieldValue(toExpression("var", "@foo"), {
         foo: "bar",
       }),
     ).toBeNull();
@@ -38,7 +38,7 @@ describe("getOptionsArgForFieldValue", () => {
 
   it("returns null when fieldValue is an options var expression but the key is empty", () => {
     expect(
-      getOptionsArgForFieldValue(makeVariableExpression("@options."), {
+      getOptionsArgForFieldValue(toExpression("var", "@options."), {
         foo: "bar",
       }),
     ).toBeNull();
@@ -46,7 +46,7 @@ describe("getOptionsArgForFieldValue", () => {
 
   it("returns null when fieldValue is an options var expression but the key is not in optionsArgs", () => {
     expect(
-      getOptionsArgForFieldValue(makeVariableExpression("@options.foo"), {
+      getOptionsArgForFieldValue(toExpression("var", "@options.foo"), {
         bar: "baz",
       }),
     ).toBeNull();
@@ -54,7 +54,7 @@ describe("getOptionsArgForFieldValue", () => {
 
   it("returns the value from optionsArgs when fieldValue is an options var expression and the key is in optionsArgs", () => {
     expect(
-      getOptionsArgForFieldValue(makeVariableExpression("@options.foo"), {
+      getOptionsArgForFieldValue(toExpression("var", "@options.foo"), {
         foo: "bar",
       }),
     ).toBe("bar");

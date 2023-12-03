@@ -19,7 +19,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
-import { makeTemplateExpression } from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 beforeEach(() => {
   // Isolate extension state between test
@@ -125,7 +125,7 @@ describe("@pixiebrix/state/set", () => {
         id: brick.id,
         config: {
           data: {
-            foo: makeTemplateExpression("nunjucks", "{{ @hello }}"),
+            foo: toExpression("nunjucks", "{{ @hello }}"),
           },
         },
       }),
@@ -149,7 +149,7 @@ describe("@pixiebrix/state/set", () => {
         config: {
           namespace: "extension",
           data: {
-            foo: makeTemplateExpression("nunjucks", "{{ @hello }}"),
+            foo: toExpression("nunjucks", "{{ @hello }}"),
           },
         },
       }),

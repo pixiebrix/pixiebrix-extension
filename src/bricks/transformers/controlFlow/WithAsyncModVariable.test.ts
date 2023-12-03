@@ -36,7 +36,7 @@ import {
 import { type UUID } from "@/types/stringTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type Expression } from "@/types/runtimeTypes";
-import { makePipelineExpression } from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 
@@ -47,7 +47,7 @@ const makeAsyncModVariablePipeline = (
 ) => ({
   id: withAsyncModVariableBrick.id,
   config: {
-    body: makePipelineExpression([
+    body: toExpression("pipeline", [
       {
         id: brick.id,
         config: {

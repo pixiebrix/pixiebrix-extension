@@ -30,7 +30,7 @@ import { type Expression } from "@/types/runtimeTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useIsMounted } from "@/hooks/common";
 import { isUUID } from "@/types/helpers";
-import { isExpression, makeTemplateExpression } from "@/utils/expressionUtils";
+import { isExpression, toExpression } from "@/utils/expressionUtils";
 
 const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
   name,
@@ -84,7 +84,7 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
 
   const setDatabaseId = async (databaseId: UUID) => {
     if (allowExpressions) {
-      await setFieldValue(makeTemplateExpression("nunjucks", databaseId));
+      await setFieldValue(toExpression("nunjucks", databaseId));
     } else {
       await setFieldValue(databaseId);
     }

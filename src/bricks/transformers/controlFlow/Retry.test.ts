@@ -24,7 +24,7 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import Retry from "@/bricks/transformers/controlFlow/Retry";
-import { makePipelineExpression } from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const retryBlock = new Retry();
 
@@ -39,7 +39,7 @@ describe("Retry", () => {
       id: retryBlock.id,
       config: {
         maxRetries: 2,
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           {
             id: throwBrick.id,
             config: {
@@ -60,7 +60,7 @@ describe("Retry", () => {
       id: retryBlock.id,
       config: {
         maxRetries: 2,
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           {
             id: echoBrick.id,
             config: {

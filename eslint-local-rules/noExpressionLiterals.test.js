@@ -23,6 +23,7 @@ const ruleTester = new RuleTester();
 ruleTester.run("noExpressionLiterals", noExpressionLiterals, {
   valid: [
     { code: "{ foo: 42 }" },
+    // No __value__ property; would fail type-checking if used as an expression
     { code: "var x = { __type__: 'nunjucks', bar: 32 };" },
   ],
   invalid: [
@@ -30,31 +31,28 @@ ruleTester.run("noExpressionLiterals", noExpressionLiterals, {
       code: 'var x = { __type__: "nunjucks", __value__: "Hello!" }',
       errors: [
         {
-          message:
-            'Use makeTemplateExpression("nunjucks", value) instead of an object literal',
+          message: "Use toExpression(type, value) instead of an object literal",
         },
       ],
-      output: 'var x = makeTemplateExpression("nunjucks", "Hello!")',
+      output: 'var x = toExpression("nunjucks", "Hello!")',
     },
     {
       code: 'var x = { __type__: "mustache", __value__: "Hello!" }',
       errors: [
         {
-          message:
-            'Use makeTemplateExpression("mustache", value) instead of an object literal',
+          message: "Use toExpression(type, value) instead of an object literal",
         },
       ],
-      output: 'var x = makeTemplateExpression("mustache", "Hello!")',
+      output: 'var x = toExpression("mustache", "Hello!")',
     },
     {
       code: 'var x = { __type__: "var", __value__: "@foo" }',
       errors: [
         {
-          message:
-            "Use makeVariableExpression(value) instead of an object literal",
+          message: "Use toExpression(type, value) instead of an object literal",
         },
       ],
-      output: 'var x = makeVariableExpression("@foo")',
+      output: 'var x = toExpression("var", "@foo")',
     },
   ],
 });

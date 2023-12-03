@@ -190,7 +190,7 @@ describe("remove element", () => {
             title: "Action",
             onClick: toExpression("pipeline", [
               {
-                id: "@test/action",
+                id: validateRegistryId("@test/action"),
                 instanceId: uuidSequence(2),
                 config: {
                   input: toExpression("var", "@serviceOutput"),

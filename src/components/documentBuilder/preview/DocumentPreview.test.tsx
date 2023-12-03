@@ -32,13 +32,9 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import blockRegistry from "@/bricks/registry";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { type PipelineExpression } from "@/types/runtimeTypes";
-
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import {
-  makePipelineExpression,
-  makeTemplateExpression,
-} from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 function renderDocumentPreview(documentElement: DocumentElement) {
   const formState = formStateFactory(undefined, [
@@ -158,8 +154,8 @@ describe("Show live preview", () => {
         id: DisplayTemporaryInfo.BLOCK_ID,
         instanceId: uuidSequence(1),
         config: {
-          title: makeTemplateExpression("nunjucks", "Test Tab"),
-          body: makePipelineExpression([
+          title: toExpression("nunjucks", "Test Tab"),
+          body: toExpression("pipeline", [
             {
               id: DocumentRenderer.BLOCK_ID,
               instanceId: uuidSequence(2),

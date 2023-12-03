@@ -16,9 +16,8 @@
  */
 
 import {
-  isTemplateString,
-  stringToExpression,
   upgradePipelineToV3,
+  upgradeStringToExpression,
 } from "@/pageEditor/starterBricks/upgrade";
 import blockRegistry from "@/bricks/registry";
 import { BrickABC } from "@/types/brickTypes";
@@ -49,39 +48,6 @@ function defineBlock(schema: Schema): RegistryId {
 
   return block.id;
 }
-
-describe("isTemplateString", () => {
-  test.each([["@input.foo"], ["@outputKey"]])(
-    "detects variable: %s",
-    (value: string) => {
-      expect(isTemplateString(value)).toBe(true);
-    },
-  );
-
-  test.each([
-    ["{{ @input.foo }}!!"],
-    ["{{ & @outputKey }}!!"],
-    ["{% if @outputKey %}foo{% endif %}"],
-  ])("detects variable: %s", (value: string) => {
-    expect(isTemplateString(value)).toBe(true);
-  });
-});
-
-describe("stringToExpression tests", () => {
-  test("convert var to expression", () => {
-    expect(stringToExpression("@foo", "mustache")).toStrictEqual({
-      __type__: "var",
-      __value__: "@foo",
-    });
-  });
-
-  test("convert var to mustache", () => {
-    expect(stringToExpression("{{ @foo }}", "mustache")).toStrictEqual({
-      __type__: "mustache",
-      __value__: "{{ @foo }}",
-    });
-  });
-});
 
 describe("upgradePipelineToV3 tests", () => {
   test.each([["string"], ["boolean"], ["number"]])(
@@ -771,5 +737,21 @@ describe("upgrade overrides", () => {
         },
       },
     ]);
+  });
+});
+
+describe("upgradeStringToExpression tests", () => {
+  test("convert var to expression", () => {
+    expect(upgradeStringToExpression("@foo", "mustache")).toStrictEqual({
+      __type__: "var",
+      __value__: "@foo",
+    });
+  });
+
+  test("convert var to mustache", () => {
+    expect(upgradeStringToExpression("{{ @foo }}", "mustache")).toStrictEqual({
+      __type__: "mustache",
+      __value__: "{{ @foo }}",
+    });
   });
 });

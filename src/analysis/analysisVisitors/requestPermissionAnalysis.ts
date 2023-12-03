@@ -20,13 +20,16 @@ import { GetAPITransformer } from "@/bricks/transformers/httpGet";
 import { RemoteMethod } from "@/bricks/transformers/remoteMethod";
 import { type BrickConfig, type BrickPosition } from "@/bricks/types";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { isTemplateString } from "@/pageEditor/starterBricks/upgrade";
 import { AnalysisVisitorABC } from "./baseAnalysisVisitors";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { AnnotationType } from "@/types/annotationTypes";
 import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
-import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
+import {
+  isTemplateExpression,
+  isTemplateString,
+  isVarExpression,
+} from "@/utils/expressionUtils";
 import { isAbsoluteUrl } from "@/utils/urlUtils";
 
 /**

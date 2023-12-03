@@ -31,12 +31,12 @@ module.exports = {
   create(context) {
     return {
       ObjectExpression(node) {
-        let expressionType = null;
+        let typeNode = null;
         let valueNode = null;
 
         for (const property of node.properties) {
           if (property.key && property.key.name === "__type__") {
-            expressionType = property.value.value;
+            typeNode = property.value;
           }
 
           if (property.key && property.key.name === "__value__") {
@@ -44,35 +44,19 @@ module.exports = {
           }
         }
 
-        if (
-          ["nunjucks", "mustache", "handlebars"].includes(expressionType) &&
-          valueNode
-        ) {
-          context.report({
-            node,
-            message: `Use makeTemplateExpression("${expressionType}", value) instead of an object literal`,
-            fix(fixer) {
-              return fixer.replaceText(
-                node,
-                `makeTemplateExpression("${expressionType}", ${context
-                  .getSourceCode()
-                  .getText(valueNode)})`,
-              );
-            },
-          });
-        }
-
-        if (expressionType === "var" && valueNode) {
+        if (typeNode && valueNode) {
           context.report({
             node,
             message:
-              "Use makeVariableExpression(value) instead of an object literal",
+              "Use toExpression(type, value) instead of an object literal",
             fix(fixer) {
+              const typeText = context.getSourceCode().getText(typeNode);
+
+              const valueText = context.getSourceCode().getText(valueNode);
+
               return fixer.replaceText(
                 node,
-                `makeVariableExpression(${context
-                  .getSourceCode()
-                  .getText(valueNode)})`,
+                `toExpression(${typeText}, ${valueText})`,
               );
             },
           });

@@ -33,7 +33,7 @@ import { setContext } from "@/testUtils/detectPageMock";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { makeVariableExpression } from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 setContext("devToolsPage");
 
@@ -137,8 +137,10 @@ describe("UiPath Options", () => {
     );
 
     const base = makeBaseState();
-    base.extension.blockPipeline[0].config.uipath =
-      makeVariableExpression("@uipath");
+    base.extension.blockPipeline[0].config.uipath = toExpression(
+      "var",
+      "@uipath",
+    );
 
     const { asFragment } = renderOptions(base);
 
@@ -159,8 +161,10 @@ describe("UiPath Options", () => {
     );
 
     const base = makeBaseState();
-    base.extension.blockPipeline[0].config.uipath =
-      makeVariableExpression("@uipath");
+    base.extension.blockPipeline[0].config.uipath = toExpression(
+      "var",
+      "@uipath",
+    );
     base.extension.blockPipeline[0].config.awaitResult = true;
 
     renderOptions(base);

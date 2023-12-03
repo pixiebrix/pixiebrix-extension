@@ -90,7 +90,7 @@ describe("selectVariables", () => {
               title: "Action",
               onClick: toExpression("pipeline", [
                 {
-                  id: "@test/service",
+                  id: validateRegistryId("@test/service"),
                   instanceId: uuidSequence(2),
                   config: {
                     input: toExpression("var", "@foo"),
@@ -118,7 +118,7 @@ describe("selectVariables", () => {
     const button = createNewElement("button");
     button.config.onClick = toExpression("pipeline", [
       {
-        id: "@test/service",
+        id: validateRegistryId("@test/service"),
         instanceId: uuidSequence(2),
         config: {
           input: toExpression("var", "@foo"),
@@ -157,17 +157,17 @@ describe("selectVariables", () => {
               title: "Action",
               onClick: toExpression("pipeline", [
                 {
-                  id: "@test/brick",
+                  id: validateRegistryId("@test/brick"),
                   config: {
                     input: toExpression("var", "@foo"),
                   },
                 },
                 {
-                  id: "@test/if",
+                  id: validateRegistryId("@test/if"),
                   config: {
                     if: toExpression("pipeline", [
                       {
-                        id: "@test/brick",
+                        id: validateRegistryId("@test/brick"),
                         config: {
                           input: toExpression("var", "@bar"),
                         },

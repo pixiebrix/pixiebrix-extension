@@ -27,7 +27,7 @@ import {
 } from "@/testUtils/factories/integrationFactories";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { makeVariableExpression } from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
@@ -62,7 +62,7 @@ describe("useSpreadsheetId", () => {
   test("works with service value", async () => {
     const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
-        spreadsheetId: makeVariableExpression("@google"),
+        spreadsheetId: toExpression("var", "@google"),
         integrationDependencies: [
           integrationDependencyFactory({
             integrationId: GOOGLE_SHEET_SERVICE_ID,
@@ -82,7 +82,7 @@ describe("useSpreadsheetId", () => {
   test("works with legacy service usage", async () => {
     const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
-        spreadsheetId: makeVariableExpression("@sheet.spreadsheetId"),
+        spreadsheetId: toExpression("var", "@sheet.spreadsheetId"),
         integrationDependencies: [
           integrationDependencyFactory({
             integrationId: GOOGLE_SHEET_SERVICE_ID,
@@ -102,7 +102,7 @@ describe("useSpreadsheetId", () => {
   test("works with mod input", async () => {
     const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
-        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        spreadsheetId: toExpression("var", "@options.sheetId"),
         optionsArgs: {
           sheetId: TEST_SPREADSHEET_ID,
         },
@@ -117,7 +117,7 @@ describe("useSpreadsheetId", () => {
   test("returns null when options value doesn't exist", async () => {
     const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
-        spreadsheetId: makeVariableExpression("@options.sheetId"),
+        spreadsheetId: toExpression("var", "@options.sheetId"),
         optionsArgs: {
           notASheetId: "abc",
           anotherInput: "foo",
@@ -133,7 +133,7 @@ describe("useSpreadsheetId", () => {
   test("returns null with no services and variable field value", async () => {
     const { result, waitForEffect } = renderHook(() => useSpreadsheetId(""), {
       initialValues: {
-        spreadsheetId: makeVariableExpression("@data.sheetId"),
+        spreadsheetId: toExpression("var", "@data.sheetId"),
       },
     });
 

@@ -25,7 +25,7 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { LOOKUP_SCHEMA } from "@/contrib/google/sheets/bricks/lookup";
 import { isEmpty } from "lodash";
 import { FormErrorContext } from "@/components/form/FormErrorContext";
-import { isExpression, makeTemplateExpression } from "@/utils/expressionUtils";
+import { isExpression, toExpression } from "@/utils/expressionUtils";
 import RequireGoogleSheet from "@/contrib/google/sheets/ui/RequireGoogleSheet";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { sheets } from "@/background/messenger/api";
@@ -82,7 +82,7 @@ const HeaderField: React.FunctionComponent<{
 
       // Set to empty nunjucks expression if no headers have loaded
       if (isEmpty(headers)) {
-        await setHeader(makeTemplateExpression("nunjucks", ""));
+        await setHeader(toExpression("nunjucks", ""));
         return;
       }
 

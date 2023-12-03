@@ -22,12 +22,7 @@ import { type Expression } from "@/types/runtimeTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import PipelineExpressionVisitor from "./PipelineExpressionVisitor";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
-
-import {
-  makeTemplateExpression,
-  makeVariableExpression,
-  toExpression,
-} from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 function getTestBlock() {
   return brickConfigFactory({
@@ -59,13 +54,13 @@ test("should invoke the callback for a brick expression", () => {
     {
       path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.text`,
     },
-    makeTemplateExpression("nunjucks", "test"),
+    toExpression("nunjucks", "test"),
   );
   expect(visitExpression).toHaveBeenCalledWith(
     {
       path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.if`,
     },
-    makeVariableExpression("@foo"),
+    toExpression("var", "@foo"),
   );
 });
 
@@ -103,6 +98,6 @@ test("should invoke the callback for a Document expression", () => {
     {
       path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.text`,
     },
-    makeTemplateExpression("nunjucks", "test"),
+    toExpression("nunjucks", "test"),
   );
 });

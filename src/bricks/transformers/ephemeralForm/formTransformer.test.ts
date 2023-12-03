@@ -17,7 +17,7 @@
 
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
 
-import { makeVariableExpression } from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const brick = new FormTransformer();
 
@@ -44,7 +44,7 @@ describe("FormTransformer", () => {
     const outputSchema = brick.getOutputSchema({
       id: brick.id,
       config: {
-        schema: makeVariableExpression("@test"),
+        schema: toExpression("var", "@test"),
       },
     });
 

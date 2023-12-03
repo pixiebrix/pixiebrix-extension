@@ -18,8 +18,9 @@
 import {
   castTextLiteralOrThrow,
   containsTemplateExpression,
+  isTemplateString,
   isTextLiteralOrNull,
-  makeTemplateExpression,
+  toExpression,
 } from "@/utils/expressionUtils";
 
 describe("containsTemplateExpression", () => {
@@ -48,15 +49,13 @@ describe("isTextLiteralOrNull", () => {
   });
 
   it("finds template literal", () => {
-    expect(isTextLiteralOrNull(makeTemplateExpression("nunjucks", "foo"))).toBe(
-      true,
-    );
+    expect(isTextLiteralOrNull(toExpression("nunjucks", "foo"))).toBe(true);
   });
 
   it("finds simple template expressions", () => {
-    expect(
-      isTextLiteralOrNull(makeTemplateExpression("nunjucks", "{{foo}}")),
-    ).toBe(false);
+    expect(isTextLiteralOrNull(toExpression("nunjucks", "{{foo}}"))).toBe(
+      false,
+    );
   });
 });
 
@@ -71,7 +70,24 @@ describe("castTextLiteralOrThrow", () => {
 
   it("finds simple template expressions", () => {
     expect(() =>
-      castTextLiteralOrThrow(makeTemplateExpression("nunjucks", "{{foo}}")),
+      castTextLiteralOrThrow(toExpression("nunjucks", "{{foo}}")),
     ).toThrow(TypeError);
+  });
+});
+
+describe("isTemplateString", () => {
+  test.each([["@input.foo"], ["@outputKey"]])(
+    "detects variable: %s",
+    (value: string) => {
+      expect(isTemplateString(value)).toBe(true);
+    },
+  );
+
+  test.each([
+    ["{{ @input.foo }}!!"],
+    ["{{ & @outputKey }}!!"],
+    ["{% if @outputKey %}foo{% endif %}"],
+  ])("detects variable: %s", (value: string) => {
+    expect(isTemplateString(value)).toBe(true);
   });
 });

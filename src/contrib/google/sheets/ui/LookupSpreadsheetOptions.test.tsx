@@ -40,10 +40,7 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { type FormikValues } from "formik";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
-import {
-  makeTemplateExpression,
-  makeVariableExpression,
-} from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 let idSequence = 0;
 function newId(): UUID {
@@ -216,11 +213,11 @@ describe("LookupSpreadsheetOptions", () => {
   test("given test googleAccount and string spreadsheetId and selected tabName/header and entered query, when rendered, does not change values", async () => {
     await renderWithValuesAndWait({
       config: {
-        googleAccount: makeVariableExpression("@google"),
+        googleAccount: toExpression("var", "@google"),
         spreadsheetId: TEST_SPREADSHEET_ID,
         tabName: "Tab2",
         header: "Bar",
-        query: makeTemplateExpression("nunjucks", "test query"),
+        query: toExpression("nunjucks", "test query"),
         multi: false,
       },
       integrationDependencies: [googlePKCEIntegrationDependency],
@@ -237,11 +234,11 @@ describe("LookupSpreadsheetOptions", () => {
   test("given test googleAccount and string spreadsheetId, when rendered, loads tab names and header values", async () => {
     await renderWithValuesAndWait({
       config: {
-        googleAccount: makeVariableExpression("@google"),
+        googleAccount: toExpression("var", "@google"),
         spreadsheetId: TEST_SPREADSHEET_ID,
-        tabName: makeTemplateExpression("nunjucks", ""),
-        header: makeTemplateExpression("nunjucks", ""),
-        query: makeTemplateExpression("nunjucks", ""),
+        tabName: toExpression("nunjucks", ""),
+        header: toExpression("nunjucks", ""),
+        query: toExpression("nunjucks", ""),
         multi: false,
       },
       integrationDependencies: [googlePKCEIntegrationDependency],
@@ -256,11 +253,11 @@ describe("LookupSpreadsheetOptions", () => {
   test("given test googleAccount and mod input spreadsheetId, when rendered, loads tab names and header values", async () => {
     await renderWithValuesAndWait({
       config: {
-        googleAccount: makeVariableExpression("@google"),
-        spreadsheetId: makeVariableExpression("@options.sheetId"),
-        tabName: makeTemplateExpression("nunjucks", ""),
-        header: makeTemplateExpression("nunjucks", ""),
-        query: makeTemplateExpression("nunjucks", ""),
+        googleAccount: toExpression("var", "@google"),
+        spreadsheetId: toExpression("var", "@options.sheetId"),
+        tabName: toExpression("nunjucks", ""),
+        header: toExpression("nunjucks", ""),
+        query: toExpression("nunjucks", ""),
         multi: false,
       },
       optionsArgs: {
@@ -278,11 +275,11 @@ describe("LookupSpreadsheetOptions", () => {
   test("given test googleAccount and null spreadsheetId, when spreadsheet selected, loads tab names and header values", async () => {
     await renderWithValuesAndWait({
       config: {
-        googleAccount: makeVariableExpression("@google"),
+        googleAccount: toExpression("var", "@google"),
         spreadsheetId: null,
-        tabName: makeTemplateExpression("nunjucks", ""),
-        header: makeTemplateExpression("nunjucks", ""),
-        query: makeTemplateExpression("nunjucks", ""),
+        tabName: toExpression("nunjucks", ""),
+        header: toExpression("nunjucks", ""),
+        query: toExpression("nunjucks", ""),
         multi: false,
       },
       integrationDependencies: [googlePKCEIntegrationDependency],
@@ -305,11 +302,11 @@ describe("LookupSpreadsheetOptions", () => {
   test("given test googleAccount and mod input spreadsheetId value, when rendered, does not clear variable values", async () => {
     await renderWithValuesAndWait({
       config: {
-        googleAccount: makeVariableExpression("@google"),
-        spreadsheetId: makeVariableExpression("@options.sheetId"),
-        tabName: makeVariableExpression("@myTab"),
-        header: makeVariableExpression("@myHeader"),
-        query: makeVariableExpression("@query"),
+        googleAccount: toExpression("var", "@google"),
+        spreadsheetId: toExpression("var", "@options.sheetId"),
+        tabName: toExpression("var", "@myTab"),
+        header: toExpression("var", "@myHeader"),
+        query: toExpression("var", "@query"),
         multi: false,
       },
       optionsArgs: {
@@ -327,11 +324,11 @@ describe("LookupSpreadsheetOptions", () => {
   test("given test googleAccount and string spreadsheetId value, when rendered, does not clear variable values", async () => {
     await renderWithValuesAndWait({
       config: {
-        googleAccount: makeVariableExpression("@google"),
+        googleAccount: toExpression("var", "@google"),
         spreadsheetId: TEST_SPREADSHEET_ID,
-        tabName: makeVariableExpression("@myTab"),
-        header: makeVariableExpression("@myHeader"),
-        query: makeVariableExpression("@query"),
+        tabName: toExpression("var", "@myTab"),
+        header: toExpression("var", "@myHeader"),
+        query: toExpression("var", "@query"),
         multi: false,
       },
       integrationDependencies: [googlePKCEIntegrationDependency],

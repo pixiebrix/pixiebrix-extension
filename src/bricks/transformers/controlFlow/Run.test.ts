@@ -26,7 +26,7 @@ import {
 import { reducePipeline } from "@/runtime/reducePipeline";
 import Run from "@/bricks/transformers/controlFlow/Run";
 import pDefer from "p-defer";
-import { makePipelineExpression } from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const runBlock = new Run();
 
@@ -40,7 +40,7 @@ describe("Run", () => {
     const pipeline = {
       id: runBlock.id,
       config: {
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           {
             id: throwBrick.id,
             config: {
@@ -60,7 +60,7 @@ describe("Run", () => {
     const pipeline = {
       id: runBlock.id,
       config: {
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           {
             id: echoBrick.id,
             config: {
@@ -91,7 +91,7 @@ describe("Run", () => {
       id: runBlock.id,
       config: {
         async: true,
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           {
             id: asyncBrick.id,
             config: {

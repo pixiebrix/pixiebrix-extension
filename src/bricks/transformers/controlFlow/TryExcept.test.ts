@@ -25,7 +25,7 @@ import {
 import { reducePipeline } from "@/runtime/reducePipeline";
 import TryExcept from "@/bricks/transformers/controlFlow/TryExcept";
 
-import { makePipelineExpression } from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const tryExceptBlock = new TryExcept();
 
@@ -39,7 +39,7 @@ describe("TryExcept", () => {
     const pipeline = {
       id: tryExceptBlock.id,
       config: {
-        try: makePipelineExpression([{ id: teapotBrick.id, config: {} }]),
+        try: toExpression("pipeline", [{ id: teapotBrick.id, config: {} }]),
       },
     };
     const result = await reducePipeline(
@@ -54,8 +54,8 @@ describe("TryExcept", () => {
     const pipeline = {
       id: tryExceptBlock.id,
       config: {
-        try: makePipelineExpression([{ id: throwBrick.id, config: {} }]),
-        except: makePipelineExpression([{ id: teapotBrick.id, config: {} }]),
+        try: toExpression("pipeline", [{ id: throwBrick.id, config: {} }]),
+        except: toExpression("pipeline", [{ id: teapotBrick.id, config: {} }]),
       },
     };
     const result = await reducePipeline(
@@ -71,7 +71,7 @@ describe("TryExcept", () => {
       id: tryExceptBlock.id,
       config: {
         // Throw to make it more obvious if wrong branch taken
-        try: makePipelineExpression([{ id: throwBrick.id, config: {} }]),
+        try: toExpression("pipeline", [{ id: throwBrick.id, config: {} }]),
       },
     };
     const result = await reducePipeline(

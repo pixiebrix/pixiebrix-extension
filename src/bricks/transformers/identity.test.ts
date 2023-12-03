@@ -20,7 +20,7 @@ import { IdentityTransformer } from "@/bricks/transformers/identity";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { validateInput } from "@/validators/generic";
 import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
-import { makeVariableExpression } from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const brick = new IdentityTransformer();
 
@@ -95,7 +95,7 @@ describe("IdentityTransformer.getOutputSchema", () => {
   it("returns undefined for expression", () => {
     const schema = brick.getOutputSchema({
       id: IdentityTransformer.BRICK_ID,
-      config: makeVariableExpression("@foo"),
+      config: toExpression("var", "@foo"),
     });
     expect(schema).toBeUndefined();
   });

@@ -36,7 +36,7 @@ import MockDate from "mockdate";
 import { type BrickPipeline } from "@/bricks/types";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { type OutputKey, type RenderedArgs } from "@/types/runtimeTypes";
-import { makeTemplateExpression } from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const addEntryMock = jest.mocked(traces.addEntry);
 const addExitMock = jest.mocked(traces.addExit);
@@ -58,7 +58,7 @@ describe("Trace normal exit", () => {
       {
         id: echoBrick.id,
         config: {
-          message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
+          message: toExpression("nunjucks", "{{@input.inputArg}}"),
         },
         instanceId,
       },
@@ -95,7 +95,7 @@ describe("Trace normal exit", () => {
       {
         id: echoBrick.id,
         config: {
-          message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
+          message: toExpression("nunjucks", "{{@input.inputArg}}"),
         },
         instanceId,
       },
@@ -119,7 +119,7 @@ describe("Trace render error", () => {
         {
           id: echoBrick.id,
           config: {
-            message: makeTemplateExpression("var", "@doesNotExist.bar"),
+            message: toExpression("var", "@doesNotExist.bar"),
           },
           instanceId,
         },
@@ -154,7 +154,7 @@ describe("Trace render error", () => {
     await reducePipeline(
       {
         id: echoBrick.id,
-        config: { message: makeTemplateExpression("var", "@doesNotExist.bar") },
+        config: { message: toExpression("var", "@doesNotExist.bar") },
         outputKey: validateOutputKey("conditional"),
         if: "f",
         instanceId,
@@ -189,7 +189,7 @@ describe("Trace conditional execution", () => {
         {
           id: echoBrick.id,
           config: {
-            message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
+            message: toExpression("nunjucks", "{{@input.inputArg}}"),
           },
           outputKey: validateOutputKey("conditional"),
           if: "f",
@@ -198,9 +198,9 @@ describe("Trace conditional execution", () => {
         {
           id: echoBrick.id,
           config: {
-            message: makeTemplateExpression("var", "@conditional.property"),
+            message: toExpression("var", "@conditional.property"),
           },
-          if: makeTemplateExpression("nunjucks", "{{true if @conditional}}"),
+          if: toExpression("nunjucks", "{{true if @conditional}}"),
           instanceId: uuidv4(),
         },
       ],
@@ -396,7 +396,7 @@ describe("Tracing disabled", () => {
       {
         id: echoBrick.id,
         config: {
-          message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
+          message: toExpression("nunjucks", "{{@input.inputArg}}"),
         },
       },
       simpleInput({ inputArg: "hello" }),
@@ -413,7 +413,7 @@ describe("Tracing disabled", () => {
       {
         id: echoBrick.id,
         config: {
-          message: makeTemplateExpression("nunjucks", "{{@input.inputArg}}"),
+          message: toExpression("nunjucks", "{{@input.inputArg}}"),
         },
       },
       simpleInput({ inputArg: "hello" }),
@@ -439,10 +439,7 @@ describe("Tracing disabled", () => {
         id: echoBrick.id,
         if: false,
         config: {
-          message: makeTemplateExpression(
-            "nunjucks",
-            "Hello, {{@input.inputArg}}",
-          ),
+          message: toExpression("nunjucks", "Hello, {{@input.inputArg}}"),
         },
       },
       simpleInput({ inputArg: "hello" }),

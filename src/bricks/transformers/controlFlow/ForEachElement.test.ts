@@ -24,7 +24,7 @@ import {
 import { reducePipeline } from "@/runtime/reducePipeline";
 import ForEachElement from "./ForEachElement";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import { makePipelineExpression } from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const forEachBlock = new ForEachElement();
 
@@ -39,7 +39,7 @@ describe("ForEachElement", () => {
       id: forEachBlock.id,
       config: {
         selector: "table",
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           {
             id: echoBrick.id,
             config: {
@@ -65,7 +65,7 @@ describe("ForEachElement", () => {
       config: {
         // The jsdom has one body tag
         selector: "body",
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           {
             id: echoBrick.id,
             config: {
@@ -92,7 +92,7 @@ describe("ForEachElement", () => {
         // The jsdom has one body tag
         selector: "body",
         elementKey: "element",
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           {
             id: echoBrick.id,
             config: {
@@ -125,7 +125,7 @@ describe("ForEachElement", () => {
         selector: "body",
         // Don't pass elementKey
         // elementKey: "element",
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           {
             id: echoBrick.id,
             config: {

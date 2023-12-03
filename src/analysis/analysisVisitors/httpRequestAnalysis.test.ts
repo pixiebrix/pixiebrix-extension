@@ -21,7 +21,7 @@ import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis
 import { RemoteMethod } from "@/bricks/transformers/remoteMethod";
 import { AnnotationType } from "@/types/annotationTypes";
 
-import { makeTemplateExpression } from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const position: BrickPosition = {
   path: "test.path",
@@ -62,10 +62,7 @@ describe("httpRequestAnalysis", () => {
         id: RemoteMethod.BLOCK_ID,
         config: {
           method: "get",
-          url: makeTemplateExpression(
-            "nunjucks",
-            "https://example.com/?foo={{ @foo }}",
-          ),
+          url: toExpression("nunjucks", "https://example.com/?foo={{ @foo }}"),
         },
       },
       {} as VisitBlockExtra,
@@ -112,7 +109,7 @@ describe("httpRequestAnalysis", () => {
         config: {
           method: "post",
           url: "https://example.com",
-          data: makeTemplateExpression(
+          data: toExpression(
             "nunjucks",
             JSON.stringify({
               foo: 42,
@@ -144,7 +141,7 @@ describe("httpRequestAnalysis", () => {
         config: {
           method: "post",
           url: "https://example.com",
-          data: makeTemplateExpression(
+          data: toExpression(
             "nunjucks",
             JSON.stringify({
               foo: "{{ @foo }}",

@@ -19,11 +19,7 @@ import {
   isSelectField,
   isIntegrationDependencyValueFormat,
 } from "@/components/fields/schemaFields/fieldTypeCheckers";
-
-import {
-  makeTemplateExpression,
-  makeVariableExpression,
-} from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("isServiceValue", () => {
   it("null is service value", () => {
@@ -36,15 +32,13 @@ describe("isServiceValue", () => {
 
   it("nunjucks is not a service value", () => {
     expect(
-      isIntegrationDependencyValueFormat(
-        makeTemplateExpression("nunjucks", "@foo"),
-      ),
+      isIntegrationDependencyValueFormat(toExpression("nunjucks", "@foo")),
     ).toBe(false);
   });
 
   it("var is a service value", () => {
     expect(
-      isIntegrationDependencyValueFormat(makeVariableExpression("@foo")),
+      isIntegrationDependencyValueFormat(toExpression("var", "@foo")),
     ).toBe(true);
   });
 });

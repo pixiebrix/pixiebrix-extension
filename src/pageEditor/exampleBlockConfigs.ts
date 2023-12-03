@@ -31,10 +31,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
 import { IdentityTransformer } from "@/bricks/transformers/identity";
-import {
-  makePipelineExpression,
-  makeTemplateExpression,
-} from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 /**
  * Get a default block config for a block
@@ -66,7 +63,7 @@ export function getExampleBlockConfig(
 
     case IdentityTransformer.BRICK_ID: {
       return {
-        value: makeTemplateExpression("nunjucks", ""),
+        value: toExpression("nunjucks", ""),
       };
     }
 
@@ -175,7 +172,7 @@ export function getExampleBlockConfig(
     case "@pixiebrix/state/assign": {
       return {
         variableName: "",
-        value: makeTemplateExpression("nunjucks", ""),
+        value: toExpression("nunjucks", ""),
       };
     }
 
@@ -183,7 +180,7 @@ export function getExampleBlockConfig(
       return {
         title: "Example Info",
         location: "panel",
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           createNewBlock(DocumentRenderer.BLOCK_ID),
         ]),
         isRootAware: true,

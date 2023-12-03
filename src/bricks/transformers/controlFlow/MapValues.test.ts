@@ -23,10 +23,7 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import MapValues from "@/bricks/transformers/controlFlow/MapValues";
-import {
-  makePipelineExpression,
-  makeTemplateExpression,
-} from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const mapValueBrick = new MapValues();
 
@@ -40,15 +37,12 @@ describe("MapValues", () => {
     const pipeline = {
       id: mapValueBrick.id,
       config: {
-        elements: makeTemplateExpression("var", "@input.elements"),
-        body: makePipelineExpression([
+        elements: toExpression("var", "@input.elements"),
+        body: toExpression("pipeline", [
           {
             id: echoBrick.id,
             config: {
-              message: makeTemplateExpression(
-                "nunjucks",
-                "iteration {{ @element }}",
-              ),
+              message: toExpression("nunjucks", "iteration {{ @element }}"),
             },
           },
         ]),

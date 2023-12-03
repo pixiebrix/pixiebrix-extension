@@ -23,11 +23,7 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
-
-import {
-  makePipelineExpression,
-  makeTemplateExpression,
-} from "@/utils/expressionUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const forEachBlock = new ForEach();
 
@@ -41,15 +37,12 @@ describe("ForEach", () => {
     const pipeline = {
       id: forEachBlock.id,
       config: {
-        elements: makeTemplateExpression("var", "@input.elements"),
-        body: makePipelineExpression([
+        elements: toExpression("var", "@input.elements"),
+        body: toExpression("pipeline", [
           {
             id: echoBrick.id,
             config: {
-              message: makeTemplateExpression(
-                "nunjucks",
-                "iteration {{ @element }}",
-              ),
+              message: toExpression("nunjucks", "iteration {{ @element }}"),
             },
           },
         ]),
