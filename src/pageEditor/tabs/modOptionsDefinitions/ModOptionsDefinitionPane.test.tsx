@@ -18,7 +18,7 @@
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "@/pageEditor/testHelpers";
-import RecipeOptionsDefinition from "@/pageEditor/tabs/recipeOptionsDefinitions/RecipeOptionsDefinition";
+import ModOptionsDefinitionPane from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionPane";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import selectEvent from "react-select-event";
 import { screen } from "@testing-library/react";
@@ -40,7 +40,7 @@ describe("RecipeOptionsDefinitions", () => {
   it("shows google sheets, and both database field type options", async () => {
     const modDefinition = defaultModDefinitionFactory();
 
-    render(<RecipeOptionsDefinition />, {
+    render(<ModOptionsDefinitionPane />, {
       setupRedux(dispatch) {
         dispatch(
           extensionsSlice.actions.installMod({

@@ -39,7 +39,7 @@ import {
   inferRecipeDependencies,
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
-import { EMPTY_RECIPE_OPTIONS_DEFINITION } from "@/pageEditor/tabs/recipeOptionsDefinitions/RecipeOptionsDefinition";
+import { EMPTY_MOD_OPTIONS_DEFINITION } from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionPane";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
 import Effect from "@/components/Effect";
 import { actions } from "@/pageEditor/slices/editorSlice";
@@ -74,7 +74,7 @@ const RecipeOptionsValuesContent: React.FC = () => {
       return dirtyRecipeOptions;
     }
 
-    return recipe?.options ?? EMPTY_RECIPE_OPTIONS_DEFINITION;
+    return recipe?.options ?? EMPTY_MOD_OPTIONS_DEFINITION;
   }, [dirtyRecipeOptions, recipe?.options]);
 
   const {

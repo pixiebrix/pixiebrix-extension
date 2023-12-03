@@ -22,18 +22,14 @@ import FieldRuntimeContext, {
 import { Card, Col, Container, Nav, Row, Tab } from "react-bootstrap";
 import Loader from "@/components/Loader";
 import { isEmpty } from "lodash";
-import styles from "./RecipeOptionsDefinition.module.scss";
+import styles from "./ModOptionsDefinitionPane.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import cx from "classnames";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
-import {
-  getMinimalSchema,
-  getMinimalUiSchema,
-  stringifyUiType,
-} from "@/components/formBuilder/formBuilderHelpers";
+import { stringifyUiType } from "@/components/formBuilder/formBuilderHelpers";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -48,6 +44,12 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import Effect from "@/components/Effect";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { type Schema } from "@/types/schemaTypes";
+import {
+  minimalSchemaFactory,
+  minimalUiSchemaFactory,
+} from "@/utils/schemaUtils";
 
 const fieldTypes = [
   ...FORM_FIELD_TYPE_OPTIONS.filter(
@@ -74,32 +76,35 @@ const fieldTypes = [
   },
 ];
 
+const activationInstructionsSchema: Schema = {
+  type: "string",
+  format: "markdown",
+};
+
 const formRuntimeContext: RuntimeContext = {
   apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   allowExpressions: false,
 };
 
-export const EMPTY_RECIPE_OPTIONS_DEFINITION: ModOptionsDefinition = {
-  schema: getMinimalSchema(),
-  uiSchema: getMinimalUiSchema(),
-};
+export const EMPTY_MOD_OPTIONS_DEFINITION: ModOptionsDefinition = Object.freeze(
+  {
+    schema: minimalSchemaFactory(),
+    uiSchema: minimalUiSchemaFactory(),
+  },
+);
 
-const RecipeOptionsDefinition: React.VFC = () => {
+const ModOptionsDefinitionPane: React.VFC = () => {
   const [activeField, setActiveField] = useState<string>();
-  const recipeId = useSelector(selectActiveRecipeId);
-  const {
-    data: recipe,
-    isFetching,
-    error,
-  } = useOptionalModDefinition(recipeId);
+  const modId = useSelector(selectActiveRecipeId);
+  const { data: mod, isFetching, error } = useOptionalModDefinition(modId);
 
-  const savedOptions = recipe?.options;
+  const savedOptions = mod?.options;
   const dirtyOptions = useSelector(
-    selectDirtyOptionDefinitionsForRecipeId(recipeId),
+    selectDirtyOptionDefinitionsForRecipeId(modId),
   );
 
   const optionsDefinition =
-    dirtyOptions ?? savedOptions ?? EMPTY_RECIPE_OPTIONS_DEFINITION;
+    dirtyOptions ?? savedOptions ?? EMPTY_MOD_OPTIONS_DEFINITION;
 
   const initialValues = { optionsDefinition };
 
@@ -136,7 +141,7 @@ const RecipeOptionsDefinition: React.VFC = () => {
           initialValues={initialValues}
           onSubmit={() => {
             console.error(
-              "Formik's submit should not be called to save recipe options. Use 'saveRecipe' from 'useRecipeSaver' instead.",
+              "Formik's submit should not be called to save mod options. Use 'saveRecipe' from 'useRecipeSaver' instead.",
             );
           }}
         >
@@ -152,13 +157,20 @@ const RecipeOptionsDefinition: React.VFC = () => {
                 <Card>
                   <Card.Header>Advanced: Mod Options</Card.Header>
                   <Card.Body>
-                    {noOptions && (
-                      <div className="mb-3">
-                        No options defined for this mod
-                      </div>
-                    )}
-
                     <FieldRuntimeContext.Provider value={formRuntimeContext}>
+                      <SchemaField
+                        name="optionsDefinition.schema.description"
+                        label="Activation Instructions"
+                        description="Optional instructions to display during activation. Supports Markdown."
+                        schema={activationInstructionsSchema}
+                      />
+
+                      {noOptions && (
+                        <div className="mb-3">
+                          No options defined for this mod
+                        </div>
+                      )}
+
                       <FormEditor
                         name="optionsDefinition"
                         showFormIntroFields={false}
@@ -207,4 +219,4 @@ const RecipeOptionsDefinition: React.VFC = () => {
   );
 };
 
-export default RecipeOptionsDefinition;
+export default ModOptionsDefinitionPane;

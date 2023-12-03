@@ -18,7 +18,7 @@
 import { type ModViewItem } from "@/types/modTypes";
 import { useDispatch } from "react-redux";
 import useFlags from "@/hooks/useFlags";
-import { isModComponentFromRecipe, isModDefinition } from "@/utils/modUtils";
+import { isModComponentFromMod, isModDefinition } from "@/utils/modUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { push } from "connected-react-router";
@@ -28,8 +28,7 @@ const useReactivateAction = (modViewItem: ModViewItem): (() => void | null) => {
   const dispatch = useDispatch();
   const { restrict } = useFlags();
   const { mod, unavailable, status, sharing } = modViewItem;
-  const hasModDefinition =
-    isModComponentFromRecipe(mod) || isModDefinition(mod);
+  const hasModDefinition = isModComponentFromMod(mod) || isModDefinition(mod);
   const isActive = status === "Active" || status === "Paused";
   const isDeployment = sharing.source.type === "Deployment";
   const isRestricted = isDeployment && restrict("uninstall");

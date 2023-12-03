@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./ServicesBody.module.scss";
+import styles from "./IntegrationsBody.module.scss";
 
 import React, { useMemo } from "react";
 import { Card } from "react-bootstrap";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import AuthWidget from "@/components/auth/AuthWidget";
-import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";
+import IntegrationDescriptor from "@/extensionConsole/pages/activateMod/IntegrationDescriptor";
 import { useField } from "formik";
 import { useAuthOptions } from "@/hooks/auth";
 import { useGetIntegrationsQuery } from "@/services/api";
@@ -37,8 +37,8 @@ import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 
 interface OwnProps {
-  blueprint: ModDefinition;
-  hideBuiltInServiceIntegrations?: boolean;
+  mod: ModDefinition;
+  hideBuiltInIntegrations?: boolean;
   showOwnTitle?: boolean;
 }
 
@@ -48,11 +48,13 @@ type ValueField = {
   isOptional?: boolean;
 };
 
-const emptyAuthOptions: readonly AuthOption[] = Object.freeze([]);
+const emptyAuthOptions: readonly AuthOption[] = Object.freeze(
+  [] as AuthOption[],
+);
 
-const ServicesBody: React.FunctionComponent<OwnProps> = ({
-  blueprint,
-  hideBuiltInServiceIntegrations,
+const IntegrationsBody: React.FunctionComponent<OwnProps> = ({
+  mod,
+  hideBuiltInIntegrations,
   showOwnTitle,
 }) => {
   const { data: authOptions, refetch: refreshAuthOptions } = fallbackValue(
@@ -63,33 +65,34 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
     integrationDependenciesField,
     { error: integrationDependenciesFieldError },
   ] = useField<IntegrationDependency[]>("integrationDependencies");
-  const { data: serviceConfigs } = useGetIntegrationsQuery();
+  const { data: configs } = useGetIntegrationsQuery();
 
-  const requiredServiceIds = useMemo(
+  const requiredIntegrationIds = useMemo(
     // The PixieBrix service gets automatically configured, so no need to include it
-    () => getModDefinitionIntegrationIds(blueprint, { excludePixieBrix: true }),
-    [blueprint],
+    () => getModDefinitionIntegrationIds(mod, { excludePixieBrix: true }),
+    [mod],
   );
 
-  function shouldShowField(serviceId: RegistryId): boolean {
-    if (!requiredServiceIds.includes(serviceId)) {
+  function shouldShowField(integrationId: RegistryId): boolean {
+    if (!requiredIntegrationIds.includes(integrationId)) {
       return false;
     }
 
-    const serviceOptions = authOptions.filter(
-      (option) => option.serviceId === serviceId,
+    const configurationOptions = authOptions.filter(
+      (option) => option.serviceId === integrationId,
     );
 
-    // Always show field if there are no options available for the service
-    if (isEmpty(serviceOptions)) {
+    // Always show field if there are no options available for the integration
+    if (isEmpty(configurationOptions)) {
       return true;
     }
 
-    if (hideBuiltInServiceIntegrations) {
+    if (hideBuiltInIntegrations) {
       // Show the field if there are options for the service that are not built-in
       return authOptions.some(
         (option) =>
-          option.serviceId === serviceId && option.sharingType !== "built-in",
+          option.serviceId === integrationId &&
+          option.sharingType !== "built-in",
       );
     }
 
@@ -126,10 +129,10 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
             servicesError={integrationDependenciesFieldError}
             fieldIndex={index}
           />
-          <Card className={styles.serviceCard}>
-            <ServiceDescriptor
-              serviceId={serviceId}
-              serviceConfigs={serviceConfigs}
+          <Card className={styles.integrationCard}>
+            <IntegrationDescriptor
+              integrationId={serviceId}
+              integrationConfigs={configs}
             />
             <AuthWidget
               authOptions={authOptions}
@@ -149,4 +152,4 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({
   );
 };
 
-export default ServicesBody;
+export default IntegrationsBody;

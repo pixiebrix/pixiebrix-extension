@@ -42,7 +42,7 @@ const Template: ComponentStory<typeof OptionsBody> = (args) => (
 
 export const TextField = Template.bind({});
 TextField.args = {
-  blueprint: {
+  mod: {
     options: {
       schema: {
         properties: {

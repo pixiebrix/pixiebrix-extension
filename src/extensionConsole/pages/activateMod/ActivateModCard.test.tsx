@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
-import ActivateRecipeCard from "@/extensionConsole/pages/activateRecipe/ActivateRecipeCard";
+import ActivateModCard from "@/extensionConsole/pages/activateMod/ActivateModPage";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
@@ -41,9 +41,9 @@ import useActivateRecipe, {
 
 registerDefaultWidgets();
 
-const testRecipeId = validateRegistryId("@test/recipe");
+const testModId = validateRegistryId("@test/recipe");
 
-const activateRecipeCallbackMock =
+const activateModCallbackMock =
   jest.fn() as jest.MockedFunction<ActivateRecipeFormCallback>;
 
 jest.mock("@/activation/useActivateRecipe.ts", () => ({
@@ -57,7 +57,7 @@ const activateRecipeHookMock = jest.mocked(
 
 jest.mock("@/extensionConsole/pages/useRecipeIdParam", () => ({
   __esModule: true,
-  default: jest.fn(() => testRecipeId),
+  default: jest.fn(() => testModId),
 }));
 
 global.chrome.commands.getAll = jest.fn();
@@ -73,7 +73,7 @@ function setupRecipe(recipe: ModDefinition) {
   };
 
   appApiMock
-    .onGet(`/api/recipes/${encodeURIComponent(testRecipeId)}/`)
+    .onGet(`/api/recipes/${encodeURIComponent(testModId)}/`)
     .reply(200, recipeResponse)
     // Databases, organizations, etc.
     .onGet()
@@ -83,18 +83,18 @@ function setupRecipe(recipe: ModDefinition) {
 beforeEach(() => {
   appApiMock.reset();
   jest.clearAllMocks();
-  activateRecipeHookMock.mockReturnValue(activateRecipeCallbackMock);
+  activateRecipeHookMock.mockReturnValue(activateModCallbackMock);
 });
 
-// Activate Recipe Card is always rendered when the recipe has already been found
-const RecipeCard: React.FC = () => {
+// Activate Mod Card is always rendered when the mod has already been found
+const ModCard: React.FC = () => {
   const recipeState = useGetRecipeQuery({
-    recipeId: testRecipeId,
+    recipeId: testModId,
   });
   return (
     <MemoryRouter>
       <AsyncStateGate state={recipeState}>
-        {() => <ActivateRecipeCard />}
+        {() => <ActivateModCard />}
       </AsyncStateGate>
     </MemoryRouter>
   );
@@ -103,7 +103,7 @@ const RecipeCard: React.FC = () => {
 describe("ActivateRecipeCard", () => {
   test("renders", async () => {
     setupRecipe(defaultModDefinitionFactory());
-    const { asFragment } = render(<RecipeCard />);
+    const { asFragment } = render(<ModCard />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
@@ -114,7 +114,7 @@ describe("ActivateRecipeCard", () => {
         extensionPoints: [modComponentDefinitionFactory({ services: null })],
       }),
     );
-    const { asFragment } = render(<RecipeCard />);
+    const { asFragment } = render(<ModCard />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
@@ -147,7 +147,7 @@ describe("ActivateRecipeCard", () => {
     });
     setupRecipe(modDefinition);
 
-    const { asFragment } = render(<RecipeCard />);
+    const { asFragment } = render(<ModCard />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
     await userEvent.click(screen.getByText("Activate"));
@@ -168,12 +168,12 @@ describe("ActivateRecipeCard", () => {
     });
     setupRecipe(modDefinition);
 
-    const { asFragment } = render(<RecipeCard />);
+    const { asFragment } = render(<ModCard />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
     await userEvent.click(screen.getByText("Activate"));
     await waitForEffect();
-    expect(activateRecipeCallbackMock).toHaveBeenCalledWith(
+    expect(activateModCallbackMock).toHaveBeenCalledWith(
       {
         extensions: { "0": true },
         optionsArgs: {},
@@ -184,14 +184,14 @@ describe("ActivateRecipeCard", () => {
   });
 
   test("user reject permissions", async () => {
-    activateRecipeCallbackMock.mockResolvedValue({
+    activateModCallbackMock.mockResolvedValue({
       success: false,
       error: "You must accept browser permissions to activate",
     });
 
     const modDefinition = defaultModDefinitionFactory({
       metadata: metadataFactory({
-        id: "test/blueprint-with-required-options" as RegistryId,
+        id: validateRegistryId("test/blueprint-with-required-options"),
         name: "A Mod",
       }),
       extensionPoints: [
@@ -202,7 +202,7 @@ describe("ActivateRecipeCard", () => {
     });
     setupRecipe(modDefinition);
 
-    render(<RecipeCard />);
+    render(<ModCard />);
     await waitForEffect();
     await userEvent.click(screen.getByText("Activate"));
     await waitForEffect();

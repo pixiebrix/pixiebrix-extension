@@ -37,6 +37,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import { selectKnownEventNames } from "@/analysis/analysisSelectors";
+import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) => {
   if (editor == null) {
@@ -113,10 +114,17 @@ export const selectDirtyRecipeOptionDefinitions = ({
 
 const dirtyOptionDefinitionsForRecipeIdSelector = createSelector(
   selectDirtyRecipeOptionDefinitions,
-  (state: EditorRootState, recipeId: RegistryId) => recipeId,
-  (dirtyRecipeOptionDefinitionsById, recipeId) =>
+  (_state: EditorRootState, recipeId: RegistryId) => recipeId,
+  (dirtyRecipeOptionDefinitionsById, recipeId) => {
     // eslint-disable-next-line security/detect-object-injection -- RegistryId for recipe
-    dirtyRecipeOptionDefinitionsById[recipeId],
+    const options = dirtyRecipeOptionDefinitionsById[recipeId];
+
+    if (options) {
+      return normalizeModOptionsDefinition(options);
+    }
+
+    return null;
+  },
 );
 
 export const selectDirtyOptionDefinitionsForRecipeId =
@@ -125,7 +133,7 @@ export const selectDirtyOptionDefinitionsForRecipeId =
 
 const dirtyOptionValuesForRecipeIdSelector = createSelector(
   selectNotDeletedElements,
-  (state: EditorRootState, recipeId: RegistryId) => recipeId,
+  (_state: EditorRootState, recipeId: RegistryId) => recipeId,
   (elements, recipeId) =>
     elements.find((element) => element.recipe?.id === recipeId)?.optionsArgs,
 );

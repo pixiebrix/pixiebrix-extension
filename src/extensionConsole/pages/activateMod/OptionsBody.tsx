@@ -30,15 +30,11 @@ const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
 };
 
 const OptionsBody: React.FunctionComponent<{
-  blueprint: Pick<ModDefinition, "options">;
-}> = ({ blueprint }) => {
+  mod: Pick<ModDefinition, "options">;
+}> = ({ mod }) => {
   const OptionsGroup = useMemo(
-    () =>
-      genericOptionsFactory(
-        blueprint.options.schema,
-        blueprint.options.uiSchema,
-      ),
-    [blueprint.options.schema, blueprint.options.uiSchema],
+    () => genericOptionsFactory(mod.options.schema, mod.options.uiSchema),
+    [mod.options.schema, mod.options.uiSchema],
   );
 
   return (

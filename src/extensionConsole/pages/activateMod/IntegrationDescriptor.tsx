@@ -15,28 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./ServicesBody.module.scss";
+import styles from "./IntegrationsBody.module.scss";
 
 import React, { useMemo } from "react";
 import { type IntegrationDefinition } from "@/integrations/integrationTypes";
+import { type RegistryId } from "@/types/registryTypes";
 
-const ServiceDescriptor: React.FunctionComponent<{
-  serviceConfigs: IntegrationDefinition[];
-  serviceId: string;
-}> = ({ serviceId, serviceConfigs }) => {
+const IntegrationDescriptor: React.FunctionComponent<{
+  integrationConfigs: IntegrationDefinition[];
+  integrationId: RegistryId;
+}> = ({ integrationId, integrationConfigs }) => {
   const config = useMemo(
-    () => serviceConfigs?.find((x) => x.metadata.id === serviceId),
-    [serviceId, serviceConfigs],
+    () => integrationConfigs?.find((x) => x.metadata.id === integrationId),
+    [integrationId, integrationConfigs],
   );
 
   return (
-    <div className={styles.serviceCardHeader}>
+    <div className={styles.integrationCardHeader}>
       {config && (
-        <h5 className={styles.serviceHeading}>{config.metadata.name}</h5>
+        <h5 className={styles.integrationHeading}>{config.metadata.name}</h5>
       )}
-      <code className={styles.serviceId}>{serviceId}</code>
+      <code className={styles.integrationId}>{integrationId}</code>
     </div>
   );
 };
 
-export default ServiceDescriptor;
+export default IntegrationDescriptor;

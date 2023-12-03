@@ -26,7 +26,7 @@ import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCa
 import useExtensionPermissions from "@/permissions/useExtensionPermissions";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 
-type RecipePermissionsState = AsyncState<PermissionsStatus> & {
+type ModPermissionsState = AsyncState<PermissionsStatus> & {
   /**
    * Callback to request permissions from the user.
    */
@@ -34,22 +34,25 @@ type RecipePermissionsState = AsyncState<PermissionsStatus> & {
 };
 
 /**
- * Hook providing convenience methods for ensuring permissions for a recipe prior to activation.
- * @param blueprint the blueprint definition
+ * Hook providing convenience methods for ensuring permissions for a mod prior to activation.
+ * @param modDefinition the mod definition
  * @param configuredDependencies the integration configurations selected for mod activation
  * @see useCloudExtensionPermissions
  */
 function useModPermissions(
-  blueprint: ModDefinition,
+  modDefinition: ModDefinition,
   configuredDependencies: IntegrationDependency[],
-): RecipePermissionsState {
+): ModPermissionsState {
   const { data: browserPermissions } = useExtensionPermissions();
 
   const permissionsState = useAsyncState(
     async () => {
       // Refresh services because the user may have created a team integration since the last refresh.
       await serviceLocator.refresh();
-      return checkModDefinitionPermissions(blueprint, configuredDependencies);
+      return checkModDefinitionPermissions(
+        modDefinition,
+        configuredDependencies,
+      );
     },
     [configuredDependencies, browserPermissions],
     {

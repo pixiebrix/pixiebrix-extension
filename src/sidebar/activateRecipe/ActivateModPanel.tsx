@@ -51,6 +51,8 @@ import AsyncStateGate from "@/components/AsyncStateGate";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 
 import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
+import Markdown from "@/components/Markdown";
+import { getModActivationInstructions } from "@/utils/modUtils";
 
 const { actions } = sidebarSlice;
 
@@ -209,7 +211,7 @@ export const SuccessPanel: React.FC<{
   </div>
 );
 
-const ActivateRecipePanelContent: React.FC<
+const ActivateModPanelContent: React.FC<
   RequiredModDefinition & UseActivateRecipeWizardResult
 > = ({
   modDefinition,
@@ -335,10 +337,14 @@ const ActivateRecipePanelContent: React.FC<
     );
   }
 
+  const instructions =
+    getModActivationInstructions(modDefinition) ??
+    "We're almost there. This mod has a few settings to configure before using. You can always change these later.";
+
   return (
     <div className={styles.root}>
       <ActivateModInputs
-        recipe={modDefinition}
+        mod={modDefinition}
         optionsWizardStep={optionsWizardStep}
         initialValues={initialValues}
         onChange={onChange}
@@ -348,11 +354,7 @@ const ActivateRecipePanelContent: React.FC<
         header={
           <>
             <ModName modDefinition={modDefinition} />
-            <p>
-              {
-                "We're almost there. This mod has a few settings to configure before using. You can always change these later."
-              }
-            </p>
+            <Markdown markdown={instructions} />
           </>
         }
         formValuesRef={formValuesRef}
@@ -373,7 +375,7 @@ const ActivateModWizardPanel: React.FC<RequiredModDefinition> = (modState) => {
   return (
     <AsyncStateGate state={wizardState}>
       {({ data: wizardResult }) => (
-        <ActivateRecipePanelContent {...modState} {...wizardResult} />
+        <ActivateModPanelContent {...modState} {...wizardResult} />
       )}
     </AsyncStateGate>
   );

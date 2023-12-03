@@ -20,7 +20,7 @@ import React, { useMemo } from "react";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert } from "react-bootstrap";
-import UrlPermissionsList from "@/extensionConsole/pages/activateRecipe/UrlPermissionsList";
+import UrlPermissionsList from "@/extensionConsole/pages/activateMod/UrlPermissionsList";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type WizardValues } from "@/activation/wizardTypes";
 import { useFormikContext } from "formik";
@@ -61,16 +61,16 @@ const QuickBarAlert = () => (
 );
 
 const PermissionsBody: React.FunctionComponent<{
-  blueprint: ModDefinition;
-}> = ({ blueprint }) => {
+  mod: ModDefinition;
+}> = ({ mod }) => {
   const selectedAuths = useSelectedAuths();
 
-  const permissionsState = useModPermissions(blueprint, selectedAuths);
+  const permissionsState = useModPermissions(mod, selectedAuths);
 
   const { isConfigured: isShortcutConfigured } = useQuickbarShortcut();
 
   const { data: hasQuickBar } = useAsyncState(
-    async () => includesQuickBarStarterBrick(blueprint),
+    async () => includesQuickBarStarterBrick(mod),
     [],
     { initialValue: false },
   );

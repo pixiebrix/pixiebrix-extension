@@ -37,10 +37,6 @@ import { cloneDeep, range, uniq } from "lodash";
 import { type MenuDefinition } from "@/starterBricks/menuItemExtension";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
-  getMinimalSchema,
-  getMinimalUiSchema,
-} from "@/components/formBuilder/formBuilderHelpers";
-import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
@@ -69,6 +65,10 @@ import {
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
+import {
+  minimalSchemaFactory,
+  minimalUiSchemaFactory,
+} from "@/utils/schemaUtils";
 
 jest.mock("@/background/contextMenus");
 
@@ -460,8 +460,8 @@ describe("blueprint options", () => {
 
   test("doesn't add empty schema when blueprint options is empty", async () => {
     const emptyOptions = {
-      schema: getMinimalSchema(),
-      uiSchema: getMinimalUiSchema(),
+      schema: minimalSchemaFactory(),
+      uiSchema: minimalUiSchemaFactory(),
     };
 
     const updatedRecipe = await runReplaceRecipeExtensions(
@@ -483,7 +483,7 @@ describe("blueprint options", () => {
           },
         },
       },
-      uiSchema: getMinimalUiSchema(),
+      uiSchema: minimalUiSchemaFactory(),
     };
 
     const updatedRecipe = await runReplaceRecipeExtensions(
@@ -505,7 +505,7 @@ describe("blueprint options", () => {
           },
         },
       },
-      uiSchema: getMinimalUiSchema(),
+      uiSchema: minimalUiSchemaFactory(),
     };
 
     const elementOptions: ModOptionsDefinition = {
@@ -517,7 +517,7 @@ describe("blueprint options", () => {
           },
         },
       },
-      uiSchema: getMinimalUiSchema(),
+      uiSchema: minimalUiSchemaFactory(),
     };
 
     const updatedRecipe = await runReplaceRecipeExtensions(
@@ -539,12 +539,12 @@ describe("blueprint options", () => {
           },
         },
       },
-      uiSchema: getMinimalUiSchema(),
+      uiSchema: minimalUiSchemaFactory(),
     };
 
     const elementOptions: ModOptionsDefinition = {
-      schema: getMinimalSchema(),
-      uiSchema: getMinimalUiSchema(),
+      schema: minimalSchemaFactory(),
+      uiSchema: minimalUiSchemaFactory(),
     };
 
     const updatedRecipe = await runReplaceRecipeExtensions(

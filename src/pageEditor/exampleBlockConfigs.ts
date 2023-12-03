@@ -30,11 +30,11 @@ import { type BrickConfig } from "@/bricks/types";
 import { uuidv4 } from "@/types/helpers";
 import { defaultBlockConfig } from "@/bricks/util";
 import TourStep from "@/bricks/transformers/tourStep/tourStep";
-import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
 import { IdentityTransformer } from "@/bricks/transformers/identity";
+import { minimalUiSchemaFactory } from "@/utils/schemaUtils";
 
 /**
  * Get a default block config for a block
@@ -83,7 +83,7 @@ export function getExampleBlockConfig(
             },
           },
         },
-        uiSchema: getMinimalUiSchema(),
+        uiSchema: minimalUiSchemaFactory(),
         cancelable: true,
         submitCaption: "Submit",
         location: "modal",

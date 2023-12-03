@@ -19,7 +19,7 @@ import React, { useEffect } from "react";
 import Page from "@/layout/Page";
 import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
 import { Card, Col, Row } from "react-bootstrap";
-import ActivateRecipeCard from "@/extensionConsole/pages/activateRecipe/ActivateRecipeCard";
+import ActivateModCard from "@/extensionConsole/pages/activateMod/ActivateModCard";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -27,18 +27,21 @@ import RequireBrickRegistry from "@/extensionConsole/components/RequireBrickRegi
 import { useGetRecipeQuery } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectRecipeHasAnyExtensionsInstalled } from "@/store/extensionsSelectors";
-import useRecipeIdParam from "@/extensionConsole/pages/useRecipeIdParam";
+import useModIdParam from "@/extensionConsole/pages/useModIdParam";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import notify from "@/utils/notify";
 import { useHistory } from "react-router";
 
-const ActivateRecipePageContent: React.FC = () => {
-  const recipeId = useRecipeIdParam();
+const ActivateModPageContent: React.FC = () => {
+  const modId = useModIdParam();
   // Page parent component below is gating this content component on isFetching, so
   // recipe will always be resolved here
-  const { data: recipe } = useGetRecipeQuery({ recipeId }, { skip: !recipeId });
+  const { data: mod } = useGetRecipeQuery(
+    { recipeId: modId },
+    { skip: !modId },
+  );
 
-  if (recipe.extensionPoints) {
+  if (mod.extensionPoints) {
     // Require that bricks have been fetched at least once before showing. Handles new installs where the bricks
     // haven't been completely fetched yet.
     // XXX: we might also want to enforce a full re-sync of the brick registry to ensure the latest brick
@@ -46,7 +49,7 @@ const ActivateRecipePageContent: React.FC = () => {
     // do not change frequently.
     return (
       <RequireBrickRegistry>
-        <ActivateRecipeCard />
+        <ActivateModCard />
       </RequireBrickRegistry>
     );
   }
@@ -58,8 +61,8 @@ const ActivateRecipePageContent: React.FC = () => {
       <Card.Header>Invalid Mod</Card.Header>
       <Card.Body>
         <p className="text-danger">
-          Error: {decodeURIComponent(recipeId)} is not a valid mod. Please
-          verify the link you received to activate the mod
+          Error: {decodeURIComponent(modId)} is not a valid mod. Please verify
+          the link you received to activate the mod
         </p>
 
         <Link to="/marketplace" className="btn btn-info">
@@ -70,15 +73,13 @@ const ActivateRecipePageContent: React.FC = () => {
   );
 };
 
-const ActivateRecipePage: React.FunctionComponent = () => {
-  const recipeId = useRecipeIdParam();
+const ActivateModPage: React.FunctionComponent = () => {
+  const modId = useModIdParam();
   const history = useHistory();
-  const isReinstall = useSelector(
-    selectRecipeHasAnyExtensionsInstalled(recipeId),
-  );
+  const isReinstall = useSelector(selectRecipeHasAnyExtensionsInstalled(modId));
 
   const { isFetching, error } = useGetRecipeQuery(
-    { recipeId },
+    { recipeId: modId },
     {
       // Force-refetch the latest data for this recipe before activation
       refetchOnMountOrArgChange: true,
@@ -115,7 +116,7 @@ const ActivateRecipePage: React.FunctionComponent = () => {
       <Row>
         <Col xs={12} xl={10}>
           <ErrorBoundary>
-            <ActivateRecipePageContent />
+            <ActivateModPageContent />
           </ErrorBoundary>
         </Col>
       </Row>
@@ -123,4 +124,4 @@ const ActivateRecipePage: React.FunctionComponent = () => {
   );
 };
 
-export default ActivateRecipePage;
+export default ActivateModPage;

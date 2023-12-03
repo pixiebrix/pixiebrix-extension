@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render, screen } from "@/extensionConsole/testHelpers";
-import OptionsBody from "@/extensionConsole/pages/activateRecipe/OptionsBody";
+import OptionsBody from "@/extensionConsole/pages/activateMod/OptionsBody";
 import { MemoryRouter } from "react-router";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
@@ -33,7 +33,7 @@ describe("Marketplace Activate Wizard OptionsBody", () => {
       <MemoryRouter>
         <Formik initialValues={{ optionsArgs: {} }} onSubmit={jest.fn()}>
           <OptionsBody
-            blueprint={{
+            mod={{
               options: {
                 schema: {
                   properties: {

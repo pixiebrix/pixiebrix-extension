@@ -32,7 +32,7 @@ import EditRecipe from "@/pageEditor/tabs/editRecipeTab/EditRecipe";
 import { type MessageContext } from "@/types/loggerTypes";
 import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
-import RecipeOptionsDefinition from "@/pageEditor/tabs/recipeOptionsDefinitions/RecipeOptionsDefinition";
+import ModOptionsDefinitionPane from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionPane";
 import RecipeOptionsValues from "@/pageEditor/tabs/recipeOptionsValues/RecipeOptionsValues";
 
 const RecipePane: React.VFC = () => {
@@ -63,7 +63,7 @@ const RecipePane: React.VFC = () => {
     },
     {
       name: "Input Form",
-      TabContent: RecipeOptionsDefinition,
+      TabContent: ModOptionsDefinitionPane,
     },
     {
       name: "Logs",

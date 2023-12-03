@@ -23,7 +23,7 @@ import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { validateRegistryId } from "@/types/helpers";
 import { render } from "@/extensionConsole/testHelpers";
-import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
+import IntegrationsBody from "@/extensionConsole/pages/activateMod/IntegrationsBody";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -45,63 +45,63 @@ jest.mock("@/integrations/util/getModDefinitionIntegrationIds", () => ({
 
 const getIntegrationIdsMock = jest.mocked(getModDefinitionIntegrationIds);
 
-const serviceId1 = validateRegistryId("test/service1");
-const serviceId2 = validateRegistryId("test/service2");
+const integrationId1 = validateRegistryId("test/integration1");
+const integrationId2 = validateRegistryId("test/integration2");
 
 const emptyAuthOptions: AuthOption[] = [];
 const sharedOption1a: AuthOption = {
   label: "Shared Option 1a",
   local: false,
-  serviceId: serviceId1,
+  serviceId: integrationId1,
   sharingType: "shared",
   value: autoUUIDSequence(),
 };
 const sharedOption1b: AuthOption = {
   label: "Shared Option 1b",
   local: false,
-  serviceId: serviceId1,
+  serviceId: integrationId1,
   sharingType: "shared",
   value: autoUUIDSequence(),
 };
 const sharedOption2a: AuthOption = {
   label: "Shared Option 2a",
   local: false,
-  serviceId: serviceId2,
+  serviceId: integrationId2,
   sharingType: "shared",
   value: autoUUIDSequence(),
 };
 const sharedOption2b: AuthOption = {
   label: "Shared Option 2b",
   local: false,
-  serviceId: serviceId2,
+  serviceId: integrationId2,
   sharingType: "shared",
   value: autoUUIDSequence(),
 };
 const builtInOption1a: AuthOption = {
   label: "Built-in Option 1a",
   local: false,
-  serviceId: serviceId1,
+  serviceId: integrationId1,
   sharingType: "built-in",
   value: autoUUIDSequence(),
 };
 const builtInOption1b: AuthOption = {
   label: "Built-in Option 1b",
   local: false,
-  serviceId: serviceId1,
+  serviceId: integrationId1,
   sharingType: "built-in",
   value: autoUUIDSequence(),
 };
 
 const service1 = {
   metadata: {
-    id: serviceId1,
-    name: "Test Service 1",
+    id: integrationId1,
+    name: "Test Integration 1",
   },
 } as IntegrationDefinition;
 const service2 = {
   metadata: {
-    id: serviceId2,
-    name: "Test Service 2",
+    id: integrationId2,
+    name: "Test Integration 2",
   },
 } as IntegrationDefinition;
 
@@ -128,11 +128,11 @@ function expectRefreshButton(count?: number) {
 describe("ServicesBody", () => {
   it("renders with one service and no options and does not render title", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState(emptyAuthOptions));
-    getIntegrationIdsMock.mockReturnValue([serviceId1]);
-    render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
+    getIntegrationIdsMock.mockReturnValue([integrationId1]);
+    render(<IntegrationsBody mod={defaultModDefinitionFactory()} />, {
       initialValues: {
         integrationDependencies: [
-          integrationDependencyFactory({ integrationId: serviceId1 }),
+          integrationDependencyFactory({ integrationId: integrationId1 }),
         ],
       },
     });
@@ -147,13 +147,13 @@ describe("ServicesBody", () => {
 
   it("renders own title properly", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState(emptyAuthOptions));
-    getIntegrationIdsMock.mockReturnValue([serviceId1]);
+    getIntegrationIdsMock.mockReturnValue([integrationId1]);
     render(
-      <ServicesBody blueprint={defaultModDefinitionFactory()} showOwnTitle />,
+      <IntegrationsBody mod={defaultModDefinitionFactory()} showOwnTitle />,
       {
         initialValues: {
           integrationDependencies: [
-            integrationDependencyFactory({ integrationId: serviceId1 }),
+            integrationDependencyFactory({ integrationId: integrationId1 }),
           ],
         },
       },
@@ -167,16 +167,16 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([sharedOption2a, sharedOption2b]),
     );
-    getIntegrationIdsMock.mockReturnValue([serviceId1]);
+    getIntegrationIdsMock.mockReturnValue([integrationId1]);
     render(
-      <ServicesBody
-        blueprint={defaultModDefinitionFactory()}
-        hideBuiltInServiceIntegrations
+      <IntegrationsBody
+        mod={defaultModDefinitionFactory()}
+        hideBuiltInIntegrations
       />,
       {
         initialValues: {
           integrationDependencies: [
-            integrationDependencyFactory({ integrationId: serviceId1 }),
+            integrationDependencyFactory({ integrationId: integrationId1 }),
           ],
         },
       },
@@ -192,12 +192,12 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([sharedOption1a, sharedOption1b]),
     );
-    getIntegrationIdsMock.mockReturnValue([serviceId1]);
-    render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
+    getIntegrationIdsMock.mockReturnValue([integrationId1]);
+    render(<IntegrationsBody mod={defaultModDefinitionFactory()} />, {
       initialValues: {
         integrationDependencies: [
           integrationDependencyFactory({
-            integrationId: serviceId1,
+            integrationId: integrationId1,
             configId: sharedOption1a.value,
           }),
         ],
@@ -214,12 +214,12 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([sharedOption1a, sharedOption1b]),
     );
-    getIntegrationIdsMock.mockReturnValue([serviceId1]);
-    render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
+    getIntegrationIdsMock.mockReturnValue([integrationId1]);
+    render(<IntegrationsBody mod={defaultModDefinitionFactory()} />, {
       initialValues: {
         integrationDependencies: [
           integrationDependencyFactory({
-            integrationId: serviceId1,
+            integrationId: integrationId1,
             configId: sharedOption1a.value,
           }),
         ],
@@ -248,16 +248,16 @@ describe("ServicesBody", () => {
         sharedOption2b,
       ]),
     );
-    getIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
-    render(<ServicesBody blueprint={defaultModDefinitionFactory()} />, {
+    getIntegrationIdsMock.mockReturnValue([integrationId1, integrationId2]);
+    render(<IntegrationsBody mod={defaultModDefinitionFactory()} />, {
       initialValues: {
         integrationDependencies: [
           integrationDependencyFactory({
-            integrationId: serviceId1,
+            integrationId: integrationId1,
             configId: sharedOption1a.value,
           }),
           integrationDependencyFactory({
-            integrationId: serviceId2,
+            integrationId: integrationId2,
             configId: sharedOption2a.value,
           }),
         ],
@@ -275,17 +275,17 @@ describe("ServicesBody", () => {
 
   it("hides one field and label when one built-in option", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState([builtInOption1a]));
-    getIntegrationIdsMock.mockReturnValue([serviceId1]);
+    getIntegrationIdsMock.mockReturnValue([integrationId1]);
     render(
-      <ServicesBody
-        blueprint={defaultModDefinitionFactory()}
-        hideBuiltInServiceIntegrations
+      <IntegrationsBody
+        mod={defaultModDefinitionFactory()}
+        hideBuiltInIntegrations
       />,
       {
         initialValues: {
           integrationDependencies: [
             integrationDependencyFactory({
-              integrationId: serviceId1,
+              integrationId: integrationId1,
               configId: builtInOption1a.value,
             }),
           ],
@@ -308,17 +308,17 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([builtInOption1a, builtInOption1b]),
     );
-    getIntegrationIdsMock.mockReturnValue([serviceId1]);
+    getIntegrationIdsMock.mockReturnValue([integrationId1]);
     render(
-      <ServicesBody
-        blueprint={defaultModDefinitionFactory()}
-        hideBuiltInServiceIntegrations
+      <IntegrationsBody
+        mod={defaultModDefinitionFactory()}
+        hideBuiltInIntegrations
       />,
       {
         initialValues: {
           integrationDependencies: [
             integrationDependencyFactory({
-              integrationId: serviceId1,
+              integrationId: integrationId1,
               configId: builtInOption1a.value,
             }),
           ],
@@ -341,17 +341,17 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([builtInOption1a, sharedOption1a]),
     );
-    getIntegrationIdsMock.mockReturnValue([serviceId1]);
+    getIntegrationIdsMock.mockReturnValue([integrationId1]);
     render(
-      <ServicesBody
-        blueprint={defaultModDefinitionFactory()}
-        hideBuiltInServiceIntegrations
+      <IntegrationsBody
+        mod={defaultModDefinitionFactory()}
+        hideBuiltInIntegrations
       />,
       {
         initialValues: {
           integrationDependencies: [
             integrationDependencyFactory({
-              integrationId: serviceId1,
+              integrationId: integrationId1,
               configId: builtInOption1a.value,
             }),
           ],
@@ -369,17 +369,17 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([builtInOption1a, sharedOption1a]),
     );
-    getIntegrationIdsMock.mockReturnValue([serviceId1]);
+    getIntegrationIdsMock.mockReturnValue([integrationId1]);
     render(
-      <ServicesBody
-        blueprint={defaultModDefinitionFactory()}
-        hideBuiltInServiceIntegrations
+      <IntegrationsBody
+        mod={defaultModDefinitionFactory()}
+        hideBuiltInIntegrations
       />,
       {
         initialValues: {
           integrationDependencies: [
             integrationDependencyFactory({
-              integrationId: serviceId1,
+              integrationId: integrationId1,
               configId: sharedOption1a.value,
             }),
           ],
@@ -408,21 +408,21 @@ describe("ServicesBody", () => {
     useAuthOptionsMock.mockReturnValue(
       valueToAsyncState([builtInOption1a, sharedOption2a, sharedOption2b]),
     );
-    getIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
+    getIntegrationIdsMock.mockReturnValue([integrationId1, integrationId2]);
     render(
-      <ServicesBody
-        blueprint={defaultModDefinitionFactory()}
-        hideBuiltInServiceIntegrations
+      <IntegrationsBody
+        mod={defaultModDefinitionFactory()}
+        hideBuiltInIntegrations
       />,
       {
         initialValues: {
           integrationDependencies: [
             integrationDependencyFactory({
-              integrationId: serviceId1,
+              integrationId: integrationId1,
               configId: builtInOption1a.value,
             }),
             integrationDependencyFactory({
-              integrationId: serviceId2,
+              integrationId: integrationId2,
               configId: sharedOption2a.value,
             }),
           ],
@@ -447,21 +447,21 @@ describe("ServicesBody", () => {
         sharedOption2b,
       ]),
     );
-    getIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
+    getIntegrationIdsMock.mockReturnValue([integrationId1, integrationId2]);
     render(
-      <ServicesBody
-        blueprint={defaultModDefinitionFactory()}
-        hideBuiltInServiceIntegrations
+      <IntegrationsBody
+        mod={defaultModDefinitionFactory()}
+        hideBuiltInIntegrations
       />,
       {
         initialValues: {
           integrationDependencies: [
             integrationDependencyFactory({
-              integrationId: serviceId1,
+              integrationId: integrationId1,
               configId: builtInOption1a.value,
             }),
             integrationDependencyFactory({
-              integrationId: serviceId2,
+              integrationId: integrationId2,
               configId: sharedOption2a.value,
             }),
           ],

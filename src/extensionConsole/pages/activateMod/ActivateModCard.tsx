@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./ActivateRecipeCard.module.scss";
+import styles from "./ActivateModCard.module.scss";
 
 import React, { useState } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
@@ -25,7 +25,7 @@ import useActivateRecipeWizard from "@/activation/useActivateRecipeWizard";
 import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmissionViaEnterIfFirstChild";
 import { useDispatch, useSelector } from "react-redux";
 import { selectRecipeHasAnyExtensionsInstalled } from "@/store/extensionsSelectors";
-import useRecipeIdParam from "@/extensionConsole/pages/useRecipeIdParam";
+import useModIdParam from "@/extensionConsole/pages/useModIdParam";
 import { useCreateMilestoneMutation, useGetRecipeQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
@@ -41,33 +41,34 @@ import { push } from "connected-react-router";
 import Loader from "@/components/Loader";
 import ModIcon from "@/mods/ModIcon";
 import WizardValuesModIntegrationsContextAdapter from "@/activation/WizardValuesModIntegrationsContextAdapter";
+import Markdown from "@/components/Markdown";
+import { getModActivationInstructions } from "@/utils/modUtils";
 
-const ActivateRecipeCard: React.FC = () => {
+const ActivateModCard: React.FC = () => {
   const dispatch = useDispatch();
-  const recipeId = useRecipeIdParam();
+  const modId = useModIdParam();
   const isReactivate = useSelector(
-    selectRecipeHasAnyExtensionsInstalled(recipeId),
+    selectRecipeHasAnyExtensionsInstalled(modId),
   );
   // Page parent component is gating this content component on isFetching, so
   // recipe will always be resolved here
-  const { data: recipe } = useGetRecipeQuery({ recipeId });
+  const { data: mod } = useGetRecipeQuery({ recipeId: modId });
 
   const {
     data: wizardState,
     isLoading: isLoadingWizard,
     error: wizardError,
-  } = useActivateRecipeWizard(recipe);
+  } = useActivateRecipeWizard(mod);
 
-  const activateRecipe = useActivateRecipe("extensionConsole");
+  const activateMod = useActivateRecipe("extensionConsole");
   const [activationError, setActivationError] = useState<unknown>();
   const [createMilestone] = useCreateMilestoneMutation();
   const { hasMilestone } = useMilestones();
 
   useSetDocumentTitle(
-    `${isReactivate ? "Reactivate" : "Activate"} ${truncate(
-      recipe.metadata.name,
-      { length: 15 },
-    )}`,
+    `${isReactivate ? "Reactivate" : "Activate"} ${truncate(mod.metadata.name, {
+      length: 15,
+    })}`,
   );
 
   if (isLoadingWizard) {
@@ -80,6 +81,8 @@ const ActivateRecipeCard: React.FC = () => {
 
   const { wizardSteps, initialValues, validationSchema } = wizardState;
 
+  const instructions = getModActivationInstructions(mod);
+
   const renderBody: RenderBody = ({ isSubmitting }) => (
     <WizardValuesModIntegrationsContextAdapter>
       <BlockFormSubmissionViaEnterIfFirstChild />
@@ -90,17 +93,15 @@ const ActivateRecipeCard: React.FC = () => {
               <div className={styles.wizardHeaderLayout}>
                 <div className={styles.wizardMainInfo}>
                   <span className={styles.blueprintIcon}>
-                    <ModIcon mod={recipe} />
+                    <ModIcon mod={mod} />
                   </span>
                   <span>
-                    <Card.Title>{recipe.metadata.name}</Card.Title>
-                    <code className={styles.packageId}>
-                      {recipe.metadata.id}
-                    </code>
+                    <Card.Title>{mod.metadata.name}</Card.Title>
+                    <code className={styles.packageId}>{mod.metadata.id}</code>
                   </span>
                 </div>
                 <div className={styles.wizardDescription}>
-                  {recipe.metadata.description}
+                  {mod.metadata.description}
                 </div>
               </div>
               <div className={styles.activateButtonContainer}>
@@ -118,12 +119,20 @@ const ActivateRecipeCard: React.FC = () => {
         </Card.Header>
         <Card.Body className={styles.wizardBody}>
           {activationError && <Alert variant="danger">{activationError}</Alert>}
+
+          {instructions && (
+            <div>
+              <h4>Activation Instructions</h4>
+              <Markdown markdown={instructions} />
+            </div>
+          )}
+
           {wizardSteps.map(({ Component, label, key }) => (
             <div key={key} className={styles.wizardBodyRow}>
               <div>
                 <h4>{label}</h4>
               </div>
-              <Component blueprint={recipe} reinstall={isReactivate} />
+              <Component mod={mod} reinstall={isReactivate} />
             </div>
           ))}
         </Card.Body>
@@ -132,16 +141,16 @@ const ActivateRecipeCard: React.FC = () => {
   );
 
   const onSubmit: OnSubmit<WizardValues> = async (values, helpers) => {
-    const { success, error } = await activateRecipe(values, recipe);
+    const { success, error } = await activateMod(values, mod);
 
     if (success) {
-      notify.success(`Installed ${recipe.metadata.name}`);
+      notify.success(`Installed ${mod.metadata.name}`);
 
       if (!hasMilestone("first_time_public_blueprint_install")) {
         await createMilestone({
           key: "first_time_public_blueprint_install",
           metadata: {
-            blueprintId: recipeId,
+            blueprintId: modId,
           },
         });
 
@@ -165,4 +174,4 @@ const ActivateRecipeCard: React.FC = () => {
   );
 };
 
-export default ActivateRecipeCard;
+export default ActivateModCard;

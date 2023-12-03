@@ -37,13 +37,13 @@ import { isEmpty } from "lodash";
 import { produce } from "immer";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isUUID } from "@/types/helpers";
-import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
+import IntegrationsBody from "@/extensionConsole/pages/activateMod/IntegrationsBody";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import WizardValuesModIntegrationsContextAdapter from "@/activation/WizardValuesModIntegrationsContextAdapter";
 
-type ActivateRecipeInputsProps = {
-  recipe: ModDefinition;
+type ActivateModInputsProps = {
+  mod: ModDefinition;
   optionsWizardStep: WizardStep;
   initialValues: WizardValues;
   onChange: (values: WizardValues) => void;
@@ -56,8 +56,8 @@ type ActivateRecipeInputsProps = {
   activationError?: string;
 };
 
-const ActivateModInputs: React.FC<ActivateRecipeInputsProps> = ({
-  recipe: inputRecipe,
+const ActivateModInputs: React.FC<ActivateModInputsProps> = ({
+  mod,
   optionsWizardStep,
   initialValues,
   onChange,
@@ -68,10 +68,10 @@ const ActivateModInputs: React.FC<ActivateRecipeInputsProps> = ({
   onClickSubmit,
   activationError,
 }) => {
-  const recipe = inputRecipe.options?.schema?.properties
-    ? produce(inputRecipe, (draft) => {
+  const normalizedMod = mod.options?.schema?.properties
+    ? produce(mod, (draft) => {
         for (const [name, optionSchema] of Object.entries(
-          inputRecipe.options.schema.properties,
+          mod.options.schema.properties,
         )) {
           if (typeof optionSchema === "boolean") {
             return;
@@ -89,20 +89,20 @@ const ActivateModInputs: React.FC<ActivateRecipeInputsProps> = ({
           }
         }
       })
-    : inputRecipe;
+    : mod;
 
-  const recipeExtensions = useSelector(
-    selectExtensionsForRecipe(recipe?.metadata?.id),
+  const modComponents = useSelector(
+    selectExtensionsForRecipe(normalizedMod?.metadata?.id),
   );
-  const isReinstall = !isEmpty(recipeExtensions);
+  const isReinstall = !isEmpty(modComponents);
 
   const renderBody: RenderBody = ({ values }) => (
     <div className={cx("scrollable-area", styles.formBody)}>
       <Effect values={values} onChange={onChange} delayMillis={200} />
       {header}
-      <ServicesBody
-        blueprint={recipe}
-        hideBuiltInServiceIntegrations
+      <IntegrationsBody
+        mod={normalizedMod}
+        hideBuiltInIntegrations
         showOwnTitle
       />
       {optionsWizardStep && (
@@ -120,7 +120,7 @@ const ActivateModInputs: React.FC<ActivateRecipeInputsProps> = ({
           */}
           <Col className={styles.optionsBody}>
             <optionsWizardStep.Component
-              blueprint={recipe}
+              mod={normalizedMod}
               reinstall={isReinstall}
             />
           </Col>
@@ -160,7 +160,7 @@ const ActivateModInputs: React.FC<ActivateRecipeInputsProps> = ({
           variant="outline-danger"
           onClick={() => {
             reportEvent(Events.MOD_ACTIVATION_CANCEL, {
-              recipeId: recipe?.metadata?.id,
+              recipeId: normalizedMod?.metadata?.id,
             });
             onClickCancel();
           }}
@@ -171,7 +171,7 @@ const ActivateModInputs: React.FC<ActivateRecipeInputsProps> = ({
           type="submit"
           onClick={() => {
             reportEvent(Events.MOD_ACTIVATION_SUBMIT, {
-              recipeId: recipe?.metadata?.id,
+              recipeId: normalizedMod?.metadata?.id,
             });
             return true;
           }}
