@@ -26,8 +26,8 @@ import { AnnotationType } from "@/types/annotationTypes";
 import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import {
+  containsTemplateExpression,
   isTemplateExpression,
-  isTemplateString,
   isVarExpression,
 } from "@/utils/expressionUtils";
 import { isAbsoluteUrl } from "@/utils/urlUtils";
@@ -67,7 +67,7 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
     if (
       isTemplateExpression(requestUrl) &&
       !isVarExpression(requestUrl) &&
-      !isTemplateString(requestUrl.__value__)
+      !containsTemplateExpression(requestUrl.__value__)
     ) {
       const url = requestUrl.__value__;
 

@@ -21,13 +21,16 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { cloneDeep } from "lodash";
 import { isSelectField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { type RegistryId } from "@/types/registryTypes";
-import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
+import {
+  type Expression,
+  type TemplateEngine,
+  VARIABLE_REFERENCE_REGEX,
+} from "@/types/runtimeTypes";
 import { type SchemaDefinition } from "@/types/schemaTypes";
 import { inputProperties } from "@/utils/schemaUtils";
 import {
-  isTemplateString,
+  containsTemplateExpression,
   toExpression,
-  VARIABLE_REFERENCE_REGEX,
 } from "@/utils/expressionUtils";
 
 /**
@@ -165,6 +168,23 @@ function selectSchema(
   }
 
   throw new Error("value did not match any subschema");
+}
+
+/**
+ * Return true if literalOrTemplate contains a variable or template-like expression that should be
+ * upgraded to an expression.
+ *
+ * Should only be used in the context of upgrading v1/v2 to v3. Otherwise, use containsTemplateExpression
+ * which excludes variable reference strings.
+ *
+ * @see containsTemplateExpression
+ */
+export function isUpgradeableString(literalOrTemplate: string): boolean {
+  if (VARIABLE_REFERENCE_REGEX.test(literalOrTemplate)) {
+    return true;
+  }
+
+  return containsTemplateExpression(literalOrTemplate);
 }
 
 async function upgradeValue({
@@ -333,7 +353,7 @@ async function upgradeValue({
   } else if (
     typeof value === "string" &&
     PRESERVE_LITERAL_VALUES.get(blockId)?.has(fieldName) &&
-    !isTemplateString(value)
+    !isUpgradeableString(value)
   ) {
     // NOP: there's some custom options we want to support literals for. See PRESERVE_LITERAL_VALUES
   } else if (

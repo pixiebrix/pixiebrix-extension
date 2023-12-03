@@ -16,6 +16,7 @@
  */
 
 import {
+  isUpgradeableString,
   upgradePipelineToV3,
   upgradeStringToExpression,
 } from "@/pageEditor/starterBricks/upgrade";
@@ -753,5 +754,22 @@ describe("upgradeStringToExpression tests", () => {
       __type__: "mustache",
       __value__: "{{ @foo }}",
     });
+  });
+});
+
+describe("isTemplateString", () => {
+  test.each([["@input.foo"], ["@outputKey"]])(
+    "detects variable: %s",
+    (value: string) => {
+      expect(isUpgradeableString(value)).toBe(true);
+    },
+  );
+
+  test.each([
+    ["{{ @input.foo }}!!"],
+    ["{{ & @outputKey }}!!"],
+    ["{% if @outputKey %}foo{% endif %}"],
+  ])("detects variable: %s", (value: string) => {
+    expect(isUpgradeableString(value)).toBe(true);
   });
 });

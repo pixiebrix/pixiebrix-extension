@@ -17,9 +17,11 @@
 
 import { type BrickConfig } from "@/bricks/types";
 import { type Brick } from "@/types/brickTypes";
-import { type BrickArgs, type OutputKey } from "@/types/runtimeTypes";
-
-const REFERENCE_CHAR = "@";
+import {
+  type BrickArgs,
+  type OutputKey,
+  REFERENCE_CHAR,
+} from "@/types/runtimeTypes";
 
 export type BrickType = "reader" | "effect" | "transform" | "renderer";
 

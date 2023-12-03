@@ -18,7 +18,6 @@
 import {
   castTextLiteralOrThrow,
   containsTemplateExpression,
-  isTemplateString,
   isTextLiteralOrNull,
   toExpression,
 } from "@/utils/expressionUtils";
@@ -72,22 +71,5 @@ describe("castTextLiteralOrThrow", () => {
     expect(() =>
       castTextLiteralOrThrow(toExpression("nunjucks", "{{foo}}")),
     ).toThrow(TypeError);
-  });
-});
-
-describe("isTemplateString", () => {
-  test.each([["@input.foo"], ["@outputKey"]])(
-    "detects variable: %s",
-    (value: string) => {
-      expect(isTemplateString(value)).toBe(true);
-    },
-  );
-
-  test.each([
-    ["{{ @input.foo }}!!"],
-    ["{{ & @outputKey }}!!"],
-    ["{% if @outputKey %}foo{% endif %}"],
-  ])("detects variable: %s", (value: string) => {
-    expect(isTemplateString(value)).toBe(true);
   });
 });
