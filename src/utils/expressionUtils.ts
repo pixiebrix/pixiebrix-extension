@@ -167,7 +167,7 @@ export function castTextLiteralOrThrow(
  * @param value the expression value
  */
 export function toExpression<
-  TValue extends string,
+  TValue extends string | null,
   TEngine extends TemplateEngine,
 >(type: TEngine, value: TValue): Expression<TValue, TEngine>;
 export function toExpression(

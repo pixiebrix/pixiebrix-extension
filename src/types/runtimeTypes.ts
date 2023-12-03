@@ -37,7 +37,7 @@ export type ApiVersion = "v1" | "v2" | "v3";
 /**
  * Character used to prefix a variable reference.
  */
-export const REFERENCE_CHAR = "@";
+export const VARIABLE_REFERENCE_PREFIX = "@";
 
 /**
  * Regular expression for a variable reference.
@@ -129,7 +129,7 @@ export type ExpressionType =
 export type Expression<
   // The value. TemplateEngine ExpressionTypes, this will be a string containing the template. For `pipeline`
   // ExpressionType this will be a BrickPipeline. (The loadBrickYaml method will currently accept any array for
-  // pipeline at this time, though.
+  // pipeline at this time, though.)
   TTemplateOrPipeline = string,
   // The type tag (without the !-prefix of the YAML simple tag)
   TTypeTag extends ExpressionType = ExpressionType,

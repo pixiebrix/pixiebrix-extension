@@ -20,7 +20,7 @@ import { type Brick } from "@/types/brickTypes";
 import {
   type BrickArgs,
   type OutputKey,
-  REFERENCE_CHAR,
+  VARIABLE_REFERENCE_PREFIX,
 } from "@/types/runtimeTypes";
 
 export type BrickType = "reader" | "effect" | "transform" | "renderer";
@@ -76,5 +76,5 @@ export function isOutputKey(value: unknown): value is OutputKey {
  * @param outputKey the output key
  */
 export function getOutputReference(outputKey: OutputKey): string {
-  return REFERENCE_CHAR + outputKey;
+  return VARIABLE_REFERENCE_PREFIX + outputKey;
 }
