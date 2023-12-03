@@ -20,14 +20,12 @@ import {
   getPreviewValues,
   isMustacheOnly,
 } from "@/components/fields/fieldUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 test("returns value for an expression", () => {
   const expectedValue = "nunjucks template with var {{@data}}";
   const config = {
-    description: {
-      __type__: "nunjucks",
-      __value__: expectedValue,
-    } as Expression,
+    description: toExpression("nunjucks", expectedValue) as Expression,
   };
 
   const { description } = getPreviewValues(config);
@@ -51,10 +49,7 @@ test("converts nested expressions", () => {
   const expectedValue = "header with data {{@data}}";
   const config = {
     properties: {
-      header: {
-        __type__: "nunjucks",
-        __value__: expectedValue,
-      } as Expression,
+      header: toExpression("nunjucks", expectedValue) as Expression,
     },
   };
 
@@ -75,14 +70,8 @@ test("converts elements of an array", () => {
   const expectedVar = "@data";
   const expectedTemplate = "nunjucks {{@data}}";
   const items = [
-    {
-      __type__: "var",
-      __value__: expectedVar,
-    } as Expression,
-    {
-      __type__: "nunjucks",
-      __value__: expectedTemplate,
-    } as Expression,
+    toExpression("var", expectedVar) as Expression,
+    toExpression("nunjucks", expectedTemplate) as Expression,
   ];
   const config = {
     array: items,

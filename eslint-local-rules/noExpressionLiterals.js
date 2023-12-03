@@ -16,6 +16,7 @@
  */
 
 // eslint-disable-next-line unicorn/prefer-module
+const { sortBy, isEqual } = require("lodash");
 module.exports = {
   meta: {
     type: "problem",
@@ -33,6 +34,18 @@ module.exports = {
       ObjectExpression(node) {
         let typeNode = null;
         let valueNode = null;
+
+        // Key is nullable
+        const propertyNames = node.properties.map((x) => x.key?.name);
+
+        const isPropertyNameMatch = isEqual(sortBy(propertyNames), [
+          "__type__",
+          "__value__",
+        ]);
+
+        if (!isPropertyNameMatch) {
+          return;
+        }
 
         for (const property of node.properties) {
           if (property.key && property.key.name === "__type__") {

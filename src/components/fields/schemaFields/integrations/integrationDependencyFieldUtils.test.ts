@@ -17,7 +17,7 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { validateRegistryId } from "@/types/helpers";
+import { validateRegistryId, validateUUID } from "@/types/helpers";
 import { selectIntegrationDependencyVariables } from "./integrationDependencyFieldUtils";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
@@ -219,47 +219,39 @@ describe("selectVariables", () => {
                 {
                   type: "pipeline",
                   config: {
-                    pipeline: {
-                      __type__: "pipeline",
-                      __value__: [
-                        {
-                          id: validateRegistryId("@pixiebrix/form"),
-                          config: {
-                            storage: {
-                              type: "database",
-                              service: {
-                                __type__: "var",
-                                __value__: "@pixiebrix",
-                              },
-                              databaseId:
-                                "964c3a9b-fc42-40bf-9516-25b5d18a5000",
-                            },
-                            successMessage: "Successfully submitted form",
-                            schema: {
-                              title: "Example Form",
-                              type: "object",
-                              properties: {
-                                notes: {
-                                  title: "Example Notes Field",
-                                  type: "string",
-                                  description: "An example notes field",
-                                },
-                              },
-                            },
-                            uiSchema: {
+                    pipeline: toExpression("pipeline", [
+                      {
+                        id: validateRegistryId("@pixiebrix/form"),
+                        config: {
+                          storage: {
+                            type: "database",
+                            service: toExpression("var", "@pixiebrix"),
+                            databaseId: "964c3a9b-fc42-40bf-9516-25b5d18a5000",
+                          },
+                          successMessage: "Successfully submitted form",
+                          schema: {
+                            title: "Example Form",
+                            type: "object",
+                            properties: {
                               notes: {
-                                "ui:widget": "textarea",
+                                title: "Example Notes Field",
+                                type: "string",
+                                description: "An example notes field",
                               },
-                            },
-                            recordId: {
-                              __type__: "nunjucks",
-                              __value__: "formData",
                             },
                           },
-                          instanceId: "c419abc2-66b0-4c91-acee-9ee5b10e5000",
+                          uiSchema: {
+                            notes: {
+                              "ui:widget": "textarea",
+                            },
+                          },
+                          recordId: toExpression("nunjucks", "formData"),
                         },
-                      ],
-                    },
+                        instanceId: validateUUID(
+                          "c419abc2-66b0-4c91-acee-9ee5b10e5000",
+                        ),
+                      },
+                    ]),
                   },
                 },
               ],

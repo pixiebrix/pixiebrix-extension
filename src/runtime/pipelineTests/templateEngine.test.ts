@@ -26,6 +26,8 @@ import {
 } from "./pipelineTestHelpers";
 import { selectSpecificError } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
+import { toExpression } from "@/utils/expressionUtils";
+import { TemplateEngine } from "@/types/runtimeTypes";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -100,15 +102,12 @@ describe("apiVersion: v3", () => {
     // see: https://handlebarsjs.com/api-reference/data-variables.html
     ["mustache"],
     ["nunjucks"],
-  ])("apply explicit %s template", (templateEngine) => {
+  ])("apply explicit %s template", (templateEngine: TemplateEngine) => {
     test("apply explicit template with property path", async () => {
       const pipeline = {
         id: echoBrick.id,
         config: {
-          message: {
-            __type__: templateEngine,
-            __value__: "{{@input.inputArg}}",
-          },
+          message: toExpression(templateEngine, "{{@input.inputArg}}"),
         },
       };
       const result = await reducePipeline(
@@ -126,10 +125,7 @@ describe("apiVersion: v3", () => {
     const pipeline = {
       id: echoBrick.id,
       config: {
-        message: {
-          __type__: "handlebars",
-          __value__: "{{@input.inputArg}}",
-        },
+        message: toExpression("handlebars", "{{@input.inputArg}}"),
       },
     };
     const result = await reducePipeline(
@@ -144,10 +140,7 @@ describe("apiVersion: v3", () => {
     const pipeline = {
       id: echoBrick.id,
       config: {
-        message: {
-          __type__: "nunjucks",
-          __value__: "{{@input.inputArg | upper}}",
-        },
+        message: toExpression("nunjucks", "{{@input.inputArg | upper}}"),
       },
       templateEngine: "mustache",
     };
@@ -163,10 +156,7 @@ describe("apiVersion: v3", () => {
     const pipeline = {
       id: echoBrick.id,
       config: {
-        message: {
-          __type__: "var",
-          __value__: "@input.inputArg",
-        },
+        message: toExpression("var", "@input.inputArg"),
       },
     };
     const result = await reducePipeline(
@@ -183,10 +173,7 @@ describe("Error handling", () => {
     const pipeline = {
       id: echoBrick.id,
       config: {
-        message: {
-          __type__: "nunjucks",
-          __value__: "  {{@input   }   ",
-        },
+        message: toExpression("nunjucks", "  {{@input   }   "),
       },
     };
     try {

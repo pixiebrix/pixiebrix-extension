@@ -162,14 +162,14 @@ export function castTextLiteralOrThrow(
 }
 
 /**
- * Create an expression from a expression type and value.
- * @param type
- * @param value
+ * Create an expression from an expression type and value.
+ * @param type the expression type
+ * @param value the expression value
  */
-export function toExpression<TEngine extends TemplateEngine>(
-  type: TEngine,
-  value: string,
-): Expression<string, TEngine>;
+export function toExpression<
+  TEngine extends TemplateEngine,
+  TValue extends string,
+>(type: TEngine, value: TValue): Expression<TValue, TEngine>;
 export function toExpression(
   type: "pipeline",
   value: BrickPipeline,
@@ -185,6 +185,7 @@ export function toExpression<
   type: TTypeTag,
   value: TTemplateOrPipeline,
 ): Expression<TTemplateOrPipeline, TTypeTag> {
+  // eslint-disable-next-line local-rules/noExpressionLiterals -- factory method
   return {
     __type__: type,
     __value__: value,

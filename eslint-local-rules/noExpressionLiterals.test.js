@@ -25,6 +25,8 @@ ruleTester.run("noExpressionLiterals", noExpressionLiterals, {
     { code: "{ foo: 42 }" },
     // No __value__ property; would fail type-checking if used as an expression
     { code: "var x = { __type__: 'nunjucks', bar: 32 };" },
+    // Don't apply to closure definitions
+    { code: "var x = { __type__: 'nunjucks', __value__: [], __env__: {} };" },
   ],
   invalid: [
     {

@@ -96,10 +96,7 @@ describe("ForEachElement", () => {
           {
             id: echoBrick.id,
             config: {
-              message: {
-                __type__: "nunjucks",
-                __value__: "Got reference: {{@element}}",
-              },
+              message: toExpression("nunjucks", "Got reference: {{@element}}"),
             },
           },
         ]),
@@ -129,10 +126,7 @@ describe("ForEachElement", () => {
           {
             id: echoBrick.id,
             config: {
-              message: {
-                __type__: "nunjucks",
-                __value__: "Got reference: {{@element}}",
-              },
+              message: toExpression("nunjucks", "Got reference: {{@element}}"),
             },
           },
         ]),

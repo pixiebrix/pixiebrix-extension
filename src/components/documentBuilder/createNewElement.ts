@@ -20,10 +20,8 @@ import {
   type DocumentElementType,
 } from "./documentBuilderTypes";
 import { validateRegistryId } from "@/types/helpers";
-import {
-  type DeferExpression,
-  type PipelineExpression,
-} from "@/types/runtimeTypes";
+import { type DeferExpression } from "@/types/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 const elementExtras: Record<"form", DocumentElementType> = {
   form: "pipeline",
@@ -80,46 +78,40 @@ export function createNewElement(
 
     case "form": {
       element.config.label = "Form";
-      element.config.pipeline = {
-        __type__: "pipeline",
-        __value__: [
-          {
-            id: validateRegistryId("@pixiebrix/form"),
-            config: {
-              storage: {
-                type: "state",
-                namespace: "blueprint",
-              },
-              submitCaption: "Save",
-              schema: {
-                type: "object",
-                properties: {
-                  notes: {
-                    title: "Example Notes Field",
-                    type: "string",
-                    description: "An example notes field",
-                  },
-                },
-              },
-              uiSchema: {
-                notes: {
-                  "ui:widget": "textarea",
-                },
-              },
-              className: "p-0",
+      element.config.pipeline = toExpression("pipeline", [
+        {
+          id: validateRegistryId("@pixiebrix/form"),
+          config: {
+            storage: {
+              type: "state",
+              namespace: "blueprint",
             },
+            submitCaption: "Save",
+            schema: {
+              type: "object",
+              properties: {
+                notes: {
+                  title: "Example Notes Field",
+                  type: "string",
+                  description: "An example notes field",
+                },
+              },
+            },
+            uiSchema: {
+              notes: {
+                "ui:widget": "textarea",
+              },
+            },
+            className: "p-0",
           },
-        ],
-      } as PipelineExpression;
+        },
+      ]);
       break;
     }
 
     case "pipeline": {
       element.config.label = "Brick";
-      element.config.pipeline = {
-        __type__: "pipeline",
-        __value__: [],
-      } as PipelineExpression;
+      element.config.pipeline = toExpression("pipeline", []);
       break;
     }
 
@@ -132,10 +124,7 @@ export function createNewElement(
       element.config.disabled = false;
       element.config.hidden = false;
 
-      element.config.onClick = {
-        __type__: "pipeline",
-        __value__: [],
-      } as PipelineExpression;
+      element.config.onClick = toExpression("pipeline", []);
 
       break;
     }
@@ -144,10 +133,10 @@ export function createNewElement(
       // ListElement uses "element" as the default. But be explicit
       element.config.elementKey = "element";
 
-      element.config.element = {
-        __type__: "defer",
-        __value__: createNewElement("text"),
-      } as DeferExpression<DocumentElement>;
+      element.config.element = toExpression(
+        "defer",
+        createNewElement("text"),
+      ) as DeferExpression<DocumentElement>;
       break;
     }
 

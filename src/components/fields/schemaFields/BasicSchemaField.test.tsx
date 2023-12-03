@@ -27,6 +27,7 @@ import { fireTextInput } from "@/testUtils/formHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
 import { type SchemaFieldProps } from "./propTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -56,10 +57,7 @@ describe("option mode switching", () => {
       "test",
       { type: "string" },
       {
-        test: {
-          __type__: "var",
-          __value__: "@data",
-        },
+        test: toExpression("var", "@data"),
       },
     );
 
@@ -77,10 +75,7 @@ describe("option mode switching", () => {
       "test",
       { type: "string", enum: ["option 1", "option 2"] },
       {
-        test: {
-          __type__: "var",
-          __value__: "@data",
-        },
+        test: toExpression("var", "@data"),
       },
     );
 
@@ -98,10 +93,7 @@ describe("option mode switching", () => {
       "test",
       { type: "string" },
       {
-        test: {
-          __type__: "nunjucks",
-          __value__: "",
-        },
+        test: toExpression("nunjucks", ""),
       },
     );
 
@@ -119,10 +111,7 @@ describe("option mode switching", () => {
       "test",
       { type: "string" },
       {
-        test: {
-          __type__: "var",
-          __value__: "@data.foo",
-        },
+        test: toExpression("var", "@data.foo"),
       },
     );
 
@@ -144,10 +133,7 @@ test("omit if empty", async () => {
       type: ["string", "number", "boolean"],
     },
     {
-      test: {
-        __type__: "var",
-        __value__: "@data.foo",
-      },
+      test: toExpression("var", "@data.foo"),
     },
     {
       omitIfEmpty: true,

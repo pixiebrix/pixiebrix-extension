@@ -20,11 +20,14 @@ import yaml from "js-yaml";
 import { type UnknownObject } from "@/types/objectTypes";
 import { produce } from "immer";
 import { isPlainObject } from "lodash";
+import { toExpression } from "@/utils/expressionUtils";
+import { type ExpressionType } from "@/types/runtimeTypes";
+import { type BrickPipeline } from "@/bricks/types";
 
 /**
  * @param tag the tag name, without the leading `!`
  */
-function createExpression(tag: string): yaml.Type {
+function createExpression(tag: ExpressionType): yaml.Type {
   // See https://github.com/nodeca/js-yaml/blob/master/examples/custom_types.js
 
   return new yaml.Type("!" + tag, {
@@ -32,6 +35,7 @@ function createExpression(tag: string): yaml.Type {
 
     resolve: (data) => typeof data === "string",
 
+    // eslint-disable-next-line local-rules/noExpressionLiterals -- untyped from YAML
     construct: (data) => ({
       __type__: tag,
       __value__: data,
@@ -51,10 +55,7 @@ const deferExpression = new yaml.Type("!defer", {
 
   resolve: (data) => isPlainObject(data),
 
-  construct: (data) => ({
-    __type__: "defer",
-    __value__: data,
-  }),
+  construct: (data) => toExpression("defer", data),
 
   predicate: (data) =>
     typeof data === "object" &&
@@ -69,10 +70,7 @@ const pipelineExpression = new yaml.Type("!pipeline", {
 
   resolve: (data) => Array.isArray(data),
 
-  construct: (data) => ({
-    __type__: "pipeline",
-    __value__: data,
-  }),
+  construct: (data) => toExpression("pipeline", data as BrickPipeline),
 
   predicate: (data) =>
     typeof data === "object" &&

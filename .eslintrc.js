@@ -46,7 +46,7 @@ module.exports = {
     "@shopify/jest/no-snapshots": "warn",
 
     "local-rules/noInvalidDataTestId": "error",
-    "local-rules/noExpressionLiterals": "warn",
+    "local-rules/noExpressionLiterals": "error",
     "local-rules/notBothLabelAndLockableProps": "error",
     "import/no-restricted-paths": [
       "warn",
