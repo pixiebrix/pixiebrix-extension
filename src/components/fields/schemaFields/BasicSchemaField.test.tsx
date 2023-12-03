@@ -63,7 +63,7 @@ describe("option mode switching", () => {
 
     expectToggleMode(container, "Variable");
 
-    const inputElement = screen.getByLabelText("test");
+    const inputElement = screen.getByLabelText("Test");
     fireTextInput(inputElement, "text");
     await waitForEffect();
 
@@ -81,7 +81,7 @@ describe("option mode switching", () => {
 
     expectToggleMode(container, "Variable");
 
-    const inputElement = screen.getByLabelText("test");
+    const inputElement = screen.getByLabelText("Test");
     fireTextInput(inputElement, "text");
     await waitForEffect();
 
@@ -99,7 +99,7 @@ describe("option mode switching", () => {
 
     expectToggleMode(container, "Text");
 
-    const inputElement = screen.getByLabelText("test");
+    const inputElement = screen.getByLabelText("Test");
     fireTextInput(inputElement, "@data.foo");
     await waitForEffect();
 
@@ -117,7 +117,7 @@ describe("option mode switching", () => {
 
     expectToggleMode(container, "Variable");
 
-    const inputElement: HTMLInputElement = screen.getByLabelText("test");
+    const inputElement: HTMLInputElement = screen.getByLabelText("Test");
     fireTextInput(inputElement, "@data.foo ");
     await waitForEffect();
 

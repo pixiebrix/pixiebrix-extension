@@ -24,6 +24,6 @@ export interface ElementInfo {
    * The HTML tag for the element.
    */
   tagName: string;
-  parent?: ElementInfo;
+  parent?: ElementInfo | null;
   isMulti?: boolean;
 }

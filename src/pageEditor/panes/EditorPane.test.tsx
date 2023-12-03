@@ -618,7 +618,7 @@ describe("validation", () => {
     await tickAsyncEffects();
 
     // By some reason, the validation doesn't fire with userEvent.type
-    fireTextInput(screen.getByLabelText("message"), "{{!");
+    fireTextInput(screen.getByLabelText("Message"), "{{!");
 
     // Run the timers of the Formik-Redux state synchronization and analysis
     await tickAsyncEffects();
@@ -663,7 +663,7 @@ describe("validation", () => {
 
     // Make invalid string template
     // This is field level error
-    fireTextInput(screen.getByLabelText("message"), "{{!");
+    fireTextInput(screen.getByLabelText("Message"), "{{!");
 
     await tickAsyncEffects();
 

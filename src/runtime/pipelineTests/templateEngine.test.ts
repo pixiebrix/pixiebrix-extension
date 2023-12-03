@@ -27,7 +27,7 @@ import {
 import { selectSpecificError } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { toExpression } from "@/utils/expressionUtils";
-import { TemplateEngine } from "@/types/runtimeTypes";
+import { type TemplateEngine } from "@/types/runtimeTypes";
 
 beforeEach(() => {
   blockRegistry.clear();

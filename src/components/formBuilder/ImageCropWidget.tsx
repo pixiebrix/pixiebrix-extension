@@ -19,7 +19,7 @@ import React, { useRef, useState } from "react";
 import ReactCrop, { type Crop } from "react-image-crop";
 import { type WidgetProps } from "@rjsf/core";
 import "react-image-crop/src/ReactCrop.scss";
-import { assert } from "@/utils/typeUtils";
+import { assertNotNull } from "@/utils/typeUtils";
 import { FormGroup, FormLabel } from "react-bootstrap";
 
 const ImageCropWidget: React.VFC<WidgetProps> = ({
@@ -64,7 +64,7 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
     const canvasContext = canvas.getContext("2d");
-    assert(canvasContext, "Browser did not provide canvas context");
+    assertNotNull(canvasContext, "Browser did not provide canvas context");
 
     canvas.width = crop.width * pixelRatio * scaleX;
     canvas.height = crop.height * pixelRatio * scaleY;

@@ -178,7 +178,6 @@ test("inner pipelines receive correct context", async () => {
 
   expect(ContextBrick.contexts[0]).toStrictEqual({
     "@input": {
-      // eslint-disable-next-line local-rules/noExpressionLiterals -- false positive. Shouldn't be warning on __env__
       body: {
         __env__: expect.toBeObject(),
         __type__: "pipeline",

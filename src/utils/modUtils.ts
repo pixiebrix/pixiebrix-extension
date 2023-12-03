@@ -35,6 +35,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { InvalidTypeError } from "@/errors/genericErrors";
 import reportError from "@/telemetry/reportError";
+import { assertNotNull } from "./typeUtils";
 
 /**
  * Returns true if the mod is an UnavailableMod
@@ -47,7 +48,6 @@ export function isUnavailableMod(mod: Mod): mod is UnavailableMod {
 
 /**
  * Returns true if the mod is a ResolvedExtension, instead of a mod definition.
- * @param mod the mod
  */
 export function isResolvedModComponent(mod: Mod): mod is ResolvedModComponent {
   return "extensionPointId" in mod;
@@ -55,7 +55,6 @@ export function isResolvedModComponent(mod: Mod): mod is ResolvedModComponent {
 
 /**
  * Return true if the mod is an ModComponentBase that originated from a recipe.
- * @param mod the mod
  */
 export function isModComponentFromRecipe(mod: Mod): boolean {
   return isResolvedModComponent(mod) && Boolean(mod._recipe);
@@ -63,7 +62,6 @@ export function isModComponentFromRecipe(mod: Mod): boolean {
 
 /**
  * Return true if the mod is a ModDefinition or UnavailableMod
- * @param mod the mod
  */
 export function isModDefinition(
   mod: Mod,
@@ -73,7 +71,6 @@ export function isModDefinition(
 
 /**
  * Returns a unique id for the mod. Suitable for use as a React key
- * @param mod the mod
  */
 export function getUniqueId(mod: Mod): UUID | RegistryId {
   return isResolvedModComponent(mod) ? mod.id : mod.metadata.id;
@@ -81,7 +78,6 @@ export function getUniqueId(mod: Mod): UUID | RegistryId {
 
 /**
  * Returns the human-readable label for the mod
- * @param mod the mod
  */
 export function getLabel(mod: Mod): string {
   return isResolvedModComponent(mod) ? mod.label : mod.metadata.name;
@@ -89,31 +85,24 @@ export function getLabel(mod: Mod): string {
 
 /**
  * Returns the description for the mod
- * @param mod the mod
  */
 export const getDescription = (mod: Mod): string => {
-  const description = isResolvedModComponent(mod)
-    ? mod._recipe?.description
-    : mod.metadata.description;
-
-  if (!description && isResolvedModComponent(mod)) {
-    return "Created in the Page Editor";
+  if (isResolvedModComponent(mod)) {
+    return mod._recipe?.description ?? "Created in the Page Editor";
   }
 
-  return description;
+  return mod.metadata.description ?? "No description";
 };
 
 /**
- * Return the registry id associated with a mod, or null
- * @param mod the mod
+ * Return the registry id associated with a mod, or undefined
  */
-export function getPackageId(mod: Mod): RegistryId | null {
+export function getPackageId(mod: Mod): RegistryId | undefined {
   return isResolvedModComponent(mod) ? mod._recipe?.id : mod.metadata.id;
 }
 
 /**
  * Returns the timestamp for the time the mod was last updated (edited)
- * @param mod the mod
  */
 export function getUpdatedAt(mod: Mod): string | null {
   return isResolvedModComponent(mod)
@@ -124,7 +113,7 @@ export function getUpdatedAt(mod: Mod): string | null {
 
 function isPublic(mod: Mod): boolean {
   return isResolvedModComponent(mod)
-    ? mod._recipe?.sharing?.public
+    ? mod._recipe?.sharing?.public ?? false
     : mod.sharing.public;
 }
 
@@ -136,7 +125,7 @@ function hasSourceRecipeWithScope(
   extension: ModComponentBase,
   scope: string,
 ): boolean {
-  return scope && extension._recipe?.id.startsWith(scope + "/");
+  return Boolean(scope && extension._recipe?.id.startsWith(scope + "/"));
 }
 
 function hasRecipeScope(
@@ -151,20 +140,21 @@ function hasRecipeScope(
  * @param mod the mod
  * @param userScope the user's scope, or null if it's not set
  */
-function isPersonal(mod: Mod, userScope: string | null) {
+function isPersonal(mod: Mod, userScope: string | null): boolean {
   if (isResolvedModComponent(mod)) {
     return (
-      isPersonalModComponent(mod) || hasSourceRecipeWithScope(mod, userScope)
+      isPersonalModComponent(mod) ||
+      Boolean(userScope && hasSourceRecipeWithScope(mod, userScope))
     );
   }
 
-  return hasRecipeScope(mod, userScope);
+  return Boolean(userScope && hasRecipeScope(mod, userScope));
 }
 
 export function getInstalledVersionNumber(
   installedExtensions: UnresolvedModComponent[],
   mod: Mod,
-): string | null {
+): string | undefined {
   if (isResolvedModComponent(mod)) {
     return mod._recipe?.version;
   }
@@ -214,7 +204,7 @@ export function getSharingSource({
   scope: string;
   installedExtensions: UnresolvedModComponent[];
 }): SharingSource {
-  let sharingType: SharingType = null;
+  let sharingType: SharingType | null = null;
   const organization = getOrganization(mod, organizations);
 
   if (!isModDefinition(mod) && !isResolvedModComponent(mod)) {
@@ -228,27 +218,26 @@ export function getSharingSource({
     throw error;
   }
 
+  let label: string;
   if (isPersonal(mod, scope)) {
     sharingType = "Personal";
   } else if (isDeployment(mod, installedExtensions)) {
     sharingType = "Deployment";
+    // There's a corner case for team deployments of marketplace bricks. The organization will come through as
+    // nullish here.
+    if (organization?.name) {
+      label = organization.name;
+    }
   } else if (organization) {
     sharingType = "Team";
+    label = organization.name;
   } else if (isPublic(mod)) {
     sharingType = "Public";
+  } else {
+    sharingType = "Unknown";
   }
 
-  let label: string;
-  if (
-    sharingType === "Team" ||
-    // There's a corner case for team deployments of public market bricks. The organization will come through as
-    // nullish here.
-    (sharingType === "Deployment" && organization?.name)
-  ) {
-    label = organization.name;
-  } else {
-    label = sharingType;
-  }
+  label ??= sharingType;
 
   return {
     type: sharingType,
@@ -267,8 +256,9 @@ export function updateAvailable(
     return false;
   }
 
-  const installedExtension: ResolvedModComponent | UnresolvedModComponent =
-    isModDefinition(mod) ? installedExtensions.get(mod.metadata.id) : mod;
+  const installedExtension = isModDefinition(mod)
+    ? installedExtensions.get(mod.metadata.id)
+    : mod;
 
   if (!installedExtension?._recipe) {
     return false;
@@ -279,6 +269,17 @@ export function updateAvailable(
   if (!availableRecipe) {
     return false;
   }
+
+  // TODO: Drop assertions once the types are tighter
+  // https://github.com/pixiebrix/pixiebrix-extension/pull/7010#discussion_r1410080332
+  assertNotNull(
+    installedExtension._recipe.version,
+    "The requested extension doesn't have a version",
+  );
+  assertNotNull(
+    availableRecipe.metadata.version,
+    "The extension's recipe doesn't have a version",
+  );
 
   if (
     semver.gt(
@@ -313,18 +314,20 @@ export function updateAvailable(
 function getOrganization(
   mod: Mod,
   organizations: Organization[],
-): Organization {
+): Organization | undefined {
   const sharing = isResolvedModComponent(mod)
     ? mod._recipe?.sharing
     : mod.sharing;
 
   if (!sharing || sharing.organizations.length === 0) {
-    return null;
+    return undefined;
   }
 
   // If more than one sharing organization, use the first.
   // This is an uncommon scenario.
-  return organizations.find((org) => sharing.organizations.includes(org.id));
+  return organizations.find(
+    (org) => org.id && sharing.organizations.includes(org.id),
+  );
 }
 
 /**

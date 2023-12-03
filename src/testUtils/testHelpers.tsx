@@ -36,7 +36,9 @@ import {
 } from "@reduxjs/toolkit";
 
 import {
+  // eslint-disable-next-line no-restricted-imports -- test file for helpers
   Form,
+  // eslint-disable-next-line no-restricted-imports -- test file for helpers
   Formik,
   type FormikErrors,
   type FormikHelpers,
@@ -53,22 +55,6 @@ import {
   type RenderHookResult,
   type WrapperComponent,
 } from "@testing-library/react-hooks";
-
-export const neverPromise = async (...args: unknown[]): Promise<never> => {
-  console.error("This method should not have been called", { args });
-  throw new Error("This method should not have been called");
-};
-
-/**
- * Generate mocked listeners for browser.*.onEvent objects
- * @example browser.permissions.onAdded = getChromeEventMocks();
- */
-export const getChromeEventMocks = () => ({
-  addListener: jest.fn(),
-  removeListener: jest.fn(),
-  hasListener: jest.fn(),
-  hasListeners: jest.fn(),
-});
 
 /**
  * Wait for async handlers, e.g., useAsyncEffect and useAsyncState.

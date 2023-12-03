@@ -60,10 +60,11 @@ export function freshIdentifier(
  * Returns a variable reference expression for the given variable name.
  * @param variableName the variable name
  */
-export function getVariableExpression<T extends string>(
+export function getVariableExpression<TValue extends string>(
   variableName: OutputKey,
-): Expression<T> {
-  const value = variableName == null ? null : (`@${variableName}` as T);
+): Expression<TValue, "var"> {
+  const value: TValue | null =
+    variableName == null ? null : (`@${variableName}` as TValue);
   // XXX: not safe for strict null checks
-  return toExpression("var", value);
+  return toExpression<TValue, "var">("var", value);
 }
