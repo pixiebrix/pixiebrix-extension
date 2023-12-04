@@ -38,6 +38,7 @@ import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import useActivateRecipe, {
   type ActivateRecipeFormCallback,
 } from "@/activation/useActivateRecipe";
+import { minimalSchemaFactory } from "@/utils/schemaUtils";
 
 registerDefaultWidgets();
 
@@ -210,5 +211,22 @@ describe("ActivateRecipeCard", () => {
     expect(
       screen.getByText("You must accept browser permissions to activate"),
     ).toBeVisible();
+  });
+
+  test("renders instructions", async () => {
+    const mod = defaultModDefinitionFactory();
+    mod.options = {
+      schema: {
+        ...minimalSchemaFactory(),
+        description: "These are some instructions",
+      },
+    };
+    setupMod(mod);
+    const { asFragment } = render(<ModCard />);
+
+    await waitForEffect();
+
+    expect(screen.getByText("These are some instructions")).toBeInTheDocument();
+    expect(asFragment()).toMatchSnapshot();
   });
 });

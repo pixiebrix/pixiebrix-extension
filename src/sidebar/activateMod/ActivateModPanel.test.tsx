@@ -150,7 +150,7 @@ beforeEach(() => {
   });
 });
 
-describe("ActivateRecipePanel", () => {
+describe("ActivateModPanel", () => {
   it("renders with options, permissions info", async () => {
     jest.mocked(checkModDefinitionPermissions).mockResolvedValue({
       hasPermissions: false,
@@ -179,7 +179,7 @@ describe("ActivateRecipePanel", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it("activates basic recipe automatically and renders well-done page", async () => {
+  it("activates basic mod automatically and renders well-done page", async () => {
     const { asFragment } = setupMocksAndRender();
 
     await waitForEffect();
@@ -187,7 +187,7 @@ describe("ActivateRecipePanel", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it("activates basic recipe with empty options structure automatically and renders well-done page", async () => {
+  it("activates basic mod with empty options structure automatically and renders well-done page", async () => {
     const { asFragment } = setupMocksAndRender({
       options: {
         schema: {},
@@ -199,7 +199,7 @@ describe("ActivateRecipePanel", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it("activates recipe with database preview automatically and renders well-done page", async () => {
+  it("activates mod with database preview automatically and renders well-done page", async () => {
     const { asFragment } = setupMocksAndRender({
       options: {
         schema: propertiesToSchema({
@@ -217,7 +217,7 @@ describe("ActivateRecipePanel", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it("activates recipe with optional integration dependency automatically and renders well-done page", async () => {
+  it("activates mod with optional integration dependency automatically and renders well-done page", async () => {
     const serviceId1 = validateRegistryId("@pixiebrix/test-service1");
     setupMocksAndRender({
       extensionPoints: [
@@ -240,7 +240,7 @@ describe("ActivateRecipePanel", () => {
     expect(screen.getByRole("button", { name: "Ok" })).toBeVisible();
   });
 
-  it("does not activate recipe automatically when one integration is required and one is not", async () => {
+  it("does not activate mod automatically when one integration is required and one is not", async () => {
     const serviceId1 = validateRegistryId("@pixiebrix/test-service1");
     const serviceId2 = validateRegistryId("@pixiebrix/test-service2");
     setupMocksAndRender({
@@ -269,6 +269,34 @@ describe("ActivateRecipePanel", () => {
         { exact: false },
       ),
     ).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: "Finish Activating" }),
+    ).toBeVisible();
+  });
+
+  it("does not activate mod automatically when one options is required", async () => {
+    setupMocksAndRender({
+      options: {
+        schema: {
+          description: "These are instructions",
+          type: "object",
+          properties: {
+            foo: {
+              type: "string",
+            },
+          },
+          required: ["foo"],
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    // Shows the custom instructions
+    expect(
+      screen.queryByText("We're almost there.", { exact: false }),
+    ).toBeNull();
+    expect(screen.getByText("These are instructions")).toBeVisible();
     expect(
       screen.getByRole("button", { name: "Finish Activating" }),
     ).toBeVisible();
@@ -314,7 +342,7 @@ describe("ActivateRecipePanel", () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it("renders with service configuration if no built-in service configs available", async () => {
+  it("renders with integration configuration if no built-in integration configs available", async () => {
     const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs();
 
     const { asFragment, container } = setupMocksAndRender(modDefinition);
@@ -328,7 +356,7 @@ describe("ActivateRecipePanel", () => {
     ).not.toBeDisabled();
   });
 
-  it("activates recipe with built-in services automatically and renders well-done page", async () => {
+  it("activates mod with built-in services automatically and renders well-done page", async () => {
     const { modDefinition, builtInIntegrationConfigs } =
       getModDefinitionWithBuiltInIntegrationConfigs();
 
