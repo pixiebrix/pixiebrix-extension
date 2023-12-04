@@ -36,7 +36,7 @@ beforeAll(() => {
   registerDefaultWidgets();
 });
 
-describe("RecipeOptionsDefinitions", () => {
+describe("ModOptionsDefinitionPane", () => {
   it("shows google sheets, and both database field type options", async () => {
     const modDefinition = defaultModDefinitionFactory();
 
@@ -52,6 +52,10 @@ describe("RecipeOptionsDefinitions", () => {
       },
     });
     await waitForEffect();
+
+    expect(
+      screen.getByLabelText("Activation Instructions"),
+    ).toBeInTheDocument();
 
     await userEvent.click(screen.getByText("Add new field"));
 

@@ -19,7 +19,7 @@ import React, { useMemo } from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import RequireMods, {
   type RequiredModDefinition,
-} from "@/sidebar/activateRecipe/RequireMods";
+} from "@/sidebar/activateMod/RequireMods";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { getOptionsValidationSchema } from "@/hooks/useAsyncRecipeOptionsValidationSchema";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
@@ -31,7 +31,7 @@ import { wizardStateFactory } from "@/activation/useActivateRecipeWizard";
 import useActivateRecipe, {
   type ActivateResult,
 } from "@/activation/useActivateRecipe";
-import { SuccessPanel } from "@/sidebar/activateRecipe/ActivateModPanel";
+import { SuccessPanel } from "@/sidebar/activateMod/ActivateModPanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 
 type ModResultPair = {

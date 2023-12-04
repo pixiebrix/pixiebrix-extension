@@ -141,7 +141,7 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
             name="id"
             label="Mod ID"
             description={FieldDescriptions.MOD_ID}
-            // Blueprint IDs may not be changed after creation
+            // Mod IDs may not be changed after creation
             readOnly
           />
           <ConnectedFieldTemplate

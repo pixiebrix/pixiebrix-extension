@@ -33,7 +33,7 @@ import { reloadMarketplaceEnhancements as reloadMarketplaceEnhancementsInContent
 import { getTopLevelFrame } from "webext-messenger";
 import cx from "classnames";
 import { isEmpty } from "lodash";
-import ActivateModInputs from "@/sidebar/activateRecipe/ActivateModInputs";
+import ActivateModInputs from "@/sidebar/activateMod/ActivateModInputs";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { Button } from "react-bootstrap";
 import useActivateRecipe from "@/activation/useActivateRecipe";
@@ -44,7 +44,7 @@ import useActivateRecipeWizard, {
 } from "@/activation/useActivateRecipeWizard";
 import RequireMods, {
   type RequiredModDefinition,
-} from "@/sidebar/activateRecipe/RequireMods";
+} from "@/sidebar/activateMod/RequireMods";
 import { persistor } from "@/sidebar/store";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import AsyncStateGate from "@/components/AsyncStateGate";

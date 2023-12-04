@@ -18,7 +18,7 @@
 import React from "react";
 import { useRequiredModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { render, screen } from "@/sidebar/testHelpers";
-import ActivateModPanel from "@/sidebar/activateRecipe/ActivateModPanel";
+import ActivateModPanel from "@/sidebar/activateMod/ActivateModPanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { propertiesToSchema } from "@/validators/generic";
@@ -40,7 +40,7 @@ import {
   modDefinitionToMarketplacePackage,
 } from "@/testUtils/factories/marketplaceFactories";
 import * as messengerApi from "@/contentScript/messenger/api";
-import ActivateMultipleModsPanel from "@/sidebar/activateRecipe/ActivateMultipleModsPanel";
+import ActivateMultipleModsPanel from "@/sidebar/activateMod/ActivateMultipleModsPanel";
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
