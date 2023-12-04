@@ -17,7 +17,11 @@
 
 import { compact, partition, uniq } from "lodash";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
-import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
+import {
+  isTemplateExpression,
+  isVarExpression,
+  toExpression,
+} from "@/utils/expressionUtils";
 import {
   type ClassFlag,
   type Value,
@@ -149,6 +153,7 @@ export function calculateNextSpacing(
   const nextValue = compact(uniq(nextClasses)).join(" ");
 
   if (isTemplate) {
+    // eslint-disable-next-line local-rules/noExpressionLiterals -- not enough type information
     return {
       __type__: (previousValue as Expression).__type__,
       __value__: nextValue,
@@ -204,10 +209,10 @@ export function calculateNextValue(
   const nextValue = compact(uniq(nextClasses)).join(" ");
 
   if (isTemplate) {
-    return {
-      __type__: (previousValue as Expression).__type__ as TemplateEngine,
-      __value__: nextValue,
-    };
+    return toExpression(
+      (previousValue as Expression).__type__ as TemplateEngine,
+      nextValue,
+    );
   }
 
   return nextValue;

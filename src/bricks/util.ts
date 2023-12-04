@@ -25,6 +25,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { type Brick } from "@/types/brickTypes";
 import BlockIdVisitor from "@/analysis/analysisVisitors/blockIdVisitor";
 import { removeUndefined } from "@/utils/objectUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 export function isOfficial(id: RegistryId): boolean {
   return id.startsWith("@pixiebrix/");
@@ -47,10 +48,7 @@ export function defaultBlockConfig(schema: Schema): UnknownObject {
         ),
         (propertySchema: Schema) => {
           if (propertySchema.$ref === pipelineSchema.$id) {
-            return {
-              __type__: "pipeline",
-              __value__: [],
-            };
+            return toExpression("pipeline", []);
           }
 
           if (typeof propertySchema.default !== "object") {

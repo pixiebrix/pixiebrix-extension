@@ -23,6 +23,7 @@ import {
   getExampleBlockConfig,
 } from "@/pageEditor/exampleBlockConfigs";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 const documentBlockId = validateRegistryId("@pixiebrix/document");
 const quickbarActionId = validateRegistryId("@pixiebrix/quickbar/add");
@@ -38,10 +39,7 @@ export function getExampleBlockPipeline(type: StarterBrickType): BrickPipeline {
     const quickbarActionBlock = createNewBlock(quickbarActionId);
     quickbarActionBlock.config = {
       title: "Example Action",
-      action: {
-        __type__: "pipeline",
-        __value__: [],
-      },
+      action: toExpression("pipeline", []),
     };
     return [quickbarActionBlock];
   }

@@ -23,7 +23,6 @@ import { Formik } from "formik";
 import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/RunBot";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
 import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type SanitizedConfig } from "@/integrations/integrationTypes";
 import { useAuthOptions } from "@/hooks/auth";
@@ -35,6 +34,7 @@ import {
 } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
+import { toExpression } from "@/utils/expressionUtils";
 
 jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter", () => ({
   __esModule: true,
@@ -112,7 +112,8 @@ describe("BotOptions", () => {
     );
 
     const base = makeBaseState();
-    base.extension.blockPipeline[0].config.service = makeVariableExpression(
+    base.extension.blockPipeline[0].config.service = toExpression(
+      "var",
       "@automationAnywhere",
     );
 
@@ -142,7 +143,8 @@ describe("BotOptions", () => {
     );
 
     const base = makeBaseState();
-    base.extension.blockPipeline[0].config.service = makeVariableExpression(
+    base.extension.blockPipeline[0].config.service = toExpression(
+      "var",
       "@automationAnywhere",
     );
 
@@ -174,7 +176,8 @@ describe("BotOptions", () => {
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.workspaceType = "public";
-    base.extension.blockPipeline[0].config.service = makeVariableExpression(
+    base.extension.blockPipeline[0].config.service = toExpression(
+      "var",
       "@automationAnywhere",
     );
 
@@ -207,7 +210,8 @@ describe("BotOptions", () => {
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.workspaceType = "public";
     base.extension.blockPipeline[0].config.isAttended = true;
-    base.extension.blockPipeline[0].config.service = makeVariableExpression(
+    base.extension.blockPipeline[0].config.service = toExpression(
+      "var",
       "@automationAnywhere",
     );
 
@@ -239,7 +243,8 @@ describe("BotOptions", () => {
 
     const base = makeBaseState();
     base.extension.blockPipeline[0].config.awaitResult = true;
-    base.extension.blockPipeline[0].config.service = makeVariableExpression(
+    base.extension.blockPipeline[0].config.service = toExpression(
+      "var",
       "@automationAnywhere",
     );
 

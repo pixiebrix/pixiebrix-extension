@@ -21,7 +21,8 @@ import {
 } from "@/testUtils/factories/pageEditorFactories";
 import CustomEventEffect from "@/bricks/effects/customEvent";
 import CollectEventNamesVisitor from "@/analysis/analysisVisitors/eventNameAnalysis/collectEventNamesVisitor";
-import { makeTemplateExpression } from "@/runtime/expressionCreators";
+
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("collectEventNamesAnalysis", () => {
   it("collects event name from literal", () => {
@@ -47,7 +48,7 @@ describe("collectEventNamesAnalysis", () => {
     formState.extension.blockPipeline[0] = {
       id: CustomEventEffect.BRICK_ID,
       config: {
-        eventName: makeTemplateExpression("nunjucks", "foo"),
+        eventName: toExpression("nunjucks", "foo"),
       },
     };
 
@@ -65,7 +66,7 @@ describe("collectEventNamesAnalysis", () => {
     formState.extension.blockPipeline[0] = {
       id: CustomEventEffect.BRICK_ID,
       config: {
-        eventName: makeTemplateExpression("nunjucks", "{{ @foo }}"),
+        eventName: toExpression("nunjucks", "{{ @foo }}"),
       },
     };
 

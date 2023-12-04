@@ -44,6 +44,7 @@ import {
   brickConfigFactory,
   pipelineFactory,
 } from "@/testUtils/factories/brickFactories";
+import { toExpression } from "@/utils/expressionUtils";
 
 jest.mock("@/components/form/FormErrorContext", () => ({
   useFormErrorSettings: jest.fn(),
@@ -150,9 +151,9 @@ describe("useFieldAnnotations", () => {
 
   test.each([
     {
-      detail: { expression: { __type__: "var", __value__: "@mod.foo" } },
+      detail: { expression: toExpression("var", "@mod.foo") },
     },
-    { detail: { __type__: "nunjucks", __value__: "@mod.bar" } },
+    { detail: toExpression("nunjucks", "@mod.bar") },
   ])(
     "does not show analysis error annotation when the annotation detail ($detail) is for a stale field value",
     ({ detail }) => {
@@ -167,7 +168,7 @@ describe("useFieldAnnotations", () => {
         pipelineFactory(
           brickConfigFactory({
             config: {
-              testField: { __type__: "var", __value__: "@mod." },
+              testField: toExpression("var", "@mod."),
             },
           }),
         ),

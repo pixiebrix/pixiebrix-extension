@@ -28,7 +28,7 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import { services } from "@/background/messenger/api";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { type ApiVersion } from "@/types/runtimeTypes";
+import { type ApiVersion, type TemplateEngine } from "@/types/runtimeTypes";
 import {
   type SanitizedIntegrationConfig,
   type IntegrationDependency,
@@ -37,6 +37,7 @@ import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import { toExpression } from "@/utils/expressionUtils";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -166,10 +167,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       {
         id: identityBrick.id,
         config: {
-          data: {
-            __type__: "var",
-            __value__: "@pixiebrix",
-          },
+          data: toExpression("var", "@pixiebrix"),
         },
       },
       {
@@ -207,10 +205,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       {
         id: identityBrick.id,
         config: {
-          data: {
-            __type__: "var",
-            __value__: "@service.prop",
-          },
+          data: toExpression("var", "@service.prop"),
         },
       },
       {
@@ -229,7 +224,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     // see: https://handlebarsjs.com/api-reference/data-variables.html
     ["mustache"],
     ["nunjucks"],
-  ])("templateEngine: %s", (templateEngine) => {
+  ])("templateEngine: %s", (templateEngine: TemplateEngine) => {
     test("reference sanitized configuration variable via template", async () => {
       const authId = uuidv4();
       const serviceId = validateRegistryId("test/api");
@@ -254,10 +249,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         {
           id: identityBrick.id,
           config: {
-            data: {
-              __type__: templateEngine,
-              __value__: "{{ @service.prop }}",
-            },
+            data: toExpression(templateEngine, "{{ @service.prop }}"),
           },
         },
         {
