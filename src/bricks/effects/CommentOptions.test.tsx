@@ -38,6 +38,9 @@ describe("CommentOptions", () => {
     });
 
     expect(screen.getByLabelText("Comment")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("this is a comment")).toBeInTheDocument();
+
+    expect(screen.getByRole("textbox", { name: "Comment" })).toHaveValue(
+      "this is a comment",
+    );
   });
 });
