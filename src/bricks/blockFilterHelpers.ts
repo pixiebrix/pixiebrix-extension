@@ -32,6 +32,7 @@ const alwaysShow = new Set([
   // Cancel/Error provide meaningful control flow for all bricks
   validateRegistryId("@pixiebrix/cancel"),
   validateRegistryId("@pixiebrix/error"),
+  validateRegistryId("@pixiebrix/comment"),
 ]);
 
 export type IsBlockAllowedPredicate = (block: TypedBrickPair) => boolean;

@@ -36,6 +36,18 @@ class CommentEffect extends EffectABC {
     [],
   );
 
+  override async isPure(): Promise<boolean> {
+    return true;
+  }
+
+  override async isPageStateAware(): Promise<boolean> {
+    return false;
+  }
+
+  override async isRootAware(): Promise<boolean> {
+    return false;
+  }
+
   constructor() {
     super(
       CommentEffect.BRICK_ID,
