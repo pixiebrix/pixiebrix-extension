@@ -67,6 +67,13 @@ export function smartAppendPeriod(string: string): string {
   return trimmed + ".";
 }
 
+/**
+ * Returns true if the value is nullish, not a string, or a string that is empty or only contains whitespace.
+ * @param value
+ */
+export function isNullOrBlank(value: null | undefined): true;
+export function isNullOrBlank(value: string): boolean;
+export function isNullOrBlank(value: unknown): false;
 export function isNullOrBlank(value: unknown): boolean {
   if (value == null) {
     return true;

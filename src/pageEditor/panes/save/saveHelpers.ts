@@ -26,7 +26,7 @@ import {
   PACKAGE_REGEX,
   validateRegistryId,
 } from "@/types/helpers";
-import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
+import { compact, isEqual, pick, sortBy } from "lodash";
 import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -55,6 +55,7 @@ import {
 } from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
+import { isModOptionsSchemaEmpty } from "@/utils/modUtils";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -239,11 +240,9 @@ export function replaceRecipeExtension(
       }
     }
 
-    if (isEmpty(element.optionsDefinition?.schema?.properties)) {
-      draft.options = undefined;
-    } else {
-      draft.options = element.optionsDefinition;
-    }
+    draft.options = isModOptionsSchemaEmpty(element.optionsDefinition)
+      ? undefined
+      : element.optionsDefinition;
 
     const index = findRecipeIndex(sourceRecipe, installedExtension);
 
@@ -399,7 +398,7 @@ export function buildRecipe({
   return produce(recipe, (draft) => {
     // Options dirty state is only populated if a change is made
     if (options) {
-      draft.options = isEmpty(options.schema?.properties) ? undefined : options;
+      draft.options = isModOptionsSchemaEmpty(options) ? undefined : options;
     }
 
     // Metadata dirty state is only populated if a change is made

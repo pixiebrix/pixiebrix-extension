@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "@/extensionConsole/pages/activateRecipe/ActivateRecipeCard.module.scss";
+import styles from "@/extensionConsole/pages/activateMod/ActivateModCard.module.scss";
 
 import React, { useCallback, useMemo } from "react";
 import { type AuthOption } from "@/auth/authTypes";

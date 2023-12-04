@@ -21,7 +21,7 @@ import useFlags from "@/hooks/useFlags";
 import {
   getLabel,
   isModDefinition,
-  selectExtensionsFromMod,
+  selectComponentsFromMod,
 } from "@/utils/modUtils";
 import { useCallback } from "react";
 import useUserAction from "@/hooks/useUserAction";
@@ -46,7 +46,7 @@ function useDeactivateAction(modViewItem: ModViewItem): () => void | null {
   // to recompute, spamming the background worker with service locator requests
   const memoizedExtensionsSelector = useCallback(
     (state: { options: ModComponentState }) =>
-      selectExtensionsFromMod(state, mod),
+      selectComponentsFromMod(state, mod),
     [mod],
   );
 

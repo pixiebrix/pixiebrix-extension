@@ -44,10 +44,6 @@ import {
 } from "@/bricks/types";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import {
-  getMinimalSchema,
-  getMinimalUiSchema,
-} from "@/components/formBuilder/formBuilderHelpers";
 import { hasInnerExtensionPointRef } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
@@ -64,6 +60,10 @@ import {
   type BaseFormState,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/baseFormStateTypes";
+import {
+  minimalSchemaFactory,
+  minimalUiSchemaFactory,
+} from "@/utils/schemaUtils";
 
 export interface WizardStep {
   step: string;
@@ -132,8 +132,8 @@ export function initRecipeOptionsIfNeeded<TElement extends BaseFormState>(
 
     if (recipe?.options == null) {
       element.optionsDefinition = {
-        schema: getMinimalSchema(),
-        uiSchema: getMinimalUiSchema(),
+        schema: minimalSchemaFactory(),
+        uiSchema: minimalUiSchemaFactory(),
       };
     } else {
       element.optionsDefinition = {

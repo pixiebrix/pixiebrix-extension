@@ -18,7 +18,7 @@
 import { Col, Row } from "react-bootstrap";
 import React from "react";
 import { useFormikContext } from "formik";
-import UrlPermissionsList from "@/extensionConsole/pages/activateRecipe/UrlPermissionsList";
+import UrlPermissionsList from "@/extensionConsole/pages/activateMod/UrlPermissionsList";
 import useCloudExtensionPermissions from "@/extensionConsole/pages/activateExtension/useCloudExtensionPermissions";
 import { type StandaloneModDefinition } from "@/types/contract";
 import { type FormState } from "@/extensionConsole/pages/activateExtension/activateTypes";

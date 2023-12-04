@@ -17,7 +17,7 @@
 
 import { type ModViewItem } from "@/types/modTypes";
 import { useCallback } from "react";
-import { selectExtensionsFromMod } from "@/utils/modUtils";
+import { selectComponentsFromMod } from "@/utils/modUtils";
 import { useSelector } from "react-redux";
 import useModPermissions from "@/mods/hooks/useModPermissions";
 import { type ModComponentState } from "@/store/extensionsTypes";
@@ -31,7 +31,7 @@ function useRequestPermissionsAction(
   // to recompute, spamming the background worker with service locator requests
   const memoizedExtensionsSelector = useCallback(
     (state: { options: ModComponentState }) =>
-      selectExtensionsFromMod(state, mod),
+      selectComponentsFromMod(state, mod),
     [mod],
   );
 
