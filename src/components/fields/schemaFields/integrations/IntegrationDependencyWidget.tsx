@@ -21,7 +21,6 @@ import { PACKAGE_REGEX } from "@/types/helpers";
 import { type AuthOption } from "@/auth/authTypes";
 import {
   type IntegrationsFormSlice,
-  keyToFieldValue,
   produceExcludeUnusedDependencies,
 } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
 import { produce } from "immer";
@@ -39,7 +38,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type SafeString, type UUID } from "@/types/stringTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { fallbackValue } from "@/utils/asyncStateUtils";
-import { freshIdentifier } from "@/utils/variableUtils";
+import { freshIdentifier, getVariableExpression } from "@/utils/variableUtils";
 import useAsyncEffect from "use-async-effect";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -85,7 +84,8 @@ function lookupAuthId(
     value == null
       ? null
       : dependencies.find(
-          ({ outputKey }) => keyToFieldValue(outputKey).__value__ === value,
+          ({ outputKey }) =>
+            getVariableExpression(outputKey).__value__ === value,
         );
 
   return dependency == null
@@ -140,7 +140,7 @@ function setIntegrationAuthSelectionForField(
   });
 
   // Update field value before calling produceExcludeUnusedDependencies, otherwise it will see the stale service var
-  nextState = setIn(nextState, fieldName, keyToFieldValue(outputKey));
+  nextState = setIn(nextState, fieldName, getVariableExpression(outputKey));
 
   // Perform cleanup of the service dependencies
   nextState = produceExcludeUnusedDependencies(nextState);
@@ -268,7 +268,7 @@ const IntegrationDependencyWidget: React.FC<
             match.outputKey,
             { rootValues, match },
           );
-          await helpers.setValue(keyToFieldValue(match.outputKey));
+          await helpers.setValue(getVariableExpression(match.outputKey));
           const authOption = authOptions.find(
             ({ value }) => value === match.configId,
           );
@@ -298,7 +298,7 @@ const IntegrationDependencyWidget: React.FC<
       } else if (
         value &&
         !rootValues.integrationDependencies.some((dependency) =>
-          isEqual(keyToFieldValue(dependency.outputKey), value),
+          isEqual(getVariableExpression(dependency.outputKey), value),
         )
       ) {
         // This currently happens when a brick is copy-pasted into a separate extension

@@ -24,14 +24,13 @@ import SelectWidget, {
   type SelectLike,
 } from "@/components/form/widgets/SelectWidget";
 import createMenuListWithAddButton from "@/components/form/widgets/createMenuListWithAddButton";
-import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 import { type UUID } from "@/types/stringTypes";
 import { type Expression } from "@/types/runtimeTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useIsMounted } from "@/hooks/common";
 import { isUUID } from "@/types/helpers";
-import { isExpression } from "@/utils/expressionUtils";
+import { isExpression, toExpression } from "@/utils/expressionUtils";
 
 const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
   name,
@@ -85,7 +84,7 @@ const DatabaseWidget: React.FunctionComponent<SchemaFieldProps> = ({
 
   const setDatabaseId = async (databaseId: UUID) => {
     if (allowExpressions) {
-      await setFieldValue(makeTemplateExpression("nunjucks", databaseId));
+      await setFieldValue(toExpression("nunjucks", databaseId));
     } else {
       await setFieldValue(databaseId);
     }

@@ -24,6 +24,7 @@ import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { type ReaderConfig } from "@/bricks/types";
 import { validateRegistryId } from "@/types/helpers";
 import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("removeEmptyValues()", () => {
   test("removes empty non-expression values", () => {
@@ -35,24 +36,24 @@ describe("removeEmptyValues()", () => {
   test("doesn't remove null and empty string expression values", () => {
     expect(
       removeEmptyValues({
-        foo: { __type__: "var", __value__: "" },
-        bar: { __type__: "mustache", __value__: "" },
-        baz: { __type__: "var", __value__: null },
+        foo: toExpression("var", ""),
+        bar: toExpression("mustache", ""),
+        baz: toExpression("var", null),
       }),
     ).toStrictEqual({
-      foo: { __type__: "var", __value__: "" },
-      bar: { __type__: "mustache", __value__: "" },
-      baz: { __type__: "var", __value__: null },
+      foo: toExpression("var", ""),
+      bar: toExpression("mustache", ""),
+      baz: toExpression("var", null),
     });
   });
 
   test("convert undefined to null in expression values", () => {
     expect(
       removeEmptyValues({
-        foo: { __type__: "nunjucks", __value__: undefined },
+        foo: toExpression("nunjucks", undefined),
       }),
     ).toStrictEqual({
-      foo: { __type__: "nunjucks", __value__: null },
+      foo: toExpression("nunjucks", null),
     });
   });
 

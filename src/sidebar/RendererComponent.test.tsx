@@ -26,6 +26,7 @@ import { SubmitPanelAction } from "@/bricks/errors";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { toExpression } from "@/utils/expressionUtils";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   runHeadlessPipeline: jest
@@ -55,10 +56,7 @@ describe("RendererComponent", () => {
         title: "Button under test",
         variant: "primary",
         className: "test-class",
-        onClick: {
-          __type__: "pipeline",
-          __value__: jest.fn(),
-        },
+        onClick: toExpression("pipeline", []),
       },
     };
 

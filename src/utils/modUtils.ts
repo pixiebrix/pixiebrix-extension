@@ -35,7 +35,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { InvalidTypeError } from "@/errors/genericErrors";
 import reportError from "@/telemetry/reportError";
-import { assert } from "./typeUtils";
+import { assertNotNull } from "./typeUtils";
 
 /**
  * Returns true if the mod is an UnavailableMod
@@ -272,11 +272,11 @@ export function updateAvailable(
 
   // TODO: Drop assertions once the types are tighter
   // https://github.com/pixiebrix/pixiebrix-extension/pull/7010#discussion_r1410080332
-  assert(
+  assertNotNull(
     installedExtension._recipe.version,
     "The requested extension doesn't have a version",
   );
-  assert(
+  assertNotNull(
     availableRecipe.metadata.version,
     "The extension's recipe doesn't have a version",
   );

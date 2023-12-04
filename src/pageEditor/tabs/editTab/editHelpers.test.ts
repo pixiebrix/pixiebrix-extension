@@ -20,7 +20,6 @@ import ForEach from "@/bricks/transformers/controlFlow/ForEach";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { type PipelineExpression } from "@/types/runtimeTypes";
-import { toExpression } from "@/testUtils/testHelpers";
 import { generateFreshOutputKey, getPipelineMap } from "./editHelpers";
 import {
   brickConfigFactory,
@@ -30,6 +29,7 @@ import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("getPipelineMap", () => {
   test("should map plain pipeline", () => {

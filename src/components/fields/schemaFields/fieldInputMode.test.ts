@@ -17,24 +17,21 @@
 
 import { inferInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import googleSheetIdSchema from "@schemas/googleSheetId.json";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("test input mode", () => {
   test("variable expression", () => {
     expect(
-      inferInputMode(
-        { field: { __type__: "var", __value__: "@foo" } },
-        "field",
-        {
-          type: "string",
-        },
-      ),
+      inferInputMode({ field: toExpression("var", "@foo") }, "field", {
+        type: "string",
+      }),
     ).toBe("var");
   });
 
   test("nunjucks expression", () => {
     expect(
       inferInputMode(
-        { field: { __type__: "nunjucks", __value__: "{{ foo }}" } },
+        { field: toExpression("nunjucks", "{{ foo }}") },
         "field",
         {
           type: "string",
