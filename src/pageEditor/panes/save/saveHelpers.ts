@@ -217,7 +217,7 @@ export function replaceRecipeExtension(
     );
   }
 
-  return produce(sourceRecipe, (draft) => {
+  return produce(sourceRecipe, (draft: ModDefinition) => {
     draft.metadata = metadata;
 
     if (sourceRecipe.apiVersion !== element.apiVersion) {
@@ -395,7 +395,7 @@ export function buildRecipe({
   // start with an empty recipe definition that will be filled in
   const recipe: UnsavedModDefinition = sourceRecipe ?? emptyRecipe;
 
-  return produce(recipe, (draft) => {
+  return produce(recipe, (draft: UnsavedModDefinition): void => {
     // Options dirty state is only populated if a change is made
     if (options) {
       draft.options = isModOptionsSchemaEmpty(options) ? undefined : options;

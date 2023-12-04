@@ -15,22 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getDefaultRegistry } from "@rjsf/core";
-import React from "react";
-import FormPreviewFieldTemplate, {
-  type FormPreviewFieldProps,
-} from "./FormPreviewFieldTemplate";
-import styles from "./FormPreviewBooleanField.module.scss";
+import DescriptionFieldTemplate from "@/components/formBuilder/DescriptionFieldTemplate";
+import FieldTemplate from "@/components/formBuilder/FieldTemplate";
+import { type FormProps } from "@rjsf/core";
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Loose types
-const RjsfArrayField = getDefaultRegistry().fields.ArrayField!;
-
-const FormPreviewArrayField: React.FC<FormPreviewFieldProps> = (props) => (
-  <FormPreviewFieldTemplate
-    as={RjsfArrayField}
-    className={styles.root}
-    {...props}
-  />
-);
-
-export default FormPreviewArrayField;
+export const templates: FormProps["templates"] = {
+  FieldTemplate,
+  DescriptionFieldTemplate,
+} as const;

@@ -17,10 +17,10 @@
 
 import React, { useRef, useState } from "react";
 import ReactCrop, { type Crop } from "react-image-crop";
-import { type WidgetProps } from "@rjsf/core";
+import { FormGroup, FormLabel } from "react-bootstrap";
+import { type WidgetProps } from "@rjsf/utils";
 import "react-image-crop/src/ReactCrop.scss";
 import { assertNotNull } from "@/utils/typeUtils";
-import { FormGroup, FormLabel } from "react-bootstrap";
 
 const ImageCropWidget: React.VFC<WidgetProps> = ({
   schema,
