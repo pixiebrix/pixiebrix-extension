@@ -120,8 +120,8 @@ function useSaveRecipe(): RecipeSaver {
         !deletedElementIds.has(extension.id),
     );
 
-    // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
     const newOptions = normalizeModOptionsDefinition(
+      // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
       dirtyRecipeOptions[recipeId],
     );
     // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
