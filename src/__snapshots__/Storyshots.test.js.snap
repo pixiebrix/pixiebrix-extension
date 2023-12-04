@@ -6466,13 +6466,18 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
               }
             />
           </div>
-          <div>
+          <div
+            className="mb-3"
+            id="root__description"
+          >
             <div
-              className="mb-3"
-              id="root__description"
-            >
-              A form example with _(you can use markdown)_
-            </div>
+              dangerouslySetInnerHTML={
+                {
+                  "__html": "<p>A form example with <em>(you can use markdown)</em></p>
+",
+                }
+              }
+            />
           </div>
           <div
             className="p-0 container-fluid"
