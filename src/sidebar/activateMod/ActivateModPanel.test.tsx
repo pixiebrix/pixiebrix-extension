@@ -290,13 +290,15 @@ describe("ActivateModPanel", () => {
       },
     });
 
-    await waitForEffect();
+    await expect(
+      screen.findByText("These are instructions"),
+    ).resolves.toBeVisible();
 
     // Shows the custom instructions
     expect(
       screen.queryByText("We're almost there.", { exact: false }),
     ).toBeNull();
-    expect(screen.getByText("These are instructions")).toBeVisible();
+
     expect(
       screen.getByRole("button", { name: "Finish Activating" }),
     ).toBeVisible();
