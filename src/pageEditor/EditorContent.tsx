@@ -24,7 +24,7 @@ import { useGetMarketplaceListingsQuery } from "@/services/api";
 import NoTabAccessPane from "@/pageEditor/panes/NoTabAccessPane";
 import BetaPane from "@/pageEditor/panes/BetaPane";
 import EditorPane from "@/pageEditor/panes/EditorPane";
-import RecipePane from "@/pageEditor/panes/RecipePane";
+import ModEditorPane from "@/pageEditor/panes/ModEditorPane";
 import HomePane from "@/pageEditor/panes/HomePane";
 import {
   selectActiveElementId,
@@ -116,7 +116,7 @@ const EditorContent: React.FC = () => {
   }
 
   if (activeRecipeId) {
-    return <RecipePane />;
+    return <ModEditorPane />;
   }
 
   if (isPendingExtensions || isConnectingToContentScript) {

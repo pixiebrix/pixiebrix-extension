@@ -41,7 +41,7 @@ import useActivateRecipe, {
 
 registerDefaultWidgets();
 
-const testModId = validateRegistryId("@test/recipe");
+const testModId = validateRegistryId("@test/mod");
 
 const activateModCallbackMock =
   jest.fn() as jest.MockedFunction<ActivateRecipeFormCallback>;
@@ -55,17 +55,17 @@ const activateRecipeHookMock = jest.mocked(
   useActivateRecipe,
 ) as jest.MockedFunction<typeof useActivateRecipe>;
 
-jest.mock("@/extensionConsole/pages/useRecipeIdParam", () => ({
+jest.mock("@/extensionConsole/pages/useModIdParam", () => ({
   __esModule: true,
   default: jest.fn(() => testModId),
 }));
 
 global.chrome.commands.getAll = jest.fn();
 
-function setupRecipe(recipe: ModDefinition) {
+function setupMod(modDefinition: ModDefinition) {
   const recipeResponse: RecipeResponse = {
-    config: recipe,
-    updated_at: recipe.updated_at,
+    config: modDefinition,
+    updated_at: modDefinition.updated_at,
     sharing: {
       public: false,
       organizations: [],
@@ -102,14 +102,14 @@ const ModCard: React.FC = () => {
 
 describe("ActivateRecipeCard", () => {
   test("renders", async () => {
-    setupRecipe(defaultModDefinitionFactory());
+    setupMod(defaultModDefinitionFactory());
     const { asFragment } = render(<ModCard />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
 
   test("renders successfully with null services property", async () => {
-    setupRecipe(
+    setupMod(
       defaultModDefinitionFactory({
         extensionPoints: [modComponentDefinitionFactory({ services: null })],
       }),
@@ -145,7 +145,7 @@ describe("ActivateRecipeCard", () => {
         }),
       ],
     });
-    setupRecipe(modDefinition);
+    setupMod(modDefinition);
 
     const { asFragment } = render(<ModCard />);
     await waitForEffect();
@@ -166,7 +166,7 @@ describe("ActivateRecipeCard", () => {
         }),
       ],
     });
-    setupRecipe(modDefinition);
+    setupMod(modDefinition);
 
     const { asFragment } = render(<ModCard />);
     await waitForEffect();
@@ -200,7 +200,7 @@ describe("ActivateRecipeCard", () => {
         }),
       ],
     });
-    setupRecipe(modDefinition);
+    setupMod(modDefinition);
 
     render(<ModCard />);
     await waitForEffect();

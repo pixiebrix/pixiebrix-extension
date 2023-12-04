@@ -52,7 +52,11 @@ const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   allowExpressions: false,
 };
 
-const RecipeOptionsValuesContent: React.FC = () => {
+const NoModOptions: React.FC = () => (
+  <div>This mod does not require any configuration</div>
+);
+
+const ModOptionsValuesContent: React.FC = () => {
   const dispatch = useDispatch();
   const recipeId = useSelector(selectActiveRecipeId);
   const {
@@ -88,6 +92,7 @@ const RecipeOptionsValuesContent: React.FC = () => {
       genericOptionsFactory(
         optionsDefinition?.schema,
         optionsDefinition?.uiSchema,
+        { NoOptionsComponent: NoModOptions },
       ),
     [optionsDefinition],
   );
@@ -164,14 +169,14 @@ const RecipeOptionsValuesContent: React.FC = () => {
   );
 };
 
-const RecipeOptionsValues: React.FC = () => (
+const ModOptionsValues: React.FC = () => (
   <Container fluid className="pt-3">
     <Row>
       <Col>
-        <RecipeOptionsValuesContent />
+        <ModOptionsValuesContent />
       </Col>
     </Row>
   </Container>
 );
 
-export default RecipeOptionsValues;
+export default ModOptionsValues;

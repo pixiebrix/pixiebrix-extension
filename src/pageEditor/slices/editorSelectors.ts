@@ -123,7 +123,8 @@ const dirtyOptionDefinitionsForRecipeIdSelector = createSelector(
       return normalizeModOptionsDefinition(options);
     }
 
-    return null;
+    // Return undefined if the options aren't dirty. Returning nullish instead of an empty options allows the
+    // caller to default to the non-dirty options easily.
   },
 );
 
@@ -147,7 +148,7 @@ export const selectDirtyRecipeMetadata = ({ editor }: EditorRootState) =>
 
 const dirtyMetadataForRecipeIdSelector = createSelector(
   selectDirtyRecipeMetadata,
-  (state: EditorRootState, recipeId: RegistryId) => recipeId,
+  (_state: EditorRootState, recipeId: RegistryId) => recipeId,
   (dirtyRecipeMetadataById, recipeId) =>
     // eslint-disable-next-line security/detect-object-injection
     dirtyRecipeMetadataById[recipeId],
@@ -159,7 +160,7 @@ export const selectDirtyMetadataForRecipeId =
 
 const elementIsDirtySelector = createSelector(
   selectDirty,
-  (state: RootState, elementId: UUID) => elementId,
+  (_state: RootState, elementId: UUID) => elementId,
   // eslint-disable-next-line security/detect-object-injection
   (dirty, elementId) => dirty[elementId] ?? false,
 );

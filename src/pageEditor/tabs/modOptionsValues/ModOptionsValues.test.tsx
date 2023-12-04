@@ -18,7 +18,7 @@
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "@/pageEditor/testHelpers";
-import RecipeOptionsValues from "@/pageEditor/tabs/recipeOptionsValues/RecipeOptionsValues";
+import ModOptionsValues from "@/pageEditor/tabs/modOptionsValues/ModOptionsValues";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import {
@@ -61,7 +61,7 @@ const useGoogleAccountMock = jest.mocked(useGoogleAccount);
 
 const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
 
-function mockModDefinition(modDefinition: ModDefinition) {
+function mockModDefinition(modDefinition: ModDefinition): void {
   (useAllModDefinitions as jest.Mock).mockReturnValue(
     valueToAsyncCacheState([modDefinition]),
   );
@@ -76,16 +76,16 @@ beforeEach(() => {
   registerDefaultWidgets();
 });
 
-describe("ActivationOptions", () => {
+describe("ModOptionsValues", () => {
   test("renders empty options", async () => {
     const modDefinition = defaultModDefinitionFactory();
     mockModDefinition(modDefinition);
-    const { asFragment } = render(<RecipeOptionsValues />);
+    const { asFragment } = render(<ModOptionsValues />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("renders blueprint options", async () => {
+  test("renders mod options", async () => {
     const modDefinition = defaultModDefinitionFactory({
       options: {
         schema: {
@@ -130,7 +130,7 @@ describe("ActivationOptions", () => {
       },
     });
     mockModDefinition(modDefinition);
-    const { asFragment } = render(<RecipeOptionsValues />);
+    const { asFragment } = render(<ModOptionsValues />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
@@ -147,7 +147,7 @@ describe("ActivationOptions", () => {
       },
     });
     mockModDefinition(modDefinition);
-    const { asFragment } = render(<RecipeOptionsValues />);
+    const { asFragment } = render(<ModOptionsValues />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
@@ -178,7 +178,7 @@ describe("ActivationOptions", () => {
       },
     });
     mockModDefinition(modDefinition);
-    render(<RecipeOptionsValues />);
+    render(<ModOptionsValues />);
 
     await waitForEffect();
 
@@ -220,7 +220,7 @@ describe("ActivationOptions", () => {
       files: [],
     });
 
-    render(<RecipeOptionsValues />);
+    render(<ModOptionsValues />);
 
     const selectInput = await screen.findByRole("combobox", {
       name: "My Sheet",
@@ -281,7 +281,7 @@ describe("ActivationOptions", () => {
       ],
     });
 
-    render(<RecipeOptionsValues />);
+    render(<ModOptionsValues />);
 
     const selectInput = await screen.findByRole("combobox", {
       name: "My Sheet",

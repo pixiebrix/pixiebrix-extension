@@ -380,7 +380,7 @@ export function normalizeModOptionsDefinition(
 }
 
 /**
- * Returns true if the options form state defines any options/activation instructions
+ * Returns true if the options form state does not define any options/activation instructions
  * @param options options definition
  * @since 1.8.5
  */
@@ -400,6 +400,12 @@ export function isModOptionsSchemaEmpty(
 export function getModActivationInstructions(
   modDefinition: ModDefinition,
 ): string | null {
-  const description = modDefinition.options?.schema.description;
+  const description: string | undefined =
+    modDefinition.options?.schema.description;
+
+  if (!description) {
+    return null;
+  }
+
   return isNullOrBlank(description) ? null : description.trim();
 }

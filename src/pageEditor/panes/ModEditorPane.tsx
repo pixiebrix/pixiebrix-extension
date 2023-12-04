@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./RecipePane.module.scss";
+import styles from "./ModEditorPane.module.scss";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -28,38 +28,38 @@ import EditorTabLayout, {
   type TabItem,
 } from "@/components/tabLayout/EditorTabLayout";
 import Logs from "@/pageEditor/tabs/Logs";
-import EditRecipe from "@/pageEditor/tabs/editRecipeTab/EditRecipe";
+import ModMetadataEditor from "@/pageEditor/tabs/modMetadata/ModMetadataEditor";
 import { type MessageContext } from "@/types/loggerTypes";
 import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
 import ModOptionsDefinitionPane from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionPane";
-import RecipeOptionsValues from "@/pageEditor/tabs/recipeOptionsValues/RecipeOptionsValues";
+import ModOptionsValues from "@/pageEditor/tabs/modOptionsValues/ModOptionsValues";
 
-const RecipePane: React.VFC = () => {
+const ModEditorPane: React.VFC = () => {
   const dispatch = useDispatch();
 
-  const activeRecipeId = useSelector(selectActiveRecipeId);
+  const activeModId = useSelector(selectActiveRecipeId);
 
   const selectionSeq = useSelector(selectSelectionSeq);
-  const layoutKey = `${activeRecipeId}-${selectionSeq}`;
+  const layoutKey = `${activeModId}-${selectionSeq}`;
 
   useEffect(() => {
     const messageContext: MessageContext = {
-      blueprintId: activeRecipeId,
+      blueprintId: activeModId,
     };
     dispatch(logActions.setContext(messageContext));
-  }, [dispatch, activeRecipeId]);
+  }, [dispatch, activeModId]);
 
   const [unreadLogsCount, logsBadgeVariant] = useLogsBadgeState();
 
   const tabItems: TabItem[] = [
     {
       name: "Edit",
-      TabContent: EditRecipe,
+      TabContent: ModMetadataEditor,
     },
     {
       name: "Current Inputs",
-      TabContent: RecipeOptionsValues,
+      TabContent: ModOptionsValues,
     },
     {
       name: "Input Form",
@@ -74,7 +74,7 @@ const RecipePane: React.VFC = () => {
     },
   ];
 
-  if (!activeRecipeId) {
+  if (!activeModId) {
     return (
       <Centered>
         <Alert variant="danger">Mod not found</Alert>
@@ -89,4 +89,4 @@ const RecipePane: React.VFC = () => {
   );
 };
 
-export default RecipePane;
+export default ModEditorPane;

@@ -28,7 +28,7 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Effect from "@/components/Effect";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import styles from "./EditRecipe.module.scss";
+import styles from "./ModMetadataEditor.module.scss";
 import { object, string } from "yup";
 import { testIsSemVerString } from "@/types/helpers";
 import Form, { type RenderBody } from "@/components/form/Form";
@@ -43,7 +43,7 @@ import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store
 
 // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
-const editRecipeSchema = object({
+const editModSchema = object({
   id: string().required(), // Recipe id is readonly here
   name: string().required(),
   version: string()
@@ -56,34 +56,34 @@ const editRecipeSchema = object({
   description: string(),
 });
 
-const selectFirstExtension = createSelector(
+const selectFirstModComponent = createSelector(
   selectExtensions,
   selectActiveRecipeId,
   (extensions, activeRecipeId) =>
     extensions.find((x) => x._recipe?.id === activeRecipeId),
 );
 
-const EditRecipe: React.VoidFunctionComponent = () => {
-  const recipeId = useSelector(selectActiveRecipeId);
+const ModMetadataEditor: React.VoidFunctionComponent = () => {
+  const modId = useSelector(selectActiveRecipeId);
   const {
-    data: recipe,
+    data: modDefinition,
     isFetching,
     error,
-  } = useOptionalModDefinition(recipeId);
+  } = useOptionalModDefinition(modId);
 
-  // Select a single extension for the recipe to check the installed version.
-  // We rely on the assumption that every extension in the recipe has the same version.
-  const recipeExtension = useSelector(selectFirstExtension);
+  // Select a single mod component for the mod to check the installed version.
+  // We rely on the assumption that every component in the mod has the same version.
+  const modDefinitionComponent = useSelector(selectFirstModComponent);
 
-  const installedRecipeVersion = recipeExtension?._recipe.version;
-  const latestRecipeVersion = recipe?.metadata?.version;
-  const showOldRecipeWarning =
-    installedRecipeVersion &&
-    latestRecipeVersion &&
-    lt(installedRecipeVersion, latestRecipeVersion);
+  const installedModVersion = modDefinitionComponent?._recipe.version;
+  const latestModVersion = modDefinition?.metadata?.version;
+  const showOldModVersionWarning =
+    installedModVersion &&
+    latestModVersion &&
+    lt(installedModVersion, latestModVersion);
 
-  const dirtyMetadata = useSelector(selectDirtyMetadataForRecipeId(recipeId));
-  const savedMetadata = recipe?.metadata;
+  const dirtyMetadata = useSelector(selectDirtyMetadataForRecipeId(modId));
+  const savedMetadata = modDefinition?.metadata;
   const metadata = dirtyMetadata ?? savedMetadata;
 
   const initialFormState: ModMetadataFormState = {
@@ -124,11 +124,10 @@ const EditRecipe: React.VoidFunctionComponent = () => {
       <Card>
         <Card.Header>Mod Metadata</Card.Header>
         <Card.Body>
-          {showOldRecipeWarning && (
+          {showOldModVersionWarning && (
             <Alert variant="warning">
-              You are editing version {installedRecipeVersion} of this mod, the
-              latest version is {latestRecipeVersion}. To get the latest
-              version,{" "}
+              You are editing version {installedModVersion} of this mod, the
+              latest version is {latestModVersion}. To get the latest version,{" "}
               <a
                 href="/options.html#/mods"
                 target="_blank"
@@ -171,7 +170,7 @@ const EditRecipe: React.VoidFunctionComponent = () => {
         <Col sm={11} md={10} lg={9} xl={8}>
           <ErrorBoundary>
             <Form
-              validationSchema={editRecipeSchema}
+              validationSchema={editModSchema}
               initialValues={initialFormState}
               onSubmit={() => {
                 console.error(
@@ -188,4 +187,4 @@ const EditRecipe: React.VoidFunctionComponent = () => {
   );
 };
 
-export default EditRecipe;
+export default ModMetadataEditor;

@@ -439,9 +439,13 @@ exports[`ActivateRecipePanel renders with options, permissions info 1`] = `
         >
           Test Mod
         </div>
-        <p>
-          We're almost there. This mod has a few settings to configure before using. You can always change these later.
-        </p>
+        <div>
+          <p>
+            We're almost there. This mod has a few settings to configure before using. You can always change these later.
+          </p>
+          
+
+        </div>
         <div>
           <h4>
             Configure Mod
@@ -787,9 +791,13 @@ exports[`ActivateRecipePanel renders with service configuration if no built-in s
         >
           Test Mod
         </div>
-        <p>
-          We're almost there. This mod has a few settings to configure before using. You can always change these later.
-        </p>
+        <div>
+          <p>
+            We're almost there. This mod has a few settings to configure before using. You can always change these later.
+          </p>
+          
+
+        </div>
         <div
           class="mt-1"
         >
@@ -799,13 +807,13 @@ exports[`ActivateRecipePanel renders with service configuration if no built-in s
         </div>
         <div>
           <div
-            class="serviceCard card"
+            class="integrationCard card"
           >
             <div
-              class="serviceCardHeader"
+              class="integrationCardHeader"
             >
               <code
-                class="serviceId"
+                class="integrationId"
               >
                 @pixiebrix/service1
               </code>
@@ -861,13 +869,13 @@ exports[`ActivateRecipePanel renders with service configuration if no built-in s
         </div>
         <div>
           <div
-            class="serviceCard card"
+            class="integrationCard card"
           >
             <div
-              class="serviceCardHeader"
+              class="integrationCardHeader"
             >
               <code
-                class="serviceId"
+                class="integrationId"
               >
                 @pixiebrix/service2
               </code>

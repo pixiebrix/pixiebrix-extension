@@ -1,6 +1,135 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ActivationOptions renders blueprint options 1`] = `
+exports[`ModOptionsValues renders blueprint options with additional props 1`] = `
+<DocumentFragment>
+  <div
+    class="pt-3 container-fluid"
+  >
+    <div
+      class="row"
+    >
+      <div
+        class="col"
+      >
+        <form
+          class=""
+          novalidate=""
+        >
+          <div
+            class="card"
+          >
+            <div
+              class="card-header"
+            >
+              Mod Input Options
+            </div>
+            <div
+              class="card-body"
+            >
+              <div
+                class="formGroup form-group row"
+              >
+                <div
+                  class="mb-2 collapse col-12"
+                >
+                  <div
+                    class="annotationPlaceholder"
+                  />
+                </div>
+                <label
+                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  for="additionalProperties"
+                >
+                  Additional Properties
+                </label>
+                <div
+                  class="col-xl-10 col-lg-9"
+                >
+                  <div
+                    class="root"
+                  >
+                    <div
+                      class="field"
+                    >
+                      <input
+                        class="form-control"
+                        id="additionalProperties"
+                        name="additionalProperties"
+                        readonly=""
+                        value=""
+                      />
+                    </div>
+                    <div
+                      class="dropdown dropdown"
+                      data-test-selected="Exclude"
+                      data-testid="toggle-additionalProperties"
+                    >
+                      <button
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="dropdown-toggle btn btn-link"
+                        type="button"
+                      >
+                        <span
+                          class="symbol"
+                        >
+                          <test-file-stub
+                            classname="root"
+                          />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ModOptionsValues renders empty options 1`] = `
+<DocumentFragment>
+  <div
+    class="pt-3 container-fluid"
+  >
+    <div
+      class="row"
+    >
+      <div
+        class="col"
+      >
+        <form
+          class=""
+          novalidate=""
+        >
+          <div
+            class="card"
+          >
+            <div
+              class="card-header"
+            >
+              Mod Input Options
+            </div>
+            <div
+              class="card-body"
+            >
+              <div>
+                This mod does not require any configuration
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ModOptionsValues renders mod options 1`] = `
 <DocumentFragment>
   <div
     class="pt-3 container-fluid"
@@ -419,131 +548,6 @@ exports[`ActivationOptions renders blueprint options 1`] = `
                 </div>
               </div>
             </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</DocumentFragment>
-`;
-
-exports[`ActivationOptions renders blueprint options with additional props 1`] = `
-<DocumentFragment>
-  <div
-    class="pt-3 container-fluid"
-  >
-    <div
-      class="row"
-    >
-      <div
-        class="col"
-      >
-        <form
-          class=""
-          novalidate=""
-        >
-          <div
-            class="card"
-          >
-            <div
-              class="card-header"
-            >
-              Mod Input Options
-            </div>
-            <div
-              class="card-body"
-            >
-              <div
-                class="formGroup form-group row"
-              >
-                <div
-                  class="mb-2 collapse col-12"
-                >
-                  <div
-                    class="annotationPlaceholder"
-                  />
-                </div>
-                <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
-                  for="additionalProperties"
-                >
-                  Additional Properties
-                </label>
-                <div
-                  class="col-xl-10 col-lg-9"
-                >
-                  <div
-                    class="root"
-                  >
-                    <div
-                      class="field"
-                    >
-                      <input
-                        class="form-control"
-                        id="additionalProperties"
-                        name="additionalProperties"
-                        readonly=""
-                        value=""
-                      />
-                    </div>
-                    <div
-                      class="dropdown dropdown"
-                      data-test-selected="Exclude"
-                      data-testid="toggle-additionalProperties"
-                    >
-                      <button
-                        aria-expanded="false"
-                        aria-haspopup="true"
-                        class="dropdown-toggle btn btn-link"
-                        type="button"
-                      >
-                        <span
-                          class="symbol"
-                        >
-                          <test-file-stub
-                            classname="root"
-                          />
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</DocumentFragment>
-`;
-
-exports[`ActivationOptions renders empty options 1`] = `
-<DocumentFragment>
-  <div
-    class="pt-3 container-fluid"
-  >
-    <div
-      class="row"
-    >
-      <div
-        class="col"
-      >
-        <form
-          class=""
-          novalidate=""
-        >
-          <div
-            class="card"
-          >
-            <div
-              class="card-header"
-            >
-              Mod Input Options
-            </div>
-            <div
-              class="card-body"
-            />
           </div>
         </form>
       </div>
