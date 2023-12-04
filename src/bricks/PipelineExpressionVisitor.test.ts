@@ -20,9 +20,9 @@ import { type BrickPosition, type BrickPipeline } from "@/bricks/types";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { type Expression } from "@/types/runtimeTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import { toExpression } from "@/testUtils/testHelpers";
 import PipelineExpressionVisitor from "./PipelineExpressionVisitor";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import { toExpression } from "@/utils/expressionUtils";
 
 function getTestBlock() {
   return brickConfigFactory({
@@ -54,19 +54,13 @@ test("should invoke the callback for a brick expression", () => {
     {
       path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.text`,
     },
-    {
-      __type__: "nunjucks",
-      __value__: "test",
-    },
+    toExpression("nunjucks", "test"),
   );
   expect(visitExpression).toHaveBeenCalledWith(
     {
       path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.if`,
     },
-    {
-      __type__: "var",
-      __value__: "@foo",
-    },
+    toExpression("var", "@foo"),
   );
 });
 
@@ -104,9 +98,6 @@ test("should invoke the callback for a Document expression", () => {
     {
       path: `${PIPELINE_BLOCKS_FIELD_NAME}.0.config.body.0.children.0.children.0.children.0.config.text`,
     },
-    {
-      __type__: "nunjucks",
-      __value__: "test",
-    },
+    toExpression("nunjucks", "test"),
   );
 });

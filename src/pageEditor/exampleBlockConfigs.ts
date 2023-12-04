@@ -22,10 +22,6 @@ import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { DocumentRenderer } from "@/bricks/renderers/document";
-import {
-  makePipelineExpression,
-  makeTemplateExpression,
-} from "@/runtime/expressionCreators";
 import { type BrickConfig } from "@/bricks/types";
 import { uuidv4 } from "@/types/helpers";
 import { defaultBlockConfig } from "@/bricks/util";
@@ -35,6 +31,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
 import { IdentityTransformer } from "@/bricks/transformers/identity";
+import { toExpression } from "@/utils/expressionUtils";
 
 /**
  * Get a default block config for a block
@@ -66,7 +63,7 @@ export function getExampleBlockConfig(
 
     case IdentityTransformer.BRICK_ID: {
       return {
-        value: makeTemplateExpression("nunjucks", ""),
+        value: toExpression("nunjucks", ""),
       };
     }
 
@@ -175,7 +172,7 @@ export function getExampleBlockConfig(
     case "@pixiebrix/state/assign": {
       return {
         variableName: "",
-        value: makeTemplateExpression("nunjucks", ""),
+        value: toExpression("nunjucks", ""),
       };
     }
 
@@ -183,7 +180,7 @@ export function getExampleBlockConfig(
       return {
         title: "Example Info",
         location: "panel",
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           createNewBlock(DocumentRenderer.BLOCK_ID),
         ]),
         isRootAware: true,

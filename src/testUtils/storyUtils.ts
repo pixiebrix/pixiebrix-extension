@@ -18,10 +18,27 @@
 import { configureStore } from "@reduxjs/toolkit";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { appApi } from "@/services/api";
+import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import sessionSlice from "@/pageEditor/slices/sessionSlice";
 
 export function settingsStore() {
   return configureStore({
     reducer: {
+      settings: settingsSlice.reducer,
+      [appApi.reducerPath]: appApi.reducer,
+    },
+    middleware(getDefaultMiddleware) {
+      return getDefaultMiddleware().concat(appApi.middleware);
+    },
+    preloadedState: {},
+  });
+}
+
+export function editorStore() {
+  return configureStore({
+    reducer: {
+      editor: editorSlice.reducer,
+      session: sessionSlice.reducer,
       settings: settingsSlice.reducer,
       [appApi.reducerPath]: appApi.reducer,
     },

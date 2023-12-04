@@ -292,7 +292,7 @@ function useInitialFormState({
 
     return {
       id: newId,
-      name: recipeMetadata.name,
+      name: `${recipeMetadata.name} (Copy)`,
       version: validateSemVerString("1.0.0"),
       description: recipeMetadata.description,
     };

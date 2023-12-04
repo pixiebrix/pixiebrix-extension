@@ -114,9 +114,6 @@ export function removeElement(state: Draft<EditorState>, uuid: UUID) {
   if (dynamicIndex > -1) {
     // Element is available, update available ids
     state.availableDynamicIds.splice(dynamicIndex, 1);
-  } else if (index > -1) {
-    // Element is present but unavailable, so update unavailable count
-    state.unavailableDynamicCount--;
   }
 
   // Make sure we're not keeping any private data around from Page Editor sessions

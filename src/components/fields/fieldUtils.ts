@@ -20,13 +20,50 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { type FieldValidator } from "formik";
 import { type Draft, produce } from "immer";
 import type * as Yup from "yup";
-import { isEmpty } from "lodash";
+import { isEmpty, startCase } from "lodash";
 import { type Schema, type SchemaDefinition } from "@/types/schemaTypes";
 import { isExpression, isTemplateExpression } from "@/utils/expressionUtils";
 
+/**
+ * Acronyms to capitalize in field labels.
+ */
+const FIELD_TITLE_ACRONYMS = new Set([
+  "API",
+  "CRUD",
+  "CSS",
+  "CSV",
+  "GUI",
+  "HTML",
+  "HTTP",
+  "HTTPS",
+  "JS",
+  "JSON",
+  "REST",
+  "SAP",
+  "SDK",
+  "SQL",
+  "UI",
+  "URL",
+]);
+
+/**
+ * Returns the default label for a field with the given form name.
+ * @param name the form name, including field name separators
+ */
 export function fieldLabel(name: string): string {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Presumably the name is never empty, so there's always a "last item"
-  return name.split(".").at(-1)!;
+  const namePart = name.split(".").at(-1)!;
+
+  return startCase(namePart)
+    .split(" ")
+    .map((word) => {
+      if (FIELD_TITLE_ACRONYMS.has(word.toUpperCase())) {
+        return word.toUpperCase();
+      }
+
+      return word;
+    })
+    .join(" ");
 }
 
 type TypePredicate = (fieldDefinition: Schema) => boolean;

@@ -20,8 +20,8 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import { type Schema } from "@/types/schemaTypes";
 import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import userEvent from "@testing-library/user-event";
-import { stringToExpression } from "@/pageEditor/starterBricks/upgrade";
 import { render, screen, within } from "@/pageEditor/testHelpers";
+import { toExpression } from "@/utils/expressionUtils";
 
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";
@@ -113,7 +113,7 @@ describe("ArrayWidget", () => {
     await userEvent.type(itemInput, "myValue");
 
     expect(getFormState()).toStrictEqual({
-      [fieldName]: [stringToExpression("myValue", "nunjucks")],
+      [fieldName]: [toExpression("nunjucks", "myValue")],
     });
   });
 

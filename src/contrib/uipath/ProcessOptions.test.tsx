@@ -24,7 +24,6 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import ProcessOptions from "@/contrib/uipath/ProcessOptions";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
 import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
@@ -34,6 +33,7 @@ import { setContext } from "@/testUtils/detectPageMock";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 setContext("devToolsPage");
 
@@ -137,8 +137,10 @@ describe("UiPath Options", () => {
     );
 
     const base = makeBaseState();
-    base.extension.blockPipeline[0].config.uipath =
-      makeVariableExpression("@uipath");
+    base.extension.blockPipeline[0].config.uipath = toExpression(
+      "var",
+      "@uipath",
+    );
 
     const { asFragment } = renderOptions(base);
 
@@ -159,8 +161,10 @@ describe("UiPath Options", () => {
     );
 
     const base = makeBaseState();
-    base.extension.blockPipeline[0].config.uipath =
-      makeVariableExpression("@uipath");
+    base.extension.blockPipeline[0].config.uipath = toExpression(
+      "var",
+      "@uipath",
+    );
     base.extension.blockPipeline[0].config.awaitResult = true;
 
     renderOptions(base);

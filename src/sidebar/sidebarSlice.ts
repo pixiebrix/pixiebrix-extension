@@ -312,6 +312,7 @@ const sidebarSlice = createSlice({
 
       state.temporaryPanels = castDraft([...otherTemporaryPanels, panel]);
       state.activeKey = eventKeyForEntry(panel);
+      state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = true;
     },
     removeTemporaryPanel(state, action: PayloadAction<UUID>) {
       const nonce = action.payload;

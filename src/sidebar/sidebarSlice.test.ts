@@ -134,6 +134,29 @@ describe("sidebarSlice.addTemporaryPanel", () => {
       [existingPanel.nonce],
     );
   });
+
+  it("closes the mod launcher if it is open", async () => {
+    const newPanel = sidebarEntryFactory("temporaryPanel");
+
+    const state = {
+      ...sidebarSlice.getInitialState(),
+      temporaryPanels: [],
+      staticPanels: [MOD_LAUNCHER],
+    } as SidebarState;
+
+    expect(state.closedTabs).toStrictEqual({});
+
+    const newState = sidebarSlice.reducer(
+      state,
+      sidebarSlice.actions.addTemporaryPanel({ panel: newPanel }),
+    );
+
+    expect(newState.activeKey).toBe(eventKeyForEntry(newPanel));
+
+    expect(newState.closedTabs).toStrictEqual({
+      [eventKeyForEntry(MOD_LAUNCHER)]: true,
+    });
+  });
 });
 
 describe("sidebarSlice.removeTemporaryPanel", () => {

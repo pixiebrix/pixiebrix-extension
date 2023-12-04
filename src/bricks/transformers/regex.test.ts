@@ -18,10 +18,8 @@
 import { RegexTransformer } from "./regex";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { BusinessError } from "@/errors/businessErrors";
-import {
-  makeTemplateExpression,
-  makeVariableExpression,
-} from "@/runtime/expressionCreators";
+
+import { toExpression } from "@/utils/expressionUtils";
 
 const transformer = new RegexTransformer();
 
@@ -172,8 +170,8 @@ describe("getOutputSchema", () => {
     const schema = transformer.getOutputSchema({
       id: transformer.id,
       config: {
-        regex: makeTemplateExpression("nunjucks", "(?<name>ABC)"),
-        input: makeTemplateExpression("nunjucks", "{{ @test }}"),
+        regex: toExpression("nunjucks", "(?<name>ABC)"),
+        input: toExpression("nunjucks", "{{ @test }}"),
       },
     });
 
@@ -228,7 +226,7 @@ describe("getOutputSchema", () => {
       id: transformer.id,
       config: {
         regex: "(?<name>ABC)",
-        input: makeVariableExpression("@test"),
+        input: toExpression("var", "@test"),
       },
     });
 

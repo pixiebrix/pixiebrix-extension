@@ -43,6 +43,7 @@ import { addOverlay } from "@/bricks/transformers/tourStep/overlay";
 import { cancelTemporaryPanels } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { AbortPanelAction } from "@/bricks/errors";
 import { $safeFind } from "@/utils/domUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 export type StepInputs = {
   title: string;
@@ -282,12 +283,9 @@ export const StepSchema: Schema = propertiesToSchema(
 );
 
 function markdownPipeline(markdown: string): PipelineExpression {
-  return {
-    __type__: "pipeline",
-    __value__: [
-      { id: validateRegistryId("@pixiebrix/markdown"), config: { markdown } },
-    ],
-  };
+  return toExpression("pipeline", [
+    { id: validateRegistryId("@pixiebrix/markdown"), config: { markdown } },
+  ]);
 }
 
 export class TourStepTransformer extends TransformerABC {

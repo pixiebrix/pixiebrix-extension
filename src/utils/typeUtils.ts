@@ -53,7 +53,7 @@ export function boolean(value: unknown): boolean {
   return false;
 }
 
-export function assert<T>(
+export function assertNotNull<T>(
   value: T,
   assertionMessage: string,
 ): asserts value is Exclude<T, null | undefined> {

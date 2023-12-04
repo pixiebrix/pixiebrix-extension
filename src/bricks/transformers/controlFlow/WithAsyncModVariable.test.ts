@@ -16,7 +16,6 @@
  */
 
 import { WithAsyncModVariable } from "@/bricks/transformers/controlFlow/WithAsyncModVariable";
-import { makePipelineExpression } from "@/runtime/expressionCreators";
 import {
   DeferredEchoBrick,
   simpleInput,
@@ -37,6 +36,7 @@ import {
 import { type UUID } from "@/types/stringTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type Expression } from "@/types/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 const withAsyncModVariableBrick = new WithAsyncModVariable();
 
@@ -47,7 +47,7 @@ const makeAsyncModVariablePipeline = (
 ) => ({
   id: withAsyncModVariableBrick.id,
   config: {
-    body: makePipelineExpression([
+    body: toExpression("pipeline", [
       {
         id: brick.id,
         config: {
@@ -283,10 +283,11 @@ describe("WithAsyncModVariable", () => {
 
   describe("getModVariableSchema", () => {
     test("with mod variable name set", async () => {
-      const pipeline = makeAsyncModVariablePipeline(asyncEchoBrick, "bar", {
-        __type__: "nunjucks",
-        __value__: "foo",
-      });
+      const pipeline = makeAsyncModVariablePipeline(
+        asyncEchoBrick,
+        "bar",
+        toExpression("nunjucks", "foo"),
+      );
 
       const withAsyncModVariableBrick = new WithAsyncModVariable();
 
@@ -340,10 +341,11 @@ describe("WithAsyncModVariable", () => {
     });
 
     test("with mod variable name unset", async () => {
-      const pipeline = makeAsyncModVariablePipeline(asyncEchoBrick, "bar", {
-        __type__: "nunjucks",
-        __value__: "",
-      });
+      const pipeline = makeAsyncModVariablePipeline(
+        asyncEchoBrick,
+        "bar",
+        toExpression("nunjucks", ""),
+      );
 
       const withAsyncModVariableBrick = new WithAsyncModVariable();
 

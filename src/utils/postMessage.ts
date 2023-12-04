@@ -33,7 +33,7 @@
 import pTimeout from "p-timeout";
 import { deserializeError, serializeError } from "serialize-error";
 import { type SerializedError } from "@/types/messengerTypes";
-import { assert } from "./typeUtils";
+import { assertNotNull } from "./typeUtils";
 import { type JsonValue } from "type-fest";
 
 const TIMEOUT_MS = 3000;
@@ -112,7 +112,7 @@ export function addPostMessageListener(
       return;
     }
 
-    assert(source, "No source port was provided");
+    assertNotNull(source, "No source port was provided");
 
     try {
       log("SANDBOX:", type, "Received payload:", data.payload);

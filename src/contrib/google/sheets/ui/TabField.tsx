@@ -20,10 +20,9 @@ import { type SchemaFieldProps } from "@/components/fields/schemaFields/propType
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { isEmpty } from "lodash";
 import { useField } from "formik";
-import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { isExpression } from "@/utils/expressionUtils";
+import { isExpression, toExpression } from "@/utils/expressionUtils";
 import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
 import useAsyncEffect from "use-async-effect";
 
@@ -67,7 +66,7 @@ const TabField: React.FC<
 
     // Set to empty nunjucks expression if no tab names have loaded
     if (isEmpty(tabNames)) {
-      await setTabName(makeTemplateExpression("nunjucks", ""));
+      await setTabName(toExpression("nunjucks", ""));
       return;
     }
 

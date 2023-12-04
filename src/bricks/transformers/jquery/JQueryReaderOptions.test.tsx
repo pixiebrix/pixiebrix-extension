@@ -28,15 +28,12 @@ import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactor
 import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import {
-  makeTemplateExpression,
-  makeVariableExpression,
-} from "@/runtime/expressionCreators";
 import { getAttributeExamples } from "@/contentScript/messenger/api";
 import { screen } from "@testing-library/react";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/pageEditor/fields/devtoolFieldOverrides";
 import userEvent from "@testing-library/user-event";
+import { toExpression } from "@/utils/expressionUtils";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   getAttributeExamples: jest.fn(),
@@ -88,7 +85,7 @@ describe("JQueryReaderOptions", () => {
   it("shows workshop message on variable selector", async () => {
     const state = baseStateFactory();
     state.extension.blockPipeline[0].config.selectors = {
-      property: makeVariableExpression("@foo"),
+      property: toExpression("var", "@foo"),
     };
 
     renderOptions(state);
@@ -101,8 +98,10 @@ describe("JQueryReaderOptions", () => {
 
   it("shows workshop message variable selectors", async () => {
     const state = baseStateFactory();
-    state.extension.blockPipeline[0].config.selectors =
-      makeVariableExpression("@foo");
+    state.extension.blockPipeline[0].config.selectors = toExpression(
+      "var",
+      "@foo",
+    );
 
     renderOptions(state);
 
@@ -166,9 +165,9 @@ describe("JQueryReaderOptions", () => {
     const state = baseStateFactory();
     state.extension.blockPipeline[0].config.selectors = {
       outer: {
-        selector: makeTemplateExpression("nunjucks", "div"),
+        selector: toExpression("nunjucks", "div"),
         find: {
-          inner: makeTemplateExpression("nunjucks", "h1"),
+          inner: toExpression("nunjucks", "h1"),
         },
       },
     };
@@ -195,9 +194,9 @@ describe("JQueryReaderOptions", () => {
     const state = baseStateFactory();
     state.extension.blockPipeline[0].config.selectors = {
       outer: {
-        selector: makeTemplateExpression("nunjucks", "div"),
+        selector: toExpression("nunjucks", "div"),
         find: {
-          inner: makeTemplateExpression("nunjucks", "h1"),
+          inner: toExpression("nunjucks", "h1"),
         },
       },
     };
@@ -224,9 +223,9 @@ describe("JQueryReaderOptions", () => {
     const state = baseStateFactory();
     state.extension.blockPipeline[0].config.selectors = {
       outer: {
-        selector: makeTemplateExpression("nunjucks", "div"),
+        selector: toExpression("nunjucks", "div"),
         find: {
-          inner: makeTemplateExpression("nunjucks", "h1"),
+          inner: toExpression("nunjucks", "h1"),
         },
       },
     };

@@ -3679,7 +3679,7 @@ exports[`Storyshots Fields/ChildObjectField Primitive Value 1`] = `
               className="label form-label col-form-label col-xl-2 col-lg-3"
               htmlFor="childObject.InputValue"
             >
-              InputValue
+              Input Value
             </label>
             <div
               className="col-xl-10 col-lg-9"
@@ -8666,6 +8666,123 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard Token (Unlinked Extension)
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots PageEditor/HomePane Default 1`] = `
+<div
+  className="h-100 overflow-auto container-fluid"
+>
+  <div
+    className="pane row"
+  >
+    <img
+      alt="background illustration"
+      className="bgImage"
+      src="test-file-stub"
+    />
+    <div
+      className="col-lg-auto col-12"
+    >
+      <img
+        alt="Page Editor logo"
+        src="test-file-stub"
+      />
+    </div>
+    <div
+      className="col-xl-auto col-lg-7 col-12"
+    >
+      <h1
+        className="title"
+      >
+        Welcome to the Page Editor!
+      </h1>
+      <div
+        className="lead"
+      >
+        <div>
+          You might recognize it from the video on the home page.
+        </div>
+        <div>
+          Here, you can create mods that improve the UX of any web apps and sites you visit.
+        </div>
+      </div>
+      <div>
+        <div
+          className="text"
+        >
+          Not sure where to get started? Our Template Gallery has customizable templates with guides for the most popular use cases.
+        </div>
+        <div>
+          <button
+            className="button btn btn-primary"
+            disabled={false}
+            onClick={[Function]}
+            type="button"
+          >
+            Launch Template Gallery
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      className="col-lg-auto col-12"
+    >
+      <div
+        className="links"
+      >
+        <ul>
+          <span
+            className="linkSectionHeader"
+          >
+            Support
+          </span>
+          <li>
+            <a
+              href="https://docs.pixiebrix.com/"
+            >
+              Documentation
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://pixiebrix.thinkific.com/collections"
+            >
+              PixieBrix Certification
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://slack.pixiebrix.com/"
+            >
+              Join the Community Slack
+            </a>
+          </li>
+        </ul>
+        <ul>
+          <span
+            className="linkSectionHeader"
+          >
+            Helpful Links
+          </span>
+          <li>
+            <button
+              onClick={[Function]}
+            >
+              Extension Console
+            </button>
+          </li>
+          <li>
+            <a
+              href="https://app.pixiebrix.com/"
+            >
+              Admin Console
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
   </div>

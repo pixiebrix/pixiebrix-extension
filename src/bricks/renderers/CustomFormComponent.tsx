@@ -103,7 +103,7 @@ const CustomFormComponent: React.FunctionComponent<{
               validator={validator}
               templates={{ FieldTemplate }}
               onChange={async ({ formData }: IChangeEvent<JsonObject>) => {
-                valuesRef.current = formData;
+                valuesRef.current = formData ?? {};
 
                 if (autoSave) {
                   submissionCountRef.current += 1;

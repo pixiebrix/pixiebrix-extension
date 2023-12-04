@@ -223,7 +223,7 @@ describe("ActivationOptions", () => {
     render(<RecipeOptionsValues />);
 
     const selectInput = await screen.findByRole("combobox", {
-      name: "mySheet",
+      name: "My Sheet",
     });
     expect(selectInput).toBeVisible();
 
@@ -284,7 +284,7 @@ describe("ActivationOptions", () => {
     render(<RecipeOptionsValues />);
 
     const selectInput = await screen.findByRole("combobox", {
-      name: "mySheet",
+      name: "My Sheet",
     });
     expect(selectInput).toBeVisible();
 

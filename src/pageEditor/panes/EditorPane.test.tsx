@@ -38,10 +38,6 @@ import userEvent from "@testing-library/user-event";
 import { JQTransformer } from "@/bricks/transformers/jq";
 import { AlertEffect } from "@/bricks/effects/alert";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
-import {
-  makePipelineExpression,
-  makeTemplateExpression,
-} from "@/runtime/expressionCreators";
 import { type OutputKey, type PipelineExpression } from "@/types/runtimeTypes";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import { type EditablePackageMetadata } from "@/types/contract";
@@ -57,7 +53,6 @@ import * as sinonTimers from "@sinonjs/fake-timers";
 import { array } from "cooky-cutter";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { mockCachedUser } from "@/testUtils/userMock";
-
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   formStateFactory,
@@ -69,6 +64,7 @@ import {
   marketplaceTagFactory,
 } from "@/testUtils/factories/marketplaceFactories";
 import { partnerUserFactory } from "@/testUtils/factories/authFactories";
+import { toExpression } from "@/utils/expressionUtils";
 
 jest.setTimeout(15_000); // This test is flaky with the default timeout of 5000 ms
 
@@ -166,17 +162,14 @@ const getFormStateWithSubPipelines = (): ModComponentFormState =>
       id: forEachBrick.id,
       outputKey: "forEachOutput" as OutputKey,
       config: {
-        elements: makeTemplateExpression("var", "@input.elements"),
+        elements: toExpression("var", "@input.elements"),
         elementKey: "element",
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           brickConfigFactory({
             id: echoBrick.id,
             outputKey: "subEchoOutput" as OutputKey,
             config: {
-              message: makeTemplateExpression(
-                "nunjucks",
-                "iteration {{ @element }}",
-              ),
+              message: toExpression("nunjucks", "iteration {{ @element }}"),
             },
           }),
         ]),
@@ -625,7 +618,7 @@ describe("validation", () => {
     await tickAsyncEffects();
 
     // By some reason, the validation doesn't fire with userEvent.type
-    fireTextInput(screen.getByLabelText("message"), "{{!");
+    fireTextInput(screen.getByLabelText("Message"), "{{!");
 
     // Run the timers of the Formik-Redux state synchronization and analysis
     await tickAsyncEffects();
@@ -670,7 +663,7 @@ describe("validation", () => {
 
     // Make invalid string template
     // This is field level error
-    fireTextInput(screen.getByLabelText("message"), "{{!");
+    fireTextInput(screen.getByLabelText("Message"), "{{!");
 
     await tickAsyncEffects();
 
@@ -740,7 +733,7 @@ describe("validation", () => {
       brickConfigFactory({
         id: MarkdownRenderer.BLOCK_ID,
         config: {
-          markdown: makeTemplateExpression("nunjucks", "test"),
+          markdown: toExpression("nunjucks", "test"),
         },
       }),
     );
@@ -777,7 +770,7 @@ describe("validation", () => {
       brickConfigFactory({
         id: MarkdownRenderer.BLOCK_ID,
         config: {
-          markdown: makeTemplateExpression("nunjucks", "test"),
+          markdown: toExpression("nunjucks", "test"),
         },
       }),
     );

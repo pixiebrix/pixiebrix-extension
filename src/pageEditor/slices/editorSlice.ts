@@ -115,10 +115,8 @@ export const initialState: EditorState = {
   deletedElementsByRecipeId: {},
   newRecipeIds: [],
   availableInstalledIds: [],
-  unavailableInstalledCount: 0,
   isPendingInstalledExtensions: false,
   availableDynamicIds: [],
-  unavailableDynamicCount: 0,
   isPendingDynamicExtensions: false,
   isModListExpanded: true,
   isDataPanelExpanded: true,
@@ -140,7 +138,7 @@ const cloneActiveExtension = createAsyncThunk<
     selectActiveElement(state),
     async (draft) => {
       draft.uuid = uuidv4();
-      draft.label += " - copy";
+      draft.label += " (Copy)";
       // Remove from its recipe, if any (the user can add it to any recipe after creation)
       delete draft.recipe;
       // Re-generate instance IDs for all the bricks in the extension
@@ -395,6 +393,14 @@ export const editorSlice = createSlice({
       void clearExtensionTraces(element.uuid);
 
       syncElementNodeUIStates(state, element);
+    },
+    showHomePane(state) {
+      state.activeElementId = null;
+      state.activeRecipeId = null;
+      state.expandedRecipeId = null;
+      state.error = null;
+      state.beta = false;
+      state.selectionSeq++;
     },
     selectElement(state, action: PayloadAction<UUID>) {
       const elementId = action.payload;
@@ -920,14 +926,12 @@ export const editorSlice = createSlice({
         (state, { payload: { availableInstalledIds, unavailableCount } }) => {
           state.isPendingInstalledExtensions = false;
           state.availableInstalledIds = availableInstalledIds;
-          state.unavailableInstalledCount = unavailableCount;
         },
       )
       .addCase(
         checkAvailableInstalledExtensions.rejected,
         (state, { error }) => {
           state.isPendingInstalledExtensions = false;
-          state.unavailableInstalledCount = 0;
           state.error = error;
           reportError(error);
         },
@@ -941,12 +945,10 @@ export const editorSlice = createSlice({
         (state, { payload: { availableDynamicIds, unavailableCount } }) => {
           state.isPendingDynamicExtensions = false;
           state.availableDynamicIds = availableDynamicIds;
-          state.unavailableDynamicCount = unavailableCount;
         },
       )
       .addCase(checkAvailableDynamicElements.rejected, (state, { error }) => {
         state.isPendingDynamicExtensions = false;
-        state.unavailableDynamicCount = 0;
         state.error = error;
         reportError(error);
       })
