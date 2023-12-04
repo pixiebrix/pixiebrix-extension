@@ -39,7 +39,7 @@ import {
   inferRecipeDependencies,
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
-import { EMPTY_MOD_OPTIONS_DEFINITION } from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionPane";
+import { EMPTY_MOD_OPTIONS_DEFINITION } from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionEditor";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
 import Effect from "@/components/Effect";
 import { actions } from "@/pageEditor/slices/editorSlice";
@@ -169,7 +169,7 @@ const ModOptionsValuesContent: React.FC = () => {
   );
 };
 
-const ModOptionsValues: React.FC = () => (
+const ModOptionsValuesEditor: React.FC = () => (
   <Container fluid className="pt-3">
     <Row>
       <Col>
@@ -179,4 +179,4 @@ const ModOptionsValues: React.FC = () => (
   </Container>
 );
 
-export default ModOptionsValues;
+export default ModOptionsValuesEditor;

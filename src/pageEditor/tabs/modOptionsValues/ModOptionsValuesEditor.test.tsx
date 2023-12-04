@@ -18,7 +18,7 @@
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "@/pageEditor/testHelpers";
-import ModOptionsValues from "@/pageEditor/tabs/modOptionsValues/ModOptionsValues";
+import ModOptionsValuesEditor from "@/pageEditor/tabs/modOptionsValues/ModOptionsValuesEditor";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { screen } from "@testing-library/react";
 import {
@@ -76,11 +76,11 @@ beforeEach(() => {
   registerDefaultWidgets();
 });
 
-describe("ModOptionsValues", () => {
+describe("ModOptionsValuesEditor", () => {
   test("renders empty options", async () => {
     const modDefinition = defaultModDefinitionFactory();
     mockModDefinition(modDefinition);
-    const { asFragment } = render(<ModOptionsValues />);
+    const { asFragment } = render(<ModOptionsValuesEditor />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
@@ -130,7 +130,7 @@ describe("ModOptionsValues", () => {
       },
     });
     mockModDefinition(modDefinition);
-    const { asFragment } = render(<ModOptionsValues />);
+    const { asFragment } = render(<ModOptionsValuesEditor />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
@@ -147,7 +147,7 @@ describe("ModOptionsValues", () => {
       },
     });
     mockModDefinition(modDefinition);
-    const { asFragment } = render(<ModOptionsValues />);
+    const { asFragment } = render(<ModOptionsValuesEditor />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
   });
@@ -178,7 +178,7 @@ describe("ModOptionsValues", () => {
       },
     });
     mockModDefinition(modDefinition);
-    render(<ModOptionsValues />);
+    render(<ModOptionsValuesEditor />);
 
     await waitForEffect();
 
@@ -220,7 +220,7 @@ describe("ModOptionsValues", () => {
       files: [],
     });
 
-    render(<ModOptionsValues />);
+    render(<ModOptionsValuesEditor />);
 
     const selectInput = await screen.findByRole("combobox", {
       name: "My Sheet",
@@ -281,7 +281,7 @@ describe("ModOptionsValues", () => {
       ],
     });
 
-    render(<ModOptionsValues />);
+    render(<ModOptionsValuesEditor />);
 
     const selectInput = await screen.findByRole("combobox", {
       name: "My Sheet",

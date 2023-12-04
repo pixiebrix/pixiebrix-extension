@@ -22,7 +22,7 @@ import FieldRuntimeContext, {
 import { Card, Col, Container, Nav, Row, Tab } from "react-bootstrap";
 import Loader from "@/components/Loader";
 import { isEmpty } from "lodash";
-import styles from "./ModOptionsDefinitionPane.module.scss";
+import styles from "./ModOptionsDefinitionEditor.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
@@ -93,7 +93,7 @@ export const EMPTY_MOD_OPTIONS_DEFINITION: ModOptionsDefinition = Object.freeze(
   },
 );
 
-const ModOptionsDefinitionPane: React.VFC = () => {
+const ModOptionsDefinitionEditor: React.VFC = () => {
   const [activeField, setActiveField] = useState<string>();
   const modId = useSelector(selectActiveRecipeId);
   const { data: mod, isFetching, error } = useOptionalModDefinition(modId);
@@ -219,4 +219,4 @@ const ModOptionsDefinitionPane: React.VFC = () => {
   );
 };
 
-export default ModOptionsDefinitionPane;
+export default ModOptionsDefinitionEditor;

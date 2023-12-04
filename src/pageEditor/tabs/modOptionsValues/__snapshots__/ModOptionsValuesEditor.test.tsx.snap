@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ModOptionsValues renders blueprint options with additional props 1`] = `
+exports[`ModOptionsValuesEditor renders blueprint options with additional props 1`] = `
 <DocumentFragment>
   <div
     class="pt-3 container-fluid"
@@ -91,7 +91,7 @@ exports[`ModOptionsValues renders blueprint options with additional props 1`] = 
 </DocumentFragment>
 `;
 
-exports[`ModOptionsValues renders empty options 1`] = `
+exports[`ModOptionsValuesEditor renders empty options 1`] = `
 <DocumentFragment>
   <div
     class="pt-3 container-fluid"
@@ -129,7 +129,7 @@ exports[`ModOptionsValues renders empty options 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ModOptionsValues renders mod options 1`] = `
+exports[`ModOptionsValuesEditor renders mod options 1`] = `
 <DocumentFragment>
   <div
     class="pt-3 container-fluid"

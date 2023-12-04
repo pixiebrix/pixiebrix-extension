@@ -18,7 +18,7 @@
 import React from "react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "@/pageEditor/testHelpers";
-import ModOptionsDefinitionPane from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionPane";
+import ModOptionsDefinitionEditor from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionEditor";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import selectEvent from "react-select-event";
 import { screen } from "@testing-library/react";
@@ -36,11 +36,11 @@ beforeAll(() => {
   registerDefaultWidgets();
 });
 
-describe("ModOptionsDefinitionPane", () => {
+describe("ModOptionsDefinitionEditor", () => {
   it("shows google sheets, and both database field type options", async () => {
     const modDefinition = defaultModDefinitionFactory();
 
-    render(<ModOptionsDefinitionPane />, {
+    render(<ModOptionsDefinitionEditor />, {
       setupRedux(dispatch) {
         dispatch(
           extensionsSlice.actions.installMod({

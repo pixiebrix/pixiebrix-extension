@@ -32,8 +32,8 @@ import ModMetadataEditor from "@/pageEditor/tabs/modMetadata/ModMetadataEditor";
 import { type MessageContext } from "@/types/loggerTypes";
 import { logActions } from "@/components/logViewer/logSlice";
 import useLogsBadgeState from "@/pageEditor/tabs/logs/useLogsBadgeState";
-import ModOptionsDefinitionPane from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionPane";
-import ModOptionsValues from "@/pageEditor/tabs/modOptionsValues/ModOptionsValues";
+import ModOptionsDefinitionEditor from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionEditor";
+import ModOptionsValuesEditor from "@/pageEditor/tabs/modOptionsValues/ModOptionsValuesEditor";
 
 const ModEditorPane: React.VFC = () => {
   const dispatch = useDispatch();
@@ -59,11 +59,11 @@ const ModEditorPane: React.VFC = () => {
     },
     {
       name: "Current Inputs",
-      TabContent: ModOptionsValues,
+      TabContent: ModOptionsValuesEditor,
     },
     {
       name: "Input Form",
-      TabContent: ModOptionsDefinitionPane,
+      TabContent: ModOptionsDefinitionEditor,
     },
     {
       name: "Logs",
