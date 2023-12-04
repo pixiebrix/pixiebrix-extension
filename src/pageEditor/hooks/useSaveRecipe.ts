@@ -43,6 +43,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
+import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -118,8 +119,11 @@ function useSaveRecipe(): RecipeSaver {
         !dirtyRecipeElements.some((element) => element.uuid === extension.id) &&
         !deletedElementIds.has(extension.id),
     );
-    // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
-    const newOptions = dirtyRecipeOptions[recipeId];
+
+    const newOptions = normalizeModOptionsDefinition(
+      // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
+      dirtyRecipeOptions[recipeId],
+    );
     // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
     const newMetadata = dirtyRecipeMetadata[recipeId];
 

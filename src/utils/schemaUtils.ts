@@ -19,9 +19,11 @@ import {
   type Schema,
   type SchemaDefinition,
   type SchemaProperties,
+  type UiSchema,
 } from "@/types/schemaTypes";
 import { castArray, intersection, isEmpty, split, uniq } from "lodash";
 import { isNullOrBlank } from "@/utils/stringUtils";
+import { UI_ORDER } from "@/components/formBuilder/schemaFieldNames";
 
 /**
  * Helper method to get the schema of a sub-property. Does not currently handle array indexes or allOf/oneOf/anyOf.
@@ -207,3 +209,18 @@ export function unionSchemaDefinitionTypes(
 
   return result;
 }
+
+/**
+ * Factory for a minimal JSON Schema for an object.
+ */
+export const minimalSchemaFactory: () => Schema = () => ({
+  type: "object",
+  properties: {},
+});
+
+/**
+ * Factory for a minimal RJSF UI Schema for an object.
+ */
+export const minimalUiSchemaFactory: () => UiSchema = () => ({
+  [UI_ORDER]: ["*"],
+});

@@ -18,8 +18,6 @@
 import { produce } from "immer";
 import {
   DEFAULT_FIELD_TYPE,
-  getMinimalSchema,
-  getMinimalUiSchema,
   normalizeSchema,
   getNormalizedUiOrder,
   produceSchemaOnPropertyNameChange,
@@ -34,6 +32,10 @@ import { UI_WIDGET } from "./schemaFieldNames";
 import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
 import { KEYS_OF_UI_SCHEMA, type Schema } from "@/types/schemaTypes";
+import {
+  minimalSchemaFactory,
+  minimalUiSchemaFactory,
+} from "@/utils/schemaUtils";
 
 describe("replaceStringInArray", () => {
   let array: string[];
@@ -89,7 +91,7 @@ describe("produceSchemaOnPropertyNameChange", () => {
 
 describe("validateNextPropertyName", () => {
   const schema: Schema = {
-    ...getMinimalSchema(),
+    ...minimalSchemaFactory(),
     properties: {
       field1: {
         title: "Field 1",
@@ -143,7 +145,7 @@ describe("normalizeSchema", () => {
     const actual = produce(
       {
         schema,
-        uiSchema: getMinimalUiSchema(),
+        uiSchema: minimalUiSchemaFactory(),
       } as RJSFSchema,
       (draft) => {
         normalizeSchema(draft);
@@ -164,7 +166,7 @@ describe("normalizeSchema", () => {
     const actual = produce(
       {
         schema,
-        uiSchema: getMinimalUiSchema(),
+        uiSchema: minimalUiSchemaFactory(),
       } as RJSFSchema,
       (draft) => {
         normalizeSchema(draft);
@@ -191,7 +193,7 @@ describe("normalizeSchema", () => {
     const actual = produce(
       {
         schema,
-        uiSchema: getMinimalUiSchema(),
+        uiSchema: minimalUiSchemaFactory(),
       } as RJSFSchema,
       (draft) => {
         normalizeSchema(draft);
@@ -247,7 +249,7 @@ describe("produceSchemaOnUiTypeChange", () => {
   test("converts Dropdown to Dropdown with labels", () => {
     const schema: RJSFSchema = {
       schema: {
-        ...getMinimalSchema(),
+        ...minimalSchemaFactory(),
         properties: {
           field1: {
             title: "Field 1",
@@ -257,7 +259,7 @@ describe("produceSchemaOnUiTypeChange", () => {
         },
       },
       uiSchema: {
-        ...getMinimalUiSchema(),
+        ...minimalUiSchemaFactory(),
         field1: {
           [UI_WIDGET]: "select",
         },
@@ -293,7 +295,7 @@ describe("produceSchemaOnUiTypeChange", () => {
   test("converts Dropdown with labels to Dropdown", () => {
     const schema: RJSFSchema = {
       schema: {
-        ...getMinimalSchema(),
+        ...minimalSchemaFactory(),
         properties: {
           field1: {
             title: "Field 1",
@@ -316,7 +318,7 @@ describe("produceSchemaOnUiTypeChange", () => {
         },
       },
       uiSchema: {
-        ...getMinimalUiSchema(),
+        ...minimalUiSchemaFactory(),
         field1: {
           [UI_WIDGET]: "select",
         },
@@ -345,7 +347,7 @@ describe("produceSchemaOnUiTypeChange", () => {
   test("produce valid database schema", () => {
     const schema: RJSFSchema = {
       schema: {
-        ...getMinimalSchema(),
+        ...minimalSchemaFactory(),
         properties: {
           field1: {
             title: "Field 1",
@@ -353,7 +355,7 @@ describe("produceSchemaOnUiTypeChange", () => {
           },
         },
       },
-      uiSchema: getMinimalUiSchema(),
+      uiSchema: minimalUiSchemaFactory(),
     };
 
     const nextSchema = produceSchemaOnUiTypeChange(
@@ -375,7 +377,7 @@ describe("produceSchemaOnUiTypeChange", () => {
   test("removes ref when switches from database", () => {
     const schema: RJSFSchema = {
       schema: {
-        ...getMinimalSchema(),
+        ...minimalSchemaFactory(),
         properties: {
           field1: {
             title: "Field 1",
@@ -384,7 +386,7 @@ describe("produceSchemaOnUiTypeChange", () => {
         },
       },
       uiSchema: {
-        ...getMinimalUiSchema(),
+        ...minimalUiSchemaFactory(),
         field1: {
           [UI_WIDGET]: "database",
         },
@@ -408,7 +410,7 @@ describe("produceSchemaOnUiTypeChange", () => {
   test("produce valid googleSheet schema", () => {
     const schema: RJSFSchema = {
       schema: {
-        ...getMinimalSchema(),
+        ...minimalSchemaFactory(),
         properties: {
           field1: {
             title: "Field 1",
@@ -416,7 +418,7 @@ describe("produceSchemaOnUiTypeChange", () => {
           },
         },
       },
-      uiSchema: getMinimalUiSchema(),
+      uiSchema: minimalUiSchemaFactory(),
     };
 
     const nextSchema = produceSchemaOnUiTypeChange(
@@ -438,7 +440,7 @@ describe("produceSchemaOnUiTypeChange", () => {
   test("removes ref when switches from googleSheet", () => {
     const schema: RJSFSchema = {
       schema: {
-        ...getMinimalSchema(),
+        ...minimalSchemaFactory(),
         properties: {
           field1: {
             title: "Field 1",
@@ -447,7 +449,7 @@ describe("produceSchemaOnUiTypeChange", () => {
         },
       },
       uiSchema: {
-        ...getMinimalUiSchema(),
+        ...minimalUiSchemaFactory(),
         field1: {
           [UI_WIDGET]: "googleSheet",
         },

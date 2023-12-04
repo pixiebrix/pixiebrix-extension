@@ -126,7 +126,12 @@ exports[`FormEditor renders empty schema 1`] = `
           class="text-muted form-text"
         >
           <span>
-            Form description or instructions. Supports markdown.
+            Form description or instructions. Supports 
+            <a
+              href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown"
+            >
+              Markdown
+            </a>
           </span>
         </small>
       </div>
@@ -318,7 +323,12 @@ exports[`FormEditor renders simple schema 1`] = `
           class="text-muted form-text"
         >
           <span>
-            Form description or instructions. Supports markdown.
+            Form description or instructions. Supports 
+            <a
+              href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown"
+            >
+              Markdown
+            </a>
           </span>
         </small>
       </div>
@@ -558,7 +568,12 @@ exports[`FormEditor renders simple schema 1`] = `
             class="text-muted form-text"
           >
             <span>
-              The user-visible description for the field
+              The user-visible description for the field. Supports 
+              <a
+                href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown"
+              >
+                Markdown
+              </a>
             </span>
           </small>
         </div>
@@ -990,7 +1005,12 @@ exports[`FormEditor renders unknown field format 1`] = `
           class="text-muted form-text"
         >
           <span>
-            Form description or instructions. Supports markdown.
+            Form description or instructions. Supports 
+            <a
+              href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown"
+            >
+              Markdown
+            </a>
           </span>
         </small>
       </div>
@@ -1230,7 +1250,12 @@ exports[`FormEditor renders unknown field format 1`] = `
             class="text-muted form-text"
           >
             <span>
-              The user-visible description for the field
+              The user-visible description for the field. Supports 
+              <a
+                href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown"
+              >
+                Markdown
+              </a>
             </span>
           </small>
         </div>

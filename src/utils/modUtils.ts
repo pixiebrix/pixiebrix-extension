@@ -36,6 +36,12 @@ import { type UUID } from "@/types/stringTypes";
 import { InvalidTypeError } from "@/errors/genericErrors";
 import reportError from "@/telemetry/reportError";
 import { assertNotNull } from "./typeUtils";
+import {
+  minimalSchemaFactory,
+  minimalUiSchemaFactory,
+} from "@/utils/schemaUtils";
+import { isEmpty } from "lodash";
+import { isNullOrBlank } from "@/utils/stringUtils";
 
 /**
  * Returns true if the mod is an UnavailableMod
@@ -54,9 +60,9 @@ export function isResolvedModComponent(mod: Mod): mod is ResolvedModComponent {
 }
 
 /**
- * Return true if the mod is an ModComponentBase that originated from a recipe.
+ * Return true if the mod is an ModComponentBase that originated from a mod.
  */
-export function isModComponentFromRecipe(mod: Mod): boolean {
+export function isModComponentFromMod(mod: Mod): boolean {
   return isResolvedModComponent(mod) && Boolean(mod._recipe);
 }
 
@@ -117,21 +123,31 @@ function isPublic(mod: Mod): boolean {
     : mod.sharing.public;
 }
 
-function isPersonalModComponent(extension: ModComponentBase): boolean {
-  return !extension._recipe && !extension._deployment;
+function isPersonalModComponent(modComponent: ModComponentBase): boolean {
+  return !modComponent._recipe && !modComponent._deployment;
 }
 
-function hasSourceRecipeWithScope(
-  extension: ModComponentBase,
+/**
+ * Returns true if the source of the mod component has the given scope
+ * @param modComponent the mod component
+ * @param scope the scope to query
+ */
+function hasSourceModWithScope(
+  modComponent: ModComponentBase,
   scope: string,
 ): boolean {
-  return Boolean(scope && extension._recipe?.id.startsWith(scope + "/"));
+  return Boolean(scope && modComponent._recipe?.id.startsWith(scope + "/"));
 }
 
-function hasRecipeScope(
+/**
+ * Returns true if the mod has the given scope
+ * @param modDefinition the mod definition
+ * @param scope the scope to query
+ */
+function hasRegistryScope(
   modDefinition: ModDefinition | UnavailableMod,
   scope: string,
-) {
+): boolean {
   return Boolean(modDefinition.metadata?.id.startsWith(scope + "/"));
 }
 
@@ -144,11 +160,11 @@ function isPersonal(mod: Mod, userScope: string | null): boolean {
   if (isResolvedModComponent(mod)) {
     return (
       isPersonalModComponent(mod) ||
-      Boolean(userScope && hasSourceRecipeWithScope(mod, userScope))
+      Boolean(userScope && hasSourceModWithScope(mod, userScope))
     );
   }
 
-  return Boolean(userScope && hasRecipeScope(mod, userScope));
+  return Boolean(userScope && hasRegistryScope(mod, userScope));
 }
 
 export function getInstalledVersionNumber(
@@ -169,28 +185,26 @@ export function getInstalledVersionNumber(
 
 export function isDeployment(
   mod: Mod,
-  installedExtensions: UnresolvedModComponent[],
+  installedComponents: UnresolvedModComponent[],
 ): boolean {
   if (isResolvedModComponent(mod)) {
     return Boolean(mod._deployment);
   }
 
-  const recipeId = mod.metadata.id;
-  return installedExtensions.some(
-    (installedExtension) =>
-      installedExtension._recipe?.id === recipeId &&
-      installedExtension?._deployment,
+  const modId = mod.metadata.id;
+  return installedComponents.some(
+    (component) => component._recipe?.id === modId && component?._deployment,
   );
 }
 
 /**
  * Returns true if a mod has been made public but is not yet published to the Marketplace.
  */
-export function isRecipePendingPublish(
-  recipe: ModDefinition,
+export function isModPendingPublish(
+  mod: ModDefinition,
   marketplaceListings: Record<RegistryId, MarketplaceListing>,
 ): boolean {
-  return recipe.sharing.public && !marketplaceListings[recipe.metadata.id];
+  return mod.sharing.public && !marketplaceListings[mod.metadata.id];
 }
 
 export function getSharingSource({
@@ -331,14 +345,68 @@ function getOrganization(
 }
 
 /**
- * Select UnresolvedExtensions currently installed from the mod.
+ * Select UnresolvedModComponents currently activated from the mod.
  */
-export const selectExtensionsFromMod = createSelector(
+export const selectComponentsFromMod = createSelector(
   [selectExtensions, (_state: unknown, mod: Mod) => mod],
-  (installedExtensions, mod) =>
+  (activeModComponents, mod) =>
     isModDefinition(mod)
-      ? installedExtensions.filter(
+      ? activeModComponents.filter(
           (extension) => extension._recipe?.id === mod.metadata.id,
         )
-      : installedExtensions.filter((x) => x.id === mod.id),
+      : activeModComponents.filter((x) => x.id === mod.id),
 );
+
+/**
+ * Normalize the `options` section of a mod definition, ensuring that it has a schema and uiSchema.
+ * @since 1.8.5
+ */
+export function normalizeModOptionsDefinition(
+  optionsDefinition: ModDefinition["options"] | null,
+): Required<ModDefinition["options"]> {
+  if (!optionsDefinition) {
+    return {
+      schema: minimalSchemaFactory(),
+      uiSchema: minimalUiSchemaFactory(),
+    };
+  }
+
+  const { schema, uiSchema } = optionsDefinition;
+
+  return {
+    schema,
+    uiSchema: uiSchema ?? minimalUiSchemaFactory(),
+  };
+}
+
+/**
+ * Returns true if the options form state does not define any options/activation instructions
+ * @param options options definition
+ * @since 1.8.5
+ */
+export function isModOptionsSchemaEmpty(
+  options: ModDefinition["options"] | undefined,
+): boolean {
+  return (
+    isEmpty(options?.schema?.properties) &&
+    isNullOrBlank(options?.schema?.description)
+  );
+}
+
+/**
+ * Return the activation instructions for a mod as markdown, or null if there are none.
+ * @param modDefinition the mod definition
+ */
+export function getModActivationInstructions(
+  modDefinition: ModDefinition,
+): string | null {
+  const description: string | undefined =
+    // Be defensive -- technically schema is required if options exists
+    modDefinition.options?.schema?.description;
+
+  if (!description) {
+    return null;
+  }
+
+  return isNullOrBlank(description) ? null : description.trim();
+}

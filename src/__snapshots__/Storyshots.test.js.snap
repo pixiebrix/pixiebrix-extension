@@ -5821,7 +5821,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
             <span
               dangerouslySetInnerHTML={
                 {
-                  "__html": "Form description or instructions. Supports markdown.",
+                  "__html": "Form description or instructions. Supports <a href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown">Markdown</a>",
                 }
               }
             />
@@ -6095,7 +6095,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
               <span
                 dangerouslySetInnerHTML={
                   {
-                    "__html": "The user-visible description for the field",
+                    "__html": "The user-visible description for the field. Supports <a href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown">Markdown</a>",
                   }
                 }
               />
@@ -6814,7 +6814,7 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
             <span
               dangerouslySetInnerHTML={
                 {
-                  "__html": "Form description or instructions. Supports markdown.",
+                  "__html": "Form description or instructions. Supports <a href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown">Markdown</a>",
                 }
               }
             />
