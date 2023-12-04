@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ActivateRecipeCard activate mod definition permissions 1`] = `
+exports[`ActivateModCard activate mod definition permissions 1`] = `
 <DocumentFragment>
   <div>
     <div
@@ -173,7 +173,7 @@ exports[`ActivateRecipeCard activate mod definition permissions 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipeCard activate mod definition with missing required mod definition options 1`] = `
+exports[`ActivateModCard activate mod definition with missing required mod definition options 1`] = `
 <DocumentFragment>
   <div>
     <div
@@ -486,7 +486,7 @@ exports[`ActivateRecipeCard activate mod definition with missing required mod de
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipeCard renders 1`] = `
+exports[`ActivateModCard renders 1`] = `
 <DocumentFragment>
   <div>
     <div
@@ -659,7 +659,7 @@ exports[`ActivateRecipeCard renders 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipeCard renders instructions 1`] = `
+exports[`ActivateModCard renders instructions 1`] = `
 <DocumentFragment>
   <div>
     <div
@@ -844,7 +844,7 @@ exports[`ActivateRecipeCard renders instructions 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ActivateRecipeCard renders successfully with null services property 1`] = `
+exports[`ActivateModCard renders successfully with null services property 1`] = `
 <DocumentFragment>
   <div>
     <div

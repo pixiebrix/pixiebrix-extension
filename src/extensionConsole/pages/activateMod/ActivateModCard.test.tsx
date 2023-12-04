@@ -101,7 +101,7 @@ const ModCard: React.FC = () => {
   );
 };
 
-describe("ActivateRecipeCard", () => {
+describe("ActivateModCard", () => {
   test("renders", async () => {
     setupMod(defaultModDefinitionFactory());
     const { asFragment } = render(<ModCard />);

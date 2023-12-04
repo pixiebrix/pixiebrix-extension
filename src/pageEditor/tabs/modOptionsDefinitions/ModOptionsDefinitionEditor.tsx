@@ -161,7 +161,7 @@ const ModOptionsDefinitionEditor: React.VFC = () => {
                       <SchemaField
                         name="optionsDefinition.schema.description"
                         label="Activation Instructions"
-                        description="Optional instructions to display during activation. Supports Markdown."
+                        description="Optional instructions to display during activation. Supports [Markdown](https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown)"
                         schema={activationInstructionsSchema}
                       />
 

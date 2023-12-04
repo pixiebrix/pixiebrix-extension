@@ -401,7 +401,8 @@ export function getModActivationInstructions(
   modDefinition: ModDefinition,
 ): string | null {
   const description: string | undefined =
-    modDefinition.options?.schema.description;
+    // Be defensive -- technically schema is required if options exists
+    modDefinition.options?.schema?.description;
 
   if (!description) {
     return null;
