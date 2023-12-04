@@ -100,7 +100,7 @@ const AuthenticatedContent: React.VFC = () => {
               />
               <Route
                 exact
-                path="/:sourcePage/activate/:recipeId"
+                path="/:sourcePage/activate/:registryId"
                 component={ActivateModPage}
               />
 

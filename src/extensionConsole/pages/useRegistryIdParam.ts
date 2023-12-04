@@ -20,16 +20,14 @@ import { useParams } from "react-router";
 import { validateRegistryId } from "@/types/helpers";
 
 /**
- * Search the React-Router dynamic route parameters for a :recipeId param,
- * convert it into a RegistryId, and return it. Can be used with any route
- * that includes a :recipeId param.
+ * Search the React-Router dynamic route parameters for a :registryId param, convert it into a RegistryId, and return it.
+ *
+ * Can be used with any route that includes a :registryId param.
  */
-export default function useModIdParam(): RegistryId | null {
-  // XXX: keeping recipeId for historical reasons. Be sure to check openActivateModPage and other external protocol
-  //  handlers before changing the expected name of this param.
-  const { recipeId: modId } = useParams<{ recipeId: string }>();
+export default function useRegistryIdParam(): RegistryId | null {
+  const { registryId } = useParams<{ registryId: string }>();
   try {
-    return validateRegistryId(decodeURIComponent(modId));
+    return validateRegistryId(decodeURIComponent(registryId));
   } catch {
     return null;
   }

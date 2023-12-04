@@ -25,7 +25,7 @@ import useActivateRecipeWizard from "@/activation/useActivateRecipeWizard";
 import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmissionViaEnterIfFirstChild";
 import { useDispatch, useSelector } from "react-redux";
 import { selectRecipeHasAnyExtensionsInstalled } from "@/store/extensionsSelectors";
-import useModIdParam from "@/extensionConsole/pages/useModIdParam";
+import useRegistryIdParam from "@/extensionConsole/pages/useRegistryIdParam";
 import { useCreateMilestoneMutation, useGetRecipeQuery } from "@/services/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
@@ -46,7 +46,7 @@ import { getModActivationInstructions } from "@/utils/modUtils";
 
 const ActivateModCard: React.FC = () => {
   const dispatch = useDispatch();
-  const modId = useModIdParam();
+  const modId = useRegistryIdParam();
   const isReactivate = useSelector(
     selectRecipeHasAnyExtensionsInstalled(modId),
   );

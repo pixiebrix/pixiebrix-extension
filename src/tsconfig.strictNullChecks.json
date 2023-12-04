@@ -248,7 +248,7 @@
     "./extensionConsole/pages/mods/modsPageSlice.ts",
     "./extensionConsole/pages/onboarding/partner/partnerOnboardingUtils.ts",
     "./extensionConsole/pages/settings/SettingToggle.tsx",
-    "./extensionConsole/pages/useModIdParam.ts",
+    "./extensionConsole/pages/useRegistryIdParam.ts",
     "./extensionConsole/pages/workshop/workshopTypes.ts",
     "./extensionConsole/pages/workshop/workshopUtils.ts",
     "./extensionContext.ts",

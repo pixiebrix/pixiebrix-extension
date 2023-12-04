@@ -27,13 +27,13 @@ import RequireBrickRegistry from "@/extensionConsole/components/RequireBrickRegi
 import { useGetRecipeQuery } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectRecipeHasAnyExtensionsInstalled } from "@/store/extensionsSelectors";
-import useModIdParam from "@/extensionConsole/pages/useModIdParam";
+import useRegistryIdParam from "@/extensionConsole/pages/useRegistryIdParam";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import notify from "@/utils/notify";
 import { useHistory } from "react-router";
 
 const ActivateModPageContent: React.FC = () => {
-  const modId = useModIdParam();
+  const modId = useRegistryIdParam();
   // Page parent component below is gating this content component on isFetching, so
   // recipe will always be resolved here
   const { data: mod } = useGetRecipeQuery(
@@ -74,7 +74,7 @@ const ActivateModPageContent: React.FC = () => {
 };
 
 const ActivateModPage: React.FunctionComponent = () => {
-  const modId = useModIdParam();
+  const modId = useRegistryIdParam();
   const history = useHistory();
   const isReinstall = useSelector(selectRecipeHasAnyExtensionsInstalled(modId));
 
