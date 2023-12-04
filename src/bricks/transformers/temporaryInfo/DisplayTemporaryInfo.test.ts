@@ -26,7 +26,6 @@ import {
   testOptions,
   throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { makePipelineExpression } from "@/runtime/expressionCreators";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { getExampleBlockConfig } from "@/pageEditor/exampleBlockConfigs";
 import { reducePipeline } from "@/runtime/reducePipeline";
@@ -56,6 +55,7 @@ import { type RendererErrorPayload } from "@/types/rendererTypes";
 import { setPageState } from "@/contentScript/pageState";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { unary } from "lodash";
+import { toExpression } from "@/utils/expressionUtils";
 
 (browser.runtime as any).getURL = jest.fn(
   (path) => `chrome-extension://abc/${path}`,
@@ -127,7 +127,7 @@ describe("DisplayTemporaryInfo", () => {
       id: displayTemporaryInfoBlock.id,
       config: {
         title: "Test Temp Panel",
-        body: makePipelineExpression([{ id: renderer.id, config }]),
+        body: toExpression("pipeline", [{ id: renderer.id, config }]),
       },
     };
 
@@ -168,7 +168,7 @@ describe("DisplayTemporaryInfo", () => {
       id: displayTemporaryInfoBlock.id,
       config: {
         title: "Test Temp Panel",
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           { id: throwBrick.id, config: { message } },
           { id: renderer.id, config: getExampleBlockConfig(renderer.id) },
         ]),
@@ -201,7 +201,7 @@ describe("DisplayTemporaryInfo", () => {
       id: displayTemporaryInfoBlock.id,
       config: {
         title: "Test Temp Panel",
-        body: makePipelineExpression([{ id: renderer.id, config }]),
+        body: toExpression("pipeline", [{ id: renderer.id, config }]),
         location: "modal",
       },
     };
@@ -239,7 +239,7 @@ describe("DisplayTemporaryInfo", () => {
       id: displayTemporaryInfoBlock.id,
       config: {
         title: "Test Temp Panel",
-        body: makePipelineExpression([{ id: renderer.id, config }]),
+        body: toExpression("pipeline", [{ id: renderer.id, config }]),
         location: "popover",
         isRootAware: true,
       },
@@ -268,7 +268,7 @@ describe("DisplayTemporaryInfo", () => {
       config: {
         title: "Test Temp Panel",
         isRootAware: true,
-        body: makePipelineExpression([{ id: renderer.id, config }]),
+        body: toExpression("pipeline", [{ id: renderer.id, config }]),
         location: "popover",
       },
     };
@@ -307,7 +307,7 @@ describe("DisplayTemporaryInfo", () => {
       id: displayTemporaryInfoBlock.id,
       config: {
         title: "Test Temp Panel",
-        body: makePipelineExpression([{ id: renderer.id, config }]),
+        body: toExpression("pipeline", [{ id: renderer.id, config }]),
         location: "panel",
         refreshTrigger: "statechange",
       },
@@ -351,7 +351,7 @@ describe("DisplayTemporaryInfo", () => {
       id: displayTemporaryInfoBlock.id,
       config: {
         title: "Test Temp Panel",
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           { id: ContextBrick.BLOCK_ID, config: {} },
           { id: renderer.id, config },
         ]),

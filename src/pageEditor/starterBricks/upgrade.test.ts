@@ -16,15 +16,16 @@
  */
 
 import {
-  isTemplateString,
-  stringToExpression,
+  isUpgradeableString,
   upgradePipelineToV3,
+  upgradeStringToExpression,
 } from "@/pageEditor/starterBricks/upgrade";
 import blockRegistry from "@/bricks/registry";
 import { BrickABC } from "@/types/brickTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -49,39 +50,6 @@ function defineBlock(schema: Schema): RegistryId {
 
   return block.id;
 }
-
-describe("isTemplateString", () => {
-  test.each([["@input.foo"], ["@outputKey"]])(
-    "detects variable: %s",
-    (value: string) => {
-      expect(isTemplateString(value)).toBe(true);
-    },
-  );
-
-  test.each([
-    ["{{ @input.foo }}!!"],
-    ["{{ & @outputKey }}!!"],
-    ["{% if @outputKey %}foo{% endif %}"],
-  ])("detects variable: %s", (value: string) => {
-    expect(isTemplateString(value)).toBe(true);
-  });
-});
-
-describe("stringToExpression tests", () => {
-  test("convert var to expression", () => {
-    expect(stringToExpression("@foo", "mustache")).toStrictEqual({
-      __type__: "var",
-      __value__: "@foo",
-    });
-  });
-
-  test("convert var to mustache", () => {
-    expect(stringToExpression("{{ @foo }}", "mustache")).toStrictEqual({
-      __type__: "mustache",
-      __value__: "{{ @foo }}",
-    });
-  });
-});
 
 describe("upgradePipelineToV3 tests", () => {
   test.each([["string"], ["boolean"], ["number"]])(
@@ -108,10 +76,7 @@ describe("upgradePipelineToV3 tests", () => {
         {
           id,
           config: {
-            prop: {
-              __type__: "var",
-              __value__: "@foo",
-            },
+            prop: toExpression("var", "@foo"),
           },
         },
       ]);
@@ -156,10 +121,7 @@ describe("upgradePipelineToV3 tests", () => {
       {
         id,
         config: {},
-        if: {
-          __type__: "var",
-          __value__: "@foo",
-        },
+        if: toExpression("var", "@foo"),
       },
     ]);
   });
@@ -175,10 +137,7 @@ describe("upgradePipelineToV3 tests", () => {
       {
         id,
         config: {},
-        if: {
-          __type__: "nunjucks",
-          __value__: "{{ @foo }}",
-        },
+        if: toExpression("nunjucks", "{{ @foo }}"),
       },
     ]);
   });
@@ -237,10 +196,7 @@ describe("upgradePipelineToV3 tests", () => {
         id,
         config: {
           parent: {
-            childString: {
-              __type__: "mustache",
-              __value__: "{{ @input.foo }}",
-            },
+            childString: toExpression("mustache", "{{ @input.foo }}"),
           },
         },
       },
@@ -277,10 +233,7 @@ describe("upgradePipelineToV3 tests", () => {
         id,
         config: {
           parent: {
-            childString: {
-              __type__: "mustache",
-              __value__: "{{ @input.foo }}",
-            },
+            childString: toExpression("mustache", "{{ @input.foo }}"),
           },
         },
       },
@@ -367,15 +320,9 @@ describe("upgradePipelineToV3 tests", () => {
         id,
         config: {
           parent: {
-            childString: {
-              __type__: "mustache",
-              __value__: "{{ @input.foo }}",
-            },
+            childString: toExpression("mustache", "{{ @input.foo }}"),
             childObject: {
-              foo: {
-                __type__: "mustache",
-                __value__: "{{ @input.bar }}",
-              },
+              foo: toExpression("mustache", "{{ @input.bar }}"),
               bar: 42,
             },
           },
@@ -457,10 +404,7 @@ describe("upgradePipelineToV3 tests", () => {
         config: {
           parent: [
             {
-              itemString: {
-                __type__: "mustache",
-                __value__: "{{ @input.foo }}",
-              },
+              itemString: toExpression("mustache", "{{ @input.foo }}"),
             },
           ],
         },
@@ -509,15 +453,9 @@ describe("upgradePipelineToV3 tests", () => {
         id,
         config: {
           parent: [
+            toExpression("mustache", "myInputString"),
             {
-              __type__: "mustache",
-              __value__: "myInputString",
-            },
-            {
-              itemString: {
-                __type__: "mustache",
-                __value__: "{{ @input.foo }}",
-              },
+              itemString: toExpression("mustache", "{{ @input.foo }}"),
             },
           ],
         },
@@ -568,19 +506,10 @@ describe("upgradePipelineToV3 tests", () => {
         config: {
           parent: [
             {
-              itemString: {
-                __type__: "mustache",
-                __value__: "{{ @input.foo }}",
-              },
+              itemString: toExpression("mustache", "{{ @input.foo }}"),
             },
-            {
-              __type__: "mustache",
-              __value__: "foo",
-            },
-            {
-              __type__: "mustache",
-              __value__: "bar",
-            },
+            toExpression("mustache", "foo"),
+            toExpression("mustache", "bar"),
           ],
         },
       },
@@ -621,15 +550,9 @@ describe("upgradePipelineToV3 tests", () => {
         config: {
           parent: [
             1,
-            {
-              __type__: "mustache",
-              __value__: "two",
-            },
+            toExpression("mustache", "two"),
             3,
-            {
-              __type__: "mustache",
-              __value__: "four",
-            },
+            toExpression("mustache", "four"),
           ],
         },
       },
@@ -670,18 +593,9 @@ describe("upgrade overrides", () => {
           tabName: "tab name",
           rowValues: {
             // This is not a special-cased field, so it gets converted
-            literal: {
-              __type__: "mustache",
-              __value__: "literal",
-            },
-            variable: {
-              __type__: "var",
-              __value__: "@variable",
-            },
-            template: {
-              __type__: "mustache",
-              __value__: "{{ @template }}",
-            },
+            literal: toExpression("mustache", "literal"),
+            variable: toExpression("var", "@variable"),
+            template: toExpression("mustache", "{{ @template }}"),
           },
         },
       },
@@ -723,18 +637,9 @@ describe("upgrade overrides", () => {
           rowValues: [
             {
               // This is not a special-cased field, so it gets converted
-              literal: {
-                __type__: "mustache",
-                __value__: "literal",
-              },
-              variable: {
-                __type__: "var",
-                __value__: "@variable",
-              },
-              template: {
-                __type__: "mustache",
-                __value__: "{{ @template }}",
-              },
+              literal: toExpression("mustache", "literal"),
+              variable: toExpression("var", "@variable"),
+              template: toExpression("mustache", "{{ @template }}"),
             },
           ],
         },
@@ -771,5 +676,36 @@ describe("upgrade overrides", () => {
         },
       },
     ]);
+  });
+});
+
+describe("upgradeStringToExpression tests", () => {
+  test("convert var to expression", () => {
+    expect(upgradeStringToExpression("@foo", "mustache")).toStrictEqual(
+      toExpression("var", "@foo"),
+    );
+  });
+
+  test("convert var to mustache", () => {
+    expect(upgradeStringToExpression("{{ @foo }}", "mustache")).toStrictEqual(
+      toExpression("mustache", "{{ @foo }}"),
+    );
+  });
+});
+
+describe("isTemplateString", () => {
+  test.each([["@input.foo"], ["@outputKey"]])(
+    "detects variable: %s",
+    (value: string) => {
+      expect(isUpgradeableString(value)).toBe(true);
+    },
+  );
+
+  test.each([
+    ["{{ @input.foo }}!!"],
+    ["{{ & @outputKey }}!!"],
+    ["{% if @outputKey %}foo{% endif %}"],
+  ])("detects variable: %s", (value: string) => {
+    expect(isUpgradeableString(value)).toBe(true);
   });
 });

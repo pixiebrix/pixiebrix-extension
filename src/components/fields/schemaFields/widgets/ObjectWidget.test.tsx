@@ -23,8 +23,8 @@ import { render, screen, within } from "@/pageEditor/testHelpers";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import userEvent from "@testing-library/user-event";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { stringToExpression } from "@/pageEditor/starterBricks/upgrade";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";
@@ -121,7 +121,7 @@ describe("ObjectWidget", () => {
 
     expect(getFormState()).toStrictEqual({
       [fieldName]: {
-        myProp: stringToExpression("myValue", "nunjucks"),
+        myProp: toExpression("nunjucks", "myValue"),
       },
     });
   });

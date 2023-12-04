@@ -24,11 +24,6 @@ import { validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import IfElse from "@/bricks/transformers/controlFlow/IfElse";
 import ForEach from "@/bricks/transformers/controlFlow/ForEach";
-import {
-  makePipelineExpression,
-  makeTemplateExpression,
-  makeVariableExpression,
-} from "@/runtime/expressionCreators";
 import { EchoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import recipeRegistry from "@/modDefinitions/registry";
@@ -58,6 +53,7 @@ import {
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
+import { toExpression } from "@/utils/expressionUtils";
 
 jest.mocked(services.locate).mockResolvedValue(
   sanitizedIntegrationConfigFactory({
@@ -693,13 +689,13 @@ describe("Collecting available vars", () => {
         outputKey: validateOutputKey("ifOutput"),
         config: {
           condition: true,
-          if: makePipelineExpression([
+          if: toExpression("pipeline", [
             brickConfigFactory({
               outputKey: validateOutputKey("foo"),
             }),
             brickConfigFactory(),
           ]),
-          else: makePipelineExpression([
+          else: toExpression("pipeline", [
             brickConfigFactory({
               outputKey: validateOutputKey("bar"),
             }),
@@ -752,17 +748,14 @@ describe("Collecting available vars", () => {
     beforeAll(async () => {
       const listElement = createNewElement("list") as ListDocumentElement;
       const textElement = createNewElement("text");
-      textElement.config.text = makeTemplateExpression(
+      textElement.config.text = toExpression(
         "nunjucks",
         "{{ @foo }} {{ @element }}",
       );
       listElement.config.element.__value__ = textElement;
 
       const otherTextElement = createNewElement("text");
-      otherTextElement.config.text = makeTemplateExpression(
-        "nunjucks",
-        "{{ @element }}",
-      );
+      otherTextElement.config.text = toExpression("nunjucks", "{{ @element }}");
 
       const documentRendererBrick = {
         id: DocumentRenderer.BLOCK_ID,
@@ -818,10 +811,10 @@ describe("Collecting available vars", () => {
       const buttonElement = createNewElement("button") as ButtonDocumentElement;
       rowElement.children[0].children.push(buttonElement);
 
-      buttonElement.config.onClick = makePipelineExpression([
+      buttonElement.config.onClick = toExpression("pipeline", [
         brickConfigFactory({
           config: {
-            text: makeTemplateExpression("nunjucks", "{{ @foo }}"),
+            text: toExpression("nunjucks", "{{ @foo }}"),
           },
         }),
       ]);
@@ -875,8 +868,8 @@ describe("Collecting available vars", () => {
         outputKey: validateOutputKey("typeExcept"),
         config: {
           errorKey: "error",
-          try: makePipelineExpression([brickConfigFactory()]),
-          except: makePipelineExpression([brickConfigFactory()]),
+          try: toExpression("pipeline", [brickConfigFactory()]),
+          except: toExpression("pipeline", [brickConfigFactory()]),
         },
       };
 
@@ -916,7 +909,7 @@ describe("Collecting available vars", () => {
         config: {
           elementKey: "element",
           selector: "a",
-          body: makePipelineExpression([brickConfigFactory()]),
+          body: toExpression("pipeline", [brickConfigFactory()]),
         },
       };
 
@@ -946,8 +939,8 @@ describe("Collecting available vars", () => {
         outputKey: validateOutputKey("forEachOutput"),
         config: {
           elementKey: "element",
-          elements: [makeTemplateExpression("nunjucks", "1")],
-          body: makePipelineExpression([
+          elements: [toExpression("nunjucks", "1")],
+          body: toExpression("pipeline", [
             brickConfigFactory({
               outputKey: validateOutputKey("foo"),
             }),
@@ -1043,7 +1036,7 @@ describe("Collecting available vars", () => {
               },
             },
           },
-          onSubmit: makePipelineExpression([brickConfigFactory()]),
+          onSubmit: toExpression("pipeline", [brickConfigFactory()]),
         },
       };
 
@@ -1096,7 +1089,7 @@ describe("Invalid template", () => {
     const invalidEchoBlock = {
       id: EchoBrick.BLOCK_ID,
       config: {
-        message: makeTemplateExpression(
+        message: toExpression(
           "nunjucks",
           "This is a malformed template {{ @foo.",
         ),
@@ -1105,7 +1098,7 @@ describe("Invalid template", () => {
     const validEchoBlock = {
       id: EchoBrick.BLOCK_ID,
       config: {
-        message: makeTemplateExpression(
+        message: toExpression(
           "nunjucks",
           "This is a valid template {{ @bar }}",
         ),
@@ -1142,7 +1135,7 @@ describe("var expression annotations", () => {
       {
         id: EchoBrick.BLOCK_ID,
         config: {
-          message: makeVariableExpression("@foo"),
+          message: toExpression("var", "@foo"),
         },
       },
     ]);
@@ -1158,7 +1151,7 @@ describe("var expression annotations", () => {
       {
         id: EchoBrick.BLOCK_ID,
         config: {
-          message: makeVariableExpression(""),
+          message: toExpression("var", ""),
         },
       },
     ]);
@@ -1174,7 +1167,7 @@ describe("var expression annotations", () => {
       {
         id: EchoBrick.BLOCK_ID,
         config: {
-          message: makeVariableExpression("foo"),
+          message: toExpression("var", "foo"),
         },
       },
     ]);
@@ -1194,7 +1187,7 @@ describe("var expression annotations", () => {
       {
         id: EchoBrick.BLOCK_ID,
         config: {
-          message: makeVariableExpression("  "),
+          message: toExpression("var", "  "),
         },
       },
     ]);
@@ -1212,7 +1205,7 @@ describe("var expression annotations", () => {
       {
         id: EchoBrick.BLOCK_ID,
         config: {
-          message: makeVariableExpression("@"),
+          message: toExpression("var", "@"),
         },
       },
     ]);
@@ -1232,7 +1225,7 @@ describe("var analysis integration tests", () => {
       {
         id: EchoBrick.BLOCK_ID,
         config: {
-          message: makeTemplateExpression(
+          message: toExpression(
             "nunjucks",
             "{{ @input.event.key }} was pressed",
           ),
@@ -1254,7 +1247,7 @@ describe("var analysis integration tests", () => {
       {
         id: EchoBrick.BLOCK_ID,
         config: {
-          message: makeTemplateExpression(
+          message: toExpression(
             "nunjucks",
             "{{ @input.event.thiscouldbeanything }} was pressed",
           ),
@@ -1276,7 +1269,7 @@ describe("var analysis integration tests", () => {
       {
         id: EchoBrick.BLOCK_ID,
         config: {
-          message: makeTemplateExpression(
+          message: toExpression(
             "nunjucks",
             // Only @input.event.selectedText is available for selectionchange
             "{{ @input.event.key }} was pressed",
