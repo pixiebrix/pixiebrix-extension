@@ -26,7 +26,7 @@ import {
   textPredicate,
 } from "@/components/fields/schemaFields/schemaUtils";
 import { type UnknownObject } from "@/types/objectTypes";
-import { defaultBlockConfig } from "@/bricks/util";
+import { defaultBrickConfig } from "@/bricks/util";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import styles from "./ArrayWidget.module.scss";
 import { joinName } from "@/utils/formUtils";
@@ -50,7 +50,7 @@ function getDefaultArrayItem(schema: Schema): unknown {
   }
 
   if (schema.type === "object") {
-    return defaultBlockConfig(schema);
+    return defaultBrickConfig(schema);
   }
 
   if (findOneOf(schema, booleanPredicate)) {

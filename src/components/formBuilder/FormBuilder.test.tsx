@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getExampleBlockConfig } from "@/pageEditor/exampleBlockConfigs";
+import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
 import {
   createFormikTemplate,
   fireTextInput,
@@ -39,7 +39,7 @@ let defaultFieldName: string;
 
 beforeAll(() => {
   registerDefaultWidgets();
-  const { schema, uiSchema } = getExampleBlockConfig(
+  const { schema, uiSchema } = getExampleBrickConfig(
     CustomFormRenderer.BLOCK_ID,
   );
   exampleFormSchema = {
@@ -431,7 +431,7 @@ describe("rename a field", () => {
   test("can rename a field with example block config", async () => {
     const FormikTemplate = createFormikTemplate(
       {
-        [RJSF_SCHEMA_PROPERTY_NAME]: getExampleBlockConfig(
+        [RJSF_SCHEMA_PROPERTY_NAME]: getExampleBrickConfig(
           CustomFormRenderer.BLOCK_ID,
         ),
       },
@@ -456,7 +456,7 @@ describe("rename a field", () => {
   it("does not show google sheet input type option", async () => {
     const FormikTemplate = createFormikTemplate(
       {
-        [RJSF_SCHEMA_PROPERTY_NAME]: getExampleBlockConfig(
+        [RJSF_SCHEMA_PROPERTY_NAME]: getExampleBrickConfig(
           CustomFormRenderer.BLOCK_ID,
         ),
       },

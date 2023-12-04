@@ -19,7 +19,7 @@ import BrickTypeAnalysis from "@/analysis/analysisVisitors/brickTypeAnalysis";
 import brickRegistry from "@/bricks/registry";
 import CommentEffect from "@/bricks/effects/comment";
 import { sidebarPanelFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
+import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { CancelEffect } from "@/bricks/effects/cancel";
 import { ALERT_EFFECT_ID, AlertEffect } from "@/bricks/effects/alert";
@@ -39,8 +39,8 @@ describe("BrickTypeAnalysis", () => {
     const modComponent = sidebarPanelFormStateFactory();
 
     modComponent.extension.blockPipeline = [
-      createNewBlock(ALERT_EFFECT_ID),
-      createNewBlock(DocumentRenderer.BLOCK_ID),
+      createNewConfiguredBrick(ALERT_EFFECT_ID),
+      createNewConfiguredBrick(DocumentRenderer.BLOCK_ID),
     ];
 
     const analysis = new BrickTypeAnalysis();
@@ -58,8 +58,8 @@ describe("BrickTypeAnalysis", () => {
     const modComponent = sidebarPanelFormStateFactory();
 
     modComponent.extension.blockPipeline = [
-      createNewBlock(brickId),
-      createNewBlock(DocumentRenderer.BLOCK_ID),
+      createNewConfiguredBrick(brickId),
+      createNewConfiguredBrick(DocumentRenderer.BLOCK_ID),
     ];
 
     const analysis = new BrickTypeAnalysis();

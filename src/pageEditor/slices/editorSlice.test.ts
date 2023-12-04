@@ -32,7 +32,7 @@ import {
   teapotBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { defaultBlockConfig } from "@/bricks/util";
+import { defaultBrickConfig } from "@/bricks/util";
 import { validateRegistryId } from "@/types/helpers";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -55,7 +55,7 @@ const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 const standardBrick = brickConfigFactory({
   id: teapotBrick.id,
   outputKey: "teapotOutput" as OutputKey,
-  config: defaultBlockConfig(teapotBrick.inputSchema),
+  config: defaultBrickConfig(teapotBrick.inputSchema),
 });
 
 const brickWithService = brickConfigFactory({
