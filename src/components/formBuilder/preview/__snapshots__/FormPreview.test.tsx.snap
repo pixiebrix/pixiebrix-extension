@@ -30,12 +30,18 @@ exports[`FormPreview it renders markdown in description 1`] = `
           style="height: 1px;"
         />
       </div>
-      <div>
-        <div
-          class="mb-3"
-          id="root__description"
-        >
-          _Form description_
+      <div
+        class="mb-3"
+        id="root__description"
+      >
+        <div>
+          <p>
+            <em>
+              Form description
+            </em>
+          </p>
+          
+
         </div>
       </div>
       <div
@@ -122,12 +128,16 @@ exports[`FormPreview it renders simple schema 1`] = `
           style="height: 1px;"
         />
       </div>
-      <div>
-        <div
-          class="mb-3"
-          id="root__description"
-        >
-          A form example.
+      <div
+        class="mb-3"
+        id="root__description"
+      >
+        <div>
+          <p>
+            A form example.
+          </p>
+          
+
         </div>
       </div>
       <div

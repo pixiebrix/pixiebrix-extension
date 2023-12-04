@@ -38,6 +38,8 @@ const FieldTemplate = ({
     return <div className="hidden">{children}</div>;
   }
 
+  console.log("FieldTemplate", { children, displayLabel, rawDescription });
+
   return (
     <Form.Group>
       {displayLabel && (

@@ -31,11 +31,11 @@ import { type Target } from "@/types/messengerTypes";
 import { validateUUID } from "@/types/helpers";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
-import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import reportError from "@/telemetry/reportError";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
+import { templates } from "@/components/formBuilder/RjsfTemplates";
 
 const fields = {
   DescriptionField,
@@ -137,7 +137,7 @@ const EphemeralForm: React.FC = () => {
           fields={fields}
           widgets={uiWidgets}
           validator={validator}
-          templates={{ FieldTemplate }}
+          templates={templates}
           onSubmit={({ formData: values }) => {
             void resolveForm(target, nonce, values);
           }}

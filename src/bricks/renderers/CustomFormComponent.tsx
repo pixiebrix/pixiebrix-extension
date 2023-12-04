@@ -26,13 +26,13 @@ import bootstrapOverrides from "@/pageEditor/sidebar/sidebarBootstrapOverrides.s
 import custom from "@/bricks/renderers/customForm.css?loadAsUrl";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import validator from "@rjsf/validator-ajv6";
-import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import { type IChangeEvent } from "@rjsf/core";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
+import { templates } from "@/components/formBuilder/RjsfTemplates";
 
 const fields = {
   DescriptionField,
@@ -101,7 +101,7 @@ const CustomFormComponent: React.FunctionComponent<{
               fields={fields}
               widgets={uiWidgets}
               validator={validator}
-              templates={{ FieldTemplate }}
+              templates={templates}
               onChange={async ({ formData }: IChangeEvent<JsonObject>) => {
                 valuesRef.current = formData ?? {};
 

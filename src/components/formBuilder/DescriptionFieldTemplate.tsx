@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { type Field } from "@rjsf/utils";
 import cx from "classnames";
 import MarkdownLazy from "@/components/MarkdownLazy";
 
@@ -26,16 +25,15 @@ type FormPreviewDescriptionFieldProps = {
   className?: string;
 };
 
-// RJSF implementation ref: https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/bootstrap-4/src/DescriptionField/DescriptionField.tsx
-export const DescriptionField: React.VoidFunctionComponent<
+export const DescriptionFieldTemplate: React.VoidFunctionComponent<
   FormPreviewDescriptionFieldProps
-> = ({ id, description, className: classNameProp }) => {
+> = ({ id, description, className }) => {
   if (!description) {
     return null;
   }
 
   return (
-    <div id={id} className={cx("field-description", classNameProp)}>
+    <div id={id} className={cx("mb-3", className)}>
       {typeof description === "string" ? (
         <MarkdownLazy markdown={description} />
       ) : (
@@ -45,5 +43,4 @@ export const DescriptionField: React.VoidFunctionComponent<
   );
 };
 
-// Adjusting field type to match RJSF expectations
-export default DescriptionField as unknown as Field;
+export default DescriptionFieldTemplate;

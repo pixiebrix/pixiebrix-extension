@@ -35,7 +35,6 @@ import FormPreviewBooleanField from "./FormPreviewBooleanField";
 import { unwrapTemplateExpressions } from "@/components/fields/fieldUtils";
 import ImageCropWidgetPreview from "@/components/formBuilder/preview/ImageCropWidgetPreview";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
-import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import FormPreviewSchemaField from "./FormPreviewSchemaField";
 import databaseSchema from "@schemas/database.json";
@@ -43,6 +42,7 @@ import googleSheetSchema from "@schemas/googleSheetId.json";
 import { type Draft } from "immer";
 import { KEYS_OF_UI_SCHEMA, type Schema } from "@/types/schemaTypes";
 import FormPreviewArrayField from "@/components/formBuilder/preview/FormPreviewArrayField";
+import { templates } from "@/components/formBuilder/RjsfTemplates";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -216,7 +216,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
       uiSchema={previewUiSchema}
       onChange={onDataChanged}
       validator={validator}
-      templates={{ FieldTemplate }}
+      templates={templates}
     >
       <div>
         {/* This <div/> prevents JsonSchemaForm from rendering a Submit button */}
