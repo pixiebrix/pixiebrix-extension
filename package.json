@@ -44,7 +44,7 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@mozilla/readability": "^0.4.4",
     "@pixiebrix/jq-web": "^0.5.1",
-    "@reduxjs/toolkit": "^1.9.7",
+    "@reduxjs/toolkit": "^2.0.1",
     "@rjsf/bootstrap-4": "^5.14.1",
     "@rjsf/core": "^5.14.1",
     "@rjsf/utils": "^5.15.0",
