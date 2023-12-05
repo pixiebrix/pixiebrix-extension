@@ -43,7 +43,7 @@ describe("TextAreaWidget", () => {
     registry: {} as any,
   };
 
-  test("renders the textarea with a label", () => {
+  test("renders the textarea--label provided by FieldTemplate", () => {
     render(<TextAreaWidget {...defaultProps} />, {
       wrapper: ({ children }) => (
         <RjsfSubmitContext.Provider
@@ -58,6 +58,7 @@ describe("TextAreaWidget", () => {
       ),
     });
 
-    expect(screen.getByLabelText("RJSF Textarea")).toBeInTheDocument();
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    expect(screen.queryByLabelText(defaultProps.label)).not.toBeInTheDocument();
   });
 });
