@@ -55,7 +55,11 @@ type RecipeSaver = {
 function useSaveRecipe(): RecipeSaver {
   const dispatch = useDispatch();
   const create = useUpsertFormElement();
-  const { data: recipes, isLoading: isRecipesLoading } = useAllModDefinitions();
+  const {
+    data: recipes,
+    isLoading: isRecipesLoading,
+    error: recipesError,
+  } = useAllModDefinitions();
   const { data: editablePackages, isLoading: isEditablePackagesLoading } =
     useGetEditablePackagesQuery();
   const [updateRecipe] = useUpdateRecipeMutation();
@@ -121,11 +125,10 @@ function useSaveRecipe(): RecipeSaver {
     );
 
     // Dirty options/metadata or null if there are not staged changes. `buildRecipe` expects nullish instead of default
-    const dirtyOptions =
-      // eslint-disable-next-line security/detect-object-injection -- recipe IDs are sanitized in the form validation
-      dirtyRecipeOptions[recipeId]
-        ? normalizeModOptionsDefinition(dirtyRecipeOptions[recipeId])
-        : undefined;
+    const dirtyOptions = dirtyRecipeOptions[recipeId]
+      ? // eslint-disable-next-line security/detect-object-injection -- recipe IDs are sanitized in the form validation
+        normalizeModOptionsDefinition(dirtyRecipeOptions[recipeId])
+      : undefined;
     // eslint-disable-next-line security/detect-object-injection -- recipe IDs are sanitized in the form validation
     const dirtyMetadata = dirtyRecipeMetadata[recipeId];
 
@@ -189,6 +192,15 @@ function useSaveRecipe(): RecipeSaver {
   }
 
   async function safeSave(recipeId: RegistryId) {
+    if (recipesError) {
+      notify.error({
+        message: "Error fetching mod definitions",
+        error: recipesError,
+      });
+
+      return;
+    }
+
     if (isRecipesLoading || isEditablePackagesLoading) {
       return;
     }

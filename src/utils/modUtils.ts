@@ -40,8 +40,14 @@ import {
   minimalSchemaFactory,
   minimalUiSchemaFactory,
 } from "@/utils/schemaUtils";
-import { isEmpty } from "lodash";
+import { isEmpty, sortBy } from "lodash";
 import { isNullOrBlank } from "@/utils/stringUtils";
+import {
+  type Schema,
+  type SchemaProperties,
+  type UiSchema,
+} from "@/types/schemaTypes";
+import { propertiesToSchema } from "@/validators/generic";
 
 /**
  * Returns true if the mod is an UnavailableMod
@@ -371,11 +377,25 @@ export function normalizeModOptionsDefinition(
     };
   }
 
-  const { schema, uiSchema } = optionsDefinition;
+  const modDefinitionSchema = optionsDefinition.schema ?? {};
+  const schema: Schema =
+    "type" in modDefinitionSchema &&
+    modDefinitionSchema.type === "object" &&
+    "properties" in modDefinitionSchema
+      ? modDefinitionSchema
+      : // Handle case where schema is just the properties. That's the old format
+        propertiesToSchema(modDefinitionSchema as SchemaProperties);
+
+  const uiSchema: UiSchema = optionsDefinition.uiSchema ?? {};
+
+  uiSchema["ui:order"] ??= [
+    ...sortBy(Object.keys(schema.properties ?? {})),
+    "*",
+  ];
 
   return {
     schema,
-    uiSchema: uiSchema ?? minimalUiSchemaFactory(),
+    uiSchema,
   };
 }
 

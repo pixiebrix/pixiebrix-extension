@@ -16,19 +16,15 @@
  */
 
 import BaseRegistry from "@/registry/memoryRegistry";
-import { propertiesToSchema } from "@/validators/generic";
 import produce from "immer";
-import { sortBy } from "lodash";
 import {
   type Schema,
   type SchemaProperties,
   type UiSchema,
 } from "@/types/schemaTypes";
-import {
-  type ModOptionsDefinition,
-  type ModDefinition,
-} from "@/types/modDefinitionTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type RegistryId } from "@/types/registryTypes";
+import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 
 type UnnormalizedOptionsDefinition = {
   schema: Schema | SchemaProperties;
@@ -43,37 +39,9 @@ type RegistryModDefinition = ModDefinition & {
   id: RegistryId;
 };
 
-/**
- * Fix hand-crafted mod options from the workshop
- */
-function normalizeModOptions(
-  options?: ModOptionsDefinition,
-): ModOptionsDefinition {
-  if (options == null) {
-    return {
-      schema: {},
-      uiSchema: {},
-    };
-  }
-
-  const modDefinitionSchema = options.schema ?? {};
-  const schema: Schema =
-    "type" in modDefinitionSchema &&
-    modDefinitionSchema.type === "object" &&
-    "properties" in modDefinitionSchema
-      ? modDefinitionSchema
-      : propertiesToSchema(modDefinitionSchema as SchemaProperties);
-  const uiSchema: UiSchema = options.uiSchema ?? {};
-  uiSchema["ui:order"] = uiSchema["ui:order"] ?? [
-    ...sortBy(Object.keys(schema.properties ?? {})),
-    "*",
-  ];
-  return { schema, uiSchema };
-}
-
 function fromJS(rawModDefinition: UnnormalizedModDefinition) {
   return produce(rawModDefinition, (draft: RegistryModDefinition) => {
-    draft.options = normalizeModOptions(rawModDefinition.options);
+    draft.options = normalizeModOptionsDefinition(rawModDefinition.options);
     draft.id = rawModDefinition.metadata.id;
   }) as RegistryModDefinition;
 }
