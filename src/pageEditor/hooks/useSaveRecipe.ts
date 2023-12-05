@@ -120,19 +120,21 @@ function useSaveRecipe(): RecipeSaver {
         !deletedElementIds.has(extension.id),
     );
 
-    const newOptions = normalizeModOptionsDefinition(
-      // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
-      dirtyRecipeOptions[recipeId],
-    );
-    // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
-    const newMetadata = dirtyRecipeMetadata[recipeId];
+    // Dirty options/metadata or null if there are not staged changes. `buildRecipe` expects nullish instead of default
+    const dirtyOptions =
+      // eslint-disable-next-line security/detect-object-injection -- recipe IDs are sanitized in the form validation
+      dirtyRecipeOptions[recipeId]
+        ? normalizeModOptionsDefinition(dirtyRecipeOptions[recipeId])
+        : undefined;
+    // eslint-disable-next-line security/detect-object-injection -- recipe IDs are sanitized in the form validation
+    const dirtyMetadata = dirtyRecipeMetadata[recipeId];
 
     const newRecipe = buildRecipe({
       sourceRecipe: recipe,
       cleanRecipeExtensions,
       dirtyRecipeElements,
-      options: newOptions,
-      metadata: newMetadata,
+      options: dirtyOptions,
+      metadata: dirtyMetadata,
     });
 
     const packageId = editablePackages.find(

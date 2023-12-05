@@ -353,7 +353,13 @@ type RecipeParts = {
   sourceRecipe?: ModDefinition;
   cleanRecipeExtensions: UnresolvedModComponent[];
   dirtyRecipeElements: ModComponentFormState[];
+  /**
+   * Dirty/new options to save. Undefined if there are no changes.
+   */
   options?: ModOptionsDefinition;
+  /**
+   * Dirty/new metadata to save. Undefined if there are no changes.
+   */
   metadata?: ModMetadataFormState;
 };
 
