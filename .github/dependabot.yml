@@ -18,6 +18,9 @@ updates:
     assignees:
       - grahamlangford
     groups:
+      rjsf:
+        patterns:
+          - "@rjsf/*"
       storybook:
         patterns:
           - "*storybook*"

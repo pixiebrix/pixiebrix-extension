@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React from "react";
-import { type WidgetProps } from "@rjsf/core";
+import { type WidgetProps } from "@rjsf/utils";
 import Select from "react-select";
 import { FormGroup, FormLabel } from "react-bootstrap";
 
@@ -63,7 +63,7 @@ const RjsfSelectWidget: React.FC<WidgetProps> = ({
 
   return (
     <FormGroup>
-      <FormLabel className={rawErrors?.length > 0 ? "text-danger" : ""}>
+      <FormLabel className={rawErrors?.length ? "text-danger" : ""}>
         {label || schema.title}
         {(label || schema.title) && required ? "*" : null}
       </FormLabel>

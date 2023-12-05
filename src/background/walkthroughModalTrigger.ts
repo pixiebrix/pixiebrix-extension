@@ -15,23 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectKnownVars } from "@/analysis/analysisSelectors";
-import {
-  selectActiveElementId,
-  selectActiveNodeInfo,
-} from "@/pageEditor/slices/editorSelectors";
-import { createSelector } from "@reduxjs/toolkit";
+import { showWalkthroughModal } from "@/contentScript/messenger/api";
 
-export const selectKnownVarsForActiveNode = createSelector(
-  selectActiveElementId,
-  selectActiveNodeInfo,
-  selectKnownVars,
-  (activeElementId, activeNodeInfo, knownVars) => {
-    if (activeNodeInfo == null) {
-      return null;
+const DEVELOPER_WELCOME_URL = "https://www.pixiebrix.com/developers-welcome";
+
+function initWalkthroughModalTrigger(): void {
+  browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (tab?.url?.startsWith(DEVELOPER_WELCOME_URL)) {
+      showWalkthroughModal({ tabId });
     }
+  });
+}
 
-    // eslint-disable-next-line security/detect-object-injection -- is a UUID
-    return knownVars[activeElementId]?.get(activeNodeInfo.path);
-  },
-);
+export default initWalkthroughModalTrigger;

@@ -24,7 +24,7 @@ import {
   type SharingType,
   type UnavailableMod,
 } from "@/types/modTypes";
-import { createSelector } from "reselect";
+import { createSelector } from "@reduxjs/toolkit";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import {
   type ModComponentBase,

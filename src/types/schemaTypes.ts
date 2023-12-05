@@ -21,7 +21,7 @@ import {
   type JSONSchema7Definition,
   type JSONSchema7TypeName,
 } from "json-schema";
-import { type UiSchema as StandardUiSchema } from "@rjsf/core";
+import { type UiSchema as StandardUiSchema } from "@rjsf/utils";
 import type DOMPurify from "dompurify";
 import { type Except } from "type-fest";
 

@@ -15,23 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectKnownVars } from "@/analysis/analysisSelectors";
-import {
-  selectActiveElementId,
-  selectActiveNodeInfo,
-} from "@/pageEditor/slices/editorSelectors";
-import { createSelector } from "@reduxjs/toolkit";
+import DescriptionFieldTemplate from "@/components/formBuilder/DescriptionFieldTemplate";
+import FieldTemplate from "@/components/formBuilder/FieldTemplate";
+import { type FormProps } from "@rjsf/core";
 
-export const selectKnownVarsForActiveNode = createSelector(
-  selectActiveElementId,
-  selectActiveNodeInfo,
-  selectKnownVars,
-  (activeElementId, activeNodeInfo, knownVars) => {
-    if (activeNodeInfo == null) {
-      return null;
-    }
-
-    // eslint-disable-next-line security/detect-object-injection -- is a UUID
-    return knownVars[activeElementId]?.get(activeNodeInfo.path);
-  },
-);
+export const templates: FormProps["templates"] = {
+  FieldTemplate,
+  DescriptionFieldTemplate,
+} as const;

@@ -33,6 +33,7 @@ import {
   type Reducer,
   type ReducersMapObject,
   type ThunkDispatch,
+  type Middleware,
 } from "@reduxjs/toolkit";
 
 import {
@@ -44,7 +45,6 @@ import {
   type FormikHelpers,
   type FormikValues,
 } from "formik";
-import { type Middleware } from "redux";
 import { noop } from "lodash";
 import { type ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
 import { type UnknownObject } from "@/types/objectTypes";
