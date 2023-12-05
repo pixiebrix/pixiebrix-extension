@@ -51,6 +51,11 @@ export type BrickNodeContentProps = {
   icon?: IconProp | React.ReactNode;
   runStatus?: RunStatus;
   brickLabel: string;
+  /**
+   * An optional summary element to display in the outline
+   * @since 1.8.5
+   */
+  brickSummary?: React.ReactElement;
   outputKey?: OutputKey;
 };
 

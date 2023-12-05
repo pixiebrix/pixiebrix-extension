@@ -77,6 +77,7 @@ import { type Brick } from "@/types/brickTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName, joinPathParts } from "@/utils/formUtils";
 import { SCROLL_TO_DOCUMENT_PREVIEW_ELEMENT_EVENT } from "@/components/documentBuilder/preview/ElementPreview";
+import { getBrickOutlineSummary } from "@/pageEditor/brickSummary";
 
 const ADD_MESSAGE = "Add more bricks with the plus button";
 
@@ -413,6 +414,7 @@ const usePipelineNodes = (): {
         brickLabel: isNullOrBlank(blockConfig.label)
           ? block?.name
           : blockConfig.label,
+        brickSummary: getBrickOutlineSummary(blockConfig),
         outputKey: expanded ? undefined : blockConfig.outputKey,
       };
     }

@@ -3,7 +3,7 @@ import { useAsyncEffect } from "use-async-effect";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { getExampleBlockPipeline } from "@/pageEditor/exampleExtensionConfig";
+import { getExampleBrickPipeline } from "@/pageEditor/exampleStarterBrickConfigs";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import {
   showSidebar,
@@ -40,7 +40,7 @@ export function useAutoInsert(type: StarterBrickType): void {
         undefined,
       ) as ModComponentFormState;
 
-      formState.extension.blockPipeline = getExampleBlockPipeline(
+      formState.extension.blockPipeline = getExampleBrickPipeline(
         formState.type,
       );
 

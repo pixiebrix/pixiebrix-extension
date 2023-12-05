@@ -32,7 +32,7 @@ import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
+import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { isPipelineExpression, toExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
@@ -92,8 +92,8 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
                 await setFieldValue(
                   configName("body"),
                   toExpression("pipeline", [
-                    createNewBlock(DocumentRenderer.BLOCK_ID, {
-                      parentBlockId: TourStepTransformer.BLOCK_ID,
+                    createNewConfiguredBrick(DocumentRenderer.BLOCK_ID, {
+                      parentBrickId: TourStepTransformer.BLOCK_ID,
                     }),
                   ]),
                 );

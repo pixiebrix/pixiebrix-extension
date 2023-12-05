@@ -17,32 +17,30 @@
 
 import React from "react";
 import { render } from "@/pageEditor/testHelpers";
-import IdentityOptions from "@/bricks/transformers/IdentityOptions";
-import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
-import { IdentityTransformer } from "@/bricks/transformers/identity";
-import brickRegistry from "@/bricks/registry";
-import { screen } from "@testing-library/react";
+import CommentOptions from "@/bricks/effects/CommentOptions";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import registerEditors from "@/contrib/editors";
+import { screen } from "@testing-library/react";
 
 beforeAll(() => {
-  brickRegistry.register([new IdentityTransformer()]);
   registerDefaultWidgets();
-  registerEditors();
 });
 
-describe("IdentityOptions", () => {
-  test("shows object widget by default", async () => {
-    render(<IdentityOptions name="foo" configKey="config" />, {
+describe("CommentOptions", () => {
+  it("renders a comment in a textarea", async () => {
+    render(<CommentOptions name="test" configKey="test" />, {
       initialValues: {
-        foo: {
-          config: getExampleBrickConfig(IdentityTransformer.BRICK_ID),
+        test: {
+          test: {
+            comment: "this is a comment",
+          },
         },
       },
     });
 
-    await expect(
-      screen.findByRole("button", { name: "Add Property" }),
-    ).resolves.toBeInTheDocument();
+    expect(screen.getByLabelText("Comment")).toBeInTheDocument();
+
+    expect(screen.getByRole("textbox", { name: "Comment" })).toHaveValue(
+      "this is a comment",
+    );
   });
 });
