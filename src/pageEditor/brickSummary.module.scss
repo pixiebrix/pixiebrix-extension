@@ -14,19 +14,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+@import "@/themes/colors";
 
 :global(.list-group-item:not(.active)) {
   .comment {
-    color: darkgreen;
+    color: $json-tree-theme-base0B;
     font-style: italic;
   }
 }
 
 .comment {
-  // FIXME: how to get the ellipsis to work?
   font-style: italic;
   max-height: 50px;
   width: 100%;
+  padding-right: 10px;
+
   overflow: hidden;
   text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
