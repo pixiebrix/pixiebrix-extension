@@ -28,7 +28,7 @@ export class CommentEffect extends EffectABC {
   static SCHEMA = propertiesToSchema(
     {
       comment: {
-        title: "Comment",
+        title: "[Experimental] Comment",
         type: "string",
         description: "The comment/note",
       },
