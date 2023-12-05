@@ -34,7 +34,7 @@ import { testIsSemVerString } from "@/types/helpers";
 import Form, { type RenderBody } from "@/components/form/Form";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import Alert from "@/components/Alert";
-import { createSelector } from "reselect";
+import { createSelector } from "@reduxjs/toolkit";
 import { lt } from "semver";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
