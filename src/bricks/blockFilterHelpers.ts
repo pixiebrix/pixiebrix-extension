@@ -16,7 +16,6 @@
  */
 
 import { type TypedBrickPair } from "@/bricks/registry";
-import { validateRegistryId } from "@/types/helpers";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { stubTrue } from "lodash";
@@ -25,14 +24,17 @@ import { type BrickType } from "@/runtime/runtimeTypes";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type RegistryId } from "@/types/registryTypes";
 import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
+import { ErrorEffect } from "@/bricks/effects/error";
+import { CancelEffect } from "@/bricks/effects/cancel";
+import { CommentEffect } from "@/bricks/effects/comment";
 
 const PANEL_TYPES = ["actionPanel", "panel"];
 
 const alwaysShow = new Set([
   // Cancel/Error provide meaningful control flow for all bricks
-  validateRegistryId("@pixiebrix/cancel"),
-  validateRegistryId("@pixiebrix/error"),
-  validateRegistryId("@pixiebrix/comment"),
+  CancelEffect.BRICK_ID,
+  ErrorEffect.BRICK_ID,
+  CommentEffect.BRICK_ID,
 ]);
 
 export type IsBlockAllowedPredicate = (block: TypedBrickPair) => boolean;
