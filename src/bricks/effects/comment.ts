@@ -28,7 +28,7 @@ export class CommentEffect extends EffectABC {
   static SCHEMA = propertiesToSchema(
     {
       comment: {
-        title: "[Experimental] Comment",
+        title: "Comment",
         type: "string",
         description: "The comment/note",
       },
@@ -51,7 +51,7 @@ export class CommentEffect extends EffectABC {
   constructor() {
     super(
       CommentEffect.BRICK_ID,
-      "Comment",
+      "[Experimental] Comment",
       "A brick to record comments/notes for mod developers",
     );
   }
