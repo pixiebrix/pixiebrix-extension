@@ -17,7 +17,7 @@
 import React from "react";
 import { type WidgetProps } from "@rjsf/utils";
 import Select from "react-select";
-import { FormGroup, FormLabel } from "react-bootstrap";
+import { FormGroup } from "react-bootstrap";
 
 type OptionType = { label: string; value: string };
 
@@ -63,11 +63,6 @@ const RjsfSelectWidget: React.FC<WidgetProps> = ({
 
   return (
     <FormGroup>
-      <FormLabel className={rawErrors?.length ? "text-danger" : ""}>
-        {label || schema.title}
-        {(label || schema.title) && required ? "*" : null}
-      </FormLabel>
-
       <div data-testid="formbuilder-select-wrapper">
         <Select
           id={id}

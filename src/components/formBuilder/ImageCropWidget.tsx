@@ -17,7 +17,7 @@
 
 import React, { useRef, useState } from "react";
 import ReactCrop, { type Crop } from "react-image-crop";
-import { FormGroup, FormLabel } from "react-bootstrap";
+import { FormGroup } from "react-bootstrap";
 import { type WidgetProps } from "@rjsf/utils";
 import "react-image-crop/src/ReactCrop.scss";
 import { assertNotNull } from "@/utils/typeUtils";
@@ -92,7 +92,6 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
 
   return (
     <FormGroup>
-      <FormLabel>{schema.title}</FormLabel>
       {source && (
         <>
           <ReactCrop
