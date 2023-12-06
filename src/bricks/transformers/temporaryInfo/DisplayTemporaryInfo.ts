@@ -55,7 +55,7 @@ import { type UUID } from "@/types/stringTypes";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Location } from "@/types/starterBrickTypes";
-import { assertNotNull_UNSAFE } from "@/utils/typeUtils";
+import { assumeNotNull_UNSAFE } from "@/utils/typeUtils";
 
 // Match naming of the sidebar panel extension point triggers
 export type RefreshTrigger = "manual" | "statechange";
@@ -409,8 +409,8 @@ class DisplayTemporaryInfo extends TransformerABC {
     expectContext("contentScript");
 
     const target = isRootAware ? root : document;
-    assertNotNull_UNSAFE(extensionId);
-    assertNotNull_UNSAFE(blueprintId);
+    assumeNotNull_UNSAFE(extensionId);
+    assumeNotNull_UNSAFE(blueprintId);
 
     // Counter for tracking branch execution
     let counter = 0;

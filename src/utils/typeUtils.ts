@@ -66,6 +66,6 @@ export function assertNotNull<T>(
  * Temporarily de-null type without actually checking it.
  * This is equivalent to `@ts-expect-error` but it works with our dual-tsconfig setup.
  */
-export function assertNotNull_UNSAFE<T>(
+export function assumeNotNull_UNSAFE<T>(
   value: T,
 ): asserts value is Exclude<T, null | undefined> {}
