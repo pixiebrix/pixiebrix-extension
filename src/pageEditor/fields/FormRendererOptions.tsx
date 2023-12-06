@@ -262,18 +262,18 @@ const FormRendererOptions: React.FC<{
         <FormSubmissionOptions makeName={makeName} />
       </ConnectedCollapsibleFieldSection>
 
-      <hr />
-
-      <ConfigErrorBoundary>
-        <FormEditor
-          name={configName}
-          // Showing the section above manually
-          showFormIntroFields={false}
-          activeField={activeElement}
-          setActiveField={setActiveElement}
-          fieldTypes={FORM_FIELD_TYPE_OPTIONS}
-        />
-      </ConfigErrorBoundary>
+      <ConnectedCollapsibleFieldSection title="Form Fields" initialExpanded>
+        <ConfigErrorBoundary>
+          <FormEditor
+            name={configName}
+            // Showing the section above manually
+            showFormIntroFields={false}
+            activeField={activeElement}
+            setActiveField={setActiveElement}
+            fieldTypes={FORM_FIELD_TYPE_OPTIONS}
+          />
+        </ConfigErrorBoundary>
+      </ConnectedCollapsibleFieldSection>
     </div>
   );
 };
