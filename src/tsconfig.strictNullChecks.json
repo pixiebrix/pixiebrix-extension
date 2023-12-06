@@ -365,6 +365,7 @@
     "./sandbox/sandbox.ts",
     "./services/baseService.ts",
     "./services/constants.ts",
+    "./services/factory.ts",
     "./services/requestErrorUtils.ts",
     "./sidebar/DefaultPanel.tsx",
     "./sidebar/ErrorBanner.tsx",

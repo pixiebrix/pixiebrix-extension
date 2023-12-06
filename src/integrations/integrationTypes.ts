@@ -319,9 +319,9 @@ export interface Integration<
 
   getOrigins: (integrationConfig: TSanitized) => string[];
 
-  getOAuth2Context: (integrationConfig: TSecret) => OAuth2Context;
+  getOAuth2Context: (integrationConfig: TSecret) => OAuth2Context | undefined;
 
-  getTokenContext: (integrationConfig: TSecret) => TokenContext;
+  getTokenContext: (integrationConfig: TSecret) => TokenContext | undefined;
 
   authenticateRequest: (
     integrationConfig: TSecret,
@@ -369,11 +369,11 @@ export abstract class IntegrationABC<
 
   abstract getOAuth2Context(
     integrationConfig: TConfig & SecretBrand,
-  ): OAuth2Context;
+  ): OAuth2Context | undefined;
 
   abstract getTokenContext(
     integrationConfig: TConfig & SecretBrand,
-  ): TokenContext;
+  ): TokenContext | undefined;
 
   abstract authenticateRequest(
     integrationConfig: TConfig & SecretBrand,
