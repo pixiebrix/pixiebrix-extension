@@ -37,7 +37,7 @@ import {
   type TemporaryDisplayInputs,
   type TemporaryPanelEntryMetadata,
 } from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { type PanelButton, type PanelPayload } from "@/types/sidebarTypes";
+import { type PanelButton } from "@/types/sidebarTypes";
 import { getCurrentTour, markTourStep } from "@/starterBricks/tourController";
 import { addOverlay } from "@/bricks/transformers/tourStep/overlay";
 import { cancelTemporaryPanels } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
@@ -360,7 +360,7 @@ export class TourStepTransformer extends TransformerABC {
 
       counter++;
 
-      return result as PanelPayload;
+      return result;
     };
 
     // Outside click handler
