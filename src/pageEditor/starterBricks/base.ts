@@ -60,10 +60,6 @@ import {
   type BaseFormState,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/baseFormStateTypes";
-import {
-  minimalSchemaFactory,
-  minimalUiSchemaFactory,
-} from "@/utils/schemaUtils";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 
 export interface WizardStep {
