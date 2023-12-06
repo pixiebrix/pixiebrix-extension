@@ -20,7 +20,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { authActions } from "@/auth/authSlice";
-import InstalledEntry from "@/pageEditor/sidebar/InstalledEntry";
+import ActivatedEntry from "@/pageEditor/sidebar/ActivatedEntry";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
@@ -42,12 +42,12 @@ afterAll(() => {
   jest.clearAllMocks();
 });
 
-describe("InstalledEntry", () => {
+describe("ActivatedEntry", () => {
   test("it renders not active element", async () => {
     const modComponent = modComponentFactory();
     const formState = formStateFactory();
     const { asFragment } = render(
-      <InstalledEntry extension={modComponent} recipes={[]} isAvailable />,
+      <ActivatedEntry extension={modComponent} recipes={[]} isAvailable />,
       {
         initialValues: formState,
         setupRedux(dispatch) {
@@ -72,7 +72,7 @@ describe("InstalledEntry", () => {
     const modComponent = modComponentFactory();
     const formState = formStateFactory();
     const { asFragment } = render(
-      <InstalledEntry extension={modComponent} recipes={[]} isAvailable />,
+      <ActivatedEntry extension={modComponent} recipes={[]} isAvailable />,
       {
         initialValues: formState,
         setupRedux(dispatch) {
