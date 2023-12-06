@@ -47,10 +47,10 @@ import { assertNotNull } from "@/utils/typeUtils";
 type RequestConfig = SetRequired<AxiosRequestConfig, "url">;
 
 /**
- * A service created from a local definition. Has the ability to authenticate requests because it has
+ * An integration hydrated from a user-defined definition. Has the ability to authenticate requests because it has
  * access to authenticate secrets.
  */
-export class LocalDefinedService<
+export class UserDefinedIntegration<
   TDefinition extends IntegrationDefinition = IntegrationDefinition,
 > extends IntegrationABC {
   private readonly _definition: TDefinition;
@@ -60,6 +60,9 @@ export class LocalDefinedService<
 
   public readonly hasAuth: boolean;
 
+  // XXX: in the future, version should be required. We currently can't mark it as required because
+  // IntegrationDefinition uses the Metadata type, which accommodate user-defined packages which have a version
+  // and built-in JS-defined bricks which don't have a version
   public readonly version?: SemVerString;
 
   constructor(definition: TDefinition) {
@@ -140,7 +143,7 @@ export class LocalDefinedService<
   /**
    * Returns origins that require permissions to use the service
    */
-  getOrigins(serviceConfig: SanitizedConfig): string[] {
+  getOrigins(integrationConfig: SanitizedConfig): string[] {
     const patterns = castArray(
       this._definition.isAvailable?.matchPatterns ?? [],
     );
@@ -151,7 +154,7 @@ export class LocalDefinedService<
     if (baseUrlTemplate) {
       // Convert into a real match pattern: https://developer.chrome.com/docs/extensions/mv3/match_patterns/
       const baseUrl = safeParseUrl(
-        renderMustache(baseUrlTemplate, serviceConfig),
+        renderMustache(baseUrlTemplate, integrationConfig),
       );
 
       if (baseUrl.hostname) {
@@ -161,7 +164,7 @@ export class LocalDefinedService<
         console.warn("Invalid baseURL provided by configuration", {
           baseUrlTemplate,
           baseUrl,
-          serviceConfig,
+          serviceConfig: integrationConfig,
         });
       }
     }
@@ -172,7 +175,7 @@ export class LocalDefinedService<
 
       // Don't add wildcard because the URL can't change per request.
       const authUrls = [oauth.oauth2.authorizeUrl, oauth.oauth2.tokenUrl]
-        .map((template) => renderMustache(template, serviceConfig))
+        .map((template) => renderMustache(template, integrationConfig))
         .filter((url) => Boolean(safeParseUrl(url).hostname));
       patterns.push(...authUrls);
     }
@@ -181,31 +184,36 @@ export class LocalDefinedService<
       const tokenUrl = (
         this._definition as IntegrationDefinition<TokenAuthenticationDefinition>
       ).authentication.token.url;
-      patterns.push(renderMustache(tokenUrl, serviceConfig));
+      patterns.push(renderMustache(tokenUrl, integrationConfig));
     }
 
     return uniq(compact(patterns));
   }
 
-  getTokenContext(serviceConfig: SecretsConfig): TokenContext | undefined {
+  getTokenContext(integrationConfig: SecretsConfig): TokenContext | undefined {
     if (this.isToken) {
       const definition: TokenContext = (
         this._definition.authentication as TokenAuthenticationDefinition
       ).token;
       // Console.debug("token context", { definition, serviceConfig });
-      return renderMustache<TokenContext>(definition, serviceConfig);
+      return renderMustache<TokenContext>(definition, integrationConfig);
     }
 
     return undefined;
   }
 
-  getOAuth2Context(serviceConfig: SecretsConfig): OAuth2Context | undefined {
+  getOAuth2Context(
+    integrationConfig: SecretsConfig,
+  ): OAuth2Context | undefined {
     if (this.isOAuth2) {
       const definition: OAuth2Context = (
         this._definition.authentication as OAuth2AuthenticationDefinition
       ).oauth2;
-      console.debug("getOAuth2Context", { definition, serviceConfig });
-      return renderMustache<OAuth2Context>(definition, serviceConfig);
+      console.debug("getOAuth2Context", {
+        definition,
+        serviceConfig: integrationConfig,
+      });
+      return renderMustache<OAuth2Context>(definition, integrationConfig);
     }
 
     return undefined;
@@ -232,7 +240,7 @@ export class LocalDefinedService<
   }
 
   private authenticateRequestKey(
-    serviceConfig: SecretsConfig,
+    integrationConfig: SecretsConfig,
     requestConfig: RequestConfig,
   ): RequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
@@ -247,7 +255,7 @@ export class LocalDefinedService<
       params = {},
     } = renderMustache<KeyAuthenticationDefinition>(
       (this._definition.authentication as KeyAuthenticationDefinition) ?? {},
-      serviceConfig,
+      integrationConfig,
     );
 
     if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
@@ -268,7 +276,7 @@ export class LocalDefinedService<
   }
 
   private authenticateBasicRequest(
-    serviceConfig: SecretsConfig,
+    integrationConfig: SecretsConfig,
     requestConfig: RequestConfig,
   ): RequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
@@ -283,7 +291,7 @@ export class LocalDefinedService<
       headers = {},
     } = renderMustache<BasicAuthenticationDefinition>(
       this._definition.authentication as BasicAuthenticationDefinition,
-      serviceConfig,
+      integrationConfig,
     );
 
     if (isEmpty(basic.username) && isEmpty(basic.password)) {
@@ -315,7 +323,7 @@ export class LocalDefinedService<
   }
 
   private authenticateRequestToken(
-    serviceConfig: SecretsConfig,
+    integrationConfig: SecretsConfig,
     requestConfig: RequestConfig,
     tokenData: AuthData,
   ): RequestConfig {
@@ -327,7 +335,7 @@ export class LocalDefinedService<
       this._definition.authentication as
         | OAuth2AuthenticationDefinition
         | TokenAuthenticationDefinition,
-      { ...serviceConfig, ...tokenData },
+      { ...integrationConfig, ...tokenData },
     );
 
     if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
@@ -347,14 +355,14 @@ export class LocalDefinedService<
   }
 
   authenticateRequest(
-    serviceConfig: SecretsConfig,
+    integrationConfig: SecretsConfig,
     requestConfig: RequestConfig,
     authData?: AuthData,
   ): RequestConfig {
-    const missing = missingProperties(this.schema, serviceConfig);
+    const missing = missingProperties(this.schema, integrationConfig);
     if (missing.length > 0) {
       throw new NotConfiguredError(
-        `Service ${this.id} is not fully configured`,
+        `Integration ${this.id} is not fully configured`,
         this.id,
         missing,
       );
@@ -363,23 +371,25 @@ export class LocalDefinedService<
     if (this.isOAuth2 || this.isToken) {
       assertNotNull(
         authData,
-        "This service requires authentication data but it was not provided",
+        "This integration requires authentication data but it was not provided",
       );
       return this.authenticateRequestToken(
-        serviceConfig,
+        integrationConfig,
         requestConfig,
         authData,
       );
     }
 
     if (this.isBasicHttpAuth) {
-      return this.authenticateBasicRequest(serviceConfig, requestConfig);
+      return this.authenticateBasicRequest(integrationConfig, requestConfig);
     }
 
-    return this.authenticateRequestKey(serviceConfig, requestConfig);
+    return this.authenticateRequestKey(integrationConfig, requestConfig);
   }
 }
 
-export function fromJS(component: IntegrationDefinition): LocalDefinedService {
-  return new LocalDefinedService(component);
+export function fromJS(
+  component: IntegrationDefinition,
+): UserDefinedIntegration {
+  return new UserDefinedIntegration(component);
 }
