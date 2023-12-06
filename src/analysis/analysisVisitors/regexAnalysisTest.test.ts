@@ -19,6 +19,7 @@ import { type BrickPosition } from "@/bricks/types";
 import RegexAnalysis from "@/analysis/analysisVisitors/regexAnalysis";
 import { validateRegistryId } from "@/types/helpers";
 import { type VisitBlockExtra } from "@/bricks/PipelineVisitor";
+import { toExpression } from "@/utils/expressionUtils";
 
 const position: BrickPosition = {
   path: "test.path",
@@ -32,10 +33,7 @@ describe("RegexAnalysis", () => {
       {
         id: validateRegistryId("@pixiebrix/regex"),
         config: {
-          regex: {
-            __type__: "nunjucks",
-            __value__: "(?<foo>abc {{ @foo }}",
-          },
+          regex: toExpression("nunjucks", "(?<foo>abc {{ @foo }}"),
         },
       },
       {} as VisitBlockExtra,
@@ -67,10 +65,7 @@ describe("RegexAnalysis", () => {
       {
         id: validateRegistryId("@pixiebrix/regex"),
         config: {
-          regex: {
-            __type__: "nunjucks",
-            __value__: "(?<foo>abc",
-          },
+          regex: toExpression("nunjucks", "(?<foo>abc"),
         },
       },
       {} as VisitBlockExtra,
@@ -94,10 +89,7 @@ describe("RegexAnalysis", () => {
       {
         id: validateRegistryId("@pixiebrix/regex"),
         config: {
-          regex: {
-            __type__: "nunjucks",
-            __value__: pattern,
-          },
+          regex: toExpression("nunjucks", pattern),
         },
       },
       {} as VisitBlockExtra,

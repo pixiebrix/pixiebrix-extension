@@ -26,8 +26,7 @@ const WorkshopMessage: React.FC = () => (
     <FontAwesomeIcon icon={faExclamationCircle} size="lg" className="mt-1" />
     <p>
       This brick configuration uses advanced features not yet supported in the
-      Page Editor. To make changes, please open the source blueprint in the
-      Workshop.{" "}
+      Page Editor. To make changes, please open the mod in the Workshop.{" "}
       <a
         href="https://docs.pixiebrix.com/developer-guide"
         target="_blank"

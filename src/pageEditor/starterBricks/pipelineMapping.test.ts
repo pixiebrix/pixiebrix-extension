@@ -23,7 +23,6 @@ import {
   echoBrick,
   teapotBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { toExpression } from "@/testUtils/testHelpers";
 import {
   normalizePipelineForEditor,
   omitEditorMetadata,
@@ -31,7 +30,7 @@ import {
 import blockRegistry from "@/bricks/registry";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { isPipelineExpression } from "@/utils/expressionUtils";
+import { isPipelineExpression, toExpression } from "@/utils/expressionUtils";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 
 describe("normalizePipeline", () => {

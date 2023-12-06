@@ -28,6 +28,7 @@ import {
 import { fromJS } from "@/bricks/transformers/brickFactory";
 import { validateSemVerString } from "@/types/helpers";
 import { setContext } from "@/testUtils/detectPageMock";
+import { toExpression } from "@/utils/expressionUtils";
 
 setContext("contentScript");
 
@@ -96,19 +97,13 @@ describe("component block v1", () => {
         id: "test/component",
         outputKey: "first",
         config: {
-          message: {
-            __type__: "var",
-            __value__: "@input.inputArg",
-          },
+          message: toExpression("var", "@input.inputArg"),
         },
       },
       {
         id: echoBrick.id,
         config: {
-          message: {
-            __type__: "mustache",
-            __value__: "{{@first.message}}",
-          },
+          message: toExpression("mustache", "{{@first.message}}"),
         },
       },
     ] as BrickPipeline;

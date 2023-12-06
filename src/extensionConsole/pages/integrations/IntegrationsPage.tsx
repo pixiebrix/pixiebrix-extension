@@ -56,6 +56,7 @@ import {
   autoConfigurations,
   autoConfigureIntegration,
 } from "@/integrations/autoConfigure";
+import { type Draft } from "immer";
 
 const { upsertIntegrationConfig, deleteIntegrationConfig } =
   integrationsSlice.actions;
@@ -173,7 +174,7 @@ const componentState = createSlice({
     },
     integrationsLoaded(state, action: PayloadAction<Integration[]>) {
       state.isLoadingIntegrations = false;
-      const integrations = action.payload;
+      const integrations = action.payload as Draft<Integration[]>;
       if (state.editingIntegrationConfig && isEmpty(state.integrations)) {
         const selectedIntegration = integrations.find(
           ({ id }) => id === state.editingIntegrationConfig.integrationId,

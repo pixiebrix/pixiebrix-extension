@@ -16,17 +16,17 @@
  */
 
 import React from "react";
-import { type Field } from "@rjsf/core";
+import { type Field } from "@rjsf/utils";
 import cx from "classnames";
 import MarkdownLazy from "@/components/MarkdownLazy";
 
 type FormPreviewDescriptionFieldProps = {
   id: string;
-  description: string | React.ReactNode;
+  description: string | React.ReactElement;
   className?: string;
 };
 
-// RJSF implementation ref https://github.com/rjsf-team/react-jsonschema-form/blob/master/packages/core/src/components/fields/DescriptionField.js
+// RJSF implementation ref: https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/bootstrap-4/src/DescriptionField/DescriptionField.tsx
 export const DescriptionField: React.VoidFunctionComponent<
   FormPreviewDescriptionFieldProps
 > = ({ id, description, className: classNameProp }) => {

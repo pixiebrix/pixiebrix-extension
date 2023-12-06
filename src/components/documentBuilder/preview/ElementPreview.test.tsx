@@ -26,7 +26,7 @@ import ElementPreview, {
   type ElementPreviewProps,
 } from "@/components/documentBuilder/preview/ElementPreview";
 import { fireEvent, screen } from "@testing-library/react";
-import { defaultBlockConfig } from "@/bricks/util";
+import { defaultBrickConfig } from "@/bricks/util";
 import { MarkdownRenderer } from "@/bricks/renderers/markdown";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 import { render } from "@/pageEditor/testHelpers";
@@ -172,7 +172,7 @@ test("can preview pipeline element with bricks", () => {
   const markdownBlock = new MarkdownRenderer();
   const markdownConfig = brickConfigFactory({
     id: markdownBlock.id,
-    config: defaultBlockConfig(markdownBlock.inputSchema),
+    config: defaultBrickConfig(markdownBlock.inputSchema),
   });
 
   const element = createNewElement("pipeline");

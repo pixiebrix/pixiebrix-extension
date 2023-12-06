@@ -19,6 +19,7 @@ import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { echoBrick, simpleInput, testOptions } from "./pipelineTestHelpers";
 import { type ApiVersion } from "@/types/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -50,10 +51,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       {
         id: echoBrick.id,
         config: {
-          message: {
-            __type__: "nunjucks",
-            __value__: "{{ @input.foo }}",
-          },
+          message: toExpression("nunjucks", "{{ @input.foo }}"),
         },
       },
     ];

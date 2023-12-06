@@ -24,7 +24,7 @@ import TextWidget, {
   isVarValue,
 } from "@/components/fields/schemaFields/widgets/TextWidget";
 import userEvent from "@testing-library/user-event";
-import { stringToExpression } from "@/pageEditor/starterBricks/upgrade";
+import { toExpression } from "@/utils/expressionUtils";
 
 const fieldName = "testField";
 const fieldDescription = "this is a test field description";
@@ -60,7 +60,7 @@ describe("TextWidget", () => {
       <TextWidget name={fieldName} schema={schema} isRequired />,
       {
         initialValues: {
-          [fieldName]: stringToExpression("", "nunjucks"),
+          [fieldName]: toExpression("nunjucks", ""),
         },
       },
     );
@@ -68,7 +68,7 @@ describe("TextWidget", () => {
     await userEvent.type(screen.getByRole("textbox"), "abc");
 
     expect(getFormState()).toStrictEqual({
-      [fieldName]: stringToExpression("abc", "nunjucks"),
+      [fieldName]: toExpression("nunjucks", "abc"),
     });
   });
 

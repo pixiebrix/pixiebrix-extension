@@ -32,7 +32,7 @@ import Sidebar from "@/extensionConsole/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
-import ActivateRecipePage from "@/extensionConsole/pages/activateRecipe/ActivateRecipePage";
+import ActivateModPage from "@/extensionConsole/pages/activateMod/ActivateModPage";
 import ActivateExtensionPage from "@/extensionConsole/pages/activateExtension/ActivateExtensionPage";
 import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import SetupPage from "@/extensionConsole/pages/onboarding/SetupPage";
@@ -100,8 +100,8 @@ const AuthenticatedContent: React.VFC = () => {
               />
               <Route
                 exact
-                path="/:sourcePage/activate/:recipeId"
-                component={ActivateRecipePage}
+                path="/:sourcePage/activate/:registryId"
+                component={ActivateModPage}
               />
 
               <Route exact path="/settings" component={SettingsPage} />

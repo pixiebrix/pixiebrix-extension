@@ -16,6 +16,9 @@
  */
 
 import { type SafeString } from "@/types/stringTypes";
+import type { Expression, OutputKey } from "@/types/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
+import { VARIABLE_REFERENCE_PREFIX } from "@/types/runtimeTypes";
 
 /**
  * Return a fresh variable name based on the root name and array of existing identifiers.
@@ -52,4 +55,21 @@ export function freshIdentifier(
   }
 
   return `${root}${next}`;
+}
+
+/**
+ * Returns a variable reference expression for the given variable name.
+ * @param variableName the variable name
+ */
+export function getVariableExpression<TValue extends string | null>(
+  variableName: OutputKey | null,
+): Expression<TValue | null, "var"> {
+  if (variableName) {
+    return toExpression(
+      "var",
+      `${VARIABLE_REFERENCE_PREFIX}${variableName}` as TValue,
+    );
+  }
+
+  return toExpression("var", null);
 }

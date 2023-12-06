@@ -23,11 +23,11 @@ import { render } from "@/pageEditor/testHelpers";
 import TabField from "@/contrib/google/sheets/ui/TabField";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
-import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
 import { screen } from "@testing-library/react";
 import { selectSchemaFieldInputMode } from "@/testUtils/formHelpers";
 import userEvent from "@testing-library/user-event";
+import { toExpression } from "@/utils/expressionUtils";
 
 beforeAll(() => {
   registerDefaultWidgets();
@@ -112,7 +112,7 @@ describe("TabField", () => {
       />,
       {
         initialValues: {
-          tabName: makeTemplateExpression("nunjucks", ""),
+          tabName: toExpression("nunjucks", ""),
         },
       },
     );

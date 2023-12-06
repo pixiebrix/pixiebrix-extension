@@ -35,13 +35,9 @@ import { isMustacheOnly } from "@/components/fields/fieldUtils";
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
 import useUndo from "@/hooks/useUndo";
 import { isKeyStringField } from "@/components/fields/schemaFields/fieldTypeCheckers";
-import {
-  makeTemplateExpression,
-  makeVariableExpression,
-} from "@/runtime/expressionCreators";
 import { type Schema } from "@/types/schemaTypes";
 import { type TemplateEngine } from "@/types/runtimeTypes";
-import { isTemplateExpression } from "@/utils/expressionUtils";
+import { isTemplateExpression, toExpression } from "@/utils/expressionUtils";
 import { trimEndOnce } from "@/utils/stringUtils";
 
 function schemaSupportsTemplates(schema: Schema): boolean {
@@ -183,7 +179,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
           templateEngine !== "var" &&
           (isVarValue(nextValue) || nextValue === "@")
         ) {
-          await setValue(makeVariableExpression(nextValue));
+          await setValue(toExpression("var", nextValue));
         } else if (
           // Automatically switch from var to text if the user starts typing text
           templateEngine === "var" &&
@@ -195,9 +191,9 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
           const templateValue = isVarValue(trimmed)
             ? nextValue.replace(trimmed, `{{${trimmed}}}`)
             : nextValue;
-          await setValue(makeTemplateExpression("nunjucks", templateValue));
+          await setValue(toExpression("nunjucks", templateValue));
         } else {
-          await setValue(makeTemplateExpression(templateEngine, nextValue));
+          await setValue(toExpression(templateEngine, nextValue));
         }
       };
 

@@ -26,6 +26,7 @@ import { getCssClassInputFieldOptions } from "@/components/fields/schemaFields/C
 import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
 import { parseValue } from "@/components/fields/schemaFields/widgets/cssClassWidgets/utils";
+import { toExpression } from "@/utils/expressionUtils";
 
 const Preview: React.VFC = () => {
   const [{ value }] = useField("cssClass");
@@ -98,10 +99,7 @@ export const Omitted: Story = {
 export const BlankExpression: Story = {
   args: {
     initialValues: {
-      cssClass: {
-        __type__: "nunjucks",
-        __value__: "",
-      },
+      cssClass: toExpression("nunjucks", ""),
     },
   },
 };
@@ -109,10 +107,7 @@ export const BlankExpression: Story = {
 export const VariableExpression: Story = {
   args: {
     initialValues: {
-      cssClass: {
-        __type__: "var",
-        __value__: "@cssClasses",
-      },
+      cssClass: toExpression("var", "@cssClasses"),
     },
   },
 };

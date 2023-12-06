@@ -22,7 +22,8 @@ import {
 import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis";
 import CustomEventEffect from "@/bricks/effects/customEvent";
 import { AnnotationType } from "@/types/annotationTypes";
-import { makeTemplateExpression } from "@/runtime/expressionCreators";
+
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("checkEventNamesAnalysis", () => {
   it("error on missing custom event", async () => {
@@ -96,7 +97,7 @@ describe("checkEventNamesAnalysis", () => {
       {
         id: CustomEventEffect.BRICK_ID,
         config: {
-          eventName: makeTemplateExpression("nunjucks", "{{@myevent}}"),
+          eventName: toExpression("nunjucks", "{{@myevent}}"),
         },
       },
     ]);

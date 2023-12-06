@@ -21,7 +21,7 @@ import { render } from "@/extensionConsole/testHelpers";
 import { Formik } from "formik";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import React from "react";
-import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
+import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
 import TourStep from "@/bricks/transformers/tourStep/tourStep";
 import TourStepOptions from "@/bricks/transformers/tourStep/TourStepOptions";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -29,7 +29,9 @@ import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactor
 function makeBaseState() {
   // Extension type doesn't really matter here...
   const baseFormState = menuItemFormStateFactory();
-  baseFormState.extension.blockPipeline = [createNewBlock(TourStep.BLOCK_ID)];
+  baseFormState.extension.blockPipeline = [
+    createNewConfiguredBrick(TourStep.BLOCK_ID),
+  ];
   return baseFormState;
 }
 

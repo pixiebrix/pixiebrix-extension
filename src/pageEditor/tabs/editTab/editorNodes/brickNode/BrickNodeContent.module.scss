@@ -58,6 +58,11 @@
   }
 }
 
+.summary {
+  max-height: 50px;
+  overflow: hidden;
+}
+
 .outputKey {
   margin-top: 0.4em;
 }

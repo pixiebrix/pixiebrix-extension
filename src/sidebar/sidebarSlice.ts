@@ -158,7 +158,7 @@ async function resolvePanel(
 }
 
 export function fixActiveTabOnRemove(
-  state: Draft<SidebarState>,
+  state: SidebarState,
   removedEntry: SidebarEntry | null,
 ) {
   // Only update the active panel if the panel needs to change
@@ -172,9 +172,6 @@ export function fixActiveTabOnRemove(
     );
 
     if (matchingExtension) {
-      // Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
-      // See: https://github.com/immerjs/immer/issues/839
-      // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
       state.activeKey = eventKeyForEntry(matchingExtension);
     } else {
       const matchingMod = panels.find(
@@ -232,7 +229,10 @@ const sidebarSlice = createSlice({
       state.activeKey =
         visiblePanelCount === 0
           ? eventKeyForEntry(MOD_LAUNCHER)
-          : defaultEventKey(state, state.closedTabs);
+          : // Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
+            // See: https://github.com/immerjs/immer/issues/839
+            // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
+            defaultEventKey(state, state.closedTabs);
     },
     selectTab(state, action: PayloadAction<string>) {
       // We were seeing some automatic calls to selectTab with a stale event key...
@@ -246,7 +246,7 @@ const sidebarSlice = createSlice({
       state.pendingActivePanel = null;
     },
     addForm(state, action: PayloadAction<{ form: FormPanelEntry }>) {
-      const { form } = action.payload;
+      const { form } = action.payload as Draft<typeof action.payload>;
 
       if (state.forms.some((x) => x.nonce === form.nonce)) {
         // Panel is already in the sidebar, do nothing as form definitions can't be updated. (There's no placeholder

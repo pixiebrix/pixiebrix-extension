@@ -33,6 +33,7 @@ import {
 } from "@/utils/expressionUtils";
 import { asyncMapValues } from "@/utils/promiseUtils";
 import { isObject } from "@/utils/objectUtils";
+import { assertNotNull } from "@/utils/typeUtils";
 
 export type Args = string | UnknownObject | UnknownObject[];
 
@@ -53,7 +54,8 @@ export async function renderExplicit(
     }
 
     const render = engineRenderer(config.__type__, options);
-    return render?.(config.__value__, ctxt);
+    assertNotNull(render, `No renderer found for ${config.__type__}`);
+    return render(config.__value__, ctxt);
   }
 
   if (isPipelineExpression(config) || isDeferExpression(config)) {
