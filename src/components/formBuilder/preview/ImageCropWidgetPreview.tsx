@@ -16,15 +16,12 @@
  */
 
 import React from "react";
-import { FormGroup } from "react-bootstrap";
 import { type WidgetProps } from "@rjsf/utils";
 
 const ImageCropWidgetPreview: React.VFC<WidgetProps> = ({ schema }) => (
-  <FormGroup>
-    <div className="text-muted form-text">
-      Image cropping is not displayed in preview.
-    </div>
-  </FormGroup>
+  <div className="text-muted form-text">
+    Image cropping is not displayed in preview.
+  </div>
 );
 
 export default ImageCropWidgetPreview;
