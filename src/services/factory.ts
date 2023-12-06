@@ -76,7 +76,7 @@ export class UserDefinedIntegration<
   }
 
   /**
-   * Return true if this service can be used to authenticate against the given URL.
+   * Return true if this integration can be used to authenticate against the given URL.
    */
   isAvailable(url: string): boolean {
     const patterns = castArray(
@@ -86,7 +86,7 @@ export class UserDefinedIntegration<
   }
 
   /**
-   * Return true if service exchanges credentials for a bearer token
+   * Return true if integration exchanges credentials for a bearer token
    */
   get isToken(): boolean {
     return (
@@ -96,7 +96,7 @@ export class UserDefinedIntegration<
   }
 
   /**
-   * Return true if service uses OAuth2 authentication
+   * Return true if integration uses OAuth2 authentication
    */
   get isOAuth2(): boolean {
     return (
@@ -119,7 +119,7 @@ export class UserDefinedIntegration<
   }
 
   /**
-   * Return true if service uses basic authentication
+   * Return true if integration uses basic authentication
    * @since 1.7.16
    */
   get isBasicHttpAuth(): boolean {
@@ -130,7 +130,7 @@ export class UserDefinedIntegration<
   }
 
   /**
-   * Return true if service uses OAuth2 authorization grant
+   * Return true if integration uses OAuth2 authorization grant
    */
   get isAuthorizationGrant(): boolean {
     return (
@@ -141,7 +141,7 @@ export class UserDefinedIntegration<
   }
 
   /**
-   * Returns origins that require permissions to use the service
+   * Returns origins that require permissions to use the integration
    */
   getOrigins(integrationConfig: SanitizedConfig): string[] {
     const patterns = castArray(
@@ -164,7 +164,7 @@ export class UserDefinedIntegration<
         console.warn("Invalid baseURL provided by configuration", {
           baseUrlTemplate,
           baseUrl,
-          serviceConfig: integrationConfig,
+          integrationConfig,
         });
       }
     }
@@ -195,7 +195,6 @@ export class UserDefinedIntegration<
       const definition: TokenContext = (
         this._definition.authentication as TokenAuthenticationDefinition
       ).token;
-      // Console.debug("token context", { definition, serviceConfig });
       return renderMustache<TokenContext>(definition, integrationConfig);
     }
 
@@ -211,7 +210,7 @@ export class UserDefinedIntegration<
       ).oauth2;
       console.debug("getOAuth2Context", {
         definition,
-        serviceConfig: integrationConfig,
+        integrationConfig,
       });
       return renderMustache<OAuth2Context>(definition, integrationConfig);
     }
@@ -220,8 +219,8 @@ export class UserDefinedIntegration<
   }
 
   /**
-   * Test that the request URL can be called by this service.
-   * @throws IncompatibleServiceError if the resulting URL cannot by called by this service
+   * Test that the request URL can be called by this integration.
+   * @throws IncompatibleServiceError if the resulting URL cannot by called by this integration
    */
   private checkRequestUrl(
     requestConfig: RequestConfig,
@@ -234,7 +233,7 @@ export class UserDefinedIntegration<
 
     if (!this.isAvailable(absoluteURL)) {
       throw new IncompatibleServiceError(
-        `Service ${this.id} cannot be used to authenticate requests to ${absoluteURL}`,
+        `Integration ${this.id} cannot be used to authenticate requests to ${absoluteURL}`,
       );
     }
   }
@@ -245,7 +244,7 @@ export class UserDefinedIntegration<
   ): RequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
       throw new IncompatibleServiceError(
-        `Service ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`,
+        `Integration ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`,
       );
     }
 
@@ -260,7 +259,7 @@ export class UserDefinedIntegration<
 
     if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
       throw new Error(
-        "Must use absolute URLs for services that don't define a baseURL",
+        "Must use absolute URLs for integrations that don't define a baseURL",
       );
     }
 
@@ -281,7 +280,7 @@ export class UserDefinedIntegration<
   ): RequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
       throw new IncompatibleServiceError(
-        `Service ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`,
+        `Integration ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`,
       );
     }
 
@@ -302,7 +301,7 @@ export class UserDefinedIntegration<
 
     if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
       throw new Error(
-        "Must use absolute URLs for services that don't define a baseURL",
+        "Must use absolute URLs for integrations that don't define a baseURL",
       );
     }
 
@@ -340,7 +339,7 @@ export class UserDefinedIntegration<
 
     if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
       throw new Error(
-        "Must use absolute URLs for services that don't define a baseURL",
+        "Must use absolute URLs for integrations that don't define a baseURL",
       );
     }
 
