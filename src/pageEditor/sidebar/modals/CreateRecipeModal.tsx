@@ -255,7 +255,7 @@ function useSaveCallbacks({
 
       reportEvent(Events.PAGE_EDITOR_CREATE_MOD, {
         copiedFrom: recipeId,
-        registryId: savedRecipe.metadata.id,
+        blueprintId: savedRecipe.metadata.id,
       });
     },
     [
