@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModDefinition } from "@/types/modDefinitionTypes";
+import {
+  type ModDefinition,
+  type ModOptionsDefinition,
+} from "@/types/modDefinitionTypes";
 import * as semver from "semver";
 import { type MarketplaceListing, type Organization } from "@/types/contract";
 import {
@@ -40,8 +43,14 @@ import {
   minimalSchemaFactory,
   minimalUiSchemaFactory,
 } from "@/utils/schemaUtils";
-import { isEmpty } from "lodash";
+import { isEmpty, sortBy } from "lodash";
 import { isNullOrBlank } from "@/utils/stringUtils";
+import {
+  type Schema,
+  type SchemaProperties,
+  type UiSchema,
+} from "@/types/schemaTypes";
+import { propertiesToSchema } from "@/validators/generic";
 
 /**
  * Returns true if the mod is an UnavailableMod
@@ -358,6 +367,16 @@ export const selectComponentsFromMod = createSelector(
 );
 
 /**
+ * Returns a minimal mod options definition in a normalized format.
+ */
+export function emptyModOptionsDefinitionFactory(): Required<ModOptionsDefinition> {
+  return {
+    schema: minimalSchemaFactory(),
+    uiSchema: minimalUiSchemaFactory(),
+  };
+}
+
+/**
  * Normalize the `options` section of a mod definition, ensuring that it has a schema and uiSchema.
  * @since 1.8.5
  */
@@ -365,17 +384,29 @@ export function normalizeModOptionsDefinition(
   optionsDefinition: ModDefinition["options"] | null,
 ): Required<ModDefinition["options"]> {
   if (!optionsDefinition) {
-    return {
-      schema: minimalSchemaFactory(),
-      uiSchema: minimalUiSchemaFactory(),
-    };
+    return emptyModOptionsDefinitionFactory();
   }
 
-  const { schema, uiSchema } = optionsDefinition;
+  const modDefinitionSchema = optionsDefinition.schema ?? {};
+  const schema: Schema =
+    "type" in modDefinitionSchema &&
+    modDefinitionSchema.type === "object" &&
+    "properties" in modDefinitionSchema
+      ? modDefinitionSchema
+      : // Handle case where schema is just the properties. That's the old format. Technically, this isn't possible
+        // given the type signature. But be defensive because this method processes user-defined mod definitions.
+        propertiesToSchema(modDefinitionSchema as SchemaProperties);
+
+  const uiSchema: UiSchema = optionsDefinition.uiSchema ?? {};
+
+  uiSchema["ui:order"] ??= [
+    ...sortBy(Object.keys(schema.properties ?? {})),
+    "*",
+  ];
 
   return {
     schema,
-    uiSchema: uiSchema ?? minimalUiSchemaFactory(),
+    uiSchema,
   };
 }
 

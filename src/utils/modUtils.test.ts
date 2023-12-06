@@ -19,6 +19,7 @@ import {
   getSharingSource,
   isResolvedModComponent,
   isUnavailableMod,
+  normalizeModOptionsDefinition,
 } from "./modUtils";
 import { uuidv4 } from "@/types/helpers";
 import { UserRole } from "@/types/contract";
@@ -181,5 +182,45 @@ describe("isUnavailableMod", () => {
   it("returns false for an extension", () => {
     const mod = modComponentFactory() as ResolvedModComponent;
     expect(isUnavailableMod(mod)).toBe(false);
+  });
+});
+
+describe("normalizeModOptionsDefinition", () => {
+  it("normalizes null", () => {
+    expect(normalizeModOptionsDefinition(null)).toStrictEqual({
+      schema: {
+        type: "object",
+        properties: {},
+      },
+      uiSchema: {
+        "ui:order": ["*"],
+      },
+    });
+  });
+
+  it("normalizes legacy schema", () => {
+    expect(
+      normalizeModOptionsDefinition({
+        schema: {
+          foo: {
+            type: "string",
+          },
+        },
+      } as any),
+    ).toStrictEqual({
+      schema: {
+        type: "object",
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        properties: {
+          foo: {
+            type: "string",
+          },
+        },
+        required: ["foo"],
+      },
+      uiSchema: {
+        "ui:order": ["foo", "*"],
+      },
+    });
   });
 });

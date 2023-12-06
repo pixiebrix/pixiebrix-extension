@@ -484,7 +484,6 @@
     "./utils/injectScriptTag.tsx",
     "./utils/injectStylesheet.tsx",
     "./utils/legacyMessengerUtils.ts",
-    "./utils/modUtils.ts",
     "./utils/notify.tsx",
     "./utils/objToYaml.ts",
     "./utils/objectUtils.ts",

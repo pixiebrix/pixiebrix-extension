@@ -120,11 +120,12 @@ const dirtyOptionDefinitionsForRecipeIdSelector = createSelector(
     const options = dirtyRecipeOptionDefinitionsById[recipeId];
 
     if (options) {
+      // Provide a consistent shape of the options
       return normalizeModOptionsDefinition(options);
     }
 
-    // Return undefined if the options aren't dirty. Returning nullish instead of an empty options allows the
-    // caller to default to the non-dirty options easily.
+    // Return undefined if the options aren't dirty. Returning nullish instead of a default empty options allows the
+    // caller to distinguish no dirty options vs. options that have been reverted to the default.
   },
 );
 

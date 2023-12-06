@@ -46,10 +46,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
-import {
-  minimalSchemaFactory,
-  minimalUiSchemaFactory,
-} from "@/utils/schemaUtils";
+import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 
 const fieldTypes = [
   ...FORM_FIELD_TYPE_OPTIONS.filter(
@@ -86,13 +83,6 @@ const formRuntimeContext: RuntimeContext = {
   allowExpressions: false,
 };
 
-export const EMPTY_MOD_OPTIONS_DEFINITION: ModOptionsDefinition = Object.freeze(
-  {
-    schema: minimalSchemaFactory(),
-    uiSchema: minimalUiSchemaFactory(),
-  },
-);
-
 const ModOptionsDefinitionEditor: React.VFC = () => {
   const [activeField, setActiveField] = useState<string>();
   const modId = useSelector(selectActiveRecipeId);
@@ -104,7 +94,7 @@ const ModOptionsDefinitionEditor: React.VFC = () => {
   );
 
   const optionsDefinition =
-    dirtyOptions ?? savedOptions ?? EMPTY_MOD_OPTIONS_DEFINITION;
+    dirtyOptions ?? savedOptions ?? emptyModOptionsDefinitionFactory();
 
   const initialValues = { optionsDefinition };
 
