@@ -84,6 +84,8 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -161,6 +163,10 @@ function useSaveCallbacks({
               shouldShowConfirmation: false,
             });
           }
+
+          reportEvent(Events.PAGE_EDITOR_CREATE_MOD, {
+            blueprintId: newRecipe.metadata.id,
+          });
         },
       ),
     [
@@ -246,6 +252,11 @@ function useSaveCallbacks({
           options,
         }),
       );
+
+      reportEvent(Events.PAGE_EDITOR_CREATE_MOD, {
+        copiedFrom: recipeId,
+        registryId: savedRecipe.metadata.id,
+      });
     },
     [
       createRecipe,
