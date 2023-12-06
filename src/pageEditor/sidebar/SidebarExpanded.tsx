@@ -31,7 +31,7 @@ import hash from "object-hash";
 import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import RecipeEntry from "@/pageEditor/sidebar/RecipeEntry";
+import ModEntry from "@/pageEditor/sidebar/ModEntry";
 import useFlags from "@/hooks/useFlags";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import {
@@ -157,7 +157,7 @@ const SidebarExpanded: React.FunctionComponent<{
             : firstElement.recipe.version;
 
       return (
-        <RecipeEntry
+        <ModEntry
           key={recipeId}
           recipe={recipe}
           isActive={recipeId === activeRecipeId}
@@ -186,7 +186,7 @@ const SidebarExpanded: React.FunctionComponent<{
               isNested
             />
           ))}
-        </RecipeEntry>
+        </ModEntry>
       );
     }
 

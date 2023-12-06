@@ -25,7 +25,7 @@ import {
   editorSlice,
   initialState as editorInitialState,
 } from "@/pageEditor/slices/editorSlice";
-import RecipeEntry, { type RecipeEntryProps } from "./RecipeEntry";
+import ModEntry, { type ModEntryProps } from "./ModEntry";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import { validateSemVerString } from "@/types/helpers";
@@ -38,7 +38,7 @@ let renderRecipeEntry: RenderFunctionWithRedux<
     editor: EditorState;
     options: ModComponentState;
   },
-  RecipeEntryProps
+  ModEntryProps
 >;
 
 beforeEach(() => {
@@ -56,7 +56,7 @@ beforeEach(() => {
         expandedRecipeId: recipeId,
       },
     },
-    ComponentUnderTest: RecipeEntry,
+    ComponentUnderTest: ModEntry,
     defaultProps: {
       recipe,
       children: <div>test children</div>,

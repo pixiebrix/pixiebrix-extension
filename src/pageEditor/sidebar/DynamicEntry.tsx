@@ -56,8 +56,9 @@ type DynamicEntryProps = {
 };
 
 /**
- * A sidebar menu entry corresponding to an extension that is new or is currently being edited.
+ * A sidebar menu entry corresponding to a singleton mod component that is new or unsaved
  * @see InstalledEntry
+ * @see ExtensionEntry
  */
 const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
   extension,

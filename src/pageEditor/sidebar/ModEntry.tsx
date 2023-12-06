@@ -42,7 +42,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import * as semver from "semver";
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
 
-export type RecipeEntryProps = PropsWithChildren<{
+export type ModEntryProps = PropsWithChildren<{
   recipe: ModDefinition | undefined;
   isActive?: boolean;
   installedVersion: SemVerString;
@@ -53,7 +53,7 @@ export type RecipeEntryProps = PropsWithChildren<{
   onClone: () => Promise<void>;
 }>;
 
-const RecipeEntry: React.FC<RecipeEntryProps> = ({
+const ModEntry: React.FC<ModEntryProps> = ({
   recipe,
   isActive,
   children,
@@ -137,4 +137,4 @@ const RecipeEntry: React.FC<RecipeEntryProps> = ({
   );
 };
 
-export default RecipeEntry;
+export default ModEntry;
