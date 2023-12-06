@@ -43,7 +43,6 @@ import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
-import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -124,11 +123,9 @@ function useSaveRecipe(): RecipeSaver {
         !deletedElementIds.has(extension.id),
     );
 
-    // Dirty options/metadata or null if there are not staged changes. `buildRecipe` expects nullish instead of default
-    const dirtyOptions = dirtyRecipeOptions[recipeId]
-      ? // eslint-disable-next-line security/detect-object-injection -- recipe IDs are sanitized in the form validation
-        normalizeModOptionsDefinition(dirtyRecipeOptions[recipeId])
-      : undefined;
+    // Dirty options/metadata or null if there are no staged changes.
+    // eslint-disable-next-line security/detect-object-injection -- recipe IDs are sanitized in the form validation
+    const dirtyOptions = dirtyRecipeOptions[recipeId];
     // eslint-disable-next-line security/detect-object-injection -- recipe IDs are sanitized in the form validation
     const dirtyMetadata = dirtyRecipeMetadata[recipeId];
 

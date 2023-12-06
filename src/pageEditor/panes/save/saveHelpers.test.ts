@@ -69,6 +69,7 @@ import {
   minimalSchemaFactory,
   minimalUiSchemaFactory,
 } from "@/utils/schemaUtils";
+import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 
 jest.mock("@/background/contextMenus");
 
@@ -459,10 +460,7 @@ describe("blueprint options", () => {
   }
 
   test("doesn't add empty schema when blueprint options is empty", async () => {
-    const emptyOptions = {
-      schema: minimalSchemaFactory(),
-      uiSchema: minimalUiSchemaFactory(),
-    };
+    const emptyOptions = emptyModOptionsDefinitionFactory();
 
     const updatedRecipe = await runReplaceRecipeExtensions(
       undefined,
@@ -542,10 +540,8 @@ describe("blueprint options", () => {
       uiSchema: minimalUiSchemaFactory(),
     };
 
-    const elementOptions: ModOptionsDefinition = {
-      schema: minimalSchemaFactory(),
-      uiSchema: minimalUiSchemaFactory(),
-    };
+    const elementOptions: ModOptionsDefinition =
+      emptyModOptionsDefinitionFactory();
 
     const updatedRecipe = await runReplaceRecipeExtensions(
       blueprintOptions,

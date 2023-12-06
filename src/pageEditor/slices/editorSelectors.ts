@@ -120,6 +120,7 @@ const dirtyOptionDefinitionsForRecipeIdSelector = createSelector(
     const options = dirtyRecipeOptionDefinitionsById[recipeId];
 
     if (options) {
+      // Provide a consistent shape of the options
       return normalizeModOptionsDefinition(options);
     }
 
