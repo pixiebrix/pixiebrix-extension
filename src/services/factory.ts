@@ -216,8 +216,8 @@ export class LocalDefinedService<
    * @throws IncompatibleServiceError if the resulting URL cannot by called by this service
    */
   private checkRequestUrl(
-    baseURL: string | undefined,
     requestConfig: RequestConfig,
+    baseURL?: string,
   ): void {
     const absoluteURL =
       baseURL && !isAbsoluteUrl(requestConfig.url)
@@ -262,7 +262,7 @@ export class LocalDefinedService<
       draft.params = { ...draft.params, ...params };
     });
 
-    this.checkRequestUrl(baseURL, requestConfig);
+    this.checkRequestUrl(requestConfig, baseURL);
 
     return result;
   }
@@ -309,7 +309,7 @@ export class LocalDefinedService<
       };
     });
 
-    this.checkRequestUrl(baseURL, requestConfig);
+    this.checkRequestUrl(requestConfig, baseURL);
 
     return result;
   }
@@ -341,7 +341,7 @@ export class LocalDefinedService<
       draft.headers = { ...draft.headers, ...headers };
     });
 
-    this.checkRequestUrl(baseURL, requestConfig);
+    this.checkRequestUrl(requestConfig, baseURL);
 
     return result;
   }
