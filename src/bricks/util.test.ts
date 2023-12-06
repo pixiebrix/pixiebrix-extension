@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defaultBlockConfig, isOfficial } from "./util";
+import { defaultBrickConfig, isOfficial } from "./util";
 import { type RegistryId } from "@/types/registryTypes";
 import IfElse from "./transformers/controlFlow/IfElse";
-import { EMPTY_PIPELINE } from "@/testUtils/testHelpers";
 import { type Schema } from "@/types/schemaTypes";
+import { EMPTY_PIPELINE } from "@/utils/expressionUtils";
 
 describe("isOfficial", () => {
   test("returns true for an official block", () => {
@@ -33,7 +33,7 @@ describe("isOfficial", () => {
 describe("defaultBlockConfig", () => {
   test("initialize pipeline props", () => {
     const ifElse = new IfElse();
-    const actual = defaultBlockConfig(ifElse.inputSchema);
+    const actual = defaultBrickConfig(ifElse.inputSchema);
 
     expect(actual.if).toEqual(EMPTY_PIPELINE);
     expect(actual.else).toEqual(EMPTY_PIPELINE);
@@ -51,7 +51,7 @@ describe("defaultBlockConfig", () => {
         },
       },
     } as Schema;
-    const config = defaultBlockConfig(schema);
+    const config = defaultBrickConfig(schema);
     expect(config.myProp).toBe(false);
   });
 });

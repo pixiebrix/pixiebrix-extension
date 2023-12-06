@@ -17,7 +17,7 @@
 
 import { type RJSFSchema } from "./formBuilderTypes";
 import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
-import { produce, type Draft } from "immer";
+import { type Draft, produce } from "immer";
 import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
 import { isEmpty } from "lodash";
@@ -26,18 +26,10 @@ import {
   type Schema,
   type SchemaDefinition,
   type SchemaPropertyType,
-  type UiSchema,
 } from "@/types/schemaTypes";
 import { type SafeString } from "@/types/stringTypes";
 import { freshIdentifier } from "@/utils/variableUtils";
-
-export const getMinimalSchema: () => Schema = () => ({
-  type: "object",
-});
-
-export const getMinimalUiSchema: () => UiSchema = () => ({
-  [UI_ORDER]: ["*"],
-});
+import { minimalSchemaFactory } from "@/utils/schemaUtils";
 
 export const DEFAULT_FIELD_TYPE = "string";
 
@@ -305,7 +297,7 @@ export const produceSchemaOnUiTypeChange = (
  */
 export const normalizeSchema = (rjsfSchemaDraft: Draft<RJSFSchema>) => {
   if (isEmpty(rjsfSchemaDraft.schema)) {
-    rjsfSchemaDraft.schema = getMinimalSchema();
+    rjsfSchemaDraft.schema = minimalSchemaFactory();
   }
 
   if (

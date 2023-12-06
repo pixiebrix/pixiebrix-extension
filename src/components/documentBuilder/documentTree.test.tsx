@@ -31,6 +31,7 @@ import {
 import DocumentContext, {
   initialValue,
 } from "@/components/documentBuilder/render/DocumentContext";
+import { toExpression } from "@/utils/expressionUtils";
 
 // Mock the recordX trace methods. Otherwise, they'll fail and Jest will have unhandled rejection errors since we call
 // them with `void` instead of awaiting them in the reducePipeline methods
@@ -258,10 +259,7 @@ describe("When rendered in panel", () => {
           title: "Button under test",
           variant: "primary",
           className: "test-class",
-          onClick: {
-            __type__: "pipeline",
-            __value__: jest.fn(),
-          },
+          onClick: toExpression("pipeline", []),
         },
       };
       renderDocument(config);
@@ -279,10 +277,7 @@ describe("When rendered in panel", () => {
         config: {
           title: "Button under test",
           fullWidth: true,
-          onClick: {
-            __type__: "pipeline",
-            __value__: jest.fn(),
-          },
+          onClick: toExpression("pipeline", []),
         },
       };
       renderDocument(config);
@@ -304,10 +299,7 @@ describe("When rendered in panel", () => {
           config: {
             title: "Button under test",
             variant,
-            onClick: {
-              __type__: "pipeline",
-              __value__: jest.fn(),
-            },
+            onClick: toExpression("pipeline", []),
           },
         };
         renderDocument(config);
@@ -324,10 +316,7 @@ describe("When rendered in panel", () => {
           title: "Button under test",
           className: "test-class",
           disabled,
-          onClick: {
-            __type__: "pipeline",
-            __value__: jest.fn(),
-          },
+          onClick: toExpression("pipeline", []),
         },
       };
 

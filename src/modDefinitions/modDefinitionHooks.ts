@@ -34,8 +34,8 @@ import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 /**
  * Lookup a mod definition from the registry by ID, or null if it doesn't exist.
  *
- * NOTE: uses useAllModDefinitions which first checks the local cache. So value may change from `null` to `mod definition`
- * after the remote fetch completes.
+ * NOTE: uses useAllModDefinitions which first checks the local cache. So value may change from `null` to `mod
+ * definition` after the remote fetch completes.
  *
  * If you want to return an error state if the mod definition doesn't exist, use useRequiredModDefinitions instead.
  *
@@ -57,8 +57,14 @@ export function useOptionalModDefinition(
   const modDefinitionState = useMergeAsyncState(state, findModDefinition);
 
   // Avoid reference change when useAllModDefinitions switches from cache to remote fetch
-  const data = useMemoCompare(modDefinitionState.data, deepEquals);
-  const currentData = useMemoCompare(modDefinitionState.data, deepEquals);
+  const data = useMemoCompare<ModDefinition>(
+    modDefinitionState.data,
+    deepEquals,
+  );
+  const currentData = useMemoCompare<ModDefinition>(
+    modDefinitionState.data,
+    deepEquals,
+  );
 
   return {
     ...modDefinitionState,
@@ -101,8 +107,11 @@ export function useRequiredModDefinitions(
   );
 
   // Avoid reference change when useAllModDefinitions switches from cache to remote fetch
-  const data = useMemoCompare(modDefinitionState.data, deepEquals);
-  const currentData = useMemoCompare(
+  const data = useMemoCompare<ModDefinition[]>(
+    modDefinitionState.data,
+    deepEquals,
+  );
+  const currentData = useMemoCompare<ModDefinition[]>(
     modDefinitionState.currentData,
     deepEquals,
   );

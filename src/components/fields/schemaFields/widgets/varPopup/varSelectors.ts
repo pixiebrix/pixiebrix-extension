@@ -20,7 +20,7 @@ import {
   selectActiveElementId,
   selectActiveNodeInfo,
 } from "@/pageEditor/slices/editorSelectors";
-import { createSelector } from "reselect";
+import { createSelector } from "@reduxjs/toolkit";
 
 export const selectKnownVarsForActiveNode = createSelector(
   selectActiveElementId,

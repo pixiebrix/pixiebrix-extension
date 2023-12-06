@@ -28,6 +28,7 @@ import type { SidebarState } from "@/types/sidebarTypes";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
+import { type Draft } from "immer";
 
 jest.mock("@/sidebar/messenger/api", () => ({
   // :shrug: imported via testUtils/factories
@@ -453,7 +454,7 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
       forms: [otherExistingPanel],
       panels: [originalPanel],
       temporaryPanels: [],
-    } as SidebarState;
+    } as Draft<SidebarState>;
 
     fixActiveTabOnRemove(state, newPanel);
 

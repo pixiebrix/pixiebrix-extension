@@ -197,6 +197,7 @@ class ArrayBrick extends BrickABC {
 // TODO: write a schema in schemas directory. The one in component.json is incomplete
 const pipelineSchema: Schema = {
   type: "object",
+  // eslint-disable-next-line local-rules/noExpressionLiterals -- JSON Schema
   properties: {
     __type__: {
       type: "string",

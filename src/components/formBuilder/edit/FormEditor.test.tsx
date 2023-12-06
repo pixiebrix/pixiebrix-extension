@@ -39,6 +39,7 @@ import {
 import selectEvent from "react-select-event";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
+import { toExpression } from "@/utils/expressionUtils";
 
 const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
 
@@ -372,10 +373,7 @@ describe("FormEditor", () => {
         schema: expect.objectContaining({
           properties: {
             [fieldName]: expect.objectContaining({
-              default: {
-                __type__: "nunjucks",
-                __value__: defaultValue,
-              },
+              default: toExpression("nunjucks", defaultValue),
             }),
           },
         }),

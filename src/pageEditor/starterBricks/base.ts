@@ -44,10 +44,6 @@ import {
 } from "@/bricks/types";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import {
-  getMinimalSchema,
-  getMinimalUiSchema,
-} from "@/components/formBuilder/formBuilderHelpers";
 import { hasInnerExtensionPointRef } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
@@ -64,6 +60,7 @@ import {
   type BaseFormState,
   type SingleLayerReaderConfig,
 } from "@/pageEditor/baseFormStateTypes";
+import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 
 export interface WizardStep {
   step: string;
@@ -122,7 +119,9 @@ export function baseFromExtension<T extends StarterBrickType>(
   };
 }
 
-// Add the recipe options to the form state if the extension is a part of a recipe
+/**
+ * Add the recipe options to the form state if the extension is a part of a recipe
+ */
 export function initRecipeOptionsIfNeeded<TElement extends BaseFormState>(
   element: TElement,
   recipes: ModDefinition[],
@@ -131,10 +130,7 @@ export function initRecipeOptionsIfNeeded<TElement extends BaseFormState>(
     const recipe = recipes?.find((x) => x.metadata.id === element.recipe.id);
 
     if (recipe?.options == null) {
-      element.optionsDefinition = {
-        schema: getMinimalSchema(),
-        uiSchema: getMinimalUiSchema(),
-      };
+      element.optionsDefinition = emptyModOptionsDefinitionFactory();
     } else {
       element.optionsDefinition = {
         schema: recipe.options.schema.properties

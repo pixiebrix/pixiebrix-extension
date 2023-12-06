@@ -22,22 +22,51 @@ exports[`form data normalization renders normalized data 1`] = `
             <div
               class="form-group"
             >
-              <div
-                class="mb-0 form-group"
+              <label
+                class="form-label"
+                for="root_name"
               >
-                <label
-                  class="form-label"
-                >
-                  name
-                </label>
-                <input
-                  class="form-control"
-                  id="root_name"
-                  placeholder=""
-                  type="text"
-                  value=""
-                />
-              </div>
+                name
+              </label>
+              <input
+                aria-describedby="root_name__error root_name__description root_name__help"
+                class="form-control"
+                id="root_name"
+                name="root_name"
+                placeholder=""
+                type="text"
+                value=""
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="row"
+          style="margin-bottom: 10px;"
+        >
+          <div
+            class="col-12"
+          >
+             
+            <div
+              class="form-group"
+            >
+              <label
+                class="form-label"
+                for="root_age"
+              >
+                age
+              </label>
+              <input
+                aria-describedby="root_age__error root_age__description root_age__help"
+                class="form-control"
+                id="root_age"
+                name="root_age"
+                placeholder=""
+                step="1"
+                type="number"
+                value=""
+              />
             </div>
           </div>
         </div>
@@ -53,36 +82,7 @@ exports[`form data normalization renders normalized data 1`] = `
               class="form-group"
             >
               <div
-                class="mb-0 form-group"
-              >
-                <label
-                  class="form-label"
-                >
-                  age
-                </label>
-                <input
-                  class="form-control"
-                  id="root_age"
-                  placeholder=""
-                  type="integer"
-                  value=""
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="row"
-          style="margin-bottom: 10px;"
-        >
-          <div
-            class="col-12"
-          >
-             
-            <div
-              class="form-group"
-            >
-              <div
+                aria-describedby="root_isAdmin__error root_isAdmin__description root_isAdmin__help"
                 class="checkbox  form-group"
               >
                 <div
@@ -91,6 +91,7 @@ exports[`form data normalization renders normalized data 1`] = `
                   <input
                     class="form-check-input"
                     id="root_isAdmin"
+                    name="root_isAdmin"
                     type="checkbox"
                   />
                   <label
@@ -116,22 +117,22 @@ exports[`form data normalization renders normalized data 1`] = `
             <div
               class="form-group"
             >
-              <div
-                class="mb-0 form-group"
+              <label
+                class="form-label"
+                for="root_rating"
               >
-                <label
-                  class="form-label"
-                >
-                  rating
-                </label>
-                <input
-                  class="form-control"
-                  id="root_rating"
-                  placeholder=""
-                  type="number"
-                  value=""
-                />
-              </div>
+                rating
+              </label>
+              <input
+                aria-describedby="root_rating__error root_rating__description root_rating__help"
+                class="form-control"
+                id="root_rating"
+                name="root_rating"
+                placeholder=""
+                step="any"
+                type="number"
+                value=""
+              />
             </div>
           </div>
         </div>

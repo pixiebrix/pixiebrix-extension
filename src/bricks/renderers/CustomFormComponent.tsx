@@ -25,13 +25,15 @@ import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import bootstrapOverrides from "@/pageEditor/sidebar/sidebarBootstrapOverrides.scss?loadAsUrl";
 import custom from "@/bricks/renderers/customForm.css?loadAsUrl";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
-import FieldTemplate from "@/components/formBuilder/FieldTemplate";
-import { type IChangeEvent, type ISubmitEvent } from "@rjsf/core";
+import validator from "@rjsf/validator-ajv6";
+import { type IChangeEvent } from "@rjsf/core";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
+import { templates } from "@/components/formBuilder/RjsfTemplates";
+import { type UnknownObject } from "@/types/objectTypes";
 
 const fields = {
   DescriptionField,
@@ -53,9 +55,11 @@ const CustomFormComponent: React.FunctionComponent<{
    * Form submission handler.
    * @param values the submitted values
    * @param submissionCount the number of times the form has been submitted (For tracing)
+   * UnkownObject is used instead of JsonObject because strictNullChecks throws
+   * `Type instantiation is excessively deep and possibly infinite.`
    */
   onSubmit: (
-    values: JsonObject,
+    values: UnknownObject,
     { submissionCount }: { submissionCount: number },
   ) => Promise<void>;
   className?: string;
@@ -71,7 +75,7 @@ const CustomFormComponent: React.FunctionComponent<{
   // Use useRef instead of useState because we don't need/want a re-render when count changes
   const submissionCountRef = useRef(0);
   // Track values during onChange so we can access it our RjsfSubmitContext submitForm callback
-  const valuesRef = useRef(formData);
+  const valuesRef = useRef<UnknownObject>(formData);
 
   return (
     <div
@@ -99,20 +103,21 @@ const CustomFormComponent: React.FunctionComponent<{
               formData={formData}
               fields={fields}
               widgets={uiWidgets}
-              FieldTemplate={FieldTemplate}
-              onChange={async ({ formData }: IChangeEvent<JsonObject>) => {
-                valuesRef.current = formData;
+              validator={validator}
+              templates={templates}
+              onChange={async ({ formData }: IChangeEvent<UnknownObject>) => {
+                valuesRef.current = formData ?? {};
 
                 if (autoSave) {
                   submissionCountRef.current += 1;
-                  await onSubmit(formData, {
+                  await onSubmit(formData ?? {}, {
                     submissionCount: submissionCountRef.current,
                   });
                 }
               }}
-              onSubmit={async ({ formData }: ISubmitEvent<JsonObject>) => {
+              onSubmit={async ({ formData }: IChangeEvent<UnknownObject>) => {
                 submissionCountRef.current += 1;
-                await onSubmit(formData, {
+                await onSubmit(formData ?? {}, {
                   submissionCount: submissionCountRef.current,
                 });
               }}

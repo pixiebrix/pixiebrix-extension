@@ -20,6 +20,7 @@ import {
   moveElement,
 } from "@/components/documentBuilder/hooks/useMoveElement";
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 const data = {
   id: "@pixiebrix/document",
@@ -40,10 +41,7 @@ const data = {
                   {
                     type: "header_1",
                     config: {
-                      title: {
-                        __type__: "nunjucks",
-                        __value__: "Sidebar #2",
-                      },
+                      title: toExpression("nunjucks", "Sidebar #2"),
                     },
                   },
                 ],
@@ -61,10 +59,10 @@ const data = {
                   {
                     type: "text",
                     config: {
-                      text: {
-                        __type__: "nunjucks",
-                        __value__: "{{@input.url}} - API: {{@response.code}}",
-                      },
+                      text: toExpression(
+                        "nunjucks",
+                        "{{@input.url}} - API: {{@response.code}}",
+                      ),
                       className: "text-success",
                     },
                   },

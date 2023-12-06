@@ -5821,7 +5821,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
             <span
               dangerouslySetInnerHTML={
                 {
-                  "__html": "Form description or instructions. Supports markdown.",
+                  "__html": "Form description or instructions. Supports <a href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown">Markdown</a>",
                 }
               }
             />
@@ -6095,7 +6095,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
               <span
                 dangerouslySetInnerHTML={
                   {
-                    "__html": "The user-visible description for the field",
+                    "__html": "The user-visible description for the field. Supports <a href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown">Markdown</a>",
                   }
                 }
               />
@@ -6452,6 +6452,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         >
           <div
             className="my-1"
+            id="root__title"
           >
             <h5>
               A form
@@ -6466,8 +6467,8 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
             />
           </div>
           <div
-            className="field-description"
-            id="root-description"
+            className="mb-3"
+            id="root__description"
           >
             <div
               dangerouslySetInnerHTML={
@@ -6496,34 +6497,33 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 <div
                   className="form-group"
                 >
+                  <label
+                    className="form-label"
+                    htmlFor="root_firstName"
+                  >
+                    First name
+                  </label>
                   <div
                     className="root root isActive"
                     onClick={[Function]}
                     role="group"
                   >
-                    <div
-                      className="mb-0 form-group"
-                    >
-                      <label
-                        className="form-label"
-                      >
-                        First name
-                      </label>
-                      <input
-                        autoFocus={false}
-                        className="form-control"
-                        disabled={false}
-                        id="root_firstName"
-                        onBlur={[Function]}
-                        onChange={[Function]}
-                        onFocus={[Function]}
-                        placeholder=""
-                        readOnly={false}
-                        required={false}
-                        type="text"
-                        value="Chuck"
-                      />
-                    </div>
+                    <input
+                      aria-describedby="root_firstName__error root_firstName__description root_firstName__help"
+                      autoFocus={false}
+                      className="form-control"
+                      disabled={false}
+                      id="root_firstName"
+                      name="root_firstName"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      placeholder=""
+                      readOnly={false}
+                      required={false}
+                      type="text"
+                      value="Chuck"
+                    />
                   </div>
                   <div
                     className="field-description text-muted"
@@ -6556,34 +6556,34 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 <div
                   className="form-group"
                 >
+                  <label
+                    className="form-label"
+                    htmlFor="root_age"
+                  >
+                    Age
+                  </label>
                   <div
                     className="root root"
                     onClick={[Function]}
                     role="group"
                   >
-                    <div
-                      className="mb-0 form-group"
-                    >
-                      <label
-                        className="form-label"
-                      >
-                        Age
-                      </label>
-                      <input
-                        autoFocus={false}
-                        className="form-control"
-                        disabled={false}
-                        id="root_age"
-                        onBlur={[Function]}
-                        onChange={[Function]}
-                        onFocus={[Function]}
-                        placeholder=""
-                        readOnly={false}
-                        required={false}
-                        type="integer"
-                        value=""
-                      />
-                    </div>
+                    <input
+                      aria-describedby="root_age__error root_age__description root_age__help"
+                      autoFocus={false}
+                      className="form-control"
+                      disabled={false}
+                      id="root_age"
+                      name="root_age"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      placeholder=""
+                      readOnly={false}
+                      required={false}
+                      step={1}
+                      type="number"
+                      value=""
+                    />
                   </div>
                   <div
                     className="field-description text-muted"
@@ -6616,35 +6616,35 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 <div
                   className="form-group"
                 >
+                  <label
+                    className="form-label"
+                    htmlFor="root_telephone"
+                  >
+                    Telephone
+                  </label>
                   <div
                     className="root root"
                     onClick={[Function]}
                     role="group"
                   >
-                    <div
-                      className="mb-0 form-group"
-                    >
-                      <label
-                        className="form-label"
-                      >
-                        Telephone
-                      </label>
-                      <input
-                        autoFocus={false}
-                        className="form-control"
-                        disabled={false}
-                        id="root_telephone"
-                        onBlur={[Function]}
-                        onChange={[Function]}
-                        onFocus={[Function]}
-                        placeholder=""
-                        readOnly={false}
-                        required={false}
-                        type="text"
-                        value=""
-                      />
-                    </div>
+                    <input
+                      aria-describedby="root_telephone__error root_telephone__description root_telephone__help"
+                      autoFocus={false}
+                      className="form-control"
+                      disabled={false}
+                      id="root_telephone"
+                      name="root_telephone"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      placeholder=""
+                      readOnly={false}
+                      required={false}
+                      type="text"
+                      value=""
+                    />
                   </div>
+                  
                 </div>
               </div>
             </div>
@@ -6814,7 +6814,7 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
             <span
               dangerouslySetInnerHTML={
                 {
-                  "__html": "Form description or instructions. Supports markdown.",
+                  "__html": "Form description or instructions. Supports <a href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown">Markdown</a>",
                 }
               }
             />

@@ -19,11 +19,11 @@ import React from "react";
 import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import { render, screen } from "@/sidebar/testHelpers";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
-import { type WidgetProps } from "@rjsf/core";
 
 describe("TextAreaWidget", () => {
-  const defaultProps: WidgetProps = {
+  const defaultProps = {
     id: "rjsf-textarea",
+    name: "rjsf-textarea",
     label: "RJSF Textarea",
     placeholder: "",
     value: "",
@@ -38,16 +38,9 @@ describe("TextAreaWidget", () => {
     onChange: jest.fn(),
     onBlur: jest.fn(),
     onFocus: jest.fn(),
-    rawErrors: [],
     WidgetProps: {},
     formContext: {},
-    registry: {
-      fields: {},
-      widgets: {},
-      definitions: {},
-      formContext: {},
-      rootSchema: {},
-    },
+    registry: {} as any,
   };
 
   test("renders the textarea with a label", () => {
