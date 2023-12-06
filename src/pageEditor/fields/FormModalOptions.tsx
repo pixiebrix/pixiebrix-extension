@@ -28,6 +28,8 @@ import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelect
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
+import { joinName } from "@/utils/formUtils";
+import { partial } from "lodash";
 
 export const FORM_MODAL_ID = validateRegistryId("@pixiebrix/form-modal");
 
@@ -57,12 +59,13 @@ const FormModalOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
+  const baseName = joinName(name, configKey);
+  const configName = partial(joinName, baseName);
+
   const [activeElement, setActiveElement] = useReduxState(
     selectNodePreviewActiveElement,
     editorActions.setNodePreviewActiveElement,
   );
-
-  const configName = `${name}.${configKey}`;
 
   return (
     <div>
@@ -70,18 +73,18 @@ const FormModalOptions: React.FC<{
         title="Form Title/Description"
         initialExpanded
       >
-        <FormIntroFields name={configName} />
+        <FormIntroFields name={baseName} />
       </ConnectedCollapsibleFieldSection>
 
       <ConnectedCollapsibleFieldSection title="Form Submission" initialExpanded>
         <SchemaField
-          name={`${configName}.submitCaption`}
+          name={configName("submitCaption")}
           label="Submit Button Text"
           schema={submitCaptionSchema}
           isRequired
         />
         <SchemaField
-          name={`${configName}.cancelable`}
+          name={configName("cancelable")}
           label="Cancelable?"
           schema={cancelableSchema}
           isRequired
@@ -90,7 +93,7 @@ const FormModalOptions: React.FC<{
 
       <ConnectedCollapsibleFieldSection title="Form Location" initialExpanded>
         <SchemaField
-          name={`${configName}.location`}
+          name={configName("location")}
           label="Location"
           schema={locationSchema}
           isRequired
@@ -100,7 +103,7 @@ const FormModalOptions: React.FC<{
       <ConnectedCollapsibleFieldSection title="Form Fields" initialExpanded>
         <ConfigErrorBoundary>
           <FormEditor
-            name={configName}
+            name={baseName}
             activeField={activeElement}
             setActiveField={setActiveElement}
             fieldTypes={FORM_FIELD_TYPE_OPTIONS}
