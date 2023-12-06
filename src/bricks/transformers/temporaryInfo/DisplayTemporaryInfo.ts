@@ -281,9 +281,7 @@ export async function displayTemporaryInfo({
         payload: await getPayload(),
       };
       // Force a re-render by changing the key
-      if (newEntry.payload) {
-        newEntry.payload.key = uuidv4();
-      }
+      newEntry.payload.key = uuidv4();
 
       updateEntry(newEntry);
     } catch (error) {
