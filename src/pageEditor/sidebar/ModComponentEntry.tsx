@@ -24,7 +24,7 @@ import InstalledEntry from "./InstalledEntry";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 
-type ExtensionEntryProps = {
+type ModComponentEntryProps = {
   extension: ModComponentBase | ModComponentFormState;
   recipes: ModDefinition[];
   availableInstalledIds: UUID[];
@@ -32,7 +32,7 @@ type ExtensionEntryProps = {
   isNested?: boolean;
 };
 
-const ExtensionEntry: React.FunctionComponent<ExtensionEntryProps> = ({
+const ModComponentEntry: React.FunctionComponent<ModComponentEntryProps> = ({
   extension,
   recipes,
   availableInstalledIds,
@@ -60,4 +60,4 @@ const ExtensionEntry: React.FunctionComponent<ExtensionEntryProps> = ({
     />
   );
 
-export default ExtensionEntry;
+export default ModComponentEntry;

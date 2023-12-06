@@ -51,7 +51,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 
 /**
- * A sidebar menu entry corresponding to an installed/saved extension point
+ * A sidebar menu entry corresponding to an installed/saved singleton mod component
  * @see DynamicEntry
  */
 const InstalledEntry: React.FunctionComponent<{
