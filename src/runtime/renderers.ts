@@ -34,7 +34,7 @@ export type AsyncTemplateRenderer = (
 export type TemplateRenderer = (template: string, context: unknown) => unknown;
 
 export type RendererOptions = {
-  autoescape?: boolean;
+  autoescape?: boolean | null;
 };
 
 export function engineRenderer(

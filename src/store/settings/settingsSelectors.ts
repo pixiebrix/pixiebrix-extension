@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSelector } from "reselect";
+import { createSelector } from "@reduxjs/toolkit";
 import { type SettingsRootState } from "@/store/settings/settingsTypes";
 
 export const selectUpdatePromptState = createSelector(

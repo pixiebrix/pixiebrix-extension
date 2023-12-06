@@ -31,7 +31,7 @@ import {
   echoBrick,
   teapotBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { defaultBlockConfig } from "@/bricks/util";
+import { defaultBrickConfig } from "@/bricks/util";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
@@ -142,12 +142,12 @@ const getPlainFormState = (): ModComponentFormState =>
     brickConfigFactory({
       id: echoBrick.id,
       outputKey: "echoOutput" as OutputKey,
-      config: defaultBlockConfig(echoBrick.inputSchema),
+      config: defaultBrickConfig(echoBrick.inputSchema),
     }),
     brickConfigFactory({
       id: teapotBrick.id,
       outputKey: "teapotOutput" as OutputKey,
-      config: defaultBlockConfig(teapotBrick.inputSchema),
+      config: defaultBrickConfig(teapotBrick.inputSchema),
     }),
   ]);
 
@@ -156,7 +156,7 @@ const getFormStateWithSubPipelines = (): ModComponentFormState =>
     brickConfigFactory({
       id: echoBrick.id,
       outputKey: "echoOutput" as OutputKey,
-      config: defaultBlockConfig(echoBrick.inputSchema),
+      config: defaultBrickConfig(echoBrick.inputSchema),
     }),
     brickConfigFactory({
       id: forEachBrick.id,
@@ -817,7 +817,7 @@ describe("validation", () => {
       const formState = formFactory();
       const disallowedBlockConfig = brickConfigFactory({
         id: disallowedBlock.id,
-        config: defaultBlockConfig(disallowedBlock.inputSchema),
+        config: defaultBrickConfig(disallowedBlock.inputSchema),
       });
 
       const { container } = render(

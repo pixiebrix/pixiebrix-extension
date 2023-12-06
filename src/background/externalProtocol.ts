@@ -33,6 +33,7 @@ import {
 import { RuntimeNotFoundError } from "@/utils/extensionUtils";
 import { getChromeExtensionId } from "@/store/browserExtensionIdStorage";
 import { type SerializableResponse } from "@/types/messengerTypes";
+import { assertNotNull } from "@/utils/typeUtils";
 
 type ChromeMessageSender = chrome.runtime.MessageSender;
 
@@ -55,7 +56,8 @@ function allowBackgroundSender(
   return (
     sender.id === browser.runtime.id ||
     ("origin" in sender &&
-      patternToRegex(...externally_connectable.matches).test(sender.origin))
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- We have it
+      patternToRegex(...externally_connectable!.matches!).test(sender.origin!))
   );
 }
 
@@ -64,7 +66,9 @@ async function handleRequest(
   sender: Runtime.MessageSender,
 ): Promise<unknown> {
   const { type, payload, meta } = request;
-  const { handler, options } = handlers.get(type);
+  const { handler, options } = handlers.get(type) ?? {};
+
+  assertNotNull(handler, `Handler not found for ${type}`);
 
   try {
     const value = await handler(...payload);
@@ -93,7 +97,7 @@ async function handleRequest(
 async function callBackground(
   type: string,
   args: unknown[],
-  options: HandlerOptions,
+  options?: HandlerOptions,
 ): Promise<unknown> {
   if (!isExtensionContext() && chrome.runtime == null) {
     throw new RuntimeNotFoundError(
@@ -109,7 +113,7 @@ async function callBackground(
   const sendMessage = isExtensionContext()
     ? browser.runtime.sendMessage
     : chromeP.runtime.sendMessage;
-  const extensionId = isExtensionContext() ? null : getChromeExtensionId();
+  const extensionId = isExtensionContext() ? undefined : getChromeExtensionId();
 
   if (isNotification(options)) {
     console.debug(`Sending background notification ${type} (nonce: ${nonce})`, {

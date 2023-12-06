@@ -19,7 +19,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type RuntimeState } from "@/pageEditor/slices/runtimeSliceTypes";
 import { isTraceError, type TraceRecord } from "@/telemetry/trace";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
-import { createSelector } from "reselect";
+import { createSelector } from "@reduxjs/toolkit";
 import { getLatestBrickCall } from "@/telemetry/traceHelpers";
 import { selectActiveNodeId } from "./editorSelectors";
 

@@ -53,6 +53,12 @@ export function boolean(value: unknown): boolean {
   return false;
 }
 
+/**
+ * Throw a TypeError if the value is null or undefined.
+ * @param value the value to check
+ * @param assertionMessage TypeError message to throw if the value is null or undefined
+ * @see assumeNotNull_UNSAFE
+ */
 export function assertNotNull<T>(
   value: T,
   assertionMessage: string,
@@ -61,3 +67,13 @@ export function assertNotNull<T>(
     throw new TypeError(assertionMessage);
   }
 }
+
+/**
+ * Assume value is not nullish without actually checking the value.
+ * This is equivalent to `@ts-expect-error` but it works with our dual-tsconfig setup.
+ *
+ * @see assertNotNull
+ */
+export function assumeNotNull_UNSAFE<T>(
+  _value: T,
+): asserts _value is Exclude<T, null | undefined> {}

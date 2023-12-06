@@ -22,6 +22,7 @@ import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes
 import { type Primitive } from "type-fest";
 import { type Logger } from "@/types/loggerTypes";
 import { type BrickPipeline } from "@/bricks/types";
+import { type PanelPayload } from "./sidebarTypes";
 
 /**
  * The PixieBrix brick definition API. Controls how the PixieBrix runtime interprets brick definitions.
@@ -383,7 +384,7 @@ export type BrickOptions<
     branch: TraceBranch,
     extraContext?: UnknownObject,
     root?: SelectorRoot,
-  ) => Promise<unknown>; // Should be PanelPayload
+  ) => Promise<PanelPayload>;
 
   /**
    * A signal to abort the current brick's execution.

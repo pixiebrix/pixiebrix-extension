@@ -35,7 +35,7 @@ export function isOfficial(id: RegistryId): boolean {
  * Returns the initial state for a blockConfig.
  * @param schema the JSON Schema
  */
-export function defaultBlockConfig(schema: Schema): UnknownObject {
+export function defaultBrickConfig(schema: Schema): BrickConfig["config"] {
   if (typeof schema.properties === "object") {
     return removeUndefined(
       mapValues(

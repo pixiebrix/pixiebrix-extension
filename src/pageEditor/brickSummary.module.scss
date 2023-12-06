@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,24 +14,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+@import "@/themes/colors";
 
-import { selectKnownVars } from "@/analysis/analysisSelectors";
-import {
-  selectActiveElementId,
-  selectActiveNodeInfo,
-} from "@/pageEditor/slices/editorSelectors";
-import { createSelector } from "@reduxjs/toolkit";
+:global(.list-group-item:not(.active)) {
+  .comment {
+    color: $json-tree-theme-base0B;
+    font-style: italic;
+  }
+}
 
-export const selectKnownVarsForActiveNode = createSelector(
-  selectActiveElementId,
-  selectActiveNodeInfo,
-  selectKnownVars,
-  (activeElementId, activeNodeInfo, knownVars) => {
-    if (activeNodeInfo == null) {
-      return null;
-    }
+.comment {
+  font-style: italic;
+  max-height: 50px;
+  width: 100%;
+  padding-right: 10px;
 
-    // eslint-disable-next-line security/detect-object-injection -- is a UUID
-    return knownVars[activeElementId]?.get(activeNodeInfo.path);
-  },
-);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}

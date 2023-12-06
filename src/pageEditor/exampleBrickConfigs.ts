@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownObject } from "@/types/objectTypes";
 import { COMPONENT_READER_ID } from "@/bricks/transformers/component/ComponentReader";
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
@@ -24,7 +23,7 @@ import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTem
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { type BrickConfig } from "@/bricks/types";
 import { uuidv4 } from "@/types/helpers";
-import { defaultBlockConfig } from "@/bricks/util";
+import { defaultBrickConfig } from "@/bricks/util";
 import TourStep from "@/bricks/transformers/tourStep/tourStep";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -32,17 +31,24 @@ import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
 import { IdentityTransformer } from "@/bricks/transformers/identity";
 import { minimalUiSchemaFactory } from "@/utils/schemaUtils";
 import { toExpression } from "@/utils/expressionUtils";
+import CommentEffect from "@/bricks/effects/comment";
 
 /**
- * Get a default block config for a block
- * @param blockId the block id to add
- * @param parentBlockId the parent block id, or null if in the root pipeline
+ * Get an example brick config for a given brick id.
+ * @param brickId the block id to add
+ * @param parentBrickId the parent brick id, or null if in the root pipeline
  */
-export function getExampleBlockConfig(
-  blockId: RegistryId,
-  { parentBlockId }: { parentBlockId?: RegistryId } = {},
-): UnknownObject | null {
-  switch (blockId) {
+export function getExampleBrickConfig(
+  brickId: RegistryId,
+  { parentBrickId }: { parentBrickId?: RegistryId } = {},
+): BrickConfig["config"] | null {
+  switch (brickId) {
+    case CommentEffect.BRICK_ID: {
+      return {
+        comment: "",
+      };
+    }
+
     case COMPONENT_READER_ID: {
       return {
         selector: "",
@@ -115,7 +121,7 @@ export function getExampleBlockConfig(
     }
 
     case "@pixiebrix/document": {
-      if (parentBlockId === "@pixiebrix/tour/step") {
+      if (parentBrickId === "@pixiebrix/tour/step") {
         // Single row with text markdown
         const container = createNewElement("container");
 
@@ -181,7 +187,7 @@ export function getExampleBlockConfig(
         title: "Example Info",
         location: "panel",
         body: toExpression("pipeline", [
-          createNewBlock(DocumentRenderer.BLOCK_ID),
+          createNewConfiguredBrick(DocumentRenderer.BLOCK_ID),
         ]),
         isRootAware: true,
       };
@@ -221,20 +227,27 @@ export function getExampleBlockConfig(
   }
 }
 
-export function createNewBlock(
-  blockId: RegistryId,
+/**
+ * Returns a new BrickConfig for a given brick id.
+ * @param brickId the brick registry
+ * @param parentBrickId optional parent brick id. Some example configs vary depending on root vs. nested usage
+ * @param brickInputSchema the brick input schema, for defaulting the brick configuration
+ */
+export function createNewConfiguredBrick(
+  brickId: RegistryId,
   {
-    parentBlockId,
-    blockInputSchema,
-  }: { parentBlockId?: RegistryId; blockInputSchema?: Schema } = {},
+    parentBrickId,
+    brickInputSchema,
+  }: { parentBrickId?: RegistryId; brickInputSchema?: Schema } = {},
 ): BrickConfig {
   return {
-    id: blockId,
+    id: brickId,
+    // Operating within the Page Editor, so include an instanceId
     instanceId: uuidv4(),
     // @since 1.7.16 -- use "document" as the default root mode because it's the easiest to understand
     rootMode: "document",
     config:
-      getExampleBlockConfig(blockId, { parentBlockId }) ??
-      (blockInputSchema == null ? {} : defaultBlockConfig(blockInputSchema)),
+      getExampleBrickConfig(brickId, { parentBrickId }) ??
+      (brickInputSchema == null ? {} : defaultBrickConfig(brickInputSchema)),
   };
 }

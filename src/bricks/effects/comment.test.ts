@@ -15,23 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectKnownVars } from "@/analysis/analysisSelectors";
-import {
-  selectActiveElementId,
-  selectActiveNodeInfo,
-} from "@/pageEditor/slices/editorSelectors";
-import { createSelector } from "@reduxjs/toolkit";
+import CommentEffect from "@/bricks/effects/comment";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
-export const selectKnownVarsForActiveNode = createSelector(
-  selectActiveElementId,
-  selectActiveNodeInfo,
-  selectKnownVars,
-  (activeElementId, activeNodeInfo, knownVars) => {
-    if (activeNodeInfo == null) {
-      return null;
-    }
+const brick = new CommentEffect();
 
-    // eslint-disable-next-line security/detect-object-injection -- is a UUID
-    return knownVars[activeElementId]?.get(activeNodeInfo.path);
-  },
-);
+describe("CommentEffect", () => {
+  it("runs like normal brick", async () => {
+    await expect(
+      brick.run(
+        unsafeAssumeValidArg({ comment: "hello" }),
+        brickOptionsFactory(),
+      ),
+    ).resolves.toBeUndefined();
+  });
+});

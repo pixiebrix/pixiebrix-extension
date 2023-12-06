@@ -91,7 +91,7 @@ class PipelineVisitor {
   public visitBrick(
     position: BrickPosition,
     blockConfig: BrickConfig,
-    extra: VisitBlockExtra,
+    _extra: VisitBlockExtra,
   ): void {
     if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
       this.visitDocument(position, blockConfig);

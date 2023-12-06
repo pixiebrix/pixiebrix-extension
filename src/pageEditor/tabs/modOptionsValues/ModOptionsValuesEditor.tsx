@@ -39,13 +39,13 @@ import {
   inferRecipeDependencies,
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
-import { EMPTY_MOD_OPTIONS_DEFINITION } from "@/pageEditor/tabs/modOptionsDefinitions/ModOptionsDefinitionEditor";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
 import Effect from "@/components/Effect";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
+import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: DEFAULT_RUNTIME_API_VERSION,
@@ -78,7 +78,7 @@ const ModOptionsValuesContent: React.FC = () => {
       return dirtyRecipeOptions;
     }
 
-    return recipe?.options ?? EMPTY_MOD_OPTIONS_DEFINITION;
+    return recipe?.options ?? emptyModOptionsDefinitionFactory();
   }, [dirtyRecipeOptions, recipe?.options]);
 
   const {

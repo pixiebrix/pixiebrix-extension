@@ -55,7 +55,10 @@ import {
 } from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
-import { isModOptionsSchemaEmpty } from "@/utils/modUtils";
+import {
+  isModOptionsSchemaEmpty,
+  normalizeModOptionsDefinition,
+} from "@/utils/modUtils";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -353,7 +356,13 @@ type RecipeParts = {
   sourceRecipe?: ModDefinition;
   cleanRecipeExtensions: UnresolvedModComponent[];
   dirtyRecipeElements: ModComponentFormState[];
+  /**
+   * Dirty/new options to save. Undefined if there are no changes.
+   */
   options?: ModOptionsDefinition;
+  /**
+   * Dirty/new metadata to save. Undefined if there are no changes.
+   */
   metadata?: ModMetadataFormState;
 };
 
@@ -366,10 +375,7 @@ const emptyRecipe: UnsavedModDefinition = {
   },
   extensionPoints: [],
   definitions: {},
-  options: {
-    schema: {},
-    uiSchema: {},
-  },
+  options: normalizeModOptionsDefinition(null),
 };
 
 /**
@@ -381,8 +387,8 @@ const emptyRecipe: UnsavedModDefinition = {
  * @param sourceRecipe the original recipe, or undefined for new recipes
  * @param cleanRecipeExtensions the recipe's unchanged, installed extensions
  * @param dirtyRecipeElements the recipe's extension form states (i.e., submitted via Formik)
- * @param options the recipe's options form state
- * @param metadata the recipe's metadata form state
+ * @param options the recipe's options form state, or nullish if there are no dirty options
+ * @param metadata the recipe's metadata form state, or nullish if there are no dirty options
  */
 export function buildRecipe({
   sourceRecipe,
@@ -398,7 +404,9 @@ export function buildRecipe({
   return produce(recipe, (draft: UnsavedModDefinition): void => {
     // Options dirty state is only populated if a change is made
     if (options) {
-      draft.options = isModOptionsSchemaEmpty(options) ? undefined : options;
+      draft.options = isModOptionsSchemaEmpty(options)
+        ? undefined
+        : normalizeModOptionsDefinition(options);
     }
 
     // Metadata dirty state is only populated if a change is made

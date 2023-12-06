@@ -19,24 +19,24 @@ import { type BrickPipeline } from "@/bricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { validateRegistryId } from "@/types/helpers";
 import {
-  createNewBlock,
-  getExampleBlockConfig,
-} from "@/pageEditor/exampleBlockConfigs";
+  createNewConfiguredBrick,
+  getExampleBrickConfig,
+} from "@/pageEditor/exampleBrickConfigs";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 
-const documentBlockId = validateRegistryId("@pixiebrix/document");
+const documentBrickId = validateRegistryId("@pixiebrix/document");
 const quickbarActionId = validateRegistryId("@pixiebrix/quickbar/add");
-const tourStepBlockId = validateRegistryId("@pixiebrix/tour/step");
+const tourStepBrickId = validateRegistryId("@pixiebrix/tour/step");
 
-export function getExampleBlockPipeline(type: StarterBrickType): BrickPipeline {
+export function getExampleBrickPipeline(type: StarterBrickType): BrickPipeline {
   if (type === "actionPanel") {
-    const documentBuilderBlock = createNewBlock(documentBlockId);
+    const documentBuilderBlock = createNewConfiguredBrick(documentBrickId);
     return [documentBuilderBlock];
   }
 
   if (type === "quickBarProvider") {
-    const quickbarActionBlock = createNewBlock(quickbarActionId);
+    const quickbarActionBlock = createNewConfiguredBrick(quickbarActionId);
     quickbarActionBlock.config = {
       title: "Example Action",
       action: toExpression("pipeline", []),
@@ -45,9 +45,9 @@ export function getExampleBlockPipeline(type: StarterBrickType): BrickPipeline {
   }
 
   if (type === "tour") {
-    const tourStepBlock = createNewBlock(tourStepBlockId);
+    const tourStepBlock = createNewConfiguredBrick(tourStepBrickId);
     tourStepBlock.outputKey = validateOutputKey("step");
-    tourStepBlock.config = getExampleBlockConfig(tourStepBlockId);
+    tourStepBlock.config = getExampleBrickConfig(tourStepBrickId);
 
     return [tourStepBlock];
   }

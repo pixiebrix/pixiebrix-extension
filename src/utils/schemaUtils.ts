@@ -57,8 +57,10 @@ export function missingProperties(
 ): string[] {
   const acc = [];
   for (const propertyKey of schema.required ?? []) {
+    // eslint-disable-next-line security/detect-object-injection -- for-of loop
     const property = schema.properties?.[propertyKey];
     if (typeof property === "object" && property?.type === "string") {
+      // eslint-disable-next-line security/detect-object-injection -- for-of loop over the schema
       const value = obj[propertyKey];
       if (isNullOrBlank(value)) {
         acc.push(propertyKey);
@@ -211,7 +213,9 @@ export function unionSchemaDefinitionTypes(
 }
 
 /**
- * Factory for a minimal JSON Schema for an object.
+ * Factory for a minimal JSON Schema for an object. Can be used with RJSF forms and mod options.
+ *
+ * @see emptyModOptionsDefinitionFactory
  */
 export const minimalSchemaFactory: () => Schema = () => ({
   type: "object",
@@ -219,7 +223,9 @@ export const minimalSchemaFactory: () => Schema = () => ({
 });
 
 /**
- * Factory for a minimal RJSF UI Schema for an object.
+ * Factory for a minimal RJSF UI Schema for an object. Can be used with RJSF forms and mod options.
+ *
+ * @see emptyModOptionsDefinitionFactory
  */
 export const minimalUiSchemaFactory: () => UiSchema = () => ({
   [UI_ORDER]: ["*"],

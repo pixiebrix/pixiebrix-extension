@@ -43,7 +43,6 @@ import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
-import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -55,7 +54,11 @@ type RecipeSaver = {
 function useSaveRecipe(): RecipeSaver {
   const dispatch = useDispatch();
   const create = useUpsertFormElement();
-  const { data: recipes, isLoading: isRecipesLoading } = useAllModDefinitions();
+  const {
+    data: recipes,
+    isLoading: isRecipesLoading,
+    error: recipesError,
+  } = useAllModDefinitions();
   const { data: editablePackages, isLoading: isEditablePackagesLoading } =
     useGetEditablePackagesQuery();
   const [updateRecipe] = useUpdateRecipeMutation();
@@ -120,19 +123,18 @@ function useSaveRecipe(): RecipeSaver {
         !deletedElementIds.has(extension.id),
     );
 
-    const newOptions = normalizeModOptionsDefinition(
-      // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
-      dirtyRecipeOptions[recipeId],
-    );
-    // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
-    const newMetadata = dirtyRecipeMetadata[recipeId];
+    // Dirty options/metadata or null if there are no staged changes.
+    // eslint-disable-next-line security/detect-object-injection -- recipe IDs are sanitized in the form validation
+    const dirtyOptions = dirtyRecipeOptions[recipeId];
+    // eslint-disable-next-line security/detect-object-injection -- recipe IDs are sanitized in the form validation
+    const dirtyMetadata = dirtyRecipeMetadata[recipeId];
 
     const newRecipe = buildRecipe({
       sourceRecipe: recipe,
       cleanRecipeExtensions,
       dirtyRecipeElements,
-      options: newOptions,
-      metadata: newMetadata,
+      options: dirtyOptions,
+      metadata: dirtyMetadata,
     });
 
     const packageId = editablePackages.find(
@@ -187,6 +189,15 @@ function useSaveRecipe(): RecipeSaver {
   }
 
   async function safeSave(recipeId: RegistryId) {
+    if (recipesError) {
+      notify.error({
+        message: "Error fetching mod definitions",
+        error: recipesError,
+      });
+
+      return;
+    }
+
     if (isRecipesLoading || isEditablePackagesLoading) {
       return;
     }
