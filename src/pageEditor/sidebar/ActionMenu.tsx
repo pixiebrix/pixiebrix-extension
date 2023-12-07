@@ -22,6 +22,7 @@ import {
   faFileExport,
   faFileImport,
   faHistory,
+  faTimes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -32,7 +33,8 @@ import EllipsisMenu, {
 
 type ActionMenuProps = {
   onSave: () => Promise<void>;
-  onRemove: () => Promise<void>;
+  onRemove?: () => Promise<void>;
+  onDeactivate?: () => Promise<void>;
   onClone: () => Promise<void>;
   onReset?: () => Promise<void>;
   isDirty?: boolean;
@@ -44,6 +46,7 @@ type ActionMenuProps = {
 const ActionMenu: React.FC<ActionMenuProps> = ({
   onSave,
   onRemove,
+  onDeactivate,
   onClone,
   onReset,
   isDirty,
@@ -62,15 +65,32 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       action: onReset,
       disabled: !isDirty || disabled,
     },
-    {
-      title: (
-        <>
-          <FontAwesomeIcon icon={faTrash} fixedWidth /> Remove
-        </>
-      ),
-      action: onRemove,
-      disabled,
-    },
+    ...(onRemove
+      ? [
+          {
+            title: (
+              <>
+                <FontAwesomeIcon icon={faTrash} fixedWidth /> Remove
+              </>
+            ),
+            action: onRemove,
+            disabled,
+          },
+        ]
+      : []),
+    ...(onDeactivate
+      ? [
+          {
+            title: (
+              <>
+                <FontAwesomeIcon icon={faTimes} fixedWidth /> Deactivate
+              </>
+            ),
+            action: onRemove,
+            disabled,
+          },
+        ]
+      : []),
     {
       title: (
         <>
