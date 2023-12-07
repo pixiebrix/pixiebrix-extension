@@ -87,7 +87,7 @@ export const Events = {
 
   ORGANIZATION_EXTENSION_LINK: "OrganizationExtensionLink",
 
-  PAGE_EDITOR_CREATE: "PageEditorCreate",
+  PAGE_EDITOR_MOD_COMPONENT_UPDATE: "PageEditorCreate",
   PAGE_EDITOR_OPEN: "PageEditorOpen",
   PAGE_EDITOR_MANUAL_RUN: "PageEditorManualRun",
   PAGE_EDITOR_MOD_COMPONENT_ERROR: "PageEditorExtensionError",

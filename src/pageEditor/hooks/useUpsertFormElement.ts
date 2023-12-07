@@ -171,7 +171,7 @@ function useUpsertFormElement(): SaveCallback {
         }
       }
 
-      reportEvent(Events.PAGE_EDITOR_CREATE, {
+      reportEvent(Events.PAGE_EDITOR_MOD_COMPONENT_UPDATE, {
         sessionId,
         type: element.type,
       });
