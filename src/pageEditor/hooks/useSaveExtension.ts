@@ -51,7 +51,7 @@ function useSaveExtension(): ExtensionSaver {
       if (error) {
         notify.error(error);
       } else {
-        reportEvent(Events.PAGE_EDITOR_SAVE, {
+        reportEvent(Events.PAGE_EDITOR_STANDALONE_MOD_COMPONENT_UPDATE, {
           sessionId,
           extensionId: element.uuid,
         });

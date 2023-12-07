@@ -93,7 +93,7 @@ export const Events = {
   PAGE_EDITOR_MOD_COMPONENT_ERROR: "PageEditorExtensionError",
   PAGE_EDITOR_REMOVE: "PageEditorRemove",
   PAGE_EDITOR_RESET: "PageEditorReset",
-  PAGE_EDITOR_SAVE: "PageEditorSave",
+  PAGE_EDITOR_STANDALONE_MOD_COMPONENT_UPDATE: "PageEditorSave",
   PAGE_EDITOR_START: "PageEditorStart",
   PAGE_EDITOR_VIEW_TEMPLATES: "PageEditorViewTemplates",
   PAGE_EDITOR_MOD_CREATE: "PageEditorModCreate",
