@@ -19,29 +19,34 @@ export type Nullish = null | undefined;
 
 export type Nullishable<T> = T | Nullish;
 
-// Discussion: Do we even want to allow Optional? Or should we enforce Nullishable only?
-export type Optional<T> = T | undefined;
-
-// Discussion: Do we even want to allow Nullable? Or should we enforce Nullishable only?
-export type Nullable<T> = T | null;
-
-// TODO: create lint rule to enforce use of NonNullish over NonNullable
-export type NonNullish<T> = Exclude<T, Nullish>;
-
-// Inspired by: https://itnext.io/typescript-isnullish-nonnullish-and-assertnonnullish-557deb6e8b17
-// As pointed out, do we even want this typeguard or should we just use `value == null` everywhere?
 export const isNullish = <T>(value: Nullishable<T>): value is Nullish =>
   value == null;
 
 export const isNonNullish = <T>(
   value: Nullishable<T>,
-): value is NonNullish<T> => !isNullish(value);
+): value is NonNullable<T> => !isNullish(value);
 
-export function assertNonNullish<T>(
+/**
+ * Throw a TypeError if the value is null or undefined.
+ * @param value the value to check
+ * @param assertionMessage TypeError message to throw if the value is null or undefined
+ * @see assumeNotNullish_UNSAFE
+ */
+export function assertNotNullish<T>(
   value: T,
   assertionMessage: string,
-): asserts value is NonNullish<T> {
+): asserts value is NonNullable<T> {
   if (value == null) {
     throw new TypeError(assertionMessage);
   }
 }
+
+/**
+ * Assume value is not nullish without actually checking the value.
+ * This is equivalent to `@ts-expect-error` but it works with our dual-tsconfig setup.
+ *
+ * @see assertNotNullish
+ */
+export function assumeNotNullish_UNSAFE<T>(
+  _value: T,
+): asserts _value is Exclude<T, Nullish> {}

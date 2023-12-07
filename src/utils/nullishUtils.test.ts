@@ -16,7 +16,7 @@
  */
 
 import {
-  assertNonNullish,
+  assertNotNullish,
   isNonNullish,
   isNullish,
 } from "@/utils/nullishUtils";
@@ -58,36 +58,36 @@ describe("nullishUtils", () => {
     });
   });
 
-  describe("assertNonNullish", () => {
+  describe("assertNotNullish", () => {
     const assertionMessage = "assertion message";
 
     it("should not throw an error for non-nullish values", () => {
       expect(() => {
-        assertNonNullish(0, assertionMessage);
+        assertNotNullish(0, assertionMessage);
       }).not.toThrow();
       expect(() => {
-        assertNonNullish("", assertionMessage);
+        assertNotNullish("", assertionMessage);
       }).not.toThrow();
       expect(() => {
-        assertNonNullish(false, assertionMessage);
+        assertNotNullish(false, assertionMessage);
       }).not.toThrow();
       expect(() => {
-        assertNonNullish([], assertionMessage);
+        assertNotNullish([], assertionMessage);
       }).not.toThrow();
       expect(() => {
-        assertNonNullish({}, assertionMessage);
+        assertNotNullish({}, assertionMessage);
       }).not.toThrow();
     });
 
     it("should throw an error for null", () => {
       expect(() => {
-        assertNonNullish(null, assertionMessage);
+        assertNotNullish(null, assertionMessage);
       }).toThrow(assertionMessage);
     });
 
     it("should throw an error for undefined", () => {
       expect(() => {
-        assertNonNullish(undefined, assertionMessage);
+        assertNotNullish(undefined, assertionMessage);
       }).toThrow(assertionMessage);
     });
   });
