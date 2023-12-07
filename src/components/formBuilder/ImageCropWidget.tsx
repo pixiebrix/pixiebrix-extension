@@ -17,7 +17,6 @@
 
 import React, { useRef, useState } from "react";
 import ReactCrop, { type Crop } from "react-image-crop";
-import { FormGroup, FormLabel } from "react-bootstrap";
 import { type WidgetProps } from "@rjsf/utils";
 import "react-image-crop/src/ReactCrop.scss";
 import { assertNotNull } from "@/utils/typeUtils";
@@ -91,23 +90,20 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
     typeof uiSchema?.source === "string" ? uiSchema.source : null;
 
   return (
-    <FormGroup>
-      <FormLabel>{schema.title}</FormLabel>
+    <>
       {source && (
-        <>
-          <ReactCrop
-            crop={crop}
-            onComplete={onCropComplete}
-            onChange={onCropChange}
-          >
-            <img
-              crossOrigin="anonymous"
-              src={source}
-              alt="Item being cropped"
-              onLoad={onImageLoaded}
-            />
-          </ReactCrop>
-        </>
+        <ReactCrop
+          crop={crop}
+          onComplete={onCropComplete}
+          onChange={onCropChange}
+        >
+          <img
+            crossOrigin="anonymous"
+            src={source}
+            alt="Item being cropped"
+            onLoad={onImageLoaded}
+          />
+        </ReactCrop>
       )}
       {croppedImageUrl && (
         <>
@@ -115,7 +111,7 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
           <img alt="Crop preview" className="mw-100" src={croppedImageUrl} />
         </>
       )}
-    </FormGroup>
+    </>
   );
 };
 

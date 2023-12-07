@@ -19,7 +19,7 @@ import DescriptionFieldTemplate from "@/components/formBuilder/DescriptionFieldT
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import { type FormProps } from "@rjsf/core";
 
-export const templates: FormProps["templates"] = {
+export const templates = {
   FieldTemplate,
   DescriptionFieldTemplate,
-} as const;
+} satisfies FormProps["templates"];
