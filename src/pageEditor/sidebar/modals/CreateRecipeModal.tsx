@@ -156,6 +156,7 @@ function useSaveCallbacks({
               notifySuccess: true,
               reactivateEveryTab: true,
             },
+            modId: newRecipe.metadata.id,
           });
           if (!keepLocalCopy) {
             await removeExtension({
