@@ -164,7 +164,7 @@ function useSaveCallbacks({
             });
           }
 
-          reportEvent(Events.PAGE_EDITOR_CREATE_MOD, {
+          reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
             modId: newRecipe.metadata.id,
           });
         },
@@ -253,7 +253,7 @@ function useSaveCallbacks({
         }),
       );
 
-      reportEvent(Events.PAGE_EDITOR_CREATE_MOD, {
+      reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
         copiedFrom: recipeId,
         modId: savedRecipe.metadata.id,
       });
