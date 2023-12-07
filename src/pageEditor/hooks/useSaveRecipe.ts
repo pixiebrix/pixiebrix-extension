@@ -43,6 +43,8 @@ import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -72,7 +74,7 @@ function useSaveRecipe(): RecipeSaver {
   const [isSaving, setIsSaving] = useState(false);
 
   /**
-   * Save a recipe's extensions, options, and metadata
+   * Save a mod's components, options, and metadata
    * Throws errors for various bad states
    * @return boolean indicating successful save
    */
@@ -184,6 +186,10 @@ function useSaveRecipe(): RecipeSaver {
       editorActions.resetMetadataAndOptionsForRecipe(newRecipeMetadata.id),
     );
     dispatch(editorActions.clearDeletedElementsForRecipe(newRecipeMetadata.id));
+
+    reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
+      modId: newRecipe.metadata.id,
+    });
 
     return true;
   }
