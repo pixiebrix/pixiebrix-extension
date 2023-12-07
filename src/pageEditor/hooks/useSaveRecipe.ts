@@ -164,6 +164,7 @@ function useSaveRecipe(): RecipeSaver {
             notifySuccess: false,
             reactivateEveryTab: false,
           },
+          modId: newRecipeMetadata.id,
         }),
       ),
     );
