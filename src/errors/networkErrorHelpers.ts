@@ -41,7 +41,7 @@ export function isAxiosError(error: unknown): error is SerializableAxiosError {
 export const NO_INTERNET_MESSAGE =
   "No response received. You are not connected to the internet.";
 export const NO_RESPONSE_MESSAGE =
-  "No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/how-to/troubleshooting-network-errors for troubleshooting information";
+  "No response received. Your browser may have blocked the request. See https://docs.pixiebrix.com/how-to/troubleshooting/troubleshooting-network-errors for troubleshooting information";
 
 /**
  * @deprecated DO NOT CALL DIRECTLY. Call getErrorMessage
