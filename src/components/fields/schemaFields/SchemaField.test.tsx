@@ -30,8 +30,8 @@ import registerDefaultWidgets from "./widgets/registerDefaultWidgets";
 import databaseSchema from "@schemas/database.json";
 import { type Schema } from "@/types/schemaTypes";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import { makeTemplateExpression } from "@/runtime/expressionCreators";
 import { type CustomWidgetRegistry } from "@/components/fields/schemaFields/schemaFieldTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 jest.mock("@/hooks/useDatabaseOptions", () => ({
   __esModule: true,
@@ -257,16 +257,16 @@ describe("SchemaField", () => {
   });
 
   test.each`
-    startValue                                    | inputMode     | toggleOption  | expectedEndValue
-    ${{ foo: "bar" }}                             | ${"Object"}   | ${"Variable"} | ${makeTemplateExpression("var", "")}
-    ${1.23}                                       | ${"Number"}   | ${"Text"}     | ${makeTemplateExpression("nunjucks", "1.23")}
-    ${1.23}                                       | ${"Number"}   | ${"Variable"} | ${makeTemplateExpression("var", "1.23")}
-    ${makeTemplateExpression("var", "abc")}       | ${"Variable"} | ${"Text"}     | ${makeTemplateExpression("nunjucks", "abc")}
-    ${makeTemplateExpression("nunjucks", "abc")}  | ${"Text"}     | ${"Variable"} | ${makeTemplateExpression("var", "abc")}
-    ${makeTemplateExpression("nunjucks", "1.23")} | ${"Text"}     | ${"Number"}   | ${1.23}
-    ${makeTemplateExpression("var", "1.23")}      | ${"Variable"} | ${"Number"}   | ${1.23}
-    ${makeTemplateExpression("nunjucks", "def")}  | ${"Text"}     | ${"Array"}    | ${[]}
-    ${makeTemplateExpression("var", "abc")}       | ${"Variable"} | ${"Object"}   | ${{}}
+    startValue                          | inputMode     | toggleOption  | expectedEndValue
+    ${{ foo: "bar" }}                   | ${"Object"}   | ${"Variable"} | ${toExpression("var", "")}
+    ${1.23}                             | ${"Number"}   | ${"Text"}     | ${toExpression("nunjucks", "1.23")}
+    ${1.23}                             | ${"Number"}   | ${"Variable"} | ${toExpression("var", "1.23")}
+    ${toExpression("var", "abc")}       | ${"Variable"} | ${"Text"}     | ${toExpression("nunjucks", "abc")}
+    ${toExpression("nunjucks", "abc")}  | ${"Text"}     | ${"Variable"} | ${toExpression("var", "abc")}
+    ${toExpression("nunjucks", "1.23")} | ${"Text"}     | ${"Number"}   | ${1.23}
+    ${toExpression("var", "1.23")}      | ${"Variable"} | ${"Number"}   | ${1.23}
+    ${toExpression("nunjucks", "def")}  | ${"Text"}     | ${"Array"}    | ${[]}
+    ${toExpression("var", "abc")}       | ${"Variable"} | ${"Object"}   | ${{}}
   `(
     "field toggle transition from $inputMode to $toggleOption",
     async ({ startValue, toggleOption, expectedEndValue }) => {
@@ -453,7 +453,7 @@ describe("SchemaField", () => {
       );
 
       // Renders switch HTML element
-      expect(screen.getByText(/isrootaware/i)).toBeInTheDocument();
+      expect(screen.getByText(/is root aware/i)).toBeInTheDocument();
       await expectToggleOptions("", []);
     },
   );
@@ -508,7 +508,7 @@ describe("SchemaField", () => {
       schema: {
         type: "string",
       },
-      assertion: () => screen.getByRole("combobox", { name: "testField" }),
+      assertion: () => screen.getByRole("combobox", { name: "Test Field" }),
     },
   ])("renders ui:widget $widget", async ({ widget, schema, assertion }) => {
     render(

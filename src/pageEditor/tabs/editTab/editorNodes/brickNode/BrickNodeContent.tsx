@@ -38,6 +38,7 @@ const BrickNodeContent: React.FC<BrickNodeContentProps> = ({
   icon: iconProp,
   runStatus,
   brickLabel,
+  brickSummary,
   outputKey,
 }) => {
   const icon = isFontAwesomeIcon(iconProp) ? (
@@ -93,6 +94,7 @@ const BrickNodeContent: React.FC<BrickNodeContentProps> = ({
       </div>
       <div className={styles.text}>
         <div>{brickLabel}</div>
+        {brickSummary && <div className={styles.summary}>{brickSummary}</div>}
         {outputKey && (
           <OutputKeyView outputKey={outputKey} className={styles.outputKey} />
         )}

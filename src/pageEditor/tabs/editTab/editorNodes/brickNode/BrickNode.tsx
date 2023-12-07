@@ -58,6 +58,7 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
   icon,
   runStatus,
   brickLabel,
+  brickSummary,
   outputKey,
   nestingLevel,
   hasSubPipelines,
@@ -113,6 +114,7 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
           icon={icon}
           runStatus={runStatus}
           brickLabel={brickLabel}
+          brickSummary={brickSummary}
           outputKey={outputKey}
         />
         <MoveBrickControl

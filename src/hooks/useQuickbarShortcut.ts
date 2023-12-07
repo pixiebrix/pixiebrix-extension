@@ -19,7 +19,7 @@ import chromeP from "webext-polyfill-kinda";
 import useAsyncState from "@/hooks/useAsyncState";
 
 function useQuickbarShortcut(): {
-  shortcut: string | null;
+  shortcut: string | undefined;
   isConfigured: boolean;
 } {
   // Can't use useAsyncExternalStore because Chrome doesn't provide an API for subscribing to command changes
@@ -37,7 +37,7 @@ function useQuickbarShortcut(): {
     // Optimistically return as isConfigured so interface doesn't show a warning
     // TODO: rewrite this hook to return AsyncState so call-site can decide how to handle loading state
     isConfigured: isConfigured || shortcut == null,
-    shortcut: isConfigured ? shortcut : null,
+    shortcut: isConfigured ? shortcut : undefined,
   };
 }
 

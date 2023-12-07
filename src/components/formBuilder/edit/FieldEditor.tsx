@@ -221,7 +221,8 @@ const FieldEditor: React.FC<{
     name: getFullFieldName("description"),
     schema: {
       type: "string",
-      description: "The user-visible description for the field",
+      description:
+        "The user-visible description for the field. Supports [Markdown](https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown)",
     },
     label: "Field Description",
   };

@@ -29,7 +29,7 @@ import PipelineVisitor, {
 import pipelineSchema from "@schemas/pipeline.json";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
-import { isPipelineExpression } from "@/utils/expressionUtils";
+import { isPipelineExpression, toExpression } from "@/utils/expressionUtils";
 
 class NormalizePipelineVisitor extends PipelineVisitor {
   constructor(private readonly blockMap: TypedBlockMap) {
@@ -60,15 +60,13 @@ class NormalizePipelineVisitor extends PipelineVisitor {
           ([prop, fieldSchema]) =>
             typeof fieldSchema === "object" &&
             fieldSchema.$ref === pipelineSchema.$id &&
+            prop in blockConfig.config &&
             !isPipelineExpression(blockConfig.config[prop]),
         )
         .map(([prop]) => prop);
 
       for (const prop of emptySubPipelineProperties) {
-        blockConfig.config[prop] = {
-          __type__: "pipeline",
-          __value__: [],
-        };
+        blockConfig.config[prop] = toExpression("pipeline", []);
       }
     }
 

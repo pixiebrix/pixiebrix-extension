@@ -19,11 +19,14 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { CancelError } from "@/errors/businessErrors";
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
+import { validateRegistryId } from "@/types/helpers";
 
 export class CancelEffect extends EffectABC {
+  static BRICK_ID = validateRegistryId("@pixiebrix/cancel");
+
   constructor() {
     super(
-      "@pixiebrix/cancel",
+      CancelEffect.BRICK_ID,
       "Cancel current action",
       "Cancels the current action",
     );

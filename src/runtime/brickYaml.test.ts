@@ -16,23 +16,18 @@
  */
 
 import { loadBrickYaml, dumpBrickYaml } from "@/runtime/brickYaml";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("loadYaml", () => {
   test("deserialize var", async () => {
     expect(loadBrickYaml("foo: !var a.b.c")).toEqual({
-      foo: {
-        __type__: "var",
-        __value__: "a.b.c",
-      },
+      foo: toExpression("var", "a.b.c"),
     });
   });
 
   test("deserialize mustache", async () => {
     expect(loadBrickYaml("foo: !mustache '{{ a.b.c }}!'")).toEqual({
-      foo: {
-        __type__: "mustache",
-        __value__: "{{ a.b.c }}!",
-      },
+      foo: toExpression("mustache", "{{ a.b.c }}!"),
     });
   });
 
@@ -40,6 +35,7 @@ describe("loadYaml", () => {
     expect(
       loadBrickYaml("foo: !pipeline\n  - id: '@pixiebrix/confetti'"),
     ).toEqual({
+      // eslint-disable-next-line local-rules/noExpressionLiterals -- testing raw YAML tag
       foo: {
         __type__: "pipeline",
         __value__: [{ id: "@pixiebrix/confetti" }],
@@ -51,15 +47,9 @@ describe("loadYaml", () => {
     expect(
       loadBrickYaml("foo: !defer\n  bar: !mustache '{{ @element }}'"),
     ).toEqual({
-      foo: {
-        __type__: "defer",
-        __value__: {
-          bar: {
-            __type__: "mustache",
-            __value__: "{{ @element }}",
-          },
-        },
-      },
+      foo: toExpression("defer", {
+        bar: toExpression("mustache", "{{ @element }}"),
+      }),
     });
   });
 });
@@ -67,10 +57,7 @@ describe("loadYaml", () => {
 describe("dumpYaml", () => {
   test("serialize var", () => {
     const dumped = dumpBrickYaml({
-      foo: {
-        __type__: "var",
-        __value__: "a.b.c",
-      },
+      foo: toExpression("var", "a.b.c"),
     });
 
     expect(dumped).toBe("foo: !var a.b.c\n");
@@ -78,6 +65,7 @@ describe("dumpYaml", () => {
 
   test("serialize pipeline", () => {
     const dumped = dumpBrickYaml({
+      // eslint-disable-next-line local-rules/noExpressionLiterals -- testing raw YAML tag
       foo: {
         __type__: "pipeline",
         __value__: [{ id: "@pixiebrix/confetti" }],
@@ -89,10 +77,7 @@ describe("dumpYaml", () => {
 
   test("serialize defer", () => {
     const dumped = dumpBrickYaml({
-      foo: {
-        __type__: "defer",
-        __value__: { bar: 42 },
-      },
+      foo: toExpression("defer", { bar: 42 }),
     });
 
     expect(dumped).toBe("foo: !defer \n  bar: 42\n");

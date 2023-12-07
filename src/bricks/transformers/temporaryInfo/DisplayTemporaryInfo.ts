@@ -55,6 +55,7 @@ import { type UUID } from "@/types/stringTypes";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Location } from "@/types/starterBrickTypes";
+import { assumeNotNull_UNSAFE } from "@/utils/typeUtils";
 
 // Match naming of the sidebar panel extension point triggers
 export type RefreshTrigger = "manual" | "statechange";
@@ -144,12 +145,12 @@ export async function displayTemporaryInfo({
   signal,
   target,
   refreshTrigger,
-  popoverOptions,
+  popoverOptions = {},
   onOutsideClick,
   onCloseClick,
 }: TemporaryDisplayInputs): Promise<JsonObject> {
   const nonce = uuidv4();
-  let onReady: () => void;
+  let onReady: (() => void) | undefined;
 
   const controller = new AbortController();
 
@@ -281,6 +282,7 @@ export async function displayTemporaryInfo({
       };
       // Force a re-render by changing the key
       newEntry.payload.key = uuidv4();
+
       updateEntry(newEntry);
     } catch (error) {
       // XXX: in the future, we may want to updatePanelDefinition with the error
@@ -293,13 +295,14 @@ export async function displayTemporaryInfo({
   }
 
   try {
-    return await waitForTemporaryPanel({
+    const panelAction = await waitForTemporaryPanel({
       nonce,
       location,
       entry,
       extensionId: entry.extensionId,
       onRegister: onReady,
     });
+    return panelAction ?? {};
   } catch (error) {
     if (isSpecificError(error, ClosePanelAction)) {
       onCloseClick?.(nonce);
@@ -404,6 +407,8 @@ class DisplayTemporaryInfo extends TransformerABC {
     expectContext("contentScript");
 
     const target = isRootAware ? root : document;
+    assumeNotNull_UNSAFE(extensionId);
+    assumeNotNull_UNSAFE(blueprintId);
 
     // Counter for tracking branch execution
     let counter = 0;
@@ -427,7 +432,7 @@ class DisplayTemporaryInfo extends TransformerABC {
 
       counter++;
 
-      return result as PanelPayload;
+      return result;
     };
 
     return displayTemporaryInfo({

@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Theme as RjsfTheme } from "@rjsf/bootstrap-4";
+import { getDefaultRegistry } from "@rjsf/core";
 import React from "react";
 import { type FormPreviewFieldProps } from "./FormPreviewFieldTemplate";
 import { type SchemaDefinition } from "@/types/schemaTypes";
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- We know it exists
-const RjsfSchemaField = RjsfTheme.fields!.SchemaField!;
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Loose types
+const RjsfSchemaField = getDefaultRegistry().fields.SchemaField!;
 
 /**
  * A base field used by RJSF to render a field preview.

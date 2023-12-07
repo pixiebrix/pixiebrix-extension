@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
 import { replaceLikelyVariable } from "./likelyVariableUtils";
 import VarMenu from "./VarMenu";
@@ -64,57 +64,60 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
     }
   }, [isMenuShowing, inputMode]);
 
-  if (!isMenuShowing) {
-    return null;
-  }
+  const onVarSelect = useCallback(
+    (selectedPath: string[]) => {
+      reportEvent(Events.VAR_POPOVER_SELECT);
 
-  const onVarSelect = (selectedPath: string[]) => {
-    reportEvent(Events.VAR_POPOVER_SELECT);
+      const fullVariableName = getPathFromArray(selectedPath);
 
-    const fullVariableName = getPathFromArray(selectedPath);
-
-    switch (inputMode) {
-      case "var": {
-        setValue(fullVariableName);
-        break;
-      }
-
-      case "string": {
-        const textElement = inputElementRef.current as HTMLTextAreaElement;
-        if (textElement == null) {
-          return;
+      switch (inputMode) {
+        case "var": {
+          setValue(fullVariableName);
+          break;
         }
 
-        const cursorPosition = textElement.selectionStart;
-
-        // Set the value
-        const { newTemplate, newCursorPosition } = replaceLikelyVariable(
-          value,
-          cursorPosition,
-          fullVariableName,
-        );
-        setValue(newTemplate);
-
-        textElement.setSelectionRange(newCursorPosition, newCursorPosition);
-
-        // Resize the textarea to fit the new value
-        setTimeout(() => {
+        case "string": {
+          const textElement = inputElementRef.current as HTMLTextAreaElement;
           if (textElement == null) {
             return;
           }
 
-          fitTextarea(textElement);
-        }, 100);
-        break;
+          const cursorPosition = textElement.selectionStart;
+
+          // Set the value
+          const { newTemplate, newCursorPosition } = replaceLikelyVariable(
+            value,
+            cursorPosition,
+            fullVariableName,
+          );
+          setValue(newTemplate);
+
+          textElement.setSelectionRange(newCursorPosition, newCursorPosition);
+
+          // Resize the textarea to fit the new value
+          setTimeout(() => {
+            if (textElement == null) {
+              return;
+            }
+
+            fitTextarea(textElement);
+          }, 100);
+          break;
+        }
+
+        default: {
+          throw new Error(`Unexpected input mode: ${inputMode}`);
+        }
       }
 
-      default: {
-        throw new Error(`Unexpected input mode: ${inputMode}`);
-      }
-    }
+      hideMenu();
+    },
+    [hideMenu, inputElementRef, inputMode, setValue, value],
+  );
 
-    hideMenu();
-  };
+  if (!isMenuShowing) {
+    return null;
+  }
 
   return (
     <VarMenu
@@ -126,4 +129,4 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
   );
 };
 
-export default VarPopup;
+export default React.memo(VarPopup);

@@ -18,6 +18,7 @@
 import { createNewElement } from "./createNewElement";
 import { DOCUMENT_ELEMENT_TYPES } from "./documentBuilderTypes";
 import { type BrickPipeline } from "@/bricks/types";
+import { toExpression } from "@/utils/expressionUtils";
 
 test.each(
   DOCUMENT_ELEMENT_TYPES.filter(
@@ -76,10 +77,7 @@ test("sets default config and children for card", () => {
 test("sets default config for block", () => {
   const expectedConfig = {
     label: "Brick",
-    pipeline: {
-      __type__: "pipeline",
-      __value__: [] as BrickPipeline,
-    },
+    pipeline: toExpression("pipeline", []),
   };
   const actual = createNewElement("pipeline");
 
@@ -95,10 +93,7 @@ test("sets default config for button", () => {
     fullWidth: false,
     variant: "primary",
     disabled: false,
-    onClick: {
-      __type__: "pipeline",
-      __value__: [] as BrickPipeline,
-    },
+    onClick: toExpression("pipeline", [] as BrickPipeline),
   };
 
   const actual = createNewElement("button");

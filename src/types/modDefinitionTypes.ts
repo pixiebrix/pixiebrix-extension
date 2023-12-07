@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UiSchema } from "@rjsf/core";
+import { type UiSchema } from "@rjsf/utils";
 import { type UnknownObject } from "@/types/objectTypes";
 import {
   type Definition,

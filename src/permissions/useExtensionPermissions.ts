@@ -35,16 +35,16 @@ async function getDetailedPermissions() {
   const additional = selectAdditionalPermissionsSync(all);
 
   return [
-    ...all.permissions.sort().map((permission) => ({
+    ...(all.permissions ?? []).sort().map((permission) => ({
       name: permission,
       isOrigin: false,
-      isUnique: unique.permissions.includes(permission),
+      isUnique: unique.permissions?.includes(permission) ?? false,
       isAdditional: additional.permissions.includes(permission),
     })),
-    ...all.origins.sort().map((origin) => ({
+    ...(all.origins ?? []).sort().map((origin) => ({
       name: origin,
       isOrigin: true,
-      isUnique: unique.origins.includes(origin),
+      isUnique: unique.origins?.includes(origin) ?? false,
       isAdditional: additional.origins.includes(origin),
     })),
   ];

@@ -185,7 +185,8 @@ export function editRecipeOptionsDefinitions(
     return;
   }
 
-  state.dirtyRecipeOptionsById[recipeId] = options;
+  state.dirtyRecipeOptionsById[recipeId] =
+    options as Draft<ModOptionsDefinition>;
 }
 
 export function activateElement(

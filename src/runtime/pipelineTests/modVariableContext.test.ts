@@ -24,13 +24,10 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { setPageState } from "@/contentScript/pageState";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
-import {
-  makeTemplateExpression,
-  makeVariableExpression,
-} from "@/runtime/expressionCreators";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { type UnknownObject } from "@/types/objectTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -50,7 +47,7 @@ describe("modVariableContext", () => {
     const pipeline = [
       {
         id: echoBrick.id,
-        if: makeVariableExpression("@mod.run"),
+        if: toExpression("var", "@mod.run"),
         config: {
           message: "Ran block",
         },
@@ -76,7 +73,7 @@ describe("modVariableContext", () => {
     const pipeline = [
       {
         id: echoBrick.id,
-        if: makeTemplateExpression("nunjucks", "{{ true if @mod.run}}"),
+        if: toExpression("nunjucks", "{{ true if @mod.run}}"),
         config: {
           message: "Ran block",
         },
@@ -130,7 +127,7 @@ describe("modVariableContext", () => {
       {
         id: echoBrick.id,
         config: {
-          message: makeTemplateExpression("nunjucks", "Hello, {{ @mod.name }}"),
+          message: toExpression("nunjucks", "Hello, {{ @mod.name }}"),
         },
       },
     ];
@@ -155,7 +152,7 @@ describe("modVariableContext", () => {
       {
         id: echoBrick.id,
         config: {
-          message: makeVariableExpression("@mod.name"),
+          message: toExpression("var", "@mod.name"),
         },
       },
     ];

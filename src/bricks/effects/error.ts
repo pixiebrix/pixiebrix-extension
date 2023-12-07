@@ -19,11 +19,14 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { BusinessError } from "@/errors/businessErrors";
+import { validateRegistryId } from "@/types/helpers";
 
 export class ErrorEffect extends EffectABC {
+  static BRICK_ID = validateRegistryId("@pixiebrix/error");
+
   constructor() {
     super(
-      "@pixiebrix/error",
+      ErrorEffect.BRICK_ID,
       "Raise business error",
       "Raise/throw a business error",
     );

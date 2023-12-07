@@ -19,12 +19,17 @@ import React from "react";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
-import FormEditor from "@/components/formBuilder/edit/FormEditor";
+import FormEditor, {
+  FormIntroFields,
+} from "@/components/formBuilder/edit/FormEditor";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
+import { joinName } from "@/utils/formUtils";
+import { partial } from "lodash";
 
 export const FORM_MODAL_ID = validateRegistryId("@pixiebrix/form-modal");
 
@@ -42,8 +47,11 @@ const submitCaptionSchema: Schema = {
 
 const locationSchema: Schema = {
   type: "string",
-  enum: ["modal", "sidebar"],
-  description: "The location of the form (default='modal')",
+  oneOf: [
+    { const: "modal", title: "Modal" },
+    { const: "sidebar", title: "Sidebar" },
+  ],
+  description: "The location of the form (default='Modal')",
   default: "modal",
 };
 
@@ -51,44 +59,58 @@ const FormModalOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
+  const baseName = joinName(name, configKey);
+  const configName = partial(joinName, baseName);
+
   const [activeElement, setActiveElement] = useReduxState(
     selectNodePreviewActiveElement,
     editorActions.setNodePreviewActiveElement,
   );
 
-  const configName = `${name}.${configKey}`;
-
   return (
     <div>
-      <ConfigErrorBoundary>
-        <FormEditor
-          name={configName}
-          activeField={activeElement}
-          setActiveField={setActiveElement}
-          fieldTypes={FORM_FIELD_TYPE_OPTIONS}
+      <ConnectedCollapsibleFieldSection
+        title="Form Title/Description"
+        initialExpanded
+      >
+        <FormIntroFields name={baseName} />
+      </ConnectedCollapsibleFieldSection>
+
+      <ConnectedCollapsibleFieldSection title="Form Submission" initialExpanded>
+        <SchemaField
+          name={configName("submitCaption")}
+          label="Submit Button Text"
+          schema={submitCaptionSchema}
+          isRequired
         />
-      </ConfigErrorBoundary>
+        <SchemaField
+          name={configName("cancelable")}
+          label="Cancelable?"
+          schema={cancelableSchema}
+          isRequired
+        />
+      </ConnectedCollapsibleFieldSection>
 
-      <SchemaField
-        name={`${configName}.cancelable`}
-        label="Cancelable?"
-        schema={cancelableSchema}
-        isRequired
-      />
+      <ConnectedCollapsibleFieldSection title="Form Location" initialExpanded>
+        <SchemaField
+          name={configName("location")}
+          label="Location"
+          schema={locationSchema}
+          isRequired
+        />
+      </ConnectedCollapsibleFieldSection>
 
-      <SchemaField
-        name={`${configName}.submitCaption`}
-        label="Submit Button Text"
-        schema={submitCaptionSchema}
-        isRequired
-      />
-
-      <SchemaField
-        name={`${configName}.location`}
-        label="Location"
-        schema={locationSchema}
-        isRequired
-      />
+      <ConnectedCollapsibleFieldSection title="Form Fields" initialExpanded>
+        <ConfigErrorBoundary>
+          <FormEditor
+            name={baseName}
+            activeField={activeElement}
+            setActiveField={setActiveElement}
+            fieldTypes={FORM_FIELD_TYPE_OPTIONS}
+            showFormIntroFields={false}
+          />
+        </ConfigErrorBoundary>
+      </ConnectedCollapsibleFieldSection>
     </div>
   );
 };

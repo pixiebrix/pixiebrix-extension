@@ -68,7 +68,7 @@ import {
   setActiveNodeId,
   syncElementNodeUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
-import { produce } from "immer";
+import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import {
@@ -344,7 +344,7 @@ export const editorSlice = createSlice({
       state.knownEditable.push(action.payload);
     },
     addElement(state, action: PayloadAction<ModComponentFormState>) {
-      const element = action.payload;
+      const element = action.payload as Draft<ModComponentFormState>;
       state.inserting = null;
       state.elements.push(element);
       state.dirty[element.uuid] = true;
@@ -365,10 +365,10 @@ export const editorSlice = createSlice({
       state.selectionSeq++;
     },
     selectInstalled(state, action: PayloadAction<ModComponentFormState>) {
-      const element = action.payload;
+      const element = action.payload as Draft<ModComponentFormState>;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
-        state.elements[index] = action.payload;
+        state.elements[index] = element;
       } else {
         state.elements.push(element);
       }
@@ -376,7 +376,7 @@ export const editorSlice = createSlice({
       activateElement(state, element);
     },
     resetInstalled(state, actions: PayloadAction<ModComponentFormState>) {
-      const element = actions.payload;
+      const element = actions.payload as Draft<ModComponentFormState>;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
         state.elements[index] = element;
@@ -437,7 +437,7 @@ export const editorSlice = createSlice({
         throw new Error(`Unknown dynamic element: ${element.uuid}`);
       }
 
-      state.elements[index] = element;
+      state.elements[index] = element as Draft<ModComponentFormState>;
       state.dirty[element.uuid] = true;
 
       syncElementNodeUIStates(state, element);

@@ -46,6 +46,7 @@ import { initContentScriptReadyListener } from "@/background/contentScript";
 import { initLogSweep } from "@/telemetry/logging";
 import { initModUpdater } from "@/background/modUpdater";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
+import initWalkthroughModalTrigger from "@/background/walkthroughModalTrigger";
 
 void initLocator();
 void initMessengerLogging();
@@ -67,3 +68,4 @@ initStarterMods();
 initPartnerTokenRefresh();
 initLogSweep();
 initModUpdater();
+initWalkthroughModalTrigger();

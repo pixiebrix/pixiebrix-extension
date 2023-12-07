@@ -18,6 +18,7 @@
 import blockRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { deferBrick, simpleInput, testOptions } from "./pipelineTestHelpers";
+import { toExpression } from "@/utils/expressionUtils";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -25,13 +26,10 @@ beforeEach(() => {
 });
 
 describe("apiVersion: v3", () => {
-  const deferred = {
-    __type__: "defer",
-    __value__: {
-      __type__: "mustache",
-      __value__: "{{ @element }} - {{ @input.value }}",
-    },
-  };
+  const deferred = toExpression(
+    "defer",
+    toExpression("mustache", "{{ @element }} - {{ @input.value }}"),
+  );
 
   test("deferBrick renders top-level deferred block", async () => {
     const pipeline = {
@@ -60,10 +58,10 @@ describe("apiVersion: v3", () => {
       config: {
         array: [1, 2],
         element: {
-          immediate: {
-            __type__: "mustache",
-            __value__: "{{ @element }} - {{ @input.value }}",
-          },
+          immediate: toExpression(
+            "mustache",
+            "{{ @element }} - {{ @input.value }}",
+          ),
           deferred,
         },
       },

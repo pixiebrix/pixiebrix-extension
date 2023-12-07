@@ -202,9 +202,11 @@ class LazyLocatorFactory {
    *
    * Prior to 1.7.34, only could return locally-defined configurations. Now also returns remote pushdown configurations.
    *
-   * @param authId UUID of the integration configuration
+   * @param configId UUID of the integration configuration
    */
-  async findIntegrationConfig(authId: UUID): Promise<IntegrationConfig | null> {
+  async findIntegrationConfig(
+    configId: UUID,
+  ): Promise<IntegrationConfig | undefined> {
     if (!this.initialized) {
       await this.refresh();
     }
@@ -222,7 +224,7 @@ class LazyLocatorFactory {
           }) as IntegrationConfig,
       );
 
-    return [...this.local, ...remote].find((x) => x.id === authId);
+    return [...this.local, ...remote].find((x) => x.id === configId);
   }
 
   async locateAllForService(

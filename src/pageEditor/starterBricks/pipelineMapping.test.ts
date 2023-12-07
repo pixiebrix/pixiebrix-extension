@@ -23,7 +23,6 @@ import {
   echoBrick,
   teapotBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { EMPTY_PIPELINE, toExpression } from "@/testUtils/testHelpers";
 import {
   normalizePipelineForEditor,
   omitEditorMetadata,
@@ -31,7 +30,7 @@ import {
 import blockRegistry from "@/bricks/registry";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { isPipelineExpression } from "@/utils/expressionUtils";
+import { isPipelineExpression, toExpression } from "@/utils/expressionUtils";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 
 describe("normalizePipeline", () => {
@@ -132,19 +131,18 @@ describe("normalizePipeline", () => {
       },
     ];
 
-    const actual = (await normalizePipelineForEditor(pipeline)) as any;
+    const actual = await normalizePipelineForEditor(pipeline);
 
     // Checking IF branch
     const ifConfig = actual[0].config.if;
     expect(isPipelineExpression(ifConfig)).toBeTrue();
-    for (const config of ifConfig.__value__) {
+    const ifConfigPipeline = ifConfig as PipelineExpression;
+    for (const config of ifConfigPipeline.__value__) {
       expect(config.instanceId).toBeDefined();
     }
 
     // ELSE branch should be undefined
-    const elseConfig = actual[0].config.else;
-    expect(isPipelineExpression(elseConfig)).toBeTrue();
-    expect(elseConfig).toEqual(EMPTY_PIPELINE);
+    expect(actual[0].config.else).toBeUndefined();
   });
 
   test("Try-Except block", async () => {
@@ -185,19 +183,18 @@ describe("normalizePipeline", () => {
       },
     ];
 
-    const actual = (await normalizePipelineForEditor(pipeline)) as any;
+    const actual = await normalizePipelineForEditor(pipeline);
 
     // Checking TRY branch
     const tryConfig = actual[0].config.try;
     expect(isPipelineExpression(tryConfig)).toBeTrue();
-    for (const config of tryConfig.__value__) {
+    const tryConfigPipeline = tryConfig as PipelineExpression;
+    for (const config of tryConfigPipeline.__value__) {
       expect(config.instanceId).toBeDefined();
     }
 
     // EXCEPT branch should be undefined
-    const exceptConfig = actual[0].config.except;
-    expect(isPipelineExpression(exceptConfig)).toBeTrue();
-    expect(exceptConfig).toEqual(EMPTY_PIPELINE);
+    expect(actual[0].config.except).toBeUndefined();
   });
 
   test("nested pipelines", async () => {

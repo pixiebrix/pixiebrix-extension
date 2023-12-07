@@ -273,4 +273,4 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   );
 };
 
-export default VarMenu;
+export default React.memo(VarMenu);

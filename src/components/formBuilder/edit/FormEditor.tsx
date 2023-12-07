@@ -78,7 +78,8 @@ export const FormIntroFields: React.FunctionComponent<{ name: string }> = ({
       name: joinName(name, "schema", "description"),
       schema: { type: "string" },
       label: "Form Description",
-      description: "Form description or instructions. Supports markdown.",
+      description:
+        "Form description or instructions. Supports [Markdown](https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown)",
     };
 
     return { titleFieldProps, descriptionFieldProps };
