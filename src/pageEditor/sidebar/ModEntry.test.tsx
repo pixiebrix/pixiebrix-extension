@@ -33,7 +33,7 @@ import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinition
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { screen } from "@testing-library/react";
 
-let renderRecipeEntry: RenderFunctionWithRedux<
+let renderModEntry: RenderFunctionWithRedux<
   {
     editor: EditorState;
     options: ModComponentState;
@@ -45,7 +45,7 @@ beforeEach(() => {
   const recipe = defaultModDefinitionFactory();
   const recipeId = recipe.metadata.id;
   // eslint-disable-next-line testing-library/no-render-in-lifecycle -- higher order function, not the actual render
-  renderRecipeEntry = createRenderFunctionWithRedux({
+  renderModEntry = createRenderFunctionWithRedux({
     reducer: {
       editor: editorSlice.reducer,
       options: extensionsSlice.reducer,
@@ -71,13 +71,13 @@ beforeEach(() => {
 });
 
 test("it renders", () => {
-  const { asFragment } = renderRecipeEntry();
+  const { asFragment } = renderModEntry();
 
   expect(asFragment()).toMatchSnapshot();
 });
 
 test("renders with empty recipe", () => {
-  const { asFragment } = renderRecipeEntry({
+  const { asFragment } = renderModEntry({
     propsOverride: {
       recipe: undefined,
     },
@@ -88,7 +88,7 @@ test("renders with empty recipe", () => {
 
 test("renders with empty metadata", () => {
   const recipe = defaultModDefinitionFactory({ metadata: null });
-  const { asFragment } = renderRecipeEntry({
+  const { asFragment } = renderModEntry({
     propsOverride: {
       recipe,
     },
@@ -103,7 +103,7 @@ test("renders the warning icon when has update", () => {
       version: validateSemVerString("2.0.0"),
     }),
   });
-  renderRecipeEntry({
+  renderModEntry({
     propsOverride: {
       recipe,
     },
