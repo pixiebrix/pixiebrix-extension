@@ -54,6 +54,8 @@ import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { toExpression } from "@/utils/expressionUtils";
+import { IdentityTransformer } from "@/bricks/transformers/identity";
+import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
 
 jest.mocked(services.locate).mockResolvedValue(
   sanitizedIntegrationConfigFactory({
@@ -61,15 +63,36 @@ jest.mocked(services.locate).mockResolvedValue(
   }),
 );
 
+// XXX: should be using actual bricks instead of a single outputSchema across all tests in order to test
+// different outputSchema scenarios
 jest.mock("@/bricks/registry", () => ({
   __esModule: true,
   default: {
     lookup: jest.fn().mockResolvedValue({
       outputSchema: {
+        type: "object",
+        additionalProperties: false,
         properties: {
-          title: "Test",
-          url: "https://example.com",
-          lang: "en",
+          title: {
+            type: "string",
+          },
+          url: {
+            type: "string",
+            format: "uri",
+          },
+          lang: {
+            type: "string",
+            enum: ["en"],
+          },
+          record: {
+            type: "object",
+            properties: {
+              baz: {
+                type: "string",
+              },
+            },
+            additionalProperties: false,
+          },
         },
       },
     }),
@@ -741,6 +764,55 @@ describe("Collecting available vars", () => {
         .get("extension.blockPipeline.1");
       expect(block1Vars.isVariableDefined("@foo")).toBeFalse();
       expect(block1Vars.isVariableDefined("@bar")).toBeFalse();
+    });
+  });
+
+  describe("optional chaining", () => {
+    test("supports optional chaining", async () => {
+      const brickConfiguration = {
+        ...createNewConfiguredBrick(IdentityTransformer.BRICK_ID),
+        outputKey: validateOutputKey("foo"),
+        // XXX: config doesn't matter here because the output schema is mocked in these tests vs. using
+        // the actual output schema from the brick :shrug:
+        config: {
+          bar: "42",
+        },
+      };
+
+      jest.mocked(blockRegistry.allTyped).mockResolvedValue(
+        new Map([
+          [
+            IdentityTransformer.BRICK_ID,
+            {
+              type: "transform",
+              block: new IdentityTransformer(),
+            },
+          ],
+        ]),
+      );
+
+      const extension = formStateFactory(undefined, [
+        brickConfiguration,
+        brickConfiguration,
+      ]);
+
+      analysis = new VarAnalysis();
+      await analysis.run(extension);
+
+      const knownVars = analysis.getKnownVars();
+      const varMap = knownVars.get("extension.blockPipeline.1");
+
+      // Check optional chaining handled for first variable
+      expect(varMap.isVariableDefined("@input")).toBeTrue();
+      expect(varMap.isVariableDefined("@input?.url")).toBeTrue();
+
+      // Check optional chaining is handled for local variables
+      expect(varMap.isVariableDefined("@foo")).toBeTrue();
+      expect(varMap.isVariableDefined("@foo?.url")).toBeFalse();
+      expect(varMap.isVariableDefined("@foo?.bar")).toBeTrue();
+      expect(varMap.isVariableDefined("@foo?.baz")).toBeFalse();
+      // XXX: it parses, but is not allowed because the identity brick ALLOW_ANY_CHILD is false for bar
+      expect(varMap.isVariableDefined("@foo.bar?.length")).toBeFalse();
     });
   });
 
