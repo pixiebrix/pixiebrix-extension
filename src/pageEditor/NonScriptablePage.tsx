@@ -41,7 +41,7 @@ const NeedHelp: React.FunctionComponent = () => (
     <p>
       Visit the{" "}
       <a
-        href="https://docs.pixiebrix.com/quick-start-guide"
+        href="https://docs.pixiebrix.com/quick-start"
         target="_blank"
         rel="noopener noreferrer"
       >

@@ -54,7 +54,7 @@ const QuickBarAlert = () => (
       <u>configured your Quick Bar shortcut</u>.
     </a>{" "}
     Learn more about{" "}
-    <a href="https://docs.pixiebrix.com/quick-bar-setup">
+    <a href="https://docs.pixiebrix.com/how-to/changing-the-quick-bar-shortcut">
       <u>configuring keyboard shortcuts</u>
     </a>
   </Alert>

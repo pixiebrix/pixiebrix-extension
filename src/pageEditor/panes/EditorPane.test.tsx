@@ -625,7 +625,7 @@ describe("validation", () => {
 
     expectEditorError(
       container,
-      "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates",
+      "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/developing-mods/developer-concepts/text-template-guide",
     );
   });
 
@@ -723,7 +723,7 @@ describe("validation", () => {
 
     expectEditorError(
       container,
-      "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates",
+      "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/developing-mods/developer-concepts/text-template-guide",
     );
   });
 

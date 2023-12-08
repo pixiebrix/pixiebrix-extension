@@ -37,7 +37,7 @@ exports[`PageStateTab it renders with orphan extension 1`] = `
         class="ml-2"
       >
         <a
-          href="https://docs.pixiebrix.com/page-state"
+          href="https://docs.pixiebrix.com/developing-mods/developer-concepts/data-context/using-page-state-advanced"
           rel="noreferrer"
           target="_blank"
         >
@@ -271,7 +271,7 @@ exports[`PageStateTab it renders with recipe extension 1`] = `
         class="ml-2"
       >
         <a
-          href="https://docs.pixiebrix.com/page-state"
+          href="https://docs.pixiebrix.com/developing-mods/developer-concepts/data-context/using-page-state-advanced"
           rel="noreferrer"
           target="_blank"
         >
