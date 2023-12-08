@@ -345,6 +345,7 @@ describe("saving a Recipe Extension", () => {
         notifySuccess: true,
         reactivateEveryTab: true,
       },
+      modId: newRecipeMeta.id,
     });
 
     const elements = selectElements(store.getState());
@@ -438,6 +439,7 @@ describe("saving a Recipe Extension", () => {
         notifySuccess: true,
         reactivateEveryTab: true,
       },
+      modId: newRecipeMeta.id,
     });
 
     const elements = selectElements(store.getState());

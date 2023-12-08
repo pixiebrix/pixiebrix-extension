@@ -43,7 +43,7 @@ export class IdentityTransformer extends TransformerABC {
     if (isPlainObject(_config.config) && !isExpression(_config.config)) {
       return {
         type: "object",
-        // Allow any under each property
+        // Allow any type under each property
         properties: mapValues(_config.config, () => ({})),
         required: Object.keys(_config.config),
       };

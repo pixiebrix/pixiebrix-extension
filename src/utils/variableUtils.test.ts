@@ -16,7 +16,7 @@
  */
 
 import { type SafeString } from "@/types/stringTypes";
-import { freshIdentifier } from "@/utils/variableUtils";
+import { freshIdentifier, stripOptionalChaining } from "@/utils/variableUtils";
 
 test("can generate fresh identifier", () => {
   const root = "field" as SafeString;
@@ -29,4 +29,16 @@ test("can generate fresh identifier", () => {
   ).toBe("field0");
   expect(freshIdentifier(root, ["field"])).toBe("field2");
   expect(freshIdentifier(root, ["foo", "bar"])).toBe("field");
+});
+
+describe("stripOptionalChaining", () => {
+  it("strips optional chaining operator", () => {
+    expect(stripOptionalChaining("foo?")).toBe("foo");
+    // Shouldn't happen in practice because it's not a valid expression, but capturing it anyway
+    expect(stripOptionalChaining("f?oo??")).toBe("f?oo");
+  });
+
+  it("preserves original values", () => {
+    expect(stripOptionalChaining("foo")).toBe("foo");
+  });
 });

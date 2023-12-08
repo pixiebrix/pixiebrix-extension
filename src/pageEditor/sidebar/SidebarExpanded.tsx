@@ -31,7 +31,7 @@ import hash from "object-hash";
 import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import RecipeEntry from "@/pageEditor/sidebar/RecipeEntry";
+import ModListItem from "@/pageEditor/sidebar/ModListItem";
 import useFlags from "@/hooks/useFlags";
 import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
 import {
@@ -54,7 +54,7 @@ import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
 import AddStarterBrickButton from "./AddStarterBrickButton";
-import ExtensionEntry from "./ExtensionEntry";
+import ModComponentListItem from "./ModComponentListItem";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { measureDurationFromAppStart } from "@/utils/performance";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
@@ -157,7 +157,7 @@ const SidebarExpanded: React.FunctionComponent<{
             : firstElement.recipe.version;
 
       return (
-        <RecipeEntry
+        <ModListItem
           key={recipeId}
           recipe={recipe}
           isActive={recipeId === activeRecipeId}
@@ -177,7 +177,7 @@ const SidebarExpanded: React.FunctionComponent<{
           }}
         >
           {elements.map((element) => (
-            <ExtensionEntry
+            <ModComponentListItem
               key={getIdForElement(element)}
               extension={element}
               recipes={recipes}
@@ -186,12 +186,12 @@ const SidebarExpanded: React.FunctionComponent<{
               isNested
             />
           ))}
-        </RecipeEntry>
+        </ModListItem>
       );
     }
 
     return (
-      <ExtensionEntry
+      <ModComponentListItem
         key={getIdForElement(item)}
         extension={item}
         recipes={recipes}
