@@ -589,6 +589,27 @@ describe("AppendSpreadsheetOptions", () => {
     expect(screen.getByDisplayValue("valueB")).toBeVisible();
   });
 
+  test("given test googleAccount, mod input spreadsheetId, selected tabName, and variable expression rowValues, when rendered, does not clear initial values", async () => {
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: toExpression("var", "@google"),
+        spreadsheetId: toExpression("var", "@options.sheetId"),
+        tabName: "Tab2",
+        rowValues: toExpression("var", "@formValues"),
+      },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
+      },
+      integrationDependencies: [googlePKCEIntegrationDependency],
+    });
+
+    // Mod input var field won't render title
+    expectTab2Selected();
+
+    // Ensure that the rowValues variable isn't cleared
+    expect(screen.getByDisplayValue("@formValues")).toBeVisible();
+  });
+
   /**
    * Miscellaneous Other Tests
    */
