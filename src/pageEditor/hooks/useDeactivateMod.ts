@@ -33,9 +33,9 @@ type Config = {
 };
 
 /**
- * This hook provides a callback function to deactivate a recipe and remove it from the page editor
+ * This hook provides a callback function to deactivate a mod and remove it from the page editor
  */
-function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
+function useDeactivateMod(): (useRemoveConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const removeExtension = useRemoveExtension();
   const extensions = useSelector(selectExtensions);
@@ -46,7 +46,7 @@ function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
     async ({ recipeId, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
         const confirmed = await showConfirmation({
-          title: "Remove Mod?",
+          title: "Deactivate Mod?",
           message:
             "You can reactivate mods from the PixieBrix Extension Console",
           submitCaption: "Remove",
@@ -78,4 +78,4 @@ function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
   );
 }
 
-export default useRemoveRecipe;
+export default useDeactivateMod;

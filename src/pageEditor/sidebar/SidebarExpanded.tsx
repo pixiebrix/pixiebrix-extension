@@ -50,7 +50,7 @@ import {
 } from "@/pageEditor/utils";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
-import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
+import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
 import AddStarterBrickButton from "./AddStarterBrickButton";
@@ -141,7 +141,7 @@ const SidebarExpanded: React.FunctionComponent<{
 
   const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
   const resetRecipe = useResetRecipe();
-  const removeRecipe = useRemoveRecipe();
+  const removeRecipe = useDeactivateMod();
 
   const listItems = sortedElements.map((item) => {
     if (Array.isArray(item)) {

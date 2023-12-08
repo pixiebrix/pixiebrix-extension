@@ -63,7 +63,7 @@ import {
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
-import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
+import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type PackageUpsertResponse } from "@/types/contract";
@@ -109,7 +109,7 @@ function useSaveCallbacks({
   const [createRecipe] = useCreateRecipeMutation();
   const createExtension = useUpsertFormElement();
   const removeExtension = useRemoveExtension();
-  const removeRecipe = useRemoveRecipe();
+  const removeRecipe = useDeactivateMod();
 
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
