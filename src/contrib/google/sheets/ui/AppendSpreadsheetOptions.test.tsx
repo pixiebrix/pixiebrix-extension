@@ -277,7 +277,7 @@ function expectGoogleAccountTestSpreadsheetLoaded() {
   expectTab1Selected();
 }
 
-function expectTab2Selected() {
+function expectTab2SelectedAndHeadersLoaded() {
   // Tab2 should be selected
   expect(
     screen.getByText(testSpreadsheet.sheets[1].properties.title),
@@ -305,7 +305,7 @@ async function expectTabSelectWorksProperly() {
   const tab2Option = await screen.findByText("Tab2");
   await userEvent.click(tab2Option);
 
-  expectTab2Selected();
+  expectTab2SelectedAndHeadersLoaded();
 }
 
 const renderWithValuesAndWait = async (initialValues: FormikValues) => {
@@ -364,7 +364,7 @@ describe("AppendSpreadsheetOptions", () => {
     });
 
     expectGoogleAccountSpreadsheetTitleLoaded();
-    expectTab2Selected();
+    expectTab2SelectedAndHeadersLoaded();
   });
 
   test("given empty googleAccount/tabName/rowValues and string spreadsheetId, when rendered, shows spreadsheet Id", async () => {
@@ -508,7 +508,7 @@ describe("AppendSpreadsheetOptions", () => {
     });
 
     expectGoogleAccountSpreadsheetTitleLoaded();
-    expectTab2Selected();
+    expectTab2SelectedAndHeadersLoaded();
 
     // Ensure that initial values are not cleared
     expect(screen.getByDisplayValue("valueA")).toBeVisible();
@@ -530,7 +530,7 @@ describe("AppendSpreadsheetOptions", () => {
     });
 
     expectGoogleAccountSpreadsheetTitleLoaded();
-    expectTab2Selected();
+    expectTab2SelectedAndHeadersLoaded();
 
     // Ensure that initial values are not cleared
     expect(screen.getByDisplayValue("valueA")).toBeVisible();
@@ -582,7 +582,7 @@ describe("AppendSpreadsheetOptions", () => {
     });
 
     // Mod input var field won't render title
-    expectTab2Selected();
+    expectTab2SelectedAndHeadersLoaded();
 
     // Ensure that initial values are not cleared
     expect(screen.getByDisplayValue("valueA")).toBeVisible();
