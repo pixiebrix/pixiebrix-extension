@@ -21,7 +21,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { Alert } from "react-bootstrap";
 
-// We need to update this link but we don't have docs for workshop yet
 const WorkshopMessage: React.FC = () => (
   <Alert variant="info" className={styles.alert}>
     <FontAwesomeIcon icon={faExclamationCircle} size="lg" className="mt-1" />
@@ -29,7 +28,7 @@ const WorkshopMessage: React.FC = () => (
       This brick configuration uses advanced features not yet supported in the
       Page Editor. To make changes, please open the mod in the Workshop.{" "}
       <a
-        href="https://docs.pixiebrix.com/developer-guide"
+        href="https://docs.pixiebrix.com/platform-overview/extension-console#workshop"
         target="_blank"
         rel="noreferrer"
       >
