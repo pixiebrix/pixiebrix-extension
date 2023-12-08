@@ -46,7 +46,10 @@ import {
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
 import useSaveExtension from "@/pageEditor/hooks/useSaveExtension";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
-import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
+import {
+  useDeactivateModComponent,
+  useDeleteModComponent,
+} from "@/pageEditor/hooks/useRemoveModComponent";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 
 type DynamicModComponentListItemProps = {
@@ -91,7 +94,9 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const { save: saveExtension, isSaving: isSavingExtension } =
     useSaveExtension();
   const resetExtension = useResetExtension();
-  const removeExtension = useRemoveExtension();
+
+  const deleteModComponent = useDeleteModComponent();
+  const deactivateStandaloneMod = useDeactivateModComponent();
   const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
 
   const onSave = async () => {
@@ -110,7 +115,14 @@ const DynamicModComponentListItem: React.FunctionComponent<
     resetExtension({ extensionId: modComponentFormState.uuid });
 
   const onRemove = async () =>
-    removeExtension({ extensionId: modComponentFormState.uuid });
+    modId
+      ? deleteModComponent({ extensionId: modComponentFormState.uuid })
+      : undefined;
+
+  const onDeactivate = modId
+    ? undefined
+    : async () =>
+        deactivateStandaloneMod({ extensionId: modComponentFormState.uuid });
 
   const onClone = async () => {
     dispatch(actions.cloneActiveExtension());
@@ -172,6 +184,7 @@ const DynamicModComponentListItem: React.FunctionComponent<
         <ActionMenu
           onSave={onSave}
           onRemove={onRemove}
+          onDeactivate={onDeactivate}
           onClone={onClone}
           onReset={modComponentFormState.installed ? onReset : undefined}
           isDirty={isDirty}

@@ -34,27 +34,17 @@ type Config = {
   shouldShowConfirmation?: boolean;
 };
 
-function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
+/* Returns a callback that deactivates a standalone mod and/or removes the mod component form state from the Page Editor.
+ *
+ * For standalone mods, this callback will deactivate the mod.
+ * For mod components that are packaged inside a mod, this callback will effectively delete the mod component. */
+function _useRemoveModComponent(): (extensionId: UUID) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
-  const { showConfirmation } = useModals();
 
   return useCallback(
-    async ({ extensionId, shouldShowConfirmation = true }) => {
+    async (extensionId) => {
       console.debug(`pageEditor: remove extension with id ${extensionId}`);
-
-      if (shouldShowConfirmation) {
-        const confirm = await showConfirmation({
-          title: "Remove Mod?",
-          message:
-            "You can reactivate mods from the PixieBrix Extension Console",
-          submitCaption: "Remove",
-        });
-
-        if (!confirm) {
-          return;
-        }
-      }
 
       reportEvent(Events.PAGE_EDITOR_REMOVE, {
         sessionId,
@@ -82,13 +72,64 @@ function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
         removeExtensionsFromAllTabs([extensionId]);
       } catch (error: unknown) {
         notify.error({
-          message: "Error removing element",
+          message: "Error removing mod",
           error,
         });
       }
     },
-    [dispatch, sessionId, showConfirmation],
+    [dispatch, sessionId],
   );
 }
 
-export default useRemoveExtension;
+export const useDeactivateModComponent = (): ((
+  useRemoveConfig: Config,
+) => Promise<void>) => {
+  const removeModComponent = _useRemoveModComponent();
+  const { showConfirmation } = useModals();
+
+  return useCallback(
+    async ({ extensionId, shouldShowConfirmation = true }) => {
+      if (shouldShowConfirmation) {
+        const confirm = await showConfirmation({
+          title: "Deactivate Mod?",
+          message:
+            "You can reactivate mods from the PixieBrix Extension Console",
+          submitCaption: "Remove",
+        });
+
+        if (!confirm) {
+          return;
+        }
+      }
+
+      await removeModComponent(extensionId);
+    },
+    [removeModComponent, showConfirmation],
+  );
+};
+
+export const useDeleteModComponent = (): ((
+  useRemoveConfig: Config,
+) => Promise<void>) => {
+  const removeModComponent = _useRemoveModComponent();
+  const { showConfirmation } = useModals();
+
+  return useCallback(
+    async ({ extensionId, shouldShowConfirmation = true }) => {
+      if (shouldShowConfirmation) {
+        const confirm = await showConfirmation({
+          title: "Delete Starter Brick?",
+          message: "This action cannot be undone.",
+          submitCaption: "Delete",
+        });
+
+        if (!confirm) {
+          return;
+        }
+      }
+
+      await removeModComponent(extensionId);
+    },
+    [removeModComponent, showConfirmation],
+  );
+};
