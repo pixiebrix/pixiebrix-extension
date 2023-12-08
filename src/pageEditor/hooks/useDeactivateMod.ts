@@ -24,18 +24,18 @@ import { selectElements } from "@/pageEditor/slices/editorSelectors";
 import { uniq } from "lodash";
 import { useModals } from "@/components/ConfirmationModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
+import { getIdForElement, getModIdForElement } from "@/pageEditor/utils";
 import { clearLog } from "@/background/messenger/api";
 
 type Config = {
-  recipeId: RegistryId;
+  modId: RegistryId;
   shouldShowConfirmation?: boolean;
 };
 
 /**
- * This hook provides a callback function to deactivate a mod and remove it from the page editor
+ * This hook provides a callback function to deactivate a mod and remove it from the Page Editor
  */
-function useDeactivateMod(): (useRemoveConfig: Config) => Promise<void> {
+function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const removeExtension = useRemoveExtension();
   const extensions = useSelector(selectExtensions);
@@ -43,7 +43,7 @@ function useDeactivateMod(): (useRemoveConfig: Config) => Promise<void> {
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async ({ recipeId, shouldShowConfirmation = true }) => {
+    async ({ modId, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
         const confirmed = await showConfirmation({
           title: "Deactivate Mod?",
@@ -59,7 +59,7 @@ function useDeactivateMod(): (useRemoveConfig: Config) => Promise<void> {
 
       const extensionIds = uniq(
         [...extensions, ...elements]
-          .filter((x) => getRecipeIdForElement(x) === recipeId)
+          .filter((x) => getModIdForElement(x) === modId)
           .map((x) => getIdForElement(x)),
       );
       await Promise.all(
@@ -69,10 +69,10 @@ function useDeactivateMod(): (useRemoveConfig: Config) => Promise<void> {
       );
 
       void clearLog({
-        blueprintId: recipeId,
+        blueprintId: modId,
       });
 
-      dispatch(actions.removeRecipeData(recipeId));
+      dispatch(actions.removeRecipeData(modId));
     },
     [dispatch, elements, extensions, removeExtension, showConfirmation],
   );

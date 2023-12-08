@@ -230,7 +230,7 @@ function useSaveCallbacks({
       };
 
       if (!keepLocalCopy) {
-        await removeRecipe({ recipeId, shouldShowConfirmation: false });
+        await removeRecipe({ modId: recipeId, shouldShowConfirmation: false });
       }
 
       const modComponents = [...dirtyRecipeElements, ...cleanRecipeExtensions];

@@ -46,7 +46,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getRecipeById,
   getIdForElement,
-  getRecipeIdForElement,
+  getModIdForElement,
 } from "@/pageEditor/utils";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
@@ -87,7 +87,7 @@ const SidebarExpanded: React.FunctionComponent<{
     return (
       allRecipes?.filter((recipe) =>
         installedAndElements.some(
-          (element) => getRecipeIdForElement(element) === recipe.metadata.id,
+          (element) => getModIdForElement(element) === recipe.metadata.id,
         ),
       ) ?? []
     );
@@ -170,7 +170,7 @@ const SidebarExpanded: React.FunctionComponent<{
             await resetRecipe(activeRecipeId);
           }}
           onRemove={async () => {
-            await removeRecipe({ recipeId: activeRecipeId });
+            await removeRecipe({ modId: activeRecipeId });
           }}
           onClone={async () => {
             dispatch(actions.showCreateRecipeModal({ keepLocalCopy: true }));
