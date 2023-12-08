@@ -50,7 +50,6 @@ module.exports = {
         );
 
         if (isNullishUnion) {
-          console.log(node.types);
           context.report({
             node,
             message: "Consider using Nullishable<T> instead of T | Nullish",
