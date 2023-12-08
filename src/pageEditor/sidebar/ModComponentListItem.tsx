@@ -19,12 +19,12 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import React from "react";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isModComponentBase } from "./common";
-import DynamicEntry from "./DynamicEntry";
-import InstalledEntry from "./InstalledEntry";
+import DynamicModComponentListItem from "./DynamicModComponentListItem";
+import ActivatedModComponentListItem from "./ActivatedModComponentListItem";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 
-type ExtensionEntryProps = {
+type ModComponentListItemProps = {
   extension: ModComponentBase | ModComponentFormState;
   recipes: ModDefinition[];
   availableInstalledIds: UUID[];
@@ -32,7 +32,9 @@ type ExtensionEntryProps = {
   isNested?: boolean;
 };
 
-const ExtensionEntry: React.FunctionComponent<ExtensionEntryProps> = ({
+const ModComponentListItem: React.FunctionComponent<
+  ModComponentListItemProps
+> = ({
   extension,
   recipes,
   availableInstalledIds,
@@ -40,7 +42,7 @@ const ExtensionEntry: React.FunctionComponent<ExtensionEntryProps> = ({
   isNested = false,
 }) =>
   isModComponentBase(extension) ? (
-    <InstalledEntry
+    <ActivatedModComponentListItem
       key={`installed-${extension.id}`}
       extension={extension}
       recipes={recipes}
@@ -50,7 +52,7 @@ const ExtensionEntry: React.FunctionComponent<ExtensionEntryProps> = ({
       isNested={isNested}
     />
   ) : (
-    <DynamicEntry
+    <DynamicModComponentListItem
       key={`dynamic-${extension.uuid}`}
       extension={extension}
       isAvailable={
@@ -60,4 +62,4 @@ const ExtensionEntry: React.FunctionComponent<ExtensionEntryProps> = ({
     />
   );
 
-export default ExtensionEntry;
+export default ModComponentListItem;
