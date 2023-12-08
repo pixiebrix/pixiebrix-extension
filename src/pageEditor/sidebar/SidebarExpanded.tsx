@@ -141,7 +141,7 @@ const SidebarExpanded: React.FunctionComponent<{
 
   const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
   const resetRecipe = useResetRecipe();
-  const removeRecipe = useDeactivateMod();
+  const deactivateMod = useDeactivateMod();
 
   const listItems = sortedElements.map((item) => {
     if (Array.isArray(item)) {
@@ -169,8 +169,8 @@ const SidebarExpanded: React.FunctionComponent<{
           onReset={async () => {
             await resetRecipe(activeRecipeId);
           }}
-          onRemove={async () => {
-            await removeRecipe({ modId: activeRecipeId });
+          onDeactivate={async () => {
+            await deactivateMod({ modId: activeRecipeId });
           }}
           onClone={async () => {
             dispatch(actions.showCreateRecipeModal({ keepLocalCopy: true }));

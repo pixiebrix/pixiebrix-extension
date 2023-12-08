@@ -109,7 +109,7 @@ function useSaveCallbacks({
   const [createRecipe] = useCreateRecipeMutation();
   const createExtension = useUpsertFormElement();
   const removeExtension = useRemoveExtension();
-  const removeRecipe = useDeactivateMod();
+  const deactivateMod = useDeactivateMod();
 
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
@@ -230,7 +230,7 @@ function useSaveCallbacks({
       };
 
       if (!keepLocalCopy) {
-        await removeRecipe({ modId: recipeId, shouldShowConfirmation: false });
+        await deactivateMod({ modId: recipeId, shouldShowConfirmation: false });
       }
 
       const modComponents = [...dirtyRecipeElements, ...cleanRecipeExtensions];
@@ -268,7 +268,7 @@ function useSaveCallbacks({
       installedExtensions,
       isDirtyByElementId,
       keepLocalCopy,
-      removeRecipe,
+      deactivateMod,
     ],
   );
 

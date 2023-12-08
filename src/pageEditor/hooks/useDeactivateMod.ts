@@ -49,7 +49,7 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
           title: "Deactivate Mod?",
           message:
             "You can reactivate mods from the PixieBrix Extension Console",
-          submitCaption: "Remove",
+          submitCaption: "Deactivate",
         });
 
         if (!confirmed) {

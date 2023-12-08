@@ -49,7 +49,7 @@ export type ModListItemProps = PropsWithChildren<{
   onSave: () => Promise<void>;
   isSaving: boolean;
   onReset: () => Promise<void>;
-  onRemove: () => Promise<void>;
+  onDeactivate: () => Promise<void>;
   onClone: () => Promise<void>;
 }>;
 
@@ -61,7 +61,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
   onSave,
   isSaving,
   onReset,
-  onRemove,
+  onDeactivate,
   onClone,
 }) => {
   const dispatch = useDispatch();
@@ -123,7 +123,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
           <ActionMenu
             onSave={onSave}
             onReset={onReset}
-            onRemove={onRemove}
+            onDeactivate={onDeactivate}
             onClone={onClone}
             isDirty={isDirty}
             disabled={isSaving}

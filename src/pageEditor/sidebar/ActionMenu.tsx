@@ -86,7 +86,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
                 <FontAwesomeIcon icon={faTimes} fixedWidth /> Deactivate
               </>
             ),
-            action: onRemove,
+            action: onDeactivate,
             disabled,
           },
         ]
