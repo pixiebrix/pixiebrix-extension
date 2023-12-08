@@ -20,7 +20,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { authActions } from "@/auth/authSlice";
-import ActivatedModComponentEntry from "@/pageEditor/sidebar/ActivatedModComponentEntry";
+import ActivatedModComponentListItem from "@/pageEditor/sidebar/ActivatedModComponentListItem";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
@@ -42,12 +42,12 @@ afterAll(() => {
   jest.clearAllMocks();
 });
 
-describe("ActivatedEntry", () => {
+describe("ActivatedModComponentListItem", () => {
   test("it renders not active element", async () => {
     const modComponent = modComponentFactory();
     const formState = formStateFactory();
     const { asFragment } = render(
-      <ActivatedModComponentEntry
+      <ActivatedModComponentListItem
         extension={modComponent}
         recipes={[]}
         isAvailable
@@ -76,7 +76,7 @@ describe("ActivatedEntry", () => {
     const modComponent = modComponentFactory();
     const formState = formStateFactory();
     const { asFragment } = render(
-      <ActivatedModComponentEntry
+      <ActivatedModComponentListItem
         extension={modComponent}
         recipes={[]}
         isAvailable

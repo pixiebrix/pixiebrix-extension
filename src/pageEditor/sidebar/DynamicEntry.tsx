@@ -57,7 +57,7 @@ type DynamicEntryProps = {
 
 /**
  * A sidebar menu entry corresponding to a new or unsaved mod component
- * @see ActivatedEntry
+ * @see ActivatedModComponentListItem
  * @see ModComponentListItem
  */
 const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({

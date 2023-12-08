@@ -20,7 +20,7 @@ import React from "react";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isModComponentBase } from "./common";
 import DynamicEntry from "./DynamicEntry";
-import ActivatedModComponentEntry from "./ActivatedModComponentEntry";
+import ActivatedModComponentListItem from "./ActivatedModComponentListItem";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 
@@ -42,7 +42,7 @@ const ModComponentListItem: React.FunctionComponent<
   isNested = false,
 }) =>
   isModComponentBase(extension) ? (
-    <ActivatedModComponentEntry
+    <ActivatedModComponentListItem
       key={`installed-${extension.id}`}
       extension={extension}
       recipes={recipes}
