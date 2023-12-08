@@ -48,7 +48,7 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
         const confirmed = await showConfirmation({
           title: "Deactivate Mod?",
           message:
-            "You can reactivate mods from the PixieBrix Extension Console",
+            "This action will deactivate the mod and remove it from the Page Editor. You can reactivate or delete mods from the PixieBrix Extension Console.",
           submitCaption: "Deactivate",
         });
 
