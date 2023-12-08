@@ -21,6 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { Alert } from "react-bootstrap";
 
+// We need to update this link but we don't have docs for workshop yet
 const WorkshopMessage: React.FC = () => (
   <Alert variant="info" className={styles.alert}>
     <FontAwesomeIcon icon={faExclamationCircle} size="lg" className="mt-1" />

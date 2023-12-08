@@ -137,7 +137,7 @@ const GetStartedView: React.VoidFunctionComponent<{
             Visit the{" "}
             <ExternalLink
               linkText="Quick Start Guide"
-              url="https://docs.pixiebrix.com/quick-start-guide"
+              url="https://docs.pixiebrix.com/quick-start"
             />{" "}
             or ask questions in the{" "}
             <ExternalLink

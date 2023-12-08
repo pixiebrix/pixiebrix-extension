@@ -32,6 +32,7 @@ const UpgradedToApiV3: React.FC = () => {
   const showMessage = useSelector(selectShowV3UpgradeMessageForActiveElement);
   const dispatch = useDispatch();
 
+  // Need to update this link but we don't have workshop docs in gitbook yet
   return (
     showMessage && (
       <Alert variant="info" className={styles.alert}>
