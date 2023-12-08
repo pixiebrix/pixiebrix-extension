@@ -37,6 +37,7 @@ import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPerm
 import { type UUID } from "@/types/stringTypes";
 
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
+import type { RegistryId } from "@/types/registryTypes";
 
 const { saveExtension } = extensionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -99,6 +100,7 @@ type SaveOptions = {
 type SaveCallback = (config: {
   element: ModComponentFormState;
   options: SaveOptions;
+  modId?: RegistryId;
 }) => Promise<string | null>;
 
 function onStepError(error: unknown, step: string): string {
@@ -127,6 +129,7 @@ function useUpsertFormElement(): SaveCallback {
     async (
       element: ModComponentFormState,
       options: SaveOptions,
+      modId?: RegistryId,
     ): Promise<string | null> => {
       if (options.checkPermissions) {
         // Good to prompt the creator for permissions if any is missing, but they're not actually required to save
@@ -171,9 +174,10 @@ function useUpsertFormElement(): SaveCallback {
         }
       }
 
-      reportEvent(Events.PAGE_EDITOR_CREATE, {
+      reportEvent(Events.PAGE_EDITOR_MOD_COMPONENT_UPDATE, {
         sessionId,
         type: element.type,
+        modId,
       });
 
       try {
@@ -218,9 +222,9 @@ function useUpsertFormElement(): SaveCallback {
   );
 
   return useCallback(
-    async ({ element, options }) => {
+    async ({ element, options, modId }) => {
       try {
-        return await saveElement(element, options);
+        return await saveElement(element, options, modId);
       } catch (error) {
         console.error("Error saving mod", { error });
         notify.error({
