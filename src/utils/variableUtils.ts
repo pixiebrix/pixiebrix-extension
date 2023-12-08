@@ -19,6 +19,7 @@ import { type SafeString } from "@/types/stringTypes";
 import type { Expression, OutputKey } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 import { VARIABLE_REFERENCE_PREFIX } from "@/types/runtimeTypes";
+import { trimEnd } from "lodash";
 
 /**
  * Return a fresh variable name based on the root name and array of existing identifiers.
@@ -72,4 +73,13 @@ export function getVariableExpression<TValue extends string | null>(
   }
 
   return toExpression("var", null);
+}
+
+/**
+ * Strip the optional chaining operator "?" from a path part.
+ * @param pathPart a part of a variable expression path
+ * @see getPropByPath
+ */
+export function stripOptionalChaining(pathPart: string): string {
+  return trimEnd(pathPart, "?");
 }

@@ -17,6 +17,7 @@
 
 import { cloneDeep, get, set, setWith, toPath } from "lodash";
 import { type UnknownObject } from "@/types/objectTypes";
+import { stripOptionalChaining } from "@/utils/variableUtils";
 
 export enum VarExistence {
   MAYBE = "MAYBE",
@@ -286,11 +287,14 @@ class VarMap {
    */
   public isVariableDefined(path: string): boolean {
     const pathParts = toPath(path);
-    const [outputKey] = pathParts;
+    const [rawOutputKey] = pathParts;
 
-    if (!outputKey) {
+    if (!rawOutputKey) {
       return false;
     }
+
+    // Handle optional chaining on first part of the path, e.g., @foo?.bar
+    const outputKey = stripOptionalChaining(rawOutputKey);
 
     for (const sourceMap of Object.values(this.map).filter(
       // Only check the sources (bricks) that provide the output key (the first part of the path)
@@ -301,7 +305,7 @@ class VarMap {
       let bag: ExistenceNode | undefined = sourceMap;
       while (pathPartsCopy.length > 0) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Existence verified via `length` check so `!` is fine
-        const part = pathPartsCopy.shift()!;
+        const part = stripOptionalChaining(pathPartsCopy.shift()!);
 
         // Handle the array case (allow only numeric keys)
         const isNumberPart = numberRegex.test(part);
