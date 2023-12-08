@@ -594,7 +594,8 @@ describe("AppendSpreadsheetOptions", () => {
       config: {
         googleAccount: toExpression("var", "@google"),
         spreadsheetId: toExpression("var", "@options.sheetId"),
-        tabName: "Tab2",
+        // Tab2
+        tabName: testSpreadsheet.sheets[1].properties.title,
         rowValues: toExpression("var", "@formValues"),
       },
       optionsArgs: {
@@ -603,11 +604,23 @@ describe("AppendSpreadsheetOptions", () => {
       integrationDependencies: [googlePKCEIntegrationDependency],
     });
 
-    // Mod input var field won't render title
-    expectTab2Selected();
+    // Tab2 should be selected
+    expect(
+      screen.getByText(testSpreadsheet.sheets[1].properties.title),
+    ).toBeVisible();
+    // Tab1 should not be visible
+    expect(
+      screen.queryByText(testSpreadsheet.sheets[0].properties.title),
+    ).not.toBeInTheDocument();
 
     // Ensure that the rowValues variable isn't cleared
     expect(screen.getByDisplayValue("@formValues")).toBeVisible();
+
+    // No header names should be visible, since rowValues has a var expression instead
+    expect(screen.queryByDisplayValue("Column1")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Column2")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Foo")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
   });
 
   /**
