@@ -28,7 +28,7 @@ const WorkshopMessage: React.FC = () => (
       This brick configuration uses advanced features not yet supported in the
       Page Editor. To make changes, please open the mod in the Workshop.{" "}
       <a
-        href="https://docs.pixiebrix.com/platform-overview/extension-console#workshop"
+        href="https://docs.pixiebrix.com/developing-mods/advanced-workshop"
         target="_blank"
         rel="noreferrer"
       >

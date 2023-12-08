@@ -20,7 +20,6 @@ import React from "react";
 import { Alert, Card } from "react-bootstrap";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
-// Need to update this link but we don't have workshop docs in gitbook yet
 const UnsupportedApiV1: React.FC = () => (
   <Card>
     <Card.Header>Unsupported Extension Runtime Version</Card.Header>
@@ -33,7 +32,7 @@ const UnsupportedApiV1: React.FC = () => (
       <p>
         Use the Workshop to edit this mod.{" "}
         <a
-          href="https://docs.pixiebrix.com/runtime"
+          href="https://docs.pixiebrix.com/developing-mods/developer-concepts/advanced-brick-runtime"
           target="_blank"
           rel="noreferrer"
         >
