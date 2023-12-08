@@ -54,7 +54,7 @@ import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
 import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
 import AddStarterBrickButton from "./AddStarterBrickButton";
-import ModComponentEntry from "./ModComponentEntry";
+import ModComponentListItem from "./ModComponentListItem";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { measureDurationFromAppStart } from "@/utils/performance";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
@@ -177,7 +177,7 @@ const SidebarExpanded: React.FunctionComponent<{
           }}
         >
           {elements.map((element) => (
-            <ModComponentEntry
+            <ModComponentListItem
               key={getIdForElement(element)}
               extension={element}
               recipes={recipes}
@@ -191,7 +191,7 @@ const SidebarExpanded: React.FunctionComponent<{
     }
 
     return (
-      <ModComponentEntry
+      <ModComponentListItem
         key={getIdForElement(item)}
         extension={item}
         recipes={recipes}

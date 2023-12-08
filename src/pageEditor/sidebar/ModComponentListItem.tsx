@@ -24,7 +24,7 @@ import ActivatedModComponentEntry from "./ActivatedModComponentEntry";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 
-type ModComponentEntryProps = {
+type ModComponentListItemProps = {
   extension: ModComponentBase | ModComponentFormState;
   recipes: ModDefinition[];
   availableInstalledIds: UUID[];
@@ -32,7 +32,9 @@ type ModComponentEntryProps = {
   isNested?: boolean;
 };
 
-const ModComponentEntry: React.FunctionComponent<ModComponentEntryProps> = ({
+const ModComponentListItem: React.FunctionComponent<
+  ModComponentListItemProps
+> = ({
   extension,
   recipes,
   availableInstalledIds,
@@ -60,4 +62,4 @@ const ModComponentEntry: React.FunctionComponent<ModComponentEntryProps> = ({
     />
   );
 
-export default ModComponentEntry;
+export default ModComponentListItem;
