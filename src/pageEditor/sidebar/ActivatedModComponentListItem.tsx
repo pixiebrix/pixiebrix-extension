@@ -51,8 +51,8 @@ import { type UUID } from "@/types/stringTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 
 /**
- * A sidebar menu entry corresponding to an activated/saved mod component
- * @see DynamicEntry
+ * A sidebar menu entry corresponding to an untouched mod component
+ * @see DynamicModComponentListItem
  */
 const ActivatedModComponentListItem: React.FunctionComponent<{
   extension: ModComponentBase;

@@ -49,22 +49,20 @@ import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 
-type DynamicEntryProps = {
+type DynamicModComponentListItemProps = {
   extension: ModComponentFormState;
   isAvailable: boolean;
   isNested?: boolean;
 };
 
 /**
- * A sidebar menu entry corresponding to a new or unsaved mod component
+ * A sidebar menu entry corresponding to a touched mod component
  * @see ActivatedModComponentListItem
  * @see ModComponentListItem
  */
-const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
-  extension,
-  isAvailable,
-  isNested = false,
-}) => {
+const DynamicModComponentListItem: React.FunctionComponent<
+  DynamicModComponentListItemProps
+> = ({ extension, isAvailable, isNested = false }) => {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
@@ -188,4 +186,4 @@ const DynamicEntry: React.FunctionComponent<DynamicEntryProps> = ({
   );
 };
 
-export default DynamicEntry;
+export default DynamicModComponentListItem;

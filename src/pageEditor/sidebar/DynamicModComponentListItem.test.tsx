@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render } from "@/pageEditor/testHelpers";
-import DynamicEntry from "@/pageEditor/sidebar/DynamicEntry";
+import DynamicModComponentListItem from "@/pageEditor/sidebar/DynamicModComponentListItem";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { authActions } from "@/auth/authSlice";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
@@ -38,37 +38,43 @@ afterAll(() => {
   jest.clearAllMocks();
 });
 
-describe("DynamicEntry", () => {
+describe("DynamicModComponentListItem", () => {
   test("it renders not active element", () => {
     const formState = formStateFactory();
     expect(
-      render(<DynamicEntry extension={formState} isAvailable />, {
-        initialValues: formState,
-        setupRedux(dispatch) {
-          dispatch(authActions.setAuth(authStateFactory()));
-          // The addElement also sets the active element
-          dispatch(editorActions.addElement(formStateFactory()));
+      render(
+        <DynamicModComponentListItem extension={formState} isAvailable />,
+        {
+          initialValues: formState,
+          setupRedux(dispatch) {
+            dispatch(authActions.setAuth(authStateFactory()));
+            // The addElement also sets the active element
+            dispatch(editorActions.addElement(formStateFactory()));
 
-          // Add new element to deactivate the previous one
-          dispatch(editorActions.addElement(formState));
-          // Remove the active element and stay with one inactive item
-          dispatch(editorActions.removeElement(formState.uuid));
+            // Add new element to deactivate the previous one
+            dispatch(editorActions.addElement(formState));
+            // Remove the active element and stay with one inactive item
+            dispatch(editorActions.removeElement(formState.uuid));
+          },
         },
-      }).asFragment(),
+      ).asFragment(),
     ).toMatchSnapshot();
   });
 
   test("it renders active element", () => {
     const formState = formStateFactory();
     expect(
-      render(<DynamicEntry extension={formState} isAvailable />, {
-        initialValues: formState,
-        setupRedux(dispatch) {
-          dispatch(authActions.setAuth(authStateFactory()));
-          // The addElement also sets the active element
-          dispatch(editorActions.addElement(formState));
+      render(
+        <DynamicModComponentListItem extension={formState} isAvailable />,
+        {
+          initialValues: formState,
+          setupRedux(dispatch) {
+            dispatch(authActions.setAuth(authStateFactory()));
+            // The addElement also sets the active element
+            dispatch(editorActions.addElement(formState));
+          },
         },
-      }).asFragment(),
+      ).asFragment(),
     ).toMatchSnapshot();
   });
 });

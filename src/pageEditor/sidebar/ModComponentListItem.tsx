@@ -19,7 +19,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import React from "react";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isModComponentBase } from "./common";
-import DynamicEntry from "./DynamicEntry";
+import DynamicModComponentListItem from "./DynamicModComponentListItem";
 import ActivatedModComponentListItem from "./ActivatedModComponentListItem";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -52,7 +52,7 @@ const ModComponentListItem: React.FunctionComponent<
       isNested={isNested}
     />
   ) : (
-    <DynamicEntry
+    <DynamicModComponentListItem
       key={`dynamic-${extension.uuid}`}
       extension={extension}
       isAvailable={
