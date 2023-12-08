@@ -34,10 +34,14 @@ type Config = {
   shouldShowConfirmation?: boolean;
 };
 
-/* Returns a callback that deactivates a standalone mod and/or removes the mod component form state from the Page Editor.
+/**
+ * Returns a callback that removes a mod component from the Page Editor and Extension Storage.
  *
- * For standalone mods, this callback will deactivate the mod.
- * For mod components that are packaged inside a mod, this callback will effectively delete the mod component. */
+ * For mod components (packaged inside a mod), this callback will effectively delete the mod component.
+ * For standalone mods, this callback will simply deactivate the mod and remove it from the Page Editor.
+ *
+ * Prefer using `useDeactivateModComponent` or `useDeleteModComponent` instead of exporting this hook.
+ **/
 function _useRemoveModComponent(): (extensionId: UUID) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
