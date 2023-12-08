@@ -25,7 +25,7 @@ import {
   editorSlice,
   initialState as editorInitialState,
 } from "@/pageEditor/slices/editorSlice";
-import ModEntry, { type ModEntryProps } from "./ModEntry";
+import ModListItem, { type ModListItemProps } from "./ModListItem";
 import { type EditorState } from "@/pageEditor/pageEditorTypes";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import { validateSemVerString } from "@/types/helpers";
@@ -33,19 +33,19 @@ import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinition
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { screen } from "@testing-library/react";
 
-let renderModEntry: RenderFunctionWithRedux<
+let renderModListItem: RenderFunctionWithRedux<
   {
     editor: EditorState;
     options: ModComponentState;
   },
-  ModEntryProps
+  ModListItemProps
 >;
 
 beforeEach(() => {
   const recipe = defaultModDefinitionFactory();
   const recipeId = recipe.metadata.id;
   // eslint-disable-next-line testing-library/no-render-in-lifecycle -- higher order function, not the actual render
-  renderModEntry = createRenderFunctionWithRedux({
+  renderModListItem = createRenderFunctionWithRedux({
     reducer: {
       editor: editorSlice.reducer,
       options: extensionsSlice.reducer,
@@ -56,7 +56,7 @@ beforeEach(() => {
         expandedRecipeId: recipeId,
       },
     },
-    ComponentUnderTest: ModEntry,
+    ComponentUnderTest: ModListItem,
     defaultProps: {
       recipe,
       children: <div>test children</div>,
@@ -71,13 +71,13 @@ beforeEach(() => {
 });
 
 test("it renders", () => {
-  const { asFragment } = renderModEntry();
+  const { asFragment } = renderModListItem();
 
   expect(asFragment()).toMatchSnapshot();
 });
 
 test("renders with empty recipe", () => {
-  const { asFragment } = renderModEntry({
+  const { asFragment } = renderModListItem({
     propsOverride: {
       recipe: undefined,
     },
@@ -88,7 +88,7 @@ test("renders with empty recipe", () => {
 
 test("renders with empty metadata", () => {
   const recipe = defaultModDefinitionFactory({ metadata: null });
-  const { asFragment } = renderModEntry({
+  const { asFragment } = renderModListItem({
     propsOverride: {
       recipe,
     },
@@ -103,7 +103,7 @@ test("renders the warning icon when has update", () => {
       version: validateSemVerString("2.0.0"),
     }),
   });
-  renderModEntry({
+  renderModListItem({
     propsOverride: {
       recipe,
     },

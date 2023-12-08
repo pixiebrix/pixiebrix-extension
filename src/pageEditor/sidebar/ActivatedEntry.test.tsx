@@ -20,7 +20,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { authActions } from "@/auth/authSlice";
-import ActivatedEntry from "@/pageEditor/sidebar/ActivatedEntry";
+import ActivatedModComponentEntry from "@/pageEditor/sidebar/ActivatedModComponentEntry";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { authStateFactory } from "@/testUtils/factories/authFactories";
@@ -47,7 +47,11 @@ describe("ActivatedEntry", () => {
     const modComponent = modComponentFactory();
     const formState = formStateFactory();
     const { asFragment } = render(
-      <ActivatedEntry extension={modComponent} recipes={[]} isAvailable />,
+      <ActivatedModComponentEntry
+        extension={modComponent}
+        recipes={[]}
+        isAvailable
+      />,
       {
         initialValues: formState,
         setupRedux(dispatch) {
@@ -72,7 +76,11 @@ describe("ActivatedEntry", () => {
     const modComponent = modComponentFactory();
     const formState = formStateFactory();
     const { asFragment } = render(
-      <ActivatedEntry extension={modComponent} recipes={[]} isAvailable />,
+      <ActivatedModComponentEntry
+        extension={modComponent}
+        recipes={[]}
+        isAvailable
+      />,
       {
         initialValues: formState,
         setupRedux(dispatch) {

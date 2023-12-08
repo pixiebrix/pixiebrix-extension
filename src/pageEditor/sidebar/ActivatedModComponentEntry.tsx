@@ -54,7 +54,7 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
  * A sidebar menu entry corresponding to an activated/saved mod component
  * @see DynamicEntry
  */
-const ActivatedEntry: React.FunctionComponent<{
+const ActivatedModComponentEntry: React.FunctionComponent<{
   extension: ModComponentBase;
   recipes: ModDefinition[];
   isAvailable: boolean;
@@ -148,4 +148,4 @@ const ActivatedEntry: React.FunctionComponent<{
   );
 };
 
-export default ActivatedEntry;
+export default ActivatedModComponentEntry;
