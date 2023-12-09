@@ -65,32 +65,6 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       action: onReset,
       disabled: !isDirty || disabled,
     },
-    ...(onDelete
-      ? [
-          {
-            title: (
-              <>
-                <FontAwesomeIcon icon={faTrash} fixedWidth /> Delete
-              </>
-            ),
-            action: onDelete,
-            disabled,
-          },
-        ]
-      : []),
-    ...(onDeactivate
-      ? [
-          {
-            title: (
-              <>
-                <FontAwesomeIcon icon={faTimes} fixedWidth /> Deactivate
-              </>
-            ),
-            action: onDeactivate,
-            disabled,
-          },
-        ]
-      : []),
     {
       title: (
         <>
@@ -130,6 +104,32 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       action: onClone,
       disabled,
     },
+    ...(onDelete
+      ? [
+          {
+            title: (
+              <>
+                <FontAwesomeIcon icon={faTrash} fixedWidth /> Delete
+              </>
+            ),
+            action: onDelete,
+            disabled,
+          },
+        ]
+      : []),
+    ...(onDeactivate
+      ? [
+          {
+            title: (
+              <>
+                <FontAwesomeIcon icon={faTimes} fixedWidth /> Deactivate
+              </>
+            ),
+            action: onDeactivate,
+            disabled,
+          },
+        ]
+      : []),
   ];
 
   return (
