@@ -34,6 +34,7 @@ beforeEach(() => {
 test("useRemoveModComponent", async () => {
   const extensionId = uuidSequence(1);
 
+  // eslint-disable-next-line unicorn/no-array-for-each -- Better readability in this case, and performance is not a concern here
   [useDeactivateModComponent, useDeleteModComponent].forEach(async (hook) => {
     const {
       result: { current: removeExtension },
