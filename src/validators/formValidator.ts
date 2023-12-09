@@ -47,11 +47,11 @@ import { assertNotNull } from "@/utils/typeUtils";
  * https://rjsf-team.github.io/react-jsonschema-form/docs/usage/validation
  * https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/utils/src/types.ts#L939
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- match types from interface
+
 class FormValidator<
   T,
   S extends StrictRJSFSchema,
-  F extends FormContextType = any,
+  F extends FormContextType = unknown,
 > implements ValidatorType<T, S, F>
 {
   // eslint-disable-next-line max-params -- matching interface
@@ -152,6 +152,9 @@ class FormValidator<
     formData: T | undefined,
     _rootSchema: RJSFSchema,
   ): boolean {
+    // XXX: technically we may want to read from $schema to determine which draft version to validate against
+    // Draft 7 is the default for RJSF: https://rjsf-team.github.io/react-jsonschema-form/docs/usage/validation/#custom-meta-schema-validation
+
     if (!this.isValidSchema(schema)) {
       return false;
     }
@@ -159,7 +162,8 @@ class FormValidator<
     // FIXME: figure out how to add the root schema to the validator
     const validator = new Validator(
       withIdRefPrefix(schema) as Schema,
-      "2019-09",
+      // The default used by RJSF: https://rjsf-team.github.io/react-jsonschema-form/docs/usage/validation/#custom-meta-schema-validation
+      "7",
       true,
     );
     // This breaks due to duplicate ids: validator.addSchema(rootSchema as Schema);
