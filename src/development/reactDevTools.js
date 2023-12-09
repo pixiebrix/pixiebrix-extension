@@ -15,17 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./ephemeralModal.scss";
-
-import "@/extensionContext";
-import "@/development/reactDevTools.js";
-
-import React from "react";
-import { render } from "react-dom";
-import EphemeralForm from "@/bricks/transformers/ephemeralForm/EphemeralForm";
-import { initRuntimeLogging } from "@/development/runtimeLogging";
-
-void initRuntimeLogging();
-
-render(<EphemeralForm />, document.querySelector("#container"));
+if (process.env.ENVIRONMENT === "development") {
+  window.pbReact = () => {
+    if (localStorage.getItem("dev:react-devtools")) {
+      localStorage.removeItem("dev:react-devtools");
+    } else {
+      localStorage.setItem("dev:react-devtools", "yes");
+      const script = document.createElement("script");
+      script.src = "http://localhost:8097";
+      document.head.append(script);
+    }
+  };
+}

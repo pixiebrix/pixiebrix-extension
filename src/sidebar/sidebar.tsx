@@ -22,6 +22,7 @@ import "@/utils/layout.scss";
 import "./sidebar.scss";
 
 import "@/extensionContext";
+import "@/development/reactDevTools.js";
 
 import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/sidebar/messenger/registration";
