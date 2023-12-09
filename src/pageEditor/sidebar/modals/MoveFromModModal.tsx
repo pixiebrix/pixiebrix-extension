@@ -51,7 +51,7 @@ const formStateSchema = object({
   moveOrRemove: string().oneOf(["move", "remove"]).required(),
 });
 
-const RemoveFromRecipeModal: React.FC = () => {
+const MoveFromModModal: React.FC = () => {
   const { isRemoveFromRecipeModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
@@ -149,4 +149,4 @@ const RemoveFromRecipeModal: React.FC = () => {
   );
 };
 
-export default RemoveFromRecipeModal;
+export default MoveFromModModal;
