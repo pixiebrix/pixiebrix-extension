@@ -19,7 +19,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./ephemeralModal.scss";
 
 import "@/extensionContext";
-import "@/development/reactDevTools.js";
 
 import React from "react";
 import { render } from "react-dom";

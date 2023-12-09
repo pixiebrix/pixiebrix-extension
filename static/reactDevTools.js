@@ -15,15 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-if (process.env.ENVIRONMENT === "development") {
+(() => {
+  const inject = () => {
+    // Must use document.write to run before the app starts
+    document.write("<script src='http://localhost:8097'></script>");
+  };
+
+  if (localStorage.getItem("dev:react-devtools")) {
+    inject();
+  }
+
   window.pbReact = () => {
     if (localStorage.getItem("dev:react-devtools")) {
       localStorage.removeItem("dev:react-devtools");
     } else {
       localStorage.setItem("dev:react-devtools", "yes");
-      const script = document.createElement("script");
-      script.src = "http://localhost:8097";
-      document.head.append(script);
+      inject();
+      location.reload();
     }
   };
-}
+})();

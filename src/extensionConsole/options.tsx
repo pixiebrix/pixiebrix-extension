@@ -22,7 +22,6 @@ import "./options.scss";
 
 import "@/extensionContext";
 import "@/development/darkMode.js";
-import "@/development/reactDevTools.js";
 
 import { render } from "react-dom";
 import React from "react";

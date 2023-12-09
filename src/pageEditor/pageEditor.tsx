@@ -21,7 +21,6 @@ import "@/utils/layout.scss";
 
 import "@/extensionContext";
 import "@/development/darkMode.js";
-import "@/development/reactDevTools.js";
 
 import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/pageEditor/messenger/registration";
