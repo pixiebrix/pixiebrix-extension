@@ -114,12 +114,12 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const onReset = async () =>
     resetExtension({ extensionId: modComponentFormState.uuid });
 
-  const onRemove = async () =>
-    modId
-      ? deleteModComponent({ extensionId: modComponentFormState.uuid })
-      : undefined;
+  const onDelete = modId
+    ? async () =>
+        deleteModComponent({ extensionId: modComponentFormState.uuid })
+    : undefined;
 
-  const onDeactivate = modId
+  const onDeactivate = onDelete
     ? undefined
     : async () =>
         deactivateStandaloneMod({ extensionId: modComponentFormState.uuid });
@@ -179,11 +179,10 @@ const DynamicModComponentListItem: React.FunctionComponent<
           <UnsavedChangesIcon />
         </span>
       )}
-      {modId}
       {isActive && (
         <ActionMenu
           onSave={onSave}
-          onRemove={onRemove}
+          onDelete={onDelete}
           onDeactivate={onDeactivate}
           onClone={onClone}
           onReset={modComponentFormState.installed ? onReset : undefined}

@@ -649,7 +649,7 @@ export const editorSlice = createSlice({
       );
       if (elementIndex < 0) {
         throw new Error(
-          "Unable to remove extension from mod, extension form state not found",
+          "Unable to remove mod component from mod, mod component form state not found",
         );
       }
 

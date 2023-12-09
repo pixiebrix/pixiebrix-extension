@@ -56,7 +56,7 @@ function _useRemoveModComponent(): (extensionId: UUID) => Promise<void> {
       });
 
       try {
-        // Remove from page editor
+        // Remove from Page Editor
         // Equivalent of @/store/dynamicElementStorage.ts:removeDynamicElements
         dispatch(editorActions.removeElement(extensionId));
 
@@ -97,8 +97,8 @@ export const useDeactivateModComponent = (): ((
         const confirm = await showConfirmation({
           title: "Deactivate Mod?",
           message:
-            "You can reactivate mods from the PixieBrix Extension Console",
-          submitCaption: "Remove",
+            "This action will deactivate the mod and remove it from the Page Editor. You can reactivate or delete mods from the PixieBrix Extension Console.",
+          submitCaption: "Deactivate",
         });
 
         if (!confirm) {
@@ -122,7 +122,7 @@ export const useDeleteModComponent = (): ((
     async ({ extensionId, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
         const confirm = await showConfirmation({
-          title: "Delete Starter Brick?",
+          title: "Delete starter brick?",
           message: "This action cannot be undone.",
           submitCaption: "Delete",
         });

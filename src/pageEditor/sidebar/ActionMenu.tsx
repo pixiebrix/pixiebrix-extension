@@ -33,7 +33,7 @@ import EllipsisMenu, {
 
 type ActionMenuProps = {
   onSave: () => Promise<void>;
-  onRemove?: () => Promise<void>;
+  onDelete?: () => Promise<void>;
   onDeactivate?: () => Promise<void>;
   onClone: () => Promise<void>;
   onReset?: () => Promise<void>;
@@ -45,7 +45,7 @@ type ActionMenuProps = {
 
 const ActionMenu: React.FC<ActionMenuProps> = ({
   onSave,
-  onRemove,
+  onDelete,
   onDeactivate,
   onClone,
   onReset,
@@ -65,15 +65,15 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
       action: onReset,
       disabled: !isDirty || disabled,
     },
-    ...(onRemove
+    ...(onDelete
       ? [
           {
             title: (
               <>
-                <FontAwesomeIcon icon={faTrash} fixedWidth /> Remove
+                <FontAwesomeIcon icon={faTrash} fixedWidth /> Delete
               </>
             ),
-            action: onRemove,
+            action: onDelete,
             disabled,
           },
         ]
@@ -114,7 +114,7 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
             fixedWidth
             className={styles.removeIcon}
           />{" "}
-          Remove from mod
+          Move from mod
         </>
       ),
       hide: !onRemoveFromRecipe,
