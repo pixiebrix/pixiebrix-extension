@@ -54,7 +54,7 @@ const FieldTemplate = ({
   return (
     <Form.Group
       onClick={onClick}
-      className={cx({
+      className={cx(styles.root, {
         [styles.isActive ?? ""]: isActive,
       })}
     >
