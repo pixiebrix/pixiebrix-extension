@@ -16,7 +16,7 @@
  */
 
 import React, { useEffect } from "react";
-import validator from "@rjsf/validator-ajv6";
+import validator from "@/validators/formValidator";
 import { Theme } from "@rjsf/bootstrap-4";
 import { withTheme, getDefaultRegistry } from "@rjsf/core";
 import { useAsyncState } from "@/hooks/common";
