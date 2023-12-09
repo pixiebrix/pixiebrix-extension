@@ -16,22 +16,19 @@
  */
 
 /* eslint-disable security/detect-object-injection */
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import validator from "@rjsf/validator-ajv6";
-import { type FieldProps } from "@rjsf/utils";
 import { type IChangeEvent } from "@rjsf/core";
 import {
   type RJSFSchema,
   type SetActiveField,
 } from "@/components/formBuilder/formBuilderTypes";
-import FormPreviewStringField from "./FormPreviewStringField";
 import {
   UI_SCHEMA_ACTIVE,
   UI_WIDGET,
 } from "@/components/formBuilder/schemaFieldNames";
 import { produce } from "immer";
-import FormPreviewBooleanField from "./FormPreviewBooleanField";
 import { unwrapTemplateExpressions } from "@/components/fields/fieldUtils";
 import ImageCropWidgetPreview from "@/components/formBuilder/preview/ImageCropWidgetPreview";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
@@ -41,7 +38,6 @@ import databaseSchema from "@schemas/database.json";
 import googleSheetSchema from "@schemas/googleSheetId.json";
 import { type Draft } from "immer";
 import { KEYS_OF_UI_SCHEMA, type Schema } from "@/types/schemaTypes";
-import FormPreviewArrayField from "@/components/formBuilder/preview/FormPreviewArrayField";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 
 export type FormPreviewProps = {
@@ -167,36 +163,13 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     setData(null);
   }, [rjsfSchema]);
 
-  const StringField = useCallback(
-    (props: FieldProps) => (
-      <FormPreviewStringField setActiveField={setActiveField} {...props} />
-    ),
-    [setActiveField],
-  );
-  const BooleanField = useCallback(
-    (props: FieldProps) => (
-      <FormPreviewBooleanField setActiveField={setActiveField} {...props} />
-    ),
-    [setActiveField],
-  );
-
-  const ArrayField = useCallback(
-    (props: FieldProps) => (
-      <FormPreviewArrayField setActiveField={setActiveField} {...props} />
-    ),
-    [setActiveField],
-  );
-
   if (!previewSchema || !previewUiSchema) {
     return null;
   }
 
   const fields = {
     SchemaField: FormPreviewSchemaField,
-    StringField,
-    BooleanField,
     DescriptionField,
-    ArrayField,
   };
 
   const widgets = {
@@ -213,15 +186,14 @@ const FormPreview: React.FC<FormPreviewProps> = ({
       fields={fields}
       widgets={widgets}
       schema={previewSchema}
-      uiSchema={previewUiSchema}
+      uiSchema={{
+        ...previewUiSchema,
+        "ui:submitButtonOptions": { norender: true },
+      }}
       onChange={onDataChanged}
       validator={validator}
       templates={templates}
-    >
-      <div>
-        {/* This <div/> prevents JsonSchemaForm from rendering a Submit button */}
-      </div>
-    </JsonSchemaForm>
+    />
   );
 };
 

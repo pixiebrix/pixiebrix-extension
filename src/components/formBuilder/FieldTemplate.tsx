@@ -15,12 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./FieldTemplate.module.scss";
 import React from "react";
+import cx from "classnames";
 import { type FieldTemplateProps } from "@rjsf/utils";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, ListGroup } from "react-bootstrap";
 // Named import to get the proper type
 import { DescriptionField } from "./DescriptionField";
+import { UI_SCHEMA_ACTIVE } from "@/components/formBuilder/schemaFieldNames";
 
 // RJSF Bootstrap 4 implementation ref https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/bootstrap-4/src/FieldTemplate/FieldTemplate.tsx
 const FieldTemplate = ({
@@ -33,13 +36,28 @@ const FieldTemplate = ({
   rawDescription,
   label,
   required,
+  uiSchema,
 }: FieldTemplateProps) => {
+  // eslint-disable-next-line security/detect-object-injection -- is a constant
+  const isActive = Boolean(uiSchema?.[UI_SCHEMA_ACTIVE]);
+
+  const onClick = () => {
+    if (!isActive) {
+      setActiveField(name);
+    }
+  };
+
   if (hidden) {
     return <div className="hidden">{children}</div>;
   }
 
   return (
-    <Form.Group>
+    <Form.Group
+      onClick={onClick}
+      className={cx({
+        [styles.isActive ?? ""]: isActive,
+      })}
+    >
       {displayLabel && (
         <Form.Label
           htmlFor={id}

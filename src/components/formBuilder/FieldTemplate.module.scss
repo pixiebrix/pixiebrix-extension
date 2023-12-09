@@ -15,22 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getDefaultRegistry } from "@rjsf/core";
-import React from "react";
-import FormPreviewFieldTemplate, {
-  type FormPreviewFieldProps,
-} from "./FormPreviewFieldTemplate";
-import styles from "./FormPreviewBooleanField.module.scss";
-
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Loose types
-const RjsfArrayField = getDefaultRegistry().fields.ArrayField!;
-
-const FormPreviewArrayField: React.FC<FormPreviewFieldProps> = (props) => (
-  <FormPreviewFieldTemplate
-    as={RjsfArrayField}
-    className={styles.root}
-    {...props}
-  />
-);
-
-export default FormPreviewArrayField;
+.root {
+  margin-right: 10px; /* Make room for the off-set outline */
+}
+.isActive {
+  /* Use `outline` instead of `box-shadow` because it supports offsets, without having to mess with padding */
+  outline: color-mix(in srgb, var(--info) 50%, transparent) solid 3px;
+  outline-offset: 6px;
+  border-radius: 2px;
+}

@@ -184,10 +184,7 @@ const ModOptionsDefinitionEditor: React.VFC = () => {
                     <Tab.Content className={dataPanelStyles.tabContent}>
                       <Tab.Pane
                         eventKey="preview"
-                        className={cx(
-                          dataPanelStyles.tabPane,
-                          dataPanelStyles.selectablePreviewContainer,
-                        )}
+                        className={cx(dataPanelStyles.tabPane)}
                       >
                         <ErrorBoundary>
                           <FormPreview
