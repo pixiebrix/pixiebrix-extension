@@ -43,13 +43,11 @@ import { templates } from "@/components/formBuilder/RjsfTemplates";
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
   activeField?: string;
-  setActiveField: SetActiveField;
 };
 
 const FormPreview: React.FC<FormPreviewProps> = ({
   rjsfSchema,
   activeField,
-  setActiveField,
 }) => {
   const [data, setData] = useState(null);
   const onDataChanged = ({ formData }: IChangeEvent<unknown>) => {
