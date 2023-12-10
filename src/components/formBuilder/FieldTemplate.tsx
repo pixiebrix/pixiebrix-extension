@@ -23,7 +23,12 @@ import { type FieldTemplateProps } from "@rjsf/utils";
 import { Form, ListGroup } from "react-bootstrap";
 // Named import to get the proper type
 import { DescriptionField } from "./DescriptionField";
+import { type SetActiveField } from "@/components/formBuilder/formBuilderTypes";
 import { UI_SCHEMA_ACTIVE } from "@/components/formBuilder/schemaFieldNames";
+
+interface FormPreviewFieldTemplateProps extends FieldTemplateProps {
+  setActiveField: SetActiveField;
+}
 
 // RJSF Bootstrap 4 implementation ref https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/bootstrap-4/src/FieldTemplate/FieldTemplate.tsx
 const FieldTemplate = ({
@@ -37,13 +42,15 @@ const FieldTemplate = ({
   label,
   required,
   uiSchema,
-}: FieldTemplateProps) => {
+  setActiveField,
+}: FormPreviewFieldTemplateProps) => {
   // eslint-disable-next-line security/detect-object-injection -- is a constant
   const isActive = Boolean(uiSchema?.[UI_SCHEMA_ACTIVE]);
 
   const onClick = () => {
     if (!isActive) {
-      setActiveField(name);
+      // TODO: How do we get the `name` of the field? `id` is not the same thing
+      // setActiveField();
     }
   };
 

@@ -16,9 +16,10 @@
  */
 
 /* eslint-disable security/detect-object-injection */
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import validator from "@rjsf/validator-ajv6";
+import { type FieldTemplateProps } from "@rjsf/utils";
 import { type IChangeEvent } from "@rjsf/core";
 import {
   type RJSFSchema,
@@ -39,15 +40,18 @@ import googleSheetSchema from "@schemas/googleSheetId.json";
 import { type Draft } from "immer";
 import { KEYS_OF_UI_SCHEMA, type Schema } from "@/types/schemaTypes";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
+import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
   activeField?: string;
+  setActiveField: SetActiveField;
 };
 
 const FormPreview: React.FC<FormPreviewProps> = ({
   rjsfSchema,
   activeField,
+  setActiveField,
 }) => {
   const [data, setData] = useState(null);
   const onDataChanged = ({ formData }: IChangeEvent<unknown>) => {
@@ -161,6 +165,13 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     setData(null);
   }, [rjsfSchema]);
 
+  const PreviewFieldTemplate = useCallback(
+    (props: FieldTemplateProps) => (
+      <FieldTemplate setActiveField={setActiveField} {...props} />
+    ),
+    [setActiveField],
+  );
+
   if (!previewSchema || !previewUiSchema) {
     return null;
   }
@@ -190,7 +201,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
       }}
       onChange={onDataChanged}
       validator={validator}
-      templates={templates}
+      templates={{ ...templates, FieldTemplate: PreviewFieldTemplate }}
     />
   );
 };
