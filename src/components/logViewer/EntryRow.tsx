@@ -73,7 +73,9 @@ const EntryRow: React.FunctionComponent<{ entry: LogEntry }> = ({ entry }) => {
         onClick={() => {
           setExpanded(!expanded);
         }}
-        className={cx(styles.mainRow, { [styles.expandable]: expandable })}
+        className={cx(styles.mainRow, {
+          [styles.expandable ?? ""]: expandable,
+        })}
       >
         <td className={styles.caret}>
           {expandable && (

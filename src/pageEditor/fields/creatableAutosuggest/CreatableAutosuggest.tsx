@@ -215,7 +215,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
   const theme = useMemo(
     () => ({
       input: cx("form-control", styles.input, {
-        [styles.notClearable]: !isClearable,
+        [styles.notClearable ?? ""]: !isClearable,
       }),
       suggestionsContainer: "dropdown",
       suggestionsList: cx("dropdown-menu", "show", styles.suggestionList),

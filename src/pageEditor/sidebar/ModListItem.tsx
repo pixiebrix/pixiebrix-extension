@@ -94,7 +94,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
         eventKey={recipeId}
         as={ListGroup.Item}
         className={cx(styles.root, "list-group-item-action", {
-          [styles.recipeBackground]: hasRecipeBackground,
+          [styles.recipeBackground ?? ""]: hasRecipeBackground,
         })}
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={isActive}
