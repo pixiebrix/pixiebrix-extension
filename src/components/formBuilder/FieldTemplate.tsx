@@ -69,11 +69,7 @@ const FieldTemplate = ({
       )}
       {children}
       {displayLabel && rawDescription && (
-        <DescriptionField
-          id={id}
-          className="text-muted"
-          description={rawDescription}
-        />
+        <DescriptionField className="text-muted" description={rawDescription} />
       )}
       {rawErrors.length > 0 && (
         <ListGroup as="ul">
