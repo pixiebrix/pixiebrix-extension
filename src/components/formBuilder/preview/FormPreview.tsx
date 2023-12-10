@@ -18,7 +18,7 @@
 /* eslint-disable security/detect-object-injection */
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
-import validator from "@rjsf/validator-ajv6";
+import validator from "@rjsf/validator-ajv8";
 import { type FieldProps } from "@rjsf/utils";
 import { type IChangeEvent } from "@rjsf/core";
 import {

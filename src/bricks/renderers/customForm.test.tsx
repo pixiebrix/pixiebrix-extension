@@ -20,7 +20,7 @@ import { render, screen } from "@testing-library/react";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
-import validator from "@rjsf/validator-ajv6";
+import validator from "@rjsf/validator-ajv8";
 import {
   CustomFormRenderer,
   normalizeIncomingFormData,
