@@ -100,20 +100,39 @@ async function interactiveWriteToClipboard(
   }
 }
 
-export async function writeTextToClipboard(text: string): Promise<void> {
+/**
+ * Copy text to the clipboard, prompting the user to interact with the page if the browser blocks the clipboard write.
+ * @param text the text to copy to the clipboard
+ * @param html optional HTML content to copy to the clipboard for pasting into rich text editors
+ */
+export async function writeTextToClipboard({
+  text,
+  html,
+}: {
+  text: string;
+  html?: string;
+}): Promise<void> {
   try {
+    // https://stackoverflow.com/a/74216984/402560
+    const items: Record<string, Blob> = {
+      "text/plain": new Blob([text], { type: "text/plain" }),
+    };
+
+    if (html) {
+      items["text/html"] = new Blob([html], { type: "text/html" });
+    }
+
     await interactiveWriteToClipboard(
       // Fails in frame contexts if the frame CSP doesn't include clipboard-write. Unfortunately, that includes the
-      // Chrome DevTools. In this case, will fall back to legacy method
-      async () => navigator.clipboard.writeText(text),
-      {
-        type: "text",
-      },
+      // Chrome DevTools. In this case, will fall back to legacy method in the catch block
+      async () => navigator.clipboard.write([new ClipboardItem(items)]),
+      { type: "text" },
     );
   } catch (error) {
     if (isPermissionError(error)) {
-      // Legacy method of copying text to clipboard doesn't require clipboard-write in frame CSP. However, it can
-      // sometimes return `true` even if the text wasn't actually copied so try to use navigator.clipboard first
+      // Deprecated method of copying text to clipboard doesn't require clipboard-write in frame CSP.
+      // It can sometimes return `true` even if the text wasn't actually copied so try to use navigator.clipboard first
+      // The legacy approach uses a hidden text area and document.execCommand('copy') under the hood
       const copied = legacyCopyText(text);
       if (!copied) {
         throw new BusinessError("Unable to write text to clipboard");
@@ -126,11 +145,25 @@ export async function writeTextToClipboard(text: string): Promise<void> {
   }
 }
 
-export async function writeToClipboard(items: ClipboardItems): Promise<void> {
+/**
+ * Writes items to the clipboard, prompting the user to interact with the page if the browser blocks the clipboard write.
+ * @param items the items to copy to the clipboard
+ * @param type type to include in the message to the user if they need to interact with the page to copy to the clipboard
+ * @see writeTextToClipboard
+ */
+export async function writeItemsToClipboard(
+  items: ClipboardItems,
+  {
+    type,
+  }: {
+    // Only allow image so caller uses writeTextToClipboard instead for text
+    type: "image";
+  },
+): Promise<void> {
   await interactiveWriteToClipboard(
     async () => navigator.clipboard.write(items),
     {
-      type: "image",
+      type,
     },
   );
 }

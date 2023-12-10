@@ -94,7 +94,7 @@ const BrickDetail = <T extends Metadata>({
 
   const copyHandler = useUserAction(
     async () => {
-      await writeTextToClipboard(makeArgumentYaml(schema));
+      await writeTextToClipboard({ text: makeArgumentYaml(schema) });
     },
     {
       successMessage: "Copied input argument YAML to clipboard",

@@ -28,21 +28,35 @@ const SMALL_RED_DOT_URI =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
 
 // Clipboard API not available in JSDOM: https://github.com/jsdom/jsdom/issues/1568
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- monkey-patching readonly property
 (navigator as any).clipboard = {
   ...navigator.clipboard,
   write: jest.fn(),
-  writeText: jest.fn(),
+  writeText: jest
+    .fn()
+    .mockRejectedValue(new Error("write should be called instead")),
 };
 
-globalThis.ClipboardItem = jest.fn();
+class ClipboardItemFake implements ClipboardItem {
+  constructor(
+    private readonly items: Record<
+      string,
+      string | Blob | PromiseLike<string | Blob>
+    >,
+  ) {}
 
-const writeMock = navigator.clipboard.write as jest.MockedFunction<
-  typeof navigator.clipboard.write
->;
+  async getType(type: string): Promise<Blob> {
+    return this.items[type] as Blob;
+  }
 
-const writeTextMock = navigator.clipboard.writeText as jest.MockedFunction<
-  typeof navigator.clipboard.writeText
->;
+  public get types(): string[] {
+    return Object.keys(this.items);
+  }
+}
+
+globalThis.ClipboardItem = ClipboardItemFake;
+
+const writeMock = jest.mocked(navigator.clipboard.write);
 
 describe("CopyToClipboard", () => {
   beforeEach(() => {
@@ -52,7 +66,11 @@ describe("CopyToClipboard", () => {
   it("copies to clipboard", async () => {
     const text = "Hello, world!";
     await brick.run(unsafeAssumeValidArg({ text }), brickOptionsFactory());
-    expect(writeTextMock).toHaveBeenCalledWith(text);
+    expect(writeMock).toHaveBeenCalledWith([
+      new ClipboardItemFake({
+        "text/plain": new Blob([text], { type: "text/plain" }),
+      }),
+    ]);
   });
 
   it("copies null to clipboard", async () => {
@@ -60,7 +78,11 @@ describe("CopyToClipboard", () => {
       unsafeAssumeValidArg({ text: null, contentType: "infer" }),
       brickOptionsFactory(),
     );
-    expect(writeTextMock).toHaveBeenCalledWith("null");
+    expect(writeMock).toHaveBeenCalledWith([
+      new ClipboardItemFake({
+        "text/plain": new Blob(["null"], { type: "text/plain" }),
+      }),
+    ]);
   });
 
   it("copies boolean clipboard", async () => {
@@ -68,7 +90,26 @@ describe("CopyToClipboard", () => {
       unsafeAssumeValidArg({ text: false, contentType: "infer" }),
       brickOptionsFactory(),
     );
-    expect(writeTextMock).toHaveBeenCalledWith("false");
+    expect(writeMock).toHaveBeenCalledWith([
+      new ClipboardItemFake({
+        "text/plain": new Blob(["false"], { type: "text/plain" }),
+      }),
+    ]);
+  });
+
+  it("copies html clipboard", async () => {
+    const text = "Hello, world!";
+    const html = "<b>Hello, world!</b>";
+    await brick.run(
+      unsafeAssumeValidArg({ text, html }),
+      brickOptionsFactory(),
+    );
+    expect(writeMock).toHaveBeenCalledWith([
+      new ClipboardItemFake({
+        "text/html": new Blob([html], { type: "text/html" }),
+        "text/plain": new Blob([text], { type: "text/plain" }),
+      }),
+    ]);
   });
 
   it("copies image to clipboard", async () => {
@@ -76,11 +117,11 @@ describe("CopyToClipboard", () => {
       unsafeAssumeValidArg({ text: SMALL_RED_DOT_URI, contentType: "infer" }),
       brickOptionsFactory(),
     );
-    expect(writeTextMock).not.toHaveBeenCalled();
     expect(writeMock).toHaveBeenCalled();
-    expect(ClipboardItem).toHaveBeenCalledWith({
-      "image/png": expect.any(Blob),
-    });
+    expect(writeMock).toHaveBeenCalledWith([
+      // XXX: matcher doesn't inspect inside of Blob for comparison
+      new ClipboardItemFake({ "image/png": new Blob([], { type: "img/png" }) }),
+    ]);
   });
 
   it("throws prop error on invalid image content", async () => {
