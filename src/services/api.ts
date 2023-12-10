@@ -284,7 +284,7 @@ export const appApi = createApi({
         const recipeConfig = dumpBrickYaml(recipe);
 
         return {
-          url: `api/bricks/${packageId}/`,
+          url: `/api/bricks/${packageId}/`,
           method: "put",
           data: {
             id: packageId,

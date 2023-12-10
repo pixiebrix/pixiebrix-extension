@@ -25,8 +25,7 @@ import { faFileAlt } from "@fortawesome/free-regular-svg-icons";
 import { IntegrationDependencyFieldDescription } from "@/components/fields/schemaFields/integrations/IntegrationDependencyField";
 import { isCustomizableObjectSchema } from "@/components/fields/schemaFields/widgets/widgetUtils";
 import { type Schema } from "@/types/schemaTypes";
-import { type ExpressionType } from "@/types/runtimeTypes";
-import { isTemplateExpression } from "@/utils/expressionUtils";
+import { isTemplateExpression, toExpression } from "@/utils/expressionUtils";
 
 type ToggleOptionInputs = {
   fieldSchema: Schema;
@@ -66,14 +65,7 @@ export function getToggleOptions({
         newValue = oldValue.__value__;
       }
 
-      return allowExpressions
-        ? {
-            // Cast as ExpressionType because without it there's a type error compiling in the app project. (Because
-            // TypeScript treats the return value as string and doesn't unify it with unknown)
-            __type__: "nunjucks" as ExpressionType,
-            __value__: newValue,
-          }
-        : newValue;
+      return allowExpressions ? toExpression("nunjucks", newValue) : newValue;
     },
   };
 
@@ -131,12 +123,7 @@ export function getToggleOptions({
             newValue = oldValue.__value__;
           }
 
-          return {
-            // Cast as ExpressionType because without it there's a type error compiling in the app project. (Because
-            // TypeScript treats the return value as string and doesn't unify it with unknown)
-            __type__: "var" as ExpressionType,
-            __value__: newValue,
-          };
+          return toExpression("var", newValue);
         },
       };
       pushOptions(varOption);

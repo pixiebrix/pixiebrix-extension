@@ -19,8 +19,8 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
-import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
+import validator from "@rjsf/validator-ajv6";
 import {
   CustomFormRenderer,
   normalizeIncomingFormData,
@@ -32,6 +32,7 @@ import userEvent from "@testing-library/user-event";
 import { dataStore } from "@/background/messenger/api";
 import { type Schema } from "@/types/schemaTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { templates } from "@/components/formBuilder/RjsfTemplates";
 
 const dataStoreGetMock = dataStore.get as jest.MockedFunction<
   typeof dataStore.get
@@ -180,7 +181,8 @@ describe("form data normalization", () => {
         formData={normalizedData}
         fields={fields}
         widgets={uiWidgets}
-        FieldTemplate={FieldTemplate}
+        validator={validator}
+        templates={templates}
       />,
     );
 

@@ -329,7 +329,6 @@ describe("removeElement", () => {
         [unavailableElement.uuid]: true,
       },
       availableDynamicIds: [availableElement.uuid],
-      unavailableDynamicCount: 1,
     };
 
     const newState = produce(state, (draft) => {

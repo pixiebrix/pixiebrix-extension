@@ -25,8 +25,8 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import IfElse from "@/bricks/transformers/controlFlow/IfElse";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { makePipelineExpression } from "@/runtime/expressionCreators";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 const ifElseBlock = new IfElse();
 
@@ -46,8 +46,8 @@ describe("IfElse", () => {
       id: ifElseBlock.id,
       config: {
         condition: true,
-        if: makePipelineExpression([{ id: teapotBrick.id, config: {} }]),
-        else: makePipelineExpression([{ id: throwBrick.id, config: {} }]),
+        if: toExpression("pipeline", [{ id: teapotBrick.id, config: {} }]),
+        else: toExpression("pipeline", [{ id: throwBrick.id, config: {} }]),
       },
     };
     const result = await reducePipeline(
@@ -63,14 +63,14 @@ describe("IfElse", () => {
       id: ifElseBlock.id,
       config: {
         condition: true,
-        if: makePipelineExpression([
+        if: toExpression("pipeline", [
           {
             id: teapotBrick.id,
             config: {},
             outputKey: validateOutputKey("branchResult"),
           },
         ]),
-        else: makePipelineExpression([
+        else: toExpression("pipeline", [
           {
             id: throwBrick.id,
             config: {},
@@ -93,8 +93,8 @@ describe("IfElse", () => {
       config: {
         condition: false,
         // Throw to make it more obvious if this branch was taken
-        if: makePipelineExpression([{ id: throwBrick.id, config: {} }]),
-        else: makePipelineExpression([{ id: teapotBrick.id, config: {} }]),
+        if: toExpression("pipeline", [{ id: throwBrick.id, config: {} }]),
+        else: toExpression("pipeline", [{ id: teapotBrick.id, config: {} }]),
       },
     };
     const result = await reducePipeline(
@@ -111,7 +111,7 @@ describe("IfElse", () => {
       config: {
         condition: false,
         // Throw to make it more obvious if this branch was taken
-        if: makePipelineExpression([{ id: throwBrick.id, config: {} }]),
+        if: toExpression("pipeline", [{ id: throwBrick.id, config: {} }]),
       },
     };
     const result = await reducePipeline(
@@ -127,7 +127,7 @@ describe("IfElse", () => {
       id: ifElseBlock.id,
       config: {
         condition: true,
-        if: makePipelineExpression([{ id: rootAwareBrick.id, config: {} }]),
+        if: toExpression("pipeline", [{ id: rootAwareBrick.id, config: {} }]),
       },
     };
     const result = await reducePipeline(

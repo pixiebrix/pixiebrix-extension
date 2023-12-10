@@ -42,7 +42,7 @@ export type HandlerOptions = {
 
 export type HandlerEntry = {
   handler: Handler;
-  options: HandlerOptions;
+  options?: HandlerOptions;
 };
 
 interface ErrorResponse {

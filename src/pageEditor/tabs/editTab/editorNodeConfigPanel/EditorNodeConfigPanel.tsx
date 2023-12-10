@@ -20,7 +20,7 @@ import styles from "./EditorNodeConfigPanel.module.scss";
 import React from "react";
 import { Col, Row } from "react-bootstrap";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import BlockConfiguration from "@/pageEditor/tabs/effect/BlockConfiguration";
+import BrickConfiguration from "@/pageEditor/tabs/effect/BrickConfiguration";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/bricks/registry";
 import { showOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
@@ -107,7 +107,7 @@ const EditorNodeConfigPanel: React.FC = () => {
         </Col>
       </Row>
 
-      <BlockConfiguration name={blockFieldName} blockId={blockId} />
+      <BrickConfiguration name={blockFieldName} brickId={blockId} />
     </>
   );
 };

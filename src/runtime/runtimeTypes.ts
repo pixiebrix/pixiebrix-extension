@@ -17,9 +17,11 @@
 
 import { type BrickConfig } from "@/bricks/types";
 import { type Brick } from "@/types/brickTypes";
-import { type BrickArgs, type OutputKey } from "@/types/runtimeTypes";
-
-const REFERENCE_CHAR = "@";
+import {
+  type BrickArgs,
+  type OutputKey,
+  VARIABLE_REFERENCE_PREFIX,
+} from "@/types/runtimeTypes";
 
 export type BrickType = "reader" | "effect" | "transform" | "renderer";
 
@@ -74,5 +76,5 @@ export function isOutputKey(value: unknown): value is OutputKey {
  * @param outputKey the output key
  */
 export function getOutputReference(outputKey: OutputKey): string {
-  return REFERENCE_CHAR + outputKey;
+  return VARIABLE_REFERENCE_PREFIX + outputKey;
 }

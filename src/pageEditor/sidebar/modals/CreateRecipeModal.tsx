@@ -84,6 +84,8 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -154,6 +156,7 @@ function useSaveCallbacks({
               notifySuccess: true,
               reactivateEveryTab: true,
             },
+            modId: newRecipe.metadata.id,
           });
           if (!keepLocalCopy) {
             await removeExtension({
@@ -161,6 +164,10 @@ function useSaveCallbacks({
               shouldShowConfirmation: false,
             });
           }
+
+          reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
+            modId: newRecipe.metadata.id,
+          });
         },
       ),
     [
@@ -246,6 +253,11 @@ function useSaveCallbacks({
           options,
         }),
       );
+
+      reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
+        copiedFrom: recipeId,
+        modId: savedRecipe.metadata.id,
+      });
     },
     [
       createRecipe,
@@ -292,7 +304,7 @@ function useInitialFormState({
 
     return {
       id: newId,
-      name: recipeMetadata.name,
+      name: `${recipeMetadata.name} (Copy)`,
       version: validateSemVerString("1.0.0"),
       description: recipeMetadata.description,
     };

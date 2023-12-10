@@ -26,7 +26,7 @@ import {
   PACKAGE_REGEX,
   validateRegistryId,
 } from "@/types/helpers";
-import { compact, isEmpty, isEqual, pick, sortBy } from "lodash";
+import { compact, isEqual, pick, sortBy } from "lodash";
 import { produce } from "immer";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -55,6 +55,10 @@ import {
 } from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
+import {
+  isModOptionsSchemaEmpty,
+  normalizeModOptionsDefinition,
+} from "@/utils/modUtils";
 
 /**
  * Generate a new registry id from an existing registry id by adding/replacing the scope.
@@ -216,7 +220,7 @@ export function replaceRecipeExtension(
     );
   }
 
-  return produce(sourceRecipe, (draft) => {
+  return produce(sourceRecipe, (draft: ModDefinition) => {
     draft.metadata = metadata;
 
     if (sourceRecipe.apiVersion !== element.apiVersion) {
@@ -239,11 +243,9 @@ export function replaceRecipeExtension(
       }
     }
 
-    if (isEmpty(element.optionsDefinition?.schema?.properties)) {
-      draft.options = undefined;
-    } else {
-      draft.options = element.optionsDefinition;
-    }
+    draft.options = isModOptionsSchemaEmpty(element.optionsDefinition)
+      ? undefined
+      : element.optionsDefinition;
 
     const index = findRecipeIndex(sourceRecipe, installedExtension);
 
@@ -354,7 +356,13 @@ type RecipeParts = {
   sourceRecipe?: ModDefinition;
   cleanRecipeExtensions: UnresolvedModComponent[];
   dirtyRecipeElements: ModComponentFormState[];
+  /**
+   * Dirty/new options to save. Undefined if there are no changes.
+   */
   options?: ModOptionsDefinition;
+  /**
+   * Dirty/new metadata to save. Undefined if there are no changes.
+   */
   metadata?: ModMetadataFormState;
 };
 
@@ -367,10 +375,7 @@ const emptyRecipe: UnsavedModDefinition = {
   },
   extensionPoints: [],
   definitions: {},
-  options: {
-    schema: {},
-    uiSchema: {},
-  },
+  options: normalizeModOptionsDefinition(null),
 };
 
 /**
@@ -382,8 +387,8 @@ const emptyRecipe: UnsavedModDefinition = {
  * @param sourceRecipe the original recipe, or undefined for new recipes
  * @param cleanRecipeExtensions the recipe's unchanged, installed extensions
  * @param dirtyRecipeElements the recipe's extension form states (i.e., submitted via Formik)
- * @param options the recipe's options form state
- * @param metadata the recipe's metadata form state
+ * @param options the recipe's options form state, or nullish if there are no dirty options
+ * @param metadata the recipe's metadata form state, or nullish if there are no dirty options
  */
 export function buildRecipe({
   sourceRecipe,
@@ -396,10 +401,12 @@ export function buildRecipe({
   // start with an empty recipe definition that will be filled in
   const recipe: UnsavedModDefinition = sourceRecipe ?? emptyRecipe;
 
-  return produce(recipe, (draft) => {
+  return produce(recipe, (draft: UnsavedModDefinition): void => {
     // Options dirty state is only populated if a change is made
     if (options) {
-      draft.options = isEmpty(options.schema?.properties) ? undefined : options;
+      draft.options = isModOptionsSchemaEmpty(options)
+        ? undefined
+        : normalizeModOptionsDefinition(options);
     }
 
     // Metadata dirty state is only populated if a change is made

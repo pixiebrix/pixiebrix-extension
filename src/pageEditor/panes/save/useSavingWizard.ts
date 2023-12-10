@@ -220,6 +220,7 @@ const useSavingWizard = () => {
         notifySuccess: true,
         reactivateEveryTab: true,
       },
+      modId: newRecipe.metadata.id,
     });
 
     if (createExtensionError) {
@@ -285,6 +286,7 @@ const useSavingWizard = () => {
         notifySuccess: true,
         reactivateEveryTab: true,
       },
+      modId: newRecipe.metadata.id,
     });
 
     if (error) {

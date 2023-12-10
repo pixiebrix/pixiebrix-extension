@@ -24,6 +24,7 @@ import {
 } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { isObject } from "./objectUtils";
+import { type BrickPipeline } from "@/bricks/types";
 
 const templateTypes: TemplateEngine[] = [
   "mustache",
@@ -63,7 +64,7 @@ export function isTemplateExpression(
 export function isVarExpression(
   value: unknown,
 ): value is Expression<string, "var"> {
-  return isExpression(value) && (value as Expression).__type__ === "var";
+  return isExpression(value) && value.__type__ === "var";
 }
 
 /**
@@ -73,7 +74,7 @@ export function isVarExpression(
 export function isNunjucksExpression(
   value: unknown,
 ): value is Expression<string, "nunjucks"> {
-  return isExpression(value) && (value as Expression).__type__ === "nunjucks";
+  return isExpression(value) && value.__type__ === "nunjucks";
 }
 
 export function isPipelineExpression(
@@ -108,7 +109,7 @@ export function isExpression(value: unknown): value is Expression<unknown> {
 
 /**
  * Returns true if `literalOrTemplate` includes any template expressions that would be replaced by `context`.
- * @param literalOrTemplate the string literal or Nunjucks/Handlebars template.
+ * @param literalOrTemplate the string literal or Nunjucks, Handlebars, or Mustache template.
  */
 export function containsTemplateExpression(literalOrTemplate: string): boolean {
   return literalOrTemplate.includes("{{") || literalOrTemplate.includes("{%");
@@ -159,3 +160,38 @@ export function castTextLiteralOrThrow(
 
   return literalOrTemplate.__value__;
 }
+
+/**
+ * Create an expression from an expression type and value.
+ * @param type the expression type
+ * @param value the expression value
+ */
+export function toExpression<
+  TValue extends string | null,
+  TEngine extends TemplateEngine,
+>(type: TEngine, value: TValue): Expression<TValue, TEngine>;
+export function toExpression(
+  type: "pipeline",
+  value: BrickPipeline,
+): PipelineExpression;
+export function toExpression<TValue extends UnknownObject>(
+  type: "defer",
+  value: TValue,
+): DeferExpression;
+export function toExpression<
+  TTemplateOrPipeline,
+  TTypeTag extends ExpressionType,
+>(
+  type: TTypeTag,
+  value: TTemplateOrPipeline,
+): Expression<TTemplateOrPipeline, TTypeTag> {
+  // eslint-disable-next-line local-rules/noExpressionLiterals -- factory method
+  return {
+    __type__: type,
+    __value__: value,
+  };
+}
+
+export const EMPTY_PIPELINE: PipelineExpression = Object.freeze(
+  toExpression("pipeline", [] as BrickPipeline),
+);

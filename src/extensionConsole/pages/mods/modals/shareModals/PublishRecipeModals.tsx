@@ -26,7 +26,7 @@ import Loader from "@/components/Loader";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import EditPublishContent from "./EditPublishContent";
 import CancelPublishContent from "./CancelPublishContent";
-import { isRecipePendingPublish } from "@/utils/modUtils";
+import { isModPendingPublish } from "@/utils/modUtils";
 import PublishedContent from "./PublishedContent";
 
 const ModalContentSwitch: React.FunctionComponent = () => {
@@ -49,7 +49,7 @@ const ModalContentSwitch: React.FunctionComponent = () => {
     return <PublishRecipeContent />;
   }
 
-  if (isRecipePendingPublish(recipe, listings)) {
+  if (isModPendingPublish(recipe, listings)) {
     return cancelingPublish ? <CancelPublishContent /> : <EditPublishContent />;
   }
 

@@ -20,6 +20,7 @@ import { RemoteMethod } from "@/bricks/transformers/remoteMethod";
 import { AnalysisAnnotationActionType } from "@/analysis/analysisTypes";
 import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import { toExpression } from "@/utils/expressionUtils";
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 const containsMock = browser.permissions.contains as jest.MockedFunction<
@@ -32,10 +33,7 @@ function blockExtensionFactory(url: string) {
     brickConfigFactory({
       id: RemoteMethod.BLOCK_ID,
       config: {
-        url: {
-          __type__: "nunjucks",
-          __value__: url,
-        },
+        url: toExpression("nunjucks", url),
       },
     }),
   ];

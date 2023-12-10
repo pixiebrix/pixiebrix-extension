@@ -19,10 +19,7 @@ import type React from "react";
 import { useField, useFormikContext } from "formik";
 import { produce } from "immer";
 import { isEqual, set } from "lodash";
-import {
-  keyToFieldValue,
-  type IntegrationsFormSlice,
-} from "./integrations/integrationDependencyFieldUtils";
+import { type IntegrationsFormSlice } from "./integrations/integrationDependencyFieldUtils";
 import {
   type Expression,
   type OutputKey,
@@ -30,6 +27,8 @@ import {
 } from "@/types/runtimeTypes";
 import useAsyncEffect from "use-async-effect";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+
+import { getVariableExpression } from "@/utils/variableUtils";
 
 const PIXIEBRIX_OUTPUT_KEY = "pixiebrix" as OutputKey;
 
@@ -56,7 +55,7 @@ const AppApiIntegrationDependencyField: React.FunctionComponent<{
   const isBadValue =
     dependencyOutputKey &&
     !root.integrationDependencies.some(({ outputKey }) =>
-      isEqual(keyToFieldValue(outputKey), dependencyOutputKey),
+      isEqual(getVariableExpression(outputKey), dependencyOutputKey),
     );
 
   useAsyncEffect(
@@ -73,7 +72,7 @@ const AppApiIntegrationDependencyField: React.FunctionComponent<{
             match.outputKey,
             { root, match },
           );
-          await setDependencyOutputKey(keyToFieldValue(match.outputKey));
+          await setDependencyOutputKey(getVariableExpression(match.outputKey));
         } else {
           console.debug("Adding PixieBrix API dependency");
           await setRootValues(
@@ -88,7 +87,7 @@ const AppApiIntegrationDependencyField: React.FunctionComponent<{
                 // configId: undefined,
               });
 
-              set(draft, name, keyToFieldValue(PIXIEBRIX_OUTPUT_KEY));
+              set(draft, name, getVariableExpression(PIXIEBRIX_OUTPUT_KEY));
             }),
           );
         }

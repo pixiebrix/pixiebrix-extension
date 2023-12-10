@@ -19,7 +19,8 @@ import React from "react";
 import { render } from "@/pageEditor/testHelpers";
 import PipelineToggleField from "@/pageEditor/fields/PipelineToggleField";
 import userEvent from "@testing-library/user-event";
-import { makePipelineExpression } from "@/runtime/expressionCreators";
+
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("PipelineToggleField", () => {
   it("toggles formik state", async () => {
@@ -39,7 +40,7 @@ describe("PipelineToggleField", () => {
     // eslint-disable-next-line testing-library/no-node-access -- screen doesn't have class selector
     await userEvent.click(document.querySelector(".btn"));
 
-    expect(getFormState().test).toStrictEqual(makePipelineExpression([]));
+    expect(getFormState().test).toStrictEqual(toExpression("pipeline", []));
 
     // eslint-disable-next-line testing-library/no-node-access -- screen doesn't have class selector
     await userEvent.click(document.querySelector(".btn"));
@@ -56,7 +57,7 @@ describe("PipelineToggleField", () => {
       />,
       {
         initialValues: {
-          test: makePipelineExpression([]),
+          test: toExpression("pipeline", []),
         },
       },
     );
@@ -69,6 +70,6 @@ describe("PipelineToggleField", () => {
     // eslint-disable-next-line testing-library/no-node-access -- screen doesn't have class selector
     await userEvent.click(document.querySelector(".btn"));
 
-    expect(getFormState().test).toStrictEqual(makePipelineExpression([]));
+    expect(getFormState().test).toStrictEqual(toExpression("pipeline", []));
   });
 });

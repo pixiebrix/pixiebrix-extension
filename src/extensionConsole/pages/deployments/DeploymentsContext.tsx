@@ -28,7 +28,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
 import { getUID, services } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
-import { type Dispatch } from "redux";
+import { type Dispatch } from "@reduxjs/toolkit";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import extensionsSlice from "@/store/extensionsSlice";

@@ -32,14 +32,14 @@ import {
   teapotBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { type OutputKey } from "@/types/runtimeTypes";
-import { defaultBlockConfig } from "@/bricks/util";
+import { defaultBrickConfig } from "@/bricks/util";
 import { validateRegistryId } from "@/types/helpers";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
+import { toExpression } from "@/utils/expressionUtils";
 
 function getTabState(
   state: EditorState,
@@ -55,14 +55,14 @@ const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 const standardBrick = brickConfigFactory({
   id: teapotBrick.id,
   outputKey: "teapotOutput" as OutputKey,
-  config: defaultBlockConfig(teapotBrick.inputSchema),
+  config: defaultBrickConfig(teapotBrick.inputSchema),
 });
 
 const brickWithService = brickConfigFactory({
   id: echoBrick.id,
   outputKey: "echoOutput" as OutputKey,
   config: {
-    spreadsheetId: makeVariableExpression("@google"),
+    spreadsheetId: toExpression("var", "@google"),
     tabName: null,
     rowValues: {},
   },
@@ -232,7 +232,7 @@ describe("Add/Remove Bricks", () => {
     expect(action2.payload).toEqual(
       expect.objectContaining({
         uuid: expect.not.stringMatching(source.uuid),
-        label: "Test Extension - copy",
+        label: "Test Extension (Copy)",
       }),
     );
     expect(action2.payload).not.toHaveProperty("recipe");

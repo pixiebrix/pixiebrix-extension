@@ -19,11 +19,14 @@ import { renderExplicit, renderImplicit } from "@/runtime/mapArgs";
 import Mustache from "mustache";
 import { engineRenderer } from "@/runtime/renderers";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { toExpression } from "@/utils/expressionUtils";
+import { type TemplateEngine } from "@/types/runtimeTypes";
+import { validateRegistryId } from "@/types/helpers";
 
 describe("renderExplicit", () => {
   test("render var path", async () => {
     const rendered = await renderExplicit(
-      { foo: { __type__: "var", __value__: "array.0" } },
+      { foo: toExpression("var", "array.0") },
       { array: ["bar"] },
       apiVersionOptions("v3"),
     );
@@ -35,7 +38,7 @@ describe("renderExplicit", () => {
 
   test("render mustache", async () => {
     const rendered = await renderExplicit(
-      { foo: { __type__: "mustache", __value__: "{{ array.0 }}!" } },
+      { foo: toExpression("mustache", "{{ array.0 }}!") },
       { array: ["bar"] },
       apiVersionOptions("v3"),
     );
@@ -53,9 +56,9 @@ describe("renderExplicit", () => {
     ["var", {}],
   ])(
     "doesn't fail on empty %s template",
-    async (templateType, expectedValue) => {
+    async (templateType: TemplateEngine, expectedValue) => {
       const rendered = await renderExplicit(
-        { foo: { __type__: templateType, __value__: undefined } },
+        { foo: toExpression(templateType, undefined) },
         {},
         apiVersionOptions("v3"),
       );
@@ -81,7 +84,7 @@ describe("exclude null", () => {
 
   test("convert null nunjucks template to string", async () => {
     const rendered = await renderExplicit(
-      { foo: { __type__: "nunjucks", __value__: undefined } },
+      { foo: toExpression("nunjucks", undefined) },
       {},
       apiVersionOptions("v3"),
     );
@@ -91,7 +94,7 @@ describe("exclude null", () => {
 
   test("remove null var value", async () => {
     const rendered = await renderExplicit(
-      { foo: { __type__: "var", __value__: undefined } },
+      { foo: toExpression("var", undefined) },
       {},
       apiVersionOptions("v3"),
     );
@@ -185,10 +188,7 @@ describe("identity - deep clone", () => {
 
   test("deep clone complex var", async () => {
     const rendered = await renderExplicit(
-      {
-        __type__: "var",
-        __value__: "@payload",
-      },
+      toExpression("var", "@payload"),
       { "@payload": config },
       apiVersionOptions("v3"),
     );
@@ -200,18 +200,12 @@ describe("identity - deep clone", () => {
 describe("defer", () => {
   test("render !defer stops at defer", async () => {
     const config = {
-      foo: {
-        __type__: "var",
-        __value__: "foo",
-      },
+      foo: toExpression("var", "foo"),
     };
 
     const rendered = await renderExplicit(
       {
-        foo: {
-          __type__: "defer",
-          __value__: config,
-        },
+        foo: toExpression("defer", config),
         bar: config,
       },
       { foo: 42 },
@@ -219,10 +213,7 @@ describe("defer", () => {
     );
 
     expect(rendered).toEqual({
-      foo: {
-        __type__: "defer",
-        __value__: config,
-      },
+      foo: toExpression("defer", config),
       bar: { foo: 42 },
     });
   });
@@ -230,10 +221,9 @@ describe("defer", () => {
 
 describe("pipeline", () => {
   test("render !pipeline", async () => {
-    const expression = {
-      __type__: "pipeline",
-      __value__: [{ id: "@pixiebrix/confetti" }],
-    };
+    const expression = toExpression("pipeline", [
+      { id: validateRegistryId("@pixiebrix/confetti"), config: {} },
+    ]);
 
     const rendered = await renderExplicit(
       {
@@ -250,23 +240,17 @@ describe("pipeline", () => {
 
   test("render !pipeline stops at pipeline", async () => {
     const config = {
-      foo: {
-        __type__: "var",
-        __value__: "foo",
-      },
+      foo: toExpression("var", "foo"),
     };
 
     const rendered = await renderExplicit(
       {
-        foo: {
-          __type__: "pipeline",
-          __value__: [
-            {
-              id: "@pixiebrix/confetti",
-              config,
-            },
-          ],
-        },
+        foo: toExpression("pipeline", [
+          {
+            id: validateRegistryId("@pixiebrix/confetti"),
+            config,
+          },
+        ]),
         bar: config,
       },
       { foo: 42 },
@@ -274,10 +258,9 @@ describe("pipeline", () => {
     );
 
     expect(rendered).toEqual({
-      foo: {
-        __type__: "pipeline",
-        __value__: [{ id: "@pixiebrix/confetti", config }],
-      },
+      foo: toExpression("pipeline", [
+        { id: validateRegistryId("@pixiebrix/confetti"), config },
+      ]),
       bar: { foo: 42 },
     });
   });
@@ -286,9 +269,9 @@ describe("pipeline", () => {
 describe("autoescape", () => {
   test.each([["mustache"], ["nunjucks"], ["handlebars"]])(
     "should autoescape for %s",
-    async (templateEngine) => {
+    async (templateEngine: TemplateEngine) => {
       const rendered = await renderExplicit(
-        { foo: { __type__: templateEngine, __value__: "{{ special }}" } },
+        { foo: toExpression(templateEngine, "{{ special }}") },
         { special: "a & b" },
         { autoescape: true },
       );
@@ -299,9 +282,9 @@ describe("autoescape", () => {
 
   test.each([["mustache"], ["nunjucks"], ["handlebars"]])(
     "should not autoescape for %s",
-    async (templateEngine) => {
+    async (templateEngine: TemplateEngine) => {
       const rendered = await renderExplicit(
-        { foo: { __type__: templateEngine, __value__: "{{ special }}" } },
+        { foo: toExpression(templateEngine, "{{ special }}") },
         { special: "a & b" },
         { autoescape: false },
       );

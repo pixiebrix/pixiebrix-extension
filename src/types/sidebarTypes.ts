@@ -51,9 +51,9 @@ export type EntryType =
 export type PanelPayload =
   | RendererRunPayload
   | RendererLoadingPayload
-  | RendererErrorPayload
-  | null;
+  | RendererErrorPayload;
 
+// Currently unused, but keeping for completeness for discriminating PanelPayload sub-types.
 export function isRendererRunPayload(
   payload: PanelPayload,
 ): payload is RendererRunPayload {
@@ -150,8 +150,10 @@ export type BaseModComponentPanelEntry = BasePanelEntry & {
   heading: string;
   /**
    * The information required to run the renderer of a pipeline, or error information if the pipeline run errored.
+   *
+   * Null is the panel is being reserved, but a payload is not yet available.
    */
-  payload: PanelPayload;
+  payload: PanelPayload | null;
   /**
    * Actions to show for the panel
    * @since 1.7.19

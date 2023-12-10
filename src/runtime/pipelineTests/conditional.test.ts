@@ -26,6 +26,7 @@ import {
   simpleInput,
   testOptions,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
+import { toExpression } from "@/utils/expressionUtils";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -134,10 +135,7 @@ describe("false mustache conditional", () => {
     const pipeline = [
       {
         id: echoBrick.id,
-        if: {
-          __type__: "mustache",
-          __value__: "{{# @input.run }}true{{/ @input.run }}",
-        },
+        if: toExpression("mustache", "{{# @input.run }}true{{/ @input.run }}"),
         config: {
           message: "Ran block",
         },

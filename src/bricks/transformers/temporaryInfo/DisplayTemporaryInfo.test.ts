@@ -26,9 +26,8 @@ import {
   testOptions,
   throwBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { makePipelineExpression } from "@/runtime/expressionCreators";
 import { DocumentRenderer } from "@/bricks/renderers/document";
-import { getExampleBlockConfig } from "@/pageEditor/exampleBlockConfigs";
+import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { type BusinessError } from "@/errors/businessErrors";
 import {
@@ -56,6 +55,7 @@ import { type RendererErrorPayload } from "@/types/rendererTypes";
 import { setPageState } from "@/contentScript/pageState";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { unary } from "lodash";
+import { toExpression } from "@/utils/expressionUtils";
 
 (browser.runtime as any).getURL = jest.fn(
   (path) => `chrome-extension://abc/${path}`,
@@ -122,12 +122,12 @@ describe("DisplayTemporaryInfo", () => {
     const extensionId = uuidv4();
     const blueprintId = registryIdFactory();
 
-    const config = getExampleBlockConfig(renderer.id);
+    const config = getExampleBrickConfig(renderer.id);
     const pipeline = {
       id: displayTemporaryInfoBlock.id,
       config: {
         title: "Test Temp Panel",
-        body: makePipelineExpression([{ id: renderer.id, config }]),
+        body: toExpression("pipeline", [{ id: renderer.id, config }]),
       },
     };
 
@@ -168,9 +168,9 @@ describe("DisplayTemporaryInfo", () => {
       id: displayTemporaryInfoBlock.id,
       config: {
         title: "Test Temp Panel",
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           { id: throwBrick.id, config: { message } },
-          { id: renderer.id, config: getExampleBlockConfig(renderer.id) },
+          { id: renderer.id, config: getExampleBrickConfig(renderer.id) },
         ]),
       },
     };
@@ -196,12 +196,12 @@ describe("DisplayTemporaryInfo", () => {
   });
 
   test("it registers panel for modal", async () => {
-    const config = getExampleBlockConfig(renderer.id);
+    const config = getExampleBrickConfig(renderer.id);
     const pipeline = {
       id: displayTemporaryInfoBlock.id,
       config: {
         title: "Test Temp Panel",
-        body: makePipelineExpression([{ id: renderer.id, config }]),
+        body: toExpression("pipeline", [{ id: renderer.id, config }]),
         location: "modal",
       },
     };
@@ -234,12 +234,12 @@ describe("DisplayTemporaryInfo", () => {
   });
 
   test("requires target for popover", async () => {
-    const config = getExampleBlockConfig(renderer.id);
+    const config = getExampleBrickConfig(renderer.id);
     const pipeline = {
       id: displayTemporaryInfoBlock.id,
       config: {
         title: "Test Temp Panel",
-        body: makePipelineExpression([{ id: renderer.id, config }]),
+        body: toExpression("pipeline", [{ id: renderer.id, config }]),
         location: "popover",
         isRootAware: true,
       },
@@ -262,13 +262,13 @@ describe("DisplayTemporaryInfo", () => {
   test("it registers a popover panel", async () => {
     document.body.innerHTML = '<div><div id="target"></div></div>';
 
-    const config = getExampleBlockConfig(renderer.id);
+    const config = getExampleBrickConfig(renderer.id);
     const pipeline = {
       id: displayTemporaryInfoBlock.id,
       config: {
         title: "Test Temp Panel",
         isRootAware: true,
-        body: makePipelineExpression([{ id: renderer.id, config }]),
+        body: toExpression("pipeline", [{ id: renderer.id, config }]),
         location: "popover",
       },
     };
@@ -302,12 +302,12 @@ describe("DisplayTemporaryInfo", () => {
       async () => deferredPromise.promise,
     );
 
-    const config = getExampleBlockConfig(renderer.id);
+    const config = getExampleBrickConfig(renderer.id);
     const pipeline = {
       id: displayTemporaryInfoBlock.id,
       config: {
         title: "Test Temp Panel",
-        body: makePipelineExpression([{ id: renderer.id, config }]),
+        body: toExpression("pipeline", [{ id: renderer.id, config }]),
         location: "panel",
         refreshTrigger: "statechange",
       },
@@ -345,13 +345,13 @@ describe("DisplayTemporaryInfo", () => {
       async () => deferredPromise.promise,
     );
 
-    const config = getExampleBlockConfig(renderer.id);
+    const config = getExampleBrickConfig(renderer.id);
 
     const pipeline = {
       id: displayTemporaryInfoBlock.id,
       config: {
         title: "Test Temp Panel",
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           { id: ContextBrick.BLOCK_ID, config: {} },
           { id: renderer.id, config },
         ]),

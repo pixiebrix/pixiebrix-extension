@@ -25,7 +25,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Button, Form as BootstrapForm } from "react-bootstrap";
-import { type UiSchema } from "@rjsf/core";
+import { type UiSchema } from "@rjsf/utils";
 import { settingsStore } from "@/testUtils/storyUtils";
 import { Provider } from "react-redux";
 

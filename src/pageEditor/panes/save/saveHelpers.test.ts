@@ -37,10 +37,6 @@ import { cloneDeep, range, uniq } from "lodash";
 import { type MenuDefinition } from "@/starterBricks/menuItemExtension";
 import extensionsSlice from "@/store/extensionsSlice";
 import {
-  getMinimalSchema,
-  getMinimalUiSchema,
-} from "@/components/formBuilder/formBuilderHelpers";
-import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
@@ -69,6 +65,8 @@ import {
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
+import { minimalUiSchemaFactory } from "@/utils/schemaUtils";
+import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 
 jest.mock("@/background/contextMenus");
 
@@ -459,10 +457,7 @@ describe("blueprint options", () => {
   }
 
   test("doesn't add empty schema when blueprint options is empty", async () => {
-    const emptyOptions = {
-      schema: getMinimalSchema(),
-      uiSchema: getMinimalUiSchema(),
-    };
+    const emptyOptions = emptyModOptionsDefinitionFactory();
 
     const updatedRecipe = await runReplaceRecipeExtensions(
       undefined,
@@ -483,7 +478,7 @@ describe("blueprint options", () => {
           },
         },
       },
-      uiSchema: getMinimalUiSchema(),
+      uiSchema: minimalUiSchemaFactory(),
     };
 
     const updatedRecipe = await runReplaceRecipeExtensions(
@@ -505,7 +500,7 @@ describe("blueprint options", () => {
           },
         },
       },
-      uiSchema: getMinimalUiSchema(),
+      uiSchema: minimalUiSchemaFactory(),
     };
 
     const elementOptions: ModOptionsDefinition = {
@@ -517,7 +512,7 @@ describe("blueprint options", () => {
           },
         },
       },
-      uiSchema: getMinimalUiSchema(),
+      uiSchema: minimalUiSchemaFactory(),
     };
 
     const updatedRecipe = await runReplaceRecipeExtensions(
@@ -539,13 +534,11 @@ describe("blueprint options", () => {
           },
         },
       },
-      uiSchema: getMinimalUiSchema(),
+      uiSchema: minimalUiSchemaFactory(),
     };
 
-    const elementOptions: ModOptionsDefinition = {
-      schema: getMinimalSchema(),
-      uiSchema: getMinimalUiSchema(),
-    };
+    const elementOptions: ModOptionsDefinition =
+      emptyModOptionsDefinitionFactory();
 
     const updatedRecipe = await runReplaceRecipeExtensions(
       blueprintOptions,

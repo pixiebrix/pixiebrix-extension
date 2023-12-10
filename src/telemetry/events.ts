@@ -87,15 +87,17 @@ export const Events = {
 
   ORGANIZATION_EXTENSION_LINK: "OrganizationExtensionLink",
 
-  PAGE_EDITOR_CREATE: "PageEditorCreate",
+  PAGE_EDITOR_MOD_COMPONENT_UPDATE: "PageEditorCreate",
   PAGE_EDITOR_OPEN: "PageEditorOpen",
   PAGE_EDITOR_MANUAL_RUN: "PageEditorManualRun",
   PAGE_EDITOR_MOD_COMPONENT_ERROR: "PageEditorExtensionError",
   PAGE_EDITOR_REMOVE: "PageEditorRemove",
   PAGE_EDITOR_RESET: "PageEditorReset",
-  PAGE_EDITOR_SAVE: "PageEditorSave",
+  PAGE_EDITOR_STANDALONE_MOD_COMPONENT_UPDATE: "PageEditorSave",
   PAGE_EDITOR_START: "PageEditorStart",
   PAGE_EDITOR_VIEW_TEMPLATES: "PageEditorViewTemplates",
+  PAGE_EDITOR_MOD_CREATE: "PageEditorModCreate",
+  PAGE_EDITOR_MOD_UPDATE: "PageEditorModUpdate",
 
   PAGE_EDITOR_SESSION_START: "PageEditorSessionStart",
   PAGE_EDITOR_SESSION_END: "PageEditorSessionEnd",

@@ -29,10 +29,10 @@ import {
   type ApiVersion,
   type BrickArgs,
   type BrickOptions,
-  type Expression,
   type SelectorRoot,
 } from "@/types/runtimeTypes";
 import { BrickABC } from "@/types/brickTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 class RootAwareBlock extends BrickABC {
   constructor() {
@@ -235,10 +235,7 @@ describe.each([["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
           id: rootBlock.id,
           config: {},
           rootMode: "element",
-          root: {
-            __type__: "var",
-            __value__: "@options.element",
-          } as Expression,
+          root: toExpression("var", "@options.element"),
         },
         { ...simpleInput({}), optionsArgs: { element: ref }, root: document },
         testOptions(apiVersion),

@@ -102,7 +102,7 @@ const UnaffiliatedColumn: React.VoidFunctionComponent = () => (
     <div className="align-self-center">
       <a
         className="btn btn-primary"
-        href="https://docs.pixiebrix.com/quick-start-guide"
+        href="https://docs.pixiebrix.com/quick-start"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -121,7 +121,7 @@ const CreateBrickColumn: React.VoidFunctionComponent = () => (
     </p>
     <a
       className="btn btn-info btn-sm"
-      href="https://docs.pixiebrix.com/quick-start-guide"
+      href="https://docs.pixiebrix.com/quick-start"
       target="_blank"
       rel="noopener noreferrer"
     >

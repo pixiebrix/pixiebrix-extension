@@ -17,7 +17,7 @@
 
 import { type SessionRootState } from "@/pageEditor/slices/sessionSliceTypes";
 import { type SessionChangesRootState } from "@/store/sessionChanges/sessionChangesTypes";
-import { createSelector } from "reselect";
+import { createSelector } from "@reduxjs/toolkit";
 
 /**
  * Detect when the current editor instance becomes stale due to changes in another browser tab/editor instance

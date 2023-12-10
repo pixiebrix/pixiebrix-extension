@@ -122,7 +122,7 @@ exports[`Storyshots Blueprints/OnboardingView Default 1`] = `
           >
             <a
               className="btn btn-primary"
-              href="https://docs.pixiebrix.com/quick-start-guide"
+              href="https://docs.pixiebrix.com/quick-start"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -3679,7 +3679,7 @@ exports[`Storyshots Fields/ChildObjectField Primitive Value 1`] = `
               className="label form-label col-form-label col-xl-2 col-lg-3"
               htmlFor="childObject.InputValue"
             >
-              InputValue
+              Input Value
             </label>
             <div
               className="col-xl-10 col-lg-9"
@@ -5821,7 +5821,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
             <span
               dangerouslySetInnerHTML={
                 {
-                  "__html": "Form description or instructions. Supports markdown.",
+                  "__html": "Form description or instructions. Supports <a href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown">Markdown</a>",
                 }
               }
             />
@@ -6095,7 +6095,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
               <span
                 dangerouslySetInnerHTML={
                   {
-                    "__html": "The user-visible description for the field",
+                    "__html": "The user-visible description for the field. Supports <a href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown">Markdown</a>",
                   }
                 }
               />
@@ -6452,6 +6452,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         >
           <div
             className="my-1"
+            id="root__title"
           >
             <h5>
               A form
@@ -6466,8 +6467,8 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
             />
           </div>
           <div
-            className="field-description"
-            id="root-description"
+            className="mb-3"
+            id="root__description"
           >
             <div
               dangerouslySetInnerHTML={
@@ -6496,34 +6497,33 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 <div
                   className="form-group"
                 >
+                  <label
+                    className="form-label"
+                    htmlFor="root_firstName"
+                  >
+                    First name
+                  </label>
                   <div
                     className="root root isActive"
                     onClick={[Function]}
                     role="group"
                   >
-                    <div
-                      className="mb-0 form-group"
-                    >
-                      <label
-                        className="form-label"
-                      >
-                        First name
-                      </label>
-                      <input
-                        autoFocus={false}
-                        className="form-control"
-                        disabled={false}
-                        id="root_firstName"
-                        onBlur={[Function]}
-                        onChange={[Function]}
-                        onFocus={[Function]}
-                        placeholder=""
-                        readOnly={false}
-                        required={false}
-                        type="text"
-                        value="Chuck"
-                      />
-                    </div>
+                    <input
+                      aria-describedby="root_firstName__error root_firstName__description root_firstName__help"
+                      autoFocus={false}
+                      className="form-control"
+                      disabled={false}
+                      id="root_firstName"
+                      name="root_firstName"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      placeholder=""
+                      readOnly={false}
+                      required={false}
+                      type="text"
+                      value="Chuck"
+                    />
                   </div>
                   <div
                     className="field-description text-muted"
@@ -6556,34 +6556,34 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 <div
                   className="form-group"
                 >
+                  <label
+                    className="form-label"
+                    htmlFor="root_age"
+                  >
+                    Age
+                  </label>
                   <div
                     className="root root"
                     onClick={[Function]}
                     role="group"
                   >
-                    <div
-                      className="mb-0 form-group"
-                    >
-                      <label
-                        className="form-label"
-                      >
-                        Age
-                      </label>
-                      <input
-                        autoFocus={false}
-                        className="form-control"
-                        disabled={false}
-                        id="root_age"
-                        onBlur={[Function]}
-                        onChange={[Function]}
-                        onFocus={[Function]}
-                        placeholder=""
-                        readOnly={false}
-                        required={false}
-                        type="integer"
-                        value=""
-                      />
-                    </div>
+                    <input
+                      aria-describedby="root_age__error root_age__description root_age__help"
+                      autoFocus={false}
+                      className="form-control"
+                      disabled={false}
+                      id="root_age"
+                      name="root_age"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      placeholder=""
+                      readOnly={false}
+                      required={false}
+                      step={1}
+                      type="number"
+                      value=""
+                    />
                   </div>
                   <div
                     className="field-description text-muted"
@@ -6616,35 +6616,35 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                 <div
                   className="form-group"
                 >
+                  <label
+                    className="form-label"
+                    htmlFor="root_telephone"
+                  >
+                    Telephone
+                  </label>
                   <div
                     className="root root"
                     onClick={[Function]}
                     role="group"
                   >
-                    <div
-                      className="mb-0 form-group"
-                    >
-                      <label
-                        className="form-label"
-                      >
-                        Telephone
-                      </label>
-                      <input
-                        autoFocus={false}
-                        className="form-control"
-                        disabled={false}
-                        id="root_telephone"
-                        onBlur={[Function]}
-                        onChange={[Function]}
-                        onFocus={[Function]}
-                        placeholder=""
-                        readOnly={false}
-                        required={false}
-                        type="text"
-                        value=""
-                      />
-                    </div>
+                    <input
+                      aria-describedby="root_telephone__error root_telephone__description root_telephone__help"
+                      autoFocus={false}
+                      className="form-control"
+                      disabled={false}
+                      id="root_telephone"
+                      name="root_telephone"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      placeholder=""
+                      readOnly={false}
+                      required={false}
+                      type="text"
+                      value=""
+                    />
                   </div>
+                  
                 </div>
               </div>
             </div>
@@ -6814,7 +6814,7 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
             <span
               dangerouslySetInnerHTML={
                 {
-                  "__html": "Form description or instructions. Supports markdown.",
+                  "__html": "Form description or instructions. Supports <a href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown">Markdown</a>",
                 }
               }
             />
@@ -7803,7 +7803,7 @@ exports[`Storyshots ModsPage/GetStartedView Activate Blueprint 1`] = `
          
         <span>
           <a
-            href="https://docs.pixiebrix.com/quick-start-guide"
+            href="https://docs.pixiebrix.com/quick-start"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -7957,7 +7957,7 @@ exports[`Storyshots ModsPage/GetStartedView Default 1`] = `
          
         <span>
           <a
-            href="https://docs.pixiebrix.com/quick-start-guide"
+            href="https://docs.pixiebrix.com/quick-start"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -8671,6 +8671,123 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard Token (Unlinked Extension)
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots PageEditor/HomePane Default 1`] = `
+<div
+  className="h-100 overflow-auto container-fluid"
+>
+  <div
+    className="pane row"
+  >
+    <img
+      alt="background illustration"
+      className="bgImage"
+      src="test-file-stub"
+    />
+    <div
+      className="col-lg-auto col-12"
+    >
+      <img
+        alt="Page Editor logo"
+        src="test-file-stub"
+      />
+    </div>
+    <div
+      className="col-xl-auto col-lg-7 col-12"
+    >
+      <h1
+        className="title"
+      >
+        Welcome to the Page Editor!
+      </h1>
+      <div
+        className="lead"
+      >
+        <div>
+          You might recognize it from the video on the home page.
+        </div>
+        <div>
+          Here, you can create mods that improve the UX of any web apps and sites you visit.
+        </div>
+      </div>
+      <div>
+        <div
+          className="text"
+        >
+          Not sure where to get started? Our Template Gallery has customizable templates with guides for the most popular use cases.
+        </div>
+        <div>
+          <button
+            className="button btn btn-primary"
+            disabled={false}
+            onClick={[Function]}
+            type="button"
+          >
+            Launch Template Gallery
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      className="col-lg-auto col-12"
+    >
+      <div
+        className="links"
+      >
+        <ul>
+          <span
+            className="linkSectionHeader"
+          >
+            Support
+          </span>
+          <li>
+            <a
+              href="https://docs.pixiebrix.com/"
+            >
+              Documentation
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://pixiebrix.thinkific.com/collections"
+            >
+              PixieBrix Certification
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://slack.pixiebrix.com/"
+            >
+              Join the Community Slack
+            </a>
+          </li>
+        </ul>
+        <ul>
+          <span
+            className="linkSectionHeader"
+          >
+            Helpful Links
+          </span>
+          <li>
+            <button
+              onClick={[Function]}
+            >
+              Extension Console
+            </button>
+          </li>
+          <li>
+            <a
+              href="https://app.pixiebrix.com/"
+            >
+              Admin Console
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
   </div>

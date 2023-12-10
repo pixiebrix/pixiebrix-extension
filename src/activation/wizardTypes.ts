@@ -24,7 +24,7 @@ export type WizardStep = {
   key: string;
   label: string;
   Component: React.FunctionComponent<{
-    blueprint: ModDefinition;
+    mod: ModDefinition;
     reinstall: boolean;
   }>;
 };

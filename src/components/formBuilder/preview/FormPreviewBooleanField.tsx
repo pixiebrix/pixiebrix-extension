@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Theme as RjsfTheme } from "@rjsf/bootstrap-4";
+import { getDefaultRegistry } from "@rjsf/core";
 import React from "react";
 import FormPreviewFieldTemplate, {
   type FormPreviewFieldProps,
 } from "./FormPreviewFieldTemplate";
 import styles from "./FormPreviewBooleanField.module.scss";
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- We know it exists
-const RjsfBooleanField = RjsfTheme.fields!.BooleanField!;
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Loose types
+const RjsfBooleanField = getDefaultRegistry().fields.BooleanField!;
 
 const FormPreviewBooleanField: React.FC<FormPreviewFieldProps> = (props) => (
   <FormPreviewFieldTemplate

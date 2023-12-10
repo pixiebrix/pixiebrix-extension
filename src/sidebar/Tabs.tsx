@@ -65,7 +65,7 @@ const ActivateModPanel = lazy(
   async () =>
     import(
       /* webpackChunkName: "ActivatePanels" */
-      "@/sidebar/activateRecipe/ActivateModPanel"
+      "@/sidebar/activateMod/ActivateModPanel"
     ),
 );
 
@@ -73,7 +73,7 @@ const ActivateMultipleModsPanel = lazy(
   async () =>
     import(
       /* webpackChunkName: "ActivatePanels" */
-      "@/sidebar/activateRecipe/ActivateMultipleModsPanel"
+      "@/sidebar/activateMod/ActivateMultipleModsPanel"
     ),
 );
 
