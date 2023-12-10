@@ -125,7 +125,7 @@ const DocumentPreview = ({
           previewStyles.root,
           documentTreeStyles.container,
           {
-            [previewStyles.hovered]: isHovered,
+            [previewStyles.hovered ?? ""]: isHovered,
             [styles.empty ?? ""]: body.length === 0,
           },
         )}
