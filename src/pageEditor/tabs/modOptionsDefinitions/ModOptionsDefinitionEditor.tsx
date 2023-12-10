@@ -26,7 +26,6 @@ import styles from "./ModOptionsDefinitionEditor.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import FormEditor from "@/components/formBuilder/edit/FormEditor";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
-import cx from "classnames";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
 import { stringifyUiType } from "@/components/formBuilder/formBuilderHelpers";
@@ -184,7 +183,7 @@ const ModOptionsDefinitionEditor: React.VFC = () => {
                     <Tab.Content className={dataPanelStyles.tabContent}>
                       <Tab.Pane
                         eventKey="preview"
-                        className={cx(dataPanelStyles.tabPane)}
+                        className={dataPanelStyles.tabPane}
                       >
                         <ErrorBoundary>
                           <FormPreview
