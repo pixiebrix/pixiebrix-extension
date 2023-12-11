@@ -131,7 +131,7 @@ const DynamicModComponentListItem: React.FunctionComponent<
   return (
     <ListGroup.Item
       className={cx(styles.root, {
-        [styles.recipeBackground]: isRelativeOfActiveListItem,
+        [styles.recipeBackground ?? ""]: isRelativeOfActiveListItem,
       })}
       as="div"
       active={isActive}

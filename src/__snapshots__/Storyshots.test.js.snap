@@ -122,7 +122,7 @@ exports[`Storyshots Blueprints/OnboardingView Default 1`] = `
           >
             <a
               className="btn btn-primary"
-              href="https://docs.pixiebrix.com/quick-start-guide"
+              href="https://docs.pixiebrix.com/quick-start"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -7803,7 +7803,7 @@ exports[`Storyshots ModsPage/GetStartedView Activate Blueprint 1`] = `
          
         <span>
           <a
-            href="https://docs.pixiebrix.com/quick-start-guide"
+            href="https://docs.pixiebrix.com/quick-start"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -7957,7 +7957,7 @@ exports[`Storyshots ModsPage/GetStartedView Default 1`] = `
          
         <span>
           <a
-            href="https://docs.pixiebrix.com/quick-start-guide"
+            href="https://docs.pixiebrix.com/quick-start"
             rel="noopener noreferrer"
             target="_blank"
           >

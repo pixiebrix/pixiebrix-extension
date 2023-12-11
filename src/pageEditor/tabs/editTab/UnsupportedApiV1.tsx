@@ -32,7 +32,7 @@ const UnsupportedApiV1: React.FC = () => (
       <p>
         Use the Workshop to edit this mod.{" "}
         <a
-          href="https://docs.pixiebrix.com/runtime"
+          href="https://docs.pixiebrix.com/developing-mods/developer-concepts/advanced-brick-runtime"
           target="_blank"
           rel="noreferrer"
         >

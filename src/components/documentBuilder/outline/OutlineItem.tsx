@@ -69,9 +69,9 @@ const OutlineItem: React.FunctionComponent<
       role="treeitem"
       style={{ paddingLeft: depth * LEVEL_PADDING_PX }}
       className={cx(styles.item, {
-        [styles.activeItem]: isActive,
-        [styles.hover]: hover && !isActive,
-        [styles.allowDrop]: allow,
+        [styles.activeItem ?? ""]: isActive,
+        [styles.hover ?? ""]: hover && !isActive,
+        [styles.allowDrop ?? ""]: allow,
       })}
       onClick={() => {
         onSelect();

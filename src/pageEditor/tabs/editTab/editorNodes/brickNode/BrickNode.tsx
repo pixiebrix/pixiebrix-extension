@@ -81,8 +81,8 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
         onClick={onClick}
         active={active}
         className={cx(styles.root, "list-group-item-action", {
-          [styles.expanded]: hasSubPipelines && !collapsed,
-          [styles.parentIsActive]: isParentActive,
+          [styles.expanded ?? ""]: hasSubPipelines && !collapsed,
+          [styles.parentIsActive ?? ""]: isParentActive,
         })}
         title={
           runStatus === RunStatus.SKIPPED
@@ -102,10 +102,10 @@ const BrickNode: React.VFC<BrickNodeProps> = ({
           <div className={styles.handleContainer}>
             <div
               className={cx({
-                [styles.active]: active,
-                [styles.closedHandle]: collapsed,
-                [styles.openHandle]: !collapsed,
-                [styles.noOutputKey]: !outputKey,
+                [styles.active ?? ""]: active,
+                [styles.closedHandle ?? ""]: collapsed,
+                [styles.openHandle ?? ""]: !collapsed,
+                [styles.noOutputKey ?? ""]: !outputKey,
               })}
             />
           </div>

@@ -35,10 +35,25 @@ import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName } from "@/utils/formUtils";
 import { type UnknownObject } from "@/types/objectTypes";
 
-const ANONYMOUS_OBJECT_SCHEMA: Schema = {
-  type: "object",
-  additionalProperties: true,
-};
+function headerFieldSchemaForHeaders(headers: string[]): Schema {
+  const headerProperties: Record<string, Schema> = Object.fromEntries(
+    headers
+      .filter((x) => !isNullOrBlank(x))
+      .map((header) => [header, { type: "string" }]),
+  );
+
+  if (isEmpty(headerProperties)) {
+    return {
+      type: "object",
+      additionalProperties: true,
+    };
+  }
+
+  return {
+    type: "object",
+    properties: headerProperties,
+  };
+}
 
 const RowValuesField: React.FunctionComponent<{
   name: string;
@@ -50,13 +65,13 @@ const RowValuesField: React.FunctionComponent<{
     useField<UnknownObject>(name);
 
   const [fieldSchema, setFieldSchema] = useState<Schema>(
-    ANONYMOUS_OBJECT_SCHEMA,
+    headerFieldSchemaForHeaders([]),
   );
 
   useAsyncEffect(
     async (isMounted) => {
-      if (spreadsheetId == null) {
-        setFieldSchema(ANONYMOUS_OBJECT_SCHEMA);
+      if (!spreadsheetId) {
+        setFieldSchema(headerFieldSchemaForHeaders([]));
         return;
       }
 
@@ -70,14 +85,10 @@ const RowValuesField: React.FunctionComponent<{
         return;
       }
 
-      const headerProperties: Record<string, Schema> = Object.fromEntries(
-        headers
-          .filter((x) => !isNullOrBlank(x))
-          .map((header) => [header, { type: "string" }]),
-      );
+      setFieldSchema(headerFieldSchemaForHeaders(headers));
 
-      if (isEmpty(headerProperties)) {
-        setFieldSchema(ANONYMOUS_OBJECT_SCHEMA);
+      // Don't modify if it's a non-empty expression (user-typed text, or variable)
+      if (isExpression(rowValues) && !isEmpty(rowValues.__value__)) {
         return;
       }
 
@@ -94,11 +105,6 @@ const RowValuesField: React.FunctionComponent<{
 
         await setRowValues(newRowValues);
       }
-
-      setFieldSchema({
-        type: "object",
-        properties: headerProperties,
-      });
     },
     // Hash just in case tabName is an expression, and we
     // don't need to run the effect when googleAccount changes,
