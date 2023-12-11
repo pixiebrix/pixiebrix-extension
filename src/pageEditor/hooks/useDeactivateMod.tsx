@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import { useCallback } from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import { useDeactivateModComponent } from "@/pageEditor/hooks/useRemoveModComponent";
@@ -47,8 +48,16 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
       if (shouldShowConfirmation) {
         const confirmed = await showConfirmation({
           title: "Deactivate Mod?",
-          message:
-            "This action will deactivate the mod and remove it from the Page Editor. You can reactivate or delete mods from the PixieBrix Extension Console.",
+          message: (
+            <>
+              This action will deactivate the mod and remove it from the Page
+              Editor. You can reactivate or delete mods from the{" "}
+              <a href="/options.html" target="_blank">
+                PixieBrix Extension Console
+              </a>
+              .
+            </>
+          ),
           submitCaption: "Deactivate",
         });
 
