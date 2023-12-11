@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import { useDeactivateModComponent } from "@/pageEditor/hooks/useRemoveModComponent";
 import { useDispatch, useSelector } from "react-redux";
