@@ -361,7 +361,7 @@ const AddBlockModal: React.FC = () => {
       </Modal.Header>
       <Modal.Body
         className={cx(styles.body, {
-          [styles.blockDetail]: state.detailBlock != null,
+          [styles.blockDetail ?? ""]: state.detailBlock != null,
         })}
       >
         {state.detailBlock ? (
@@ -383,7 +383,7 @@ const AddBlockModal: React.FC = () => {
             <div
               className={cx(styles.tagList, {
                 // Fit the "Automation Anywhere" tag name on one line
-                [styles.widerTagList]:
+                [styles.widerTagList ?? ""]:
                   partnerKey === AUTOMATION_ANYWHERE_PARTNER_KEY,
               })}
             >

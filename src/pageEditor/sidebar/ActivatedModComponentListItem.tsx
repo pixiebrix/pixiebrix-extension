@@ -120,7 +120,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
   return (
     <ListGroup.Item
       className={cx(styles.root, {
-        [styles.recipeBackground]: hasRecipeBackground,
+        [styles.recipeBackground ?? ""]: hasRecipeBackground,
       })}
       action
       active={isActive}
@@ -133,7 +133,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
     >
       <span
         className={cx(styles.icon, {
-          [styles.nested]: isNested,
+          [styles.nested ?? ""]: isNested,
         })}
       >
         <ExtensionIcon type={type} />

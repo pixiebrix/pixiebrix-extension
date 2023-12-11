@@ -39,7 +39,7 @@ const TagListItem: React.VFC<{
   return (
     <button
       className={cx(styles.item, {
-        [styles.itemActive]: isActive,
+        [styles.itemActive ?? ""]: isActive,
       })}
       onClick={() => {
         onSelect();
