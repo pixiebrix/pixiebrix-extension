@@ -89,7 +89,7 @@ const PageStateTab: React.VFC = () => {
         </div>
         <div className="ml-2">
           <a
-            href="https://docs.pixiebrix.com/page-state"
+            href="https://docs.pixiebrix.com/developing-mods/developer-concepts/data-context/using-page-state-advanced"
             target="_blank"
             rel="noreferrer"
           >

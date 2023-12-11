@@ -277,7 +277,7 @@ function expectGoogleAccountTestSpreadsheetLoaded() {
   expectTab1Selected();
 }
 
-function expectTab2Selected() {
+function expectTab2SelectedAndHeadersLoaded() {
   // Tab2 should be selected
   expect(
     screen.getByText(testSpreadsheet.sheets[1].properties.title),
@@ -305,7 +305,7 @@ async function expectTabSelectWorksProperly() {
   const tab2Option = await screen.findByText("Tab2");
   await userEvent.click(tab2Option);
 
-  expectTab2Selected();
+  expectTab2SelectedAndHeadersLoaded();
 }
 
 const renderWithValuesAndWait = async (initialValues: FormikValues) => {
@@ -364,7 +364,7 @@ describe("AppendSpreadsheetOptions", () => {
     });
 
     expectGoogleAccountSpreadsheetTitleLoaded();
-    expectTab2Selected();
+    expectTab2SelectedAndHeadersLoaded();
   });
 
   test("given empty googleAccount/tabName/rowValues and string spreadsheetId, when rendered, shows spreadsheet Id", async () => {
@@ -508,7 +508,7 @@ describe("AppendSpreadsheetOptions", () => {
     });
 
     expectGoogleAccountSpreadsheetTitleLoaded();
-    expectTab2Selected();
+    expectTab2SelectedAndHeadersLoaded();
 
     // Ensure that initial values are not cleared
     expect(screen.getByDisplayValue("valueA")).toBeVisible();
@@ -530,7 +530,7 @@ describe("AppendSpreadsheetOptions", () => {
     });
 
     expectGoogleAccountSpreadsheetTitleLoaded();
-    expectTab2Selected();
+    expectTab2SelectedAndHeadersLoaded();
 
     // Ensure that initial values are not cleared
     expect(screen.getByDisplayValue("valueA")).toBeVisible();
@@ -582,11 +582,45 @@ describe("AppendSpreadsheetOptions", () => {
     });
 
     // Mod input var field won't render title
-    expectTab2Selected();
+    expectTab2SelectedAndHeadersLoaded();
 
     // Ensure that initial values are not cleared
     expect(screen.getByDisplayValue("valueA")).toBeVisible();
     expect(screen.getByDisplayValue("valueB")).toBeVisible();
+  });
+
+  test("given test googleAccount, mod input spreadsheetId, selected tabName, and variable expression rowValues, when rendered, does not clear initial values", async () => {
+    await renderWithValuesAndWait({
+      config: {
+        googleAccount: toExpression("var", "@google"),
+        spreadsheetId: toExpression("var", "@options.sheetId"),
+        // Tab2
+        tabName: testSpreadsheet.sheets[1].properties.title,
+        rowValues: toExpression("var", "@formValues"),
+      },
+      optionsArgs: {
+        sheetId: TEST_SPREADSHEET_ID,
+      },
+      integrationDependencies: [googlePKCEIntegrationDependency],
+    });
+
+    // Tab2 should be selected
+    expect(
+      screen.getByText(testSpreadsheet.sheets[1].properties.title),
+    ).toBeVisible();
+    // Tab1 should not be visible
+    expect(
+      screen.queryByText(testSpreadsheet.sheets[0].properties.title),
+    ).not.toBeInTheDocument();
+
+    // Ensure that the rowValues variable isn't cleared
+    expect(screen.getByDisplayValue("@formValues")).toBeVisible();
+
+    // No header names should be visible, since rowValues has a var expression instead
+    expect(screen.queryByDisplayValue("Column1")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Column2")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Foo")).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue("Bar")).not.toBeInTheDocument();
   });
 
   /**

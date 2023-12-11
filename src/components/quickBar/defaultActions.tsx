@@ -64,7 +64,7 @@ const defaultActions: Action[] = [
     icon: <FontAwesomeIcon icon={faAppleAlt} fixedWidth />,
     priority: Priority.LOW,
     perform() {
-      window.location.href = "https://docs.pixiebrix.com/quick-start-guide";
+      window.location.href = "https://docs.pixiebrix.com/quick-start";
     },
   },
   {

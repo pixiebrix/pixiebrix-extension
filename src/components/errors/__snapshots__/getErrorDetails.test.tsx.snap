@@ -278,7 +278,7 @@ exports[`Network error 1`] = `
         <div>
           PixieBrix did not receive a response. See 
           <a
-            href="https://docs.pixiebrix.com/network-errors"
+            href="https://docs.pixiebrix.com/how-to/troubleshooting/troubleshooting-network-errors"
             rel="noreferrer"
             target="_blank"
           >
