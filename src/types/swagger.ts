@@ -17,25 +17,13 @@ export interface paths {
     /** @description Registry view of current version of each package. */
     get: operations["listRegistryBricks"];
   };
-  "/api/registry/query/": {
-    /** @description Queries Packages and UserExtension by JsonPath. */
-    get: operations["retrievePackageQueryResult"];
-  };
   "/api/registry/bricks/{name}/": {
     /** @description Registry view of current version of each package. */
     get: operations["retrieveRegistryBricks"];
   };
-  "/api/blocks/": {
-    /** @description Registry view of current version of each package. */
-    get: operations["listBlocks"];
-  };
-  "/api/extension-points/": {
-    /** @description Registry view of current version of each package. */
-    get: operations["listExtensionPoints"];
-  };
-  "/api/recipes/": {
-    /** @description Registry view of current version of each package. */
-    get: operations["listRecipes"];
+  "/api/registry/query/": {
+    /** @description Queries Packages and UserExtension by JsonPath. */
+    get: operations["retrievePackageQueryResult"];
   };
   "/api/recipes/{name}/": {
     /** @description Registry view of current version of each package. */
@@ -65,9 +53,6 @@ export interface paths {
   "/api/databases/": {
     get: operations["listUserDatabases"];
     post: operations["createUserDatabase"];
-  };
-  "/api/databases/records/": {
-    get: operations["listAllRecords"];
   };
   "/api/databases/records/jobs/{id}/": {
     get: operations["retrieveDatabaseExportJob"];
@@ -148,6 +133,7 @@ export interface paths {
   };
   "/api/deployments/{deployment_pk}/errors/": {
     get: operations["listDeploymentErrors"];
+    delete: operations["destroyDeploymentErrors"];
   };
   "/api/deployments/{deployment_pk}/groups/": {
     get: operations["listDeploymentPermissions"];
@@ -383,6 +369,9 @@ export interface paths {
   "/api/telemetry/errors/public-blueprints/": {
     get: operations["listPublicBlueprintErrorItemGroups"];
   };
+  "/api/tests/cypress/constants/": {
+    get: operations["listCypressConstants"];
+  };
   "/api/registry/updates/": {
     post: operations["createPackageVersionUpdates"];
   };
@@ -444,6 +433,9 @@ export interface paths {
     /** @description Endpoint for recording custom user telemetry via service account, e.g., from Zapier. */
     post: operations["createExternalEvent"];
   };
+  "/api/tests/cypress/seed/": {
+    post: operations["createSeedCypress"];
+  };
   "/api/deployments/{deployment_pk}/groups/{id}/": {
     delete: operations["destroyDeploymentPermission"];
   };
@@ -460,8 +452,8 @@ export interface paths {
   "/api/tests/accounts/social/": {
     delete: operations["destroyDeleteTestSocialAccount"];
   };
-  "/api/tests/accounts/dynamic-rainforest/": {
-    delete: operations["destroyDeleteDynamicRainforestAccounts"];
+  "/api/tests/accounts/rainforest/": {
+    delete: operations["destroyDeleteRainforestAccount"];
   };
 }
 
@@ -502,6 +494,28 @@ export interface components {
         [key: string]: unknown;
       };
     };
+    PackageConfig: {
+      /**
+       * Format: uuid
+       * @description Surrogate primary key
+       */
+      id?: string;
+      /** @description Unique package identifier, including the scope and collection */
+      name: string;
+      /** @description Human-readable name */
+      verbose_name?: string | null;
+      version?: string;
+      kind: string;
+      /** Format: date-time */
+      updated_at: string;
+      sharing: {
+        public?: boolean;
+        organizations?: string[];
+      };
+      config: {
+        [key: string]: unknown;
+      };
+    };
     PackageQueryResult: {
       /**
        * Format: uuid
@@ -532,28 +546,6 @@ export interface components {
       /** Format: date-time */
       updated_at?: string;
       is_public: boolean;
-    };
-    PackageConfig: {
-      /**
-       * Format: uuid
-       * @description Surrogate primary key
-       */
-      id?: string;
-      /** @description Unique package identifier, including the scope and collection */
-      name: string;
-      /** @description Human-readable name */
-      verbose_name?: string | null;
-      version?: string;
-      kind: string;
-      /** Format: date-time */
-      updated_at: string;
-      sharing: {
-        public?: boolean;
-        organizations?: string[];
-      };
-      config: {
-        [key: string]: unknown;
-      };
     };
     PackageMeta: {
       /**
@@ -622,16 +614,6 @@ export interface components {
       /** Format: date-time */
       last_write_at?: string;
       num_records?: number;
-    };
-    ExportedRecord: {
-      id: string;
-      /** Format: uuid */
-      database: string;
-      data: {
-        [key: string]: unknown;
-      };
-      /** Format: date-time */
-      created_at?: string;
     };
     DatabaseExportJob: {
       /** Format: uuid */
@@ -1379,7 +1361,6 @@ export interface components {
       /** @enum {integer} */
       default_role?: 1 | 2 | 3 | 4 | 5;
       partner?: string;
-      sso_domain?: string | null;
       /** @description The number of milliseconds restricted team members have to apply manual deployments or browser extension update. */
       enforce_update_millis?: number | null;
       theme?: {
@@ -1629,6 +1610,22 @@ export interface components {
       user_agent_extension_versions: string[];
       request_urls: string[];
     };
+    CypressConstants: {
+      TEST_CONTROL_ROOM_1: {
+        index: number;
+        url: string;
+        database_url: string;
+        service_account_username: string;
+        service_account_api_key: string;
+      };
+      TEST_CONTROL_ROOM_2: {
+        index: number;
+        url: string;
+        database_url: string;
+        service_account_username: string;
+        service_account_api_key: string;
+      };
+    };
     DatabaseExportRequest: {
       name: string;
       databases: string[];
@@ -1789,6 +1786,13 @@ export interface components {
       };
       event: string;
     };
+    SeedCypress: {
+      users: {
+        /** Format: email */
+        email?: string;
+        scope?: string | null;
+      }[];
+    };
   };
   responses: never;
   parameters: never;
@@ -1796,6 +1800,8 @@ export interface components {
   headers: never;
   pathItems: never;
 }
+
+export type $defs = Record<string, never>;
 
 export type external = Record<string, never>;
 
@@ -1916,24 +1922,6 @@ export interface operations {
       };
     };
   };
-  /** @description Queries Packages and UserExtension by JsonPath. */
-  retrievePackageQueryResult: {
-    parameters: {
-      query?: {
-        /** @description The JsonPath to filter Packages and UserExtension */
-        jsonpath?: string;
-      };
-    };
-    responses: {
-      200: {
-        headers: {};
-        content: {
-          "application/json; version=1.0": components["schemas"]["PackageQueryResult"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["PackageQueryResult"];
-        };
-      };
-    };
-  };
   /** @description Registry view of current version of each package. */
   retrieveRegistryBricks: {
     parameters: {
@@ -1959,98 +1947,20 @@ export interface operations {
       };
     };
   };
-  /** @description Registry view of current version of each package. */
-  listBlocks: {
+  /** @description Queries Packages and UserExtension by JsonPath. */
+  retrievePackageQueryResult: {
     parameters: {
       query?: {
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description header */
-        header?: string;
-        /** @description kind */
-        kind?: 1 | 2 | 3 | 4 | 5;
-        /** @description kind__in */
-        kind__in?: string;
+        /** @description The JsonPath to filter Packages and UserExtension */
+        jsonpath?: string;
       };
     };
     responses: {
       200: {
-        headers: {
-          /**
-           * @description See https://datatracker.ietf.org/doc/html/rfc8288 for more information.
-           * @example &lt;https://app.pixiebrix.com/api/blocks/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/blocks/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/blocks/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/blocks/?page=11&gt;; rel=&quot;last&quot;
-           */
-          Link?: unknown;
-        };
+        headers: {};
         content: {
-          "application/json; version=2.0": components["schemas"]["PackageConfigList"][];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PackageConfigList"][];
-        };
-      };
-    };
-  };
-  /** @description Registry view of current version of each package. */
-  listExtensionPoints: {
-    parameters: {
-      query?: {
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description header */
-        header?: string;
-        /** @description kind */
-        kind?: 1 | 2 | 3 | 4 | 5;
-        /** @description kind__in */
-        kind__in?: string;
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          /**
-           * @description See https://datatracker.ietf.org/doc/html/rfc8288 for more information.
-           * @example &lt;https://app.pixiebrix.com/api/extension-points/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/extension-points/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/extension-points/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/extension-points/?page=11&gt;; rel=&quot;last&quot;
-           */
-          Link?: unknown;
-        };
-        content: {
-          "application/json; version=2.0": components["schemas"]["PackageConfigList"][];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PackageConfigList"][];
-        };
-      };
-    };
-  };
-  /** @description Registry view of current version of each package. */
-  listRecipes: {
-    parameters: {
-      query?: {
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-        /** @description header */
-        header?: string;
-        /** @description kind */
-        kind?: 1 | 2 | 3 | 4 | 5;
-        /** @description kind__in */
-        kind__in?: string;
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          /**
-           * @description See https://datatracker.ietf.org/doc/html/rfc8288 for more information.
-           * @example &lt;https://app.pixiebrix.com/api/recipes/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/recipes/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/recipes/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/recipes/?page=11&gt;; rel=&quot;last&quot;
-           */
-          Link?: unknown;
-        };
-        content: {
-          "application/json; version=2.0": components["schemas"]["PackageConfigList"][];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PackageConfigList"][];
+          "application/json; version=1.0": components["schemas"]["PackageQueryResult"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["PackageQueryResult"];
         };
       };
     };
@@ -2220,7 +2130,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   listPackageVersions: {
@@ -2294,33 +2206,6 @@ export interface operations {
       };
     };
   };
-  listAllRecords: {
-    parameters: {
-      query?: {
-        /** @description A page number within the paginated result set. */
-        page?: number;
-        /** @description Number of results to return per page. */
-        page_size?: number;
-      };
-    };
-    responses: {
-      200: {
-        headers: {
-          /**
-           * @description See https://datatracker.ietf.org/doc/html/rfc8288 for more information.
-           * @example &lt;https://app.pixiebrix.com/api/databases/records/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/databases/records/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/databases/records/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/databases/records/?page=11&gt;; rel=&quot;last&quot;
-           */
-          Link?: unknown;
-        };
-        content: {
-          "application/json; version=1.0": components["schemas"]["ExportedRecord"][];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ExportedRecord"][];
-          "text/csv; version=1.0": components["schemas"]["ExportedRecord"][];
-          "application/xlsx; version=1.0": components["schemas"]["ExportedRecord"][];
-        };
-      };
-    };
-  };
   retrieveDatabaseExportJob: {
     parameters: {
       path: {
@@ -2361,7 +2246,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   updateUserDatabase: {
@@ -2474,7 +2361,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   retrieveRecordDetail: {
@@ -2530,7 +2419,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   /** @description List bricks that use a database. */
@@ -2691,7 +2582,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   retrieveCampaignEngagementJob: {
@@ -2863,7 +2756,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   /** @description View for admins to get/create/update/delete a deployment. */
@@ -2998,6 +2893,18 @@ export interface operations {
           "application/json; version=1.0": components["schemas"]["ErrorItemGroup"][];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ErrorItemGroup"][];
         };
+      };
+    };
+  };
+  destroyDeploymentErrors: {
+    parameters: {
+      path: {
+        deployment_pk: string;
+      };
+    };
+    responses: {
+      204: {
+        content: never;
       };
     };
   };
@@ -3191,7 +3098,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   partialUpdateDeploymentAlertEmail: {
@@ -3289,7 +3198,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   /** @description Add, remove, and list users to/from a group */
@@ -3512,7 +3423,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   partialUpdateServiceAuthPermission: {
@@ -3588,7 +3501,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   partialUpdateGroup: {
@@ -3691,7 +3606,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   partialUpdateDatabasePermission: {
@@ -3904,7 +3821,9 @@ export interface operations {
   };
   destroyMe: {
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   /** @description Return the token for the current user. */
@@ -3971,7 +3890,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   /** @description Detail view for an organization's memberships. */
@@ -4076,7 +3997,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   partialUpdateOrganization: {
@@ -4405,7 +4328,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   partialUpdateDatabase: {
@@ -4725,7 +4650,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   partialUpdateOrganizationContact: {
@@ -4788,7 +4715,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   partialUpdateControlRoomConfiguration: {
@@ -4861,7 +4790,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   partialUpdateGroupPackagePermission: {
@@ -4976,7 +4907,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   partialUpdateEditableAuth: {
@@ -5181,6 +5114,17 @@ export interface operations {
         content: {
           "application/json; version=1.0": components["schemas"]["PublicBlueprintErrorItemGroup"][];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["PublicBlueprintErrorItemGroup"][];
+        };
+      };
+    };
+  };
+  listCypressConstants: {
+    responses: {
+      200: {
+        headers: {};
+        content: {
+          "application/json; version=1.0": components["schemas"]["CypressConstants"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["CypressConstants"][];
         };
       };
     };
@@ -5557,6 +5501,24 @@ export interface operations {
       };
     };
   };
+  createSeedCypress: {
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["SeedCypress"];
+        "application/x-www-form-urlencoded": components["schemas"]["SeedCypress"];
+        "multipart/form-data": components["schemas"]["SeedCypress"];
+      };
+    };
+    responses: {
+      201: {
+        headers: {};
+        content: {
+          "application/json; version=1.0": components["schemas"]["SeedCypress"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["SeedCypress"];
+        };
+      };
+    };
+  };
   destroyDeploymentPermission: {
     parameters: {
       path: {
@@ -5565,7 +5527,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   destroyDeploymentManagerPermission: {
@@ -5576,7 +5540,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   /** @description Add, remove, and list users to/from a group */
@@ -5588,7 +5554,9 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   destroyInvitation: {
@@ -5598,17 +5566,23 @@ export interface operations {
       };
     };
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
   destroyDeleteTestSocialAccount: {
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
-  destroyDeleteDynamicRainforestAccounts: {
+  destroyDeleteRainforestAccount: {
     responses: {
-      204: never;
+      204: {
+        content: never;
+      };
     };
   };
 }
