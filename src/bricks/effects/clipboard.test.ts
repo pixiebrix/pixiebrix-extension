@@ -20,6 +20,7 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { PropError } from "@/errors/businessErrors";
 import userEvent from "@testing-library/user-event";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { convertDataUrl } from "@/utils/parseDataUrl";
 
 const brick = new CopyToClipboard();
 
@@ -54,7 +55,21 @@ class ClipboardItemFake implements ClipboardItem {
   }
 }
 
+// @ts-expect-error -- BlobFake is not a real Blob
+class BlobFake implements Blob {
+  // @ts-expect-error -- match Block constructor
+  constructor(
+    private readonly parts: BlobPart[],
+    private readonly options: BlobPropertyBag,
+  ) {}
+
+  get type(): string {
+    return this.options.type;
+  }
+}
+
 globalThis.ClipboardItem = ClipboardItemFake;
+globalThis.Blob = BlobFake as unknown as typeof Blob;
 
 const writeMock = jest.mocked(navigator.clipboard.write);
 
@@ -120,7 +135,9 @@ describe("CopyToClipboard", () => {
     expect(writeMock).toHaveBeenCalled();
     expect(writeMock).toHaveBeenCalledWith([
       // XXX: matcher doesn't inspect inside of Blob for comparison
-      new ClipboardItemFake({ "image/png": new Blob([], { type: "img/png" }) }),
+      new ClipboardItemFake({
+        "image/png": convertDataUrl(SMALL_RED_DOT_URI, "Blob"),
+      }),
     ]);
   });
 
