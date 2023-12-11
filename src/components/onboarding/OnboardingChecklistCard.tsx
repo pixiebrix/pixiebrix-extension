@@ -41,12 +41,12 @@ export const OnboardingStep: React.FunctionComponent<{
   return (
     <ListGroup.Item
       className={cx(styles.checklistItem, {
-        [styles.futureStep]: !active && !completed,
+        [styles.futureStep ?? ""]: !active && !completed,
       })}
     >
       <div
         className={cx(styles.checklistItemLayout, {
-          [styles.inactive]: !active,
+          [styles.inactive ?? ""]: !active,
         })}
       >
         <div>
@@ -60,7 +60,7 @@ export const OnboardingStep: React.FunctionComponent<{
             {title && <h3 className={styles.stepTitle}>{title}</h3>}
             {isLoading && <Loader />}
             {children && !isLoading && !notStarted && !completed && (
-              <div className={cx({ [styles.stepBody]: Boolean(title) })}>
+              <div className={cx({ [styles.stepBody ?? ""]: Boolean(title) })}>
                 {children}
               </div>
             )}

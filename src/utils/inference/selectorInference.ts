@@ -36,7 +36,7 @@ import { escapeSingleQuotes, matchesAnyPattern } from "@/utils/stringUtils";
 import { $safeFind } from "@/utils/domUtils";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { getAttributeSelectorRegex } from "@/utils/inference/selectorInferenceUtils";
-import { assertNotNull } from "@/utils/typeUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export const NON_EXISTENT_TAG_NAME = "selectnothing";
 /** Valid selector that never returns any element (no `<selectnothing>` element exists) */
@@ -652,7 +652,7 @@ export function findContainer(elements: HTMLElement[]): {
   selectors: string[];
 } {
   const firstElement = elements[0];
-  assertNotNull(firstElement, "No element was selected");
+  assertNotNullish(firstElement, "No element was selected");
 
   if (elements.length > 1) {
     const container = getCommonAncestor(...elements);

@@ -125,8 +125,8 @@ const DocumentPreview = ({
           previewStyles.root,
           documentTreeStyles.container,
           {
-            [previewStyles.hovered]: isHovered,
-            [styles.empty]: body.length === 0,
+            [previewStyles.hovered ?? ""]: isHovered,
+            [styles.empty ?? ""]: body.length === 0,
           },
         )}
         /* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events -- TODO */

@@ -112,7 +112,7 @@ const DynamicModComponentListItem: React.FunctionComponent<
   return (
     <ListGroup.Item
       className={cx(styles.root, {
-        [styles.recipeBackground]: hasRecipeBackground,
+        [styles.recipeBackground ?? ""]: hasRecipeBackground,
       })}
       as="div"
       active={isActive}
@@ -142,7 +142,7 @@ const DynamicModComponentListItem: React.FunctionComponent<
     >
       <span
         className={cx(styles.icon, {
-          [styles.nested]: isNested,
+          [styles.nested ?? ""]: isNested,
         })}
       >
         <ExtensionIcon type={extension.type} />

@@ -53,7 +53,7 @@ export const ActiveSidebarModsListItem: React.FunctionComponent<{
 
   return (
     <ListGroup.Item className={styles.root} onClick={onClick}>
-      <div className={cx(styles.icon, { [styles.noIcon]: !mod })}>
+      <div className={cx(styles.icon, { [styles.noIcon ?? ""]: !mod })}>
         {Boolean(mod) && <ModIcon mod={mod} />}
       </div>
       <h5 className={styles.lineClampOneLine}>{heading}</h5>
