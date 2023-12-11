@@ -48,6 +48,8 @@ module.exports = {
     "local-rules/noInvalidDataTestId": "error",
     "local-rules/noExpressionLiterals": "error",
     "local-rules/notBothLabelAndLockableProps": "error",
+    "local-rules/preferNullish": "warn",
+    "local-rules/preferNullishable": "warn",
     "import/no-restricted-paths": [
       "warn",
       {

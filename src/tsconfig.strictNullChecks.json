@@ -500,6 +500,7 @@
     "./utils/injectStylesheet.tsx",
     "./utils/legacyMessengerUtils.ts",
     "./utils/notify.tsx",
+    "./utils/nullishUtils.ts",
     "./utils/objToYaml.ts",
     "./utils/objectUtils.ts",
     "./utils/parseDataUrl.ts",
