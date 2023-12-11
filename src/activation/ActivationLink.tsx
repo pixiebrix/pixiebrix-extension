@@ -47,7 +47,7 @@ const ActivationLink: React.FunctionComponent<ActivationLinkProps> = ({
         <AsyncButton
           variant="info"
           onClick={async () => {
-            await writeTextToClipboard(installationLink);
+            await writeTextToClipboard({ text: installationLink });
             // Don't close the modal - that allows the user to re-copy the link and verify the link works
             notify.success("Copied activation link to clipboard");
           }}
