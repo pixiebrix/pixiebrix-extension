@@ -15,49 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  assertNotNullish,
-  isNonNullish,
-  isNullish,
-} from "@/utils/nullishUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 describe("nullishUtils", () => {
-  describe("isNullish", () => {
-    it("should return true for null", () => {
-      expect(isNullish(null)).toBe(true);
-    });
-
-    it("should return true for undefined", () => {
-      expect(isNullish(undefined)).toBe(true);
-    });
-
-    it("should return false for non-nullish values", () => {
-      expect(isNullish(0)).toBe(false);
-      expect(isNullish("")).toBe(false);
-      expect(isNullish(false)).toBe(false);
-      expect(isNullish([])).toBe(false);
-      expect(isNullish({})).toBe(false);
-    });
-  });
-
-  describe("isNonNullish", () => {
-    it("should return false for null", () => {
-      expect(isNonNullish(null)).toBe(false);
-    });
-
-    it("should return false for undefined", () => {
-      expect(isNonNullish(undefined)).toBe(false);
-    });
-
-    it("should return true for non-nullish values", () => {
-      expect(isNonNullish(0)).toBe(true);
-      expect(isNonNullish("")).toBe(true);
-      expect(isNonNullish(false)).toBe(true);
-      expect(isNonNullish([])).toBe(true);
-      expect(isNonNullish({})).toBe(true);
-    });
-  });
-
   describe("assertNotNullish", () => {
     const assertionMessage = "assertion message";
 

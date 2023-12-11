@@ -19,13 +19,6 @@ export type Nullish = null | undefined;
 
 export type Nullishable<T> = T | Nullish;
 
-export const isNullish = <T>(value: Nullishable<T>): value is Nullish =>
-  value == null;
-
-export const isNonNullish = <T>(
-  value: Nullishable<T>,
-): value is NonNullable<T> => !isNullish(value);
-
 /**
  * Throw a TypeError if the value is null or undefined.
  * @param value the value to check
