@@ -27,9 +27,12 @@ import { uuidv4 } from "@/types/helpers";
 
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
+const EASING_FUNCTION = "cubic-bezier(0.23, 1, 0.32, 1)";
+const TRANSITION_DURATION = "500ms";
 
 // Use ? because it's not defined during header generation. But otherwise it will always be defined.
 const html: HTMLElement = globalThis.document?.documentElement;
+const body: HTMLElement = globalThis.document?.body;
 const SIDEBAR_WIDTH_PX = 400;
 
 function storeOriginalCSSOnce() {
@@ -47,6 +50,23 @@ function storeOriginalCSSOnce() {
   html.style.setProperty(
     "margin-right",
     `calc(var(${ORIGINAL_MARGIN_CSS_PROPERTY}) + var(${SIDEBAR_WIDTH_CSS_PROPERTY}))`,
+  );
+
+  html.style.setProperty(
+    "transition",
+    `margin-right ${TRANSITION_DURATION} ${EASING_FUNCTION}`,
+  );
+
+  // Make the body width dynamic so it always follows the sidebar width, if open
+  // This prevents the Sidebar from overlapping Zendesk content
+  body.style.setProperty(
+    "width",
+    `calc(100vw - var(${SIDEBAR_WIDTH_CSS_PROPERTY}))`,
+  );
+
+  body.style.setProperty(
+    "transition",
+    `width ${TRANSITION_DURATION} ${EASING_FUNCTION}`,
   );
 }
 
@@ -128,8 +148,8 @@ export function insertSidebarFrame(): boolean {
   html.append(wrapper);
 
   iframe.animate([{ translate: "50%" }, { translate: 0 }], {
-    duration: 500,
-    easing: "cubic-bezier(0.23, 1, 0.32, 1)",
+    duration: TRANSITION_DURATION,
+    easing: EASING_FUNCTION,
   });
 
   if (!isSidebarFrameVisible()) {
