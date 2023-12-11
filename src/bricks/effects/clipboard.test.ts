@@ -57,8 +57,8 @@ class ClipboardItemFake implements ClipboardItem {
 
 // @ts-expect-error -- BlobFake is not a real Blob
 class BlobFake implements Blob {
-  // @ts-expect-error -- match Block constructor
   constructor(
+    // @ts-expect-error -- match Block constructor
     private readonly parts: BlobPart[],
     private readonly options: BlobPropertyBag,
   ) {}
