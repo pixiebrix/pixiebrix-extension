@@ -72,7 +72,7 @@ export function getIdForElement(
   return isModComponentBase(element) ? element.id : element.uuid;
 }
 
-export function getRecipeIdForElement(
+export function getModIdForElement(
   element: ModComponentBase | ModComponentFormState,
 ): RegistryId {
   return isModComponentBase(element) ? element._recipe?.id : element.recipe?.id;

@@ -54,7 +54,7 @@ const ModComponentListItem: React.FunctionComponent<
   ) : (
     <DynamicModComponentListItem
       key={`dynamic-${extension.uuid}`}
-      extension={extension}
+      modComponentFormState={extension}
       isAvailable={
         !availableDynamicIds || availableDynamicIds.includes(extension.uuid)
       }

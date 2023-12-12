@@ -46,11 +46,14 @@ import {
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
 import useSaveExtension from "@/pageEditor/hooks/useSaveExtension";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
-import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
+import {
+  useDeactivateModComponent,
+  useDeleteModComponent,
+} from "@/pageEditor/hooks/useRemoveModComponent";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 
 type DynamicModComponentListItemProps = {
-  extension: ModComponentFormState;
+  modComponentFormState: ModComponentFormState;
   isAvailable: boolean;
   isNested?: boolean;
 };
@@ -62,20 +65,23 @@ type DynamicModComponentListItemProps = {
  */
 const DynamicModComponentListItem: React.FunctionComponent<
   DynamicModComponentListItemProps
-> = ({ extension, isAvailable, isNested = false }) => {
+> = ({ modComponentFormState, isAvailable, isNested = false }) => {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
-  const activeRecipeId = useSelector(selectActiveRecipeId);
+  const activeModId = useSelector(selectActiveRecipeId);
   const activeElement = useSelector(selectActiveElement);
-  const isActive = activeElement?.uuid === extension.uuid;
-  // Get the selected recipe id, or the recipe id of the selected item
-  const recipeId = activeRecipeId ?? activeElement?.recipe?.id;
-  // Set the alternate background if this item isn't active, but either its recipe or another item in its recipe is active
-  const hasRecipeBackground =
-    !isActive && recipeId && extension.recipe?.id === recipeId;
-  const isDirty = useSelector(selectElementIsDirty(extension.uuid));
 
-  const isButton = extension.type === "menuItem";
+  const isActive = activeElement?.uuid === modComponentFormState.uuid;
+  const modId = modComponentFormState.recipe?.id;
+  const isSiblingOfActiveListItem = activeElement?.recipe?.id
+    ? modId === activeElement?.recipe?.id
+    : false;
+  const isChildOfActiveListItem = modId === activeModId;
+  const isRelativeOfActiveListItem =
+    !isActive && (isChildOfActiveListItem || isSiblingOfActiveListItem);
+  const isDirty = useSelector(selectElementIsDirty(modComponentFormState.uuid));
+
+  const isButton = modComponentFormState.type === "menuItem";
 
   const showOverlay = useCallback(async (uuid: UUID) => {
     await enableOverlay(thisTab, `[data-pb-uuid="${uuid}"]`);
@@ -88,22 +94,35 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const { save: saveExtension, isSaving: isSavingExtension } =
     useSaveExtension();
   const resetExtension = useResetExtension();
-  const removeExtension = useRemoveExtension();
+
+  const deleteModComponent = useDeleteModComponent();
+  const deactivateStandaloneMod = useDeactivateModComponent();
   const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
 
   const onSave = async () => {
-    if (extension.recipe) {
-      await saveRecipe(extension.recipe?.id);
+    if (modComponentFormState.recipe) {
+      await saveRecipe(modComponentFormState.recipe?.id);
     } else {
-      await saveExtension(extension);
+      await saveExtension(modComponentFormState);
     }
   };
 
-  const isSaving = extension.recipe ? isSavingRecipe : isSavingExtension;
+  const isSaving = modComponentFormState.recipe
+    ? isSavingRecipe
+    : isSavingExtension;
 
-  const onReset = async () => resetExtension({ extensionId: extension.uuid });
+  const onReset = async () =>
+    resetExtension({ extensionId: modComponentFormState.uuid });
 
-  const onRemove = async () => removeExtension({ extensionId: extension.uuid });
+  const onDelete = modId
+    ? async () =>
+        deleteModComponent({ extensionId: modComponentFormState.uuid })
+    : undefined;
+
+  const onDeactivate = onDelete
+    ? undefined
+    : async () =>
+        deactivateStandaloneMod({ extensionId: modComponentFormState.uuid });
 
   const onClone = async () => {
     dispatch(actions.cloneActiveExtension());
@@ -112,28 +131,30 @@ const DynamicModComponentListItem: React.FunctionComponent<
   return (
     <ListGroup.Item
       className={cx(styles.root, {
-        [styles.recipeBackground ?? ""]: hasRecipeBackground,
+        [styles.recipeBackground ?? ""]: isRelativeOfActiveListItem,
       })}
       as="div"
       active={isActive}
-      key={`dynamic-${extension.uuid}`}
+      key={`dynamic-${modComponentFormState.uuid}`}
       onMouseEnter={
-        isButton ? async () => showOverlay(extension.uuid) : undefined
+        isButton
+          ? async () => showOverlay(modComponentFormState.uuid)
+          : undefined
       }
       onMouseLeave={isButton ? async () => hideOverlay() : undefined}
       onClick={() => {
         reportEvent(Events.PAGE_EDITOR_OPEN, {
           sessionId,
-          extensionId: extension.uuid,
+          extensionId: modComponentFormState.uuid,
         });
 
-        dispatch(actions.selectElement(extension.uuid));
+        dispatch(actions.selectElement(modComponentFormState.uuid));
 
-        if (extension.type === "actionPanel") {
+        if (modComponentFormState.type === "actionPanel") {
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
           // frequently between extensions within the same blueprint.
           void showSidebar(thisTab, {
-            extensionId: extension.uuid,
+            extensionId: modComponentFormState.uuid,
             force: true,
             refresh: false,
           });
@@ -142,12 +163,12 @@ const DynamicModComponentListItem: React.FunctionComponent<
     >
       <span
         className={cx(styles.icon, {
-          [styles.nested ?? ""]: isNested,
+          [styles.nested]: isNested,
         })}
       >
-        <ExtensionIcon type={extension.type} />
+        <ExtensionIcon type={modComponentFormState.type} />
       </span>
-      <span className={styles.name}>{getLabel(extension)}</span>
+      <span className={styles.name}>{getLabel(modComponentFormState)}</span>
       {!isAvailable && (
         <span className={styles.icon}>
           <NotAvailableIcon />
@@ -161,19 +182,20 @@ const DynamicModComponentListItem: React.FunctionComponent<
       {isActive && (
         <ActionMenu
           onSave={onSave}
-          onRemove={onRemove}
+          onDelete={onDelete}
+          onDeactivate={onDeactivate}
           onClone={onClone}
-          onReset={extension.installed ? onReset : undefined}
+          onReset={modComponentFormState.installed ? onReset : undefined}
           isDirty={isDirty}
           onAddToRecipe={
-            extension.recipe
+            modComponentFormState.recipe
               ? undefined
               : async () => {
                   dispatch(actions.showAddToRecipeModal());
                 }
           }
           onRemoveFromRecipe={
-            extension.recipe
+            modComponentFormState.recipe
               ? async () => {
                   dispatch(actions.showRemoveFromRecipeModal());
                 }
