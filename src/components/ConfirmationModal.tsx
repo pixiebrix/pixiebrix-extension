@@ -27,7 +27,7 @@ import { type ButtonVariant } from "react-bootstrap/types";
 
 type ModalProps = {
   title?: string;
-  message: string | React.ReactNode;
+  message: string | React.ReactElement;
   submitVariant?: ButtonVariant;
   submitCaption?: string;
   cancelCaption?: string;
