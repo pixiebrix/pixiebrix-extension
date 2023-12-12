@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { assert } from "@/utils/typeUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const elementsCollectionRegexp =
   /((?<collectionName>.*)\.)?(?<elementIndex>\d+)/;
@@ -30,7 +30,10 @@ function getElementCollectionName(elementName: string): {
 } {
   const match = elementsCollectionRegexp.exec(elementName)?.groups;
 
-  assert(match, `Unable to parse the collection name in: ${elementName}`);
+  assertNotNullish(
+    match,
+    `Unable to parse the collection name in: ${elementName}`,
+  );
 
   return {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Guaranteed by the regexp

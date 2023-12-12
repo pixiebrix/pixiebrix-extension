@@ -18,7 +18,7 @@
 import { validateRegistryId } from "@/types/helpers";
 import { sheets } from "@/background/messenger/api";
 import { zip } from "lodash";
-import { BusinessError } from "@/errors/businessErrors";
+import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
   GOOGLE_OAUTH2_PKCE_INTEGRATION_ID,
   SHEET_SERVICE_SCHEMA,
@@ -155,6 +155,15 @@ export class GoogleSheetsLookup extends TransformerABC {
     }: BrickArgs<BrickArgsType>,
     { logger }: BrickOptions,
   ): Promise<UnknownObject | UnknownObject[]> {
+    if (googleAccount == null) {
+      throw new PropError(
+        "A Google Configuration is now required. See the migration guide: https://docs.pixiebrix.com/integrations/google-drive/migrating-from-google-sheet-to-google-drive-integration",
+        GOOGLE_SHEETS_LOOKUP_ID,
+        "googleAccount",
+        googleAccount,
+      );
+    }
+
     const spreadsheetId =
       typeof spreadsheetIdArg === "string"
         ? spreadsheetIdArg

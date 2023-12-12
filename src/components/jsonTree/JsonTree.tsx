@@ -163,7 +163,7 @@ const CopyDataButton: React.FunctionComponent<{ data: unknown }> = ({
     aria-label="copy data"
     href="#"
     onClick={async (event) => {
-      await writeTextToClipboard(safeJsonStringify(data, null, 2));
+      await writeTextToClipboard({ text: safeJsonStringify(data, null, 2) });
       event.preventDefault();
       event.stopPropagation();
       notify.info("Copied data to the clipboard");

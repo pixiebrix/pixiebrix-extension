@@ -20,9 +20,9 @@ import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import type React from "react";
 import { isEmpty, mapValues } from "lodash";
-import OptionsBody from "@/extensionConsole/pages/activateRecipe/OptionsBody";
-import ServicesBody from "@/extensionConsole/pages/activateRecipe/ServicesBody";
-import PermissionsBody from "@/extensionConsole/pages/activateRecipe/PermissionsBody";
+import OptionsBody from "@/extensionConsole/pages/activateMod/OptionsBody";
+import IntegrationsBody from "@/extensionConsole/pages/activateMod/IntegrationsBody";
+import PermissionsBody from "@/extensionConsole/pages/activateMod/PermissionsBody";
 import * as Yup from "yup";
 import { type AnyObjectSchema } from "yup";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
@@ -47,14 +47,14 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 
 const STEPS: WizardStep[] = [
-  { key: "services", label: "Integrations", Component: ServicesBody },
+  { key: "services", label: "Integrations", Component: IntegrationsBody },
   // OptionsBody takes only a slice of the ModDefinition, however the types aren't set up in a way for TypeScript
   // to realize it's OK to pass in a whole ModDefinition for something that just needs the options prop
   {
     key: "options",
     label: "Configure Mod",
     Component: OptionsBody as React.FunctionComponent<{
-      blueprint: ModDefinition;
+      mod: ModDefinition;
     }>,
   },
   { key: "activate", label: "Permissions & URLs", Component: PermissionsBody },

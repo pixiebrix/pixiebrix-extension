@@ -65,7 +65,7 @@ const ActivateModPanel = lazy(
   async () =>
     import(
       /* webpackChunkName: "ActivatePanels" */
-      "@/sidebar/activateRecipe/ActivateModPanel"
+      "@/sidebar/activateMod/ActivateModPanel"
     ),
 );
 
@@ -73,7 +73,7 @@ const ActivateMultipleModsPanel = lazy(
   async () =>
     import(
       /* webpackChunkName: "ActivatePanels" */
-      "@/sidebar/activateRecipe/ActivateMultipleModsPanel"
+      "@/sidebar/activateMod/ActivateMultipleModsPanel"
     ),
 );
 
@@ -97,7 +97,9 @@ const TabWithDivider = ({
   const isPanelHidden = closedTabs[eventKey];
 
   return isPanelHidden ? null : (
-    <Nav.Item className={cx(styles.tabWrapper, { [styles.active]: active })}>
+    <Nav.Item
+      className={cx(styles.tabWrapper, { [styles.active ?? ""]: active })}
+    >
       <Nav.Link
         {...props}
         className={styles.tabHeader}

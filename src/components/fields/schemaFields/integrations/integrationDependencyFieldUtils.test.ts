@@ -17,8 +17,7 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { toExpression } from "@/testUtils/testHelpers";
-import { validateRegistryId } from "@/types/helpers";
+import { validateRegistryId, validateUUID } from "@/types/helpers";
 import { selectIntegrationDependencyVariables } from "./integrationDependencyFieldUtils";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
@@ -29,6 +28,7 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import { toExpression } from "@/utils/expressionUtils";
 
 describe("selectVariables", () => {
   test("selects nothing when no services used", () => {
@@ -90,7 +90,7 @@ describe("selectVariables", () => {
               title: "Action",
               onClick: toExpression("pipeline", [
                 {
-                  id: "@test/service",
+                  id: validateRegistryId("@test/service"),
                   instanceId: uuidSequence(2),
                   config: {
                     input: toExpression("var", "@foo"),
@@ -118,7 +118,7 @@ describe("selectVariables", () => {
     const button = createNewElement("button");
     button.config.onClick = toExpression("pipeline", [
       {
-        id: "@test/service",
+        id: validateRegistryId("@test/service"),
         instanceId: uuidSequence(2),
         config: {
           input: toExpression("var", "@foo"),
@@ -157,17 +157,17 @@ describe("selectVariables", () => {
               title: "Action",
               onClick: toExpression("pipeline", [
                 {
-                  id: "@test/brick",
+                  id: validateRegistryId("@test/brick"),
                   config: {
                     input: toExpression("var", "@foo"),
                   },
                 },
                 {
-                  id: "@test/if",
+                  id: validateRegistryId("@test/if"),
                   config: {
                     if: toExpression("pipeline", [
                       {
-                        id: "@test/brick",
+                        id: validateRegistryId("@test/brick"),
                         config: {
                           input: toExpression("var", "@bar"),
                         },
@@ -219,47 +219,39 @@ describe("selectVariables", () => {
                 {
                   type: "pipeline",
                   config: {
-                    pipeline: {
-                      __type__: "pipeline",
-                      __value__: [
-                        {
-                          id: validateRegistryId("@pixiebrix/form"),
-                          config: {
-                            storage: {
-                              type: "database",
-                              service: {
-                                __type__: "var",
-                                __value__: "@pixiebrix",
-                              },
-                              databaseId:
-                                "964c3a9b-fc42-40bf-9516-25b5d18a5000",
-                            },
-                            successMessage: "Successfully submitted form",
-                            schema: {
-                              title: "Example Form",
-                              type: "object",
-                              properties: {
-                                notes: {
-                                  title: "Example Notes Field",
-                                  type: "string",
-                                  description: "An example notes field",
-                                },
-                              },
-                            },
-                            uiSchema: {
+                    pipeline: toExpression("pipeline", [
+                      {
+                        id: validateRegistryId("@pixiebrix/form"),
+                        config: {
+                          storage: {
+                            type: "database",
+                            service: toExpression("var", "@pixiebrix"),
+                            databaseId: "964c3a9b-fc42-40bf-9516-25b5d18a5000",
+                          },
+                          successMessage: "Successfully submitted form",
+                          schema: {
+                            title: "Example Form",
+                            type: "object",
+                            properties: {
                               notes: {
-                                "ui:widget": "textarea",
+                                title: "Example Notes Field",
+                                type: "string",
+                                description: "An example notes field",
                               },
-                            },
-                            recordId: {
-                              __type__: "nunjucks",
-                              __value__: "formData",
                             },
                           },
-                          instanceId: "c419abc2-66b0-4c91-acee-9ee5b10e5000",
+                          uiSchema: {
+                            notes: {
+                              "ui:widget": "textarea",
+                            },
+                          },
+                          recordId: toExpression("nunjucks", "formData"),
                         },
-                      ],
-                    },
+                        instanceId: validateUUID(
+                          "c419abc2-66b0-4c91-acee-9ee5b10e5000",
+                        ),
+                      },
+                    ]),
                   },
                 },
               ],

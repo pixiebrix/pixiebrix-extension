@@ -45,7 +45,7 @@ const UpgradedToApiV3: React.FC = () => {
           API v2. We&apos;ve attempted to automatically convert this mod to
           runtime API v3.{" "}
           <a
-            href="https://docs.pixiebrix.com/runtime"
+            href="https://docs.pixiebrix.com/developing-mods/developer-concepts/advanced-brick-runtime"
             target="_blank"
             rel="noreferrer"
           >

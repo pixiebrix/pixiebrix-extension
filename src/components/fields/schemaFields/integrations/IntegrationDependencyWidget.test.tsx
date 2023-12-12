@@ -35,7 +35,8 @@ import {
 } from "@/utils/asyncStateUtils";
 import selectEvent from "react-select-event";
 import { act, screen } from "@testing-library/react";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
+
+import { toExpression } from "@/utils/expressionUtils";
 
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),
@@ -219,7 +220,7 @@ describe("ServiceWidget", () => {
         blockPipeline: [
           {
             config: {
-              service: makeVariableExpression("@jest2"),
+              service: toExpression("var", "@jest2"),
             },
           },
         ],

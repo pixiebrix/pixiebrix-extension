@@ -32,9 +32,9 @@ import SwitchButtonWidget, {
   type CheckBoxLike,
 } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { createNewBlock } from "@/pageEditor/exampleBlockConfigs";
+import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
 import { DocumentRenderer } from "@/bricks/renderers/document";
-import { isPipelineExpression } from "@/utils/expressionUtils";
+import { isPipelineExpression, toExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
 import { getSubSchema } from "@/utils/schemaUtils";
 import PipelineToggleField from "@/pageEditor/fields/PipelineToggleField";
@@ -89,23 +89,26 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
             value={isPipelineExpression(body)}
             onChange={async ({ target }: ChangeEvent<CheckBoxLike>) => {
               if (target.value) {
-                await setFieldValue(configName("body"), {
-                  __type__: "pipeline",
-                  __value__: [
-                    createNewBlock(DocumentRenderer.BLOCK_ID, {
-                      parentBlockId: TourStepTransformer.BLOCK_ID,
+                await setFieldValue(
+                  configName("body"),
+                  toExpression("pipeline", [
+                    createNewConfiguredBrick(DocumentRenderer.BLOCK_ID, {
+                      parentBrickId: TourStepTransformer.BLOCK_ID,
                     }),
-                  ],
-                });
+                  ]),
+                );
                 await setFieldValue(
                   configName("appearance", "refreshTrigger"),
                   "manual",
                 );
               } else {
-                await setFieldValue(configName("body"), {
-                  __type__: "nunjucks",
-                  __value__: "Enter step content, supports **markdown**",
-                });
+                await setFieldValue(
+                  configName("body"),
+                  toExpression(
+                    "nunjucks",
+                    "Enter step content, supports **markdown**",
+                  ),
+                );
               }
             }}
           />

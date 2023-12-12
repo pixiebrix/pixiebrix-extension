@@ -17,10 +17,9 @@
 
 import React, { useRef, useState } from "react";
 import ReactCrop, { type Crop } from "react-image-crop";
-import { type WidgetProps } from "@rjsf/core";
+import { type WidgetProps } from "@rjsf/utils";
 import "react-image-crop/src/ReactCrop.scss";
-import { assert } from "@/utils/typeUtils";
-import { FormGroup, FormLabel } from "react-bootstrap";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ImageCropWidget: React.VFC<WidgetProps> = ({
   schema,
@@ -64,7 +63,7 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
     const canvasContext = canvas.getContext("2d");
-    assert(canvasContext, "Browser did not provide canvas context");
+    assertNotNullish(canvasContext, "Browser did not provide canvas context");
 
     canvas.width = crop.width * pixelRatio * scaleX;
     canvas.height = crop.height * pixelRatio * scaleY;
@@ -91,23 +90,20 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
     typeof uiSchema?.source === "string" ? uiSchema.source : null;
 
   return (
-    <FormGroup>
-      <FormLabel>{schema.title}</FormLabel>
+    <>
       {source && (
-        <>
-          <ReactCrop
-            crop={crop}
-            onComplete={onCropComplete}
-            onChange={onCropChange}
-          >
-            <img
-              crossOrigin="anonymous"
-              src={source}
-              alt="Item being cropped"
-              onLoad={onImageLoaded}
-            />
-          </ReactCrop>
-        </>
+        <ReactCrop
+          crop={crop}
+          onComplete={onCropComplete}
+          onChange={onCropChange}
+        >
+          <img
+            crossOrigin="anonymous"
+            src={source}
+            alt="Item being cropped"
+            onLoad={onImageLoaded}
+          />
+        </ReactCrop>
       )}
       {croppedImageUrl && (
         <>
@@ -115,7 +111,7 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
           <img alt="Crop preview" className="mw-100" src={croppedImageUrl} />
         </>
       )}
-    </FormGroup>
+    </>
   );
 };
 

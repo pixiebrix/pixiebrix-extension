@@ -68,7 +68,7 @@ import {
   setActiveNodeId,
   syncElementNodeUIStates,
 } from "@/pageEditor/slices/editorSliceHelpers";
-import { produce } from "immer";
+import { type Draft, produce } from "immer";
 import { normalizePipelineForEditor } from "@/pageEditor/starterBricks/pipelineMapping";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import {
@@ -115,10 +115,8 @@ export const initialState: EditorState = {
   deletedElementsByRecipeId: {},
   newRecipeIds: [],
   availableInstalledIds: [],
-  unavailableInstalledCount: 0,
   isPendingInstalledExtensions: false,
   availableDynamicIds: [],
-  unavailableDynamicCount: 0,
   isPendingDynamicExtensions: false,
   isModListExpanded: true,
   isDataPanelExpanded: true,
@@ -140,7 +138,7 @@ const cloneActiveExtension = createAsyncThunk<
     selectActiveElement(state),
     async (draft) => {
       draft.uuid = uuidv4();
-      draft.label += " - copy";
+      draft.label += " (Copy)";
       // Remove from its recipe, if any (the user can add it to any recipe after creation)
       delete draft.recipe;
       // Re-generate instance IDs for all the bricks in the extension
@@ -346,7 +344,7 @@ export const editorSlice = createSlice({
       state.knownEditable.push(action.payload);
     },
     addElement(state, action: PayloadAction<ModComponentFormState>) {
-      const element = action.payload;
+      const element = action.payload as Draft<ModComponentFormState>;
       state.inserting = null;
       state.elements.push(element);
       state.dirty[element.uuid] = true;
@@ -367,10 +365,10 @@ export const editorSlice = createSlice({
       state.selectionSeq++;
     },
     selectInstalled(state, action: PayloadAction<ModComponentFormState>) {
-      const element = action.payload;
+      const element = action.payload as Draft<ModComponentFormState>;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
-        state.elements[index] = action.payload;
+        state.elements[index] = element;
       } else {
         state.elements.push(element);
       }
@@ -378,7 +376,7 @@ export const editorSlice = createSlice({
       activateElement(state, element);
     },
     resetInstalled(state, actions: PayloadAction<ModComponentFormState>) {
-      const element = actions.payload;
+      const element = actions.payload as Draft<ModComponentFormState>;
       const index = state.elements.findIndex((x) => x.uuid === element.uuid);
       if (index >= 0) {
         state.elements[index] = element;
@@ -395,6 +393,14 @@ export const editorSlice = createSlice({
       void clearExtensionTraces(element.uuid);
 
       syncElementNodeUIStates(state, element);
+    },
+    showHomePane(state) {
+      state.activeElementId = null;
+      state.activeRecipeId = null;
+      state.expandedRecipeId = null;
+      state.error = null;
+      state.beta = false;
+      state.selectionSeq++;
     },
     selectElement(state, action: PayloadAction<UUID>) {
       const elementId = action.payload;
@@ -431,7 +437,7 @@ export const editorSlice = createSlice({
         throw new Error(`Unknown dynamic element: ${element.uuid}`);
       }
 
-      state.elements[index] = element;
+      state.elements[index] = element as Draft<ModComponentFormState>;
       state.dirty[element.uuid] = true;
 
       syncElementNodeUIStates(state, element);
@@ -643,7 +649,7 @@ export const editorSlice = createSlice({
       );
       if (elementIndex < 0) {
         throw new Error(
-          "Unable to remove extension from mod, extension form state not found",
+          "Unable to remove mod component from mod, mod component form state not found",
         );
       }
 
@@ -920,14 +926,12 @@ export const editorSlice = createSlice({
         (state, { payload: { availableInstalledIds, unavailableCount } }) => {
           state.isPendingInstalledExtensions = false;
           state.availableInstalledIds = availableInstalledIds;
-          state.unavailableInstalledCount = unavailableCount;
         },
       )
       .addCase(
         checkAvailableInstalledExtensions.rejected,
         (state, { error }) => {
           state.isPendingInstalledExtensions = false;
-          state.unavailableInstalledCount = 0;
           state.error = error;
           reportError(error);
         },
@@ -941,12 +945,10 @@ export const editorSlice = createSlice({
         (state, { payload: { availableDynamicIds, unavailableCount } }) => {
           state.isPendingDynamicExtensions = false;
           state.availableDynamicIds = availableDynamicIds;
-          state.unavailableDynamicCount = unavailableCount;
         },
       )
       .addCase(checkAvailableDynamicElements.rejected, (state, { error }) => {
         state.isPendingDynamicExtensions = false;
-        state.unavailableDynamicCount = 0;
         state.error = error;
         reportError(error);
       })

@@ -20,6 +20,7 @@ exports[`FormPreview it renders markdown in description 1`] = `
     >
       <div
         class="my-1"
+        id="root__title"
       >
         <h5>
           A form
@@ -30,8 +31,8 @@ exports[`FormPreview it renders markdown in description 1`] = `
         />
       </div>
       <div
-        class="field-description"
-        id="root-description"
+        class="mb-3"
+        id="root__description"
       >
         <div>
           <p>
@@ -57,26 +58,25 @@ exports[`FormPreview it renders markdown in description 1`] = `
             <div
               class="form-group"
             >
+              <label
+                class="form-label"
+                for="root_firstName"
+              >
+                First name
+              </label>
               <div
                 class="root root isActive"
                 role="group"
               >
-                <div
-                  class="mb-0 form-group"
-                >
-                  <label
-                    class="form-label"
-                  >
-                    First name
-                  </label>
-                  <input
-                    class="form-control"
-                    id="root_firstName"
-                    placeholder=""
-                    type="text"
-                    value=""
-                  />
-                </div>
+                <input
+                  aria-describedby="root_firstName__error root_firstName__description root_firstName__help"
+                  class="form-control"
+                  id="root_firstName"
+                  name="root_firstName"
+                  placeholder=""
+                  type="text"
+                  value=""
+                />
               </div>
               <div
                 class="field-description text-muted"
@@ -118,6 +118,7 @@ exports[`FormPreview it renders simple schema 1`] = `
     >
       <div
         class="my-1"
+        id="root__title"
       >
         <h5>
           A form
@@ -128,8 +129,8 @@ exports[`FormPreview it renders simple schema 1`] = `
         />
       </div>
       <div
-        class="field-description"
-        id="root-description"
+        class="mb-3"
+        id="root__description"
       >
         <div>
           <p>
@@ -153,26 +154,25 @@ exports[`FormPreview it renders simple schema 1`] = `
             <div
               class="form-group"
             >
+              <label
+                class="form-label"
+                for="root_firstName"
+              >
+                First name
+              </label>
               <div
                 class="root root isActive"
                 role="group"
               >
-                <div
-                  class="mb-0 form-group"
-                >
-                  <label
-                    class="form-label"
-                  >
-                    First name
-                  </label>
-                  <input
-                    class="form-control"
-                    id="root_firstName"
-                    placeholder=""
-                    type="text"
-                    value="Chuck"
-                  />
-                </div>
+                <input
+                  aria-describedby="root_firstName__error root_firstName__description root_firstName__help"
+                  class="form-control"
+                  id="root_firstName"
+                  name="root_firstName"
+                  placeholder=""
+                  type="text"
+                  value="Chuck"
+                />
               </div>
             </div>
           </div>
@@ -188,26 +188,26 @@ exports[`FormPreview it renders simple schema 1`] = `
             <div
               class="form-group"
             >
+              <label
+                class="form-label"
+                for="root_age"
+              >
+                Age
+              </label>
               <div
                 class="root root"
                 role="group"
               >
-                <div
-                  class="mb-0 form-group"
-                >
-                  <label
-                    class="form-label"
-                  >
-                    Age
-                  </label>
-                  <input
-                    class="form-control"
-                    id="root_age"
-                    placeholder=""
-                    type="number"
-                    value=""
-                  />
-                </div>
+                <input
+                  aria-describedby="root_age__error root_age__description root_age__help"
+                  class="form-control"
+                  id="root_age"
+                  name="root_age"
+                  placeholder=""
+                  step="any"
+                  type="number"
+                  value=""
+                />
               </div>
             </div>
           </div>
@@ -223,26 +223,25 @@ exports[`FormPreview it renders simple schema 1`] = `
             <div
               class="form-group"
             >
+              <label
+                class="form-label"
+                for="root_telephone"
+              >
+                Telephone
+              </label>
               <div
                 class="root root"
                 role="group"
               >
-                <div
-                  class="mb-0 form-group"
-                >
-                  <label
-                    class="form-label"
-                  >
-                    Telephone
-                  </label>
-                  <input
-                    class="form-control"
-                    id="root_telephone"
-                    placeholder=""
-                    type="text"
-                    value=""
-                  />
-                </div>
+                <input
+                  aria-describedby="root_telephone__error root_telephone__description root_telephone__help"
+                  class="form-control"
+                  id="root_telephone"
+                  name="root_telephone"
+                  placeholder=""
+                  type="text"
+                  value=""
+                />
               </div>
             </div>
           </div>

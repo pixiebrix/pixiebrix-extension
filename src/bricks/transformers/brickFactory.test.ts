@@ -37,10 +37,8 @@ import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 import { setContext } from "@/testUtils/detectPageMock";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
-import {
-  makePipelineExpression,
-  makeVariableExpression,
-} from "@/runtime/expressionCreators";
+
+import { toExpression } from "@/utils/expressionUtils";
 
 setContext("contentScript");
 
@@ -149,7 +147,7 @@ test("inner pipelines receive correct context", async () => {
       {
         id: "@pixiebrix/run",
         config: {
-          body: makeVariableExpression("@input.body"),
+          body: toExpression("var", "@input.body"),
         },
       },
     ],
@@ -162,7 +160,7 @@ test("inner pipelines receive correct context", async () => {
     id: block.id,
     config: {
       customInput: "Brick Environment",
-      body: makePipelineExpression([
+      body: toExpression("pipeline", [
         {
           id: validateRegistryId("test/context"),
           label: "Pipeline Arg Context",
@@ -354,7 +352,7 @@ describe("tracing", () => {
         {
           id: "@pixiebrix/run",
           config: {
-            body: makeVariableExpression("@input.body"),
+            body: toExpression("var", "@input.body"),
           },
         },
       ],
@@ -367,7 +365,7 @@ describe("tracing", () => {
       id: block.id,
       config: {
         customInput: "Brick Environment",
-        body: makePipelineExpression([
+        body: toExpression("pipeline", [
           {
             id: validateRegistryId("test/options"),
             label: "Pipeline Arg Options",

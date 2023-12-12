@@ -42,7 +42,7 @@ import { type MarketplaceListing } from "@/types/contract";
 import BlockDetail from "@/components/addBlockModal/BlockDetail";
 import Loader from "@/components/Loader";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { produce } from "immer";
+import { type Draft, produce } from "immer";
 import { useDispatch, useSelector } from "react-redux";
 import useAllBricks from "@/bricks/hooks/useAllBricks";
 import useBlockSearch from "@/components/addBlockModal/useBlockSearch";
@@ -103,7 +103,7 @@ const slice = createSlice({
       state.scrollPosition = action.payload;
     },
     onSetDetailBlock(state, action: PayloadAction<Brick>) {
-      state.detailBlock = action.payload;
+      state.detailBlock = action.payload as Draft<Brick>;
       state.scrollTo = state.scrollPosition;
     },
     onClearDetailBlock(state) {
@@ -361,7 +361,7 @@ const AddBlockModal: React.FC = () => {
       </Modal.Header>
       <Modal.Body
         className={cx(styles.body, {
-          [styles.blockDetail]: state.detailBlock != null,
+          [styles.blockDetail ?? ""]: state.detailBlock != null,
         })}
       >
         {state.detailBlock ? (
@@ -383,7 +383,7 @@ const AddBlockModal: React.FC = () => {
             <div
               className={cx(styles.tagList, {
                 // Fit the "Automation Anywhere" tag name on one line
-                [styles.widerTagList]:
+                [styles.widerTagList ?? ""]:
                   partnerKey === AUTOMATION_ANYWHERE_PARTNER_KEY,
               })}
             >

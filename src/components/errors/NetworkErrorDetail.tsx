@@ -112,7 +112,7 @@ const NetworkErrorDetail: React.FunctionComponent<{
             <div>
               PixieBrix did not receive a response. See{" "}
               <a
-                href="https://docs.pixiebrix.com/network-errors"
+                href="https://docs.pixiebrix.com/how-to/troubleshooting/troubleshooting-network-errors"
                 target="_blank"
                 rel="noreferrer"
               >

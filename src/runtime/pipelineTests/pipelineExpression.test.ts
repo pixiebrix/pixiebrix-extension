@@ -23,6 +23,8 @@ import {
   simpleInput,
   testOptions,
 } from "./pipelineTestHelpers";
+import { toExpression } from "@/utils/expressionUtils";
+import { validateRegistryId } from "@/types/helpers";
 
 beforeEach(() => {
   blockRegistry.clear();
@@ -34,10 +36,9 @@ describe("apiVersion: v3", () => {
     const pipeline = {
       id: pipelineBrick.id,
       config: {
-        pipeline: {
-          __type__: "pipeline",
-          __value__: [{ id: "@pixiebrix/confetti" }],
-        },
+        pipeline: toExpression("pipeline", [
+          { id: validateRegistryId("@pixiebrix/confetti"), config: {} },
+        ]),
       },
     };
     const result = await reducePipeline(
@@ -52,10 +53,9 @@ describe("apiVersion: v3", () => {
     const pipeline = {
       id: identityBrick.id,
       config: {
-        data: {
-          __type__: "pipeline",
-          __value__: [{ id: "@pixiebrix/confetti" }],
-        },
+        data: toExpression("pipeline", [
+          { id: validateRegistryId("@pixiebrix/confetti"), config: {} },
+        ]),
       },
     };
     const result = await reducePipeline(
@@ -64,10 +64,9 @@ describe("apiVersion: v3", () => {
       testOptions("v3"),
     );
     expect(result).toStrictEqual({
-      data: {
-        __type__: "pipeline",
-        __value__: [{ id: "@pixiebrix/confetti" }],
-      },
+      data: toExpression("pipeline", [
+        { id: validateRegistryId("@pixiebrix/confetti"), config: {} },
+      ]),
     });
   });
 });

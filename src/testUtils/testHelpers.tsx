@@ -33,27 +33,21 @@ import {
   type Reducer,
   type ReducersMapObject,
   type ThunkDispatch,
+  type Middleware,
 } from "@reduxjs/toolkit";
 
 import {
-  // eslint-disable-next-line no-restricted-imports
+  // eslint-disable-next-line no-restricted-imports -- test file for helpers
   Form,
-  // eslint-disable-next-line no-restricted-imports
+  // eslint-disable-next-line no-restricted-imports -- test file for helpers
   Formik,
-  type FormikHelpers,
   type FormikErrors,
+  type FormikHelpers,
   type FormikValues,
 } from "formik";
-import { type Middleware } from "redux";
 import { noop } from "lodash";
 import { type ThunkMiddlewareFor } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
 import { type UnknownObject } from "@/types/objectTypes";
-import {
-  type Expression,
-  type ExpressionType,
-  type PipelineExpression,
-} from "@/types/runtimeTypes";
-import { type BrickPipeline } from "@/bricks/types";
 import {
   act as actHook,
   renderHook,
@@ -61,22 +55,6 @@ import {
   type RenderHookResult,
   type WrapperComponent,
 } from "@testing-library/react-hooks";
-
-export const neverPromise = async (...args: unknown[]): Promise<never> => {
-  console.error("This method should not have been called", { args });
-  throw new Error("This method should not have been called");
-};
-
-/**
- * Generate mocked listeners for browser.*.onEvent objects
- * @example browser.permissions.onAdded = getChromeEventMocks();
- */
-export const getChromeEventMocks = () => ({
-  addListener: jest.fn(),
-  removeListener: jest.fn(),
-  hasListener: jest.fn(),
-  hasListeners: jest.fn(),
-});
 
 /**
  * Wait for async handlers, e.g., useAsyncEffect and useAsyncState.
@@ -367,20 +345,3 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
     };
   };
 }
-
-export function toExpression<
-  TTemplateOrPipeline,
-  TTypeTag extends ExpressionType,
->(
-  type: TTypeTag,
-  value: TTemplateOrPipeline,
-): Expression<TTemplateOrPipeline, TTypeTag> {
-  return {
-    __type__: type,
-    __value__: value,
-  };
-}
-
-export const EMPTY_PIPELINE: PipelineExpression = Object.freeze(
-  toExpression("pipeline", [] as BrickPipeline),
-);

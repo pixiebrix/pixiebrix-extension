@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "@/extensionConsole/pages/activateRecipe/ServicesBody.module.scss";
+import styles from "@/extensionConsole/pages/activateMod/IntegrationsBody.module.scss";
 
 import React from "react";
 import { type AuthOption } from "@/auth/authTypes";
 import { useField } from "formik";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { Card, Col, Row } from "react-bootstrap";
-import ServiceDescriptor from "@/extensionConsole/pages/activateRecipe/ServiceDescriptor";
+import IntegrationDescriptor from "@/extensionConsole/pages/activateMod/IntegrationDescriptor";
 import AuthWidget from "@/components/integrations/AuthWidget";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { AnnotationType } from "@/types/annotationTypes";
@@ -68,9 +68,9 @@ const ServicesRow: React.FunctionComponent<{
           <Col xs={12} sm={6} xl={4} key={`${outputKey}-${valueIndex}`}>
             <ServiceFieldError servicesError={error} fieldIndex={valueIndex} />
             <Card className={styles.serviceCard}>
-              <ServiceDescriptor
-                serviceId={integrationId}
-                serviceConfigs={serviceConfigs}
+              <IntegrationDescriptor
+                integrationId={integrationId}
+                integrationConfigs={serviceConfigs}
               />
               <AuthWidget
                 authOptions={authOptions}

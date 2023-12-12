@@ -39,7 +39,9 @@ const OptionComponent = ({
   <div
     ref={innerRef}
     {...innerProps}
-    className={cx(styles.optionContainer, { [styles.active]: isSelected })}
+    className={cx(styles.optionContainer, {
+      [styles.active ?? ""]: isSelected,
+    })}
   >
     <Button
       data-testid="variant-option"

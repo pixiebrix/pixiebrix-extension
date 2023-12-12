@@ -18,7 +18,7 @@
 import React from "react";
 import { render } from "@/pageEditor/testHelpers";
 import IdentityOptions from "@/bricks/transformers/IdentityOptions";
-import { getExampleBlockConfig } from "@/pageEditor/exampleBlockConfigs";
+import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
 import { IdentityTransformer } from "@/bricks/transformers/identity";
 import brickRegistry from "@/bricks/registry";
 import { screen } from "@testing-library/react";
@@ -36,7 +36,7 @@ describe("IdentityOptions", () => {
     render(<IdentityOptions name="foo" configKey="config" />, {
       initialValues: {
         foo: {
-          config: getExampleBlockConfig(IdentityTransformer.BRICK_ID),
+          config: getExampleBrickConfig(IdentityTransformer.BRICK_ID),
         },
       },
     });

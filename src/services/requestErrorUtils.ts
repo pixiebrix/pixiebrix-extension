@@ -26,7 +26,7 @@ import {
 } from "@/errors/networkErrorHelpers";
 import { isAbsoluteUrl } from "@/utils/urlUtils";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
-import { assert } from "@/utils/typeUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * Get the absolute URL from a request configuration. Does NOT include the query params from the request unless
@@ -38,12 +38,12 @@ export function selectAbsoluteUrl({
 }: // Using AxiosRequestConfig since the actual request object doesn't seem
 // to be available in all the places we use this method
 AxiosRequestConfig): string {
-  assert(url, "axios: The URL was not provided");
+  assertNotNullish(url, "axios: The URL was not provided");
   if (isAbsoluteUrl(url)) {
     return url;
   }
 
-  assert(baseURL, "axios: The base URL was not provided");
+  assertNotNullish(baseURL, "axios: The base URL was not provided");
   return urljoin(baseURL, url);
 }
 

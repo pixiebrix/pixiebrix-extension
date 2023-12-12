@@ -121,12 +121,17 @@ const IntegrationAuthSelector: React.FunctionComponent<{
   );
 
   useAsyncEffect(async () => {
-    if (field.value != null || authOptions.length > 1 || isOptional) {
+    const option = authOptions[0];
+    if (
+      field.value != null ||
+      authOptions.length !== 1 ||
+      isOptional ||
+      !option
+    ) {
       return;
     }
 
     // Automatically default the field value if there's only one option available
-    const option = authOptions[0];
     await helpers.setValue(option.value);
     void reportSelectEvent(option, false);
   }, [helpers, authOptions, field.value]);

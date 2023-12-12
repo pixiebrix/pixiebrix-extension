@@ -52,7 +52,7 @@ exports[`NonScriptablePage it renders 1`] = `
             <p>
               Visit the 
               <a
-                href="https://docs.pixiebrix.com/quick-start-guide"
+                href="https://docs.pixiebrix.com/quick-start"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -128,7 +128,7 @@ exports[`NonScriptablePage it renders http snapshot 1`] = `
             <p>
               Visit the 
               <a
-                href="https://docs.pixiebrix.com/quick-start-guide"
+                href="https://docs.pixiebrix.com/quick-start"
                 rel="noopener noreferrer"
                 target="_blank"
               >

@@ -35,7 +35,6 @@ import menuItem from "@/pageEditor/starterBricks/menuItem";
 import pDefer from "p-defer";
 import { pick } from "lodash";
 import extensionsSlice from "@/store/extensionsSlice";
-import { getMinimalUiSchema } from "@/components/formBuilder/formBuilderHelpers";
 import { type ModOptionsDefinition } from "@/types/modDefinitionTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
@@ -45,6 +44,7 @@ import {
 } from "@/testUtils/factories/pageEditorFactories";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+import { minimalUiSchemaFactory } from "@/utils/schemaUtils";
 
 jest.mock("@/pageEditor/hooks/useUpsertFormElement");
 jest.mock("@/pageEditor/hooks/useResetExtension");
@@ -160,7 +160,7 @@ describe("saving a Recipe Extension", () => {
         },
       },
     },
-    uiSchema: getMinimalUiSchema(),
+    uiSchema: minimalUiSchemaFactory(),
   };
   const setupMocks = () => {
     const recipe = defaultModDefinitionFactory({
@@ -345,6 +345,7 @@ describe("saving a Recipe Extension", () => {
         notifySuccess: true,
         reactivateEveryTab: true,
       },
+      modId: newRecipeMeta.id,
     });
 
     const elements = selectElements(store.getState());
@@ -438,6 +439,7 @@ describe("saving a Recipe Extension", () => {
         notifySuccess: true,
         reactivateEveryTab: true,
       },
+      modId: newRecipeMeta.id,
     });
 
     const elements = selectElements(store.getState());

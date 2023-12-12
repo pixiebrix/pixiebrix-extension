@@ -40,7 +40,7 @@ export class JavaScriptTransformer extends TransformerABC {
   constructor() {
     super(
       JavaScriptTransformer.BRICK_ID,
-      "[Experimental] Run JavaScript Function",
+      "Run JavaScript Function",
       "Run a JavaScript function and return the result",
     );
   }

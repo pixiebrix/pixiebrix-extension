@@ -37,12 +37,13 @@ import {
   type TemporaryDisplayInputs,
   type TemporaryPanelEntryMetadata,
 } from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { type PanelButton, type PanelPayload } from "@/types/sidebarTypes";
+import { type PanelButton } from "@/types/sidebarTypes";
 import { getCurrentTour, markTourStep } from "@/starterBricks/tourController";
 import { addOverlay } from "@/bricks/transformers/tourStep/overlay";
 import { cancelTemporaryPanels } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { AbortPanelAction } from "@/bricks/errors";
 import { $safeFind } from "@/utils/domUtils";
+import { toExpression } from "@/utils/expressionUtils";
 
 export type StepInputs = {
   title: string;
@@ -282,12 +283,9 @@ export const StepSchema: Schema = propertiesToSchema(
 );
 
 function markdownPipeline(markdown: string): PipelineExpression {
-  return {
-    __type__: "pipeline",
-    __value__: [
-      { id: validateRegistryId("@pixiebrix/markdown"), config: { markdown } },
-    ],
-  };
+  return toExpression("pipeline", [
+    { id: validateRegistryId("@pixiebrix/markdown"), config: { markdown } },
+  ]);
 }
 
 export class TourStepTransformer extends TransformerABC {
@@ -362,7 +360,7 @@ export class TourStepTransformer extends TransformerABC {
 
       counter++;
 
-      return result as PanelPayload;
+      return result;
     };
 
     // Outside click handler

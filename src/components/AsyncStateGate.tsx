@@ -21,7 +21,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { type AsyncState, type FetchableAsyncState } from "@/types/sliceTypes";
 import { Button } from "react-bootstrap";
 import { isFetchableAsyncState } from "@/utils/asyncStateUtils";
-import { assert } from "@/utils/typeUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  *  A standard error display for use with AsyncStateGate
@@ -98,7 +98,7 @@ function AsyncStateGate<Data>(
     throw error;
   }
 
-  assert(data, "data should be defined"); // Type-only check
+  assertNotNullish(data, "data should be defined"); // Type-only check
   return <>{children({ data })}</>;
 }
 

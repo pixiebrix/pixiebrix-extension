@@ -271,7 +271,7 @@ exports[`ModsPageLayout renders 1`] = `
                 Visit the 
                 <span>
                   <a
-                    href="https://docs.pixiebrix.com/quick-start-guide"
+                    href="https://docs.pixiebrix.com/quick-start"
                     rel="noopener noreferrer"
                     target="_blank"
                   >

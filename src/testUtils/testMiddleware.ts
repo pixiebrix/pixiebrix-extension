@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Middleware } from "@reduxjs/toolkit";
-import { type Action } from "redux";
+import { type Middleware, type Action } from "@reduxjs/toolkit";
 
 const actions: Action[] = [];
 

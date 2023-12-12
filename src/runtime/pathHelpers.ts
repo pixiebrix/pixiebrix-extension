@@ -102,29 +102,29 @@ export function getPropByPath(
   for (const [index, rawPart] of rawParts.entries()) {
     const previous = value;
 
-    // Handle null coalescing syntax
+    // Handle optional chaining syntax, e.g., foo?.bar
     let part: string | number = rawPart;
-    let coalesce = false;
-    let numeric = false;
+    let isOptionalChain = false;
+    let isNumeric = false;
 
     if (rawPart.endsWith("?")) {
       part = rawPart.slice(0, -1);
-      coalesce = true;
+      isOptionalChain = true;
     }
 
     if (/^\d+$/.test(part) && Array.isArray(value)) {
       part = Number.parseInt(part, 10);
-      numeric = true;
+      isNumeric = true;
     }
 
-    if (!(typeof value == "object" || (Array.isArray(previous) && numeric))) {
+    if (!(typeof value == "object" || (Array.isArray(previous) && isNumeric))) {
       throw new InvalidPathError(`Invalid path ${path}`, path);
     }
 
     value = get(value, part);
 
     if (value == null) {
-      if (coalesce || index === rawParts.length - 1) {
+      if (isOptionalChain || index === rawParts.length - 1) {
         return null;
       }
 

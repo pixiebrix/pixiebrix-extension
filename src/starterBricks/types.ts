@@ -126,9 +126,9 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
 
   public readonly name: string;
 
-  public readonly icon: BrickIcon;
+  public readonly icon?: BrickIcon;
 
-  public readonly description: string;
+  public readonly description?: string;
 
   /**
    * The current registered mod components.

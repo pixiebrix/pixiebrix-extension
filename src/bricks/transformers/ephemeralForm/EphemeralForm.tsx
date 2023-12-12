@@ -16,8 +16,9 @@
  */
 
 import React, { useEffect } from "react";
+import validator from "@rjsf/validator-ajv6";
 import { Theme } from "@rjsf/bootstrap-4";
-import { utils, withTheme } from "@rjsf/core";
+import { withTheme, getDefaultRegistry } from "@rjsf/core";
 import { useAsyncState } from "@/hooks/common";
 import {
   getFormDefinition,
@@ -30,11 +31,11 @@ import { type Target } from "@/types/messengerTypes";
 import { validateUUID } from "@/types/helpers";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import DescriptionField from "@/components/formBuilder/DescriptionField";
-import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import reportError from "@/telemetry/reportError";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
+import { templates } from "@/components/formBuilder/RjsfTemplates";
 
 const fields = {
   DescriptionField,
@@ -55,15 +56,16 @@ const PanelLayout: React.FC = ({ children }) => (
   <div className="p-3">{children}</div>
 );
 
-function monkeyPatchForm() {
+function monkeyPatchFormWidgets() {
+  const registry = getDefaultRegistry();
+  // Use default widget instead of bs4 widget because the bs4 file widget is broken
   // https://github.com/rjsf-team/react-jsonschema-form/issues/2095#issuecomment-844309622
-  const registry = utils.getDefaultRegistry();
-  const defaultFileWidget = registry.widgets.FileWidget;
-  Theme.widgets.FileWidget = defaultFileWidget;
+  // TODO: Remove this monkeypatch since it was fixed in March 2023
+  Theme.widgets.FileWidget = registry.widgets.FileWidget;
   return withTheme(Theme);
 }
 
-const JsonSchemaForm = monkeyPatchForm();
+const JsonSchemaForm = monkeyPatchFormWidgets();
 
 /**
  * @see FormTransformer
@@ -134,7 +136,8 @@ const EphemeralForm: React.FC = () => {
           uiSchema={definition.uiSchema}
           fields={fields}
           widgets={uiWidgets}
-          FieldTemplate={FieldTemplate}
+          validator={validator}
+          templates={templates}
           onSubmit={({ formData: values }) => {
             void resolveForm(target, nonce, values);
           }}

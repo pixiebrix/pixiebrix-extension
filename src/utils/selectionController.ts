@@ -17,6 +17,11 @@
 
 import { getCommonAncestor } from "@/utils/inference/selectorInference";
 
+function getSelection(): Selection {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Firefox-only iframe-only "null"
+  return window.getSelection()!;
+}
+
 /**
  * Get the HTMLElement corresponding to the current selection.
  *
@@ -26,11 +31,14 @@ import { getCommonAncestor } from "@/utils/inference/selectorInference";
  * @see setActiveElement
  */
 export function guessSelectedElement(): HTMLElement | null {
-  const selection = document.getSelection();
+  const selection = getSelection();
   if (selection?.rangeCount) {
-    const start = selection.getRangeAt(0).startContainer.parentElement;
-    const end = selection.getRangeAt(selection.rangeCount - 1).endContainer
-      .parentElement;
+    const start =
+      selection.getRangeAt(0).startContainer.parentElement ??
+      document.documentElement;
+    const end =
+      selection.getRangeAt(selection.rangeCount - 1).endContainer
+        .parentElement ?? document.documentElement;
     const node = getCommonAncestor(start, end);
     if (node instanceof HTMLElement) {
       return node;

@@ -43,6 +43,8 @@ import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { reactivateEveryTab } from "@/background/messenger/api";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -54,7 +56,11 @@ type RecipeSaver = {
 function useSaveRecipe(): RecipeSaver {
   const dispatch = useDispatch();
   const create = useUpsertFormElement();
-  const { data: recipes, isLoading: isRecipesLoading } = useAllModDefinitions();
+  const {
+    data: recipes,
+    isLoading: isRecipesLoading,
+    error: recipesError,
+  } = useAllModDefinitions();
   const { data: editablePackages, isLoading: isEditablePackagesLoading } =
     useGetEditablePackagesQuery();
   const [updateRecipe] = useUpdateRecipeMutation();
@@ -68,7 +74,7 @@ function useSaveRecipe(): RecipeSaver {
   const [isSaving, setIsSaving] = useState(false);
 
   /**
-   * Save a recipe's extensions, options, and metadata
+   * Save a mod's components, options, and metadata
    * Throws errors for various bad states
    * @return boolean indicating successful save
    */
@@ -118,17 +124,19 @@ function useSaveRecipe(): RecipeSaver {
         !dirtyRecipeElements.some((element) => element.uuid === extension.id) &&
         !deletedElementIds.has(extension.id),
     );
-    // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
-    const newOptions = dirtyRecipeOptions[recipeId];
-    // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
-    const newMetadata = dirtyRecipeMetadata[recipeId];
+
+    // Dirty options/metadata or null if there are no staged changes.
+    // eslint-disable-next-line security/detect-object-injection -- recipe IDs are sanitized in the form validation
+    const dirtyOptions = dirtyRecipeOptions[recipeId];
+    // eslint-disable-next-line security/detect-object-injection -- recipe IDs are sanitized in the form validation
+    const dirtyMetadata = dirtyRecipeMetadata[recipeId];
 
     const newRecipe = buildRecipe({
       sourceRecipe: recipe,
       cleanRecipeExtensions,
       dirtyRecipeElements,
-      options: newOptions,
-      metadata: newMetadata,
+      options: dirtyOptions,
+      metadata: dirtyMetadata,
     });
 
     const packageId = editablePackages.find(
@@ -156,6 +164,7 @@ function useSaveRecipe(): RecipeSaver {
             notifySuccess: false,
             reactivateEveryTab: false,
           },
+          modId: newRecipeMetadata.id,
         }),
       ),
     );
@@ -179,10 +188,23 @@ function useSaveRecipe(): RecipeSaver {
     );
     dispatch(editorActions.clearDeletedElementsForRecipe(newRecipeMetadata.id));
 
+    reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
+      modId: newRecipe.metadata.id,
+    });
+
     return true;
   }
 
   async function safeSave(recipeId: RegistryId) {
+    if (recipesError) {
+      notify.error({
+        message: "Error fetching mod definitions",
+        error: recipesError,
+      });
+
+      return;
+    }
+
     if (isRecipesLoading || isEditablePackagesLoading) {
       return;
     }

@@ -62,8 +62,8 @@ import {
   inferConfiguredModIntegrations,
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
-import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
-import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
+import { useDeactivateModComponent } from "@/pageEditor/hooks/useRemoveModComponent";
+import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type PackageUpsertResponse } from "@/types/contract";
@@ -84,6 +84,8 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -106,8 +108,8 @@ function useSaveCallbacks({
   const dispatch = useDispatch();
   const [createRecipe] = useCreateRecipeMutation();
   const createExtension = useUpsertFormElement();
-  const removeExtension = useRemoveExtension();
-  const removeRecipe = useRemoveRecipe();
+  const deactivateStandaloneMod = useDeactivateModComponent();
+  const deactivateMod = useDeactivateMod();
 
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
@@ -154,13 +156,18 @@ function useSaveCallbacks({
               notifySuccess: true,
               reactivateEveryTab: true,
             },
+            modId: newRecipe.metadata.id,
           });
           if (!keepLocalCopy) {
-            await removeExtension({
+            await deactivateStandaloneMod({
               extensionId: activeElement.uuid,
               shouldShowConfirmation: false,
             });
           }
+
+          reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
+            modId: newRecipe.metadata.id,
+          });
         },
       ),
     [
@@ -169,7 +176,7 @@ function useSaveCallbacks({
       createRecipe,
       dispatch,
       keepLocalCopy,
-      removeExtension,
+      deactivateStandaloneMod,
     ],
   );
 
@@ -223,7 +230,7 @@ function useSaveCallbacks({
       };
 
       if (!keepLocalCopy) {
-        await removeRecipe({ recipeId, shouldShowConfirmation: false });
+        await deactivateMod({ modId: recipeId, shouldShowConfirmation: false });
       }
 
       const modComponents = [...dirtyRecipeElements, ...cleanRecipeExtensions];
@@ -246,6 +253,11 @@ function useSaveCallbacks({
           options,
         }),
       );
+
+      reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
+        copiedFrom: recipeId,
+        modId: savedRecipe.metadata.id,
+      });
     },
     [
       createRecipe,
@@ -256,7 +268,7 @@ function useSaveCallbacks({
       installedExtensions,
       isDirtyByElementId,
       keepLocalCopy,
-      removeRecipe,
+      deactivateMod,
     ],
   );
 
@@ -292,7 +304,7 @@ function useInitialFormState({
 
     return {
       id: newId,
-      name: recipeMetadata.name,
+      name: `${recipeMetadata.name} (Copy)`,
       version: validateSemVerString("1.0.0"),
       description: recipeMetadata.description,
     };

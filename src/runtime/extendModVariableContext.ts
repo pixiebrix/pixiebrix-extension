@@ -24,6 +24,7 @@ import apiVersionOptions, {
 } from "@/runtime/apiVersionOptions";
 import { pickBy } from "lodash";
 import { type ApiVersion } from "@/types/runtimeTypes";
+import { validateUUID } from "@/types/helpers";
 
 /**
  * Variable for accessing the mod Page State.
@@ -142,7 +143,7 @@ function extendModVariableContext<T extends UnknownObject = UnknownObject>(
     namespace: "blueprint",
     blueprintId,
     // `extensionId` is not used because namespace is `blueprint`
-    extensionId: undefined,
+    extensionId: validateUUID(null),
   });
 
   return {

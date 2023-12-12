@@ -41,22 +41,29 @@ import {
 import { type SemVerString } from "@/types/registryTypes";
 import { isAbsoluteUrl, safeParseUrl } from "@/utils/urlUtils";
 import { missingProperties } from "@/utils/schemaUtils";
+import { type SetRequired } from "type-fest";
+import { assertNotNullish } from "@/utils/nullishUtils";
+
+type RequestConfig = SetRequired<AxiosRequestConfig, "url">;
 
 /**
- * A service created from a local definition. Has the ability to authenticate requests because it has
+ * An integration hydrated from a user-defined definition. Has the ability to authenticate requests because it has
  * access to authenticate secrets.
  */
-export class LocalDefinedIntegration<
+export class UserDefinedIntegration<
   TDefinition extends IntegrationDefinition = IntegrationDefinition,
 > extends IntegrationABC {
   private readonly _definition: TDefinition;
 
   public readonly schema: Schema;
-  public readonly uiSchema: UiSchema;
+  public readonly uiSchema?: UiSchema;
 
   public readonly hasAuth: boolean;
 
-  public readonly version: SemVerString;
+  // XXX: in the future, version should be required. We currently can't mark it as required because
+  // IntegrationDefinition uses the Metadata type, which accommodate user-defined packages which have a version
+  // and built-in JS-defined bricks which don't have a version
+  public readonly version?: SemVerString;
 
   constructor(definition: TDefinition) {
     const { id, name, description, icon, version } = definition.metadata;
@@ -69,7 +76,7 @@ export class LocalDefinedIntegration<
   }
 
   /**
-   * Return true if this service can be used to authenticate against the given URL.
+   * Return true if this integration can be used to authenticate against the given URL.
    */
   isAvailable(url: string): boolean {
     const patterns = castArray(
@@ -79,7 +86,7 @@ export class LocalDefinedIntegration<
   }
 
   /**
-   * Return true if service exchanges credentials for a bearer token
+   * Return true if integration exchanges credentials for a bearer token
    */
   get isToken(): boolean {
     return (
@@ -89,7 +96,7 @@ export class LocalDefinedIntegration<
   }
 
   /**
-   * Return true if service uses OAuth2 authentication
+   * Return true if integration uses OAuth2 authentication
    */
   get isOAuth2(): boolean {
     return (
@@ -112,7 +119,7 @@ export class LocalDefinedIntegration<
   }
 
   /**
-   * Return true if service uses basic authentication
+   * Return true if integration uses basic authentication
    * @since 1.7.16
    */
   get isBasicHttpAuth(): boolean {
@@ -123,7 +130,7 @@ export class LocalDefinedIntegration<
   }
 
   /**
-   * Return true if service uses OAuth2 authorization grant
+   * Return true if integration uses OAuth2 authorization grant
    */
   get isAuthorizationGrant(): boolean {
     return (
@@ -134,21 +141,20 @@ export class LocalDefinedIntegration<
   }
 
   /**
-   * Returns origins that require permissions to use the service
+   * Returns origins that require permissions to use the integration
    */
-  getOrigins(serviceConfig: SanitizedConfig): string[] {
+  getOrigins(integrationConfig: SanitizedConfig): string[] {
     const patterns = castArray(
       this._definition.isAvailable?.matchPatterns ?? [],
     );
 
-    if (
-      this._definition.authentication != null &&
-      "baseURL" in this._definition.authentication
-    ) {
+    const baseUrlTemplate =
+      "baseURL" in this._definition.authentication &&
+      this._definition.authentication.baseURL;
+    if (baseUrlTemplate) {
       // Convert into a real match pattern: https://developer.chrome.com/docs/extensions/mv3/match_patterns/
-      const baseUrlTemplate = this._definition.authentication.baseURL;
       const baseUrl = safeParseUrl(
-        renderMustache(baseUrlTemplate, serviceConfig),
+        renderMustache(baseUrlTemplate, integrationConfig),
       );
 
       if (baseUrl.hostname) {
@@ -158,7 +164,7 @@ export class LocalDefinedIntegration<
         console.warn("Invalid baseURL provided by configuration", {
           baseUrlTemplate,
           baseUrl,
-          serviceConfig,
+          integrationConfig,
         });
       }
     }
@@ -169,7 +175,7 @@ export class LocalDefinedIntegration<
 
       // Don't add wildcard because the URL can't change per request.
       const authUrls = [oauth.oauth2.authorizeUrl, oauth.oauth2.tokenUrl]
-        .map((template) => renderMustache(template, serviceConfig))
+        .map((template) => renderMustache(template, integrationConfig))
         .filter((url) => Boolean(safeParseUrl(url).hostname));
       patterns.push(...authUrls);
     }
@@ -178,43 +184,47 @@ export class LocalDefinedIntegration<
       const tokenUrl = (
         this._definition as IntegrationDefinition<TokenAuthenticationDefinition>
       ).authentication.token.url;
-      patterns.push(renderMustache(tokenUrl, serviceConfig));
+      patterns.push(renderMustache(tokenUrl, integrationConfig));
     }
 
     return uniq(compact(patterns));
   }
 
-  getTokenContext(serviceConfig: SecretsConfig): TokenContext {
+  getTokenContext(integrationConfig: SecretsConfig): TokenContext | undefined {
     if (this.isToken) {
       const definition: TokenContext = (
         this._definition.authentication as TokenAuthenticationDefinition
       ).token;
-      // Console.debug("token context", { definition, serviceConfig });
-      return renderMustache<TokenContext>(definition, serviceConfig);
+      return renderMustache<TokenContext>(definition, integrationConfig);
     }
 
     return undefined;
   }
 
-  getOAuth2Context(serviceConfig: SecretsConfig): OAuth2Context {
+  getOAuth2Context(
+    integrationConfig: SecretsConfig,
+  ): OAuth2Context | undefined {
     if (this.isOAuth2) {
       const definition: OAuth2Context = (
         this._definition.authentication as OAuth2AuthenticationDefinition
       ).oauth2;
-      console.debug("getOAuth2Context", { definition, serviceConfig });
-      return renderMustache<OAuth2Context>(definition, serviceConfig);
+      console.debug("getOAuth2Context", {
+        definition,
+        integrationConfig,
+      });
+      return renderMustache<OAuth2Context>(definition, integrationConfig);
     }
 
     return undefined;
   }
 
   /**
-   * Test that the request URL can be called by this service.
-   * @throws IncompatibleServiceError if the resulting URL cannot by called by this service
+   * Test that the request URL can be called by this integration.
+   * @throws IncompatibleServiceError if the resulting URL cannot by called by this integration
    */
   private checkRequestUrl(
-    baseURL: string | null,
-    requestConfig: AxiosRequestConfig,
+    requestConfig: RequestConfig,
+    baseURL?: string,
   ): void {
     const absoluteURL =
       baseURL && !isAbsoluteUrl(requestConfig.url)
@@ -223,18 +233,18 @@ export class LocalDefinedIntegration<
 
     if (!this.isAvailable(absoluteURL)) {
       throw new IncompatibleServiceError(
-        `Service ${this.id} cannot be used to authenticate requests to ${absoluteURL}`,
+        `Integration ${this.id} cannot be used to authenticate requests to ${absoluteURL}`,
       );
     }
   }
 
   private authenticateRequestKey(
-    serviceConfig: SecretsConfig,
-    requestConfig: AxiosRequestConfig,
-  ): AxiosRequestConfig {
+    integrationConfig: SecretsConfig,
+    requestConfig: RequestConfig,
+  ): RequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
       throw new IncompatibleServiceError(
-        `Service ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`,
+        `Integration ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`,
       );
     }
 
@@ -244,12 +254,12 @@ export class LocalDefinedIntegration<
       params = {},
     } = renderMustache<KeyAuthenticationDefinition>(
       (this._definition.authentication as KeyAuthenticationDefinition) ?? {},
-      serviceConfig,
+      integrationConfig,
     );
 
     if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
       throw new Error(
-        "Must use absolute URLs for services that don't define a baseURL",
+        "Must use absolute URLs for integrations that don't define a baseURL",
       );
     }
 
@@ -259,18 +269,18 @@ export class LocalDefinedIntegration<
       draft.params = { ...draft.params, ...params };
     });
 
-    this.checkRequestUrl(baseURL, requestConfig);
+    this.checkRequestUrl(requestConfig, baseURL);
 
     return result;
   }
 
   private authenticateBasicRequest(
-    serviceConfig: SecretsConfig,
-    requestConfig: AxiosRequestConfig,
-  ): AxiosRequestConfig {
+    integrationConfig: SecretsConfig,
+    requestConfig: RequestConfig,
+  ): RequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
       throw new IncompatibleServiceError(
-        `Service ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`,
+        `Integration ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`,
       );
     }
 
@@ -280,7 +290,7 @@ export class LocalDefinedIntegration<
       headers = {},
     } = renderMustache<BasicAuthenticationDefinition>(
       this._definition.authentication as BasicAuthenticationDefinition,
-      serviceConfig,
+      integrationConfig,
     );
 
     if (isEmpty(basic.username) && isEmpty(basic.password)) {
@@ -291,7 +301,7 @@ export class LocalDefinedIntegration<
 
     if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
       throw new Error(
-        "Must use absolute URLs for services that don't define a baseURL",
+        "Must use absolute URLs for integrations that don't define a baseURL",
       );
     }
 
@@ -306,16 +316,16 @@ export class LocalDefinedIntegration<
       };
     });
 
-    this.checkRequestUrl(baseURL, requestConfig);
+    this.checkRequestUrl(requestConfig, baseURL);
 
     return result;
   }
 
   private authenticateRequestToken(
-    serviceConfig: SecretsConfig,
-    requestConfig: AxiosRequestConfig,
+    integrationConfig: SecretsConfig,
+    requestConfig: RequestConfig,
     tokenData: AuthData,
-  ): AxiosRequestConfig {
+  ): RequestConfig {
     if (isEmpty(tokenData)) {
       throw new Error("Empty token data provided");
     }
@@ -324,12 +334,12 @@ export class LocalDefinedIntegration<
       this._definition.authentication as
         | OAuth2AuthenticationDefinition
         | TokenAuthenticationDefinition,
-      { ...serviceConfig, ...tokenData },
+      { ...integrationConfig, ...tokenData },
     );
 
     if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
       throw new Error(
-        "Must use absolute URLs for services that don't define a baseURL",
+        "Must use absolute URLs for integrations that don't define a baseURL",
       );
     }
 
@@ -338,43 +348,47 @@ export class LocalDefinedIntegration<
       draft.headers = { ...draft.headers, ...headers };
     });
 
-    this.checkRequestUrl(baseURL, requestConfig);
+    this.checkRequestUrl(requestConfig, baseURL);
 
     return result;
   }
 
   authenticateRequest(
-    serviceConfig: SecretsConfig,
-    requestConfig: AxiosRequestConfig,
+    integrationConfig: SecretsConfig,
+    requestConfig: RequestConfig,
     authData?: AuthData,
-  ): AxiosRequestConfig {
-    const missing = missingProperties(this.schema, serviceConfig);
+  ): RequestConfig {
+    const missing = missingProperties(this.schema, integrationConfig);
     if (missing.length > 0) {
       throw new NotConfiguredError(
-        `Service ${this.id} is not fully configured`,
+        `Integration ${this.id} is not fully configured`,
         this.id,
         missing,
       );
     }
 
     if (this.isOAuth2 || this.isToken) {
+      assertNotNullish(
+        authData,
+        "This integration requires authentication data but it was not provided",
+      );
       return this.authenticateRequestToken(
-        serviceConfig,
+        integrationConfig,
         requestConfig,
         authData,
       );
     }
 
     if (this.isBasicHttpAuth) {
-      return this.authenticateBasicRequest(serviceConfig, requestConfig);
+      return this.authenticateBasicRequest(integrationConfig, requestConfig);
     }
 
-    return this.authenticateRequestKey(serviceConfig, requestConfig);
+    return this.authenticateRequestKey(integrationConfig, requestConfig);
   }
 }
 
 export function fromJS(
   component: IntegrationDefinition,
-): LocalDefinedIntegration {
-  return new LocalDefinedIntegration(component);
+): UserDefinedIntegration {
+  return new UserDefinedIntegration(component);
 }

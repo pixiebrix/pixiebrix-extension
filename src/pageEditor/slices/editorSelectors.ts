@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSelector } from "reselect";
+import { createSelector } from "@reduxjs/toolkit";
 import {
   type EditorRootState,
   type EditorState,
@@ -37,6 +37,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import { selectKnownEventNames } from "@/analysis/analysisSelectors";
+import { normalizeModOptionsDefinition } from "@/utils/modUtils";
 
 export const selectActiveElementId = ({ editor }: EditorRootState) => {
   if (editor == null) {
@@ -113,10 +114,19 @@ export const selectDirtyRecipeOptionDefinitions = ({
 
 const dirtyOptionDefinitionsForRecipeIdSelector = createSelector(
   selectDirtyRecipeOptionDefinitions,
-  (state: EditorRootState, recipeId: RegistryId) => recipeId,
-  (dirtyRecipeOptionDefinitionsById, recipeId) =>
+  (_state: EditorRootState, recipeId: RegistryId) => recipeId,
+  (dirtyRecipeOptionDefinitionsById, recipeId) => {
     // eslint-disable-next-line security/detect-object-injection -- RegistryId for recipe
-    dirtyRecipeOptionDefinitionsById[recipeId],
+    const options = dirtyRecipeOptionDefinitionsById[recipeId];
+
+    if (options) {
+      // Provide a consistent shape of the options
+      return normalizeModOptionsDefinition(options);
+    }
+
+    // Return undefined if the options aren't dirty. Returning nullish instead of a default empty options allows the
+    // caller to distinguish no dirty options vs. options that have been reverted to the default.
+  },
 );
 
 export const selectDirtyOptionDefinitionsForRecipeId =
@@ -125,7 +135,7 @@ export const selectDirtyOptionDefinitionsForRecipeId =
 
 const dirtyOptionValuesForRecipeIdSelector = createSelector(
   selectNotDeletedElements,
-  (state: EditorRootState, recipeId: RegistryId) => recipeId,
+  (_state: EditorRootState, recipeId: RegistryId) => recipeId,
   (elements, recipeId) =>
     elements.find((element) => element.recipe?.id === recipeId)?.optionsArgs,
 );
@@ -139,7 +149,7 @@ export const selectDirtyRecipeMetadata = ({ editor }: EditorRootState) =>
 
 const dirtyMetadataForRecipeIdSelector = createSelector(
   selectDirtyRecipeMetadata,
-  (state: EditorRootState, recipeId: RegistryId) => recipeId,
+  (_state: EditorRootState, recipeId: RegistryId) => recipeId,
   (dirtyRecipeMetadataById, recipeId) =>
     // eslint-disable-next-line security/detect-object-injection
     dirtyRecipeMetadataById[recipeId],
@@ -151,7 +161,7 @@ export const selectDirtyMetadataForRecipeId =
 
 const elementIsDirtySelector = createSelector(
   selectDirty,
-  (state: RootState, elementId: UUID) => elementId,
+  (_state: RootState, elementId: UUID) => elementId,
   // eslint-disable-next-line security/detect-object-injection
   (dirty, elementId) => dirty[elementId] ?? false,
 );
@@ -391,18 +401,14 @@ export const selectCopiedBlock = ({ editor }: EditorRootState) =>
 export const selectExtensionAvailability = ({
   editor: {
     availableInstalledIds,
-    unavailableInstalledCount,
     isPendingInstalledExtensions,
     availableDynamicIds,
-    unavailableDynamicCount,
     isPendingDynamicExtensions,
   },
 }: EditorRootState) => ({
   availableInstalledIds,
-  unavailableInstalledCount,
   isPendingInstalledExtensions,
   availableDynamicIds,
-  unavailableDynamicCount,
   isPendingDynamicExtensions,
 });
 

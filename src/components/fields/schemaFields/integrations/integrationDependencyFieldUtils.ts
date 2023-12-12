@@ -16,12 +16,7 @@
  */
 
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { produce, type Draft } from "immer";
-import {
-  type Expression,
-  type OutputKey,
-  type ServiceVarRef,
-} from "@/types/runtimeTypes";
+import { type Draft, produce } from "immer";
 import {
   isDeferExpression,
   isExpression,
@@ -29,6 +24,7 @@ import {
   isVarExpression,
 } from "@/utils/expressionUtils";
 import { isEmpty } from "lodash";
+import { getVariableExpression } from "@/utils/variableUtils";
 
 export type IntegrationsFormSlice = Pick<
   ModComponentFormState,
@@ -86,14 +82,6 @@ export function selectIntegrationDependencyVariables(
   return variables;
 }
 
-export function keyToFieldValue(key: OutputKey): Expression<ServiceVarRef> {
-  const value = key == null ? null : (`@${key}` as ServiceVarRef);
-  return {
-    __type__: "var",
-    __value__: value,
-  };
-}
-
 /**
  * Filter the unused dependencies from a draft in-place
  */
@@ -104,7 +92,7 @@ export function removeUnusedDependencies(draft: Draft<IntegrationsFormSlice>) {
 
   const used = selectIntegrationDependencyVariables(draft);
   draft.integrationDependencies = draft.integrationDependencies.filter(
-    ({ outputKey }) => used.has(keyToFieldValue(outputKey).__value__),
+    ({ outputKey }) => used.has(getVariableExpression(outputKey).__value__),
   );
 }
 

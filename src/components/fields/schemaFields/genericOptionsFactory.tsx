@@ -46,15 +46,22 @@ const NoOptions: React.FunctionComponent = () => (
  * @param schema the JSONSchema for the block configuration
  * @param uiSchema an optional RJSF UISchema for the block configuration
  * @param preserveSchemaOrder if true, preserve order of the schema properties if no uiSchema is provided
+ * @param NoOptionsComponent React component to render if the schema has no fields
  */
 function genericOptionsFactory(
   schema: Schema,
   uiSchema: UiSchema = {},
-  { preserveSchemaOrder = false }: { preserveSchemaOrder?: boolean } = {},
+  {
+    preserveSchemaOrder = false,
+    NoOptionsComponent = NoOptions,
+  }: {
+    preserveSchemaOrder?: boolean;
+    NoOptionsComponent?: React.FunctionComponent<BlockOptionProps>;
+  } = {},
 ): React.FunctionComponent<BlockOptionProps> {
   const optionSchema = inputProperties(schema);
   if (isEmpty(optionSchema)) {
-    return NoOptions;
+    return NoOptionsComponent;
   }
 
   const sortedFieldsConfig = sortedFields(schema, uiSchema, {
@@ -76,6 +83,7 @@ function genericOptionsFactory(
       )}
     </>
   );
+  OptionsFields.displayName = "OptionsFields";
 
   return OptionsFields;
 }

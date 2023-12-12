@@ -16,7 +16,8 @@
  */
 
 import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
-import { makeVariableExpression } from "@/runtime/expressionCreators";
+
+import { toExpression } from "@/utils/expressionUtils";
 
 const brick = new JQueryReader();
 
@@ -25,7 +26,7 @@ describe("JQueryReader output schema", () => {
     const schema = brick.getOutputSchema({
       id: brick.id,
       config: {
-        selectors: makeVariableExpression("@test"),
+        selectors: toExpression("var", "@test"),
       },
     });
 

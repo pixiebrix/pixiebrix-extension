@@ -19,7 +19,6 @@ import { getFormDefinition } from "@/contentScript/messenger/api";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import EphemeralForm from "./EphemeralForm";
-import { waitForEffect } from "@/testUtils/testHelpers";
 
 jest.mock("@/contentScript/messenger/api", () => ({
   getFormDefinition: jest.fn(),
@@ -36,6 +35,7 @@ describe("EphemeralForm", () => {
         properties: {
           foo: {
             type: "string",
+            title: "Foo",
           },
         },
       },
@@ -45,18 +45,11 @@ describe("EphemeralForm", () => {
       location: "modal",
     });
 
-    const { asFragment } = render(<EphemeralForm />);
+    render(<EphemeralForm />);
 
-    await waitForEffect();
-
-    // https://github.com/pixiebrix/pixiebrix-extension/pull/4913#issuecomment-1400379452
-    // TODO: replace with getByLabelText after the upgrade to rjsf5
-    // Caused by bug in the default TextWidget in rjsf4:
-    // https://github.com/rjsf-team/react-jsonschema-form/blob/v4.2.3/packages/bootstrap-4/src/TextWidget/TextWidget.tsx
-    // expect(screen.getByLabelText("foo")).not.toBeNull();
-    expect(screen.getByText("foo")).toBeVisible();
-    expect(screen.getByRole("textbox")).toBeVisible();
-    expect(asFragment()).toMatchSnapshot();
+    await expect(
+      screen.findByRole("textbox", { name: /foo/i }),
+    ).resolves.toBeVisible();
   });
 
   it("supports markdown in field descriptions", async () => {
@@ -67,8 +60,8 @@ describe("EphemeralForm", () => {
         properties: {
           foo: {
             title: "Foo",
-            type: "string",
             description: "I am **bold**",
+            type: "string",
           },
         },
       },
@@ -78,13 +71,15 @@ describe("EphemeralForm", () => {
       location: "modal",
     });
 
-    const { asFragment } = render(<EphemeralForm />);
+    render(<EphemeralForm />);
 
-    await waitForEffect();
-
-    // https://github.com/pixiebrix/pixiebrix-extension/pull/4913#issuecomment-1400379452
-    expect(asFragment()).toMatchSnapshot();
-    expect(screen.getByRole("strong")).not.toBeNull();
+    await expect(
+      screen.findByRole("heading", { level: 5, name: /test form/i }),
+    ).resolves.toBeInTheDocument();
+    expect(
+      screen.getByText((_, element) => element.textContent === "I am bold"),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("strong")).toHaveTextContent("bold");
   });
 
   it("supports markdown in form description", async () => {
@@ -101,13 +96,14 @@ describe("EphemeralForm", () => {
       location: "modal",
     });
 
-    const { asFragment } = render(<EphemeralForm />);
+    render(<EphemeralForm />);
 
-    await waitForEffect();
-    await waitForEffect();
-
-    // https://github.com/pixiebrix/pixiebrix-extension/pull/4913#issuecomment-1400379452
-    expect(asFragment()).toMatchSnapshot();
-    expect(screen.getByRole("strong")).not.toBeNull();
+    await expect(
+      screen.findByRole("heading", { level: 5, name: /test form/i }),
+    ).resolves.toBeInTheDocument();
+    expect(
+      screen.getByText((_, element) => element.textContent === "I am bold"),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("strong")).toHaveTextContent("bold");
   });
 });

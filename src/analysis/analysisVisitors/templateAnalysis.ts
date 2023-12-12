@@ -32,7 +32,7 @@ import {
 } from "@/utils/expressionUtils";
 
 const TEMPLATE_ERROR_MESSAGE =
-  "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/nunjucks-templates";
+  "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/developing-mods/developer-concepts/text-template-guide";
 
 type PushAnnotationArgs = {
   position: BrickPosition;
