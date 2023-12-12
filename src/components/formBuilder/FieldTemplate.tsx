@@ -31,8 +31,8 @@ const FieldTemplate = ({
   rawHelp,
   hidden,
   rawDescription,
-  label,
   required,
+  schema: { title },
 }: FieldTemplateProps) => {
   if (hidden) {
     return <div className="hidden">{children}</div>;
@@ -45,7 +45,11 @@ const FieldTemplate = ({
           htmlFor={id}
           className={rawErrors.length > 0 ? "text-danger" : ""}
         >
-          {label}
+          {/* Cannot use the label prop as RJSF5 defaults to the name if the title is falsy
+           * See https://github.com/rjsf-team/react-jsonschema-form/blob/e8aa9e8f2078d86a6048ff3d018bd3030d8d2aba/packages/core/src/components/fields/SchemaField.tsx#L196
+           * See https://github.com/pixiebrix/pixiebrix-extension/issues/7106
+           */}
+          {title}
           {required ? "*" : null}
         </Form.Label>
       )}
