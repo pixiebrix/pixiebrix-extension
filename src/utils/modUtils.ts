@@ -38,7 +38,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { InvalidTypeError } from "@/errors/genericErrors";
 import reportError from "@/telemetry/reportError";
-import { assertNotNull } from "./typeUtils";
+import { assertNotNullish } from "./nullishUtils";
 import {
   minimalSchemaFactory,
   minimalUiSchemaFactory,
@@ -295,11 +295,11 @@ export function updateAvailable(
 
   // TODO: Drop assertions once the types are tighter
   // https://github.com/pixiebrix/pixiebrix-extension/pull/7010#discussion_r1410080332
-  assertNotNull(
+  assertNotNullish(
     installedExtension._recipe.version,
     "The requested extension doesn't have a version",
   );
-  assertNotNull(
+  assertNotNullish(
     availableRecipe.metadata.version,
     "The extension's recipe doesn't have a version",
   );

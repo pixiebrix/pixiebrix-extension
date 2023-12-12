@@ -33,7 +33,7 @@ import {
 import { RuntimeNotFoundError } from "@/utils/extensionUtils";
 import { getChromeExtensionId } from "@/store/browserExtensionIdStorage";
 import { type SerializableResponse } from "@/types/messengerTypes";
-import { assertNotNull } from "@/utils/typeUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type ChromeMessageSender = chrome.runtime.MessageSender;
 
@@ -68,7 +68,7 @@ async function handleRequest(
   const { type, payload, meta } = request;
   const { handler, options } = handlers.get(type) ?? {};
 
-  assertNotNull(handler, `Handler not found for ${type}`);
+  assertNotNullish(handler, `Handler not found for ${type}`);
 
   try {
     const value = await handler(...payload);

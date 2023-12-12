@@ -16,7 +16,7 @@
  */
 
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { type BrickArgs } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Permissions } from "webextension-polyfill";
 import { BusinessError, PropError } from "@/errors/businessErrors";
@@ -24,7 +24,7 @@ import {
   type ContentType,
   detectContentType,
   writeTextToClipboard,
-  writeToClipboard,
+  writeItemsToClipboard,
 } from "@/utils/clipboardUtils";
 import { convertDataUrl } from "@/utils/parseDataUrl";
 
@@ -56,19 +56,34 @@ export class CopyToClipboard extends EffectABC {
         description:
           "The type of content to copy to the clipboard, of 'infer' to detect automatically",
         default: "infer",
-        enum: ["infer", "text", "image"],
+        oneOf: [
+          { const: "infer", title: "Infer" },
+          { const: "text", title: "Text" },
+          { const: "image", title: "Image" },
+        ],
+      },
+      html: {
+        title: "HTML",
+        description:
+          "Optional: HTML content to copy to the clipboard for pasting into rich text editors. Ignored if provided content is not text.",
+        type: "string",
       },
     },
   };
 
-  async effect({
-    text,
-    // Fallback to "text" for backward compatability
-    contentType: contentTypeInput = "text",
-  }: BrickArgs<{
-    text: string | boolean | number;
-    contentType: ContentType;
-  }>): Promise<void> {
+  async effect(
+    {
+      text,
+      html,
+      // Fallback to "text" for backward compatability
+      contentType: contentTypeInput = "text",
+    }: BrickArgs<{
+      text: string | boolean | number;
+      html: string;
+      contentType: ContentType;
+    }>,
+    { logger }: BrickOptions,
+  ): Promise<void> {
     const contentType =
       contentTypeInput === "infer" ? detectContentType(text) : contentTypeInput;
 
@@ -97,17 +112,29 @@ export class CopyToClipboard extends EffectABC {
           );
         }
 
-        await writeToClipboard([
-          new ClipboardItem({
-            [blob.type]: blob,
-          }),
-        ]);
+        if (html) {
+          logger.warn("Ignoring HTML content for image content");
+        }
+
+        await writeItemsToClipboard(
+          [
+            new ClipboardItem({
+              [blob.type]: blob,
+            }),
+          ],
+          {
+            type: "image",
+          },
+        );
 
         break;
       }
 
       case "text": {
-        await writeTextToClipboard(String(text));
+        await writeTextToClipboard({
+          text: String(text),
+          html,
+        });
         break;
       }
 

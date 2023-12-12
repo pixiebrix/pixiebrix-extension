@@ -42,7 +42,7 @@ const BrickResult = <T extends Metadata>({
 }: BrickResultProps<T>) => (
   <ListGroup.Item
     onClick={onShowDetail}
-    className={cx(styles.root, { [styles.active]: active, active })}
+    className={cx(styles.root, { [styles.active ?? ""]: active, active })}
   >
     <div className="d-flex">
       <div className="mr-2 text-muted">
