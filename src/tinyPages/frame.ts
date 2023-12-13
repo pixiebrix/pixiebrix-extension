@@ -32,4 +32,4 @@ iframe.name = name;
 document.body.append(iframe);
 
 // Handle an embedded AA Co-Pilot frame
-initCopilotMessenger();
+void initCopilotMessenger();

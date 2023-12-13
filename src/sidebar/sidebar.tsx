@@ -47,4 +47,4 @@ initToaster();
 init();
 
 // Handle an embedded AA business copilot frame
-initCopilotMessenger();
+void initCopilotMessenger();
