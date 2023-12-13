@@ -44,6 +44,7 @@ const FIELD_TITLE_ACRONYMS = new Set([
   "SQL",
   "UI",
   "URL",
+  // Discussion: https://english.stackexchange.com/questions/101248/how-should-the-abbreviation-for-identifier-be-capitalized
   "ID",
 ]);
 
