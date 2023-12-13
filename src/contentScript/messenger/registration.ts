@@ -80,6 +80,7 @@ import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnha
 import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
 import { closeWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
 import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughModal";
+import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
 
 expectContext("contentScript");
 
@@ -143,6 +144,8 @@ declare global {
 
     GET_PAGE_STATE: typeof getPageState;
     SET_PAGE_STATE: typeof setPageState;
+
+    GET_COPILOT_HOST_DATA: typeof getCopilotHostData;
 
     RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadActivationEnhancements;
   }
@@ -211,6 +214,8 @@ export default function registerMessenger(): void {
 
     GET_PAGE_STATE: getPageState,
     SET_PAGE_STATE: setPageState,
+
+    GET_COPILOT_HOST_DATA: getCopilotHostData,
 
     RELOAD_MARKETPLACE_ENHANCEMENTS: reloadActivationEnhancements,
   });

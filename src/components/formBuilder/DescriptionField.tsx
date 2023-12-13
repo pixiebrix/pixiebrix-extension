@@ -21,7 +21,6 @@ import cx from "classnames";
 import MarkdownLazy from "@/components/MarkdownLazy";
 
 type FormPreviewDescriptionFieldProps = {
-  id: string;
   description: string | React.ReactElement;
   className?: string;
 };
@@ -29,13 +28,13 @@ type FormPreviewDescriptionFieldProps = {
 // RJSF implementation ref: https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/bootstrap-4/src/DescriptionField/DescriptionField.tsx
 export const DescriptionField: React.VoidFunctionComponent<
   FormPreviewDescriptionFieldProps
-> = ({ id, description, className: classNameProp }) => {
+> = ({ description, className: classNameProp }) => {
   if (!description) {
     return null;
   }
 
   return (
-    <div id={id} className={cx("field-description", classNameProp)}>
+    <div className={cx("field-description", classNameProp)}>
       {typeof description === "string" ? (
         <MarkdownLazy markdown={description} />
       ) : (
