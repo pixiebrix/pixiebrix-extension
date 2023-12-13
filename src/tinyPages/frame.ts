@@ -17,6 +17,7 @@
 
 // https://transitory.technology/browser-extensions-and-csp-headers/
 // Load the passed URL into another iframe to get around the parent page's CSP headers
+// Until this is resolved: https://github.com/w3c/webextensions/issues/483
 
 import { initCopilotMessenger } from "@/contrib/automationanywhere/frameProtocol";
 

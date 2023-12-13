@@ -21,22 +21,30 @@ import { expectContext } from "@/utils/expectContext";
 /**
  * Runtime event type for setting Co-Pilot data
  */
-export const SET_COPILOT_DATA = "SET_COPILOT_DATA";
+export const SET_COPILOT_DATA_MESSAGE_TYPE = "SET_COPILOT_DATA";
 
+/**
+ * `window.postMessage` data payload the Co-Pilot frame sends to the host application.
+ * https://docs.automationanywhere.com/bundle/enterprise-v2019/page/co-pilot-map-host-data.html
+ */
 type AariDataRequestData = {
   aariDataRequest: "aari-data-request";
   processId: string;
+  // When would botId be provided?
   botId: string | null;
 };
 
 /**
  * Runtime message to set the Co-Pilot data per process id.
+ * @see MessengerMessage
  */
 export type SetCopilotDataMessage = {
-  type: typeof SET_COPILOT_DATA;
-  args: {
-    data: Record<string, UnknownObject>;
+  // Follows webext-messenger message format
+  type: typeof SET_COPILOT_DATA_MESSAGE_TYPE;
+  target: {
+    page: string;
   };
+  args: [Record<string, UnknownObject>];
 };
 
 /**
@@ -45,9 +53,14 @@ export type SetCopilotDataMessage = {
 const hostData = new Map<string, UnknownObject>();
 
 function isSetCopilotDataMessage(
-  data?: UnknownObject,
-): data is SetCopilotDataMessage {
-  return data?.type === SET_COPILOT_DATA;
+  message?: UnknownObject,
+): message is SetCopilotDataMessage {
+  return message?.type === SET_COPILOT_DATA_MESSAGE_TYPE;
+}
+
+function isMessageTarget(message: SetCopilotDataMessage): boolean {
+  // Mimic the page filtering of webext-messenger
+  return message.target.page === window.location.pathname;
 }
 
 function isAariDataRequestData(
@@ -78,19 +91,21 @@ export function initCopilotMessenger(): void {
 
   // Setting the runtime handler directly instead of the messenger to keep this file self-contained
   browser.runtime.onMessage.addListener((message: UnknownObject) => {
-    if (isSetCopilotDataMessage(message)) {
-      console.debug("Setting Co-Pilot data", message.args);
+    // Mimic the page filtering of webext-messenger
+    if (isSetCopilotDataMessage(message) && isMessageTarget(message)) {
+      console.debug("Setting Co-Pilot data", {
+        location: window.location.href,
+        data: message.args[0],
+      });
 
       hostData.clear();
 
-      for (const [processId, data] of Object.entries(message.args.data)) {
+      for (const [processId, data] of Object.entries(message.args[0])) {
         hostData.set(processId, data);
       }
-
-      // Handled
-      return true;
     }
 
-    // Return undefined to indicate not handled
+    // Always return undefined to indicate not handled. That ensures all PixieBrix frames on the page have the context
+    // necessary to pass to the Co-Pilot frame.
   });
 }
