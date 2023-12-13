@@ -23,10 +23,15 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { setPartnerCopilotData } from "@/background/messenger/api";
 
+// Must track host data on content script instead of the frame parent because the frame parent might not be attached
+// to the page at the time this data is set.
+const hostData = new Map<string, UnknownObject>();
+
 /**
  * Brick to map data from the host application to Automation Anywhere Co-Pilot forms.
  * https://docs.automationanywhere.com/bundle/enterprise-v2019/page/co-pilot-map-host-data.html
  * @since 1.8.5
+ * @see initCopilotMessenger
  */
 export class SetCopilotDataEffect extends EffectABC {
   static BRICK_ID = validateRegistryId(
@@ -66,9 +71,10 @@ export class SetCopilotDataEffect extends EffectABC {
     processId: string | number;
     data: UnknownObject;
   }>): Promise<void> {
+    hostData.set(String(processId), data);
+
     setPartnerCopilotData({
-      processId: String(processId),
-      data,
+      data: Object.fromEntries(hostData.entries()),
     });
   }
 }

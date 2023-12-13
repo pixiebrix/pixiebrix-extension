@@ -1,20 +1,15 @@
 import type { MessengerMeta } from "webext-messenger";
 import { type UnknownObject } from "@/types/objectTypes";
-import { SET_COPILOT_DATA } from "@/contrib/automationanywhere/frameProtocol";
+import {
+  SET_COPILOT_DATA,
+  type SetCopilotDataMessage,
+} from "@/contrib/automationanywhere/frameProtocol";
 
 type SetCopilotDataRequest = {
   /**
-   * The frame id to send the message to. Should be the direct parent of the copilot frame
+   * Mapping from process ID to data.
    */
-  frameId?: number;
-  /**
-   * The automation anywhere process id
-   */
-  processId: string;
-  /**
-   * The data to set on the copilot form
-   */
-  data: UnknownObject;
+  data: Record<string, UnknownObject>;
 };
 
 /**
@@ -27,30 +22,26 @@ export async function setCopilotProcessData(
 ): Promise<void> {
   const sourceTabId = this.trace[0].tab.id;
 
-  const { frameId, ...data } = request;
+  // FIXME: this isn't what we want. It returns the normal frames, not the extension frames on the page.
+  const frames = await browser.webNavigation.getAllFrames({
+    tabId: sourceTabId,
+  });
 
-  let frameIds;
-
-  if (frameId) {
-    frameIds = [frameId];
-  } else {
-    const frames = await browser.webNavigation.getAllFrames({
-      tabId: sourceTabId,
-    });
-
-    frameIds = frames.map((x) => x.frameId);
-  }
-
-  console.debug("Sending AA Co-Pilot data to frames", { frameIds, data });
+  console.debug("Sending AA Co-Pilot data to frames", {
+    frames,
+    data: request.data,
+  });
 
   await Promise.allSettled(
-    frameIds.map(async (frameId) => {
+    frames.map(async ({ frameId }) => {
       await browser.tabs.sendMessage(
         sourceTabId,
         {
           type: SET_COPILOT_DATA,
-          data,
-        },
+          args: {
+            data: request.data,
+          },
+        } satisfies SetCopilotDataMessage,
         {
           frameId,
         },

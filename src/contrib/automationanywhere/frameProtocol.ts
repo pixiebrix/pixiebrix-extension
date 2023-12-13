@@ -16,6 +16,12 @@
  */
 
 import { type UnknownObject } from "@/types/objectTypes";
+import { expectContext } from "@/utils/expectContext";
+
+/**
+ * Runtime event type for setting Co-Pilot data
+ */
+export const SET_COPILOT_DATA = "SET_COPILOT_DATA";
 
 type AariDataRequestData = {
   aariDataRequest: "aari-data-request";
@@ -23,11 +29,13 @@ type AariDataRequestData = {
   botId: string | null;
 };
 
-type SetCopilotDataMessage = {
+/**
+ * Runtime message to set the Co-Pilot data per process id.
+ */
+export type SetCopilotDataMessage = {
   type: typeof SET_COPILOT_DATA;
-  data: {
-    processId: string;
-    data: UnknownObject;
+  args: {
+    data: Record<string, UnknownObject>;
   };
 };
 
@@ -35,11 +43,6 @@ type SetCopilotDataMessage = {
  * Mapping from processId to form data.
  */
 const hostData = new Map<string, UnknownObject>();
-
-/**
- * Runtime event type for setting Co-Pilot data
- */
-export const SET_COPILOT_DATA = "SET_COPILOT_DATA";
 
 function isSetCopilotDataMessage(
   data?: UnknownObject,
@@ -57,13 +60,15 @@ function isAariDataRequestData(
  * Initialize the Automation Anywhere Co-Pilot window and runtime messenger.
  */
 export function initCopilotMessenger(): void {
+  expectContext("extension", "should only be run in sidebar or frame");
+
   window.addEventListener("message", (event: MessageEvent<UnknownObject>) => {
     if (isAariDataRequestData(event.data)) {
       const data = hostData.get(event.data.processId) ?? {};
 
       console.debug("Received AARI data request", {
         event,
-        data,
+        currentProcessData: data,
       });
 
       // @ts-expect-error -- incorrect types https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#examples
@@ -74,8 +79,14 @@ export function initCopilotMessenger(): void {
   // Setting the runtime handler directly instead of the messenger to keep this file self-contained
   browser.runtime.onMessage.addListener((message: UnknownObject) => {
     if (isSetCopilotDataMessage(message)) {
-      console.debug("Setting Co-Pilot data", message.data.processId, message);
-      hostData.set(message.data.processId, message.data.data);
+      console.debug("Setting Co-Pilot data", message.args);
+
+      hostData.clear();
+
+      for (const [processId, data] of Object.entries(message.args.data)) {
+        hostData.set(processId, data);
+      }
+
       // Handled
       return true;
     }
