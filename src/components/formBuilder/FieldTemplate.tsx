@@ -25,12 +25,11 @@ import { Form, ListGroup } from "react-bootstrap";
 import { DescriptionField } from "./DescriptionField";
 import { type SetActiveField } from "@/components/formBuilder/formBuilderTypes";
 import { UI_SCHEMA_ACTIVE } from "@/components/formBuilder/schemaFieldNames";
-import { type Nullishable } from "@/utils/nullishUtils";
 import { noop } from "lodash";
 
 interface FormPreviewFieldTemplateProps extends FieldTemplateProps {
   // Only used in the FormPreview
-  setActiveField: Nullishable<SetActiveField>;
+  setActiveField: SetActiveField;
 }
 
 // RJSF Bootstrap 4 implementation ref https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/bootstrap-4/src/FieldTemplate/FieldTemplate.tsx
