@@ -32,7 +32,7 @@ import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { initToaster } from "@/utils/notify";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
-import { initCopilotMessenger } from "@/contrib/automationanywhere/frameProtocol";
+import { initCopilotMessenger } from "@/contrib/automationanywhere/aaFrameProtocol";
 
 function init(): void {
   ReactDOM.render(<App />, document.querySelector("#container"));
