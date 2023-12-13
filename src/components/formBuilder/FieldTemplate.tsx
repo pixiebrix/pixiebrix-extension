@@ -26,8 +26,10 @@ import { DescriptionField } from "./DescriptionField";
 import { type SetActiveField } from "@/components/formBuilder/formBuilderTypes";
 import { UI_SCHEMA_ACTIVE } from "@/components/formBuilder/schemaFieldNames";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { noop } from "lodash";
 
 interface FormPreviewFieldTemplateProps extends FieldTemplateProps {
+  // Only used in the FormPreview
   setActiveField: Nullishable<SetActiveField>;
 }
 
@@ -42,7 +44,7 @@ const FieldTemplate = ({
   rawDescription,
   required,
   uiSchema,
-  setActiveField,
+  setActiveField = noop,
   schema: { title },
 }: FormPreviewFieldTemplateProps) => {
   // eslint-disable-next-line security/detect-object-injection -- is a constant
@@ -50,11 +52,7 @@ const FieldTemplate = ({
 
   const handleClick = useCallback(() => {
     // We're getting an additional event from `#root`
-    if (
-      typeof setActiveField === "function" &&
-      !isActive &&
-      id.startsWith("root_")
-    ) {
+    if (!isActive && id.startsWith("root_")) {
       setActiveField(id.replace("root_", ""));
     }
   }, [id, isActive, setActiveField]);
