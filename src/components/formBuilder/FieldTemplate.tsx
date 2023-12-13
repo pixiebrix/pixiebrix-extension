@@ -16,7 +16,7 @@
  */
 
 import styles from "./FieldTemplate.module.scss";
-import React from "react";
+import React, { useCallback } from "react";
 import cx from "classnames";
 import { type FieldTemplateProps } from "@rjsf/utils";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
@@ -25,9 +25,10 @@ import { Form, ListGroup } from "react-bootstrap";
 import { DescriptionField } from "./DescriptionField";
 import { type SetActiveField } from "@/components/formBuilder/formBuilderTypes";
 import { UI_SCHEMA_ACTIVE } from "@/components/formBuilder/schemaFieldNames";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 interface FormPreviewFieldTemplateProps extends FieldTemplateProps {
-  setActiveField: SetActiveField;
+  setActiveField: Nullishable<SetActiveField>;
 }
 
 // RJSF Bootstrap 4 implementation ref https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/bootstrap-4/src/FieldTemplate/FieldTemplate.tsx
@@ -47,12 +48,16 @@ const FieldTemplate = ({
   // eslint-disable-next-line security/detect-object-injection -- is a constant
   const isActive = Boolean(uiSchema?.[UI_SCHEMA_ACTIVE]);
 
-  const onClick = () => {
+  const onClick = useCallback(() => {
     // We're getting an additional event from `#root`
-    if (!isActive && id.startsWith("root_")) {
+    if (
+      typeof setActiveField === "function" &&
+      !isActive &&
+      id.startsWith("root_")
+    ) {
       setActiveField(id.replace("root_", ""));
     }
-  };
+  }, [id, isActive, setActiveField]);
 
   if (hidden) {
     return <div className="hidden">{children}</div>;
