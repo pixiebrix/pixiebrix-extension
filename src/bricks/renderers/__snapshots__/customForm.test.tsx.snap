@@ -6,7 +6,7 @@ exports[`form data normalization renders normalized data 1`] = `
     class="rjsf"
   >
     <div
-      class="form-group"
+      class="root form-group"
     >
       <div
         class="p-0 container-fluid"
@@ -20,7 +20,7 @@ exports[`form data normalization renders normalized data 1`] = `
           >
              
             <div
-              class="form-group"
+              class="root form-group"
             >
               <label
                 class="form-label"
@@ -47,7 +47,7 @@ exports[`form data normalization renders normalized data 1`] = `
           >
              
             <div
-              class="form-group"
+              class="root form-group"
             >
               <label
                 class="form-label"
@@ -75,7 +75,7 @@ exports[`form data normalization renders normalized data 1`] = `
           >
              
             <div
-              class="form-group"
+              class="root form-group"
             >
               <div
                 aria-describedby="root_isAdmin__error root_isAdmin__description root_isAdmin__help"
@@ -111,7 +111,7 @@ exports[`form data normalization renders normalized data 1`] = `
           >
              
             <div
-              class="form-group"
+              class="root form-group"
             >
               <label
                 class="form-label"

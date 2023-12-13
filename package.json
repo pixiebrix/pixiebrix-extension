@@ -25,7 +25,7 @@
   "engine-strict": true,
   "engines": {
     "node": "20.5.1",
-    "npm": "10.2.3"
+    "npm": "10.2.5"
   },
   "author": "Todd Schiller",
   "license": "AGPL-3.0",

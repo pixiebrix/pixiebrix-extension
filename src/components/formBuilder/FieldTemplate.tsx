@@ -15,12 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import styles from "./FieldTemplate.module.scss";
+import React, { useCallback } from "react";
+import cx from "classnames";
 import { type FieldTemplateProps } from "@rjsf/utils";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form, ListGroup } from "react-bootstrap";
 // Named import to get the proper type
 import { DescriptionField } from "./DescriptionField";
+import { type SetActiveField } from "@/components/formBuilder/formBuilderTypes";
+import { UI_SCHEMA_ACTIVE } from "@/components/formBuilder/schemaFieldNames";
+import { noop } from "lodash";
+
+interface FormPreviewFieldTemplateProps extends FieldTemplateProps {
+  // Only used in the FormPreview
+  setActiveField: SetActiveField;
+}
 
 // RJSF Bootstrap 4 implementation ref https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/bootstrap-4/src/FieldTemplate/FieldTemplate.tsx
 const FieldTemplate = ({
@@ -32,14 +42,31 @@ const FieldTemplate = ({
   hidden,
   rawDescription,
   required,
+  uiSchema,
+  setActiveField = noop,
   schema: { title },
-}: FieldTemplateProps) => {
+}: FormPreviewFieldTemplateProps) => {
+  // eslint-disable-next-line security/detect-object-injection -- is a constant
+  const isActive = Boolean(uiSchema?.[UI_SCHEMA_ACTIVE]);
+
+  const handleClick = useCallback(() => {
+    // We're getting an additional event from `#root`
+    if (!isActive && id.startsWith("root_")) {
+      setActiveField(id.replace("root_", ""));
+    }
+  }, [id, isActive, setActiveField]);
+
   if (hidden) {
     return <div className="hidden">{children}</div>;
   }
 
   return (
-    <Form.Group>
+    <Form.Group
+      onClick={handleClick}
+      className={cx(styles.root, {
+        [styles.isActive ?? ""]: isActive,
+      })}
+    >
       {displayLabel && (
         <Form.Label
           htmlFor={id}
@@ -55,11 +82,7 @@ const FieldTemplate = ({
       )}
       {children}
       {displayLabel && rawDescription && (
-        <DescriptionField
-          id={id}
-          className="text-muted"
-          description={rawDescription}
-        />
+        <DescriptionField className="text-muted" description={rawDescription} />
       )}
       {rawErrors.length > 0 && (
         <ListGroup as="ul">
