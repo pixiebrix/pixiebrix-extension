@@ -60,7 +60,7 @@ export class SetCopilotDataEffect extends EffectABC {
   inputSchema: Schema = propertiesToSchema(
     {
       processId: {
-        title: "Process Id",
+        title: "Process ID",
         type: ["string", "number"],
         description: "The Co-Pilot process ID",
       },
