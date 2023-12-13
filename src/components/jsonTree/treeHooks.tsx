@@ -41,7 +41,9 @@ export function useLabelRenderer() {
           aria-label="Copy path"
           href="#"
           onClick={async (event) => {
-            await writeTextToClipboard(getPathFromArray(keyPath.reverse()));
+            await writeTextToClipboard({
+              text: getPathFromArray(keyPath.reverse()),
+            });
             event.preventDefault();
             event.stopPropagation();
             notify.info("Copied property path to the clipboard");

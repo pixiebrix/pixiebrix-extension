@@ -107,7 +107,7 @@ const BlockResult = <T extends Metadata>({
 }: BlockResultProps<T>) => (
   <ListGroup.Item
     onClick={onSelect}
-    className={cx(styles.root, { [styles.active]: active, active })}
+    className={cx(styles.root, { [styles.active ?? ""]: active, active })}
   >
     <div className="d-flex">
       <div className="mr-2 text-muted">

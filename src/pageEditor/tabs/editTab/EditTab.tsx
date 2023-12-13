@@ -80,7 +80,8 @@ const EditTab: React.FC<{
           <div className={styles.nodeHeader}>
             <span
               className={cx(styles.nodeHeaderTitle, {
-                [styles.disabledTitle]: activeNodeId === FOUNDATION_NODE_ID,
+                [styles.disabledTitle ?? ""]:
+                  activeNodeId === FOUNDATION_NODE_ID,
               })}
             >
               Brick Actions
@@ -133,7 +134,7 @@ const EditTab: React.FC<{
         <div className={styles.collapseWrapper}>
           <button
             className={cx(styles.toggle, {
-              [styles.active]: isDataPanelExpanded,
+              [styles.active ?? ""]: isDataPanelExpanded,
             })}
             type="button"
             onClick={() => {

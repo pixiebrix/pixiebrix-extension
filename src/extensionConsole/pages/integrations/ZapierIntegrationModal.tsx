@@ -38,7 +38,7 @@ const ZapierIntegrationModal: React.FunctionComponent<OwnProps> = ({
   const { data } = useGetZapierKeyQuery(undefined, { skip: !show });
 
   const handleCopy = useCallback(async () => {
-    await writeTextToClipboard(String(data?.api_key));
+    await writeTextToClipboard({ text: String(data?.api_key) });
     notify.success("Copied API Key to clipboard");
     reportEvent(Events.ZAPIER_KEY_COPY);
   }, [data?.api_key]);

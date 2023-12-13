@@ -54,7 +54,7 @@ const BlockGridItem: React.VFC<BlockItemProps> = ({
   >
     <div
       className={cx(styles.content, {
-        [styles.invalid]: Boolean(invalidMessage),
+        [styles.invalid ?? ""]: Boolean(invalidMessage),
       })}
     >
       <div className={styles.nameRow}>

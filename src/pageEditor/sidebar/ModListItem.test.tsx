@@ -64,7 +64,7 @@ beforeEach(() => {
       onSave: jest.fn(),
       isSaving: false,
       onReset: jest.fn(),
-      onRemove: jest.fn(),
+      onDeactivate: jest.fn(),
       onClone: jest.fn(),
     },
   });
