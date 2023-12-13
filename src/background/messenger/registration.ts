@@ -81,6 +81,7 @@ import {
   deleteCachedAuthData,
   getCachedAuthData,
 } from "@/background/auth/authStorage";
+import { setCopilotProcessData } from "@/background/partnerHandlers";
 
 expectContext("background");
 
@@ -107,6 +108,7 @@ declare global {
     ACTIVATE_PARTNER_THEME: typeof initPartnerTheme;
     GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
     LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
+    SET_PARTNER_COPILOT_DATA: typeof setCopilotProcessData;
 
     INSTALL_STARTER_BLUEPRINTS: typeof installStarterBlueprints;
 
@@ -181,6 +183,7 @@ export default function registerMessenger(): void {
     ACTIVATE_PARTNER_THEME: initPartnerTheme,
     GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
     LAUNCH_AUTH_INTEGRATION: launchAuthIntegration,
+    SET_PARTNER_COPILOT_DATA: setCopilotProcessData,
 
     INSTALL_STARTER_BLUEPRINTS: installStarterBlueprints,
 

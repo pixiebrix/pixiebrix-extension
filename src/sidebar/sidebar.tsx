@@ -32,6 +32,7 @@ import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { initToaster } from "@/utils/notify";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
+import { initCopilotMessenger } from "@/contrib/automationanywhere/frameProtocol";
 
 function init(): void {
   ReactDOM.render(<App />, document.querySelector("#container"));
@@ -44,3 +45,6 @@ registerContribBlocks();
 registerBuiltinBlocks();
 initToaster();
 init();
+
+// Handle an embedded AA business copilot frame
+initCopilotMessenger();

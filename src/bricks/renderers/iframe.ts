@@ -38,6 +38,12 @@ export class IFrameRenderer extends RendererABC {
         type: "string",
         description: "The title of the IFrame",
       },
+      // The name field for the iframe. Added in 1.8.5 because the AA copilot frame requires it for messaging.
+      // @since 1.8.5
+      name: {
+        type: "string",
+        description: "The name of the IFrame",
+      },
       width: {
         type: "string",
         description: "The width of the IFrame",
@@ -60,12 +66,14 @@ export class IFrameRenderer extends RendererABC {
   async render({
     url,
     title = "PixieBrix",
+    name = "",
     height = "100%",
     width = "100%",
     safeMode = false,
   }: BrickArgs<{
     url: string;
     title?: string;
+    name?: string;
     height?: string;
     width?: string;
     safeMode?: boolean;
@@ -74,14 +82,19 @@ export class IFrameRenderer extends RendererABC {
     const parsedURL = new URL(url);
 
     if (safeMode) {
+      const namePart = name ? ` name="${name}"` : "";
+
       return assumeSafe(
-        `<iframe src="${parsedURL.href}" title="${title}" height="${height}" width="${width}" style="border:none;" allowfullscreen="false" allowpaymentrequest="false"></iframe>`,
+        `<iframe src="${parsedURL.href}" title="${title}" ${namePart} height="${height}" width="${width}" style="border:none;" allowfullscreen="false" allowpaymentrequest="false"></iframe>`,
       );
     }
 
     // https://transitory.technology/browser-extensions-and-csp-headers/
     const frameURL = browser.runtime.getURL("frame.html");
-    const source = `${frameURL}?url=${encodeURIComponent(parsedURL.href)}`;
+    const namePart = name ? `&name=${encodeURIComponent(name)}` : "";
+    const source = `${frameURL}?url=${encodeURIComponent(
+      parsedURL.href,
+    )}${namePart}`;
 
     return assumeSafe(
       `<iframe src="${source}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>`,
