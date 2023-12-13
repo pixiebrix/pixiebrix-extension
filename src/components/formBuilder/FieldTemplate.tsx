@@ -48,7 +48,7 @@ const FieldTemplate = ({
   // eslint-disable-next-line security/detect-object-injection -- is a constant
   const isActive = Boolean(uiSchema?.[UI_SCHEMA_ACTIVE]);
 
-  const onClick = useCallback(() => {
+  const handleClick = useCallback(() => {
     // We're getting an additional event from `#root`
     if (
       typeof setActiveField === "function" &&
@@ -65,7 +65,7 @@ const FieldTemplate = ({
 
   return (
     <Form.Group
-      onClick={onClick}
+      onClick={handleClick}
       className={cx(styles.root, {
         [styles.isActive ?? ""]: isActive,
       })}
