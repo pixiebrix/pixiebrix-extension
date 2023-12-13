@@ -1,12 +1,14 @@
 import { getNotifier, type MessengerMeta } from "webext-messenger";
-import { type UnknownObject } from "@/types/objectTypes";
-import { SET_COPILOT_DATA_MESSAGE_TYPE } from "@/contrib/automationanywhere/frameProtocol";
+import {
+  SET_COPILOT_DATA_MESSAGE_TYPE,
+  type ProcessDataMap,
+} from "@/contrib/automationanywhere/frameProtocol";
 
 type SetCopilotDataRequest = {
   /**
    * Mapping from process ID to data.
    */
-  data: Record<string, UnknownObject>;
+  data: ProcessDataMap;
 };
 
 /**
@@ -21,7 +23,6 @@ export async function setCopilotProcessData(
   const sourceTabId = this.trace[0].tab.id;
 
   console.debug("Sending AA Co-Pilot data to frames", {
-    frames,
     data: request.data,
   });
 

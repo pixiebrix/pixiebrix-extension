@@ -25,9 +25,18 @@ import { setPartnerCopilotData } from "@/background/messenger/api";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { BusinessError } from "@/errors/businessErrors";
 
+type ProcessDataMap = Record<string, UnknownObject>;
+
 // Must track host data on content script instead of the frame parent because the frame parent might not be attached
 // to the page at the time this data is set.
 const hostData = new Map<string, UnknownObject>();
+
+/**
+ * Returns the Automation Anywhere Co-Pilot forms data for the current page.
+ */
+export function getCopilotHostData(): ProcessDataMap {
+  return Object.fromEntries(hostData.entries());
+}
 
 /**
  * Brick to map data from the host application to Automation Anywhere Co-Pilot forms.

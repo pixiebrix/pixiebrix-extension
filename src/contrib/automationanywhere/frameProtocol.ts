@@ -17,11 +17,18 @@
 
 import { type UnknownObject } from "@/types/objectTypes";
 import { expectContext } from "@/utils/expectContext";
+import { getTopLevelFrame } from "webext-messenger";
+import { getCopilotHostData } from "@/contentScript/messenger/api";
 
 /**
  * Runtime event type for setting Co-Pilot data
  */
 export const SET_COPILOT_DATA_MESSAGE_TYPE = "SET_COPILOT_DATA";
+
+/**
+ * Mapping from processId to form data.
+ */
+export type ProcessDataMap = Record<string, UnknownObject>;
 
 /**
  * `window.postMessage` data payload the Co-Pilot frame sends to the host application.
@@ -30,7 +37,7 @@ export const SET_COPILOT_DATA_MESSAGE_TYPE = "SET_COPILOT_DATA";
 type AariDataRequestData = {
   aariDataRequest: "aari-data-request";
   processId: string;
-  // When would botId be provided?
+  // XXX: when would botId be non-null?
   botId: string | null;
 };
 
@@ -44,13 +51,22 @@ export type SetCopilotDataMessage = {
   target: {
     page: string;
   };
-  args: [Record<string, UnknownObject>];
+  args: [ProcessDataMap];
 };
 
 /**
  * Mapping from processId to form data.
  */
 const hostData = new Map<string, UnknownObject>();
+
+function setHostData(processDataMap: ProcessDataMap): void {
+  // Maintain the reference so that the listener can access the data
+  hostData.clear();
+
+  for (const [processId, data] of Object.entries(processDataMap)) {
+    hostData.set(processId, data);
+  }
+}
 
 function isSetCopilotDataMessage(
   message?: UnknownObject,
@@ -72,8 +88,11 @@ function isAariDataRequestData(
 /**
  * Initialize the Automation Anywhere Co-Pilot window and runtime messenger.
  */
-export function initCopilotMessenger(): void {
-  expectContext("extension", "should only be run in sidebar or frame");
+export async function initCopilotMessenger(): Promise<void> {
+  expectContext(
+    "extension",
+    "should only be run in sidebar or frame tiny page",
+  );
 
   window.addEventListener("message", (event: MessageEvent<UnknownObject>) => {
     if (isAariDataRequestData(event.data)) {
@@ -98,14 +117,19 @@ export function initCopilotMessenger(): void {
         data: message.args[0],
       });
 
-      hostData.clear();
-
-      for (const [processId, data] of Object.entries(message.args[0])) {
-        hostData.set(processId, data);
-      }
+      setHostData(message.args[0]);
     }
 
     // Always return undefined to indicate not handled. That ensures all PixieBrix frames on the page have the context
     // necessary to pass to the Co-Pilot frame.
   });
+
+  // Fetch the current data from the content script when the frame loads
+  const frame = await getTopLevelFrame();
+  const data = await getCopilotHostData(frame);
+  console.debug("Setting initial Co-Pilot data", {
+    location: window.location.href,
+    data,
+  });
+  setHostData(data);
 }
