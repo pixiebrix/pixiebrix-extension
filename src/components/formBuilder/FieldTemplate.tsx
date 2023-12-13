@@ -48,9 +48,9 @@ const FieldTemplate = ({
   const isActive = Boolean(uiSchema?.[UI_SCHEMA_ACTIVE]);
 
   const onClick = () => {
-    if (!isActive) {
-      // TODO: How do we get the `name` of the field? `id` is not the same thing
-      // setActiveField();
+    // We're getting an additional event from `#root`
+    if (!isActive && id.startsWith("root_")) {
+      setActiveField(id.replace("root_", ""));
     }
   };
 

@@ -6523,7 +6523,6 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                   />
                   <div
                     className="field-description text-muted"
-                    id="root_firstName"
                   >
                     <div
                       dangerouslySetInnerHTML={
@@ -6578,7 +6577,6 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                   />
                   <div
                     className="field-description text-muted"
-                    id="root_age"
                   >
                     <div
                       dangerouslySetInnerHTML={
