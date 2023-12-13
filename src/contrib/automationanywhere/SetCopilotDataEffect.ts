@@ -22,6 +22,8 @@ import { type BrickArgs } from "@/types/runtimeTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { setPartnerCopilotData } from "@/background/messenger/api";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { BusinessError } from "@/errors/businessErrors";
 
 // Must track host data on content script instead of the frame parent because the frame parent might not be attached
 // to the page at the time this data is set.
@@ -71,6 +73,13 @@ export class SetCopilotDataEffect extends EffectABC {
     processId: string | number;
     data: UnknownObject;
   }>): Promise<void> {
+    if (isLoadedInIframe()) {
+      // Force the user to use the top-level frame because that's where the copilot protocol will check for data.
+      throw new BusinessError(
+        "This brick cannot be used in an iframe. Use target Top-Level Frame.",
+      );
+    }
+
     hostData.set(String(processId), data);
 
     setPartnerCopilotData({
