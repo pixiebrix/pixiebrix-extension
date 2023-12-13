@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { fromJS } from "@/integrations/LocalDefinedIntegration";
+import { fromJS } from "@/integrations/UserDefinedIntegration";
 import IntegrationConfigEditorModal from "@/components/integrations/IntegrationConfigEditorModal";
 import { render, screen } from "@/extensionConsole/testHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";

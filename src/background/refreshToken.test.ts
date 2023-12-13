@@ -20,7 +20,7 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { type IntegrationConfig } from "@/integrations/integrationTypes";
 import { readRawConfigurations } from "@/integrations/registry";
-import { fromJS } from "@/integrations/LocalDefinedIntegration";
+import { fromJS } from "@/integrations/UserDefinedIntegration";
 import { locator } from "@/background/locator";
 import aaDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
 import googleDefinition from "@contrib/integrations/google-oauth2-pkce.yaml";

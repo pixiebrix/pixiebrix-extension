@@ -19,7 +19,7 @@ import React, { type ComponentProps } from "react";
 import { type ComponentMeta, type Story } from "@storybook/react";
 import IntegrationConfigEditorModal from "./IntegrationConfigEditorModal";
 import { action } from "@storybook/addon-actions";
-import { fromJS } from "@/integrations/LocalDefinedIntegration";
+import { fromJS } from "@/integrations/UserDefinedIntegration";
 import { dumpBrickYaml, loadBrickYaml } from "@/runtime/brickYaml";
 import { type IntegrationDefinition } from "@/integrations/integrationTypes";
 

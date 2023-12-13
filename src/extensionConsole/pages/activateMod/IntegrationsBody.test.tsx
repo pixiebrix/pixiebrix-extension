@@ -168,8 +168,8 @@ async function expectFieldToBeHidden(integration: IntegrationDefinition) {
 const Content: React.FC<{
   blueprint: ModDefinition;
   showOwnTitle?: boolean;
-  hideBuiltInServiceIntegrations?: boolean;
-}> = ({ blueprint, showOwnTitle, hideBuiltInServiceIntegrations }) => {
+  hideBuiltInIntegrations?: boolean;
+}> = ({ blueprint, showOwnTitle, hideBuiltInIntegrations }) => {
   const [loaded] = useRefreshRegistries();
 
   if (!loaded) {
@@ -177,10 +177,10 @@ const Content: React.FC<{
   }
 
   return (
-    <ServicesBody
-      blueprint={blueprint}
+    <IntegrationsBody
+      mod={blueprint}
       showOwnTitle={showOwnTitle}
-      hideBuiltInServiceIntegrations={hideBuiltInServiceIntegrations}
+      hideBuiltInIntegrations={hideBuiltInIntegrations}
     />
   );
 };
@@ -189,18 +189,18 @@ function renderContent({
   modDefinition = defaultModDefinitionFactory(),
   integrationDependencies = [],
   showOwnTitle,
-  hideBuiltInServiceIntegrations,
+  hideBuiltInIntegrations,
 }: {
   modDefinition?: ModDefinition;
   integrationDependencies: IntegrationDependency[];
   showOwnTitle?: boolean;
-  hideBuiltInServiceIntegrations?: boolean;
+  hideBuiltInIntegrations?: boolean;
 }) {
   render(
     <Content
       blueprint={modDefinition}
       showOwnTitle={showOwnTitle}
-      hideBuiltInServiceIntegrations={hideBuiltInServiceIntegrations}
+      hideBuiltInIntegrations={hideBuiltInIntegrations}
     />,
     {
       initialValues: {
@@ -210,7 +210,7 @@ function renderContent({
   );
 }
 
-describe("ServicesBody", () => {
+describe("IntegrationsBody", () => {
   it("renders with one service and no options and does not render title", async () => {
     useAuthOptionsMock.mockReturnValue(valueToAsyncState(emptyAuthOptions));
     getIntegrationIdsMock.mockReturnValue([integrationId1]);
@@ -318,7 +318,7 @@ describe("ServicesBody", () => {
         sharedOption2b,
       ]),
     );
-    getIntegrationIdsMock.mockReturnValue([serviceId1, serviceId2]);
+    getIntegrationIdsMock.mockReturnValue([integrationId1, integrationId2]);
     renderContent({
       integrationDependencies: [
         integrationDependencyFactory({
@@ -351,7 +351,7 @@ describe("ServicesBody", () => {
           configId: builtInOption1a.value,
         }),
       ],
-      hideBuiltInServiceIntegrations: true,
+      hideBuiltInIntegrations: true,
     });
 
     await expectFieldToBeHidden(integrationDefinition1);
@@ -369,7 +369,7 @@ describe("ServicesBody", () => {
           configId: builtInOption1a.value,
         }),
       ],
-      hideBuiltInServiceIntegrations: true,
+      hideBuiltInIntegrations: true,
     });
 
     await expectFieldToBeHidden(integrationDefinition1);
@@ -387,7 +387,7 @@ describe("ServicesBody", () => {
           configId: builtInOption1a.value,
         }),
       ],
-      hideBuiltInServiceIntegrations: true,
+      hideBuiltInIntegrations: true,
     });
 
     await expectServiceDescriptorVisible(integrationDefinition1);
@@ -408,7 +408,7 @@ describe("ServicesBody", () => {
           configId: sharedOption1a.value,
         }),
       ],
-      hideBuiltInServiceIntegrations: true,
+      hideBuiltInIntegrations: true,
     });
 
     await expectServiceDescriptorVisible(integrationDefinition1);
@@ -444,7 +444,7 @@ describe("ServicesBody", () => {
           configId: sharedOption2a.value,
         }),
       ],
-      hideBuiltInServiceIntegrations: true,
+      hideBuiltInIntegrations: true,
     });
 
     await expectRefreshButton();
@@ -478,7 +478,7 @@ describe("ServicesBody", () => {
           configId: sharedOption2b.value,
         }),
       ],
-      hideBuiltInServiceIntegrations: true,
+      hideBuiltInIntegrations: true,
     });
 
     await expectRefreshButton();

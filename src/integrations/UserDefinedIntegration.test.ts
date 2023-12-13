@@ -18,7 +18,7 @@
 import automationAnywhere from "@contrib/integrations/automation-anywhere.yaml";
 import automationAnywhereOAuth2 from "@contrib/integrations/automation-anywhere-oauth2.yaml";
 import greenhouse from "@contrib/integrations/greenhouse.yaml";
-import { fromJS } from "@/integrations/LocalDefinedIntegration";
+import { fromJS } from "@/integrations/UserDefinedIntegration";
 import { BusinessError } from "@/errors/businessErrors";
 import {
   type SanitizedConfig,
@@ -26,7 +26,7 @@ import {
   type IntegrationDefinition,
 } from "@/integrations/integrationTypes";
 
-describe("LocalDefinedIntegration", () => {
+describe("UserDefinedIntegration", () => {
   test("includes version", () => {
     const integration = fromJS(
       automationAnywhere as unknown as IntegrationDefinition,
@@ -104,7 +104,7 @@ describe("LocalDefinedIntegration", () => {
   });
 });
 
-describe("LocalDefinedIntegration.authenticateBasicRequest", () => {
+describe("UserDefinedIntegration.authenticateBasicRequest", () => {
   it("adds authorization header", () => {
     const integration = fromJS(greenhouse as unknown as IntegrationDefinition);
 
