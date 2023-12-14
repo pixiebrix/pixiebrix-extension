@@ -17,7 +17,7 @@
 
 import { RendererABC } from "@/types/bricks/rendererTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import sanitize from "@/utils/sanitize";
+import sanitize, { ADD_IFRAME_CONFIG } from "@/utils/sanitize";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type SafeHTML } from "@/types/stringTypes";
 import { validateRegistryId } from "@/types/helpers";
@@ -55,16 +55,7 @@ class HtmlRenderer extends RendererABC {
     html,
     allowIFrames = false,
   }: BrickArgs<{ html: string; allowIFrames?: boolean }>): Promise<SafeHTML> {
-    if (allowIFrames) {
-      // `src`, `title`, and similar attributes are already allowed
-      // https://github.com/cure53/DOMPurify/wiki/Default-TAGs-ATTRIBUTEs-allow-list-&-blocklist#default-allow-listsblocklists
-      return sanitize(html, {
-        ADD_TAGS: ["iframe"],
-        ADD_ATTR: ["allowfullscreen", "frameborder", "scrolling"],
-      });
-    }
-
-    return sanitize(html);
+    return sanitize(html, allowIFrames ? ADD_IFRAME_CONFIG : undefined);
   }
 }
 

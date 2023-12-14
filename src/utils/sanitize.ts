@@ -28,6 +28,13 @@ export function assumeSafe(html: string): SafeHTML {
   return html as SafeHTML;
 }
 
+// `src`, `title`, and similar attributes are already allowed
+// https://github.com/cure53/DOMPurify/wiki/Default-TAGs-ATTRIBUTEs-allow-list-&-blocklist#default-allow-listsblocklists
+export const ADD_IFRAME_CONFIG: Config = {
+  ADD_TAGS: ["iframe"],
+  ADD_ATTR: ["allowfullscreen", "frameborder", "scrolling"],
+};
+
 /**
  * Sanitize the given HTML string.
  *

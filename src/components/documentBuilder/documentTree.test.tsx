@@ -20,7 +20,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { render, screen, within } from "@testing-library/react";
 import React from "react";
 import blockRegistry from "@/bricks/registry";
-import { MarkdownRenderer } from "@/bricks/renderers/markdown";
+import { MarkdownRenderer } from "@/bricks/renderers/MarkdownRenderer";
 import * as contentScriptAPI from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import { buildDocumentBranch } from "./documentTree";
