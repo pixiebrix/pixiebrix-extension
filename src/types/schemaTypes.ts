@@ -33,6 +33,12 @@ export type UiSchema = StandardUiSchema;
  */
 export const SCHEMA_ALLOW_ANY: Schema = Object.freeze({});
 
+export const SCHEMA_EMPTY_OBJECT: Schema = Object.freeze({
+  type: "object",
+  properties: {},
+  additionalProperties: false,
+});
+
 /**
  * Field Schema for labelled enums.
  *
