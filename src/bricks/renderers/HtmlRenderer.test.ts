@@ -29,7 +29,7 @@ describe("html renderer", () => {
   it("sanitizes HTML", async () => {
     const result = await brick.run(
       unsafeAssumeValidArg({
-        html: "<h1>hello</h1>",
+        html: "<h1><foo>hello</foo></h1>",
       }),
       brickOptionsFactory(),
     );

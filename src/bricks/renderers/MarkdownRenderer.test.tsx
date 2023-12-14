@@ -32,7 +32,9 @@ describe("MarkdownRenderer", () => {
       unsafeAssumeValidArg({ markdown: "# Hello" }),
     );
     render(<Component {...props} />);
-    expect(screen.getByText("Hello")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+      "Hello",
+    );
   });
 
   it.each([undefined, false])(
