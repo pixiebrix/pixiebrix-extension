@@ -303,7 +303,7 @@ const extensionsSlice = createSlice({
         throw new Error("extensionPointId is required");
       }
 
-      const extension: Except<
+      const modComponent: Except<
         ActivatedModComponent,
         "_unresolvedModComponentBrand"
       > = {
@@ -322,20 +322,20 @@ const extensionsSlice = createSlice({
         active: true,
       };
 
-      assertModComponentNotResolved(extension);
+      assertModComponentNotResolved(modComponent);
 
       if (pushToCloud && !_deployment) {
         // In the future, we'll want to make the Redux action async. For now, just fail silently in the interface
-        void saveUserExtension(extension);
+        void saveUserExtension(modComponent);
       }
 
       const index = state.extensions.findIndex((x) => x.id === id);
 
       if (index >= 0) {
         // eslint-disable-next-line security/detect-object-injection -- array index from findIndex
-        state.extensions[index] = extension;
+        state.extensions[index] = modComponent;
       } else {
-        state.extensions.push(extension);
+        state.extensions.push(modComponent);
       }
     },
     updateExtension(
