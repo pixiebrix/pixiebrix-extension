@@ -42,7 +42,7 @@ import { type OutputKey, type PipelineExpression } from "@/types/runtimeTypes";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import { type EditablePackageMetadata } from "@/types/contract";
 import { fireTextInput } from "@/testUtils/formHelpers";
-import { MarkdownRenderer } from "@/bricks/renderers/MarkdownRenderer";
+import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import getType from "@/runtime/getType";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
