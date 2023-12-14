@@ -17,7 +17,7 @@
 
 import React from "react";
 import { render } from "@/pageEditor/testHelpers";
-import IdentityOptions from "@/bricks/transformers/IdentityOptions";
+import IdentityTransformerOptions from "@/bricks/transformers/IdentityTransformerOptions";
 import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
 import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import brickRegistry from "@/bricks/registry";
@@ -40,7 +40,7 @@ describe("IdentityOptions", () => {
   });
 
   test("shows object widget by default", async () => {
-    render(<IdentityOptions name="foo" configKey="config" />, {
+    render(<IdentityTransformerOptions name="foo" configKey="config" />, {
       initialValues: {
         foo: {
           config: getExampleBrickConfig(IdentityTransformer.BRICK_ID),
