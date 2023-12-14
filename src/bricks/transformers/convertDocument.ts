@@ -92,13 +92,10 @@ class ConvertDocument extends TransformerABC {
     input,
     sourceFormat,
     targetFormat,
-    // Default to true if not provided for backwards compatibility
-    sanitizeOutput = true,
   }: BrickArgs<{
     input: string;
     sourceFormat: "html" | "markdown";
     targetFormat: "text" | "html";
-    sanitizeOutput: boolean;
   }>): Promise<unknown> {
     if (sourceFormat === targetFormat) {
       return {
