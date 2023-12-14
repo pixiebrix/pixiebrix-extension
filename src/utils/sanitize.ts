@@ -20,10 +20,22 @@ import { type SafeHTML } from "@/types/stringTypes";
 
 let DOMPurify: DOMPurifyI;
 
+/**
+ * Assume that the given HTML is safe by applying the SafeHTML type brand.
+ * @param html the HTML string
+ */
 export function assumeSafe(html: string): SafeHTML {
   return html as SafeHTML;
 }
 
+/**
+ * Sanitize the given HTML string.
+ *
+ * https://github.com/cure53/DOMPurify?tab=readme-ov-file#can-i-configure-dompurify
+ *
+ * @param html
+ * @param config the DOMPurify config
+ */
 function sanitize(html: string, config?: Config): SafeHTML {
   if (!DOMPurify) {
     DOMPurify = createDOMPurify(window);

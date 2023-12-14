@@ -74,6 +74,13 @@ class ConvertDocument extends TransformerABC {
         description: "The target document format",
         enum: ["text", "html"],
       },
+      sanitizeOutput: {
+        title: "Sanitize Output",
+        type: "boolean",
+        description:
+          "Whether to sanitize the output, e.g., using [DOMPurify](https://github.com/cure53/DOMPurify) for HTML",
+        default: true,
+      },
     },
     ["input", "sourceFormat", "targetFormat"],
   );
@@ -92,10 +99,13 @@ class ConvertDocument extends TransformerABC {
     input,
     sourceFormat,
     targetFormat,
+    // Default to true if not provided for backwards compatibility
+    sanitizeOutput = true,
   }: BrickArgs<{
     input: string;
     sourceFormat: "html" | "markdown";
     targetFormat: "text" | "html";
+    sanitizeOutput: boolean;
   }>): Promise<unknown> {
     if (sourceFormat === targetFormat) {
       return {
@@ -120,8 +130,10 @@ class ConvertDocument extends TransformerABC {
         /* webpackChunkName: "markdown" */ "marked"
       );
 
+      const rawHtml = String(marked(input));
+
       return {
-        output: sanitize(String(marked(input))),
+        output: sanitizeOutput ? sanitize(rawHtml) : rawHtml,
       };
     }
 

@@ -15,79 +15,55 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ConvertDocument from "@/bricks/transformers/convertDocument";
+import HtmlRenderer from "@/bricks/renderers/HtmlRenderer";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
-const brick = new ConvertDocument();
+const brick = new HtmlRenderer();
 
+// OneDrive embed iframe: https://support.microsoft.com/en-au/office/embed-files-directly-into-your-website-or-blog-ed07dd52-8bdb-431d-96a5-cbe8a80b7418
 const oneDriveEmbedFrame =
   '<iframe src="https://pixiebrixoffice-my.sharepoint.com/personal/todd_pixiebrixoffice_onmicrosoft_com/_layouts/15/embed.aspx?UniqueId=43f4044d-69bc-4daf-890b-1623cc32e75e" width="640" height="360" frameborder="0" scrolling="no" allowfullscreen title="7-cat-png-image-download-picture-kitten.png"></iframe>';
 
-describe("convert document", () => {
-  it("converts basic HTML to text", async () => {
+describe("html renderer", () => {
+  it("sanitizes HTML", async () => {
     const result = await brick.run(
       unsafeAssumeValidArg({
-        input: "<h1>hello</h1>",
-        sourceFormat: "html",
-        targetFormat: "text",
+        html: "<h1>hello</h1>",
       }),
       brickOptionsFactory(),
     );
 
-    expect(result).toEqual({
-      output: "HELLO",
-    });
+    expect(result).toBe("<h1>hello</h1>");
   });
 
-  it("converts markdown HTML", async () => {
-    const result = await brick.run(
-      unsafeAssumeValidArg({
-        input: "# hello",
-        sourceFormat: "markdown",
-        targetFormat: "html",
-      }),
-      brickOptionsFactory(),
-    );
-
-    expect(result).toEqual({
-      output: "<h1>hello</h1>\n",
-    });
-  });
-
-  it("preserves iframe if sanitizeOutput: false", async () => {
-    // Sharepoint embed iframe
-    const result = await brick.run(
-      unsafeAssumeValidArg({
-        input: oneDriveEmbedFrame,
-        sourceFormat: "markdown",
-        targetFormat: "html",
-        sanitizeOutput: false,
-      }),
-      brickOptionsFactory(),
-    );
-
-    expect(result).toStrictEqual({
-      output: oneDriveEmbedFrame,
-    });
-  });
-
-  it.each([true, undefined])(
-    "removes iframe for sanitizeOutput: %s",
-    async (sanitizeOutput) => {
+  it.each([undefined, false])(
+    "sanitizes HTML with iframe when allowIframes: %s",
+    async (allowIFrames) => {
       const result = await brick.run(
         unsafeAssumeValidArg({
-          input: oneDriveEmbedFrame,
-          sourceFormat: "markdown",
-          targetFormat: "html",
-          sanitizeOutput,
+          html: oneDriveEmbedFrame,
+          allowIFrames,
         }),
         brickOptionsFactory(),
       );
 
-      expect(result).toStrictEqual({
-        output: "",
-      });
+      expect(result).toBe("");
     },
   );
+
+  it("allows HTML with iframe when allowIFrames: true", async () => {
+    const result = await brick.run(
+      unsafeAssumeValidArg({
+        html: oneDriveEmbedFrame,
+        allowIFrames: true,
+      }),
+      brickOptionsFactory(),
+    );
+
+    // Sanitization re-orders attributes, so we can't compare the strings directly.
+    const original = $(oneDriveEmbedFrame);
+    const sanitized = $(result);
+    expect(sanitized).toEqual(original);
+  });
 });

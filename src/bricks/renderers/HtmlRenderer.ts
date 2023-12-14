@@ -20,11 +20,14 @@ import { propertiesToSchema } from "@/validators/generic";
 import sanitize from "@/utils/sanitize";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type SafeHTML } from "@/types/stringTypes";
+import { validateRegistryId } from "@/types/helpers";
 
-export class HtmlRenderer extends RendererABC {
+class HtmlRenderer extends RendererABC {
+  static BRICK_ID = validateRegistryId("@pixiebrix/html");
+
   constructor() {
     super(
-      "@pixiebrix/html",
+      HtmlRenderer.BRICK_ID,
       "HTML Renderer",
       "Render HTML, sanitizing it first",
     );
@@ -32,12 +35,37 @@ export class HtmlRenderer extends RendererABC {
 
   inputSchema = propertiesToSchema({
     html: {
+      title: "HTML",
       type: "string",
       description: "The HTML string to render",
     },
+    /**
+     * @since 1.8.5
+     */
+    allowIFrames: {
+      title: "Allow IFrames",
+      type: "boolean",
+      description:
+        "Toggle to allow the iframe tag and generally safe frame attributes",
+      default: false,
+    },
   });
 
-  async render({ html }: BrickArgs<{ html: string }>): Promise<SafeHTML> {
+  async render({
+    html,
+    allowIFrames = false,
+  }: BrickArgs<{ html: string; allowIFrames?: boolean }>): Promise<SafeHTML> {
+    if (allowIFrames) {
+      // `src`, `title`, and similar attributes are already allowed
+      // https://github.com/cure53/DOMPurify/wiki/Default-TAGs-ATTRIBUTEs-allow-list-&-blocklist#default-allow-listsblocklists
+      return sanitize(html, {
+        ADD_TAGS: ["iframe"],
+        ADD_ATTR: ["allowfullscreen", "frameborder", "scrolling"],
+      });
+    }
+
     return sanitize(html);
   }
 }
+
+export default HtmlRenderer;
