@@ -264,12 +264,12 @@ const extensionsSlice = createSlice({
       });
     },
     // XXX: why do we expose a `extensionId` in addition ModComponentBase's `id` prop here?
-    saveExtension(
+    saveModComponent(
       state,
       {
         payload,
       }: PayloadAction<{
-        extension: (ModComponentBase | ActivatedModComponent) & {
+        modComponent: (ModComponentBase | ActivatedModComponent) & {
           createTimestamp?: string;
         };
         pushToCloud: boolean;
@@ -278,7 +278,7 @@ const extensionsSlice = createSlice({
       const timestamp = new Date().toISOString();
 
       const {
-        extension: {
+        modComponent: {
           id,
           apiVersion,
           extensionPointId,

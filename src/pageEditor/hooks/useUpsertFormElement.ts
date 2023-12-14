@@ -39,7 +39,7 @@ import { type UUID } from "@/types/stringTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import type { RegistryId } from "@/types/registryTypes";
 
-const { saveExtension } = extensionsSlice.actions;
+const { saveModComponent } = extensionsSlice.actions;
 const { markSaved } = editorSlice.actions;
 
 async function upsertPackageConfig(
@@ -186,8 +186,8 @@ function useUpsertFormElement(): SaveCallback {
           const extensionPointConfig =
             adapter.selectExtensionPointConfig(element);
           dispatch(
-            saveExtension({
-              extension: extensionWithInnerDefinitions(
+            saveModComponent({
+              modComponent: extensionWithInnerDefinitions(
                 rawExtension,
                 extensionPointConfig.definition,
               ),
@@ -196,8 +196,8 @@ function useUpsertFormElement(): SaveCallback {
           );
         } else {
           dispatch(
-            saveExtension({
-              extension: rawExtension,
+            saveModComponent({
+              modComponent: rawExtension,
               pushToCloud: options.pushToCloud,
             }),
           );
