@@ -99,8 +99,10 @@ const DynamicModComponentListItem: React.FunctionComponent<
     await disableOverlay(thisTab);
   }, []);
 
-  const { save: saveExtension, isSaving: isSavingExtension } =
-    useSaveStandaloneModComponent();
+  const {
+    save: saveStandaloneModComponent,
+    isSaving: isSavingStandaloneModComponent,
+  } = useSaveStandaloneModComponent();
   const resetExtension = useResetExtension();
 
   const deleteModComponent = useDeleteModComponent();
@@ -111,13 +113,13 @@ const DynamicModComponentListItem: React.FunctionComponent<
     if (modComponentFormState.recipe) {
       await saveRecipe(modComponentFormState.recipe?.id);
     } else {
-      await saveExtension(modComponentFormState);
+      await saveStandaloneModComponent(modComponentFormState);
     }
   };
 
   const isSaving = modComponentFormState.recipe
     ? isSavingRecipe
-    : isSavingExtension;
+    : isSavingStandaloneModComponent;
 
   const onReset = async () =>
     resetExtension({ extensionId: modComponentFormState.uuid });
