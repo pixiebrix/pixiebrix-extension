@@ -71,6 +71,7 @@ const SidebarConfiguration: React.FC<{
     <>
       <ConnectedFieldTemplate
         name="extension.heading"
+        // If you change this label, update the field title in ShowSidebar
         label="Tab Title"
         description="The text that will appear in the tab along the top of the Sidebar Panel"
       />
