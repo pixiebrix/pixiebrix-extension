@@ -69,7 +69,8 @@ export function getExampleBrickConfig(
 
     case IdentityTransformer.BRICK_ID: {
       return {
-        value: toExpression("nunjucks", ""),
+        // Use `property` as the default because the property table has title "Property name"
+        property: toExpression("nunjucks", ""),
       };
     }
 
