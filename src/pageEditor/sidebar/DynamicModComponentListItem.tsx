@@ -44,13 +44,14 @@ import {
   selectElementIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
-import useSaveExtension from "@/pageEditor/hooks/useSaveExtension";
+import useSaveStandaloneModComponent from "@/pageEditor/hooks/useSaveStandaloneModComponent";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import {
   useDeactivateModComponent,
   useDeleteModComponent,
 } from "@/pageEditor/hooks/useRemoveModComponent";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
+import { useGetAllCloudExtensionsQuery } from "@/services/api";
 
 type DynamicModComponentListItemProps = {
   modComponentFormState: ModComponentFormState;
@@ -80,6 +81,13 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const isRelativeOfActiveListItem =
     !isActive && (isChildOfActiveListItem || isSiblingOfActiveListItem);
   const isDirty = useSelector(selectElementIsDirty(modComponentFormState.uuid));
+  const { data: cloudModComponents } = useGetAllCloudExtensionsQuery();
+
+  const isSavedOnCloud = cloudModComponents?.some(
+    (modComponent) => modComponent.id === modComponentFormState.uuid,
+  );
+
+  console.log("***isSavedOnCloud", isSavedOnCloud, modComponentFormState);
 
   const isButton = modComponentFormState.type === "menuItem";
 
@@ -92,7 +100,7 @@ const DynamicModComponentListItem: React.FunctionComponent<
   }, []);
 
   const { save: saveExtension, isSaving: isSavingExtension } =
-    useSaveExtension();
+    useSaveStandaloneModComponent();
   const resetExtension = useResetExtension();
 
   const deleteModComponent = useDeleteModComponent();
