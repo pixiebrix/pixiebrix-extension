@@ -54,7 +54,7 @@ import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
 import JQueryReaderOptions from "@/bricks/transformers/jquery/JQueryReaderOptions";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import AssignModVariableOptions from "@/pageEditor/fields/AssignModVariableOptions";
-import { IdentityTransformer } from "@/bricks/transformers/identity";
+import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import IdentityOptions from "@/bricks/transformers/IdentityOptions";
 import CommentEffect from "@/bricks/effects/comment";
 import CommentOptions from "@/bricks/effects/CommentOptions";

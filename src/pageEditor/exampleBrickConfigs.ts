@@ -28,7 +28,7 @@ import TourStep from "@/bricks/transformers/tourStep/tourStep";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
-import { IdentityTransformer } from "@/bricks/transformers/identity";
+import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import { minimalUiSchemaFactory } from "@/utils/schemaUtils";
 import { toExpression } from "@/utils/expressionUtils";
 import CommentEffect from "@/bricks/effects/comment";

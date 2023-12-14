@@ -21,7 +21,7 @@ import { GetAPITransformer } from "./httpGet";
 import { RemoteMethod } from "./remoteMethod";
 import { RegexTransformer } from "./regex";
 import { MappingTransformer } from "./mapping";
-import { IdentityTransformer } from "./identity";
+import IdentityTransformer from "./IdentityTransformer";
 import { UrlParser } from "./parseUrl";
 import { FormData } from "./FormData";
 import { Prompt } from "./prompt";
