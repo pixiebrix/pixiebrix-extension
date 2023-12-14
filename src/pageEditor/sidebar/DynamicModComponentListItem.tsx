@@ -51,7 +51,8 @@ import {
   useDeleteModComponent,
 } from "@/pageEditor/hooks/useRemoveModComponent";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
-import { useGetAllCloudExtensionsQuery } from "@/services/api";
+import { appApi, useGetCloudExtensionQuery } from "@/services/api";
+import { sleep } from "@/utils/timeUtils";
 
 type DynamicModComponentListItemProps = {
   modComponentFormState: ModComponentFormState;
@@ -81,11 +82,12 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const isRelativeOfActiveListItem =
     !isActive && (isChildOfActiveListItem || isSiblingOfActiveListItem);
   const isDirty = useSelector(selectElementIsDirty(modComponentFormState.uuid));
-  const { data: cloudModComponents } = useGetAllCloudExtensionsQuery();
-
-  const isSavedOnCloud = cloudModComponents?.some(
-    (modComponent) => modComponent.id === modComponentFormState.uuid,
+  const { data: cloudModComponent, isFetching } = useGetCloudExtensionQuery(
+    { extensionId: modComponentFormState.uuid },
+    { skip: !modComponentFormState.uuid },
   );
+
+  const isSavedOnCloud = Boolean(cloudModComponent);
 
   console.log("***isSavedOnCloud", isSavedOnCloud, modComponentFormState);
 
@@ -189,6 +191,7 @@ const DynamicModComponentListItem: React.FunctionComponent<
           <UnsavedChangesIcon />
         </span>
       )}
+      {isSavedOnCloud ? "☁️" : "🔴"}
       {isActive && (
         <ActionMenu
           onSave={onSave}
@@ -211,7 +214,7 @@ const DynamicModComponentListItem: React.FunctionComponent<
                 }
               : undefined
           }
-          disabled={isSaving}
+          disabled={isSaving || isFetching}
         />
       )}
     </ListGroup.Item>

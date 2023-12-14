@@ -49,8 +49,8 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
           title: "Deactivate Mod?",
           message: (
             <>
-              This action will deactivate the mod and remove it from the Page
-              Editor. You can reactivate or delete mods from the{" "}
+              Unsaved changes will be lost. You can reactivate or delete mods
+              from the{" "}
               <a href="/options.html" target="_blank">
                 PixieBrix Extension Console
               </a>

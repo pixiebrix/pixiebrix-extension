@@ -19,7 +19,7 @@ import { type UUID } from "@/types/stringTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { useModals } from "@/components/ConfirmationModal";
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
@@ -96,8 +96,16 @@ export const useDeactivateModComponent = (): ((
       if (shouldShowConfirmation) {
         const confirm = await showConfirmation({
           title: "Deactivate Mod?",
-          message:
-            "This action will deactivate the mod and remove it from the Page Editor. You can reactivate or delete mods from the PixieBrix Extension Console.",
+          message: (
+            <>
+              Unsaved changes will be lost. You can reactivate or delete mods
+              from the{" "}
+              <a href="/options.html" target="_blank">
+                PixieBrix Extension Console
+              </a>
+              .
+            </>
+          ),
           submitCaption: "Deactivate",
         });
 

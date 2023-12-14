@@ -27,7 +27,7 @@ import { Events } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { extensionWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
-import { useGetEditablePackagesQuery } from "@/services/api";
+import { appApi, useGetEditablePackagesQuery } from "@/services/api";
 import { type UnknownObject } from "@/types/objectTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
@@ -182,6 +182,7 @@ function useUpsertFormElement(): SaveCallback {
 
       try {
         const rawExtension = adapter.selectExtension(element);
+
         if (hasInnerExtensionPoint) {
           const extensionPointConfig =
             adapter.selectExtensionPointConfig(element);
