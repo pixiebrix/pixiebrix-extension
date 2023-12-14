@@ -417,6 +417,8 @@ describe("ActivateModPanel", () => {
     );
   });
 
+  // TODO: Something isn't resetting state properly, these two following tests work in isolation but not when the whole suite runs
+
   it("does not activate recipe automatically when required integration does not have built-in config available", async () => {
     const { integrationDefinition } = generateIntegrationAndRemoteConfig();
     // Don't include the remote auth option
