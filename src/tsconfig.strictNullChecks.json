@@ -78,7 +78,7 @@
     "./bricks/transformers/component/TableReader.ts",
     "./bricks/transformers/ephemeralForm/formTypes.ts",
     "./bricks/transformers/ephemeralForm/modalUtils.tsx",
-    "./bricks/transformers/identity.ts",
+    "./bricks/transformers/IdentityTransformer.ts",
     "./bricks/transformers/jquery/JQueryReader.ts",
     "./bricks/transformers/jsonPath.ts",
     "./bricks/transformers/mapping.ts",

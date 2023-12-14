@@ -54,7 +54,7 @@ import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import { toExpression } from "@/utils/expressionUtils";
-import { IdentityTransformer } from "@/bricks/transformers/identity";
+import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
 
 jest.mocked(services.locate).mockResolvedValue(
