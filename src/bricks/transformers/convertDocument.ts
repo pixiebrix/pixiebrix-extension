@@ -74,13 +74,6 @@ class ConvertDocument extends TransformerABC {
         description: "The target document format",
         enum: ["text", "html"],
       },
-      sanitizeOutput: {
-        title: "Sanitize Output",
-        type: "boolean",
-        description:
-          "Whether to sanitize the output, e.g., using [DOMPurify](https://github.com/cure53/DOMPurify) for HTML",
-        default: true,
-      },
     },
     ["input", "sourceFormat", "targetFormat"],
   );
@@ -130,10 +123,8 @@ class ConvertDocument extends TransformerABC {
         /* webpackChunkName: "markdown" */ "marked"
       );
 
-      const rawHtml = String(marked(input));
-
       return {
-        output: sanitizeOutput ? sanitize(rawHtml) : rawHtml,
+        output: sanitize(String(marked(input))),
       };
     }
 

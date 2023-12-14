@@ -21,9 +21,6 @@ import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 const brick = new ConvertDocument();
 
-const oneDriveEmbedFrame =
-  '<iframe src="https://pixiebrixoffice-my.sharepoint.com/personal/todd_pixiebrixoffice_onmicrosoft_com/_layouts/15/embed.aspx?UniqueId=43f4044d-69bc-4daf-890b-1623cc32e75e" width="640" height="360" frameborder="0" scrolling="no" allowfullscreen title="7-cat-png-image-download-picture-kitten.png"></iframe>';
-
 describe("convert document", () => {
   it("converts basic HTML to text", async () => {
     const result = await brick.run(
@@ -54,40 +51,4 @@ describe("convert document", () => {
       output: "<h1>hello</h1>\n",
     });
   });
-
-  it("preserves iframe if sanitizeOutput: false", async () => {
-    // Sharepoint embed iframe
-    const result = await brick.run(
-      unsafeAssumeValidArg({
-        input: oneDriveEmbedFrame,
-        sourceFormat: "markdown",
-        targetFormat: "html",
-        sanitizeOutput: false,
-      }),
-      brickOptionsFactory(),
-    );
-
-    expect(result).toStrictEqual({
-      output: oneDriveEmbedFrame,
-    });
-  });
-
-  it.each([true, undefined])(
-    "removes iframe for sanitizeOutput: %s",
-    async (sanitizeOutput) => {
-      const result = await brick.run(
-        unsafeAssumeValidArg({
-          input: oneDriveEmbedFrame,
-          sourceFormat: "markdown",
-          targetFormat: "html",
-          sanitizeOutput,
-        }),
-        brickOptionsFactory(),
-      );
-
-      expect(result).toStrictEqual({
-        output: "",
-      });
-    },
-  );
 });
