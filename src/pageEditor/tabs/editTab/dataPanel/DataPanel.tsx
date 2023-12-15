@@ -395,7 +395,7 @@ const DataPanel: React.FC = () => {
               />
             </ErrorBoundary>
           </DataTab>
-          <CommentsTab />
+          <CommentsTab comments={brickConfig?.comments} />
         </Tab.Content>
       </div>
     </Tab.Container>
