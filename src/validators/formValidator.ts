@@ -48,6 +48,10 @@ import { assertNotNullish } from "@/utils/nullishUtils";
  * https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/utils/src/types.ts#L939
  */
 
+const REQUIRED_PROPERTY_NAME_REGEX =
+  /Instance does not have required property "(.*?)"/;
+const HASH_OR_HASH_SLASH_REGEX = /^#\/?/;
+
 class FormValidator<
   T,
   S extends StrictRJSFSchema,
@@ -98,8 +102,6 @@ class FormValidator<
       };
     }
 
-    console.log(errors, errorSchema);
-
     if (typeof customValidate !== "function") {
       return { errors, errorSchema };
     }
@@ -125,7 +127,6 @@ class FormValidator<
   private transformRJSFValidationErrors(
     errors: OutputUnit[] = [],
   ): RJSFValidationError[] {
-    console.log("transform", errors);
     return errors
       .filter(
         (error) =>
@@ -139,18 +140,17 @@ class FormValidator<
 
         switch (keyword) {
           case "required": {
-            const regexPattern =
-              /Instance does not have required property "(.*?)"/;
-            const matches = regexPattern.exec(error);
+            const matches = REQUIRED_PROPERTY_NAME_REGEX.exec(error);
 
-            property = `${instanceLocation.replace(/#\/?/, "")}.${
-              matches?.[1] ?? ""
-            }`;
+            property = `${instanceLocation.replace(
+              HASH_OR_HASH_SLASH_REGEX,
+              "",
+            )}.${matches?.[1] ?? ""}`;
             break;
           }
 
           case "type": {
-            property = instanceLocation.replace(/#\/?/, "");
+            property = instanceLocation.replace(HASH_OR_HASH_SLASH_REGEX, "");
             break;
           }
 

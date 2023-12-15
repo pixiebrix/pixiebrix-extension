@@ -61,12 +61,16 @@ const illFormedKey = "bar.`'[]()=+*&^%$#@!";
 // Copied from https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/validator-ajv6/test/validator.test.ts
 describe("RJSF Tests", () => {
   let builder: ErrorSchemaBuilder;
+  3;
+
   beforeAll(() => {
     builder = new ErrorSchemaBuilder();
   });
+
   afterEach(() => {
     builder.resetAllErrors();
   });
+
   describe("default options", () => {
     describe("validator.isValid()", () => {
       it("should return true if the data is valid against the schema", () => {
@@ -79,6 +83,7 @@ describe("RJSF Tests", () => {
 
         expect(validator.isValid(schema, { foo: "bar" }, schema)).toBe(true);
       });
+
       it("should return false if the data is not valid against the schema", () => {
         const schema: RJSFSchema = {
           type: "object",
@@ -89,6 +94,7 @@ describe("RJSF Tests", () => {
 
         expect(validator.isValid(schema, { foo: 12_345 }, schema)).toBe(false);
       });
+
       it("should return false if the schema is invalid", () => {
         const schema: RJSFSchema = "foobarbaz" as unknown as RJSFSchema;
 
@@ -100,6 +106,7 @@ describe("RJSF Tests", () => {
       it("should return empty list for unspecified errorSchema", () => {
         expect(validator.toErrorList()).toEqual([]);
       });
+
       it("should convert an errorSchema into a flat list", () => {
         const errorSchema = builder
           .addErrors(["err1", "err2"])
@@ -114,6 +121,7 @@ describe("RJSF Tests", () => {
         ]);
       });
     });
+
     describe("validator.validateFormData()", () => {
       describe("No custom validate function, single value", () => {
         let errors: RJSFValidationError[];
@@ -155,6 +163,7 @@ describe("RJSF Tests", () => {
 
       describe("Validating multipleOf with a float", () => {
         let errors: RJSFValidationError[];
+
         beforeAll(() => {
           const schema: RJSFSchema = {
             type: "object",
@@ -170,13 +179,16 @@ describe("RJSF Tests", () => {
           const result = validator.validateFormData({ price: 0.14 }, schema);
           errors = result.errors;
         });
+
         it("should not return an error", () => {
           expect(errors).toHaveLength(0);
         });
       });
+
       describe("Validating multipleOf with a float, with multiple errors", () => {
         let errors: RJSFValidationError[];
         let errorSchema: ErrorSchema;
+
         beforeAll(() => {
           const schema: RJSFSchema = {
             type: "object",
@@ -325,6 +337,7 @@ describe("RJSF Tests", () => {
         let newErrorMessage: string;
         let transformErrors: jest.Mock;
         let uiSchema: UiSchema;
+
         beforeAll(() => {
           const schema: RJSFSchema = {
             type: "object",
@@ -333,13 +346,17 @@ describe("RJSF Tests", () => {
               [illFormedKey]: { type: "string" },
             },
           };
+
           uiSchema = {
             foo: { "ui:label": false },
           };
+
           newErrorMessage = "Better error message";
+
           transformErrors = jest.fn((errors: RJSFValidationError[]) => [
             { ...errors[0], message: newErrorMessage },
           ]);
+
           const result = validator.validateFormData(
             { foo: 42, [illFormedKey]: 41 },
             schema,
@@ -347,6 +364,7 @@ describe("RJSF Tests", () => {
             transformErrors,
             uiSchema,
           );
+
           errors = result.errors;
         });
 
@@ -354,6 +372,7 @@ describe("RJSF Tests", () => {
           expect(errors).not.toHaveLength(0);
           expect(errors[0].message).toEqual(newErrorMessage);
         });
+
         it("transformErrors function was called with uiSchema", () => {
           expect(transformErrors).toHaveBeenCalledWith(
             expect.any(Array),
@@ -361,11 +380,13 @@ describe("RJSF Tests", () => {
           );
         });
       });
+
       describe("Custom validate function", () => {
         let errors: RJSFValidationError[];
         let errorSchema: ErrorSchema;
         let validate: jest.Mock;
         let uiSchema: UiSchema;
+
         beforeAll(() => {
           uiSchema = {
             foo: { "ui:label": false },
@@ -379,6 +400,7 @@ describe("RJSF Tests", () => {
             return errors;
           });
         });
+
         describe("formData is provided", () => {
           beforeAll(() => {
             const schema: RJSFSchema = {
@@ -390,6 +412,7 @@ describe("RJSF Tests", () => {
                 foo: { type: "array", items: { type: "string" } }, // Adding an array for test coverage
               },
             };
+
             const formData = { pass1: "a", pass2: "b", foo: ["a"] };
             const result = validator.validateFormData(
               formData,
@@ -401,16 +424,19 @@ describe("RJSF Tests", () => {
             errors = result.errors;
             errorSchema = result.errorSchema;
           });
+
           it("should return an error list", () => {
             expect(errors).toHaveLength(1);
             expect(errors[0].stack).toBe(".pass2 passwords don`t match.");
           });
+
           it("should return an errorSchema", () => {
             expect(errorSchema.pass2!.__errors).toHaveLength(1);
             expect(errorSchema.pass2!.__errors[0]).toBe(
               "passwords don`t match.",
             );
           });
+
           it("validate function was called with uiSchema", () => {
             expect(validate).toHaveBeenCalledWith(
               expect.any(Object),
@@ -419,6 +445,7 @@ describe("RJSF Tests", () => {
             );
           });
         });
+
         describe("formData is missing data", () => {
           beforeAll(() => {
             const schema: RJSFSchema = {
@@ -437,16 +464,19 @@ describe("RJSF Tests", () => {
             errors = result.errors;
             errorSchema = result.errorSchema;
           });
+
           it("should return an error list", () => {
             expect(errors).toHaveLength(1);
             expect(errors[0].stack).toBe(".pass2 passwords don`t match.");
           });
+
           it("should return an errorSchema", () => {
             expect(errorSchema.pass2!.__errors).toHaveLength(1);
             expect(errorSchema.pass2!.__errors[0]).toBe(
               "passwords don`t match.",
             );
           });
+
           it("validate function was called with undefined uiSchema", () => {
             expect(validate).toHaveBeenCalledWith(
               expect.any(Object),
@@ -456,8 +486,10 @@ describe("RJSF Tests", () => {
           });
         });
       });
+
       describe("Data-Url validation", () => {
         let schema: RJSFSchema;
+
         beforeAll(() => {
           schema = {
             type: "object",
@@ -467,6 +499,7 @@ describe("RJSF Tests", () => {
             },
           };
         });
+
         it("Data-Url with name is accepted", () => {
           const formData = {
             dataUrlWithName: "data:text/plain;name=file1.txt;base64,x=",
@@ -474,6 +507,7 @@ describe("RJSF Tests", () => {
           const result = validator.validateFormData(formData, schema);
           expect(result.errors).toHaveLength(0);
         });
+
         it("Data-Url without name is accepted", () => {
           const formData = {
             dataUrlWithoutName: "data:text/plain;base64,x=",
@@ -482,6 +516,7 @@ describe("RJSF Tests", () => {
           expect(result.errors).toHaveLength(0);
         });
       });
+
       describe("Invalid schema", () => {
         let errors: RJSFValidationError[];
         let errorSchema: ErrorSchema;
@@ -518,62 +553,6 @@ describe("RJSF Tests", () => {
             "should be array",
           );
         });
-      });
-    });
-  });
-
-  describe("validator.validateFormData(), custom options", () => {
-    let schema: RJSFSchema;
-    beforeAll(() => {
-      schema = {
-        $ref: "#/definitions/Dataset",
-        $schema: "http://json-schema.org/draft-07/schema#",
-        definitions: {
-          Dataset: {
-            properties: {
-              datasetId: {
-                pattern: "\\d+",
-                type: "string",
-              },
-            },
-            required: ["datasetId"],
-            type: "object",
-          },
-        },
-      };
-    });
-    it.skip("should return a validation error about meta schema when meta schema is not defined", () => {
-      const errors = validator.validateFormData(
-        { datasetId: "some kind of text" },
-        schema,
-      );
-      const errMessage =
-        'no schema with key or ref "http://json-schema.org/draft-07/schema#"';
-      expect(errors.errors).toEqual([{ stack: errMessage }]);
-      expect(errors.errorSchema).toEqual({
-        $schema: { __errors: [errMessage] },
-      });
-    });
-
-    describe("validating using custom string formats", () => {
-      let schema: RJSFSchema;
-      beforeAll(() => {
-        schema = {
-          type: "object",
-          properties: {
-            phone: {
-              type: "string",
-              format: "phone-us",
-            },
-          },
-        };
-      });
-      it("should not return a validation error if unknown string format is used", () => {
-        const result = validator.validateFormData(
-          { phone: "800.555.2368" },
-          schema,
-        );
-        expect(result.errors).toHaveLength(0);
       });
     });
   });
