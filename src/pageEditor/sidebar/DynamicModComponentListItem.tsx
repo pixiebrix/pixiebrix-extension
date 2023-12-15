@@ -51,7 +51,7 @@ import {
   useDeleteModComponent,
 } from "@/pageEditor/hooks/useRemoveModComponent";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectIsModComponentSavedOnCloud } from "@/store/extensionsSelectors";
 
 type DynamicModComponentListItemProps = {
   modComponentFormState: ModComponentFormState;
@@ -81,9 +81,8 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const isRelativeOfActiveListItem =
     !isActive && (isChildOfActiveListItem || isSiblingOfActiveListItem);
   const isDirty = useSelector(selectElementIsDirty(modComponentFormState.uuid));
-  const extensions = useSelector(selectExtensions);
-  const isSavedOnCloud = Boolean(
-    extensions.some((extension) => extension.id === modComponentFormState.uuid),
+  const isSavedOnCloud = useSelector(
+    selectIsModComponentSavedOnCloud(modComponentFormState.uuid),
   );
   const isButton = modComponentFormState.type === "menuItem";
 

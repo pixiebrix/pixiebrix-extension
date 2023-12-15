@@ -20,6 +20,7 @@ import { createSelector } from "@reduxjs/toolkit";
 import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { isEmpty } from "lodash";
+import { type UUID } from "@/types/stringTypes";
 
 export function selectExtensions({
   options,
@@ -33,6 +34,17 @@ export function selectExtensions({
 
   return options.extensions;
 }
+
+const isModComponentSavedOnCloudSelector = createSelector(
+  selectExtensions,
+  (state: ModComponentsRootState, modComponentId: UUID) => modComponentId,
+  (extensions, modComponentId) =>
+    extensions.some((extension) => extension.id === modComponentId),
+);
+
+export const selectIsModComponentSavedOnCloud =
+  (modComponentId: UUID) => (state: ModComponentsRootState) =>
+    isModComponentSavedOnCloudSelector(state, modComponentId);
 
 const extensionsForRecipeSelector = createSelector(
   selectExtensions,
