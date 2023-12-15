@@ -86,8 +86,8 @@ const ModIcon: React.FunctionComponent<{
       src={listing.image.url}
       alt="Icon"
       className={cx(styles.imageIcon, {
-        [styles.size1]: size === "1x",
-        [styles.size2]: size === "2x",
+        [styles.size1 ?? ""]: size === "1x",
+        [styles.size2 ?? ""]: size === "2x",
       })}
     />
   ) : (

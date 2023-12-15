@@ -39,6 +39,10 @@ export const waitForTargetByUrl = getMethod("WAIT_FOR_TARGET_BY_URL", bg);
 export const activatePartnerTheme = getMethod("ACTIVATE_PARTNER_THEME", bg);
 export const getPartnerPrincipals = getMethod("GET_PARTNER_PRINCIPALS", bg);
 export const launchAuthIntegration = getMethod("LAUNCH_AUTH_INTEGRATION", bg);
+export const setPartnerCopilotData = getNotifier(
+  "SET_PARTNER_COPILOT_DATA",
+  bg,
+);
 
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
 export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);

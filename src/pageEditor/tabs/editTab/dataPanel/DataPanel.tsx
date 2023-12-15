@@ -344,13 +344,11 @@ const DataPanel: React.FC = () => {
                   </Alert>
                 )}
                 {showFormPreview ? (
-                  <div className={dataPanelStyles.selectablePreviewContainer}>
-                    <FormPreview
-                      rjsfSchema={blockConfig?.config as RJSFSchema}
-                      activeField={nodePreviewActiveElement}
-                      setActiveField={setNodePreviewActiveElement}
-                    />
-                  </div>
+                  <FormPreview
+                    rjsfSchema={blockConfig?.config as RJSFSchema}
+                    activeField={nodePreviewActiveElement}
+                    setActiveField={setNodePreviewActiveElement}
+                  />
                 ) : (
                   <DocumentPreview
                     documentBodyName={documentBodyName}

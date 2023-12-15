@@ -46,6 +46,7 @@ import {
 import { inputProperties } from "@/utils/schemaUtils";
 import { joinPathParts } from "@/utils/formUtils";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
+import MapValues from "@/bricks/transformers/controlFlow/MapValues";
 
 export async function getCurrentURL(): Promise<string> {
   expectContext("devTools");
@@ -72,7 +73,7 @@ export function getIdForElement(
   return isModComponentBase(element) ? element.id : element.uuid;
 }
 
-export function getRecipeIdForElement(
+export function getModIdForElement(
   element: ModComponentBase | ModComponentFormState,
 ): RegistryId {
   return isModComponentBase(element) ? element._recipe?.id : element.recipe?.id;
@@ -167,7 +168,9 @@ export function getVariableKeyForSubPipeline(
   let keyPropName: string = null;
 
   if (
-    [ForEach.BLOCK_ID, ForEachElement.BLOCK_ID].includes(brickConfig.id) &&
+    [ForEach.BLOCK_ID, ForEachElement.BLOCK_ID, MapValues.BRICK_ID].includes(
+      brickConfig.id,
+    ) &&
     pipelinePropName === "body"
   ) {
     keyPropName = "elementKey";

@@ -15,41 +15,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { type RegistryId } from "@/types/registryTypes";
-import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
+import { useDeactivateModComponent } from "@/pageEditor/hooks/useRemoveModComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { selectElements } from "@/pageEditor/slices/editorSelectors";
 import { uniq } from "lodash";
 import { useModals } from "@/components/ConfirmationModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { getIdForElement, getRecipeIdForElement } from "@/pageEditor/utils";
+import { getIdForElement, getModIdForElement } from "@/pageEditor/utils";
 import { clearLog } from "@/background/messenger/api";
 
 type Config = {
-  recipeId: RegistryId;
+  modId: RegistryId;
   shouldShowConfirmation?: boolean;
 };
 
 /**
- * This hook provides a callback function to deactivate a recipe and remove it from the page editor
+ * This hook provides a callback function to deactivate a mod and remove it from the Page Editor
  */
-function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
+function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
-  const removeExtension = useRemoveExtension();
+  const deactivateModComponent = useDeactivateModComponent();
   const extensions = useSelector(selectExtensions);
   const elements = useSelector(selectElements);
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async ({ recipeId, shouldShowConfirmation = true }) => {
+    async ({ modId, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
         const confirmed = await showConfirmation({
-          title: "Remove Mod?",
-          message:
-            "You can reactivate mods from the PixieBrix Extension Console",
-          submitCaption: "Remove",
+          title: "Deactivate Mod?",
+          message: (
+            <>
+              This action will deactivate the mod and remove it from the Page
+              Editor. You can reactivate or delete mods from the{" "}
+              <a href="/options.html" target="_blank">
+                PixieBrix Extension Console
+              </a>
+              .
+            </>
+          ),
+          submitCaption: "Deactivate",
         });
 
         if (!confirmed) {
@@ -59,23 +67,26 @@ function useRemoveRecipe(): (useRemoveConfig: Config) => Promise<void> {
 
       const extensionIds = uniq(
         [...extensions, ...elements]
-          .filter((x) => getRecipeIdForElement(x) === recipeId)
+          .filter((x) => getModIdForElement(x) === modId)
           .map((x) => getIdForElement(x)),
       );
       await Promise.all(
         extensionIds.map(async (extensionId) =>
-          removeExtension({ extensionId, shouldShowConfirmation: false }),
+          deactivateModComponent({
+            extensionId,
+            shouldShowConfirmation: false,
+          }),
         ),
       );
 
       void clearLog({
-        blueprintId: recipeId,
+        blueprintId: modId,
       });
 
-      dispatch(actions.removeRecipeData(recipeId));
+      dispatch(actions.removeRecipeData(modId));
     },
-    [dispatch, elements, extensions, removeExtension, showConfirmation],
+    [dispatch, elements, extensions, deactivateModComponent, showConfirmation],
   );
 }
 
-export default useRemoveRecipe;
+export default useDeactivateMod;
