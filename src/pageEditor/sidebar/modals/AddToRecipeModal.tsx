@@ -35,7 +35,7 @@ import Form, {
 import { object, string } from "yup";
 import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
 import { type RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
-import { useDeactivateModComponent } from "@/pageEditor/hooks/useRemoveModComponent";
+import { useDeactivateModComponent } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";

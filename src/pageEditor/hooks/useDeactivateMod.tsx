@@ -20,7 +20,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import {
   DEACTIVATE_MOD_MODAL_PROPS,
   useDeactivateModComponent,
-} from "@/pageEditor/hooks/useRemoveModComponent";
+} from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { selectElements } from "@/pageEditor/slices/editorSelectors";

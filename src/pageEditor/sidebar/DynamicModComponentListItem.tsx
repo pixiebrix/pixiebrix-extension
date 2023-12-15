@@ -47,11 +47,11 @@ import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
 import useSaveStandaloneModComponent from "@/pageEditor/hooks/useSaveStandaloneModComponent";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import {
-  _useRemoveModComponentFromStorage,
+  useRemoveModComponentFromStorage,
   DEACTIVATE_MOD_MODAL_PROPS,
   DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
   DELETE_STARTER_BRICK_MODAL_PROPS,
-} from "@/pageEditor/hooks/useRemoveModComponent";
+} from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 import { selectIsModComponentSavedOnCloud } from "@/store/extensionsSelectors";
 
@@ -86,7 +86,7 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const isSavedOnCloud = useSelector(
     selectIsModComponentSavedOnCloud(modComponentFormState.uuid),
   );
-  const removeModComponent = _useRemoveModComponentFromStorage();
+  const removeModComponent = useRemoveModComponentFromStorage();
   const isButton = modComponentFormState.type === "menuItem";
 
   const showOverlay = useCallback(async (uuid: UUID) => {

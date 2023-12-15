@@ -62,7 +62,7 @@ import {
   inferConfiguredModIntegrations,
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
-import { useDeactivateModComponent } from "@/pageEditor/hooks/useRemoveModComponent";
+import { useDeactivateModComponent } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
