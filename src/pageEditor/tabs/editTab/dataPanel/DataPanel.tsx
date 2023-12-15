@@ -22,9 +22,9 @@ import { Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import BlockPreview, {
+import BrickPreview, {
   usePreviewInfo,
-} from "@/pageEditor/tabs/effect/BlockPreview";
+} from "@/pageEditor/tabs/effect/BrickPreview";
 import useReduxState from "@/hooks/useReduxState";
 import { useSelector } from "react-redux";
 import { selectActiveElementTraces } from "@/pageEditor/slices/runtimeSelectors";
@@ -366,9 +366,9 @@ const DataPanel: React.FC = () => {
               </ErrorBoundary>
             ) : showBrickPreview ? (
               <ErrorBoundary>
-                <BlockPreview
+                <BrickPreview
                   traceRecord={record}
-                  blockConfig={brickConfig}
+                  brickConfig={brickConfig}
                   extensionPoint={activeElement.extensionPoint}
                 />
               </ErrorBoundary>
