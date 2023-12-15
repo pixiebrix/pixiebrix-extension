@@ -18,7 +18,10 @@
 import { type UUID } from "@/types/stringTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { useModals } from "@/components/ConfirmationModal";
+import {
+  type ConfirmationModalProps,
+  useModals,
+} from "@/components/ConfirmationModal";
 import React, { useCallback } from "react";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -32,7 +35,36 @@ import { removeExtensionsFromAllTabs } from "@/store/uninstallUtils";
 type Config = {
   extensionId: UUID;
   shouldShowConfirmation?: boolean;
+  confirmationModal: ConfirmationModalProps;
 };
+
+export const DELETE_STARTER_BRICK_MODAL_PROPS: ConfirmationModalProps = {
+  title: "Delete starter brick?",
+  message: "This action cannot be undone.",
+  submitCaption: "Delete",
+};
+
+export const DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS: ConfirmationModalProps =
+  {
+    title: "Delete mod?",
+    message: "This action cannot be undone.",
+    submitCaption: "Delete",
+  };
+
+export const DEACTIVATE_STANDALONE_MOD_COMPONENT_MODAL_PROPS: ConfirmationModalProps =
+  {
+    title: "Deactivate Mod?",
+    message: (
+      <>
+        Unsaved changes will be lost. You can reactivate or delete mods from the{" "}
+        <a href="/options.html" target="_blank">
+          PixieBrix Extension Console
+        </a>
+        .
+      </>
+    ),
+    submitCaption: "Deactivate",
+  };
 
 /**
  * Returns a callback that removes a mod component from the Page Editor and Extension Storage.
@@ -42,13 +74,25 @@ type Config = {
  *
  * Prefer using `useDeactivateModComponent` or `useDeleteModComponent` instead of exporting this hook.
  **/
-function _useRemoveModComponent(): (extensionId: UUID) => Promise<void> {
+export function _useRemoveModComponent(): (
+  extensionId: UUID,
+  confirmationModal?: ConfirmationModalProps,
+) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
+  const { showConfirmation } = useModals();
 
   return useCallback(
-    async (extensionId) => {
-      console.debug(`pageEditor: remove extension with id ${extensionId}`);
+    async (extensionId, confirmationModal) => {
+      console.debug(`pageEditor: remove mod component with id ${extensionId}`);
+
+      if (confirmationModal) {
+        const confirm = await showConfirmation(confirmationModal);
+
+        if (!confirm) {
+          return;
+        }
+      }
 
       reportEvent(Events.PAGE_EDITOR_REMOVE, {
         sessionId,
