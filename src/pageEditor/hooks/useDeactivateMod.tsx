@@ -19,7 +19,7 @@ import { useCallback } from "react";
 import { type RegistryId } from "@/types/registryTypes";
 import {
   DEACTIVATE_MOD_MODAL_PROPS,
-  useDeactivateModComponent,
+  useRemoveModComponentFromStorage,
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
@@ -40,7 +40,7 @@ type Config = {
  */
 function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
-  const deactivateModComponent = useDeactivateModComponent();
+  const removeModComponentFromStorage = useRemoveModComponentFromStorage();
   const extensions = useSelector(selectExtensions);
   const elements = useSelector(selectElements);
   const { showConfirmation } = useModals();
@@ -62,7 +62,7 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
       );
       await Promise.all(
         extensionIds.map(async (extensionId) =>
-          deactivateModComponent({
+          removeModComponentFromStorage({
             extensionId,
             shouldShowConfirmation: false,
           }),
@@ -75,7 +75,13 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
 
       dispatch(actions.removeRecipeData(modId));
     },
-    [dispatch, elements, extensions, deactivateModComponent, showConfirmation],
+    [
+      dispatch,
+      elements,
+      extensions,
+      useRemoveModComponentFromStorage,
+      showConfirmation,
+    ],
   );
 }
 

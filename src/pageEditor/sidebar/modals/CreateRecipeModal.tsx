@@ -62,7 +62,7 @@ import {
   inferConfiguredModIntegrations,
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
-import { useDeactivateModComponent } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
+import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
@@ -108,7 +108,7 @@ function useSaveCallbacks({
   const dispatch = useDispatch();
   const [createRecipe] = useCreateRecipeMutation();
   const createExtension = useUpsertFormElement();
-  const deactivateStandaloneMod = useDeactivateModComponent();
+  const removeModComponentFromStorage = useRemoveModComponentFromStorage();
   const deactivateMod = useDeactivateMod();
 
   const editorFormElements = useSelector(selectElements);
@@ -159,7 +159,7 @@ function useSaveCallbacks({
             modId: newRecipe.metadata.id,
           });
           if (!keepLocalCopy) {
-            await deactivateStandaloneMod({
+            await removeModComponentFromStorage({
               extensionId: activeElement.uuid,
               shouldShowConfirmation: false,
             });
@@ -176,7 +176,7 @@ function useSaveCallbacks({
       createRecipe,
       dispatch,
       keepLocalCopy,
-      deactivateStandaloneMod,
+      removeModComponentFromStorage,
     ],
   );
 

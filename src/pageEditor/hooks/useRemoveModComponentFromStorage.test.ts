@@ -17,10 +17,7 @@
 
 import { renderHook } from "@/pageEditor/testHelpers";
 import { removeExtensionsFromAllTabs } from "@/store/uninstallUtils";
-import {
-  useDeactivateModComponent,
-  useDeleteModComponent,
-} from "./useRemoveModComponentFromStorage";
+import { useRemoveModComponentFromStorage } from "./useRemoveModComponentFromStorage";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { actions as extensionsActions } from "@/store/extensionsSlice";
 import { clearDynamicElements } from "@/contentScript/messenger/api";
@@ -34,33 +31,30 @@ beforeEach(() => {
 test("useRemoveModComponentFromStorage", async () => {
   const extensionId = uuidSequence(1);
 
-  // eslint-disable-next-line unicorn/no-array-for-each -- Better readability in this case, and performance is not a concern here
-  [useDeactivateModComponent, useDeleteModComponent].forEach(async (hook) => {
-    const {
-      result: { current: removeExtension },
-      getReduxStore,
-    } = renderHook(() => hook(), {
-      setupRedux(dispatch, { store }) {
-        jest.spyOn(store, "dispatch");
-      },
-    });
-
-    await removeExtension({
-      extensionId,
-      shouldShowConfirmation: false,
-    });
-
-    const { dispatch } = getReduxStore();
-
-    expect(dispatch).toHaveBeenCalledWith(
-      editorActions.removeElement(extensionId),
-    );
-    expect(dispatch).toHaveBeenCalledWith(
-      extensionsActions.removeExtension({ extensionId }),
-    );
-    expect(clearDynamicElements).toHaveBeenCalledWith(expect.any(Object), {
-      uuid: extensionId,
-    });
-    expect(removeExtensionsFromAllTabs).toHaveBeenCalledWith([extensionId]);
+  const {
+    result: { current: removeExtension },
+    getReduxStore,
+  } = renderHook(() => useRemoveModComponentFromStorage(), {
+    setupRedux(dispatch, { store }) {
+      jest.spyOn(store, "dispatch");
+    },
   });
+
+  await removeExtension({
+    extensionId,
+    shouldShowConfirmation: false,
+  });
+
+  const { dispatch } = getReduxStore();
+
+  expect(dispatch).toHaveBeenCalledWith(
+    editorActions.removeElement(extensionId),
+  );
+  expect(dispatch).toHaveBeenCalledWith(
+    extensionsActions.removeExtension({ extensionId }),
+  );
+  expect(clearDynamicElements).toHaveBeenCalledWith(expect.any(Object), {
+    uuid: extensionId,
+  });
+  expect(removeExtensionsFromAllTabs).toHaveBeenCalledWith([extensionId]);
 });
