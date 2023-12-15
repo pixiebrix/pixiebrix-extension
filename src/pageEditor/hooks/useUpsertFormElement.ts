@@ -39,7 +39,7 @@ import { type UUID } from "@/types/stringTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import type { RegistryId } from "@/types/registryTypes";
 
-const { saveModComponent } = extensionsSlice.actions;
+const { saveExtension } = extensionsSlice.actions;
 const { markSaved } = editorSlice.actions;
 
 async function upsertPackageConfig(
@@ -144,7 +144,7 @@ function useUpsertFormElement(): SaveCallback {
 
       let isEditable = false;
 
-      // Handle the case where the Page Editor is also editing a starter brick that exists as a registry item
+      // Handle the case where the Page Editor is also editing an extension point that exists as a registry item
       if (!hasInnerExtensionPoint) {
         // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
         // number of bricks implemented and frequency of saves
@@ -182,14 +182,12 @@ function useUpsertFormElement(): SaveCallback {
 
       try {
         const rawExtension = adapter.selectExtension(element);
-        // Raw extension with update timestamp
-
         if (hasInnerExtensionPoint) {
           const extensionPointConfig =
             adapter.selectExtensionPointConfig(element);
           dispatch(
-            saveModComponent({
-              modComponent: extensionWithInnerDefinitions(
+            saveExtension({
+              extension: extensionWithInnerDefinitions(
                 rawExtension,
                 extensionPointConfig.definition,
               ),
@@ -198,8 +196,8 @@ function useUpsertFormElement(): SaveCallback {
           );
         } else {
           dispatch(
-            saveModComponent({
-              modComponent: rawExtension,
+            saveExtension({
+              extension: rawExtension,
               pushToCloud: options.pushToCloud,
             }),
           );

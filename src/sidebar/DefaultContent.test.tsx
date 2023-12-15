@@ -35,8 +35,8 @@ describe("renders DefaultPanel", () => {
     render(<DefaultPanel />, {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.saveModComponent({
-            modComponent: modComponentFactory() as ActivatedModComponent,
+          extensionsSlice.actions.saveExtension({
+            extension: modComponentFactory() as ActivatedModComponent,
             pushToCloud: false,
           }),
         );

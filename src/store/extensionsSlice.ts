@@ -264,12 +264,12 @@ const extensionsSlice = createSlice({
       });
     },
     // XXX: why do we expose a `extensionId` in addition ModComponentBase's `id` prop here?
-    saveModComponent(
+    saveExtension(
       state,
       {
         payload,
       }: PayloadAction<{
-        modComponent: (ModComponentBase | ActivatedModComponent) & {
+        extension: (ModComponentBase | ActivatedModComponent) & {
           createTimestamp?: string;
         };
         pushToCloud: boolean;
@@ -278,7 +278,7 @@ const extensionsSlice = createSlice({
       const timestamp = new Date().toISOString();
 
       const {
-        modComponent: {
+        extension: {
           id,
           apiVersion,
           extensionPointId,
@@ -303,7 +303,7 @@ const extensionsSlice = createSlice({
         throw new Error("extensionPointId is required");
       }
 
-      const modComponent: Except<
+      const extension: Except<
         ActivatedModComponent,
         "_unresolvedModComponentBrand"
       > = {
@@ -322,20 +322,20 @@ const extensionsSlice = createSlice({
         active: true,
       };
 
-      assertModComponentNotResolved(modComponent);
+      assertModComponentNotResolved(extension);
 
       if (pushToCloud && !_deployment) {
         // In the future, we'll want to make the Redux action async. For now, just fail silently in the interface
-        void saveUserExtension(modComponent);
+        void saveUserExtension(extension);
       }
 
       const index = state.extensions.findIndex((x) => x.id === id);
 
       if (index >= 0) {
         // eslint-disable-next-line security/detect-object-injection -- array index from findIndex
-        state.extensions[index] = modComponent;
+        state.extensions[index] = extension;
       } else {
-        state.extensions.push(modComponent);
+        state.extensions.push(extension);
       }
     },
     updateExtension(
