@@ -38,7 +38,7 @@ import {
   withIdRefPrefix,
 } from "@rjsf/utils";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { assertNotNull } from "@/utils/typeUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  * A RJSF FormValidator that uses @cfworker/json-schema for validation that works in contexts that disallow
@@ -65,6 +65,7 @@ class FormValidator<
     const rootSchema = schema;
 
     const rawErrors = this.rawValidation<OutputUnit>(schema, formData);
+
     const { validationError } = rawErrors;
     let errors = this.transformRJSFValidationErrors(rawErrors.errors);
 
@@ -76,7 +77,7 @@ class FormValidator<
     );
 
     if (noProperMetaSchema) {
-      assertNotNull(validationError, "logic error");
+      assertNotNullish(validationError, "logic error");
       errors = [...errors, { stack: validationError.message }];
     }
 
@@ -87,7 +88,7 @@ class FormValidator<
     let errorSchema = toErrorSchema<T>(errors);
 
     if (noProperMetaSchema) {
-      assertNotNull(validationError, "logic error");
+      assertNotNullish(validationError, "logic error");
 
       errorSchema = {
         ...errorSchema,
@@ -96,6 +97,8 @@ class FormValidator<
         },
       };
     }
+
+    console.log(errors, errorSchema);
 
     if (typeof customValidate !== "function") {
       return { errors, errorSchema };
@@ -122,23 +125,33 @@ class FormValidator<
   private transformRJSFValidationErrors(
     errors: OutputUnit[] = [],
   ): RJSFValidationError[] {
-    return errors.map((outputUnit: OutputUnit) => {
-      const { keyword, keywordLocation, instanceLocation, error } = outputUnit;
-      const property = `${keywordLocation}`;
+    console.log(errors);
+    return errors
+      .filter(
+        (error) =>
+          error.instanceLocation !== "#" || error.keyword === "required",
+      )
+      .map((outputUnit: OutputUnit) => {
+        const { keyword, keywordLocation, instanceLocation, error } =
+          outputUnit;
+        const property = keywordLocation
+          .replace("#/properties/", "")
+          .replace(`/${keyword}`, "");
 
-      // Put data in expected format
-      return {
-        name: keyword,
-        property,
-        message: error,
-        stack: `${property} ${error}`.trim(),
-        schemaPath: instanceLocation,
-      };
-    });
+        // Put data in expected format
+        return {
+          name: keyword,
+          property,
+          message: error,
+          stack: `${property} ${error}`.trim(),
+          schemaPath: instanceLocation,
+        };
+      });
   }
 
   private isValidSchema(schema: unknown): schema is RJSFSchema {
     const validator = new Validator(draft07 as Schema);
+
     try {
       const result = validator.validate(schema);
       return result.valid;
