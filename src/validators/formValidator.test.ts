@@ -239,14 +239,14 @@ describe("RJSF Tests", () => {
           it("should return an error list", () => {
             expect(errors).toHaveLength(1);
             expect(errors[0].stack).toBe(
-              '# Instance does not have required property "pass2".',
+              '#/required Instance does not have required property "pass2".',
             );
           });
 
           it.only("should return an errorSchema", () => {
             expect(errorSchema.pass2!.__errors).toHaveLength(1);
             expect(errorSchema.pass2!.__errors[0]).toBe(
-              "is a required property",
+              'Instance does not have required property "pass2".',
             );
           });
         });
@@ -273,17 +273,17 @@ describe("RJSF Tests", () => {
             errorSchema = result.errorSchema;
           });
 
-          it.skip("should return an error list", () => {
+          it("should return an error list", () => {
             expect(errors).toHaveLength(1);
             expect(errors[0].stack).toBe(
-              'Instance does not have required property "pass2".',
+              '#/properties/nested/required Instance does not have required property "pass2".',
             );
           });
 
-          it.skip("should return an errorSchema", () => {
+          it("should return an errorSchema", () => {
             expect(errorSchema.nested!.pass2!.__errors).toHaveLength(1);
             expect(errorSchema.nested!.pass2!.__errors[0]).toBe(
-              "is a required property",
+              'Instance does not have required property "pass2".',
             );
           });
         });

@@ -131,19 +131,32 @@ class FormValidator<
         (error) =>
           error.instanceLocation !== "#" || error.keyword === "required",
       )
-      .map((outputUnit: OutputUnit) => {
+      .map((outputUnit) => {
         const { keyword, keywordLocation, instanceLocation, error } =
           outputUnit;
-        const property = keywordLocation
-          .replace("#/properties/", "")
-          .replace(`/${keyword}`, "");
+
+        let property = "";
+
+        if (keyword === "required") {
+          const regexPattern =
+            /Instance does not have required property "(.*?)"/;
+          const matches = regexPattern.exec(error);
+
+          property = `${instanceLocation.replace("#/", "")}.${
+            matches?.[1] ?? ""
+          }`;
+        } else {
+          property = keywordLocation
+            .replace("#/properties/", "")
+            .replace(`/${keyword}`, "");
+        }
 
         // Put data in expected format
         return {
           name: keyword,
           property,
           message: error,
-          stack: `${property} ${error}`.trim(),
+          stack: `${keywordLocation} ${error}`.trim(),
           schemaPath: instanceLocation,
         };
       });
