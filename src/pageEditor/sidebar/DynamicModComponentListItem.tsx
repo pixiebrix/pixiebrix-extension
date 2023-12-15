@@ -47,6 +47,9 @@ import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
 import useSaveStandaloneModComponent from "@/pageEditor/hooks/useSaveStandaloneModComponent";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import {
+  _useRemoveModComponent,
+  DEACTIVATE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
+  DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
   useDeactivateModComponent,
   useDeleteModComponent,
 } from "@/pageEditor/hooks/useRemoveModComponent";
@@ -84,6 +87,7 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const isSavedOnCloud = useSelector(
     selectIsModComponentSavedOnCloud(modComponentFormState.uuid),
   );
+  const removeModComponent = _useRemoveModComponent();
   const isButton = modComponentFormState.type === "menuItem";
 
   const showOverlay = useCallback(async (uuid: UUID) => {
@@ -100,8 +104,16 @@ const DynamicModComponentListItem: React.FunctionComponent<
   } = useSaveStandaloneModComponent();
   const resetExtension = useResetExtension();
 
-  const deleteModComponent = useDeleteModComponent();
-  const deactivateStandaloneMod = useDeactivateModComponent();
+  const deleteModComponent = async () =>
+    removeModComponent(
+      modComponentFormState.uuid,
+      DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
+    );
+  const deactivateStandaloneMod = async () =>
+    removeModComponent(
+      modComponentFormState.uuid,
+      DEACTIVATE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
+    );
   const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
 
   const onSave = async () => {
@@ -119,16 +131,9 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const onReset = async () =>
     resetExtension({ extensionId: modComponentFormState.uuid });
 
-  const onDelete =
-    modId || !isSavedOnCloud
-      ? async () =>
-          deleteModComponent({ extensionId: modComponentFormState.uuid })
-      : undefined;
+  const onDelete = modId || !isSavedOnCloud ? deleteModComponent : undefined;
 
-  const onDeactivate = onDelete
-    ? undefined
-    : async () =>
-        deactivateStandaloneMod({ extensionId: modComponentFormState.uuid });
+  const onDeactivate = onDelete ? undefined : deactivateStandaloneMod;
 
   const onClone = async () => {
     dispatch(actions.cloneActiveExtension());
