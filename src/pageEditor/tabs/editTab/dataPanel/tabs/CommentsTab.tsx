@@ -14,15 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import React from "react";
+import { Tab } from "react-bootstrap";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
-export enum DataPanelTabKey {
-  Context = "context",
-  PageState = "pageState",
-  State = "state",
-  BlockConfig = "blockConfig",
-  Rendered = "rendered",
-  Output = "output",
-  Preview = "preview",
-  Outline = "outline",
-  Comments = "comments",
-}
+const CommentsTab: React.FunctionComponent = () => (
+  <Tab.Pane eventKey={DataPanelTabKey.Comments}>Hello world! ✨</Tab.Pane>
+);
+
+export default CommentsTab;
