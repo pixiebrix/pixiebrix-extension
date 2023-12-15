@@ -243,7 +243,7 @@ describe("RJSF Tests", () => {
             );
           });
 
-          it.only("should return an errorSchema", () => {
+          it("should return an errorSchema", () => {
             expect(errorSchema.pass2!.__errors).toHaveLength(1);
             expect(errorSchema.pass2!.__errors[0]).toBe(
               'Instance does not have required property "pass2".',
@@ -312,9 +312,11 @@ describe("RJSF Tests", () => {
           );
         });
 
-        it.skip("should return an errorSchema", () => {
+        it("should return an errorSchema", () => {
           expect(errorSchema.foo!.__errors).toHaveLength(1);
-          expect(errorSchema.foo!.__errors[0]).toBe("should be string");
+          expect(errorSchema.foo!.__errors[0]).toBe(
+            'Instance type "number" is invalid. Expected "string".',
+          );
         });
       });
 

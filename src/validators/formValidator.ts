@@ -125,7 +125,7 @@ class FormValidator<
   private transformRJSFValidationErrors(
     errors: OutputUnit[] = [],
   ): RJSFValidationError[] {
-    console.log(errors);
+    console.log("transform", errors);
     return errors
       .filter(
         (error) =>
@@ -137,18 +137,28 @@ class FormValidator<
 
         let property = "";
 
-        if (keyword === "required") {
-          const regexPattern =
-            /Instance does not have required property "(.*?)"/;
-          const matches = regexPattern.exec(error);
+        switch (keyword) {
+          case "required": {
+            const regexPattern =
+              /Instance does not have required property "(.*?)"/;
+            const matches = regexPattern.exec(error);
 
-          property = `${instanceLocation.replace("#/", "")}.${
-            matches?.[1] ?? ""
-          }`;
-        } else {
-          property = keywordLocation
-            .replace("#/properties/", "")
-            .replace(`/${keyword}`, "");
+            property = `${instanceLocation.replace(/#\/?/, "")}.${
+              matches?.[1] ?? ""
+            }`;
+            break;
+          }
+
+          case "type": {
+            property = instanceLocation.replace(/#\/?/, "");
+            break;
+          }
+
+          default: {
+            property = keywordLocation
+              .replace("#/properties/", "")
+              .replace(`/${keyword}`, "");
+          }
         }
 
         // Put data in expected format
