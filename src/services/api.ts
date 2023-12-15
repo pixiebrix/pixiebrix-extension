@@ -438,6 +438,7 @@ export const {
   useDeletePackageMutation,
   useListPackageVersionsQuery,
   useUpdateScopeMutation,
+  useUpsertStandaloneModComponentMutation,
   useGetStarterBlueprintsQuery,
   useCreateMilestoneMutation,
   util,

@@ -51,8 +51,7 @@ import {
   useDeleteModComponent,
 } from "@/pageEditor/hooks/useRemoveModComponent";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
-import { appApi, useGetCloudExtensionQuery } from "@/services/api";
-import { sleep } from "@/utils/timeUtils";
+import { selectExtensions } from "@/store/extensionsSelectors";
 
 type DynamicModComponentListItemProps = {
   modComponentFormState: ModComponentFormState;
@@ -82,15 +81,10 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const isRelativeOfActiveListItem =
     !isActive && (isChildOfActiveListItem || isSiblingOfActiveListItem);
   const isDirty = useSelector(selectElementIsDirty(modComponentFormState.uuid));
-  const { data: cloudModComponent, isFetching } = useGetCloudExtensionQuery(
-    { extensionId: modComponentFormState.uuid },
-    { skip: !modComponentFormState.uuid },
+  const extensions = useSelector(selectExtensions);
+  const isSavedOnCloud = Boolean(
+    extensions.some((extension) => extension.id === modComponentFormState.uuid),
   );
-
-  const isSavedOnCloud = Boolean(cloudModComponent);
-
-  console.log("***isSavedOnCloud", isSavedOnCloud, modComponentFormState);
-
   const isButton = modComponentFormState.type === "menuItem";
 
   const showOverlay = useCallback(async (uuid: UUID) => {
@@ -126,10 +120,11 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const onReset = async () =>
     resetExtension({ extensionId: modComponentFormState.uuid });
 
-  const onDelete = modId
-    ? async () =>
-        deleteModComponent({ extensionId: modComponentFormState.uuid })
-    : undefined;
+  const onDelete =
+    modId || !isSavedOnCloud
+      ? async () =>
+          deleteModComponent({ extensionId: modComponentFormState.uuid })
+      : undefined;
 
   const onDeactivate = onDelete
     ? undefined
@@ -191,7 +186,6 @@ const DynamicModComponentListItem: React.FunctionComponent<
           <UnsavedChangesIcon />
         </span>
       )}
-      {isSavedOnCloud ? "☁️" : "🔴"}
       {isActive && (
         <ActionMenu
           onSave={onSave}
@@ -214,7 +208,7 @@ const DynamicModComponentListItem: React.FunctionComponent<
                 }
               : undefined
           }
-          disabled={isSaving || isFetching}
+          disabled={isSaving}
         />
       )}
     </ListGroup.Item>
