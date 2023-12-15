@@ -57,6 +57,7 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { joinPathParts } from "@/utils/formUtils";
+import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -192,6 +193,8 @@ const DataPanel: React.FC = () => {
     return true;
   }, [activeNodeId, activeElement, traces, blockConfig]);
 
+  console.log("*** blockConfig", blockConfig);
+
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
       <div className={dataPanelStyles.tabContainer}>
@@ -232,6 +235,9 @@ const DataPanel: React.FC = () => {
               <Nav.Link eventKey={DataPanelTabKey.Outline}>Outline</Nav.Link>
             </Nav.Item>
           )}
+          <Nav.Item className={dataPanelStyles.tabNav}>
+            <Nav.Link eventKey={DataPanelTabKey.Comments}>Comments</Nav.Link>
+          </Nav.Item>
         </Nav>
         <Tab.Content className={dataPanelStyles.tabContent}>
           <DataTab eventKey={DataPanelTabKey.Context} isTraceEmpty={!record}>
@@ -389,6 +395,7 @@ const DataPanel: React.FC = () => {
               />
             </ErrorBoundary>
           </DataTab>
+          <CommentsTab />
         </Tab.Content>
       </div>
     </Tab.Container>
