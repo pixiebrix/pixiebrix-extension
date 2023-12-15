@@ -364,10 +364,14 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
         </div>
         <div
           aria-hidden="true"
-          class="fade tab-pane"
+          class="fade tabPane tab-pane"
           role="tabpanel"
         >
-          Hello world! ✨
+          <em
+            class="text-muted"
+          >
+            No comments available
+          </em>
         </div>
       </div>
     </div>

@@ -2339,10 +2339,14 @@ exports[`renders the first selected node 1`] = `
                     </div>
                     <div
                       aria-hidden="true"
-                      class="fade tab-pane"
+                      class="fade tabPane tab-pane"
                       role="tabpanel"
                     >
-                      Hello world! ✨
+                      <em
+                        class="text-muted"
+                      >
+                        No comments available
+                      </em>
                     </div>
                   </div>
                 </div>

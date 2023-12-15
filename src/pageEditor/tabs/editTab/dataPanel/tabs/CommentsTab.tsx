@@ -18,13 +18,16 @@ import React from "react";
 import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { type BrickConfig } from "@/bricks/types";
+import styles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 
 const CommentsTab: React.FunctionComponent<{
   comments?: BrickConfig["comments"];
 }> = ({ comments }) => (
-  <Tab.Pane eventKey={DataPanelTabKey.Comments}>
-    {comments ?? (
-      <em className="text-muted">This brick has no comments available</em>
+  <Tab.Pane eventKey={DataPanelTabKey.Comments} className={styles.tabPane}>
+    {comments ? (
+      <p>{comments}</p>
+    ) : (
+      <em className="text-muted">No comments available</em>
     )}
   </Tab.Pane>
 );
