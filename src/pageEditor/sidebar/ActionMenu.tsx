@@ -31,7 +31,7 @@ import EllipsisMenu, {
   type EllipsisMenuItem,
 } from "@/components/ellipsisMenu/EllipsisMenu";
 
-type ActionMenuProps = {
+export type ActionMenuProps = {
   onSave: () => Promise<void>;
   onDelete?: () => Promise<void>;
   onDeactivate?: () => Promise<void>;

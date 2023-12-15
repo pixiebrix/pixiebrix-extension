@@ -43,13 +43,16 @@ import {
   selectActiveRecipeId,
   selectElementIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
-import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
+import ActionMenu, {
+  type ActionMenuProps,
+} from "@/pageEditor/sidebar/ActionMenu";
 import useSaveStandaloneModComponent from "@/pageEditor/hooks/useSaveStandaloneModComponent";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
 import {
-  _useRemoveModComponent,
-  DEACTIVATE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
+  _useRemoveModComponentFromStorage,
+  DEACTIVATE_MOD_MODAL_PROPS,
   DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
+  DELETE_STARTER_BRICK_MODAL_PROPS,
   useDeactivateModComponent,
   useDeleteModComponent,
 } from "@/pageEditor/hooks/useRemoveModComponent";
@@ -61,6 +64,10 @@ type DynamicModComponentListItemProps = {
   isAvailable: boolean;
   isNested?: boolean;
 };
+
+// const _useModComponentActions = (): ActionMenuProps => {
+//
+// }
 
 /**
  * A sidebar menu entry corresponding to a touched mod component
@@ -87,7 +94,7 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const isSavedOnCloud = useSelector(
     selectIsModComponentSavedOnCloud(modComponentFormState.uuid),
   );
-  const removeModComponent = _useRemoveModComponent();
+  const removeModComponent = _useRemoveModComponentFromStorage();
   const isButton = modComponentFormState.type === "menuItem";
 
   const showOverlay = useCallback(async (uuid: UUID) => {
@@ -103,18 +110,17 @@ const DynamicModComponentListItem: React.FunctionComponent<
     isSaving: isSavingStandaloneModComponent,
   } = useSaveStandaloneModComponent();
   const resetExtension = useResetExtension();
+  const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
 
   const deleteModComponent = async () =>
     removeModComponent(
       modComponentFormState.uuid,
-      DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
+      modId
+        ? DELETE_STARTER_BRICK_MODAL_PROPS
+        : DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
     );
-  const deactivateStandaloneMod = async () =>
-    removeModComponent(
-      modComponentFormState.uuid,
-      DEACTIVATE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
-    );
-  const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
+  const deactivateModComponent = async () =>
+    removeModComponent(modComponentFormState.uuid, DEACTIVATE_MOD_MODAL_PROPS);
 
   const onSave = async () => {
     if (modComponentFormState.recipe) {
@@ -133,7 +139,7 @@ const DynamicModComponentListItem: React.FunctionComponent<
 
   const onDelete = modId || !isSavedOnCloud ? deleteModComponent : undefined;
 
-  const onDeactivate = onDelete ? undefined : deactivateStandaloneMod;
+  const onDeactivate = onDelete ? undefined : deactivateModComponent;
 
   const onClone = async () => {
     dispatch(actions.cloneActiveExtension());

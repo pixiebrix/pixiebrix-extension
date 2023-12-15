@@ -51,20 +51,20 @@ export const DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS: ConfirmationModalProps
     submitCaption: "Delete",
   };
 
-export const DEACTIVATE_STANDALONE_MOD_COMPONENT_MODAL_PROPS: ConfirmationModalProps =
-  {
-    title: "Deactivate Mod?",
-    message: (
-      <>
-        Unsaved changes will be lost. You can reactivate or delete mods from the{" "}
-        <a href="/options.html" target="_blank">
-          PixieBrix Extension Console
-        </a>
-        .
-      </>
-    ),
-    submitCaption: "Deactivate",
-  };
+export const DEACTIVATE_MOD_MODAL_PROPS: ConfirmationModalProps = {
+  title: "Deactivate Mod?",
+  message: (
+    <>
+      Any unsaved changes will be lost. You can reactivate or delete mods from
+      the{" "}
+      <a href="/options.html" target="_blank">
+        PixieBrix Extension Console
+      </a>
+      .
+    </>
+  ),
+  submitCaption: "Deactivate",
+};
 
 /**
  * Returns a callback that removes a mod component from the Page Editor and Extension Storage.
@@ -72,9 +72,11 @@ export const DEACTIVATE_STANDALONE_MOD_COMPONENT_MODAL_PROPS: ConfirmationModalP
  * For mod components (packaged inside a mod), this callback will effectively delete the mod component.
  * For standalone mods, this callback will simply deactivate the mod and remove it from the Page Editor.
  *
+ * In both cases, unsaved changes will be lost.
+ *
  * Prefer using `useDeactivateModComponent` or `useDeleteModComponent` instead of exporting this hook.
  **/
-export function _useRemoveModComponent(): (
+export function _useRemoveModComponentFromStorage(): (
   extensionId: UUID,
   confirmationModal?: ConfirmationModalProps,
 ) => Promise<void> {
@@ -132,7 +134,7 @@ export function _useRemoveModComponent(): (
 export const useDeactivateModComponent = (): ((
   useRemoveConfig: Config,
 ) => Promise<void>) => {
-  const removeModComponent = _useRemoveModComponent();
+  const removeModComponent = _useRemoveModComponentFromStorage();
   const { showConfirmation } = useModals();
 
   return useCallback(
@@ -167,7 +169,7 @@ export const useDeactivateModComponent = (): ((
 export const useDeleteModComponent = (): ((
   useRemoveConfig: Config,
 ) => Promise<void>) => {
-  const removeModComponent = _useRemoveModComponent();
+  const removeModComponent = _useRemoveModComponentFromStorage();
   const { showConfirmation } = useModals();
 
   return useCallback(

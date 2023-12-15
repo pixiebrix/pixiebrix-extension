@@ -15,9 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { type RegistryId } from "@/types/registryTypes";
-import { useDeactivateModComponent } from "@/pageEditor/hooks/useRemoveModComponent";
+import {
+  DEACTIVATE_MOD_MODAL_PROPS,
+  useDeactivateModComponent,
+} from "@/pageEditor/hooks/useRemoveModComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { selectElements } from "@/pageEditor/slices/editorSelectors";
@@ -45,20 +48,7 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
   return useCallback(
     async ({ modId, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
-        const confirmed = await showConfirmation({
-          title: "Deactivate Mod?",
-          message: (
-            <>
-              Unsaved changes will be lost. You can reactivate or delete mods
-              from the{" "}
-              <a href="/options.html" target="_blank">
-                PixieBrix Extension Console
-              </a>
-              .
-            </>
-          ),
-          submitCaption: "Deactivate",
-        });
+        const confirmed = await showConfirmation(DEACTIVATE_MOD_MODAL_PROPS);
 
         if (!confirmed) {
           return;
