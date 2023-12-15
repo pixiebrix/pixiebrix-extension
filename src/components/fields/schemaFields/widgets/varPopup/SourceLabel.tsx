@@ -2,13 +2,13 @@ import React from "react";
 import { type BlockInfo } from "@/pageEditor/uiState/uiStateTypes";
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 import styles from "./SourceLabel.module.scss";
-import { type TypedBlockMap } from "@/bricks/registry";
+import { type TypedBrickMap } from "@/bricks/registry";
 
 type SourceLabelProps = {
   source: string;
   extensionPointLabel: string;
   blocksInfo: BlockInfo[];
-  allBlocks: TypedBlockMap;
+  allBlocks: TypedBrickMap;
 };
 
 const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({

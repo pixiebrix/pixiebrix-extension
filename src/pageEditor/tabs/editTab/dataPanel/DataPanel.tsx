@@ -83,36 +83,36 @@ const DataPanel: React.FC = () => {
   const activeElement = useSelector(selectActiveElement);
 
   const {
-    blockId,
-    blockConfig,
-    index: blockIndex,
-    path: blockPath,
+    blockId: brickId,
+    blockConfig: brickConfig,
+    index: brickIndex,
+    path: brickPath,
     pipeline,
   } = useSelector(selectActiveNodeInfo);
 
-  const { allBlocks } = useAllBricks();
-  const block = allBlocks.get(blockId);
-  const blockType = block?.type;
+  const { allBricks } = useAllBricks();
+  const brick = allBricks.get(brickId);
+  const brickType = brick?.type;
 
   const traces = useSelector(selectActiveElementTraces);
   const record = traces.find((trace) => trace.blockInstanceId === activeNodeId);
 
   const isInputStale = useMemo(() => {
-    // Don't show the warning if there are no traces. Also, this block can't have a
-    // stale input if it's the first block in the pipeline.
-    if (record === undefined || blockIndex === 0) {
+    // Don't show the warning if there are no traces. Also, this brick can't have a
+    // stale input if it's the first brick in the pipeline.
+    if (record === undefined || brickIndex === 0) {
       return false;
     }
 
-    const currentInput = pipeline.slice(0, blockIndex);
+    const currentInput = pipeline.slice(0, brickIndex);
     const tracedInput = currentInput.map(
-      (block) =>
-        traces.find((trace) => trace.blockInstanceId === block.instanceId)
+      (brick) =>
+        traces.find((trace) => trace.blockInstanceId === brick.instanceId)
           ?.blockConfig,
     );
 
     return !isEqual(currentInput, tracedInput);
-  }, [blockIndex, pipeline, record, traces]);
+  }, [brickIndex, pipeline, record, traces]);
 
   const isCurrentStale = useMemo(() => {
     if (isInputStale) {
@@ -123,8 +123,8 @@ const DataPanel: React.FC = () => {
       return false;
     }
 
-    return !isEqual(record.blockConfig, blockConfig);
-  }, [isInputStale, record, blockConfig]);
+    return !isEqual(record.blockConfig, brickConfig);
+  }, [isInputStale, record, brickConfig]);
 
   const relevantContext = useMemo(
     () => pickBy(record?.templateContext ?? {}, contextFilter),
@@ -132,11 +132,11 @@ const DataPanel: React.FC = () => {
   );
 
   const { data: showPageState } = fallbackValue(
-    useAsyncState(async () => block?.block.isPageStateAware() ?? true, [block]),
+    useAsyncState(async () => brick?.block.isPageStateAware() ?? true, [brick]),
     true,
   );
 
-  const documentBodyName = joinPathParts(blockPath, "config.body");
+  const documentBodyName = joinPathParts(brickPath, "config.body");
 
   const outputObj: JsonObject =
     record !== undefined && "output" in record
@@ -145,13 +145,13 @@ const DataPanel: React.FC = () => {
         : record.output
       : null;
 
-  const [previewInfo] = usePreviewInfo(blockId);
+  const [previewInfo] = usePreviewInfo(brickId);
 
   const showFormPreview =
-    blockId === CustomFormRenderer.BLOCK_ID ||
-    blockId === FormTransformer.BLOCK_ID;
-  const showDocumentPreview = blockId === DocumentRenderer.BLOCK_ID;
-  const showBlockPreview = record || previewInfo?.traceOptional;
+    brickId === CustomFormRenderer.BLOCK_ID ||
+    brickId === FormTransformer.BLOCK_ID;
+  const showDocumentPreview = brickId === DocumentRenderer.BLOCK_ID;
+  const showBrickPreview = record || previewInfo?.traceOptional;
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
     showFormPreview || showDocumentPreview
@@ -185,15 +185,15 @@ const DataPanel: React.FC = () => {
     if (
       traces.length === 0 ||
       trace == null ||
-      isEqual(trace.blockConfig, blockConfig)
+      isEqual(trace.blockConfig, brickConfig)
     ) {
       return false;
     }
 
     return true;
-  }, [activeNodeId, activeElement, traces, blockConfig]);
+  }, [activeNodeId, activeElement, traces, brickConfig]);
 
-  console.log("*** blockConfig", blockConfig);
+  console.log("*** blockConfig", brickConfig);
 
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
@@ -216,7 +216,7 @@ const DataPanel: React.FC = () => {
               </Nav.Item>
               <Nav.Item className={dataPanelStyles.tabNav}>
                 <Nav.Link eventKey={DataPanelTabKey.BlockConfig}>
-                  Raw Block
+                  Raw Brick
                 </Nav.Link>
               </Nav.Item>
             </>
@@ -243,7 +243,7 @@ const DataPanel: React.FC = () => {
           <DataTab eventKey={DataPanelTabKey.Context} isTraceEmpty={!record}>
             {isInputStale && (
               <Alert variant="warning">
-                A previous block has changed, input context may be out of date
+                A previous brick has changed, input context may be out of date
               </Alert>
             )}
             <DataTabJsonTree
@@ -258,7 +258,7 @@ const DataPanel: React.FC = () => {
           {showDeveloperTabs && (
             <>
               <StateTab />
-              <ConfigurationTab config={blockConfig} />
+              <ConfigurationTab config={brickConfig} />
             </>
           )}
           <DataTab eventKey={DataPanelTabKey.Rendered} isTraceEmpty={!record}>
@@ -280,7 +280,7 @@ const DataPanel: React.FC = () => {
               <>
                 {isInputStale && (
                   <Alert variant="warning">
-                    A previous block has changed, input context may be out of
+                    A previous brick has changed, input context may be out of
                     date
                   </Alert>
                 )}
@@ -306,7 +306,7 @@ const DataPanel: React.FC = () => {
             )}
             {!record?.skippedRun &&
               outputObj == null &&
-              blockType === "renderer" && (
+              brickType === "renderer" && (
                 <Alert variant="info">
                   Renderer brick output is not available in Data Panel
                 </Alert>
@@ -333,8 +333,8 @@ const DataPanel: React.FC = () => {
             )}
           </DataTab>
           <DataTab eventKey={DataPanelTabKey.Preview} isTraceEmpty={false}>
-            {/* The value of block.if can be `false`, in this case we also need to show the warning */}
-            {blockConfig?.if && (
+            {/* The value of `brick.if` can be `false`, in which case we also need to show a warning that brick execution is conditional. */}
+            {brickConfig?.if && (
               <Alert variant="info">
                 This brick has a condition. The brick will not execute if the
                 condition is not met
@@ -351,7 +351,7 @@ const DataPanel: React.FC = () => {
                 )}
                 {showFormPreview ? (
                   <FormPreview
-                    rjsfSchema={blockConfig?.config as RJSFSchema}
+                    rjsfSchema={brickConfig?.config as RJSFSchema}
                     activeField={nodePreviewActiveElement}
                     setActiveField={setNodePreviewActiveElement}
                   />
@@ -364,11 +364,11 @@ const DataPanel: React.FC = () => {
                   />
                 )}
               </ErrorBoundary>
-            ) : showBlockPreview ? (
+            ) : showBrickPreview ? (
               <ErrorBoundary>
                 <BlockPreview
                   traceRecord={record}
-                  blockConfig={blockConfig}
+                  blockConfig={brickConfig}
                   extensionPoint={activeElement.extensionPoint}
                 />
               </ErrorBoundary>
