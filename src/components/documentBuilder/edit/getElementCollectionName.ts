@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { assertNotNull } from "@/utils/typeUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 const elementsCollectionRegexp =
   /((?<collectionName>.*)\.)?(?<elementIndex>\d+)/;
@@ -30,7 +30,7 @@ function getElementCollectionName(elementName: string): {
 } {
   const match = elementsCollectionRegexp.exec(elementName)?.groups;
 
-  assertNotNull(
+  assertNotNullish(
     match,
     `Unable to parse the collection name in: ${elementName}`,
   );

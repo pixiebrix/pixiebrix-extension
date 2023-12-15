@@ -82,6 +82,8 @@ export const runMapArgs = getMethod("RUN_MAP_ARGS");
 export const getPageState = getMethod("GET_PAGE_STATE");
 export const setPageState = getMethod("SET_PAGE_STATE");
 
+export const getCopilotHostData = getMethod("GET_COPILOT_HOST_DATA");
+
 export const reloadMarketplaceEnhancements = getMethod(
   "RELOAD_MARKETPLACE_ENHANCEMENTS",
 );

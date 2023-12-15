@@ -42,7 +42,7 @@ import { type SemVerString } from "@/types/registryTypes";
 import { isAbsoluteUrl, safeParseUrl } from "@/utils/urlUtils";
 import { missingProperties } from "@/utils/schemaUtils";
 import { type SetRequired } from "type-fest";
-import { assertNotNull } from "@/utils/typeUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type RequestConfig = SetRequired<AxiosRequestConfig, "url">;
 
@@ -368,7 +368,7 @@ export class UserDefinedIntegration<
     }
 
     if (this.isOAuth2 || this.isToken) {
-      assertNotNull(
+      assertNotNullish(
         authData,
         "This integration requires authentication data but it was not provided",
       );

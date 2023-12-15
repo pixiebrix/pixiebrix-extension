@@ -16,8 +16,8 @@
  */
 
 import { getDefaultRegistry } from "@rjsf/core";
+import { type FieldProps } from "@rjsf/utils";
 import React from "react";
-import { type FormPreviewFieldProps } from "./FormPreviewFieldTemplate";
 import { type SchemaDefinition } from "@/types/schemaTypes";
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Loose types
@@ -26,8 +26,8 @@ const RjsfSchemaField = getDefaultRegistry().fields.SchemaField!;
 /**
  * A base field used by RJSF to render a field preview.
  */
-const FormPreviewSchemaField: React.FC<FormPreviewFieldProps> = (props) => {
-  let fieldProps: FormPreviewFieldProps;
+const FormPreviewSchemaField: React.FC<FieldProps> = (props) => {
+  let fieldProps: FieldProps;
   // The value of oneOf/enum is a string when we render a @var
   // or in some special cases when the dropdown should be disabled (e.g. database selector)
   // In such case use this string value as a single option

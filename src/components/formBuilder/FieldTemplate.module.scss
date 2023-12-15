@@ -15,29 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RendererABC } from "@/types/bricks/rendererTypes";
-import { propertiesToSchema } from "@/validators/generic";
-import sanitize from "@/utils/sanitize";
-import { type BrickArgs } from "@/types/runtimeTypes";
-import { type SafeHTML } from "@/types/stringTypes";
-
-export class HtmlRenderer extends RendererABC {
-  constructor() {
-    super(
-      "@pixiebrix/html",
-      "HTML Renderer",
-      "Render HTML, sanitizing it first",
-    );
-  }
-
-  inputSchema = propertiesToSchema({
-    html: {
-      type: "string",
-      description: "The HTML string to render",
-    },
-  });
-
-  async render({ html }: BrickArgs<{ html: string }>): Promise<SafeHTML> {
-    return sanitize(html);
-  }
+.root {
+  margin-right: 10px; /* Make room for the off-set outline */
+}
+.isActive {
+  /* Use `outline` instead of `box-shadow` because it supports offsets, without having to mess with padding */
+  outline: color-mix(in srgb, var(--info) 50%, transparent) solid 3px;
+  outline-offset: 6px;
+  border-radius: 2px;
+}
+.description {
+  margin-top: 0.5rem; /* Matches `label`'s default `margin-bottom` */
 }

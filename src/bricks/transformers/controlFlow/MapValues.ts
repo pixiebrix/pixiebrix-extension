@@ -23,17 +23,18 @@ import {
   type BrickOptions,
   type OutputKey,
   type PipelineExpression,
+  VARIABLE_REFERENCE_PREFIX,
 } from "@/types/runtimeTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 
 class MapValues extends TransformerABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/map");
+  static BRICK_ID = validateRegistryId("@pixiebrix/map");
   defaultOutputKey = "mapped";
 
   constructor() {
     super(
-      MapValues.BLOCK_ID,
+      MapValues.BRICK_ID,
       "Map/Transform Values",
       "Map/Transform a list of values",
     );
@@ -105,7 +106,7 @@ class MapValues extends TransformerABC {
         bodyPipeline,
         { key: "body", counter: index },
         {
-          [`@${elementKey}`]: element,
+          [`${VARIABLE_REFERENCE_PREFIX}${elementKey}`]: element,
         },
       );
 

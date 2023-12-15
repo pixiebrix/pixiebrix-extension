@@ -36,6 +36,7 @@ import { RunLocalProcess } from "./uipath/localProcess";
 import { PushZap } from "./zapier/push";
 import { RunBot } from "./automationanywhere/RunBot";
 import { GoogleSheetsLookup } from "@/contrib/google/sheets/bricks/lookup";
+import SetCopilotDataEffect from "@/contrib/automationanywhere/SetCopilotDataEffect";
 
 let registered = false;
 
@@ -80,6 +81,7 @@ function registerContribBlocks(): void {
 
     // Automation Anywhere
     new RunBot(),
+    new SetCopilotDataEffect(),
   ]);
 
   registered = true;

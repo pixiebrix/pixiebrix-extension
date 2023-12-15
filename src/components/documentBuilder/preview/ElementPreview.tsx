@@ -172,8 +172,8 @@ const ElementPreview: React.FC<ElementPreviewProps> = ({
       {...props}
       onClick={onClick}
       className={cx(styles.root, {
-        [styles.active]: isActive,
-        [styles.hovered]: isHovered,
+        [styles.active ?? ""]: isActive,
+        [styles.hovered ?? ""]: isHovered,
         "btn-block": isFullWidth,
       })}
       onMouseOver={onMouseOver}

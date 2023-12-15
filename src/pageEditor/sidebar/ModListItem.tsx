@@ -49,7 +49,7 @@ export type ModListItemProps = PropsWithChildren<{
   onSave: () => Promise<void>;
   isSaving: boolean;
   onReset: () => Promise<void>;
-  onRemove: () => Promise<void>;
+  onDeactivate: () => Promise<void>;
   onClone: () => Promise<void>;
 }>;
 
@@ -61,7 +61,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
   onSave,
   isSaving,
   onReset,
-  onRemove,
+  onDeactivate,
   onClone,
 }) => {
   const dispatch = useDispatch();
@@ -94,7 +94,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
         eventKey={recipeId}
         as={ListGroup.Item}
         className={cx(styles.root, "list-group-item-action", {
-          [styles.recipeBackground]: hasRecipeBackground,
+          [styles.recipeBackground ?? ""]: hasRecipeBackground,
         })}
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={isActive}
@@ -123,7 +123,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
           <ActionMenu
             onSave={onSave}
             onReset={onReset}
-            onRemove={onRemove}
+            onDeactivate={onDeactivate}
             onClone={onClone}
             isDirty={isDirty}
             disabled={isSaving}
