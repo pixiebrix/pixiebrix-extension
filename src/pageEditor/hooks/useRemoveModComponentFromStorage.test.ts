@@ -42,7 +42,6 @@ test("useRemoveModComponentFromStorage", async () => {
 
   await removeExtension({
     extensionId,
-    shouldShowConfirmation: false,
   });
 
   const { dispatch } = getReduxStore();

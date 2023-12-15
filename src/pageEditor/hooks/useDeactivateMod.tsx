@@ -64,7 +64,6 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
         extensionIds.map(async (extensionId) =>
           removeModComponentFromStorage({
             extensionId,
-            shouldShowConfirmation: false,
           }),
         ),
       );

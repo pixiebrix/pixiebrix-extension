@@ -161,7 +161,6 @@ function useSaveCallbacks({
           if (!keepLocalCopy) {
             await removeModComponentFromStorage({
               extensionId: activeElement.uuid,
-              shouldShowConfirmation: false,
             });
           }
 

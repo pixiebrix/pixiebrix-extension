@@ -34,7 +34,6 @@ import { removeExtensionsFromAllTabs } from "@/store/uninstallUtils";
 
 type Config = {
   extensionId: UUID;
-  shouldShowConfirmation?: boolean;
   confirmationModal?: ConfirmationModalProps;
 };
 

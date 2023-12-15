@@ -86,7 +86,7 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const isSavedOnCloud = useSelector(
     selectIsModComponentSavedOnCloud(modComponentFormState.uuid),
   );
-  const removeModComponent = useRemoveModComponentFromStorage();
+  const removeModComponentFromStorage = useRemoveModComponentFromStorage();
   const isButton = modComponentFormState.type === "menuItem";
 
   const showOverlay = useCallback(async (uuid: UUID) => {
@@ -105,14 +105,14 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
 
   const deleteModComponent = async () =>
-    removeModComponent({
+    removeModComponentFromStorage({
       extensionId: modComponentFormState.uuid,
       confirmationModal: modId
         ? DELETE_STARTER_BRICK_MODAL_PROPS
         : DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
     });
   const deactivateModComponent = async () =>
-    removeModComponent({
+    removeModComponentFromStorage({
       extensionId: modComponentFormState.uuid,
       confirmationModal: DEACTIVATE_MOD_MODAL_PROPS,
     });
