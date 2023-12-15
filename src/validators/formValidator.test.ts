@@ -61,7 +61,6 @@ const illFormedKey = "bar.`'[]()=+*&^%$#@!";
 // Copied from https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/validator-ajv6/test/validator.test.ts
 describe("RJSF Tests", () => {
   let builder: ErrorSchemaBuilder;
-  3;
 
   beforeAll(() => {
     builder = new ErrorSchemaBuilder();

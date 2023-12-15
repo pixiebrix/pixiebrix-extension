@@ -127,6 +127,7 @@ class FormValidator<
   private transformRJSFValidationErrors(
     errors: OutputUnit[] = [],
   ): RJSFValidationError[] {
+    console.log(errors);
     return errors
       .filter(
         (error) =>
@@ -215,7 +216,7 @@ class FormValidator<
   ): { errors?: Result[]; validationError?: Error } {
     try {
       // Return all errors so they can be displayed in the form
-      const validator = new Validator(schema as Schema, "2019-09", false);
+      const validator = new Validator(schema as Schema, "7", false);
       const result = validator.validate(formData);
 
       return {
