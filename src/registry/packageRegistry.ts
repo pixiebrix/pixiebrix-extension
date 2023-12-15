@@ -243,8 +243,13 @@ export function parsePackage(
 /**
  * Return the latest version of a brick, or null if it's not found.
  * @param id the registry id
+ * @param options the find options
+ * @param options.shouldFetch whether to fetch from the api if not found in the db
  */
-export async function find(id: string): Promise<PackageVersion | null> {
+export async function find(
+  id: string,
+  options: { shouldFetch?: boolean } = {},
+): Promise<PackageVersion | null> {
   if (id == null) {
     throw new Error("id is required");
   }
@@ -258,7 +263,24 @@ export async function find(id: string): Promise<PackageVersion | null> {
 
   try {
     const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
-    return latestVersion(versions);
+    const diskResult = latestVersion(versions);
+
+    if (!options.shouldFetch) {
+      return diskResult;
+    }
+
+    // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
+    const timestamp = new Date();
+    const data = await fetch<RegistryPackage>(`/api/registry/bricks/${id}`);
+    const packageVersion: PackageVersion = {
+      ...parsePackage(data),
+      // Use the timestamp the call was initiated, not the timestamp received. That prevents missing any updates
+      // that were made during the call.
+      timestamp,
+    };
+    const tx = db.transaction(BRICK_STORE, "readwrite");
+    await tx.store.put(packageVersion);
+    await tx.done;
   } finally {
     db.close();
   }

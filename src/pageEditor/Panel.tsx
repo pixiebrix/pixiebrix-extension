@@ -35,7 +35,7 @@ registerDefaultWidgets();
 
 const Panel: React.VoidFunctionComponent = () => {
   // Refresh the brick registry on mount
-  useRefreshRegistries({ refreshOnMount: true });
+  // useRefreshRegistries({ refreshOnMount: true });
 
   return (
     <Provider store={store}>

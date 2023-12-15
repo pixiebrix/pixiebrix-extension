@@ -216,8 +216,9 @@ export class MemoryRegistry<
       throw new DoesNotExistError(id);
     }
 
-    // Look up in IDB
-    const raw = await backgroundRegistry.find(id);
+    // Look up in IDB, or fetch from the api
+    // eslint-disable-next-line unicorn/no-array-method-this-argument -- this is not an array method
+    const raw = await backgroundRegistry.find(id, { shouldFetch: true });
 
     if (!raw) {
       console.debug(`Cannot find ${id as string} in registry`);
