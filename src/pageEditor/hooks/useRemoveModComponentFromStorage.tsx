@@ -123,6 +123,6 @@ export function useRemoveModComponentFromStorage(): (
         });
       }
     },
-    [dispatch, sessionId],
+    [dispatch, sessionId, showConfirmation],
   );
 }
