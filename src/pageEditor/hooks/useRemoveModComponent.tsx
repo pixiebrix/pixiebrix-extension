@@ -77,15 +77,14 @@ export const DEACTIVATE_MOD_MODAL_PROPS: ConfirmationModalProps = {
  * Prefer using `useDeactivateModComponent` or `useDeleteModComponent` instead of exporting this hook.
  **/
 export function _useRemoveModComponentFromStorage(): (
-  extensionId: UUID,
-  confirmationModal?: ConfirmationModalProps,
+  useRemoveConfig: Config,
 ) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async (extensionId, confirmationModal) => {
+    async ({ extensionId, confirmationModal }) => {
       console.debug(`pageEditor: remove mod component with id ${extensionId}`);
 
       if (confirmationModal) {
@@ -160,7 +159,7 @@ export const useDeactivateModComponent = (): ((
         }
       }
 
-      await removeModComponent(extensionId);
+      await removeModComponent({ extensionId });
     },
     [removeModComponent, showConfirmation],
   );
@@ -186,7 +185,7 @@ export const useDeleteModComponent = (): ((
         }
       }
 
-      await removeModComponent(extensionId);
+      await removeModComponent({ extensionId });
     },
     [removeModComponent, showConfirmation],
   );

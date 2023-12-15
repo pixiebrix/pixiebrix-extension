@@ -27,12 +27,7 @@ import { Events } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { extensionWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
-import {
-  appApi,
-  useGetEditablePackagesQuery,
-  useUpsertStandaloneModComponentMutation,
-  useUpsertStandaloneModComponentQuery,
-} from "@/services/api";
+import { useGetEditablePackagesQuery } from "@/services/api";
 import { type UnknownObject } from "@/types/objectTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
@@ -129,8 +124,6 @@ function useUpsertFormElement(): SaveCallback {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const { data: editablePackages } = useGetEditablePackagesQuery();
-  const [upsertStandaloneModComponent] =
-    useUpsertStandaloneModComponentMutation();
 
   const saveElement = useCallback(
     async (
@@ -211,8 +204,6 @@ function useUpsertFormElement(): SaveCallback {
             }),
           );
         }
-
-        upsertStandaloneModComponent({});
 
         dispatch(markSaved(element.uuid));
       } catch (error) {
