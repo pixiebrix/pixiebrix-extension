@@ -107,14 +107,14 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const deleteModComponent = async () =>
     removeModComponentFromStorage({
       extensionId: modComponentFormState.uuid,
-      confirmationModal: modId
+      showConfirmationModal: modId
         ? DELETE_STARTER_BRICK_MODAL_PROPS
         : DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
     });
   const deactivateModComponent = async () =>
     removeModComponentFromStorage({
       extensionId: modComponentFormState.uuid,
-      confirmationModal: DEACTIVATE_MOD_MODAL_PROPS,
+      showConfirmationModal: DEACTIVATE_MOD_MODAL_PROPS,
     });
 
   const onSave = async () => {

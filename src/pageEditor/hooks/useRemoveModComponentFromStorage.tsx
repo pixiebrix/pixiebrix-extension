@@ -34,7 +34,8 @@ import { removeExtensionsFromAllTabs } from "@/store/uninstallUtils";
 
 type Config = {
   extensionId: UUID;
-  confirmationModal?: ConfirmationModalProps;
+  // Show a confirmation modal with the specified modal props before removing the mod component if defined
+  showConfirmationModal?: ConfirmationModalProps;
 };
 
 export const DELETE_STARTER_BRICK_MODAL_PROPS: ConfirmationModalProps = {
@@ -81,11 +82,11 @@ export function useRemoveModComponentFromStorage(): (
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async ({ extensionId, confirmationModal }) => {
+    async ({ extensionId, showConfirmationModal }) => {
       console.debug(`pageEditor: remove mod component with id ${extensionId}`);
 
-      if (confirmationModal) {
-        const confirm = await showConfirmation(confirmationModal);
+      if (showConfirmationModal) {
+        const confirm = await showConfirmation(showConfirmationModal);
 
         if (!confirm) {
           return;
