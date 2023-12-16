@@ -180,7 +180,7 @@ const SidebarExpanded: React.FunctionComponent<{
             <ModComponentListItem
               key={getIdForElement(element)}
               modComponent={element}
-              recipes={recipes}
+              mods={recipes}
               availableInstalledIds={availableInstalledIds}
               availableDynamicIds={availableDynamicIds}
               isNested
@@ -194,7 +194,7 @@ const SidebarExpanded: React.FunctionComponent<{
       <ModComponentListItem
         key={getIdForElement(item)}
         modComponent={item}
-        recipes={recipes}
+        mods={recipes}
         availableInstalledIds={availableInstalledIds}
         availableDynamicIds={availableDynamicIds}
       />

@@ -55,37 +55,37 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
  * @see DynamicModComponentListItem
  */
 const ActivatedModComponentListItem: React.FunctionComponent<{
-  extension: ModComponentBase;
-  recipes: ModDefinition[];
+  modComponentBase: ModComponentBase;
+  mods: ModDefinition[];
   isAvailable: boolean;
   isNested?: boolean;
-}> = ({ extension, recipes, isAvailable, isNested = false }) => {
+}> = ({ modComponentBase, mods, isAvailable, isNested = false }) => {
   const sessionId = useSelector(selectSessionId);
   const dispatch = useDispatch();
   const [type] = useAsyncState(
-    async () => selectType(extension),
-    [extension.extensionPointId],
+    async () => selectType(modComponentBase),
+    [modComponentBase.extensionPointId],
   );
 
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const activeElement = useSelector(selectActiveElement);
-  const isActive = activeElement?.uuid === extension.id;
+  const isActive = activeElement?.uuid === modComponentBase.id;
   // Get the selected recipe id, or the recipe id of the selected item
   const recipeId = activeRecipeId ?? activeElement?.recipe?.id;
   // Set the alternate background if this item isn't active, but either its recipe or another item in its recipe is active
   const hasRecipeBackground =
-    !isActive && recipeId && extension._recipe?.id === recipeId;
+    !isActive && recipeId && modComponentBase._recipe?.id === recipeId;
 
   const selectHandler = useCallback(
-    async (extension: ModComponentBase) => {
+    async (modComponentBase: ModComponentBase) => {
       try {
         reportEvent(Events.PAGE_EDITOR_OPEN, {
           sessionId,
-          extensionId: extension.id,
+          extensionId: modComponentBase.id,
         });
 
-        const state = await extensionToFormState(extension);
-        initRecipeOptionsIfNeeded(state, recipes);
+        const state = await extensionToFormState(modComponentBase);
+        initRecipeOptionsIfNeeded(state, mods);
 
         dispatch(actions.selectInstalled(state));
         dispatch(actions.checkActiveElementAvailability());
@@ -94,17 +94,17 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
           // frequently between extensions within the same blueprint.
           void showSidebar(thisTab, {
-            extensionId: extension.id,
+            extensionId: modComponentBase.id,
             force: true,
             refresh: false,
           });
         }
       } catch (error) {
         reportError(error);
-        dispatch(actions.adapterError({ uuid: extension.id, error }));
+        dispatch(actions.adapterError({ uuid: modComponentBase.id, error }));
       }
     },
-    [dispatch, sessionId, recipes, type],
+    [dispatch, sessionId, mods, type],
   );
 
   const isButton = type === "menuItem";
@@ -124,12 +124,12 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
       })}
       action
       active={isActive}
-      key={`installed-${extension.id}`}
+      key={`installed-${modComponentBase.id}`}
       onMouseEnter={
-        isButton ? async () => showOverlay(extension.id) : undefined
+        isButton ? async () => showOverlay(modComponentBase.id) : undefined
       }
       onMouseLeave={isButton ? async () => hideOverlay() : undefined}
-      onClick={async () => selectHandler(extension)}
+      onClick={async () => selectHandler(modComponentBase)}
     >
       <span
         className={cx(styles.icon, {
@@ -138,7 +138,9 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
       >
         <ExtensionIcon type={type} />
       </span>
-      <span className={styles.name}>{extension.label ?? extension.id}</span>
+      <span className={styles.name}>
+        {modComponentBase.label ?? modComponentBase.id}
+      </span>
       {!isAvailable && (
         <span className={styles.icon}>
           <NotAvailableIcon />

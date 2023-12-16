@@ -26,7 +26,7 @@ import { type UUID } from "@/types/stringTypes";
 
 type ModComponentListItemProps = {
   modComponent: ModComponentBase | ModComponentFormState;
-  recipes: ModDefinition[];
+  mods: ModDefinition[];
   availableInstalledIds: UUID[];
   availableDynamicIds: UUID[];
   isNested?: boolean;
@@ -36,7 +36,7 @@ const ModComponentListItem: React.FunctionComponent<
   ModComponentListItemProps
 > = ({
   modComponent,
-  recipes,
+  mods,
   availableInstalledIds,
   availableDynamicIds,
   isNested = false,
@@ -44,8 +44,8 @@ const ModComponentListItem: React.FunctionComponent<
   isModComponentBase(modComponent) ? (
     <ActivatedModComponentListItem
       key={`installed-${modComponent.id}`}
-      extension={modComponent}
-      recipes={recipes}
+      modComponentBase={modComponent}
+      mods={mods}
       isAvailable={
         !availableInstalledIds ||
         availableInstalledIds.includes(modComponent.id)
