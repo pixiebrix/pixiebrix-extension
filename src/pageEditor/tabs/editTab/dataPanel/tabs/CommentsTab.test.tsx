@@ -28,11 +28,15 @@ describe("CommentsTab", () => {
   it("renders message when no comments", () => {
     for (const comments of [undefined, ""]) {
       render(<CommentsTab comments={comments} />);
-      expect(screen.getByText("No comments available")).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("No comments available"),
+      ).toBeInTheDocument();
       cleanup();
     }
 
     render(<CommentsTab />);
-    expect(screen.getByText("No comments available")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("No comments available"),
+    ).toBeInTheDocument();
   });
 });

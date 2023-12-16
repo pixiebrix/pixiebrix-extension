@@ -19,16 +19,19 @@ import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { type BrickConfig } from "@/bricks/types";
 import styles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
+// TODO import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 
 const CommentsTab: React.FunctionComponent<{
   comments?: BrickConfig["comments"];
 }> = ({ comments }) => (
   <Tab.Pane eventKey={DataPanelTabKey.Comments} className={styles.tabPane}>
-    {comments ? (
-      <p>{comments}</p>
-    ) : (
-      <em className="text-muted">No comments available</em>
-    )}
+    <textarea
+      className="form-control"
+      style={{ whiteSpace: "pre-wrap" }}
+      value={comments}
+      placeholder="No comments available"
+    />
+    {/* <TextAreaWidget/> */}
   </Tab.Pane>
 );
 

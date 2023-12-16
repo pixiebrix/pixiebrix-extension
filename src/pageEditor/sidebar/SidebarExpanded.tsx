@@ -179,7 +179,7 @@ const SidebarExpanded: React.FunctionComponent<{
           {elements.map((element) => (
             <ModComponentListItem
               key={getIdForElement(element)}
-              extension={element}
+              modComponent={element}
               recipes={recipes}
               availableInstalledIds={availableInstalledIds}
               availableDynamicIds={availableDynamicIds}
@@ -193,7 +193,7 @@ const SidebarExpanded: React.FunctionComponent<{
     return (
       <ModComponentListItem
         key={getIdForElement(item)}
-        extension={item}
+        modComponent={item}
         recipes={recipes}
         availableInstalledIds={availableInstalledIds}
         availableDynamicIds={availableDynamicIds}
