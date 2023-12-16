@@ -265,7 +265,7 @@ export async function find(
     const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
     const diskResult = latestVersion(versions);
 
-    if (!options.shouldFetch) {
+    if (!options.shouldFetch || diskResult != null) {
       return diskResult;
     }
 
