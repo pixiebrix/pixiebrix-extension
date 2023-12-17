@@ -86,17 +86,26 @@ const ActiveSidebarModsListItem: React.FunctionComponent<{
     dispatch(sidebarSlice.actions.closeTab(eventKeyForEntry(MOD_LAUNCHER)));
   };
 
-  let icon: React.ReactNode = <DelayedDefaultIcon />;
+  let icon: React.ReactNode = (
+    <div className={styles.defaultIcon}>
+      <DelayedDefaultIcon />
+    </div>
+  );
   // Prefer emoji icon
   if (emojiIcon) {
-    icon = emojiIcon;
+    icon = <div className={styles.emojiIcon}>{emojiIcon}</div>;
   } else if (mod) {
-    icon = <ModIcon mod={mod} />;
+    icon = (
+      <div className={styles.modIcon}>
+        <ModIcon mod={mod} />
+      </div>
+    );
   }
 
   return (
+    // Pass noIcon style if mod is nullish to enforce standard width
     <ListGroup.Item className={styles.root} onClick={onClick}>
-      <div className={cx(styles.icon, { [styles.noIcon]: !mod })}>{icon}</div>
+      <div className={cx({ [styles.modIcon]: Boolean(mod) })}>{icon}</div>
       <h5 className={styles.lineClampOneLine}>{title}</h5>
     </ListGroup.Item>
   );

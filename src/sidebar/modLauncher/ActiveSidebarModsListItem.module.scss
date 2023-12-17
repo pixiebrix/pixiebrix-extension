@@ -38,13 +38,20 @@
   overflow: hidden;
 }
 
-.icon {
+.defaultIcon {
+  // using em because the icon is 1.25em
+  width: 1.25em;
+  margin-top: 0.2em;
+  margin-right: 1rem;
+}
+
+.modIcon {
   // The line height for the header is 1.2em, so adjust the icon to make the alignment match.
   margin-top: 0.2em;
   padding-right: 1rem;
 }
 
-.noIcon {
+.emojiIcon {
   // using em because the icon is 1.25em
   width: 1.25em;
   margin-right: 1rem;
