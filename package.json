@@ -100,7 +100,7 @@
     "kbar": "^0.1.0-beta.44",
     "lodash-es": "^4.17.21",
     "mark.js": "^8.11.1",
-    "marked": "^11.0.1",
+    "marked": "^11.1.0",
     "memoize-one": "^6.0.0",
     "mustache": "^4.2.0",
     "nunjucks": "^3.2.4",
