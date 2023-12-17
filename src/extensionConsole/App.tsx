@@ -37,7 +37,7 @@ import ActivateExtensionPage from "@/extensionConsole/pages/activateExtension/Ac
 import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import SetupPage from "@/extensionConsole/pages/onboarding/SetupPage";
 import UpdateBanner from "@/extensionConsole/pages/UpdateBanner";
-import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import registerEditors from "@/contrib/editors";
 import DeploymentBanner from "@/extensionConsole/pages/deployments/DeploymentBanner";
@@ -59,7 +59,7 @@ import Loader from "@/components/Loader";
 
 // Register the built-in bricks
 registerEditors();
-registerBuiltinBlocks();
+registerBuiltinBricks();
 registerContribBlocks();
 
 // Register Widgets

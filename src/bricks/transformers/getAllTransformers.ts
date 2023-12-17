@@ -58,8 +58,14 @@ import ConvertDocument from "@/bricks/transformers/convertDocument";
 import { SearchText } from "@/bricks/transformers/searchText";
 import { WithAsyncModVariable } from "@/bricks/transformers/controlFlow/WithAsyncModVariable";
 import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
+import type { RegistryProtocol } from "@/registry/memoryRegistry";
+import type { RegistryId } from "@/types/registryTypes";
+import RunBrickByIdTransformer from "@/bricks/transformers/RunBrickByIdTransformer";
+import GetBrickInterfaceTransformer from "@/bricks/transformers/GetBrickInterfaceTransformer";
 
-function getAllTransformers(): Brick[] {
+function getAllTransformers(
+  registry: RegistryProtocol<RegistryId, Brick>,
+): Brick[] {
   return [
     new JavaScriptTransformer(),
     new JQTransformer(),
@@ -95,6 +101,10 @@ function getAllTransformers(): Brick[] {
     new TraverseElements(),
     new SelectElement(),
     new ExtensionDiagnostics(),
+
+    // Reflection/Meta Bricks
+    new RunBrickByIdTransformer(registry),
+    new GetBrickInterfaceTransformer(registry),
 
     // Control Flow Bricks
     new ForEach(),
