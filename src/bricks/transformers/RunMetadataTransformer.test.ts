@@ -23,7 +23,7 @@ import {
   registryIdFactory,
 } from "@/testUtils/factories/stringFactories";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { SemVerString } from "@/types/registryTypes";
+import type { SemVerString } from "@/types/registryTypes";
 
 const brick = new RunMetadataTransformer();
 
