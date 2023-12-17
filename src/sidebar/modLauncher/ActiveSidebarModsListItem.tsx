@@ -29,7 +29,6 @@ import reportEvent from "@/telemetry/reportEvent";
 import { selectExtensionFromEventKey } from "@/sidebar/sidebarSelectors";
 import { Events } from "@/telemetry/events";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
-import cx from "classnames";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { splitStartingEmoji } from "@/utils/stringUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -105,7 +104,7 @@ const ActiveSidebarModsListItem: React.FunctionComponent<{
   return (
     // Pass noIcon style if mod is nullish to enforce standard width
     <ListGroup.Item className={styles.root} onClick={onClick}>
-      <div className={cx({ [styles.modIcon]: Boolean(mod) })}>{icon}</div>
+      {icon}
       <h5 className={styles.lineClampOneLine}>{title}</h5>
     </ListGroup.Item>
   );
