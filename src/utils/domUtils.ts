@@ -116,6 +116,10 @@ export async function waitForBody(): Promise<void> {
   }
 }
 
+/**
+ * Returns true if the element is visible. Copied from jQuery's `:visible` selector.
+ * @param element the HTML element to check
+ */
 export function isVisible(element: HTMLElement): boolean {
   // https://github.com/jquery/jquery/blob/c66d4700dcf98efccb04061d575e242d28741223/src/css/hiddenVisibleSelectors.js#L9C1-L9C1
   return Boolean(
@@ -123,4 +127,12 @@ export function isVisible(element: HTMLElement): boolean {
       element.offsetHeight ||
       element.getClientRects().length > 0,
   );
+}
+
+/**
+ * Returns true if the node is an HTMLElement.
+ * @param node the node to check
+ */
+export function isElement(node: Node): node is Element {
+  return node.nodeType === Node.ELEMENT_NODE;
 }

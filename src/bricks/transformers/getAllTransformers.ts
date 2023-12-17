@@ -58,6 +58,7 @@ import ConvertDocument from "@/bricks/transformers/convertDocument";
 import { SearchText } from "@/bricks/transformers/searchText";
 import { WithAsyncModVariable } from "@/bricks/transformers/controlFlow/WithAsyncModVariable";
 import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
+import HtmlTransformer from "@/bricks/transformers/HtmlTransformer";
 
 function getAllTransformers(): Brick[] {
   return [
@@ -81,6 +82,7 @@ function getAllTransformers(): Brick[] {
     new UrlParams(),
     new SplitText(),
     new SearchText(),
+    new HtmlTransformer(),
     new JQueryReader(),
     new Readable(),
     new ComponentReader(),
