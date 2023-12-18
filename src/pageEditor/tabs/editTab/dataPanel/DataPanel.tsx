@@ -17,7 +17,7 @@
  */
 
 import React, { useMemo } from "react";
-import { isEmpty, isEqual, pickBy } from "lodash";
+import { isEmpty, isEqual, pickBy, omit } from "lodash";
 import { Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import FormPreview from "@/components/formBuilder/preview/FormPreview";
@@ -185,7 +185,10 @@ const DataPanel: React.FC = () => {
     if (
       traces.length === 0 ||
       trace == null ||
-      isEqual(trace.blockConfig, brickConfig)
+      isEqual(
+        omit(trace.blockConfig, ["comments"]),
+        omit(brickConfig, ["comments"]),
+      )
     ) {
       return false;
     }
