@@ -46,11 +46,11 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getRecipeById,
   getIdForElement,
-  getRecipeIdForElement,
+  getModIdForElement,
 } from "@/pageEditor/utils";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
-import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
+import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
 import AddStarterBrickButton from "./AddStarterBrickButton";
@@ -87,7 +87,7 @@ const SidebarExpanded: React.FunctionComponent<{
     return (
       allRecipes?.filter((recipe) =>
         installedAndElements.some(
-          (element) => getRecipeIdForElement(element) === recipe.metadata.id,
+          (element) => getModIdForElement(element) === recipe.metadata.id,
         ),
       ) ?? []
     );
@@ -141,7 +141,7 @@ const SidebarExpanded: React.FunctionComponent<{
 
   const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
   const resetRecipe = useResetRecipe();
-  const removeRecipe = useRemoveRecipe();
+  const deactivateMod = useDeactivateMod();
 
   const listItems = sortedElements.map((item) => {
     if (Array.isArray(item)) {
@@ -169,8 +169,8 @@ const SidebarExpanded: React.FunctionComponent<{
           onReset={async () => {
             await resetRecipe(activeRecipeId);
           }}
-          onRemove={async () => {
-            await removeRecipe({ recipeId: activeRecipeId });
+          onDeactivate={async () => {
+            await deactivateMod({ modId: activeRecipeId });
           }}
           onClone={async () => {
             dispatch(actions.showCreateRecipeModal({ keepLocalCopy: true }));

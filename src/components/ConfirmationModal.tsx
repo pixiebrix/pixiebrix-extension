@@ -25,16 +25,16 @@ import React, {
 import { Modal, Button } from "react-bootstrap";
 import { type ButtonVariant } from "react-bootstrap/types";
 
-type ModalProps = {
+export type ConfirmationModalProps = {
   title?: string;
-  message: string;
+  message: string | React.ReactElement;
   submitVariant?: ButtonVariant;
   submitCaption?: string;
   cancelCaption?: string;
 };
 
 type ModalContextProps = {
-  showConfirmation: (modalProps: ModalProps) => Promise<boolean>;
+  showConfirmation: (modalProps: ConfirmationModalProps) => Promise<boolean>;
 };
 
 const initialModalState: ModalContextProps = {
@@ -46,7 +46,7 @@ const initialModalState: ModalContextProps = {
 const ModalContext = createContext<ModalContextProps>(initialModalState);
 
 const ConfirmationModal: React.FunctionComponent<
-  ModalProps & {
+  ConfirmationModalProps & {
     onCancel: () => void;
     onSubmit: () => void;
     onExited: () => void;
@@ -87,14 +87,15 @@ const ConfirmationModal: React.FunctionComponent<
 
 type Callback = (submit: boolean) => void;
 
-const DEFAULT_MODAL_PROPS: ModalProps = {
+const DEFAULT_MODAL_PROPS: ConfirmationModalProps = {
   message: "Are you sure?",
 };
 
 export const ModalProvider: React.FunctionComponent<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [modalProps, setModalProps] = useState<ModalProps>(DEFAULT_MODAL_PROPS);
+  const [modalProps, setModalProps] =
+    useState<ConfirmationModalProps>(DEFAULT_MODAL_PROPS);
   const [callback, setCallback] = useState<Callback | null>();
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   useEffect(
@@ -106,7 +107,7 @@ export const ModalProvider: React.FunctionComponent<{
   );
 
   const showConfirmation = useCallback(
-    async (modalProps: ModalProps) => {
+    async (modalProps: ConfirmationModalProps) => {
       // Cancel any previous modal that was showing
       callback?.(false);
 

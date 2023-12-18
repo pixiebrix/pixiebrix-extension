@@ -43,7 +43,10 @@ describe("DynamicModComponentListItem", () => {
     const formState = formStateFactory();
     expect(
       render(
-        <DynamicModComponentListItem extension={formState} isAvailable />,
+        <DynamicModComponentListItem
+          modComponentFormState={formState}
+          isAvailable
+        />,
         {
           initialValues: formState,
           setupRedux(dispatch) {
@@ -65,7 +68,10 @@ describe("DynamicModComponentListItem", () => {
     const formState = formStateFactory();
     expect(
       render(
-        <DynamicModComponentListItem extension={formState} isAvailable />,
+        <DynamicModComponentListItem
+          modComponentFormState={formState}
+          isAvailable
+        />,
         {
           initialValues: formState,
           setupRedux(dispatch) {

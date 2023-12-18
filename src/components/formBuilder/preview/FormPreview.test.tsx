@@ -21,6 +21,8 @@ import testItRenders, {
 import { type Except } from "type-fest";
 import FormPreview, { type FormPreviewProps } from "./FormPreview";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
+import { render, screen } from "@testing-library/react";
+import React from "react";
 
 describe("FormPreview", () => {
   const defaultProps: Except<FormPreviewProps, "activeField"> = {
@@ -97,5 +99,32 @@ describe("FormPreview", () => {
       activeField: "firstName",
       setActiveField: defaultProps.setActiveField,
     },
+  });
+
+  test("it does not render the name as the label if the title is an empty string", () => {
+    const schema: Schema = {
+      title: "Form",
+      type: "object",
+      properties: {
+        notes: {
+          type: "string",
+          title: "",
+          description: "A note",
+        },
+      },
+    };
+    const uiSchema: UiSchema = {};
+
+    const props: FormPreviewProps = {
+      rjsfSchema: { schema, uiSchema },
+      activeField: "notes",
+      setActiveField: defaultProps.setActiveField,
+    };
+
+    render(<FormPreview {...props} />);
+
+    expect(screen.getByRole("textbox")).toHaveAttribute("name", "root_notes");
+    expect(screen.getByText("A note")).toBeInTheDocument();
+    expect(screen.queryByText("notes")).not.toBeInTheDocument();
   });
 });

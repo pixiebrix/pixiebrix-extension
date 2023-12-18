@@ -16,10 +16,20 @@
  */
 
 // https://transitory.technology/browser-extensions-and-csp-headers/
-// Load the passed URL into an another iframe to get around the parent page's CSP headers
+// Load the passed URL into another iframe to get around the parent page's CSP headers
+// Until this is resolved: https://github.com/w3c/webextensions/issues/483
 
-const frameUrl = new URLSearchParams(window.location.search).get("url");
+import { initCopilotMessenger } from "@/contrib/automationanywhere/aaFrameProtocol";
+
+const params = new URLSearchParams(window.location.search);
+
+const frameUrl = params.get("url");
+const name = params.get("name");
 
 const iframe = document.createElement("iframe");
 iframe.src = frameUrl;
+iframe.name = name;
 document.body.append(iframe);
+
+// Handle an embedded AA Co-Pilot frame
+void initCopilotMessenger();

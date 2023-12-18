@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { HtmlRenderer } from "./html";
+import HtmlRenderer from "./HtmlRenderer";
 import { IFrameRenderer } from "./iframe";
-import { MarkdownRenderer } from "./markdown";
+import MarkdownRenderer from "./MarkdownRenderer";
 import { PropertyTableRenderer } from "./propertyTable";
 import { CustomFormRenderer } from "./customForm";
 import { TableRenderer } from "./table";

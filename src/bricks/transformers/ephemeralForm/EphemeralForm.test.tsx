@@ -35,6 +35,7 @@ describe("EphemeralForm", () => {
         properties: {
           foo: {
             type: "string",
+            title: "Foo",
           },
         },
       },
@@ -47,7 +48,7 @@ describe("EphemeralForm", () => {
     render(<EphemeralForm />);
 
     await expect(
-      screen.findByRole("textbox", { name: "foo" }),
+      screen.findByRole("textbox", { name: /foo/i }),
     ).resolves.toBeVisible();
   });
 

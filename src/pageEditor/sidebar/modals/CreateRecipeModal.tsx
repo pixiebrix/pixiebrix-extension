@@ -62,8 +62,8 @@ import {
   inferConfiguredModIntegrations,
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
-import useRemoveExtension from "@/pageEditor/hooks/useRemoveExtension";
-import useRemoveRecipe from "@/pageEditor/hooks/useRemoveRecipe";
+import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
+import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type PackageUpsertResponse } from "@/types/contract";
@@ -108,8 +108,8 @@ function useSaveCallbacks({
   const dispatch = useDispatch();
   const [createRecipe] = useCreateRecipeMutation();
   const createExtension = useUpsertFormElement();
-  const removeExtension = useRemoveExtension();
-  const removeRecipe = useRemoveRecipe();
+  const removeModComponentFromStorage = useRemoveModComponentFromStorage();
+  const deactivateMod = useDeactivateMod();
 
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
@@ -159,9 +159,8 @@ function useSaveCallbacks({
             modId: newRecipe.metadata.id,
           });
           if (!keepLocalCopy) {
-            await removeExtension({
+            await removeModComponentFromStorage({
               extensionId: activeElement.uuid,
-              shouldShowConfirmation: false,
             });
           }
 
@@ -176,7 +175,7 @@ function useSaveCallbacks({
       createRecipe,
       dispatch,
       keepLocalCopy,
-      removeExtension,
+      removeModComponentFromStorage,
     ],
   );
 
@@ -230,7 +229,7 @@ function useSaveCallbacks({
       };
 
       if (!keepLocalCopy) {
-        await removeRecipe({ recipeId, shouldShowConfirmation: false });
+        await deactivateMod({ modId: recipeId, shouldShowConfirmation: false });
       }
 
       const modComponents = [...dirtyRecipeElements, ...cleanRecipeExtensions];
@@ -268,7 +267,7 @@ function useSaveCallbacks({
       installedExtensions,
       isDirtyByElementId,
       keepLocalCopy,
-      removeRecipe,
+      deactivateMod,
     ],
   );
 

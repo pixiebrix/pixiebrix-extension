@@ -258,6 +258,30 @@ describe("sidebarSlice.addForm", () => {
   });
 });
 
+describe("sidebarSlice.showActivationPanel", () => {
+  it("closes the mod launcher if it is open", async () => {
+    const newPanel = sidebarEntryFactory("activateMods");
+
+    const state = {
+      ...sidebarSlice.getInitialState(),
+      staticPanels: [MOD_LAUNCHER],
+    } as SidebarState;
+
+    expect(state.closedTabs).toStrictEqual({});
+
+    const newState = sidebarSlice.reducer(
+      state,
+      sidebarSlice.actions.showModActivationPanel(newPanel),
+    );
+
+    expect(newState.activeKey).toBe(eventKeyForEntry(newPanel));
+
+    expect(newState.closedTabs).toStrictEqual({
+      [eventKeyForEntry(MOD_LAUNCHER)]: true,
+    });
+  });
+});
+
 describe("closed tabs", () => {
   const panel = sidebarEntryFactory("panel", { heading: "Test Panel" });
   const panelKey = eventKeyForEntry(panel);

@@ -54,8 +54,8 @@ import { JQueryReader } from "@/bricks/transformers/jquery/JQueryReader";
 import JQueryReaderOptions from "@/bricks/transformers/jquery/JQueryReaderOptions";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import AssignModVariableOptions from "@/pageEditor/fields/AssignModVariableOptions";
-import { IdentityTransformer } from "@/bricks/transformers/identity";
-import IdentityOptions from "@/bricks/transformers/IdentityOptions";
+import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
+import IdentityTransformerOptions from "@/bricks/transformers/IdentityTransformerOptions";
 import CommentEffect from "@/bricks/effects/comment";
 import CommentOptions from "@/bricks/effects/CommentOptions";
 
@@ -82,6 +82,6 @@ export default function registerEditors() {
   optionsRegistry.set(ALERT_EFFECT_ID, AlertOptions);
   optionsRegistry.set(JQueryReader.BRICK_ID, JQueryReaderOptions);
   optionsRegistry.set(AssignModVariable.BRICK_ID, AssignModVariableOptions);
-  optionsRegistry.set(IdentityTransformer.BRICK_ID, IdentityOptions);
+  optionsRegistry.set(IdentityTransformer.BRICK_ID, IdentityTransformerOptions);
   optionsRegistry.set(CommentEffect.BRICK_ID, CommentOptions);
 }

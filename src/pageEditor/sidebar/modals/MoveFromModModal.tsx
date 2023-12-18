@@ -26,7 +26,10 @@ import notify from "@/utils/notify";
 import { Alert, Button, Modal } from "react-bootstrap";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExclamationTriangle,
+  faHistory,
+} from "@fortawesome/free-solid-svg-icons";
 import { object, string } from "yup";
 import Form, {
   type OnSubmit,
@@ -48,7 +51,7 @@ const formStateSchema = object({
   moveOrRemove: string().oneOf(["move", "remove"]).required(),
 });
 
-const RemoveFromRecipeModal: React.FC = () => {
+const MoveFromModModal: React.FC = () => {
   const { isRemoveFromRecipeModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
@@ -85,7 +88,7 @@ const RemoveFromRecipeModal: React.FC = () => {
       value: "move",
     },
     {
-      label: "Remove from the mod",
+      label: "Delete starter brick",
       value: "remove",
     },
   ];
@@ -96,13 +99,17 @@ const RemoveFromRecipeModal: React.FC = () => {
         name="moveOrRemove"
         as={RadioItemListWidget}
         items={radioItems}
-        header="Move or remove the starter brick?"
+        header="Move or delete the starter brick from the mod?"
       />
       {values.moveOrRemove === "remove" && (
         <Alert variant="warning">
           <FontAwesomeIcon icon={faExclamationTriangle} />
-          &nbsp;This will delete the starter brick. To restore it, use the reset
-          button.
+          &nbsp;The{" "}
+          <strong>
+            <FontAwesomeIcon icon={faHistory} fixedWidth /> Reset{" "}
+          </strong>
+          action located on the mod&apos;s three-dot menu can be used to restore
+          the starter brick <strong>before saving the mod</strong>.
         </Alert>
       )}
     </Modal.Body>
@@ -142,4 +149,4 @@ const RemoveFromRecipeModal: React.FC = () => {
   );
 };
 
-export default RemoveFromRecipeModal;
+export default MoveFromModModal;

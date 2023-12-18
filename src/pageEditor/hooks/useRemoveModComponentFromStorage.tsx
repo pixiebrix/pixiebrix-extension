@@ -18,8 +18,11 @@
 import { type UUID } from "@/types/stringTypes";
 import { useDispatch, useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
-import { useModals } from "@/components/ConfirmationModal";
-import { useCallback } from "react";
+import {
+  type ConfirmationModalProps,
+  useModals,
+} from "@/components/ConfirmationModal";
+import React, { useCallback } from "react";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import notify from "@/utils/notify";
@@ -31,25 +34,59 @@ import { removeExtensionsFromAllTabs } from "@/store/uninstallUtils";
 
 type Config = {
   extensionId: UUID;
-  shouldShowConfirmation?: boolean;
+  // Show a confirmation modal with the specified modal props before removing the mod component if defined
+  showConfirmationModal?: ConfirmationModalProps;
 };
 
-function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
+export const DELETE_STARTER_BRICK_MODAL_PROPS: ConfirmationModalProps = {
+  title: "Delete starter brick?",
+  message: "This action cannot be undone.",
+  submitCaption: "Delete",
+};
+
+export const DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS: ConfirmationModalProps =
+  {
+    title: "Delete mod?",
+    message: "This action cannot be undone.",
+    submitCaption: "Delete",
+  };
+
+export const DEACTIVATE_MOD_MODAL_PROPS: ConfirmationModalProps = {
+  title: "Deactivate Mod?",
+  message: (
+    <>
+      Any unsaved changes will be lost. You can reactivate or delete mods from
+      the{" "}
+      <a href="/options.html" target="_blank">
+        PixieBrix Extension Console
+      </a>
+      .
+    </>
+  ),
+  submitCaption: "Deactivate",
+};
+
+/**
+ * Returns a callback that removes a mod component from the Page Editor and Extension Storage.
+ *
+ * For mod components packaged inside a mod and standalone mod components not saved on the cloud, this callback will effectively delete the mod component.
+ * For saved standalone mods, this callback will simply deactivate the mod and remove it from the Page Editor.
+ *
+ * In both cases, unsaved changes will be lost.
+ **/
+export function useRemoveModComponentFromStorage(): (
+  useRemoveConfig: Config,
+) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const { showConfirmation } = useModals();
 
   return useCallback(
-    async ({ extensionId, shouldShowConfirmation = true }) => {
-      console.debug(`pageEditor: remove extension with id ${extensionId}`);
+    async ({ extensionId, showConfirmationModal }) => {
+      console.debug(`pageEditor: remove mod component with id ${extensionId}`);
 
-      if (shouldShowConfirmation) {
-        const confirm = await showConfirmation({
-          title: "Remove Mod?",
-          message:
-            "You can reactivate mods from the PixieBrix Extension Console",
-          submitCaption: "Remove",
-        });
+      if (showConfirmationModal) {
+        const confirm = await showConfirmation(showConfirmationModal);
 
         if (!confirm) {
           return;
@@ -62,7 +99,7 @@ function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
       });
 
       try {
-        // Remove from page editor
+        // Remove from Page Editor
         // Equivalent of @/store/dynamicElementStorage.ts:removeDynamicElements
         dispatch(editorActions.removeElement(extensionId));
 
@@ -82,7 +119,7 @@ function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
         removeExtensionsFromAllTabs([extensionId]);
       } catch (error: unknown) {
         notify.error({
-          message: "Error removing element",
+          message: "Error removing mod",
           error,
         });
       }
@@ -90,5 +127,3 @@ function useRemoveExtension(): (useRemoveConfig: Config) => Promise<void> {
     [dispatch, sessionId, showConfirmation],
   );
 }
-
-export default useRemoveExtension;

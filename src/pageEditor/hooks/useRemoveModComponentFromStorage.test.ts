@@ -17,7 +17,7 @@
 
 import { renderHook } from "@/pageEditor/testHelpers";
 import { removeExtensionsFromAllTabs } from "@/store/uninstallUtils";
-import useRemoveExtension from "./useRemoveExtension";
+import { useRemoveModComponentFromStorage } from "./useRemoveModComponentFromStorage";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { actions as extensionsActions } from "@/store/extensionsSlice";
 import { clearDynamicElements } from "@/contentScript/messenger/api";
@@ -28,13 +28,13 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-test("useRemoveExtension", async () => {
+test("useRemoveModComponentFromStorage", async () => {
   const extensionId = uuidSequence(1);
 
   const {
     result: { current: removeExtension },
     getReduxStore,
-  } = renderHook(() => useRemoveExtension(), {
+  } = renderHook(() => useRemoveModComponentFromStorage(), {
     setupRedux(dispatch, { store }) {
       jest.spyOn(store, "dispatch");
     },
@@ -42,7 +42,6 @@ test("useRemoveExtension", async () => {
 
   await removeExtension({
     extensionId,
-    shouldShowConfirmation: false,
   });
 
   const { dispatch } = getReduxStore();
