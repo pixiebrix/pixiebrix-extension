@@ -17,17 +17,11 @@
 
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
-import { type Schema } from "@/types/schemaTypes";
+import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
 import { hideSidebar, showSidebar } from "@/contentScript/sidebarController";
 import { propertiesToSchema } from "@/validators/generic";
 
 import { logPromiseDuration } from "@/utils/promiseUtils";
-
-const NO_PARAMS: Schema = {
-  $schema: "https://json-schema.org/draft/2019-09/schema#",
-  type: "object",
-  properties: {},
-};
 
 export class ShowSidebar extends EffectABC {
   constructor() {
@@ -42,9 +36,10 @@ export class ShowSidebar extends EffectABC {
     {
       panelHeading: {
         type: "string",
-        title: "Panel Heading",
+        // Should match the field label in SidebarConfiguration
+        title: "Tab Title",
         description:
-          "The panel to show in the sidebar. If not provided, defaults to a sidebar panel in this mod",
+          "The tab to show in the sidebar. If not provided, defaults to a sidebar panel in this mod",
       },
       forcePanel: {
         type: "boolean",
@@ -89,7 +84,7 @@ export class HideSidebar extends EffectABC {
     );
   }
 
-  inputSchema: Schema = NO_PARAMS;
+  inputSchema: Schema = SCHEMA_EMPTY_OBJECT;
 
   async effect(): Promise<void> {
     hideSidebar();

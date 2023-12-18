@@ -29,7 +29,7 @@ type ExtensionSaver = {
   isSaving: boolean;
 };
 
-function useSaveExtension(): ExtensionSaver {
+function useSaveStandaloneModComponent(): ExtensionSaver {
   const [isSaving, setIsSaving] = useState(false);
   const create = useUpsertFormElement();
   const sessionId = useSelector(selectSessionId);
@@ -67,4 +67,4 @@ function useSaveExtension(): ExtensionSaver {
   };
 }
 
-export default useSaveExtension;
+export default useSaveStandaloneModComponent;

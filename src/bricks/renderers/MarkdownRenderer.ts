@@ -20,14 +20,15 @@ import { propertiesToSchema } from "@/validators/generic";
 import { validateRegistryId } from "@/types/helpers";
 import MarkdownLazy from "@/components/MarkdownLazy";
 import { type BrickArgs, type ComponentRef } from "@/types/runtimeTypes";
+import { ADD_IFRAME_CONFIG } from "@/utils/sanitize";
 
-export class MarkdownRenderer extends RendererABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/markdown");
+class MarkdownRenderer extends RendererABC {
+  static BRICK_ID = validateRegistryId("@pixiebrix/markdown");
 
   constructor() {
     super(
-      MarkdownRenderer.BLOCK_ID,
-      "Render Markdown",
+      MarkdownRenderer.BRICK_ID,
+      "Markdown Renderer",
       "Render Markdown to sanitized HTML",
     );
   }
@@ -39,16 +40,35 @@ export class MarkdownRenderer extends RendererABC {
         description: "The Markdown to render",
         format: "markdown",
       },
+      /**
+       * @since 1.8.5
+       */
+      allowIFrames: {
+        title: "Allow IFrames",
+        type: "boolean",
+        description:
+          "Toggle to allow the iframe tag and generally safe frame attributes",
+        default: false,
+      },
     },
     ["markdown"],
   );
 
-  async render({ markdown }: BrickArgs): Promise<ComponentRef> {
+  async render({
+    markdown,
+    allowIFrames = false,
+  }: BrickArgs<{
+    markdown: string;
+    allowIFrames?: boolean;
+  }>): Promise<ComponentRef> {
     return {
       Component: MarkdownLazy,
       props: {
         markdown,
+        purifyConfig: allowIFrames ? ADD_IFRAME_CONFIG : undefined,
       },
     };
   }
 }
+
+export default MarkdownRenderer;

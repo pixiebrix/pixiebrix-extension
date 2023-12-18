@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type DBSchema, type IDBPDatabase, openDB } from "idb/with-async-ittr";
+import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { flatten, groupBy, sortBy } from "lodash";
 import { type RegistryPackage } from "@/types/contract";
 import { fetch } from "@/hooks/fetch";
