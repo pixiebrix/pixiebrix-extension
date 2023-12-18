@@ -20,7 +20,7 @@ import PipelineVisitor, {
   type VisitBlockExtra,
 } from "@/bricks/PipelineVisitor";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
+import blockRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import { type Schema } from "@/types/schemaTypes";
 import { compact, isEqual, uniqWith } from "lodash";
 
@@ -38,7 +38,7 @@ export type ModVariableSchemaResult = {
 class ModVariableSchemasVisitor extends PipelineVisitor {
   readonly schemaPromises: Array<Promise<Schema>> = [];
 
-  constructor(readonly allBlocks: TypedBlockMap) {
+  constructor(readonly allBlocks: TypedBrickMap) {
     super();
   }
 

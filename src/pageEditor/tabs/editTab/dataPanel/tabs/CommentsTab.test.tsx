@@ -15,14 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export enum DataPanelTabKey {
-  Context = "context",
-  PageState = "pageState",
-  State = "state",
-  BrickConfig = "blockConfig",
-  Rendered = "rendered",
-  Output = "output",
-  Preview = "preview",
-  Outline = "outline",
-  Comments = "comments",
-}
+import React from "react";
+import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
+import { render, screen } from "@/pageEditor/testHelpers";
+
+describe("CommentsTab", () => {
+  it("renders comments", () => {
+    render(<CommentsTab comments="foo" />);
+    expect(screen.getByText("foo")).toBeInTheDocument();
+  });
+
+  it.each([undefined, ""])("renders message when no comments", (comments) => {
+    render(<CommentsTab comments={comments} />);
+    expect(screen.getByText("No comments available")).toBeInTheDocument();
+  });
+});
