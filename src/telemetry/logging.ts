@@ -18,7 +18,7 @@
 import { uuidv4 } from "@/types/helpers";
 import { type Except, type JsonObject } from "type-fest";
 import { deserializeError } from "serialize-error";
-import { type DBSchema, type IDBPDatabase, openDB } from "idb/with-async-ittr";
+import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { isEmpty, once, sortBy } from "lodash";
 import { allowsTrack } from "@/telemetry/dnt";
 import {
