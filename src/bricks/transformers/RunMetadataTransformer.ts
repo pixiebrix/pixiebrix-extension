@@ -54,7 +54,7 @@ class RunMetadataTransformer extends TransformerABC {
 
   override outputSchema: Schema = propertiesToSchema(
     {
-      componentId: {
+      modComponentId: {
         type: "string",
         format: "uuid",
         description: "The mod component id",
@@ -77,6 +77,7 @@ class RunMetadataTransformer extends TransformerABC {
             description: "The mod version",
           },
         },
+        required: ["id", "version"],
       },
       deploymentId: {
         type: ["string", "null"],
@@ -85,7 +86,7 @@ class RunMetadataTransformer extends TransformerABC {
           "The deployment id, or null if not running as part of a deployment",
       },
     },
-    ["componentId"],
+    ["modComponentId"],
   );
 
   async transform(
@@ -103,7 +104,7 @@ class RunMetadataTransformer extends TransformerABC {
               version: context.blueprintVersion,
             },
       deploymentId: context.deploymentId ?? null,
-      componentId: context.extensionId,
+      modComponentId: context.extensionId,
       runId: meta.runId,
     };
   }

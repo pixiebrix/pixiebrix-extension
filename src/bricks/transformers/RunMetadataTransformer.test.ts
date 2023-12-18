@@ -42,7 +42,7 @@ describe("RunMetadataTransformer", () => {
     );
 
     expect(result).toEqual({
-      componentId: extensionId,
+      modComponentId: extensionId,
       deploymentId: null,
       mod: null,
       runId: null,
@@ -66,13 +66,49 @@ describe("RunMetadataTransformer", () => {
     );
 
     expect(result).toEqual({
-      componentId: extensionId,
+      modComponentId: extensionId,
       deploymentId: null,
       mod: {
         id: registryId,
         version: "1.0.0",
       },
       runId: null,
+    });
+  });
+
+  it("returns deployed mod metadata", async () => {
+    const extensionId = autoUUIDSequence();
+    const deploymentId = autoUUIDSequence();
+    const registryId = registryIdFactory();
+    const runId = autoUUIDSequence();
+
+    const logger = new ConsoleLogger({
+      extensionId,
+      blueprintId: registryId,
+      blueprintVersion: "1.0.0" as SemVerString,
+      deploymentId,
+    });
+
+    const result = await brick.run(
+      unsafeAssumeValidArg({}),
+      brickOptionsFactory({
+        logger,
+        meta: {
+          runId,
+          extensionId,
+          branches: [],
+        },
+      }),
+    );
+
+    expect(result).toEqual({
+      modComponentId: extensionId,
+      deploymentId,
+      mod: {
+        id: registryId,
+        version: "1.0.0",
+      },
+      runId,
     });
   });
 });
