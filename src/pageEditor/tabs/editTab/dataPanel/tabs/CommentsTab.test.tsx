@@ -25,14 +25,9 @@ describe("CommentsTab", () => {
     expect(screen.getByText("foo")).toBeInTheDocument();
   });
 
-  it("renders message when no comments", () => {
-    for (const comments of [undefined, ""]) {
-      render(<CommentsTab comments={comments} />);
-      expect(screen.getByText("No comments available")).toBeInTheDocument();
-      cleanup();
-    }
-
-    render(<CommentsTab />);
+  it.each([undefined, ""])("renders message when no comments", (comments) => {
+    render(<CommentsTab comments={comments} />);
     expect(screen.getByText("No comments available")).toBeInTheDocument();
+    cleanup();
   });
 });
