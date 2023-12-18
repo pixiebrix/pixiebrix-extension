@@ -22,7 +22,7 @@ import { ListGroup, Row } from "react-bootstrap";
 import useModViewItems from "@/mods/useModViewItems";
 import { type Column, useTable } from "react-table";
 import Loader from "@/components/Loader";
-import { ActiveSidebarModsListItem } from "@/sidebar/modLauncher/ActiveSidebarModsListItem";
+import ActiveSidebarModsListItem from "@/sidebar/modLauncher/ActiveSidebarModsListItem";
 import { isEmpty } from "lodash";
 import workshopIllustration from "@img/workshop.svg";
 

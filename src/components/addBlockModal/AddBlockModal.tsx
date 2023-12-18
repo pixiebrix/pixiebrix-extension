@@ -131,7 +131,7 @@ const AddBlockModal: React.FC = () => {
 
   const gridRef = useRef<LazyGrid>();
 
-  const { allBricks, isLoading: isLoadingAllBlocks } = useAllBricks();
+  const { allBricks, isLoading: isLoadingAllBricks } = useAllBricks();
 
   const reduxDispatch = useDispatch();
   const closeModal = useCallback(() => {
@@ -211,7 +211,7 @@ const AddBlockModal: React.FC = () => {
   }, [marketplaceTags, partnerKey]);
 
   const filteredBlocks = useMemo<Brick[]>(() => {
-    if (isLoadingAllBlocks || isLoadingTags || isEmpty(allBricks)) {
+    if (isLoadingAllBricks || isLoadingTags || isEmpty(allBricks)) {
       return [];
     }
 
@@ -227,7 +227,7 @@ const AddBlockModal: React.FC = () => {
     return typedBlocks.map(({ block }) => block);
   }, [
     allBricks,
-    isLoadingAllBlocks,
+    isLoadingAllBricks,
     isLoadingTags,
     partnerKey,
     taggedBrickIds,

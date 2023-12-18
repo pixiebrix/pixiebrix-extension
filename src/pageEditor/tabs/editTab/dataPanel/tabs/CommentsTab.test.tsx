@@ -17,7 +17,7 @@
 
 import React from "react";
 import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
-import { render, screen, cleanup } from "@/pageEditor/testHelpers";
+import { render, screen } from "@/pageEditor/testHelpers";
 
 describe("CommentsTab", () => {
   it("renders comments", () => {
@@ -25,16 +25,8 @@ describe("CommentsTab", () => {
     expect(screen.getByText("foo")).toBeInTheDocument();
   });
 
-  it("renders message when no comments", () => {
-    for (const comments of [undefined, ""]) {
-      render(<CommentsTab comments={comments} />);
-      expect(
-        screen.getByPlaceholderText("No comments available"),
-      ).toBeInTheDocument();
-      cleanup();
-    }
-
-    render(<CommentsTab />);
+  it.each([undefined, ""])("renders message when no comments", (comments) => {
+    render(<CommentsTab comments={comments} />);
     expect(
       screen.getByPlaceholderText("No comments available"),
     ).toBeInTheDocument();

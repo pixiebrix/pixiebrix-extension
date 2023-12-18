@@ -1,5 +1,5 @@
 import pDefer from "p-defer";
-import { deleteDB } from "idb/with-async-ittr";
+import { deleteDB } from "idb";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
 // IDB Connection Error message strings:

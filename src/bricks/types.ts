@@ -214,6 +214,8 @@ export type BrickConfig = {
 
   /**
    * Comments added by the mod developer to annotate the brick. Does not affect runtime behavior.
+   *
+   * @since 1.8.6
    */
   comments?: string;
 };

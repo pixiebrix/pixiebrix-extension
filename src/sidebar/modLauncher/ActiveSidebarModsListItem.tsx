@@ -17,10 +17,10 @@
 
 import styles from "@/sidebar/modLauncher/ActiveSidebarModsListItem.module.scss";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { type Mod } from "@/types/modTypes";
 import { ListGroup } from "react-bootstrap";
-import ModIcon from "@/mods/ModIcon";
+import ModIcon, { DEFAULT_TEXT_ICON_COLOR } from "@/mods/ModIcon";
 import { type PanelEntry } from "@/types/sidebarTypes";
 import { useDispatch, useSelector } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
@@ -29,16 +29,50 @@ import reportEvent from "@/telemetry/reportEvent";
 import { selectExtensionFromEventKey } from "@/sidebar/sidebarSelectors";
 import { Events } from "@/telemetry/events";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
-import cx from "classnames";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
+import { splitStartingEmoji } from "@/utils/stringUtils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCube } from "@fortawesome/free-solid-svg-icons";
+import DelayedRender from "@/components/DelayedRender";
 
-export const ActiveSidebarModsListItem: React.FunctionComponent<{
+/**
+ * Returns the emoji icon and title for a given heading
+ * @see useGetActionNameAndIcon
+ */
+function useEmojiIcon(heading: string) {
+  return useMemo(() => {
+    const { startingEmoji, rest } = splitStartingEmoji(heading);
+    return {
+      title: rest.trim(), // Trim whitespace if there is any from the emoji split
+      emojiIcon: startingEmoji,
+    };
+  }, [heading]);
+}
+
+/**
+ * Default icon for when mod is not provided for an entry.
+ * @constructor
+ */
+const DelayedDefaultIcon: React.FunctionComponent = () => (
+  // Apply a delay so there's no flash if/when the mod is passed through
+  <DelayedRender millis={600}>
+    <FontAwesomeIcon
+      icon={faCube}
+      color={DEFAULT_TEXT_ICON_COLOR}
+      size="1x"
+      fixedWidth
+    />
+  </DelayedRender>
+);
+
+const ActiveSidebarModsListItem: React.FunctionComponent<{
   mod?: Mod;
   panel: PanelEntry;
 }> = ({ mod, panel }) => {
   const dispatch = useDispatch();
   const getModComponentFromEventKey = useSelector(selectExtensionFromEventKey);
-  const { heading } = panel;
+  const { heading: originalHeading } = panel;
+  const { title, emojiIcon } = useEmojiIcon(originalHeading);
 
   const onClick = () => {
     const eventKey = eventKeyForEntry(panel);
@@ -51,12 +85,30 @@ export const ActiveSidebarModsListItem: React.FunctionComponent<{
     dispatch(sidebarSlice.actions.closeTab(eventKeyForEntry(MOD_LAUNCHER)));
   };
 
+  let icon: React.ReactNode = (
+    // Use DelayedDefaultIcon instead of passing null to ModIcon because ModIcon does not support a null mod argument.
+    // Having the caller decide how to handle the null mod case provides freedom of choosing the default icon
+    // based on the calling context, e.g., single vs. multiple block icon
+    <div className={styles.defaultIcon}>
+      <DelayedDefaultIcon />
+    </div>
+  );
+
+  // Prefer emoji icon over mod icon
+  if (emojiIcon) {
+    icon = <div className={styles.emojiIcon}>{emojiIcon}</div>;
+  } else if (mod) {
+    icon = (
+      <div className={styles.modIcon}>
+        <ModIcon mod={mod} />
+      </div>
+    );
+  }
+
   return (
     <ListGroup.Item className={styles.root} onClick={onClick}>
-      <div className={cx(styles.icon, { [styles.noIcon ?? ""]: !mod })}>
-        {Boolean(mod) && <ModIcon mod={mod} />}
-      </div>
-      <h5 className={styles.lineClampOneLine}>{heading}</h5>
+      {icon}
+      <h5 className={styles.lineClampOneLine}>{title}</h5>
     </ListGroup.Item>
   );
 };
