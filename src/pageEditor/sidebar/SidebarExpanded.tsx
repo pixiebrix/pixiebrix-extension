@@ -63,35 +63,35 @@ import { useDebounce } from "use-debounce";
 const SidebarExpanded: React.FunctionComponent<{
   collapseSidebar: () => void;
 }> = ({ collapseSidebar }) => {
-  const { data: allRecipes, isLoading: isAllRecipesLoading } =
+  const { data: allModDefinitions, isLoading: isAllModDefinitionsLoading } =
     useAllModDefinitions();
 
   useEffect(() => {
-    if (!isAllRecipesLoading) {
+    if (!isAllModDefinitionsLoading) {
       measureDurationFromAppStart("sidebarExpanded:allRecipesLoaded");
     }
-  }, [isAllRecipesLoading]);
+  }, [isAllModDefinitionsLoading]);
 
   const dispatch = useDispatch();
   const activeElementId = useSelector(selectActiveElementId);
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const expandedRecipeId = useSelector(selectExpandedRecipeId);
-  const installed = useSelector(selectNotDeletedExtensions);
+  const activated = useSelector(selectNotDeletedExtensions);
   const elements = useSelector(selectNotDeletedElements);
   const { availableInstalledIds, availableDynamicIds } = useSelector(
     selectExtensionAvailability,
   );
 
-  const recipes = useMemo(() => {
-    const installedAndElements = [...installed, ...elements];
+  const mods = useMemo(() => {
+    const activatedAndElements = [...activated, ...elements];
     return (
-      allRecipes?.filter((recipe) =>
-        installedAndElements.some(
+      allModDefinitions?.filter((recipe) =>
+        activatedAndElements.some(
           (element) => getModIdForElement(element) === recipe.metadata.id,
         ),
       ) ?? []
     );
-  }, [allRecipes, elements, installed]);
+  }, [allModDefinitions, elements, activated]);
 
   const { flagOn } = useFlags();
   const showDeveloperUI =
@@ -114,23 +114,23 @@ const SidebarExpanded: React.FunctionComponent<{
     ),
   );
   const recipeHash = hash(
-    recipes
-      ? recipes.map((recipe) => `${recipe.metadata.id}-${recipe.metadata.name}`)
+    mods
+      ? mods.map((recipe) => `${recipe.metadata.id}-${recipe.metadata.name}`)
       : "",
   );
   const sortedElements = useMemo(
     () =>
       arrangeElements({
         elements,
-        installed,
-        recipes,
+        installed: activated,
+        recipes: mods,
         activeElementId,
         activeRecipeId,
         query: debouncedQuery,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using elementHash and recipeHash to track changes
     [
-      installed,
+      activated,
       elementHash,
       recipeHash,
       activeElementId,
@@ -146,7 +146,7 @@ const SidebarExpanded: React.FunctionComponent<{
   const listItems = sortedElements.map((item) => {
     if (Array.isArray(item)) {
       const [recipeId, elements] = item;
-      const recipe = getRecipeById(recipes, recipeId);
+      const recipe = getRecipeById(mods, recipeId);
       const firstElement = elements[0];
       const installedVersion =
         firstElement == null
@@ -180,7 +180,7 @@ const SidebarExpanded: React.FunctionComponent<{
             <ModComponentListItem
               key={getIdForElement(element)}
               modComponent={element}
-              mods={recipes}
+              mods={mods}
               availableInstalledIds={availableInstalledIds}
               availableDynamicIds={availableDynamicIds}
               isNested
@@ -194,7 +194,7 @@ const SidebarExpanded: React.FunctionComponent<{
       <ModComponentListItem
         key={getIdForElement(item)}
         modComponent={item}
-        mods={recipes}
+        mods={mods}
         availableInstalledIds={availableInstalledIds}
         availableDynamicIds={availableDynamicIds}
       />
