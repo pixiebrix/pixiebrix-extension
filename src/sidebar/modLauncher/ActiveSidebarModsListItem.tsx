@@ -86,6 +86,9 @@ const ActiveSidebarModsListItem: React.FunctionComponent<{
   };
 
   let icon: React.ReactNode = (
+    // Use DelayedDefaultIcon instead of passing null to ModIcon because ModIcon does not support a null mod argument.
+    // Having the caller decide how to handle the null mod case provides freedom of choosing the default icon
+    // based on the calling context, e.g., single vs. multiple block icon
     <div className={styles.defaultIcon}>
       <DelayedDefaultIcon />
     </div>
