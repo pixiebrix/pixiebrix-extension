@@ -22,7 +22,7 @@ import {
 } from "@cfworker/json-schema";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import serviceRegistry from "@/integrations/registry";
-import { isEmpty, pickBy } from "lodash";
+import { pickBy } from "lodash";
 import { type UnknownObject } from "@/types/objectTypes";
 import urljoin from "url-join";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
@@ -159,16 +159,13 @@ export async function validateInput(
  */
 export function propertiesToSchema(
   properties: SchemaProperties,
-  required?: string[],
+  required: string[],
 ): Schema {
   return {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties,
-    required:
-      required === undefined && !isEmpty(properties)
-        ? Object.keys(properties)
-        : required,
+    required,
   };
 }
 

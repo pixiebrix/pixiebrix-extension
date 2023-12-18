@@ -39,15 +39,18 @@ export class SelectElement extends TransformerABC {
     additionalProperties: false,
   };
 
-  override outputSchema: Schema = propertiesToSchema({
-    elements: {
-      type: "array",
-      description: "The array of element references selected",
-      items: {
-        $ref: "https://app.pixiebrix.com/schemas/element#",
+  override outputSchema: Schema = propertiesToSchema(
+    {
+      elements: {
+        type: "array",
+        description: "The array of element references selected",
+        items: {
+          $ref: "https://app.pixiebrix.com/schemas/element#",
+        },
       },
     },
-  });
+    ["elements"],
+  );
 
   async transform(): Promise<unknown> {
     // Include here to avoid error during header generation (which runs in node environment)

@@ -39,7 +39,7 @@ class RootAwareBlock extends BrickABC {
     super("block/root-aware", "Root Aware Brick");
   }
 
-  inputSchema = propertiesToSchema({});
+  inputSchema = propertiesToSchema({}, []);
 
   override async isRootAware(): Promise<boolean> {
     return true;
@@ -58,7 +58,7 @@ class RootAwareReader extends ReaderABC {
     super("reader/root-aware", "Root Aware Reader");
   }
 
-  override inputSchema = propertiesToSchema({});
+  override inputSchema = propertiesToSchema({}, []);
 
   override async isRootAware(): Promise<boolean> {
     return true;
