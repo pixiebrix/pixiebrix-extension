@@ -26,7 +26,7 @@ import {
   maybeGetLinkedApiClient,
 } from "@/services/apiClient";
 import { allowsTrack } from "@/telemetry/dnt";
-import { type DBSchema, type IDBPDatabase, openDB } from "idb/with-async-ittr";
+import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { type UnknownObject } from "@/types/objectTypes";
 import { deleteDatabase } from "@/utils/idbUtils";
 import { detectBrowser } from "@/vendors/mixpanel";

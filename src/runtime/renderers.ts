@@ -23,7 +23,7 @@ import { type JsonObject } from "type-fest";
 import {
   renderHandlebarsTemplate,
   renderNunjucksTemplate,
-} from "@/sandbox/messenger/executor";
+} from "@/sandbox/messenger/api";
 import { type UnknownObject } from "@/types/objectTypes";
 import { containsTemplateExpression } from "@/utils/expressionUtils";
 

@@ -74,7 +74,6 @@ export async function initPerformanceMonitoring(): Promise<void> {
     trackUserInteractions: true,
     trackResources: true,
     trackLongTasks: true,
-    trackFrustrations: true,
     defaultPrivacyLevel: "mask",
     // From the docs, it would appear that useCrossSiteSessionCookie would enable support for iframes like the
     // sidebar and page editor. But in reality, it breaks the Extension Console tracking too.
