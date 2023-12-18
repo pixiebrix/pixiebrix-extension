@@ -78,8 +78,8 @@ const popupSlice = createSlice({
   },
 });
 
-// A bit of hack to determine if we're in a context where autosuggest is supported. Used to prevent autosuggest from
-// breaking service configuration.
+// Shouldn't be necessary given FieldRuntimeContext. But it's a good safety check because allowExpressions defaults
+// to true in the FieldRuntimeContext.
 const selectAnalysisSliceExists = (state: UnknownObject) =>
   Boolean(state.analysis);
 
