@@ -22,17 +22,19 @@ import {
   useReducer,
   type MutableRefObject,
   useCallback,
+  useContext,
 } from "react";
 import {
   getLikelyVariableAtPosition,
   getVariableAtPosition,
 } from "@/components/fields/schemaFields/widgets/varPopup/likelyVariableUtils";
 import { type FieldInputMode } from "@/components/fields/schemaFields/fieldInputMode";
-import { type UnknownObject } from "@/types/objectTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import useDebouncedEffect from "@/hooks/useDebouncedEffect";
 
 import { waitAnimationFrame } from "@/utils/domUtils";
+import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
+import type { UnknownObject } from "@/types/objectTypes";
 
 type Props = {
   inputMode: FieldInputMode;
@@ -76,8 +78,8 @@ const popupSlice = createSlice({
   },
 });
 
-// A bit of hack to determine if we're in a context where autosuggest is supported. Used to prevent autosuggest from
-// breaking service configuration.
+// Shouldn't be necessary given FieldRuntimeContext. But it's a good safety check because allowExpressions defaults
+// to true in the FieldRuntimeContext.
 const selectAnalysisSliceExists = (state: UnknownObject) =>
   Boolean(state.analysis);
 
@@ -86,13 +88,16 @@ const selectAnalysisSliceExists = (state: UnknownObject) =>
  */
 function useAttachPopup({ inputMode, inputElementRef, value }: Props) {
   const analysisSliceExists = useSelector(selectAnalysisSliceExists);
+  const { allowExpressions } = useContext(FieldRuntimeContext);
   const { varAutosuggest } = useSelector(selectSettings);
+
   const [{ isMenuShowing, likelyVariable }, dispatch] = useReducer(
     popupSlice.reducer,
     initialState,
   );
 
-  const autosuggestEnabled = varAutosuggest && analysisSliceExists;
+  const autosuggestEnabled =
+    varAutosuggest && allowExpressions && analysisSliceExists;
 
   const isMenuAvailable =
     (inputMode === "var" || inputMode === "string") && autosuggestEnabled;

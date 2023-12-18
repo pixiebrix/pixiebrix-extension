@@ -62,6 +62,7 @@ import type { RegistryProtocol } from "@/registry/memoryRegistry";
 import type { RegistryId } from "@/types/registryTypes";
 import RunBrickByIdTransformer from "@/bricks/transformers/RunBrickByIdTransformer";
 import GetBrickInterfaceTransformer from "@/bricks/transformers/GetBrickInterfaceTransformer";
+import RunMetadataTransformer from "@/bricks/transformers/RunMetadataTransformer";
 
 function getAllTransformers(
   registry: RegistryProtocol<RegistryId, Brick>,
@@ -105,6 +106,7 @@ function getAllTransformers(
     // Reflection/Meta Bricks
     new RunBrickByIdTransformer(registry),
     new GetBrickInterfaceTransformer(registry),
+    new RunMetadataTransformer(),
 
     // Control Flow Bricks
     new ForEach(),

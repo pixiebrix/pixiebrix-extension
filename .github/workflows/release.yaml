@@ -39,12 +39,14 @@ jobs:
           AWS_DEFAULT_REGION: "us-east-2"
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
       - name: Save extension
-        uses: ./.github/actions/upload-zipped-artifact
+        uses: actions/upload-artifact@v4
         with:
           name: build-for-store
-          directory: dist
-          exclusions: "*.map"
+          path: |
+            dist
+            !dist/**/*.map
           retention-days: 5
+          if-no-files-found: error
 
   build:
     runs-on: ubuntu-latest
@@ -76,12 +78,14 @@ jobs:
           AWS_DEFAULT_REGION: "us-east-2"
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
       - name: Save extension
-        uses: ./.github/actions/upload-zipped-artifact
+        uses: actions/upload-artifact@v4
         with:
           name: build-production
-          directory: dist
-          exclusions: "*.map"
+          path: |
+            dist
+            !dist/**/*.map
           retention-days: 30
+          if-no-files-found: error
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
         env:
