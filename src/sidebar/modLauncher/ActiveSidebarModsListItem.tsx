@@ -90,7 +90,8 @@ const ActiveSidebarModsListItem: React.FunctionComponent<{
       <DelayedDefaultIcon />
     </div>
   );
-  // Prefer emoji icon
+
+  // Prefer emoji icon over mod icon
   if (emojiIcon) {
     icon = <div className={styles.emojiIcon}>{emojiIcon}</div>;
   } else if (mod) {
@@ -102,7 +103,6 @@ const ActiveSidebarModsListItem: React.FunctionComponent<{
   }
 
   return (
-    // Pass noIcon style if mod is nullish to enforce standard width
     <ListGroup.Item className={styles.root} onClick={onClick}>
       {icon}
       <h5 className={styles.lineClampOneLine}>{title}</h5>
