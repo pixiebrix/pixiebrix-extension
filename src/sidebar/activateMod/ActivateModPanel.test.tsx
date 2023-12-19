@@ -311,7 +311,7 @@ describe("ActivateModPanel", () => {
     );
   });
 
-  it("activates recipe automatically with required integration dependency and built-in auth option and renders well-done page", async () => {
+  it("activates mod automatically with required integration dependency and built-in auth option and renders well-done page", async () => {
     const { remoteConfig, integrationDefinition } =
       generateIntegrationAndRemoteConfig();
     appApiMock.onGet("/api/services/shared/").reply(200, [remoteConfig]);
@@ -355,7 +355,7 @@ describe("ActivateModPanel", () => {
     );
   });
 
-  it("activates recipe automatically with optional integration dependency and built-in auth option and renders well-done page", async () => {
+  it("activates mod automatically with optional integration dependency and built-in auth option and renders well-done page", async () => {
     const { remoteConfig, integrationDefinition } =
       generateIntegrationAndRemoteConfig();
     // Include the remote auth option
@@ -400,7 +400,7 @@ describe("ActivateModPanel", () => {
     );
   });
 
-  it("does not activate recipe automatically when required integration does not have built-in config available", async () => {
+  it("does not activate mod automatically when required integration does not have built-in config available", async () => {
     const { integrationDefinition } = generateIntegrationAndRemoteConfig();
     // Don't include the remote auth option
     appApiMock.onGet("/api/services/shared/").reply(200, []);
