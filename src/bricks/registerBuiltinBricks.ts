@@ -21,19 +21,19 @@ import getAllRenderers from "./renderers/getAllRenderers";
 import getAllReaders, {
   registerReaderFactories,
 } from "@/bricks/readers/getAllReaders";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 
 let registered = false;
 
-function registerBuiltinBlocks() {
+function registerBuiltinBricks(): void {
   if (registered) {
     console.warn(
-      "registerBuiltinBlocks already called; multiple calls are unnecessary and may impact startup performance",
+      "registerBuiltinBricks already called; multiple calls are unnecessary and may impact startup performance",
     );
   }
 
-  blockRegistry.register([
-    ...getAllTransformers(),
+  brickRegistry.register([
+    ...getAllTransformers(brickRegistry),
     ...getAllEffects(),
     ...getAllRenderers(),
     ...getAllReaders(),
@@ -44,4 +44,4 @@ function registerBuiltinBlocks() {
   registered = true;
 }
 
-export default registerBuiltinBlocks;
+export default registerBuiltinBricks;

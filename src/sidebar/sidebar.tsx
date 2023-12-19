@@ -28,7 +28,7 @@ import registerMessenger from "@/sidebar/messenger/registration";
 import App from "@/sidebar/SidebarApp";
 import ReactDOM from "react-dom";
 import React from "react";
-import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import { initToaster } from "@/utils/notify";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
@@ -44,7 +44,7 @@ void initRuntimeLogging();
 void initPerformanceMonitoring();
 registerMessenger();
 registerContribBlocks();
-registerBuiltinBlocks();
+registerBuiltinBricks();
 initToaster();
 init();
 

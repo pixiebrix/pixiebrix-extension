@@ -3,7 +3,7 @@ import { render } from "@/pageEditor/testHelpers";
 import TriggerConfiguration from "@/pageEditor/tabs/trigger/TriggerConfiguration";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import { screen } from "@testing-library/react";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -11,7 +11,7 @@ import userEvent from "@testing-library/user-event";
 import CustomEventEffect from "@/bricks/effects/customEvent";
 
 beforeAll(() => {
-  registerBuiltinBlocks();
+  registerBuiltinBricks();
   registerDefaultWidgets();
 });
 
