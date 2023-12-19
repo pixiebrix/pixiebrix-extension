@@ -272,15 +272,17 @@ export async function find(
     // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
     const timestamp = new Date();
     const data = await fetch<RegistryPackage>(`/api/registry/bricks/${id}`);
-    const packageVersion: PackageVersion = {
+    const fetchResult: PackageVersion = {
       ...parsePackage(data),
       // Use the timestamp the call was initiated, not the timestamp received. That prevents missing any updates
       // that were made during the call.
       timestamp,
     };
     const tx = db.transaction(BRICK_STORE, "readwrite");
-    await tx.store.put(packageVersion);
+    await tx.store.put(fetchResult);
     await tx.done;
+
+    return fetchResult;
   } finally {
     db.close();
   }
