@@ -39,6 +39,53 @@ import { propertiesToSchema } from "@/validators/generic";
 import sanitize from "@/utils/sanitize";
 import { BusinessError } from "@/errors/businessErrors";
 
+async function convert({
+  input,
+  sourceFormat,
+  targetFormat,
+}: {
+  input: string;
+  sourceFormat: "html" | "markdown";
+  targetFormat: "text" | "html";
+}): Promise<string> {
+  if (sourceFormat === targetFormat) {
+    return input;
+  }
+
+  if (sourceFormat === "html" && targetFormat === "text") {
+    const { convert } = await import(
+      /* webpackChunkName: "html-to-text" */ "html-to-text"
+    );
+
+    return convert(input);
+  }
+
+  if (sourceFormat === "markdown" && targetFormat === "html") {
+    const { marked } = await import(
+      /* webpackChunkName: "markdown" */ "marked"
+    );
+
+    return sanitize(String(marked(input)));
+  }
+
+  if (sourceFormat === "markdown" && targetFormat === "text") {
+    // Chain the conversions
+    const html = await convert({
+      input,
+      sourceFormat: "markdown",
+      targetFormat: "html",
+    });
+
+    return convert({
+      input: html,
+      sourceFormat: "html",
+      targetFormat: "text",
+    });
+  }
+
+  throw new BusinessError("Unsupported conversion");
+}
+
 class ConvertDocument extends TransformerABC {
   constructor() {
     super(
@@ -97,35 +144,15 @@ class ConvertDocument extends TransformerABC {
     sourceFormat: "html" | "markdown";
     targetFormat: "text" | "html";
   }>): Promise<unknown> {
-    if (sourceFormat === targetFormat) {
-      return {
-        output: input,
-      };
-    }
+    const output = await convert({
+      input,
+      sourceFormat,
+      targetFormat,
+    });
 
-    if (sourceFormat === "html" && targetFormat === "text") {
-      const { convert } = await import(
-        /* webpackChunkName: "html-to-text" */ "html-to-text"
-      );
-
-      const text = convert(input);
-
-      return {
-        output: text,
-      };
-    }
-
-    if (sourceFormat === "markdown" && targetFormat === "html") {
-      const { marked } = await import(
-        /* webpackChunkName: "markdown" */ "marked"
-      );
-
-      return {
-        output: sanitize(String(marked(input))),
-      };
-    }
-
-    throw new BusinessError("Unsupported conversion");
+    return {
+      output,
+    };
   }
 }
 
