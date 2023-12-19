@@ -56,11 +56,14 @@ describe("upgradePipelineToV3 tests", () => {
     "upgrade %s var",
     async (type) => {
       const id = defineBlock(
-        propertiesToSchema({
-          prop: {
-            type: type as any,
+        propertiesToSchema(
+          {
+            prop: {
+              type: type as any,
+            },
           },
-        }),
+          ["prop"],
+        ),
       );
 
       const upgraded = await upgradePipelineToV3([
@@ -85,14 +88,17 @@ describe("upgradePipelineToV3 tests", () => {
 
   test("upgrade literals", async () => {
     const id = defineBlock(
-      propertiesToSchema({
-        booleanProp: {
-          type: "boolean",
+      propertiesToSchema(
+        {
+          booleanProp: {
+            type: "boolean",
+          },
+          numberProp: {
+            type: "number",
+          },
         },
-        numberProp: {
-          type: "number",
-        },
-      }),
+        ["booleanProp", "numberProp"],
+      ),
     );
 
     const config = {
@@ -111,7 +117,7 @@ describe("upgradePipelineToV3 tests", () => {
   });
 
   test("upgrade conditional", async () => {
-    const id = defineBlock(propertiesToSchema({}));
+    const id = defineBlock(propertiesToSchema({}, []));
 
     const upgraded = await upgradePipelineToV3([
       { id, config: {}, if: "@foo" },
@@ -127,7 +133,7 @@ describe("upgradePipelineToV3 tests", () => {
   });
 
   test("upgrade nunjucks conditional", async () => {
-    const id = defineBlock(propertiesToSchema({}));
+    const id = defineBlock(propertiesToSchema({}, []));
 
     const upgraded = await upgradePipelineToV3([
       { id, config: {}, if: "{{ @foo }}", templateEngine: "nunjucks" },
@@ -144,12 +150,15 @@ describe("upgradePipelineToV3 tests", () => {
 
   test("ignore selector", async () => {
     const id = defineBlock(
-      propertiesToSchema({
-        selector: {
-          type: "string",
-          format: "selector",
+      propertiesToSchema(
+        {
+          selector: {
+            type: "string",
+            format: "selector",
+          },
         },
-      }),
+        ["selector"],
+      ),
     );
 
     const config = {
@@ -168,16 +177,19 @@ describe("upgradePipelineToV3 tests", () => {
 
   test("nested object", async () => {
     const id = defineBlock(
-      propertiesToSchema({
-        parent: {
-          type: "object",
-          properties: {
-            childString: {
-              type: "string",
+      propertiesToSchema(
+        {
+          parent: {
+            type: "object",
+            properties: {
+              childString: {
+                type: "string",
+              },
             },
           },
         },
-      }),
+        ["parent"],
+      ),
     );
 
     const upgraded = await upgradePipelineToV3([
@@ -374,19 +386,22 @@ describe("upgradePipelineToV3 tests", () => {
 
   test("nested array", async () => {
     const id = defineBlock(
-      propertiesToSchema({
-        parent: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              itemString: {
-                type: "string",
+      propertiesToSchema(
+        {
+          parent: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                itemString: {
+                  type: "string",
+                },
               },
             },
           },
         },
-      }),
+        ["parent"],
+      ),
     );
 
     const upgraded = await upgradePipelineToV3([
@@ -414,24 +429,27 @@ describe("upgradePipelineToV3 tests", () => {
 
   test("nested array with items array", async () => {
     const id = defineBlock(
-      propertiesToSchema({
-        parent: {
-          type: "array",
-          items: [
-            {
-              type: "string",
-            },
-            {
-              type: "object",
-              properties: {
-                itemString: {
-                  type: "string",
+      propertiesToSchema(
+        {
+          parent: {
+            type: "array",
+            items: [
+              {
+                type: "string",
+              },
+              {
+                type: "object",
+                properties: {
+                  itemString: {
+                    type: "string",
+                  },
                 },
               },
-            },
-          ],
+            ],
+          },
         },
-      }),
+        ["parent"],
+      ),
     );
 
     const upgraded = await upgradePipelineToV3([
@@ -465,24 +483,27 @@ describe("upgradePipelineToV3 tests", () => {
 
   test("nested array with items array and additionalItems", async () => {
     const id = defineBlock(
-      propertiesToSchema({
-        parent: {
-          type: "array",
-          items: [
-            {
-              type: "object",
-              properties: {
-                itemString: {
-                  type: "string",
+      propertiesToSchema(
+        {
+          parent: {
+            type: "array",
+            items: [
+              {
+                type: "object",
+                properties: {
+                  itemString: {
+                    type: "string",
+                  },
                 },
               },
+            ],
+            additionalItems: {
+              type: "string",
             },
-          ],
-          additionalItems: {
-            type: "string",
           },
         },
-      }),
+        ["parent"],
+      ),
     );
 
     const upgraded = await upgradePipelineToV3([
@@ -518,21 +539,24 @@ describe("upgradePipelineToV3 tests", () => {
 
   test("nested array with additionalItems and oneOf", async () => {
     const id = defineBlock(
-      propertiesToSchema({
-        parent: {
-          type: "array",
-          additionalItems: {
-            oneOf: [
-              {
-                type: "string",
-              },
-              {
-                type: "number",
-              },
-            ],
+      propertiesToSchema(
+        {
+          parent: {
+            type: "array",
+            additionalItems: {
+              oneOf: [
+                {
+                  type: "string",
+                },
+                {
+                  type: "number",
+                },
+              ],
+            },
           },
         },
-      }),
+        ["parent"],
+      ),
     );
 
     const upgraded = await upgradePipelineToV3([
