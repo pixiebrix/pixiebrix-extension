@@ -127,7 +127,6 @@ class FormValidator<
   private transformRJSFValidationErrors(
     errors: OutputUnit[] = [],
   ): RJSFValidationError[] {
-    console.log(errors);
     return errors
       .filter(
         (error) =>

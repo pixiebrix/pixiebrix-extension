@@ -517,6 +517,11 @@ describe("RJSF Tests", () => {
       });
 
       describe("Invalid schema", () => {
+        /* NOTE: Our form builder should produce only valid JSON Schemas
+         * We're still testing the behaviors, but @cfworker/json-schema behaves differently from
+         * AJV6, so we've adjusted some of the tests to match the new behavior.
+         */
+
         let errors: RJSFValidationError[];
         let errorSchema: ErrorSchema;
 
@@ -535,21 +540,20 @@ describe("RJSF Tests", () => {
           errorSchema = result.errorSchema;
         });
 
-        it.skip("should return an error list", () => {
+        it("should return an error list", () => {
           expect(errors).toHaveLength(1);
           expect(errors[0].name).toBe("type");
-          expect(errors[0].property).toBe(".properties['foo'].required");
-          // TODO: This schema path is wrong due to a bug in ajv; change this test when https://github.com/ajv-validator/ajv/issues/512 is fixed.
-          expect(errors[0].schemaPath).toBe("#/definitions/stringArray/type");
-          expect(errors[0].message).toBe("should be array");
+          expect(errors[0].property).toBe("foo");
+          expect(errors[0].schemaPath).toBe("#/foo");
+          expect(errors[0].message).toBe(
+            'Instance type "number" is invalid. Expected "string".',
+          );
         });
 
-        it.skip("should return an errorSchema", () => {
-          expect(errorSchema.properties!.foo!.required!.__errors).toHaveLength(
-            1,
-          );
-          expect(errorSchema.properties!.foo!.required!.__errors[0]).toBe(
-            "should be array",
+        it("should return an errorSchema", () => {
+          expect(errorSchema.foo.__errors).toHaveLength(1);
+          expect(errorSchema.foo.__errors[0]).toBe(
+            'Instance type "number" is invalid. Expected "string".',
           );
         });
       });
