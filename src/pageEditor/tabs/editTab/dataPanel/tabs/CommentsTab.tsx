@@ -17,21 +17,15 @@
 import React from "react";
 import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import { type BrickConfig } from "@/bricks/types";
 import styles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
-// TODO import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
+import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 
 const CommentsTab: React.FunctionComponent<{
-  comments?: BrickConfig["comments"];
-}> = ({ comments }) => (
+  // Formik field name for the comments brick config field
+  fieldName: string;
+}> = ({ fieldName }) => (
   <Tab.Pane eventKey={DataPanelTabKey.Comments} className={styles.tabPane}>
-    <textarea
-      className="form-control"
-      style={{ whiteSpace: "pre-wrap" }}
-      value={comments}
-      placeholder="No comments available"
-    />
-    {/* <TextAreaWidget/> */}
+    <TextWidget name={fieldName} schema={{ type: "string" }} />
   </Tab.Pane>
 );
 

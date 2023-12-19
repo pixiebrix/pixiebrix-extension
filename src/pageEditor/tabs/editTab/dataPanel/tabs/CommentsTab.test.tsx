@@ -21,12 +21,12 @@ import { render, screen } from "@/pageEditor/testHelpers";
 
 describe("CommentsTab", () => {
   it("renders comments", () => {
-    render(<CommentsTab comments="foo" />);
+    render(<CommentsTab fieldName="foo" />);
     expect(screen.getByText("foo")).toBeInTheDocument();
   });
 
   it.each([undefined, ""])("renders message when no comments", (comments) => {
-    render(<CommentsTab comments={comments} />);
+    render(<CommentsTab fieldName="foo" />);
     expect(
       screen.getByPlaceholderText("No comments available"),
     ).toBeInTheDocument();

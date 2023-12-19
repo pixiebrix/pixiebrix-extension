@@ -137,6 +137,7 @@ const DataPanel: React.FC = () => {
   );
 
   const documentBodyName = joinPathParts(brickPath, "config.body");
+  const brickCommentFieldName = joinPathParts(brickPath, "comments");
 
   const outputObj: JsonObject =
     record !== undefined && "output" in record
@@ -398,7 +399,7 @@ const DataPanel: React.FC = () => {
               />
             </ErrorBoundary>
           </DataTab>
-          <CommentsTab comments={brickConfig?.comments} />
+          <CommentsTab fieldName={brickCommentFieldName} />
         </Tab.Content>
       </div>
     </Tab.Container>
