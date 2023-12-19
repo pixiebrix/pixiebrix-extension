@@ -208,7 +208,7 @@ const usePipelineNodes = (): {
 
   const isApiAtLeastV2 = useApiVersionAtLeast("v2");
 
-  const { allBlocks, isLoading } = useAllBricks();
+  const { allBricks, isLoading } = useAllBricks();
 
   const pasteBlock = usePasteBlock();
   const showPaste = pasteBlock && isApiAtLeastV2;
@@ -293,7 +293,7 @@ const usePipelineNodes = (): {
     extensionHasTraces?: boolean;
   }): MapOutput {
     const nodes: EditorNodeProps[] = [];
-    const block = allBlocks.get(blockConfig.id)?.block;
+    const block = allBricks.get(blockConfig.id)?.block;
     const isNodeActive = blockConfig.instanceId === activeNodeId;
 
     const traceRecord = getLatestBrickCall(
@@ -610,7 +610,7 @@ const usePipelineNodes = (): {
     const isRootPipeline = pipelinePath === PIPELINE_BLOCKS_FIELD_NAME;
     const lastIndex = pipeline.length - 1;
     const lastBlockId = pipeline.at(lastIndex)?.id;
-    const lastBlock = lastBlockId ? allBlocks.get(lastBlockId) : undefined;
+    const lastBlock = lastBlockId ? allBricks.get(lastBlockId) : undefined;
     const showAppend = !lastBlock?.block || lastBlock.type !== "renderer";
     const nodes: EditorNodeProps[] = [];
 

@@ -43,27 +43,30 @@ export class Readable extends TransformerABC {
     return true;
   }
 
-  inputSchema: Schema = propertiesToSchema({});
+  inputSchema: Schema = propertiesToSchema({}, []);
 
-  override outputSchema: Schema = propertiesToSchema({
-    content: {
-      type: "string",
-      description: "HTML string of processed article content",
+  override outputSchema: Schema = propertiesToSchema(
+    {
+      content: {
+        type: "string",
+        description: "HTML string of processed article content",
+      },
+      textContent: {
+        type: "string",
+        description:
+          "Text content of the article, with all the HTML tags removed",
+      },
+      length: {
+        type: "number",
+        description: "Length of an article, in characters",
+      },
+      lang: {
+        type: "string",
+        description: "Language of the article",
+      },
     },
-    textContent: {
-      type: "string",
-      description:
-        "Text content of the article, with all the HTML tags removed",
-    },
-    length: {
-      type: "number",
-      description: "Length of an article, in characters",
-    },
-    lang: {
-      type: "string",
-      description: "Language of the article",
-    },
-  });
+    ["content", "textContent", "length", "lang"],
+  );
 
   async transform(
     _args: never,

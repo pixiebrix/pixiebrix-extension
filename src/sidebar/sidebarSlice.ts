@@ -402,6 +402,7 @@ const sidebarSlice = createSlice({
       const entry = action.payload;
       state.modActivationPanel = entry;
       state.activeKey = eventKeyForEntry(entry);
+      state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = true;
     },
     hideModActivationPanel(state) {
       // We don't need to pass in an id to this action, because the can only be one active mod activation panel at a time

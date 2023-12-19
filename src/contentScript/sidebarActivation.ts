@@ -32,6 +32,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getActivatedModIds } from "@/store/extensionsStorage";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 let listener: EventListener | null;
 
@@ -128,8 +129,12 @@ export async function initSidebarActivation(): Promise<void> {
 
   const modIds = await getInProgressModActivation();
 
-  // Do not try to show sidebar activation inside an iframe
-  if (modIds && !isLoadedInIframe()) {
+  // Do not try to show sidebar activation inside an iframe or in the Admin Console
+  if (
+    modIds &&
+    !isLoadedInIframe() &&
+    !document.location.href.includes(DEFAULT_SERVICE_URL)
+  ) {
     await Promise.allSettled([
       // Clear out local storage
       setActivatingMods({ blueprintId: null }),

@@ -16,7 +16,7 @@
  */
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { IdentityTransformer } from "@/bricks/transformers/identity";
+import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { validateInput } from "@/validators/generic";
 import { throwIfInvalidInput } from "@/runtime/runtimeUtils";

@@ -23,7 +23,7 @@ import { type BrickConfig } from "@/bricks/types";
 import { isPlainObject, mapValues } from "lodash";
 import { isExpression } from "@/utils/expressionUtils";
 
-export class IdentityTransformer extends TransformerABC {
+class IdentityTransformer extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/identity");
 
   override async isPure(): Promise<boolean> {
@@ -66,3 +66,5 @@ export class IdentityTransformer extends TransformerABC {
     return args;
   }
 }
+
+export default IdentityTransformer;

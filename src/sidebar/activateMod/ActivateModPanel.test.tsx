@@ -214,18 +214,21 @@ describe("ActivateModPanel", () => {
 
     const { asFragment } = setupMocksAndRender({
       options: {
-        schema: propertiesToSchema({
-          foo: {
-            type: "string",
+        schema: propertiesToSchema(
+          {
+            foo: {
+              type: "string",
+            },
+            bar: {
+              type: "number",
+            },
+            testDatabase: {
+              $ref: "https://app.pixiebrix.com/schemas/database#",
+              title: "Test Database",
+            },
           },
-          bar: {
-            type: "number",
-          },
-          testDatabase: {
-            $ref: "https://app.pixiebrix.com/schemas/database#",
-            title: "Test Database",
-          },
-        }),
+          ["foo", "bar", "testDatabase"],
+        ),
       },
     });
 
@@ -257,13 +260,16 @@ describe("ActivateModPanel", () => {
   it("activates mod with database preview automatically and renders well-done page", async () => {
     const { asFragment } = setupMocksAndRender({
       options: {
-        schema: propertiesToSchema({
-          testDatabase: {
-            $ref: "https://app.pixiebrix.com/schemas/database#",
-            title: "Database",
-            format: "preview",
+        schema: propertiesToSchema(
+          {
+            testDatabase: {
+              $ref: "https://app.pixiebrix.com/schemas/database#",
+              title: "Database",
+              format: "preview",
+            },
           },
-        }),
+          ["testDatabase"],
+        ),
       },
     });
 

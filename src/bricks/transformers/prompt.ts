@@ -48,12 +48,15 @@ export class Prompt extends TransformerABC {
     ["message"],
   );
 
-  override outputSchema: Schema = propertiesToSchema({
-    value: {
-      type: "string",
-      description: "The user-provided value",
+  override outputSchema: Schema = propertiesToSchema(
+    {
+      value: {
+        type: "string",
+        description: "The user-provided value",
+      },
     },
-  });
+    ["value"],
+  );
 
   async transform({
     message,

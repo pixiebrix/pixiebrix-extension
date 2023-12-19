@@ -35,7 +35,7 @@ import VarMap, { VarExistence } from "./varMap";
 import { type TraceRecord } from "@/telemetry/trace";
 import parseTemplateVariables from "./parseTemplateVariables";
 import recipesRegistry from "@/modDefinitions/registry";
-import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
+import blockRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import { type ListDocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { fromJS } from "@/starterBricks/factory";
@@ -405,7 +405,7 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
    * Cache of block definitions to fetch definitions synchronously.
    * @private
    */
-  private allBlocks: TypedBlockMap;
+  private allBlocks: TypedBrickMap;
 
   get id() {
     return "var";

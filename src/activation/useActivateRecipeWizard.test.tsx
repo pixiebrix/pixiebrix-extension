@@ -57,9 +57,12 @@ describe("useActivateRecipeWizard", () => {
         defaultModDefinitionFactory({
           // Page Editor produces normalized form
           options: {
-            schema: propertiesToSchema({
-              foo: { type: "string" },
-            }),
+            schema: propertiesToSchema(
+              {
+                foo: { type: "string" },
+              },
+              ["foo"],
+            ),
           },
         }),
       ),
@@ -101,13 +104,16 @@ describe("useActivateRecipeWizard", () => {
 
   test("sets database preview initial value", async () => {
     const name = "Database";
-    const optionSchema = propertiesToSchema({
-      [name]: {
-        $ref: "https://app.pixiebrix.com/schemas/database#",
-        title: "Database",
-        format: "preview",
+    const optionSchema = propertiesToSchema(
+      {
+        [name]: {
+          $ref: "https://app.pixiebrix.com/schemas/database#",
+          title: "Database",
+          format: "preview",
+        },
       },
-    });
+      [name],
+    );
     const modDefinition = defaultModDefinitionFactory({
       options: {
         schema: optionSchema,
@@ -125,13 +131,16 @@ describe("useActivateRecipeWizard", () => {
 
   test("selects existing preview database", () => {
     const name = "Database";
-    const optionSchema = propertiesToSchema({
-      [name]: {
-        $ref: "https://app.pixiebrix.com/schemas/database#",
-        title: "Database",
-        format: "preview",
+    const optionSchema = propertiesToSchema(
+      {
+        [name]: {
+          $ref: "https://app.pixiebrix.com/schemas/database#",
+          title: "Database",
+          format: "preview",
+        },
       },
-    });
+      [name],
+    );
     const modDefinition = defaultModDefinitionFactory({
       options: {
         schema: optionSchema,

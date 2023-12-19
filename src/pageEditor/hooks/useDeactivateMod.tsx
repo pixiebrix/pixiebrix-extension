@@ -15,9 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { type RegistryId } from "@/types/registryTypes";
-import { useDeactivateModComponent } from "@/pageEditor/hooks/useRemoveModComponent";
+import {
+  DEACTIVATE_MOD_MODAL_PROPS,
+  useRemoveModComponentFromStorage,
+} from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { selectElements } from "@/pageEditor/slices/editorSelectors";
@@ -37,7 +40,7 @@ type Config = {
  */
 function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
-  const deactivateModComponent = useDeactivateModComponent();
+  const removeModComponentFromStorage = useRemoveModComponentFromStorage();
   const extensions = useSelector(selectExtensions);
   const elements = useSelector(selectElements);
   const { showConfirmation } = useModals();
@@ -45,20 +48,7 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
   return useCallback(
     async ({ modId, shouldShowConfirmation = true }) => {
       if (shouldShowConfirmation) {
-        const confirmed = await showConfirmation({
-          title: "Deactivate Mod?",
-          message: (
-            <>
-              This action will deactivate the mod and remove it from the Page
-              Editor. You can reactivate or delete mods from the{" "}
-              <a href="/options.html" target="_blank">
-                PixieBrix Extension Console
-              </a>
-              .
-            </>
-          ),
-          submitCaption: "Deactivate",
-        });
+        const confirmed = await showConfirmation(DEACTIVATE_MOD_MODAL_PROPS);
 
         if (!confirmed) {
           return;
@@ -72,9 +62,8 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
       );
       await Promise.all(
         extensionIds.map(async (extensionId) =>
-          deactivateModComponent({
+          removeModComponentFromStorage({
             extensionId,
-            shouldShowConfirmation: false,
           }),
         ),
       );
@@ -85,7 +74,13 @@ function useDeactivateMod(): (useDeactivateConfig: Config) => Promise<void> {
 
       dispatch(actions.removeRecipeData(modId));
     },
-    [dispatch, elements, extensions, deactivateModComponent, showConfirmation],
+    [
+      dispatch,
+      elements,
+      extensions,
+      useRemoveModComponentFromStorage,
+      showConfirmation,
+    ],
   );
 }
 

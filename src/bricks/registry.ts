@@ -32,7 +32,7 @@ export type TypedBrickPair = {
   type: BrickType;
 };
 
-export type TypedBlockMap = Map<RegistryId, TypedBrickPair>;
+export type TypedBrickMap = Map<RegistryId, TypedBrickPair>;
 
 /**
  * In-memory registry of bricks. Includes both user-defined and built-in bricks.
@@ -51,14 +51,14 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
   }
 
   // Write as single promise vs. promise + cache to avoid race conditions in invalidation logic
-  private typeCachePromise: Promise<TypedBlockMap> = null;
+  private typeCachePromise: Promise<TypedBrickMap> = null;
 
   /**
    * Infer the type of all blocks in the registry. Uses the brick cache if available.
    * @private
    */
-  private async inferAllTypes(): Promise<TypedBlockMap> {
-    const typeCache: TypedBlockMap = new Map();
+  private async inferAllTypes(): Promise<TypedBrickMap> {
+    const typeCache: TypedBrickMap = new Map();
 
     const items = this.isCachedInitialized ? this.cached : await this.all();
 
@@ -91,7 +91,7 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
    * @see cached
    */
   // eslint-disable-next-line @typescript-eslint/promise-function-async -- async returns different promise ids
-  allTyped(): Promise<TypedBlockMap> {
+  allTyped(): Promise<TypedBrickMap> {
     if (this.typeCachePromise == null) {
       const promise = this.inferAllTypes();
       this.typeCachePromise = promise;

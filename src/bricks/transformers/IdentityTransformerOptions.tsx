@@ -12,7 +12,7 @@ const ANY_SCHEMA: Schema = {
 /**
  * Page Editor fields for the @pixiebrix/identity brick.
  */
-const IdentityOptions: React.FunctionComponent<BlockOptionProps> = ({
+const IdentityTransformerOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
 }) => (
@@ -25,4 +25,4 @@ const IdentityOptions: React.FunctionComponent<BlockOptionProps> = ({
   />
 );
 
-export default IdentityOptions;
+export default IdentityTransformerOptions;

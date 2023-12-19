@@ -18,22 +18,34 @@
 import React, { useMemo } from "react";
 import sanitize from "@/utils/sanitize";
 import { marked } from "marked";
+import type { Config } from "dompurify";
 
 export type MarkdownProps = {
   markdown: string | null;
   as?: React.ElementType;
   className?: string;
+  /**
+   * DOMPurify config to use when sanitizing HTML produced by the markdown.
+   *
+   * https://github.com/cure53/DOMPurify?tab=readme-ov-file#can-i-configure-dompurify
+   *
+   * @since 1.8.5
+   */
+  purifyConfig?: Config;
 };
 
 const Markdown: React.FunctionComponent<MarkdownProps> = ({
   markdown,
   as: As = "div",
   className,
+  purifyConfig,
 }) => {
   const content = useMemo(
     () =>
-      typeof markdown === "string" ? sanitize(String(marked(markdown))) : null,
-    [markdown],
+      typeof markdown === "string"
+        ? sanitize(String(marked(markdown)), purifyConfig)
+        : null,
+    [markdown, purifyConfig],
   );
 
   return (

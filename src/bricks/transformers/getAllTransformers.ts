@@ -21,7 +21,7 @@ import { GetAPITransformer } from "./httpGet";
 import { RemoteMethod } from "./remoteMethod";
 import { RegexTransformer } from "./regex";
 import { MappingTransformer } from "./mapping";
-import { IdentityTransformer } from "./identity";
+import IdentityTransformer from "./IdentityTransformer";
 import { UrlParser } from "./parseUrl";
 import { FormData } from "./FormData";
 import { Prompt } from "./prompt";
@@ -58,6 +58,7 @@ import ConvertDocument from "@/bricks/transformers/convertDocument";
 import { SearchText } from "@/bricks/transformers/searchText";
 import { WithAsyncModVariable } from "@/bricks/transformers/controlFlow/WithAsyncModVariable";
 import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
+import RunMetadataTransformer from "@/bricks/transformers/RunMetadataTransformer";
 
 function getAllTransformers(): Brick[] {
   return [
@@ -95,6 +96,9 @@ function getAllTransformers(): Brick[] {
     new TraverseElements(),
     new SelectElement(),
     new ExtensionDiagnostics(),
+
+    // Reflection
+    new RunMetadataTransformer(),
 
     // Control Flow Bricks
     new ForEach(),

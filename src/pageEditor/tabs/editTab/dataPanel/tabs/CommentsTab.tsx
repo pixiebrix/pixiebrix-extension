@@ -14,30 +14,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import React from "react";
+import { Tab } from "react-bootstrap";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { type BrickConfig } from "@/bricks/types";
+import styles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 
-import { RendererABC } from "@/types/bricks/rendererTypes";
-import { propertiesToSchema } from "@/validators/generic";
-import sanitize from "@/utils/sanitize";
-import { type BrickArgs } from "@/types/runtimeTypes";
-import { type SafeHTML } from "@/types/stringTypes";
+const CommentsTab: React.FunctionComponent<{
+  comments?: BrickConfig["comments"];
+}> = ({ comments }) => (
+  <Tab.Pane eventKey={DataPanelTabKey.Comments} className={styles.tabPane}>
+    {comments ? (
+      <p>{comments}</p>
+    ) : (
+      <em className="text-muted">No comments available</em>
+    )}
+  </Tab.Pane>
+);
 
-export class HtmlRenderer extends RendererABC {
-  constructor() {
-    super(
-      "@pixiebrix/html",
-      "HTML Renderer",
-      "Render HTML, sanitizing it first",
-    );
-  }
-
-  inputSchema = propertiesToSchema({
-    html: {
-      type: "string",
-      description: "The HTML string to render",
-    },
-  });
-
-  async render({ html }: BrickArgs<{ html: string }>): Promise<SafeHTML> {
-    return sanitize(html);
-  }
-}
+export default CommentsTab;

@@ -15,22 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getDefaultRegistry } from "@rjsf/core";
 import React from "react";
-import FormPreviewFieldTemplate, {
-  type FormPreviewFieldProps,
-} from "./FormPreviewFieldTemplate";
-import styles from "./FormPreviewBooleanField.module.scss";
+import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
+import { render, screen } from "@/pageEditor/testHelpers";
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Loose types
-const RjsfBooleanField = getDefaultRegistry().fields.BooleanField!;
+describe("CommentsTab", () => {
+  it("renders comments", () => {
+    render(<CommentsTab comments="foo" />);
+    expect(screen.getByText("foo")).toBeInTheDocument();
+  });
 
-const FormPreviewBooleanField: React.FC<FormPreviewFieldProps> = (props) => (
-  <FormPreviewFieldTemplate
-    as={RjsfBooleanField}
-    className={styles.root}
-    {...props}
-  />
-);
-
-export default FormPreviewBooleanField;
+  it.each([undefined, ""])("renders message when no comments", (comments) => {
+    render(<CommentsTab comments={comments} />);
+    expect(screen.getByText("No comments available")).toBeInTheDocument();
+  });
+});

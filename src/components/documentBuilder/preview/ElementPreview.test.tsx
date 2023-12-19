@@ -27,7 +27,7 @@ import ElementPreview, {
 } from "@/components/documentBuilder/preview/ElementPreview";
 import { fireEvent, screen } from "@testing-library/react";
 import { defaultBrickConfig } from "@/bricks/util";
-import { MarkdownRenderer } from "@/bricks/renderers/markdown";
+import MarkdownRenderer from "@/bricks/renderers/MarkdownRenderer";
 import { type PipelineExpression } from "@/types/runtimeTypes";
 import { render } from "@/pageEditor/testHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
