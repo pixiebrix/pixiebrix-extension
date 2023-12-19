@@ -34,6 +34,7 @@ import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { type UnknownObject } from "@/types/objectTypes";
+import { cloneDeep } from "lodash";
 
 const fields = {
   DescriptionField,
@@ -98,7 +99,10 @@ const CustomFormComponent: React.FunctionComponent<{
             }}
           >
             <JsonSchemaForm
-              schema={schema}
+              // Deep clone the schema because otherwise the schema is not extensible
+              // This breaks validation when @cfworker/json-schema dereferences the schema
+              // See https://github.com/cfworker/cfworker/blob/263260ea661b6f8388116db7b8daa859e0d28b25/packages/json-schema/src/dereference.ts#L115
+              schema={cloneDeep(schema)}
               uiSchema={uiSchema}
               formData={formData}
               fields={fields}
