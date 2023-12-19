@@ -39,10 +39,9 @@ import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinition
 import { registry, services } from "@/background/messenger/api";
 import { refreshServices } from "@/background/locator";
 import { clear, find, syncPackages } from "@/registry/packageRegistry";
-import Loader from "@/components/Loader";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import { produce } from "immer";
+import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 
 jest.mock("@/hooks/auth", () => ({
   useAuthOptions: jest.fn(),
@@ -115,7 +114,7 @@ const integrationDefinition2 = produce(_integrationDefinition2, (draft) => {
   draft.metadata.id = integrationId2;
 });
 
-beforeAll(() => {
+beforeAll(async () => {
   // These are only used for the service names in the descriptors
   appApiMock
     .onGet("/api/services/")
@@ -129,6 +128,8 @@ beforeAll(() => {
   jest.mocked(registry.syncRemote).mockImplementation(syncPackages);
   jest.mocked(registry.find).mockImplementation(find);
   jest.mocked(registry.clear).mockImplementation(clear);
+
+  await refreshRegistries();
 });
 
 afterAll(() => {
@@ -165,26 +166,6 @@ async function expectFieldToBeHidden(integration: IntegrationDefinition) {
   ).not.toBeInTheDocument();
 }
 
-const Content: React.FC<{
-  blueprint: ModDefinition;
-  showOwnTitle?: boolean;
-  hideBuiltInIntegrations?: boolean;
-}> = ({ blueprint, showOwnTitle, hideBuiltInIntegrations }) => {
-  const [loaded] = useRefreshRegistries();
-
-  if (!loaded) {
-    return <Loader />;
-  }
-
-  return (
-    <IntegrationsBody
-      mod={blueprint}
-      showOwnTitle={showOwnTitle}
-      hideBuiltInIntegrations={hideBuiltInIntegrations}
-    />
-  );
-};
-
 function renderContent({
   modDefinition = defaultModDefinitionFactory(),
   integrationDependencies = [],
@@ -197,8 +178,8 @@ function renderContent({
   hideBuiltInIntegrations?: boolean;
 }) {
   render(
-    <Content
-      blueprint={modDefinition}
+    <IntegrationsBody
+      mod={modDefinition}
       showOwnTitle={showOwnTitle}
       hideBuiltInIntegrations={hideBuiltInIntegrations}
     />,

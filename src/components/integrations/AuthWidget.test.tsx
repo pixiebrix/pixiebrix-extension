@@ -28,11 +28,10 @@ import {
 import { type AuthOption } from "@/auth/authTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import selectEvent from "react-select-event";
-import useRefreshRegistries from "@/hooks/useRefreshRegistries";
+import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { registry, services } from "@/background/messenger/api";
 import { refreshServices } from "@/background/locator";
-import Loader from "@/components/Loader";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
 const { remoteConfig, integrationDefinition } =
@@ -54,7 +53,7 @@ const authOption2: AuthOption = {
   sharingType: "shared",
 };
 
-beforeAll(() => {
+beforeAll(async () => {
   registerDefaultWidgets();
   appApiMock.onGet("/api/services/").reply(200, [integrationDefinition]);
   appApiMock.onGet("/api/services/shared/").reply(200, [remoteConfig]);
@@ -64,35 +63,28 @@ beforeAll(() => {
   jest.mocked(registry.syncRemote).mockImplementation(syncPackages);
   jest.mocked(registry.find).mockImplementation(find);
   jest.mocked(registry.clear).mockImplementation(clear);
+
+  await refreshRegistries();
 });
 
 afterAll(() => {
   appApiMock.reset();
 });
 
-const Content: React.FC<{ authOptions: AuthOption[] }> = ({ authOptions }) => {
-  const [loaded] = useRefreshRegistries();
-
-  if (!loaded) {
-    return <Loader />;
-  }
-
-  return (
+function renderContent(...authOptions: AuthOption[]) {
+  render(
     <AuthWidget
       name="testField"
       integrationId={integrationDefinition.metadata.id}
       authOptions={authOptions}
       onRefresh={jest.fn()}
-    />
-  );
-};
-
-function renderContent(...authOptions: AuthOption[]) {
-  render(<Content authOptions={authOptions} />, {
-    initialValues: {
-      testField: null,
+    />,
+    {
+      initialValues: {
+        testField: null,
+      },
     },
-  });
+  );
 }
 
 describe("AuthWidget", () => {
