@@ -44,7 +44,7 @@ const ModComponentListItem: React.FunctionComponent<
   isModComponentBase(modComponent) ? (
     <ActivatedModComponentListItem
       key={`installed-${modComponent.id}`}
-      modComponentBase={modComponent}
+      modComponent={modComponent}
       mods={mods}
       isAvailable={
         !availableInstalledIds ||

@@ -55,26 +55,26 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
  * @see DynamicModComponentListItem
  */
 const ActivatedModComponentListItem: React.FunctionComponent<{
-  modComponentBase: ModComponentBase;
+  modComponent: ModComponentBase;
   mods: ModDefinition[];
   isAvailable: boolean;
   isNested?: boolean;
-}> = ({ modComponentBase, mods, isAvailable, isNested = false }) => {
+}> = ({ modComponent, mods, isAvailable, isNested = false }) => {
   const sessionId = useSelector(selectSessionId);
   const dispatch = useDispatch();
   const [type] = useAsyncState(
-    async () => selectType(modComponentBase),
-    [modComponentBase.extensionPointId],
+    async () => selectType(modComponent),
+    [modComponent.extensionPointId],
   );
 
   const activeRecipeId = useSelector(selectActiveRecipeId);
   const activeElement = useSelector(selectActiveElement);
-  const isActive = activeElement?.uuid === modComponentBase.id;
+  const isActive = activeElement?.uuid === modComponent.id;
   // Get the selected recipe id, or the recipe id of the selected item
   const recipeId = activeRecipeId ?? activeElement?.recipe?.id;
   // Set the alternate background if this item isn't active, but either its recipe or another item in its recipe is active
   const hasRecipeBackground =
-    !isActive && recipeId && modComponentBase._recipe?.id === recipeId;
+    !isActive && recipeId && modComponent._recipe?.id === recipeId;
 
   const selectHandler = useCallback(
     async (modComponentBase: ModComponentBase) => {
@@ -124,12 +124,12 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
       })}
       action
       active={isActive}
-      key={`installed-${modComponentBase.id}`}
+      key={`installed-${modComponent.id}`}
       onMouseEnter={
-        isButton ? async () => showOverlay(modComponentBase.id) : undefined
+        isButton ? async () => showOverlay(modComponent.id) : undefined
       }
       onMouseLeave={isButton ? async () => hideOverlay() : undefined}
-      onClick={async () => selectHandler(modComponentBase)}
+      onClick={async () => selectHandler(modComponent)}
     >
       <span
         className={cx(styles.icon, {
@@ -139,7 +139,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
         <ExtensionIcon type={type} />
       </span>
       <span className={styles.name}>
-        {modComponentBase.label ?? modComponentBase.id}
+        {modComponent.label ?? modComponent.id}
       </span>
       {!isAvailable && (
         <span className={styles.icon}>

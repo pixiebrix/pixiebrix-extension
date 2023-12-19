@@ -48,7 +48,7 @@ describe("ActivatedModComponentListItem", () => {
     const formState = formStateFactory();
     const { asFragment } = render(
       <ActivatedModComponentListItem
-        modComponentBase={modComponent}
+        modComponent={modComponent}
         mods={[]}
         isAvailable
       />,
@@ -77,7 +77,7 @@ describe("ActivatedModComponentListItem", () => {
     const formState = formStateFactory();
     const { asFragment } = render(
       <ActivatedModComponentListItem
-        modComponentBase={modComponent}
+        modComponent={modComponent}
         mods={[]}
         isAvailable
       />,
