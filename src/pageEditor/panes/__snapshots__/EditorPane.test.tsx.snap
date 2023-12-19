@@ -2340,6 +2340,7 @@ exports[`renders the first selected node 1`] = `
                     <div
                       aria-hidden="true"
                       class="fade tabPane tab-pane"
+                      data-testid="comments-tab-pane"
                       role="tabpanel"
                     >
                       <textarea

@@ -25,24 +25,38 @@ import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import userEvent from "@testing-library/user-event";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 
 const reportEventMock = jest.mocked(reportEvent);
 
 const commentsFieldName = "extension.blockPipeline.0.comments";
 const initialComments = "Hello world!";
-const formStateWithComments = menuItemFormStateFactory({}, [
-  brickConfigFactory({
-    comments: initialComments,
-  }),
-]);
+const formStateWithComments = menuItemFormStateFactory(
+  {
+    recipe: modMetadataFactory(),
+  },
+  [
+    brickConfigFactory({
+      comments: initialComments,
+    }),
+  ],
+);
 
-const formStateWithNoComments = menuItemFormStateFactory();
-const renderCommentsTab = (formState = formStateWithComments) =>
+const formStateWithNoComments = menuItemFormStateFactory({}, [
+  brickConfigFactory(),
+]);
+const renderCommentsTab = (formState = formStateWithComments) => {
+  const brickId = formState.extension.blockPipeline[0].id;
   render(
     <Formik onSubmit={jest.fn()} initialValues={formState}>
-      <CommentsTab brickCommentsFieldName={commentsFieldName} />
+      <CommentsTab
+        brickId={brickId}
+        brickCommentsFieldName={commentsFieldName}
+        modId={formState.recipe?.id}
+      />
     </Formik>,
   );
+};
 
 describe("CommentsTab", () => {
   it("renders comments", () => {
@@ -66,9 +80,36 @@ describe("CommentsTab", () => {
 
     // Trigger onBlur event for the textarea
     await userEvent.click(screen.getByTestId("comments-tab-pane"));
+    const expectedBrickId =
+      formStateWithNoComments.extension.blockPipeline[0].id;
 
     expect(reportEventMock).toHaveBeenCalledWith(Events.BRICK_COMMENTS_UPDATE, {
       commentsLength: newComments.length,
+      brickId: expectedBrickId,
+      modId: undefined,
+    });
+  });
+
+  it("reports telemetry with mod id if available", async () => {
+    renderCommentsTab(formStateWithComments);
+    const textArea = screen.getByTestId(
+      `comments-text-area-${commentsFieldName}`,
+    );
+
+    const newComments = "I am a comment!";
+    const expectedComments = `${initialComments}${newComments}`;
+    await userEvent.type(textArea, newComments);
+
+    expect(textArea).toHaveValue(expectedComments);
+
+    // Trigger onBlur event for the textarea
+    await userEvent.click(screen.getByTestId("comments-tab-pane"));
+    const expectedBrickId = formStateWithComments.extension.blockPipeline[0].id;
+
+    expect(reportEventMock).toHaveBeenCalledWith(Events.BRICK_COMMENTS_UPDATE, {
+      commentsLength: expectedComments.length,
+      brickId: expectedBrickId,
+      modId: formStateWithComments.recipe.id,
     });
   });
 });

@@ -21,15 +21,19 @@ import styles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import { Events } from "@/telemetry/events";
 import reportEvent from "@/telemetry/reportEvent";
+import { type RegistryId } from "@/types/registryTypes";
 
 const CommentsTab: React.FunctionComponent<{
+  brickId: RegistryId;
   brickCommentsFieldName: string;
-}> = ({ brickCommentsFieldName }) => {
-  // TODO: add mod id and brick id to telemetry
+  modId?: RegistryId;
+}> = ({ brickCommentsFieldName, brickId, modId }) => {
   const handleBlur = (event: React.FocusEvent<HTMLTextAreaElement>) => {
     const comments = event.target.value;
     reportEvent(Events.BRICK_COMMENTS_UPDATE, {
       commentsLength: comments.length,
+      modId,
+      brickId,
     });
   };
 
