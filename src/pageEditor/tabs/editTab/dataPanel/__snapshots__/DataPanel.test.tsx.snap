@@ -77,6 +77,19 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
             Preview
           </a>
         </div>
+        <div
+          class="tabNav nav-item"
+        >
+          <a
+            aria-selected="false"
+            class="nav-link"
+            data-rb-event-key="comments"
+            href="#"
+            role="tab"
+          >
+            Comments
+          </a>
+        </div>
       </div>
       <div
         class="tabContent tab-content"
@@ -348,6 +361,17 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
               </li>
             </ul>
           </div>
+        </div>
+        <div
+          aria-hidden="true"
+          class="fade tabPane tab-pane"
+          role="tabpanel"
+        >
+          <em
+            class="text-muted"
+          >
+            No comments available
+          </em>
         </div>
       </div>
     </div>

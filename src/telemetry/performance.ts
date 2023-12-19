@@ -35,11 +35,9 @@ const RUM_FLAG = "telemetry-performance";
 export async function initPerformanceMonitoring(): Promise<void> {
   // Require the extension context because we don't want to track performance of the host sites
   expectContext("extension");
+
   forbidContext("contentScript");
-  // DataDog issue that RUM doesn't work in browser extension contexts, e.g., DevTools
-  // https://github.com/DataDog/browser-sdk/issues/798
-  forbidContext("devTools");
-  forbidContext("sidebar");
+  forbidContext("web");
   // There's no user interactions to track in the background page
   forbidContext("background");
 
@@ -74,7 +72,6 @@ export async function initPerformanceMonitoring(): Promise<void> {
     trackUserInteractions: true,
     trackResources: true,
     trackLongTasks: true,
-    trackFrustrations: true,
     defaultPrivacyLevel: "mask",
     // From the docs, it would appear that useCrossSiteSessionCookie would enable support for iframes like the
     // sidebar and page editor. But in reality, it breaks the Extension Console tracking too.
@@ -83,6 +80,10 @@ export async function initPerformanceMonitoring(): Promise<void> {
     // List the URLs/origins for sending trace headers
     // https://docs.datadoghq.com/real_user_monitoring/connect_rum_and_traces/?tab=browserrum#usage
     allowedTracingUrls: [baseUrl],
+
+    // https://github.com/DataDog/browser-sdk/issues/798
+    // https://docs.datadoghq.com/real_user_monitoring/guide/monitor-electron-applications-using-browser-sdk/
+    allowFallbackToLocalStorage: true,
   });
 
   datadogRum.startSessionReplayRecording();

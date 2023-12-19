@@ -310,11 +310,14 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     this.modComponents.length = 0;
   }
 
-  inputSchema: Schema = propertiesToSchema({
-    action: {
-      $ref: "https://app.pixiebrix.com/schemas/effect#",
+  inputSchema: Schema = propertiesToSchema(
+    {
+      action: {
+        $ref: "https://app.pixiebrix.com/schemas/effect#",
+      },
     },
-  });
+    ["action"],
+  );
 
   async getBricks(
     extension: ResolvedModComponent<TriggerConfig>,

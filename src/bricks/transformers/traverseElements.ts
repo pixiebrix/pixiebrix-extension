@@ -43,34 +43,37 @@ export class TraverseElements extends TransformerABC {
     );
   }
 
-  inputSchema: Schema = propertiesToSchema({
-    selector: {
-      type: "string",
-      format: "selector",
-      description: "The selector/filter for the traversal",
+  inputSchema: Schema = propertiesToSchema(
+    {
+      selector: {
+        type: "string",
+        format: "selector",
+        description: "The selector/filter for the traversal",
+      },
+      traversal: {
+        type: "string",
+        description:
+          "jQuery traversal type: https://api.jquery.com/category/traversing/tree-traversal/",
+        default: "find",
+        enum: [
+          "closest",
+          "children",
+          "find",
+          "next",
+          "nextAll",
+          "nextUntil",
+          "parent",
+          "parents",
+          "parentsUntil",
+          "prev",
+          "prevAll",
+          "prevUntil",
+          "siblings",
+        ],
+      },
     },
-    traversal: {
-      type: "string",
-      description:
-        "jQuery traversal type: https://api.jquery.com/category/traversing/tree-traversal/",
-      default: "find",
-      enum: [
-        "closest",
-        "children",
-        "find",
-        "next",
-        "nextAll",
-        "nextUntil",
-        "parent",
-        "parents",
-        "parentsUntil",
-        "prev",
-        "prevAll",
-        "prevUntil",
-        "siblings",
-      ],
-    },
-  });
+    ["selector", "traversal"],
+  );
 
   override outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",

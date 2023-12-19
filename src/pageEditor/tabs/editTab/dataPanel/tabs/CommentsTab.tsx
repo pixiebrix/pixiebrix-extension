@@ -14,26 +14,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
+import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
-import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
+import { type BrickConfig } from "@/bricks/types";
+import styles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 
-const ConfigurationTab: React.FC<{ config: unknown }> = ({ config }) => (
-  <DataTab eventKey={DataPanelTabKey.BrickConfig}>
-    <div className="text-info">
-      <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible to
-      developers
-    </div>
-    <DataTabJsonTree
-      data={config ?? {}}
-      tabKey={DataPanelTabKey.BrickConfig}
-      label="Configuration"
-    />
-  </DataTab>
+const CommentsTab: React.FunctionComponent<{
+  comments?: BrickConfig["comments"];
+}> = ({ comments }) => (
+  <Tab.Pane eventKey={DataPanelTabKey.Comments} className={styles.tabPane}>
+    {comments ? (
+      <p>{comments}</p>
+    ) : (
+      <em className="text-muted">No comments available</em>
+    )}
+  </Tab.Pane>
 );
 
-export default ConfigurationTab;
+export default CommentsTab;

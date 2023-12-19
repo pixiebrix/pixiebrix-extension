@@ -165,11 +165,14 @@ test.each`
   async ({ propertyName, expected }) => {
     const brick = brickFactory({
       [propertyName]: jest.fn(),
-      inputSchema: propertiesToSchema({
-        message: {
-          type: "string",
+      inputSchema: propertiesToSchema(
+        {
+          message: {
+            type: "string",
+          },
         },
-      }),
+        ["message"],
+      ),
     });
 
     brickRegistry.register([brick]);

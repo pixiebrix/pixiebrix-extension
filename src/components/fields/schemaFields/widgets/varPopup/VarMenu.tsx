@@ -143,7 +143,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   const dispatch = useDispatch();
   const activeElement = useSelector(selectActiveElement);
   const pipelineMap = useSelector(selectPipelineMap) ?? {};
-  const { allBlocks } = useAllBricks();
+  const { allBricks } = useAllBricks();
 
   const knownVars = useSelector(selectKnownVarsForActiveNode);
   const { rootElementRef } = usePositionVarPopup({
@@ -237,7 +237,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
                   source={source}
                   extensionPointLabel={extensionPointLabel}
                   blocksInfo={blocksInfo}
-                  allBlocks={allBlocks}
+                  allBlocks={allBricks}
                 />
                 <VariablesTree
                   vars={vars}
@@ -255,7 +255,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
               source={source}
               extensionPointLabel={extensionPointLabel}
               blocksInfo={blocksInfo}
-              allBlocks={allBlocks}
+              allBlocks={allBricks}
             />
             <VariablesTree
               vars={filterVarMapByVariable(vars, likelyVariable)}

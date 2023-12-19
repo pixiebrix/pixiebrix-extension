@@ -29,7 +29,7 @@ export class ActivateTabEffect extends EffectABC {
     );
   }
 
-  inputSchema: Schema = propertiesToSchema({});
+  inputSchema: Schema = propertiesToSchema({}, []);
 
   async effect(): Promise<void> {
     await activateTab();
@@ -41,7 +41,7 @@ export class CloseTabEffect extends EffectABC {
     super("@pixiebrix/browser/close-tab", "Close browser tab", "Close the tab");
   }
 
-  inputSchema: Schema = propertiesToSchema({});
+  inputSchema: Schema = propertiesToSchema({}, []);
 
   async effect(): Promise<void> {
     await closeTab();
