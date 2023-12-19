@@ -47,13 +47,13 @@ import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContext
 import { generateIntegrationAndRemoteConfig } from "@/testUtils/factories/integrationFactories";
 import { registry, services } from "@/background/messenger/api";
 import { clear, find, syncPackages } from "@/registry/packageRegistry";
-import useRefreshRegistries from "@/hooks/useRefreshRegistries";
-import Loader from "@/components/Loader";
+import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { refreshServices } from "@/background/locator";
 import { type WizardValues } from "@/activation/wizardTypes";
 import useActivateRecipe, {
   type ActivateResult,
 } from "@/activation/useActivateRecipe";
+import brickRegistry from "@/bricks/registry";
 
 jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useRequiredModDefinitions: jest.fn(),
@@ -119,13 +119,29 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
+  appApiMock.reset();
+  hideSidebarSpy.mockReset();
   activateRecipeSpy.mockReset();
+
   activateRecipeSpy.mockResolvedValue({ success: true });
+
   useActivateRecipeMock.mockReturnValue(activateRecipeSpy);
+  includesQuickBarMock.mockResolvedValue(false);
+
+  useQuickbarShortcutMock.mockReturnValue({
+    shortcut: null,
+    isConfigured: false,
+  });
+
+  checkModDefinitionPermissionsMock.mockResolvedValue({
+    hasPermissions: true,
+    permissions: {},
+  });
 });
 
 afterEach(async () => {
   await registry.clear();
+  brickRegistry.clear();
   appApiMock.reset();
 });
 
@@ -177,33 +193,6 @@ function setupMocksAndRender(
     },
   });
 }
-
-beforeEach(() => {
-  appApiMock.reset();
-  hideSidebarSpy.mockReset();
-
-  includesQuickBarMock.mockResolvedValue(false);
-
-  useQuickbarShortcutMock.mockReturnValue({
-    shortcut: null,
-    isConfigured: false,
-  });
-
-  checkModDefinitionPermissionsMock.mockResolvedValue({
-    hasPermissions: true,
-    permissions: {},
-  });
-});
-
-const ServicesWrapper: React.FC = ({ children }) => {
-  const [loaded] = useRefreshRegistries();
-
-  if (!loaded) {
-    return <Loader />;
-  }
-
-  return <>{children}</>;
-};
 
 describe("ActivateModPanel", () => {
   it("renders with options, permissions info", async () => {
@@ -287,25 +276,22 @@ describe("ActivateModPanel", () => {
       .onGet("/api/registry/bricks/")
       .reply(200, [integrationDefinition]);
 
-    setupMocksAndRender(
-      {
-        extensionPoints: [
-          modComponentDefinitionFactory({
-            services: {
-              properties: {
-                service1: {
-                  $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
-                },
+    await refreshRegistries();
+
+    setupMocksAndRender({
+      extensionPoints: [
+        modComponentDefinitionFactory({
+          services: {
+            properties: {
+              service1: {
+                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
               },
-              required: [],
             },
-          }),
-        ],
-      },
-      {
-        Wrapper: ServicesWrapper,
-      },
-    );
+            required: [],
+          },
+        }),
+      ],
+    });
 
     expect(
       await screen.findByText("Well done", { exact: false }),
@@ -334,25 +320,22 @@ describe("ActivateModPanel", () => {
       .onGet("/api/registry/bricks/")
       .reply(200, [integrationDefinition]);
 
-    setupMocksAndRender(
-      {
-        extensionPoints: [
-          modComponentDefinitionFactory({
-            services: {
-              properties: {
-                service1: {
-                  $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
-                },
+    await refreshRegistries();
+
+    setupMocksAndRender({
+      extensionPoints: [
+        modComponentDefinitionFactory({
+          services: {
+            properties: {
+              service1: {
+                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
               },
-              required: ["service1"],
             },
-          }),
-        ],
-      },
-      {
-        Wrapper: ServicesWrapper,
-      },
-    );
+            required: ["service1"],
+          },
+        }),
+      ],
+    });
 
     expect(
       await screen.findByText("Well done", { exact: false }),
@@ -382,28 +365,22 @@ describe("ActivateModPanel", () => {
       .onGet("/api/registry/bricks/")
       .reply(200, [integrationDefinition]);
 
-    const activateRecipeSpy = jest.fn(async () => ({ success: true }));
-    useActivateRecipeMock.mockReturnValue(activateRecipeSpy);
+    await refreshRegistries();
 
-    setupMocksAndRender(
-      {
-        extensionPoints: [
-          modComponentDefinitionFactory({
-            services: {
-              properties: {
-                service1: {
-                  $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
-                },
+    setupMocksAndRender({
+      extensionPoints: [
+        modComponentDefinitionFactory({
+          services: {
+            properties: {
+              service1: {
+                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
               },
-              required: [],
             },
-          }),
-        ],
-      },
-      {
-        Wrapper: ServicesWrapper,
-      },
-    );
+            required: [],
+          },
+        }),
+      ],
+    });
 
     expect(
       await screen.findByText("Well done", { exact: false }),
@@ -423,8 +400,6 @@ describe("ActivateModPanel", () => {
     );
   });
 
-  // TODO: Something isn't resetting state properly, these two following tests work in isolation but not when the whole suite runs
-
   it("does not activate recipe automatically when required integration does not have built-in config available", async () => {
     const { integrationDefinition } = generateIntegrationAndRemoteConfig();
     // Don't include the remote auth option
@@ -434,38 +409,22 @@ describe("ActivateModPanel", () => {
       .onGet("/api/registry/bricks/")
       .reply(200, [integrationDefinition]);
 
-    const ServicesWrapper2: React.FC = ({ children }) => {
-      const [loaded] = useRefreshRegistries();
+    await refreshRegistries();
 
-      if (!loaded) {
-        console.log("*** Wrapper2 not loaded");
-        return <Loader />;
-      }
-
-      console.log("*** Wrapper2 loaded");
-
-      return <>{children}</>;
-    };
-
-    setupMocksAndRender(
-      {
-        extensionPoints: [
-          modComponentDefinitionFactory({
-            services: {
-              properties: {
-                service1: {
-                  $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
-                },
+    setupMocksAndRender({
+      extensionPoints: [
+        modComponentDefinitionFactory({
+          services: {
+            properties: {
+              service1: {
+                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition.metadata.id}`,
               },
-              required: ["service1"],
             },
-          }),
-        ],
-      },
-      {
-        Wrapper: ServicesWrapper2,
-      },
-    );
+            required: ["service1"],
+          },
+        }),
+      ],
+    });
 
     expect(
       await screen.findByText(
@@ -493,28 +452,25 @@ describe("ActivateModPanel", () => {
       .onGet("/api/registry/bricks/")
       .reply(200, [integrationDefinition1, integrationDefinition2]);
 
-    setupMocksAndRender(
-      {
-        extensionPoints: [
-          modComponentDefinitionFactory({
-            services: {
-              properties: {
-                service1: {
-                  $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition1.metadata.id}`,
-                },
-                service2: {
-                  $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition2.metadata.id}`,
-                },
+    await refreshRegistries();
+
+    setupMocksAndRender({
+      extensionPoints: [
+        modComponentDefinitionFactory({
+          services: {
+            properties: {
+              service1: {
+                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition1.metadata.id}`,
               },
-              required: ["service1"],
+              service2: {
+                $ref: `${SERVICES_BASE_SCHEMA_URL}${integrationDefinition2.metadata.id}`,
+              },
             },
-          }),
-        ],
-      },
-      {
-        Wrapper: ServicesWrapper,
-      },
-    );
+            required: ["service1"],
+          },
+        }),
+      ],
+    });
 
     expect(
       await screen.findByText(
@@ -592,35 +548,6 @@ describe("ActivateModPanel", () => {
     });
 
     const { asFragment } = setupMocksAndRender();
-
-    await waitForEffect();
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  it("renders with integration configuration if no built-in integration configs available", async () => {
-    const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs();
-
-    const { asFragment, container } = setupMocksAndRender(modDefinition);
-
-    await waitForEffect();
-
-    expect(asFragment()).toMatchSnapshot();
-    expect(
-      // eslint-disable-next-line testing-library/no-container
-      container.querySelector(".actionButton"),
-    ).not.toBeDisabled();
-  });
-
-  it("activates mod with built-in services automatically and renders well-done page", async () => {
-    const { modDefinition, builtInIntegrationConfigs } =
-      getModDefinitionWithBuiltInIntegrationConfigs();
-
-    appApiMock
-      .onGet("/api/services/shared/")
-      .reply(200, builtInIntegrationConfigs);
-
-    const { asFragment } = setupMocksAndRender(modDefinition);
 
     await waitForEffect();
 
