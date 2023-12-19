@@ -18,17 +18,46 @@
 import React from "react";
 import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
 import { render, screen } from "@/pageEditor/testHelpers";
+// eslint-disable-next-line no-restricted-imports -- used for testing purposes
+import { Formik } from "formik";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import userEvent from "@testing-library/user-event";
+
+const commentsFieldName = "extension.blockPipeline.0.comments";
+const initialComments = "Hello world!";
+const formStateWithComments = menuItemFormStateFactory({}, [
+  brickConfigFactory({
+    comments: initialComments,
+  }),
+]);
+
+const formStateWithNoComments = menuItemFormStateFactory();
+const renderCommentsTab = (formState = formStateWithComments) =>
+  render(
+    <Formik onSubmit={jest.fn()} initialValues={formState}>
+      <CommentsTab brickCommentsFieldName={commentsFieldName} />
+    </Formik>,
+  );
 
 describe("CommentsTab", () => {
   it("renders comments", () => {
-    render(<CommentsTab fieldName="foo" />);
-    expect(screen.getByText("foo")).toBeInTheDocument();
+    renderCommentsTab();
+    expect(screen.getByText(initialComments)).toBeInTheDocument();
   });
 
-  it.each([undefined, ""])("renders message when no comments", (comments) => {
-    render(<CommentsTab fieldName="foo" />);
-    expect(
-      screen.getByPlaceholderText("No comments available"),
-    ).toBeInTheDocument();
+  it("renders editable empty text area", async () => {
+    renderCommentsTab(formStateWithNoComments);
+    const textArea = screen.getByTestId(
+      `comments-text-area-${commentsFieldName}`,
+    );
+    expect(textArea).toBeInTheDocument();
+
+    expect(textArea).toHaveValue("");
+
+    const newComments = "I am a comment!";
+    await userEvent.type(textArea, newComments);
+
+    expect(textArea).toHaveValue(newComments);
   });
 });

@@ -399,7 +399,7 @@ const DataPanel: React.FC = () => {
               />
             </ErrorBoundary>
           </DataTab>
-          <CommentsTab fieldName={brickCommentFieldName} />
+          <CommentsTab brickCommentsFieldName={brickCommentFieldName} />
         </Tab.Content>
       </div>
     </Tab.Container>

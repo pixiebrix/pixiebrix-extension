@@ -369,8 +369,9 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
         >
           <textarea
             class="form-control"
-            placeholder="No comments available"
-            style="white-space: pre-wrap;"
+            data-testid="comments-text-area-extension.blockPipeline.1.comments"
+            name="extension.blockPipeline.1.comments"
+            rows="1"
           />
         </div>
       </div>

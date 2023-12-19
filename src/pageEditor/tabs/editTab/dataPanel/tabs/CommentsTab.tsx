@@ -21,11 +21,14 @@ import styles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 
 const CommentsTab: React.FunctionComponent<{
-  // Formik field name for the comments brick config field
-  fieldName: string;
-}> = ({ fieldName }) => (
+  brickCommentsFieldName: string;
+}> = ({ brickCommentsFieldName }) => (
   <Tab.Pane eventKey={DataPanelTabKey.Comments} className={styles.tabPane}>
-    <TextWidget name={fieldName} schema={{ type: "string" }} />
+    <TextWidget
+      name={brickCommentsFieldName}
+      schema={{ type: "string" }}
+      data-testid={`comments-text-area-${brickCommentsFieldName}`}
+    />
   </Tab.Pane>
 );
 

@@ -2344,8 +2344,9 @@ exports[`renders the first selected node 1`] = `
                     >
                       <textarea
                         class="form-control"
-                        placeholder="No comments available"
-                        style="white-space: pre-wrap;"
+                        data-testid="comments-text-area-extension.blockPipeline.0.comments"
+                        name="extension.blockPipeline.0.comments"
+                        rows="1"
                       />
                     </div>
                   </div>
