@@ -23,6 +23,10 @@ import { Formik } from "formik";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import userEvent from "@testing-library/user-event";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+
+const reportEventMock = jest.mocked(reportEvent);
 
 const commentsFieldName = "extension.blockPipeline.0.comments";
 const initialComments = "Hello world!";
@@ -59,5 +63,12 @@ describe("CommentsTab", () => {
     await userEvent.type(textArea, newComments);
 
     expect(textArea).toHaveValue(newComments);
+
+    // Trigger onBlur event for the textarea
+    await userEvent.click(screen.getByTestId("comments-tab-pane"));
+
+    expect(reportEventMock).toHaveBeenCalledWith(Events.BRICK_COMMENTS_UPDATE, {
+      commentsLength: newComments.length,
+    });
   });
 });

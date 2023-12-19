@@ -19,17 +19,34 @@ import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import styles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
 import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
+import { Events } from "@/telemetry/events";
+import reportEvent from "@/telemetry/reportEvent";
 
 const CommentsTab: React.FunctionComponent<{
   brickCommentsFieldName: string;
-}> = ({ brickCommentsFieldName }) => (
-  <Tab.Pane eventKey={DataPanelTabKey.Comments} className={styles.tabPane}>
-    <TextWidget
-      name={brickCommentsFieldName}
-      schema={{ type: "string" }}
-      data-testid={`comments-text-area-${brickCommentsFieldName}`}
-    />
-  </Tab.Pane>
-);
+}> = ({ brickCommentsFieldName }) => {
+  // TODO: add mod id and brick id to telemetry
+  const handleBlur = (event: React.FocusEvent<HTMLTextAreaElement>) => {
+    const comments = event.target.value;
+    reportEvent(Events.BRICK_COMMENTS_UPDATE, {
+      commentsLength: comments.length,
+    });
+  };
+
+  return (
+    <Tab.Pane
+      eventKey={DataPanelTabKey.Comments}
+      className={styles.tabPane}
+      data-testid="comments-tab-pane"
+    >
+      <TextWidget
+        name={brickCommentsFieldName}
+        schema={{ type: "string" }}
+        data-testid={`comments-text-area-${brickCommentsFieldName}`}
+        onBlur={handleBlur}
+      />
+    </Tab.Pane>
+  );
+};
 
 export default CommentsTab;
