@@ -58,11 +58,14 @@ export class RandomNumber extends TransformerABC {
     [],
   );
 
-  override outputSchema = propertiesToSchema({
-    value: {
-      type: "number",
+  override outputSchema = propertiesToSchema(
+    {
+      value: {
+        type: "number",
+      },
     },
-  });
+    ["value"],
+  );
 
   async transform({
     lower = 0,

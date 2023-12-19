@@ -197,8 +197,6 @@ const DataPanel: React.FC = () => {
     return true;
   }, [activeNodeId, activeElement, traces, brickConfig]);
 
-  console.log("*** blockConfig", brickConfig);
-
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={onSelectTab}>
       <div className={dataPanelStyles.tabContainer}>

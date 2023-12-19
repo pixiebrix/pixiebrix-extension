@@ -37,7 +37,7 @@ export class ContextBrick extends BrickABC {
     ContextBrick.contexts = [];
   }
 
-  inputSchema = propertiesToSchema({});
+  inputSchema = propertiesToSchema({}, []);
 
   async run(_arg: BrickArgs, { ctxt }: BrickOptions) {
     ContextBrick.contexts.push(ctxt);
@@ -61,7 +61,7 @@ export class OptionsBrick extends BrickABC {
     OptionsBrick.options = [];
   }
 
-  inputSchema = propertiesToSchema({});
+  inputSchema = propertiesToSchema({}, []);
 
   async run(_arg: BrickArgs, options: BrickOptions): Promise<JsonValue> {
     OptionsBrick.options.push(options);
@@ -78,11 +78,14 @@ export class EchoBrick extends BrickABC {
     super(EchoBrick.BLOCK_ID, "Echo Brick");
   }
 
-  inputSchema = propertiesToSchema({
-    message: {
-      type: "string",
+  inputSchema = propertiesToSchema(
+    {
+      message: {
+        type: "string",
+      },
     },
-  });
+    ["message"],
+  );
 
   async run({ message }: BrickArgs<{ message: string }>) {
     return { message };
@@ -97,11 +100,14 @@ export class DeferredEchoBrick extends BrickABC {
     this.promiseOrFactory = promiseOrFactory;
   }
 
-  inputSchema = propertiesToSchema({
-    message: {
-      type: "string",
+  inputSchema = propertiesToSchema(
+    {
+      message: {
+        type: "string",
+      },
     },
-  });
+    ["message"],
+  );
 
   async run({ message }: BrickArgs<{ message: string }>) {
     if (isPromise(this.promiseOrFactory)) {
@@ -120,7 +126,7 @@ class RootAwareBrick extends BrickABC {
     super("test/root-aware", "Root Aware");
   }
 
-  inputSchema = propertiesToSchema({});
+  inputSchema = propertiesToSchema({}, []);
 
   async run(_arg: BrickArgs, { root }: BrickOptions) {
     return {
@@ -138,7 +144,7 @@ class TeapotBrick extends BrickABC {
     super("test/teapot", "Teapot Brick");
   }
 
-  inputSchema = propertiesToSchema({});
+  inputSchema = propertiesToSchema({}, []);
 
   async run() {
     return { prop: "I'm a teapot" };
@@ -150,9 +156,12 @@ class IdentityBrick extends BrickABC {
     super("test/identity", "Identity Brick");
   }
 
-  inputSchema = propertiesToSchema({
-    data: {},
-  });
+  inputSchema = propertiesToSchema(
+    {
+      data: {},
+    },
+    ["data"],
+  );
 
   async run(arg: BrickArgs) {
     return arg;
@@ -187,7 +196,7 @@ class ArrayBrick extends BrickABC {
     super("test/array", "Array Brick");
   }
 
-  inputSchema = propertiesToSchema({});
+  inputSchema = propertiesToSchema({}, []);
 
   async run() {
     return [{ value: "foo" }, { value: "bar" }];
@@ -228,9 +237,12 @@ class PipelineBrick extends BrickABC {
     super("test/pipeline", "Pipeline Brick");
   }
 
-  inputSchema = propertiesToSchema({
-    pipeline: pipelineSchema,
-  });
+  inputSchema = propertiesToSchema(
+    {
+      pipeline: pipelineSchema,
+    },
+    ["pipeline"],
+  );
 
   async run({ pipeline }: BrickArgs<{ pipeline: PipelineExpression }>) {
     return {

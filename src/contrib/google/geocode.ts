@@ -110,16 +110,19 @@ export class GeocodeTransformer extends TransformerABC {
     );
   }
 
-  inputSchema: Schema = propertiesToSchema({
-    service: {
-      $ref: "https://app.pixiebrix.com/schemas/services/google/geocode-api",
-      description: "A Google Geocode service to authenticate the request",
+  inputSchema: Schema = propertiesToSchema(
+    {
+      service: {
+        $ref: "https://app.pixiebrix.com/schemas/services/google/geocode-api",
+        description: "A Google Geocode service to authenticate the request",
+      },
+      address: {
+        type: "string",
+        description: "The address or partial address",
+      },
     },
-    address: {
-      type: "string",
-      description: "The address or partial address",
-    },
-  });
+    ["service", "address"],
+  );
 
   async transform({
     service,
