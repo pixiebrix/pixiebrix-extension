@@ -40,10 +40,7 @@ const TIMEOUT_MS = 3000;
 
 type Payload = JsonValue;
 
-// TODO: Allow toggling logging. This isn't possible via `getMessengerLogging`/`storage.get`
-// due to the sandbox. This might need to be done via an ENV, partially reverting:
-// https://github.com/pixiebrix/pixiebrix-extension/pull/6546
-const log = console.debug;
+const log = process.env.SANDBOX_LOGGING ? console.debug : () => {};
 
 export type RequestPacket = {
   type: string;
