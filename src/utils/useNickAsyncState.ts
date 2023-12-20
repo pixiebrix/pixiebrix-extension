@@ -64,8 +64,9 @@ function useNickAsyncState<T = unknown>(
       }
     }
 
-    // The value we return becomes the `fulfilled` action payload
-    const returnValue = await inputFn();
+    const returnValue = await (typeof inputFn === "function"
+      ? inputFn()
+      : inputFn);
     return returnValue;
   });
 
