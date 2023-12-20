@@ -8,8 +8,14 @@ import { useCallback, useContext } from "react";
 import { ReactReduxContext, useDispatch, useSelector } from "react-redux";
 import useAsyncEffect from "use-async-effect";
 import { loadingAsyncStateFactory } from "./asyncStateUtils";
+import { type AsyncState } from "@/types/sliceTypes";
 
 type ValueFactory<T> = Promise<T> | (() => Promise<T>);
+
+type IRootState = {
+  [key: string]: unknown;
+  asyncSlice: AsyncState;
+};
 
 function useNickAsyncState<T = unknown>(
   inputFn: () => ValueFactory<T>,
@@ -19,7 +25,7 @@ function useNickAsyncState<T = unknown>(
   const { store } = useContext(ReactReduxContext);
   const dispatch = useDispatch();
 
-  const currentState = useSelector((state) => state);
+  const currentState: IRootState = useSelector((state: IRootState) => state);
 
   const updateAsync = createAsyncThunk("asyncSlice/updateAsync", async () => {
     if (
@@ -36,8 +42,8 @@ function useNickAsyncState<T = unknown>(
       }
     }
 
-    const returnValue = await inputFn();
     // The value we return becomes the `fulfilled` action payload
+    const returnValue = await inputFn();
     return returnValue;
   });
 
@@ -82,8 +88,7 @@ function useNickAsyncState<T = unknown>(
     store.replaceReducer(newRootReducer);
   };
 
-  const { asyncSlice } = store.getState();
-  if (!asyncSlice) {
+  if (!currentState.asyncSlice) {
     initializeInternalSlice();
   }
 
