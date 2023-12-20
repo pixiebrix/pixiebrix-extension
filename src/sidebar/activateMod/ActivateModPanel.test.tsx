@@ -151,10 +151,8 @@ function setupMocksAndRender(
   modDefinitionOverride?: Partial<ModDefinition>,
   {
     componentOverride,
-    Wrapper,
   }: {
     componentOverride?: React.ReactElement;
-    Wrapper?: React.ComponentType;
   } = {},
 ) {
   modDefinition = defaultModDefinitionFactory({
@@ -185,9 +183,7 @@ function setupMocksAndRender(
     <ActivateModPanel modId={modDefinition.metadata.id} />
   );
 
-  const content = Wrapper ? <Wrapper>{element}</Wrapper> : element;
-
-  return render(content, {
+  return render(element, {
     setupRedux(dispatch) {
       dispatch(sidebarSlice.actions.showModActivationPanel(entry));
     },
