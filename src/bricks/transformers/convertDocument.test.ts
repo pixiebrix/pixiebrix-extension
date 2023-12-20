@@ -37,6 +37,21 @@ describe("convert document", () => {
     });
   });
 
+  it("converts markdown to TEXT", async () => {
+    const result = await brick.run(
+      unsafeAssumeValidArg({
+        input: "# hello",
+        sourceFormat: "markdown",
+        targetFormat: "text",
+      }),
+      brickOptionsFactory(),
+    );
+
+    expect(result).toEqual({
+      output: "HELLO",
+    });
+  });
+
   it("converts markdown HTML", async () => {
     const result = await brick.run(
       unsafeAssumeValidArg({
