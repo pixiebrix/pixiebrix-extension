@@ -40,18 +40,13 @@ const CommentsTab: React.FunctionComponent<{
   };
 
   return (
-    <Tab.Pane
-      eventKey={DataPanelTabKey.Comments}
-      className={styles.tabPane}
-      data-testid="comments-tab-pane"
-    >
+    <Tab.Pane eventKey={DataPanelTabKey.Comments} className={styles.tabPane}>
       <FieldRuntimeContext.Provider
         value={{ ...context, allowExpressions: false }}
       >
         <TextWidget
           name={brickCommentsFieldName}
           schema={{ type: "string" }}
-          data-testid={`comments-text-area-${brickCommentsFieldName}`}
           onBlur={handleBlur}
         />
       </FieldRuntimeContext.Provider>

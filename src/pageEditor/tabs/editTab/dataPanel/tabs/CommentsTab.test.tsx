@@ -16,6 +16,7 @@
  */
 
 import React from "react";
+import { Tab } from "react-bootstrap";
 import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
 import { render, screen } from "@/pageEditor/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- used for testing purposes
@@ -26,6 +27,7 @@ import userEvent from "@testing-library/user-event";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 const reportEventMock = jest.mocked(reportEvent);
 
@@ -48,29 +50,27 @@ const formStateWithNoComments = menuItemFormStateFactory({}, [
 const renderCommentsTab = (formState = formStateWithComments) => {
   const brickId = formState.extension.blockPipeline[0].id;
   render(
-    <Formik onSubmit={jest.fn()} initialValues={formState}>
-      <CommentsTab
-        brickId={brickId}
-        brickCommentsFieldName={commentsFieldName}
-        modId={formState.recipe?.id}
-      />
-    </Formik>,
+    <Tab.Container defaultActiveKey={DataPanelTabKey.Comments}>
+      <Formik onSubmit={jest.fn()} initialValues={formState}>
+        <CommentsTab
+          brickId={brickId}
+          brickCommentsFieldName={commentsFieldName}
+          modId={formState.recipe?.id}
+        />
+      </Formik>
+    </Tab.Container>,
   );
 };
 
 describe("CommentsTab", () => {
   it("renders comments", () => {
     renderCommentsTab();
-    expect(
-      screen.getByTestId(`comments-text-area-${commentsFieldName}`),
-    ).toHaveTextContent(initialComments);
+    expect(screen.getByRole("textbox")).toHaveTextContent(initialComments);
   });
 
   it("renders editable empty text area", async () => {
     renderCommentsTab(formStateWithNoComments);
-    const textArea = screen.getByTestId(
-      `comments-text-area-${commentsFieldName}`,
-    );
+    const textArea = screen.getByRole("textbox");
     expect(textArea).toBeInTheDocument();
 
     expect(textArea).toHaveValue("");
@@ -81,7 +81,7 @@ describe("CommentsTab", () => {
     expect(textArea).toHaveValue(newComments);
 
     // Trigger onBlur event for the textarea
-    await userEvent.click(screen.getByTestId("comments-tab-pane"));
+    await userEvent.keyboard("{tab}");
     const expectedBrickId =
       formStateWithNoComments.extension.blockPipeline[0].id;
 
@@ -94,9 +94,7 @@ describe("CommentsTab", () => {
 
   it("reports telemetry with mod id if available", async () => {
     renderCommentsTab(formStateWithComments);
-    const textArea = screen.getByTestId(
-      `comments-text-area-${commentsFieldName}`,
-    );
+    const textArea = screen.getByRole("textbox");
 
     const newComments = "I am a comment!";
     const expectedComments = `${initialComments}${newComments}`;
@@ -105,7 +103,7 @@ describe("CommentsTab", () => {
     expect(textArea).toHaveValue(expectedComments);
 
     // Trigger onBlur event for the textarea
-    await userEvent.click(screen.getByTestId("comments-tab-pane"));
+    await userEvent.keyboard("{tab}");
     const expectedBrickId = formStateWithComments.extension.blockPipeline[0].id;
 
     expect(reportEventMock).toHaveBeenCalledWith(Events.BRICK_COMMENTS_UPDATE, {

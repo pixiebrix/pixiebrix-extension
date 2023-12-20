@@ -365,12 +365,10 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
         <div
           aria-hidden="true"
           class="fade tabPane tab-pane"
-          data-testid="comments-tab-pane"
           role="tabpanel"
         >
           <textarea
             class="form-control"
-            data-testid="comments-text-area-extension.blockPipeline.1.comments"
             name="extension.blockPipeline.1.comments"
             rows="1"
           />

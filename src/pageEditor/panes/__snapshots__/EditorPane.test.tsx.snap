@@ -2340,12 +2340,10 @@ exports[`renders the first selected node 1`] = `
                     <div
                       aria-hidden="true"
                       class="fade tabPane tab-pane"
-                      data-testid="comments-tab-pane"
                       role="tabpanel"
                     >
                       <textarea
                         class="form-control"
-                        data-testid="comments-text-area-extension.blockPipeline.0.comments"
                         name="extension.blockPipeline.0.comments"
                         rows="1"
                       />
