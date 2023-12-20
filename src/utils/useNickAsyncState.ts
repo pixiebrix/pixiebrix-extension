@@ -1,14 +1,34 @@
+/*
+ * Copyright (C) 2023 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import {
   type Reducer,
   combineReducers,
   createAsyncThunk,
   createSlice,
 } from "@reduxjs/toolkit";
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useRef } from "react";
 import { ReactReduxContext, useDispatch, useSelector } from "react-redux";
 import useAsyncEffect from "use-async-effect";
 import { loadingAsyncStateFactory } from "./asyncStateUtils";
 import { type AsyncState } from "@/types/sliceTypes";
+import { useIsMounted } from "@/hooks/common";
+import { type UUID } from "@/types/stringTypes";
+import { uuidv4 } from "@/types/helpers";
 
 type ValueFactory<T> = Promise<T> | (() => Promise<T>);
 
@@ -26,6 +46,8 @@ function useNickAsyncState<T = unknown>(
   const dispatch = useDispatch();
 
   const currentState: IRootState = useSelector((state: IRootState) => state);
+  const checkIsMounted = useIsMounted();
+  const promiseNonceRef = useRef<UUID>();
 
   const updateAsync = createAsyncThunk("asyncSlice/updateAsync", async () => {
     if (
@@ -93,13 +115,21 @@ function useNickAsyncState<T = unknown>(
   }
 
   useAsyncEffect(async () => {
-    dispatch(updateAsync());
+    const nonce = uuidv4();
+    promiseNonceRef.current = nonce;
+    if (checkIsMounted && promiseNonceRef.current === nonce) {
+      dispatch(updateAsync());
+    }
   }, dependencies);
 
   const refetch = useCallback(async () => {
+    const nonce = uuidv4();
+    promiseNonceRef.current = nonce;
     initializeInternalSlice();
-    dispatch(updateAsync());
-  }, [inputFn]);
+    if (checkIsMounted && promiseNonceRef.current === nonce) {
+      dispatch(updateAsync());
+    }
+  }, [checkIsMounted]);
 
   return { ...currentState.asyncSlice, refetch };
 }
