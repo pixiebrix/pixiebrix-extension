@@ -4,7 +4,7 @@ import {
   createAsyncThunk,
   createSlice,
 } from "@reduxjs/toolkit";
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { ReactReduxContext, useDispatch, useSelector } from "react-redux";
 import useAsyncEffect from "use-async-effect";
 import { loadingAsyncStateFactory } from "./asyncStateUtils";
@@ -30,6 +30,7 @@ function useNickAsyncState<T = unknown>(
       if (currentState.asyncSlice.data) {
         return currentState.asyncSlice.data;
       }
+
       if (currentState.asyncSlice.isLoading) {
         return currentState.asyncSlice.data;
       }
@@ -40,8 +41,7 @@ function useNickAsyncState<T = unknown>(
     return returnValue;
   });
 
-  const { asyncSlice } = store.getState();
-  if (!asyncSlice) {
+  const initializeInternalSlice = () => {
     const slice = createSlice({
       name: "asyncSlice",
       initialState: loadingAsyncStateFactory(),
@@ -80,13 +80,23 @@ function useNickAsyncState<T = unknown>(
     });
 
     store.replaceReducer(newRootReducer);
+  };
+
+  const { asyncSlice } = store.getState();
+  if (!asyncSlice) {
+    initializeInternalSlice();
   }
 
   useAsyncEffect(async () => {
+    initializeInternalSlice();
     dispatch(updateAsync());
   }, dependencies);
 
-  return { ...currentState.asyncSlice };
+  const refetch = useCallback(async () => {
+    dispatch(updateAsync());
+  }, [inputFn]);
+
+  return { ...currentState.asyncSlice, refetch };
 }
 
 export default useNickAsyncState;
