@@ -77,14 +77,14 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
     !isActive && recipeId && modComponent._recipe?.id === recipeId;
 
   const selectHandler = useCallback(
-    async (modComponentBase: ModComponentBase) => {
+    async (modComponent: ModComponentBase) => {
       try {
         reportEvent(Events.PAGE_EDITOR_OPEN, {
           sessionId,
-          extensionId: modComponentBase.id,
+          extensionId: modComponent.id,
         });
 
-        const state = await extensionToFormState(modComponentBase);
+        const state = await extensionToFormState(modComponent);
         initRecipeOptionsIfNeeded(state, mods);
 
         dispatch(actions.selectInstalled(state));
@@ -94,14 +94,14 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
           // frequently between extensions within the same blueprint.
           void showSidebar(thisTab, {
-            extensionId: modComponentBase.id,
+            extensionId: modComponent.id,
             force: true,
             refresh: false,
           });
         }
       } catch (error) {
         reportError(error);
-        dispatch(actions.adapterError({ uuid: modComponentBase.id, error }));
+        dispatch(actions.adapterError({ uuid: modComponent.id, error }));
       }
     },
     [dispatch, sessionId, mods, type],
