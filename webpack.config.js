@@ -394,6 +394,7 @@ module.exports = (env, options) =>
         ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost/",
         // Record telemetry events in development?
         DEV_EVENT_TELEMETRY: false,
+        SANDBOX_LOGGING: false,
 
         // If not found, "undefined" will cause the build to fail
         SERVICE_URL: undefined,

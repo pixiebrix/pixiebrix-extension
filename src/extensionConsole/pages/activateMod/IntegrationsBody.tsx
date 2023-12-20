@@ -20,7 +20,7 @@ import styles from "./IntegrationsBody.module.scss";
 import React, { useMemo } from "react";
 import { Card } from "react-bootstrap";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import AuthWidget from "@/components/auth/AuthWidget";
+import AuthWidget from "@/components/integrations/AuthWidget";
 import IntegrationDescriptor from "@/extensionConsole/pages/activateMod/IntegrationDescriptor";
 import { useField } from "formik";
 import { useAuthOptions } from "@/hooks/auth";

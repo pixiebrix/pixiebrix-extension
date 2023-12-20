@@ -21,7 +21,7 @@ import VarMenu from "@/components/fields/schemaFields/widgets/varPopup/VarMenu";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import analysisSlice from "@/analysis/analysisSlice";
 import VarAnalysis from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
 
@@ -46,7 +46,7 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 }));
 
 beforeAll(() => {
-  registerBuiltinBlocks();
+  registerBuiltinBricks();
 });
 
 afterAll(() => {

@@ -17,43 +17,25 @@
 
 import React from "react";
 import { render } from "@/extensionConsole/testHelpers";
-import AuthWidget from "@/components/auth/AuthWidget";
-import {
-  keyAuthIntegrationDefinitionFactory,
-  remoteIntegrationConfigurationFactory,
-} from "@/testUtils/factories/integrationFactories";
+import AuthWidget from "@/components/integrations/AuthWidget";
+import { generateIntegrationAndRemoteConfig } from "@/testUtils/factories/integrationFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 import {
   screen,
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { type AuthOption } from "@/auth/authTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import selectEvent from "react-select-event";
-import useRefreshRegistries from "@/hooks/useRefreshRegistries";
-import {
-  type Kind,
-  parsePackage,
-  syncPackages,
-} from "@/registry/packageRegistry";
+import { refreshRegistries } from "@/hooks/useRefreshRegistries";
+import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { registry, services } from "@/background/messenger/api";
 import { refreshServices } from "@/background/locator";
-import Loader from "@/components/Loader";
-import { type IntegrationDefinition } from "@/integrations/integrationTypes";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 
-const remoteConfig = remoteIntegrationConfigurationFactory();
-
-const integrationDefinition: IntegrationDefinition & { kind: Kind } = {
-  ...keyAuthIntegrationDefinitionFactory({
-    metadata: metadataFactory({
-      id: remoteConfig.service.config.metadata.id,
-    }),
-  }),
-  kind: "service" as Kind,
-};
+const { remoteConfig, integrationDefinition } =
+  generateIntegrationAndRemoteConfig();
 
 const authOption1: AuthOption = {
   label: "Test Option 1",
@@ -71,35 +53,47 @@ const authOption2: AuthOption = {
   sharingType: "shared",
 };
 
-beforeAll(() => {
+beforeAll(async () => {
   registerDefaultWidgets();
   appApiMock.onGet("/api/services/").reply(200, [integrationDefinition]);
   appApiMock.onGet("/api/services/shared/").reply(200, [remoteConfig]);
   appApiMock.onGet("/api/registry/bricks/").reply(200, [integrationDefinition]);
-  jest.mocked(registry.syncRemote).mockImplementation(syncPackages);
-  const remotePackage = {
-    ...parsePackage(integrationDefinition as any),
-    timestamp: new Date(),
-  };
-  jest.mocked(registry.getByKinds).mockResolvedValue([remotePackage]);
+  // Wire up directly to the background implementations for integration testing
   jest.mocked(services.refresh).mockImplementation(refreshServices);
+  jest.mocked(registry.syncRemote).mockImplementation(syncPackages);
+  jest.mocked(registry.find).mockImplementation(find);
+  jest.mocked(registry.clear).mockImplementation(clear);
+
+  await refreshRegistries();
 });
 
-describe("AuthWidget", () => {
-  test("given no auth options, when rendered, then shows configure and refresh buttons", async () => {
-    render(
-      <AuthWidget
-        name="testField"
-        integrationId={integrationDefinition.metadata.id}
-        authOptions={[]}
-        onRefresh={jest.fn()}
-      />,
-      {
-        initialValues: {
-          testField: null,
-        },
+afterAll(() => {
+  appApiMock.reset();
+});
+
+function renderContent(...authOptions: AuthOption[]) {
+  render(
+    <AuthWidget
+      name="testField"
+      integrationId={integrationDefinition.metadata.id}
+      authOptions={authOptions}
+      onRefresh={jest.fn()}
+    />,
+    {
+      initialValues: {
+        testField: null,
       },
-    );
+    },
+  );
+}
+
+describe("AuthWidget", () => {
+  afterEach(async () => {
+    await registry.clear();
+  });
+
+  test("given no auth options, when rendered, then shows configure and refresh buttons", async () => {
+    renderContent();
 
     expect(
       await screen.findByRole("button", { name: "Configure" }),
@@ -110,19 +104,7 @@ describe("AuthWidget", () => {
   });
 
   test("given 1 auth option, when rendered, then shows select dropdown and defaults to the only option", async () => {
-    render(
-      <AuthWidget
-        name="testField"
-        integrationId={integrationDefinition.metadata.id}
-        authOptions={[authOption1]}
-        onRefresh={jest.fn()}
-      />,
-      {
-        initialValues: {
-          testField: null,
-        },
-      },
-    );
+    renderContent(authOption1);
 
     expect(await screen.findByText("Test Option 1")).toBeVisible();
     expect(
@@ -131,19 +113,7 @@ describe("AuthWidget", () => {
   });
 
   test("given multiple auth options, when rendered, then shows select dropdown but does not select an option automatically", async () => {
-    render(
-      <AuthWidget
-        name="testField"
-        integrationId={integrationDefinition.metadata.id}
-        authOptions={[authOption1, authOption2]}
-        onRefresh={jest.fn()}
-      />,
-      {
-        initialValues: {
-          testField: null,
-        },
-      },
-    );
+    renderContent(authOption1, authOption2);
 
     expect(await screen.findByText("Select configuration...")).toBeVisible();
     expect(
@@ -154,34 +124,13 @@ describe("AuthWidget", () => {
   });
 
   test("given multiple auth options, when select add new, then shows integration config modal", async () => {
-    const Content: React.FC = () => {
-      const [loaded] = useRefreshRegistries();
+    renderContent(authOption1, authOption2);
 
-      if (!loaded) {
-        return <Loader />;
-      }
-
-      return (
-        <AuthWidget
-          name="testField"
-          integrationId={integrationDefinition.metadata.id}
-          authOptions={[authOption1, authOption2]}
-          onRefresh={jest.fn()}
-        />
-      );
-    };
-
-    render(<Content />, {
-      initialValues: {
-        testField: null,
-      },
-    });
-
-    expect(await screen.findByTestId("loader")).toBeVisible();
+    expect(screen.getByTestId("loader")).toBeVisible();
 
     await waitForElementToBeRemoved(() => screen.queryByTestId("loader"));
 
-    const configSelect = screen.getByRole("combobox");
+    const configSelect = await screen.findByRole("combobox");
 
     selectEvent.openMenu(configSelect);
 
