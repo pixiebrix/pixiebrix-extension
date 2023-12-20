@@ -36,6 +36,7 @@ import {
   validationDataMerge,
   type ValidatorType,
   withIdRefPrefix,
+  type GenericObjectType,
 } from "@rjsf/utils";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { assertNotNullish } from "@/utils/nullishUtils";
@@ -55,7 +56,7 @@ const HASH_OR_HASH_SLASH_REGEX = /^#\/?/;
 class FormValidator<
   T,
   S extends StrictRJSFSchema,
-  F extends FormContextType = unknown,
+  F extends FormContextType = GenericObjectType,
 > implements ValidatorType<T, S, F>
 {
   // eslint-disable-next-line max-params -- matching interface

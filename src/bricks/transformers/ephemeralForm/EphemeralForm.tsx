@@ -36,6 +36,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
+import { cloneDeep } from "lodash";
 
 const fields = {
   DescriptionField,
@@ -132,7 +133,10 @@ const EphemeralForm: React.FC = () => {
     <FormContainer>
       <ErrorBoundary>
         <JsonSchemaForm
-          schema={definition.schema}
+          // Deep clone the schema because otherwise the schema is not extensible
+          // This breaks validation when @cfworker/json-schema dereferences the schema
+          // See https://github.com/cfworker/cfworker/blob/263260ea661b6f8388116db7b8daa859e0d28b25/packages/json-schema/src/dereference.ts#L115
+          schema={cloneDeep(definition.schema)}
           uiSchema={definition.uiSchema}
           fields={fields}
           widgets={uiWidgets}
