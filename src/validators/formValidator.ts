@@ -184,11 +184,7 @@ class FormValidator<
     }
   }
 
-  isValid(
-    schema: S,
-    formData: T | undefined,
-    _rootSchema: RJSFSchema,
-  ): boolean {
+  isValid(schema: S, formData: T | undefined): boolean {
     // XXX: technically we may want to read from $schema to determine which draft version to validate against
     // Draft 7 is the default for RJSF: https://rjsf-team.github.io/react-jsonschema-form/docs/usage/validation/#custom-meta-schema-validation
 
@@ -196,14 +192,12 @@ class FormValidator<
       return false;
     }
 
-    // FIXME: figure out how to add the root schema to the validator
     const validator = new Validator(
       withIdRefPrefix(schema) as Schema,
       // The default used by RJSF: https://rjsf-team.github.io/react-jsonschema-form/docs/usage/validation/#custom-meta-schema-validation
       "7",
       true,
     );
-    // This breaks due to duplicate ids: validator.addSchema(rootSchema as Schema);
 
     const result = validator.validate(formData);
     return result.valid;
