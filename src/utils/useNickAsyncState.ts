@@ -118,7 +118,7 @@ function useNickAsyncState<T = unknown>(
   useAsyncEffect(async () => {
     const nonce = uuidv4();
     promiseNonceRef.current = nonce;
-    if (checkIsMounted && promiseNonceRef.current === nonce) {
+    if (checkIsMounted() && promiseNonceRef.current === nonce) {
       dispatch(updateAsync());
     }
   }, dependencies);
@@ -127,7 +127,7 @@ function useNickAsyncState<T = unknown>(
     const nonce = uuidv4();
     promiseNonceRef.current = nonce;
     initializeInternalSlice();
-    if (checkIsMounted && promiseNonceRef.current === nonce) {
+    if (checkIsMounted() && promiseNonceRef.current === nonce) {
       dispatch(updateAsync());
     }
   }, [checkIsMounted]);
