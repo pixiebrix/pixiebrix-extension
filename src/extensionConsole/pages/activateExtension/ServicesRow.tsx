@@ -23,7 +23,7 @@ import { useField } from "formik";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { Card, Col, Row } from "react-bootstrap";
 import IntegrationDescriptor from "@/extensionConsole/pages/activateMod/IntegrationDescriptor";
-import AuthWidget from "@/components/auth/AuthWidget";
+import AuthWidget from "@/components/integrations/AuthWidget";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { AnnotationType } from "@/types/annotationTypes";
 import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";

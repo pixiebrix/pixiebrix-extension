@@ -16,7 +16,7 @@
  */
 
 import BaseRegistry from "@/registry/memoryRegistry";
-import { fromJS } from "@/services/factory";
+import { fromJS } from "@/integrations/UserDefinedIntegration";
 import {
   type IntegrationConfig,
   type IntegrationABC,
