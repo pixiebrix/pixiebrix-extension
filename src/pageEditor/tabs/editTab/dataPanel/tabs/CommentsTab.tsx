@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React from "react";
+import React, { useContext } from "react";
 import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import styles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
@@ -22,12 +22,14 @@ import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
 import { Events } from "@/telemetry/events";
 import reportEvent from "@/telemetry/reportEvent";
 import { type RegistryId } from "@/types/registryTypes";
+import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
 
 const CommentsTab: React.FunctionComponent<{
   brickId: RegistryId;
   brickCommentsFieldName: string;
   modId?: RegistryId;
 }> = ({ brickCommentsFieldName, brickId, modId }) => {
+  const context = useContext(FieldRuntimeContext);
   const handleBlur = (event: React.FocusEvent<HTMLTextAreaElement>) => {
     const comments = event.target.value;
     reportEvent(Events.BRICK_COMMENTS_UPDATE, {
@@ -43,12 +45,16 @@ const CommentsTab: React.FunctionComponent<{
       className={styles.tabPane}
       data-testid="comments-tab-pane"
     >
-      <TextWidget
-        name={brickCommentsFieldName}
-        schema={{ type: "string" }}
-        data-testid={`comments-text-area-${brickCommentsFieldName}`}
-        onBlur={handleBlur}
-      />
+      <FieldRuntimeContext.Provider
+        value={{ ...context, allowExpressions: false }}
+      >
+        <TextWidget
+          name={brickCommentsFieldName}
+          schema={{ type: "string" }}
+          data-testid={`comments-text-area-${brickCommentsFieldName}`}
+          onBlur={handleBlur}
+        />
+      </FieldRuntimeContext.Provider>
     </Tab.Pane>
   );
 };

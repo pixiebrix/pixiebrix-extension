@@ -61,7 +61,9 @@ const renderCommentsTab = (formState = formStateWithComments) => {
 describe("CommentsTab", () => {
   it("renders comments", () => {
     renderCommentsTab();
-    expect(screen.getByText(initialComments)).toBeInTheDocument();
+    expect(
+      screen.getByTestId(`comments-text-area-${commentsFieldName}`),
+    ).toHaveTextContent(initialComments);
   });
 
   it("renders editable empty text area", async () => {
