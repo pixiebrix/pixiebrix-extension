@@ -88,11 +88,11 @@ function useNickAsyncState<T = unknown>(
   }
 
   useAsyncEffect(async () => {
-    initializeInternalSlice();
     dispatch(updateAsync());
   }, dependencies);
 
   const refetch = useCallback(async () => {
+    initializeInternalSlice();
     dispatch(updateAsync());
   }, [inputFn]);
 
