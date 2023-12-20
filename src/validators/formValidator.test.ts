@@ -28,7 +28,7 @@ import {
 describe("FormValidator", () => {
   describe("isValid", () => {
     it("should return true for valid form", () => {
-      expect(validator.isValid({ type: "string" }, "test", {})).toBeTrue();
+      expect(validator.isValid({ type: "string" }, "test")).toBeTrue();
     });
   });
 
@@ -80,7 +80,7 @@ describe("RJSF Tests", () => {
           },
         };
 
-        expect(validator.isValid(schema, { foo: "bar" }, schema)).toBe(true);
+        expect(validator.isValid(schema, { foo: "bar" })).toBe(true);
       });
 
       it("should return false if the data is not valid against the schema", () => {
@@ -91,13 +91,13 @@ describe("RJSF Tests", () => {
           },
         };
 
-        expect(validator.isValid(schema, { foo: 12_345 }, schema)).toBe(false);
+        expect(validator.isValid(schema, { foo: 12_345 })).toBe(false);
       });
 
       it("should return false if the schema is invalid", () => {
         const schema: RJSFSchema = "foobarbaz" as unknown as RJSFSchema;
 
-        expect(validator.isValid(schema, { foo: "bar" }, schema)).toBe(false);
+        expect(validator.isValid(schema, { foo: "bar" })).toBe(false);
       });
     });
 
