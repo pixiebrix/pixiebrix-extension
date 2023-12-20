@@ -56,22 +56,22 @@ export type TemplateRenderPayload = {
 
 export async function renderNunjucksTemplate(payload: TemplateRenderPayload) {
   return (await isSandboxed())
-    ? directApi.renderNunjucksTemplate(payload)
-    : postMessage({
+    ? postMessage({
         recipient: await loadSandbox(),
         payload,
         type: "RENDER_NUNJUCKS",
-      });
+      })
+    : directApi.renderNunjucksTemplate(payload);
 }
 
 export async function renderHandlebarsTemplate(payload: TemplateRenderPayload) {
   return (await isSandboxed())
-    ? directApi.renderHandlebarsTemplate(payload)
-    : postMessage({
+    ? postMessage({
         recipient: await loadSandbox(),
         payload,
         type: "RENDER_HANDLEBARS",
-      });
+      })
+    : directApi.renderHandlebarsTemplate(payload);
 }
 
 export type JavaScriptPayload = {

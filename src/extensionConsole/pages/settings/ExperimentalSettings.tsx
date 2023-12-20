@@ -41,7 +41,7 @@ const ExperimentalSettings: React.FunctionComponent = () => {
         <Form>
           <SettingToggle
             controlId="suggestElements"
-            label="Suggest Elements in Selection Mode:"
+            label="Suggest Elements in Selection Mode"
             description="Toggle on to enable element suggestions/filtering in Page Editor
             selection mode"
             isEnabled={suggestElements}
@@ -49,7 +49,7 @@ const ExperimentalSettings: React.FunctionComponent = () => {
           />
           <SettingToggle
             controlId="excludeRandomClasses"
-            label="Detect and Exclude Random Classes from Selectors:"
+            label="Detect and Exclude Random Classes from Selectors"
             description="Toggle on to avoid using randomly-generated classes when picking
             elements from a website"
             isEnabled={excludeRandomClasses}
@@ -57,14 +57,14 @@ const ExperimentalSettings: React.FunctionComponent = () => {
           />
           <SettingToggle
             controlId="performanceTracing"
-            label="Performance Tracing:"
+            label="Performance Tracing"
             description="Toggle on to trace runtime performance"
             isEnabled={performanceTracing}
             flag="performanceTracing"
           />
           <SettingToggle
             controlId="sandboxedCode"
-            label="Sandboxed code:"
+            label="Sandboxed code"
             description="Toggle on to sandbox templating libraries"
             isEnabled={sandboxedCode}
             flag="sandboxedCode"
