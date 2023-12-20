@@ -23,6 +23,9 @@ import { Events } from "@/telemetry/events";
 import reportEvent from "@/telemetry/reportEvent";
 import { type RegistryId } from "@/types/registryTypes";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
+import { type Schema } from "@/types/schemaTypes";
+
+const commentsSchema: Schema = { type: "string" };
 
 const CommentsTab: React.FunctionComponent<{
   brickId: RegistryId;
@@ -46,7 +49,7 @@ const CommentsTab: React.FunctionComponent<{
       >
         <TextWidget
           name={brickCommentsFieldName}
-          schema={{ type: "string" }}
+          schema={commentsSchema}
           onBlur={handleBlur}
         />
       </FieldRuntimeContext.Provider>
