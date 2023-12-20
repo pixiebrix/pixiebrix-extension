@@ -25,8 +25,8 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 
 type ModComponentListItemProps = {
-  extension: ModComponentBase | ModComponentFormState;
-  recipes: ModDefinition[];
+  modComponent: ModComponentBase | ModComponentFormState;
+  mods: ModDefinition[];
   availableInstalledIds: UUID[];
   availableDynamicIds: UUID[];
   isNested?: boolean;
@@ -35,28 +35,29 @@ type ModComponentListItemProps = {
 const ModComponentListItem: React.FunctionComponent<
   ModComponentListItemProps
 > = ({
-  extension,
-  recipes,
+  modComponent,
+  mods,
   availableInstalledIds,
   availableDynamicIds,
   isNested = false,
 }) =>
-  isModComponentBase(extension) ? (
+  isModComponentBase(modComponent) ? (
     <ActivatedModComponentListItem
-      key={`installed-${extension.id}`}
-      extension={extension}
-      recipes={recipes}
+      key={`installed-${modComponent.id}`}
+      modComponent={modComponent}
+      mods={mods}
       isAvailable={
-        !availableInstalledIds || availableInstalledIds.includes(extension.id)
+        !availableInstalledIds ||
+        availableInstalledIds.includes(modComponent.id)
       }
       isNested={isNested}
     />
   ) : (
     <DynamicModComponentListItem
-      key={`dynamic-${extension.uuid}`}
-      modComponentFormState={extension}
+      key={`dynamic-${modComponent.uuid}`}
+      modComponentFormState={modComponent}
       isAvailable={
-        !availableDynamicIds || availableDynamicIds.includes(extension.uuid)
+        !availableDynamicIds || availableDynamicIds.includes(modComponent.uuid)
       }
       isNested={isNested}
     />

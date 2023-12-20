@@ -136,7 +136,8 @@ const DataPanel: React.FC = () => {
     true,
   );
 
-  const documentBodyName = joinPathParts(brickPath, "config.body");
+  const documentBodyFieldName = joinPathParts(brickPath, "config.body");
+  const brickCommentsFieldName = joinPathParts(brickPath, "comments");
 
   const outputObj: JsonObject =
     record !== undefined && "output" in record
@@ -358,7 +359,7 @@ const DataPanel: React.FC = () => {
                   />
                 ) : (
                   <DocumentPreview
-                    documentBodyName={documentBodyName}
+                    documentBodyName={documentBodyFieldName}
                     activeElement={nodePreviewActiveElement}
                     setActiveElement={setNodePreviewActiveElement}
                     menuBoundary={popupBoundary}
@@ -390,13 +391,17 @@ const DataPanel: React.FC = () => {
                 </Alert>
               )}
               <DocumentOutline
-                documentBodyName={documentBodyName}
+                documentBodyName={documentBodyFieldName}
                 activeElement={nodePreviewActiveElement}
                 setActiveElement={setNodePreviewActiveElement}
               />
             </ErrorBoundary>
           </DataTab>
-          <CommentsTab comments={brickConfig?.comments} />
+          <CommentsTab
+            brickId={brickConfig.id}
+            modId={activeElement.recipe?.id}
+            brickCommentsFieldName={brickCommentsFieldName}
+          />
         </Tab.Content>
       </div>
     </Tab.Container>

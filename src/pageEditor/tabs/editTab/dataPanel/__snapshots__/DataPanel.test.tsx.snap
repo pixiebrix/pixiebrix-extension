@@ -367,11 +367,11 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
           class="fade tabPane tab-pane"
           role="tabpanel"
         >
-          <em
-            class="text-muted"
-          >
-            No comments available
-          </em>
+          <textarea
+            class="form-control"
+            name="extension.blockPipeline.1.comments"
+            rows="1"
+          />
         </div>
       </div>
     </div>
