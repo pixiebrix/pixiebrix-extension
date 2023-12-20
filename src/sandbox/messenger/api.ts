@@ -38,7 +38,7 @@ export default loadSandbox;
 
 async function isSandboxed(): Promise<boolean> {
   const { sandboxedCode } = await getSettingsState();
-  return sandboxedCode;
+  return Boolean(sandboxedCode);
 }
 
 export async function ping() {
