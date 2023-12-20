@@ -53,11 +53,11 @@ async function convert({
   }
 
   if (sourceFormat === "html" && targetFormat === "text") {
-    const { convert } = await import(
+    const { convert: htmlToText } = await import(
       /* webpackChunkName: "html-to-text" */ "html-to-text"
     );
 
-    return convert(input);
+    return htmlToText(input);
   }
 
   if (sourceFormat === "markdown" && targetFormat === "html") {
