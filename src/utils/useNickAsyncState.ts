@@ -32,7 +32,7 @@ function useNickAsyncState<T = unknown>(
       }
 
       if (currentState.asyncSlice.isLoading) {
-        return currentState.asyncSlice.data;
+        return currentState.asyncSlice.currentData;
       }
     }
 
