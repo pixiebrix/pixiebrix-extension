@@ -638,3 +638,10 @@ export async function reactivateTab(): Promise<void> {
   // Force navigate event even though the href hasn't changed
   await handleNavigate({ force: true });
 }
+
+export function initNavigation() {
+  window.navigation?.addEventListener("navigate", async (event) => {
+    // Delay slightly to avoid catching events that navigate away from the page
+    setTimeout(handleNavigate, 0);
+  });
+}

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { reactivateTab, handleNavigate } from "@/contentScript/messenger/api";
+import { reactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/utils/extensionUtils";
 import { type Target } from "@/types/messengerTypes";
 import { canAccessTab } from "@/permissions/permissionsUtils";
@@ -50,12 +50,6 @@ async function traceNavigation(target: Target): Promise<void> {
 async function onNavigation({ tabId, frameId }: Target): Promise<void> {
   if (syncFlagOn("navigation-trace")) {
     await traceNavigation({ tabId, frameId });
-  }
-
-  if (await canAccessTab({ tabId, frameId })) {
-    // The content script will already be injected, so we don't have to call ensureContentScript before messaging the
-    // content script with handleNavigate.
-    handleNavigate({ tabId, frameId });
   }
 }
 

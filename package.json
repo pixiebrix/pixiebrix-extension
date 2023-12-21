@@ -195,6 +195,7 @@
     "@testing-library/user-event": "^14.5.1",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/chrome": "^0.0.216",
+    "@types/dom-navigation": "^1.0.3",
     "@types/dompurify": "^3.0.5",
     "@types/downloadjs": "^1.4.6",
     "@types/gapi": "0.0.47",
