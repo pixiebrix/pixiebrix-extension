@@ -23,7 +23,6 @@ import "@/extensionContext";
 import "@/development/darkMode.js";
 
 import { initMessengerLogging } from "@/development/messengerLogging";
-import registerMessenger from "@/pageEditor/messenger/registration";
 
 import ReactDOM from "react-dom";
 import React from "react";
@@ -39,7 +38,6 @@ markAppStart();
 void initMessengerLogging();
 void initRuntimeLogging();
 void initPerformanceMonitoring();
-registerMessenger();
 watchNavigation();
 initToaster();
 

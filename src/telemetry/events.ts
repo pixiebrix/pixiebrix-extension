@@ -23,6 +23,7 @@ export const Events = {
 
   BRICK_ADD: "BrickAdd",
   BRICK_DELETE: "BrickDelete",
+  BRICK_COMMENTS_UPDATE: "BrickCommentsUpdate",
 
   BROWSER_ACTION_RESTRICTED_URL: "BrowserActionRestrictedUrl",
 
