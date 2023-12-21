@@ -35,16 +35,15 @@ import { useAsyncState } from "@/hooks/common";
 import serviceRegistry from "@/integrations/registry";
 import blockRegistry from "@/bricks/registry";
 import extensionPointRegistry from "@/starterBricks/registry";
-import { fetch } from "@/hooks/fetch";
-import { type EditablePackageMetadata } from "@/types/contract";
 import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
 import notify from "@/utils/notify";
 import BrickHistory from "@/extensionConsole/pages/brickEditor/BrickHistory";
 import { useParams } from "react-router";
 import LogCard from "@/components/logViewer/LogCard";
-import { type Metadata } from "@/types/registryTypes";
+import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { isMac } from "@/utils/browserUtils";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import { appApi } from "@/services/api";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -73,18 +72,37 @@ interface OwnProps {
   showLogs?: boolean;
 }
 
-function useOpenEditorTab() {
-  return useCallback(async (id: string) => {
-    // Call to translate the brick registry id into the editable package id
-    const available = await fetch<EditablePackageMetadata[]>("/api/bricks/");
-    const brick = available.find((x) => x.name === id);
-    if (brick) {
-      console.debug("Open editor for brick: %s", id, { brick });
-      window.open(getExtensionConsoleUrl(`workshop/bricks/${brick.id}`));
-    } else {
-      notify.warning(`You cannot edit brick: ${id}`);
-    }
-  }, []);
+export function useOpenEditorTab(): (id: RegistryId) => Promise<void> {
+  const [getEditablePackages] =
+    appApi.endpoints.getEditablePackages.useLazyQuery();
+
+  return useCallback(
+    async (brickId: RegistryId) => {
+      let brick;
+
+      try {
+        const editablePackages = await getEditablePackages(
+          undefined,
+          true,
+        ).unwrap();
+        brick = editablePackages.find((x) => x.name === brickId);
+      } catch (error) {
+        notify.error({
+          message: `Something went wrong while opening ${brickId}`,
+          error,
+        });
+        return;
+      }
+
+      if (brick) {
+        console.debug("Open editor for brick: %s", brickId, { brick });
+        window.open(getExtensionConsoleUrl(`workshop/bricks/${brick.id}`));
+      } else {
+        notify.warning(`You cannot edit brick: ${brickId}`);
+      }
+    },
+    [getEditablePackages],
+  );
 }
 
 const Editor = ({ showLogs = true }: OwnProps) => {
