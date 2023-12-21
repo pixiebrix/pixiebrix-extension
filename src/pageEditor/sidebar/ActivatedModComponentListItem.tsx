@@ -72,11 +72,11 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
   const activeModId = useSelector(selectActiveRecipeId);
   const activeElement = useSelector(selectActiveElement);
   const isActive = activeElement?.uuid === modComponent.id;
-  // Get the selected recipe id, or the recipe id of the selected item
-  const recipeId = activeModId ?? activeElement?.recipe?.id;
+  // Get the selected mod id, or the mod id of the selected mod component
+  const modId = activeModId ?? activeElement?.recipe?.id;
   // Set the alternate background if this item isn't active, but either its recipe or another item in its recipe is active
-  const hasRecipeBackground =
-    !isActive && recipeId && modComponent._recipe?.id === recipeId;
+  const hasActiveModBackground =
+    !isActive && modId && modComponent._recipe?.id === modId;
 
   const selectHandler = useCallback(
     async (modComponent: ModComponentBase) => {
@@ -86,7 +86,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           extensionId: modComponent.id,
         });
 
-        const state = await extensionToFormState(modComponent);
+        const modComponentFormState = await extensionToFormState(modComponent);
 
         // Initialize mod options schema if needed
         if (modComponent._recipe) {
@@ -95,7 +95,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
             true,
           );
           if (modDefinition) {
-            state.optionsDefinition =
+            modComponentFormState.optionsDefinition =
               modDefinition.options == null
                 ? emptyModOptionsDefinitionFactory()
                 : {
@@ -110,7 +110,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           }
         }
 
-        dispatch(actions.selectInstalled(state));
+        dispatch(actions.selectInstalled(modComponentFormState));
         dispatch(actions.checkActiveElementAvailability());
 
         if (type === "actionPanel") {
@@ -143,7 +143,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
   return (
     <ListGroup.Item
       className={cx(styles.root, {
-        [styles.recipeBackground ?? ""]: hasRecipeBackground,
+        [styles.recipeBackground ?? ""]: hasActiveModBackground,
       })}
       action
       active={isActive}
