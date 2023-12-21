@@ -87,16 +87,21 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
 
     return (
       analysisAnnotations
-        .filter((x) => !ignoreAnalysisIds.includes(x.analysisId))
+        .filter(
+          (annotation) => !ignoreAnalysisIds.includes(annotation.analysisId),
+        )
         // Annotations from redux can get out of sync with the current state of the field
         // Check that the value from redux matches the current formik value before showing
         // See: https://github.com/pixiebrix/pixiebrix-extension/pull/6846
-        .filter((x) => {
-          if (typeof x.detail === "object" && "expression" in x.detail) {
-            return x.detail.expression === value;
+        .filter((annotation) => {
+          if (
+            typeof annotation.detail === "object" &&
+            "expression" in annotation.detail
+          ) {
+            return annotation.detail.expression === value;
           }
 
-          return x.detail === value;
+          return annotation.detail === value;
         })
         .map(({ message, type, actions }) => {
           const fieldAnnotation: FieldAnnotation = {
