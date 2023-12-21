@@ -185,9 +185,6 @@ class FormValidator<
   }
 
   isValid(schema: S, formData: T | undefined): boolean {
-    // XXX: technically we may want to read from $schema to determine which draft version to validate against
-    // Draft 7 is the default for RJSF: https://rjsf-team.github.io/react-jsonschema-form/docs/usage/validation/#custom-meta-schema-validation
-
     if (!this.isValidSchema(schema)) {
       return false;
     }
