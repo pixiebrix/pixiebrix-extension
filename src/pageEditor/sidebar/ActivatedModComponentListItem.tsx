@@ -86,12 +86,12 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           extensionId: modComponent.id,
         });
 
-        const state = await extensionToFormState(extension);
+        const state = await extensionToFormState(modComponent);
 
         // Initialize mod options schema if needed
-        if (extension._recipe) {
+        if (modComponent._recipe) {
           const { data: modDefinition } = await getModDefinition(
-            { recipeId: extension._recipe.id },
+            { recipeId: modComponent._recipe.id },
             true,
           );
           if (modDefinition) {
