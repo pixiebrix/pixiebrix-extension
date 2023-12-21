@@ -17,44 +17,35 @@
 
 import { useOpenEditorTab } from "@/extensionConsole/pages/brickEditor/Editor";
 import { editablePackageMetadataFactory } from "@/testUtils/factories/registryFactories";
-import { renderHook } from "@testing-library/react-hooks";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import { validateRegistryId } from "@/types/helpers";
 import notify from "@/utils/notify";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
+import { renderHook } from "@/extensionConsole/testHelpers";
 
-const editablePackage = editablePackageMetadataFactory();
-jest.mock("@/services/api", () => ({
-  appApi: {
-    endpoints: {
-      getEditablePackages: {
-        useLazyQuery: jest.fn(() => [
-          jest.fn(() => {
-            return {
-              unwrap: jest.fn(() => [editablePackage]),
-            };
-          }),
-        ]),
-      },
-    },
-  },
-}));
+const axiosMock = new MockAdapter(axios);
+
 describe("Editor", () => {
   describe("useOpenEditorTab hook", () => {
     let windowOpenSpy: jest.SpyInstance;
     let notifyWarningSpy: jest.SpyInstance;
+    let notifyErrorSpy: jest.SpyInstance;
 
     beforeEach(() => {
       windowOpenSpy = jest.spyOn(window, "open");
       notifyWarningSpy = jest.spyOn(notify, "warning");
+      notifyErrorSpy = jest.spyOn(notify, "error");
     });
 
     afterEach(() => {
       jest.clearAllMocks();
     });
 
-    it("returns a function that opens the edit tab when brick is editable", async () => {
+    it("opens the edit tab when brick is editable", async () => {
+      const editablePackage = editablePackageMetadataFactory();
+      axiosMock.onGet("/api/bricks/").reply(200, [editablePackage]);
+
       const { result } = renderHook(() => useOpenEditorTab());
       const openEditorTab = result.current;
       await openEditorTab(editablePackage.name);
@@ -63,12 +54,25 @@ describe("Editor", () => {
       );
     });
 
-    it("returns a function that warns and does not open the edit tab with a brick is not editable", async () => {
+    it("warns and does not open the edit tab with a brick is not editable", async () => {
+      axiosMock.onGet("/api/bricks/").reply(200, []);
+
       const { result } = renderHook(() => useOpenEditorTab());
       const openEditorTab = result.current;
       await openEditorTab(validateRegistryId("@test/non-editable-registry-id"));
       expect(windowOpenSpy).toHaveBeenCalledTimes(0);
       expect(notifyWarningSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it("displays error when request error", async () => {
+      axiosMock.onGet("/api/bricks/").reply(500);
+
+      const { result } = renderHook(() => useOpenEditorTab());
+      const openEditorTab = result.current;
+      await openEditorTab(validateRegistryId("@test/non-editable-registry-id"));
+      expect(windowOpenSpy).toHaveBeenCalledTimes(0);
+      expect(notifyErrorSpy).toHaveBeenCalledTimes(1);
+      expect(notifyWarningSpy).toHaveBeenCalledTimes(0);
     });
   });
 });
