@@ -16,14 +16,14 @@
  */
 
 import React from "react";
-import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/pageEditor/testHelpers";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-import { authActions } from "@/auth/authSlice";
 import ActivatedModComponentListItem from "@/pageEditor/sidebar/ActivatedModComponentListItem";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
-import { authStateFactory } from "@/testUtils/factories/authFactories";
+import { screen, waitFor } from "@testing-library/react";
+import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("@/pageEditor/starterBricks/adapter", () => {
   const actual = jest.requireActual("@/pageEditor/starterBricks/adapter");
@@ -32,6 +32,14 @@ jest.mock("@/pageEditor/starterBricks/adapter", () => {
     selectType: jest.fn().mockResolvedValue("menuItem"),
   };
 });
+
+jest.mock("@/contentScript/messenger/api", () => ({
+  enableOverlay: jest.fn(),
+  disableOverlay: jest.fn(),
+}));
+
+const enableOverlayMock = jest.mocked(enableOverlay);
+const disableOverlayMock = jest.mocked(disableOverlay);
 
 beforeAll(() => {
   // When a FontAwesomeIcon gets a title, it generates a random id, which breaks the snapshot.
@@ -43,55 +51,76 @@ afterAll(() => {
 });
 
 describe("ActivatedModComponentListItem", () => {
-  test("it renders not active element", async () => {
+  it("renders not active element", async () => {
     const modComponent = modComponentFactory();
-    const formState = formStateFactory();
-    const { asFragment } = render(
-      <ActivatedModComponentListItem
-        extension={modComponent}
-        recipes={[]}
-        isAvailable
-      />,
-      {
-        initialValues: formState,
-        setupRedux(dispatch) {
-          dispatch(authActions.setAuth(authStateFactory()));
-
-          // The addElement also sets the active element
-          dispatch(editorActions.addElement(formStateFactory()));
-
-          // Add new element to deactivate the previous one
-          dispatch(editorActions.addElement(formState));
-          // Remove the active element and stay with one inactive item
-          dispatch(editorActions.removeElement(formState.uuid));
-        },
-      },
+    render(
+      <ActivatedModComponentListItem modComponent={modComponent} isAvailable />,
     );
-    await waitForEffect();
 
-    expect(asFragment()).toMatchSnapshot();
+    const button = await screen.findByRole("button", {
+      name: modComponent.label,
+    });
+    expect(button).toBeVisible();
+    expect(button).not.toHaveClass("active");
   });
 
-  test("it renders active element", async () => {
+  it("renders active element", async () => {
+    // Note: This is a contrived situation, because in the real app, a
+    // form state element will always be created when a mod component
+    // is selected (active) in the sidebar
     const modComponent = modComponentFactory();
-    const formState = formStateFactory();
-    const { asFragment } = render(
-      <ActivatedModComponentListItem
-        extension={modComponent}
-        recipes={[]}
-        isAvailable
-      />,
+    const formState = formStateFactory({
+      uuid: modComponent.id,
+    });
+    render(
+      <ActivatedModComponentListItem modComponent={modComponent} isAvailable />,
       {
-        initialValues: formState,
         setupRedux(dispatch) {
-          dispatch(authActions.setAuth(authStateFactory()));
           // The addElement also sets the active element
           dispatch(editorActions.addElement(formState));
         },
       },
     );
-    await waitForEffect();
 
-    expect(asFragment()).toMatchSnapshot();
+    const button = await screen.findByRole("button", {
+      name: modComponent.label,
+    });
+    expect(button).toBeVisible();
+    // Wait for Redux side effects
+    await waitFor(() => {
+      expect(button).toHaveClass("active");
+    });
+  });
+
+  it("shows not-available icon properly", async () => {
+    const modComponent = modComponentFactory();
+    render(
+      <ActivatedModComponentListItem
+        modComponent={modComponent}
+        isAvailable={false}
+      />,
+    );
+
+    expect(
+      await screen.findByRole("img", { name: "Not available on page" }),
+    ).toBeVisible();
+  });
+
+  it("handles mouseover action properly for button mod components", async () => {
+    const modComponent = modComponentFactory();
+    render(
+      <ActivatedModComponentListItem modComponent={modComponent} isAvailable />,
+    );
+
+    const button = await screen.findByRole("button", {
+      name: modComponent.label,
+    });
+    await userEvent.hover(button);
+
+    expect(enableOverlayMock).toHaveBeenCalledTimes(1);
+
+    await userEvent.unhover(button);
+
+    expect(disableOverlayMock).toHaveBeenCalledTimes(1);
   });
 });

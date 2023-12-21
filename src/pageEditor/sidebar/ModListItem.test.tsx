@@ -16,102 +16,68 @@
  */
 
 import React from "react";
-import extensionsSlice from "@/store/extensionsSlice";
-import {
-  createRenderFunctionWithRedux,
-  type RenderFunctionWithRedux,
-} from "@/testUtils/testHelpers";
-import {
-  editorSlice,
-  initialState as editorInitialState,
-} from "@/pageEditor/slices/editorSlice";
-import ModListItem, { type ModListItemProps } from "./ModListItem";
-import { type EditorState } from "@/pageEditor/pageEditorTypes";
-import { type ModComponentState } from "@/store/extensionsTypes";
-import { validateSemVerString } from "@/types/helpers";
-import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+import ModListItem from "./ModListItem";
 import { screen } from "@testing-library/react";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { render } from "@/pageEditor/testHelpers";
+import { Accordion, ListGroup } from "react-bootstrap";
 
-let renderModListItem: RenderFunctionWithRedux<
-  {
-    editor: EditorState;
-    options: ModComponentState;
-  },
-  ModListItemProps
->;
+describe("ModListItem", () => {
+  test("it renders expanded", async () => {
+    const modMetadata = modMetadataFactory();
+    render(
+      <Accordion defaultActiveKey={modMetadata.id}>
+        <ListGroup>
+          <ModListItem
+            modMetadata={modMetadata}
+            onSave={jest.fn()}
+            isSaving={false}
+            onReset={jest.fn()}
+            onDeactivate={jest.fn()}
+            onClone={jest.fn()}
+          >
+            <div>test children</div>
+          </ModListItem>
+        </ListGroup>
+      </Accordion>,
+    );
 
-beforeEach(() => {
-  const recipe = defaultModDefinitionFactory();
-  const recipeId = recipe.metadata.id;
-  // eslint-disable-next-line testing-library/no-render-in-lifecycle -- higher order function, not the actual render
-  renderModListItem = createRenderFunctionWithRedux({
-    reducer: {
-      editor: editorSlice.reducer,
-      options: extensionsSlice.reducer,
-    },
-    preloadedState: {
-      editor: {
-        ...editorInitialState,
-        expandedRecipeId: recipeId,
-      },
-    },
-    ComponentUnderTest: ModListItem,
-    defaultProps: {
-      recipe,
-      children: <div>test children</div>,
-      installedVersion: validateSemVerString("1.0.0"),
-      onSave: jest.fn(),
-      isSaving: false,
-      onReset: jest.fn(),
-      onDeactivate: jest.fn(),
-      onClone: jest.fn(),
-    },
-  });
-});
-
-test("it renders", () => {
-  const { asFragment } = renderModListItem();
-
-  expect(asFragment()).toMatchSnapshot();
-});
-
-test("renders with empty recipe", () => {
-  const { asFragment } = renderModListItem({
-    propsOverride: {
-      recipe: undefined,
-    },
+    expect(await screen.findByText(modMetadata.name)).toBeVisible();
+    // eslint-disable-next-line testing-library/no-node-access -- Accordion collapse state
+    expect(screen.getByText("test children").parentElement).toHaveClass(
+      "collapse show",
+    );
   });
 
-  expect(asFragment()).toMatchSnapshot();
-});
+  test("it renders not expanded", async () => {
+    const modMetadata = modMetadataFactory();
+    render(
+      <Accordion defaultActiveKey={null}>
+        <ListGroup>
+          <ModListItem
+            modMetadata={modMetadata}
+            onSave={jest.fn()}
+            isSaving={false}
+            onReset={jest.fn()}
+            onDeactivate={jest.fn()}
+            onClone={jest.fn()}
+          >
+            <div>test children</div>
+          </ModListItem>
+        </ListGroup>
+      </Accordion>,
+    );
 
-test("renders with empty metadata", () => {
-  const recipe = defaultModDefinitionFactory({ metadata: null });
-  const { asFragment } = renderModListItem({
-    propsOverride: {
-      recipe,
-    },
+    expect(await screen.findByText(modMetadata.name)).toBeVisible();
+    // eslint-disable-next-line testing-library/no-node-access -- Accordion collapse state
+    expect(screen.getByText("test children").parentElement).toHaveClass(
+      "collapse",
+    );
+    // eslint-disable-next-line testing-library/no-node-access -- Accordion collapse state
+    expect(screen.getByText("test children").parentElement).not.toHaveClass(
+      "show",
+    );
   });
 
-  expect(asFragment()).toMatchSnapshot();
-});
-
-test("renders the warning icon when has update", () => {
-  const recipe = defaultModDefinitionFactory({
-    metadata: metadataFactory({
-      version: validateSemVerString("2.0.0"),
-    }),
-  });
-  renderModListItem({
-    propsOverride: {
-      recipe,
-    },
-  });
-
-  const warningIcon = screen.getByTitle(
-    "You are editing version 1.0.0 of this mod, the latest version is 2.0.0.",
-  );
-
-  expect(warningIcon).toBeInTheDocument();
+  // TODO: Add a test for the update warning indicator icon, after the feature is re-enabled
 });

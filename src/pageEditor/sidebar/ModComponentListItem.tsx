@@ -15,18 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ModDefinition } from "@/types/modDefinitionTypes";
 import React from "react";
-import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { isModComponentBase } from "./common";
+import { isModComponentBase, type ModComponentSidebarItem } from "./common";
 import DynamicModComponentListItem from "./DynamicModComponentListItem";
 import ActivatedModComponentListItem from "./ActivatedModComponentListItem";
-import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 
 type ModComponentListItemProps = {
-  extension: ModComponentBase | ModComponentFormState;
-  recipes: ModDefinition[];
+  modComponentSidebarItem: ModComponentSidebarItem;
   availableInstalledIds: UUID[];
   availableDynamicIds: UUID[];
   isNested?: boolean;
@@ -35,28 +31,26 @@ type ModComponentListItemProps = {
 const ModComponentListItem: React.FunctionComponent<
   ModComponentListItemProps
 > = ({
-  extension,
-  recipes,
+  modComponentSidebarItem,
   availableInstalledIds,
   availableDynamicIds,
   isNested = false,
 }) =>
-  isModComponentBase(extension) ? (
+  isModComponentBase(modComponentSidebarItem) ? (
     <ActivatedModComponentListItem
-      key={`installed-${extension.id}`}
-      extension={extension}
-      recipes={recipes}
+      modComponent={modComponentSidebarItem}
       isAvailable={
-        !availableInstalledIds || availableInstalledIds.includes(extension.id)
+        !availableInstalledIds ||
+        availableInstalledIds.includes(modComponentSidebarItem.id)
       }
       isNested={isNested}
     />
   ) : (
     <DynamicModComponentListItem
-      key={`dynamic-${extension.uuid}`}
-      modComponentFormState={extension}
+      modComponentFormState={modComponentSidebarItem}
       isAvailable={
-        !availableDynamicIds || availableDynamicIds.includes(extension.uuid)
+        !availableDynamicIds ||
+        availableDynamicIds.includes(modComponentSidebarItem.uuid)
       }
       isNested={isNested}
     />
