@@ -40,7 +40,7 @@ import notify from "@/utils/notify";
 import BrickHistory from "@/extensionConsole/pages/brickEditor/BrickHistory";
 import { useParams } from "react-router";
 import LogCard from "@/components/logViewer/LogCard";
-import { type Metadata } from "@/types/registryTypes";
+import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { isMac } from "@/utils/browserUtils";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import { appApi } from "@/services/api";
@@ -72,12 +72,12 @@ interface OwnProps {
   showLogs?: boolean;
 }
 
-function useOpenEditorTab() {
+export function useOpenEditorTab(): (id: RegistryId) => Promise<void> {
   const [getEditablePackages] =
     appApi.endpoints.getEditablePackages.useLazyQuery();
 
   return useCallback(
-    async (id: string) => {
+    async (brickId: RegistryId) => {
       let brick;
 
       try {
@@ -85,19 +85,20 @@ function useOpenEditorTab() {
           undefined,
           true,
         ).unwrap();
-        brick = editablePackages.find((x) => x.name === id);
+        brick = editablePackages.find((x) => x.name === brickId);
       } catch (error) {
         notify.error({
-          message: `Something went wrong while opening ${id}`,
+          message: `Something went wrong while opening ${brickId}`,
           error,
         });
+        return;
       }
 
       if (brick) {
-        console.debug("Open editor for brick: %s", id, { brick });
+        console.debug("Open editor for brick: %s", brickId, { brick });
         window.open(getExtensionConsoleUrl(`workshop/bricks/${brick.id}`));
       } else {
-        notify.warning(`You cannot edit brick: ${id}`);
+        notify.warning(`You cannot edit brick: ${brickId}`);
       }
     },
     [getEditablePackages],
