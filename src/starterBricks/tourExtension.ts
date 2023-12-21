@@ -129,11 +129,14 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     unregisterTours(this.modComponents.map((x) => x.id));
   }
 
-  inputSchema: Schema = propertiesToSchema({
-    tour: {
-      $ref: "https://app.pixiebrix.com/schemas/effect#",
+  inputSchema: Schema = propertiesToSchema(
+    {
+      tour: {
+        $ref: "https://app.pixiebrix.com/schemas/effect#",
+      },
     },
-  });
+    ["tour"],
+  );
 
   async getBricks(
     extension: ResolvedModComponent<TourConfig>,

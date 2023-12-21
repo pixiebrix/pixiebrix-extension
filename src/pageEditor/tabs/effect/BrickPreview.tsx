@@ -135,16 +135,16 @@ const previewSlice = createSlice({
   },
 });
 
-const BlockPreview: React.FunctionComponent<{
-  blockConfig: BrickConfig;
+const BrickPreview: React.FunctionComponent<{
+  brickConfig: BrickConfig;
   extensionPoint: BaseExtensionPointState;
   traceRecord: TraceRecord;
   previewRefreshMillis?: 250;
   // eslint-disable-next-line complexity
-}> = ({ blockConfig, extensionPoint, traceRecord, previewRefreshMillis }) => {
+}> = ({ brickConfig, extensionPoint, traceRecord, previewRefreshMillis }) => {
   const [{ isRunning, output }, dispatch] = useReducer(previewSlice.reducer, {
     ...initialState,
-    outputKey: blockConfig.outputKey,
+    outputKey: brickConfig.outputKey,
   });
 
   const { values } = useFormikContext<ModComponentFormState>();
@@ -153,21 +153,21 @@ const BlockPreview: React.FunctionComponent<{
     "integrationDependencies",
   );
 
-  const [blockInfo, blockLoading, blockError] = usePreviewInfo(blockConfig.id);
+  const [brickInfo, brickLoading, brickError] = usePreviewInfo(brickConfig.id);
 
   // This defaults to "inherit" as described in the doc, see BrickConfig.rootMode
-  const blockRootMode = blockConfig.rootMode ?? "inherit";
+  const brickRootMode = brickConfig.rootMode ?? "inherit";
 
   const debouncedRun = useDebouncedCallback(
-    async (blockConfig: BrickConfig, context: BrickArgsContext) => {
+    async (brickConfig: BrickConfig, context: BrickArgsContext) => {
       dispatch(previewSlice.actions.startRun());
-      const { outputKey } = blockConfig;
+      const { outputKey } = brickConfig;
 
       try {
         const output = await runBlock(thisTab, {
           apiVersion,
           blockConfig: {
-            ...removeEmptyValues(blockConfig),
+            ...removeEmptyValues(brickConfig),
             if: undefined,
           },
           context: {
@@ -188,16 +188,16 @@ const BlockPreview: React.FunctionComponent<{
 
   const context = traceRecord?.templateContext;
 
-  const showTraceWarning = !traceRecord && blockInfo?.traceOptional;
+  const showTraceWarning = !traceRecord && brickInfo?.traceOptional;
 
   useEffect(() => {
-    if ((context && blockInfo?.isPure) || blockInfo?.traceOptional) {
-      void debouncedRun(blockConfig, context as unknown as BrickArgsContext);
+    if ((context && brickInfo?.isPure) || brickInfo?.traceOptional) {
+      void debouncedRun(brickConfig, context as unknown as BrickArgsContext);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
-  }, [debouncedRun, blockConfig, blockInfo, objectHash(context ?? {})]);
+  }, [debouncedRun, brickConfig, brickInfo, objectHash(context ?? {})]);
 
-  if (blockInfo?.type === "renderer") {
+  if (brickInfo?.type === "renderer") {
     return (
       <div className="text-muted">
         Output previews are not currently supported for renderers
@@ -205,7 +205,7 @@ const BlockPreview: React.FunctionComponent<{
     );
   }
 
-  if (blockRootMode === "element") {
+  if (brickRootMode === "element") {
     return (
       <div className="text-muted">
         Output Preview is not currently supported when brick is configured with
@@ -214,7 +214,7 @@ const BlockPreview: React.FunctionComponent<{
     );
   }
 
-  if (blockRootMode === "inherit") {
+  if (brickRootMode === "inherit") {
     return (
       <div className="text-muted">
         Output Preview is not currently supported when brick is configured with
@@ -223,7 +223,7 @@ const BlockPreview: React.FunctionComponent<{
     );
   }
 
-  if (blockLoading || isRunning) {
+  if (brickLoading || isRunning) {
     return (
       <div>
         {showTraceWarning && traceWarning}
@@ -232,16 +232,16 @@ const BlockPreview: React.FunctionComponent<{
     );
   }
 
-  if (blockError) {
+  if (brickError) {
     return (
       <div className="text-danger">
         Error loading brick from registry
-        {getErrorMessage(blockError)}
+        {getErrorMessage(brickError)}
       </div>
     );
   }
 
-  if (!blockInfo?.traceOptional && !traceRecord) {
+  if (!brickInfo?.traceOptional && !traceRecord) {
     return (
       <div className="text-info">
         <FontAwesomeIcon icon={faInfoCircle} /> Run the brick once to enable
@@ -256,13 +256,13 @@ const BlockPreview: React.FunctionComponent<{
     <div>
       {showTraceWarning && traceWarning}
 
-      {blockInfo != null && !blockInfo.isPure && (
+      {brickInfo != null && !brickInfo.isPure && (
         <Button
           variant="info"
           size="sm"
           disabled={!traceRecord}
           onClick={() => {
-            void debouncedRun(blockConfig, context as BrickArgsContext);
+            void debouncedRun(brickConfig, context as BrickArgsContext);
           }}
         >
           <FontAwesomeIcon icon={faSync} /> Refresh Preview
@@ -290,4 +290,4 @@ const BlockPreview: React.FunctionComponent<{
   );
 };
 
-export default BlockPreview;
+export default BrickPreview;

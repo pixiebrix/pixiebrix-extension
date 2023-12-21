@@ -18,11 +18,11 @@
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import ModVariableSchemasVisitor from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
-import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import { toExpression } from "@/utils/expressionUtils";
 
 beforeAll(() => {
-  registerBuiltinBlocks();
+  registerBuiltinBricks();
 });
 
 describe("ModVariableSchemasVisitor", () => {

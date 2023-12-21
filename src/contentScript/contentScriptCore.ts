@@ -23,7 +23,7 @@ import "@/extensionContext";
 import { initMessengerLogging } from "@/development/messengerLogging";
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import registerMessenger from "@/contentScript/messenger/registration";
-import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import brickRegistry from "@/bricks/registry";
 import { handleNavigate, initNavigation } from "@/contentScript/lifecycle";
@@ -57,7 +57,7 @@ export async function init(): Promise<void> {
   void initMessengerLogging();
   registerMessenger();
   registerExternalMessenger();
-  registerBuiltinBlocks();
+  registerBuiltinBricks();
   registerContribBlocks();
   // Since 1.8.2, the brick registry was de-coupled from the runtime to avoid circular dependencies
   initRuntime(brickRegistry);

@@ -36,7 +36,7 @@ import { cloneDeep, partial } from "lodash";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 import { setContext } from "@/testUtils/detectPageMock";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 
 import { toExpression } from "@/utils/expressionUtils";
 
@@ -45,7 +45,7 @@ setContext("contentScript");
 const fromJS = partial(nativeFromJS, blockRegistry);
 
 beforeAll(() => {
-  registerBuiltinBlocks();
+  registerBuiltinBricks();
 });
 
 beforeEach(() => {

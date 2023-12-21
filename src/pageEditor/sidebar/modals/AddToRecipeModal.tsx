@@ -35,10 +35,10 @@ import Form, {
 import { object, string } from "yup";
 import RadioItemListWidget from "@/components/form/widgets/radioItemList/RadioItemListWidget";
 import { type RadioItem } from "@/components/form/widgets/radioItemList/radioItemListWidgetTypes";
-import { useDeactivateModComponent } from "@/pageEditor/hooks/useRemoveModComponent";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type RegistryId } from "@/types/registryTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
+import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 
 type FormState = {
   recipeId: RegistryId;
@@ -63,7 +63,7 @@ const AddToRecipeModal: React.FC = () => {
   );
   const recipeMetadatas = useSelector(selectInstalledRecipeMetadatas);
   const activeElement = useSelector(selectActiveElement);
-  const deactivateStandaloneMod = useDeactivateModComponent();
+  const removeModComponentFromStorage = useRemoveModComponentFromStorage();
 
   const recipeMetadataById = useMemo(() => {
     const result: Record<RegistryId, ModComponentBase["_recipe"]> = {};
@@ -104,9 +104,8 @@ const AddToRecipeModal: React.FC = () => {
         }),
       );
       if (!keepLocalCopy) {
-        await deactivateStandaloneMod({
+        await removeModComponentFromStorage({
           extensionId: elementId,
-          shouldShowConfirmation: false,
         });
       }
 

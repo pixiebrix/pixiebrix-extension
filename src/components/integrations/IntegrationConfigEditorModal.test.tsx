@@ -16,8 +16,8 @@
  */
 
 import React from "react";
-import { fromJS } from "@/services/factory";
-import IntegrationConfigEditorModal from "@/extensionConsole/pages/integrations/IntegrationConfigEditorModal";
+import { fromJS } from "@/integrations/UserDefinedIntegration";
+import IntegrationConfigEditorModal from "@/components/integrations/IntegrationConfigEditorModal";
 import { render, screen } from "@/extensionConsole/testHelpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 
@@ -27,7 +27,7 @@ import automationAnywhereYaml from "@contrib/integrations/automation-anywhere.ya
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
 import { type IntegrationConfig } from "@/integrations/integrationTypes";
-import { convertSchemaToConfigState } from "@/components/auth/AuthWidget";
+import { convertSchemaToConfigState } from "@/components/integrations/AuthWidget";
 import { within } from "@testing-library/react";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 

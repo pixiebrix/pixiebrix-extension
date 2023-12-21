@@ -23,14 +23,14 @@ import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
 import DataTabJsonTree from "@/pageEditor/tabs/editTab/dataPanel/DataTabJsonTree";
 
 const ConfigurationTab: React.FC<{ config: unknown }> = ({ config }) => (
-  <DataTab eventKey={DataPanelTabKey.BlockConfig}>
+  <DataTab eventKey={DataPanelTabKey.BrickConfig}>
     <div className="text-info">
       <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible to
       developers
     </div>
     <DataTabJsonTree
       data={config ?? {}}
-      tabKey={DataPanelTabKey.BlockConfig}
+      tabKey={DataPanelTabKey.BrickConfig}
       label="Configuration"
     />
   </DataTab>

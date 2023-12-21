@@ -28,11 +28,11 @@ import PipelineVisitor, {
 } from "@/bricks/PipelineVisitor";
 import pipelineSchema from "@schemas/pipeline.json";
 import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
-import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
+import blockRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import { isPipelineExpression, toExpression } from "@/utils/expressionUtils";
 
 class NormalizePipelineVisitor extends PipelineVisitor {
-  constructor(private readonly blockMap: TypedBlockMap) {
+  constructor(private readonly blockMap: TypedBrickMap) {
     super();
   }
 

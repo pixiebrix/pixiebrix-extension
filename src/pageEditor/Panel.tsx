@@ -18,7 +18,7 @@
 import React from "react";
 import store from "./store";
 import { Provider } from "react-redux";
-import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import registerEditors from "@/contrib/editors";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
@@ -28,7 +28,7 @@ import PanelContent from "@/pageEditor/PanelContent";
 // Register the built-in bricks
 registerEditors();
 registerContribBlocks();
-registerBuiltinBlocks();
+registerBuiltinBricks();
 
 // Register Widgets
 registerDefaultWidgets();

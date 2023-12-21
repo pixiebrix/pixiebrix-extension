@@ -28,10 +28,10 @@ import getMenuOptions from "./getMenuOptions";
 import { type JsonObject } from "type-fest";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
-import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 
 beforeAll(() => {
-  registerBuiltinBlocks();
+  registerBuiltinBricks();
 });
 
 describe("setting values", () => {

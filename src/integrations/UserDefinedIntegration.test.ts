@@ -18,7 +18,7 @@
 import automationAnywhere from "@contrib/integrations/automation-anywhere.yaml";
 import automationAnywhereOAuth2 from "@contrib/integrations/automation-anywhere-oauth2.yaml";
 import greenhouse from "@contrib/integrations/greenhouse.yaml";
-import { fromJS } from "@/services/factory";
+import { fromJS } from "@/integrations/UserDefinedIntegration";
 import { BusinessError } from "@/errors/businessErrors";
 import {
   type SanitizedConfig,
@@ -26,22 +26,20 @@ import {
   type IntegrationDefinition,
 } from "@/integrations/integrationTypes";
 
-describe("LocalDefinedService", () => {
+describe("UserDefinedIntegration", () => {
   test("includes version", () => {
-    const service = fromJS(
+    const integration = fromJS(
       automationAnywhere as unknown as IntegrationDefinition,
     );
-    expect(service.version).toBe("1.0.0");
-    expect(service.uiSchema).toMatchObject({
-      "ui:order": expect.toBeArrayOfSize(5),
-    });
+    expect(integration.version).toBe("1.0.0");
+    expect(integration.uiSchema["ui:order"]).toBeArrayOfSize(5);
   });
 
-  test("get origins for oauth2 service", () => {
-    const service = fromJS(
+  test("get origins for oauth2 integration", () => {
+    const integration = fromJS(
       automationAnywhereOAuth2 as unknown as IntegrationDefinition,
     );
-    const origins = service.getOrigins({
+    const origins = integration.getOrigins({
       controlRoomUrl: "https://controlroom.example.com",
     } as unknown as SanitizedConfig);
 
@@ -55,10 +53,10 @@ describe("LocalDefinedService", () => {
   test("get origins from oauth2 service using custom authConfigOrigin", () => {
     const authConfigOrigin = "https://authconfig.example.com";
 
-    const service = fromJS(
+    const integration = fromJS(
       automationAnywhereOAuth2 as unknown as IntegrationDefinition,
     );
-    const origins = service.getOrigins({
+    const origins = integration.getOrigins({
       controlRoomUrl: "https://controlroom.example.com",
       authConfigOrigin,
     } as unknown as SanitizedConfig);
@@ -71,10 +69,10 @@ describe("LocalDefinedService", () => {
   });
 
   test("excludes invalid base URL", () => {
-    const service = fromJS(
+    const integration = fromJS(
       automationAnywhereOAuth2 as unknown as IntegrationDefinition,
     );
-    const origins = service.getOrigins({
+    const origins = integration.getOrigins({
       controlRoomUrl: "",
     } as unknown as SanitizedConfig);
 
@@ -86,33 +84,33 @@ describe("LocalDefinedService", () => {
   });
 
   test("default client ID", () => {
-    const service = fromJS(
+    const integration = fromJS(
       automationAnywhereOAuth2 as unknown as IntegrationDefinition,
     );
-    const oauth2 = service.getOAuth2Context({} as unknown as SecretsConfig);
+    const oauth2 = integration.getOAuth2Context({} as unknown as SecretsConfig);
     expect(oauth2.client_id).toBe("g2qrB2fvyLYbotkb3zi9wwO5qjmje3eM");
   });
 
   test("custom client ID", () => {
     const clientId = "12345";
 
-    const service = fromJS(
+    const integration = fromJS(
       automationAnywhereOAuth2 as unknown as IntegrationDefinition,
     );
-    const oauth2 = service.getOAuth2Context({
+    const oauth2 = integration.getOAuth2Context({
       clientId,
     } as unknown as SecretsConfig);
     expect(oauth2.client_id).toBe(clientId);
   });
 });
 
-describe("LocalDefinedService.authenticateBasicRequest", () => {
+describe("UserDefinedIntegration.authenticateBasicRequest", () => {
   it("adds authorization header", () => {
-    const service = fromJS(greenhouse as unknown as IntegrationDefinition);
+    const integration = fromJS(greenhouse as unknown as IntegrationDefinition);
 
-    expect(service.isBasicHttpAuth).toBeTrue();
+    expect(integration.isBasicHttpAuth).toBeTrue();
 
-    const config = service.authenticateRequest(
+    const config = integration.authenticateRequest(
       { apiToken: "topsecret" } as unknown as SecretsConfig,
       { url: "/v1/candidates/", method: "get" },
     );
@@ -125,12 +123,12 @@ describe("LocalDefinedService.authenticateBasicRequest", () => {
   });
 
   it("requires value", () => {
-    const service = fromJS(greenhouse as unknown as IntegrationDefinition);
+    const integration = fromJS(greenhouse as unknown as IntegrationDefinition);
 
-    expect(service.isBasicHttpAuth).toBeTrue();
+    expect(integration.isBasicHttpAuth).toBeTrue();
 
     expect(() =>
-      service.authenticateRequest(
+      integration.authenticateRequest(
         { notTheKey: "topsecret" } as unknown as SecretsConfig,
         { url: "/v1/candidates/", method: "get" },
       ),

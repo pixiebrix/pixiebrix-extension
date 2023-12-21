@@ -395,7 +395,10 @@ export function normalizeModOptionsDefinition(
       ? modDefinitionSchema
       : // Handle case where schema is just the properties. That's the old format. Technically, this isn't possible
         // given the type signature. But be defensive because this method processes user-defined mod definitions.
-        propertiesToSchema(modDefinitionSchema as SchemaProperties);
+        propertiesToSchema(
+          modDefinitionSchema as SchemaProperties,
+          Object.keys(modDefinitionSchema as SchemaProperties),
+        );
 
   const uiSchema: UiSchema = optionsDefinition.uiSchema ?? {};
 

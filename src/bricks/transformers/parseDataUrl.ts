@@ -59,20 +59,23 @@ export class ParseDataUrl extends TransformerABC {
     ["url"],
   );
 
-  override outputSchema: Schema = propertiesToSchema({
-    mimeType: {
-      type: "string",
-      description: "The MIME media type",
+  override outputSchema: Schema = propertiesToSchema(
+    {
+      mimeType: {
+        type: "string",
+        description: "The MIME media type",
+      },
+      encoding: {
+        type: "string",
+        description: "The encoding used to decode the body",
+      },
+      body: {
+        type: "string",
+        description: "The body, decoded if decode flag was set",
+      },
     },
-    encoding: {
-      type: "string",
-      description: "The encoding used to decode the body",
-    },
-    body: {
-      type: "string",
-      description: "The body, decoded if decode flag was set",
-    },
-  });
+    ["mimeType", "encoding", "body"],
+  );
 
   // Pass true for decodeText to maintain backward compatability
   async transform({

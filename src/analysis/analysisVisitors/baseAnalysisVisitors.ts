@@ -21,7 +21,7 @@ import {
 } from "@/analysis/analysisTypes";
 import PipelineVisitor from "@/bricks/PipelineVisitor";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import blockRegistry, { type TypedBlockMap } from "@/bricks/registry";
+import blockRegistry, { type TypedBrickMap } from "@/bricks/registry";
 
 /**
  * A base class for creating analysis visitors.
@@ -61,7 +61,7 @@ export abstract class AnalysisVisitorABC
 }
 
 export abstract class AnalysisVisitorWithResolvedBricksABC extends AnalysisVisitorABC {
-  protected allBlocks: TypedBlockMap;
+  protected allBlocks: TypedBrickMap;
 
   override async run(extension: ModComponentFormState): Promise<void> {
     this.allBlocks = await blockRegistry.allTyped();

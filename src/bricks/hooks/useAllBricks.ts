@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import brickRegistry, { type TypedBlockMap } from "@/bricks/registry";
+import brickRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import { isEmpty } from "lodash";
 import { type RegistryChangeListener } from "@/registry/memoryRegistry";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
@@ -38,12 +38,12 @@ const subscribe = (callback: () => void) => {
  * Load the TypedBlockMap from the block registry, and listen for changes in the registry.
  */
 function useAllBricks(): {
-  allBlocks: TypedBlockMap;
+  allBricks: TypedBrickMap;
   isLoading: boolean;
 } {
   // Use useAsyncEffect and useState to handle the promise. Can't use useAsyncState because it requires that
   // the data is serializable because it uses RTK.
-  const [allTyped, setAllTyped] = useState<TypedBlockMap>(new Map());
+  const [allTyped, setAllTyped] = useState<TypedBrickMap>(new Map());
 
   const allTypedPromise = useSyncExternalStore(
     subscribe,
@@ -65,7 +65,7 @@ function useAllBricks(): {
   );
 
   return {
-    allBlocks: allTyped,
+    allBricks: allTyped,
     isLoading: isEmpty(allTyped),
   };
 }

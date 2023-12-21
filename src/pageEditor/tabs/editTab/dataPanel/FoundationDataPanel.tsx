@@ -61,7 +61,7 @@ const FoundationDataPanel: React.FC = () => {
               <Nav.Link eventKey={DataPanelTabKey.State}>State</Nav.Link>
             </Nav.Item>
             <Nav.Item className={dataPanelStyles.tabNav}>
-              <Nav.Link eventKey={DataPanelTabKey.BlockConfig}>
+              <Nav.Link eventKey={DataPanelTabKey.BrickConfig}>
                 Raw Foundation
               </Nav.Link>
             </Nav.Item>

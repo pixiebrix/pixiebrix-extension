@@ -22,7 +22,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { serializeError } from "serialize-error";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import registerBuiltinBlocks from "@/bricks/registerBuiltinBlocks";
+import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import {
   type RendererErrorPayload,
@@ -35,7 +35,7 @@ const blueprintId = registryIdFactory();
 
 describe("PanelBody", () => {
   beforeAll(() => {
-    registerBuiltinBlocks();
+    registerBuiltinBricks();
   });
 
   it("renders application error", () => {

@@ -35,35 +35,41 @@ export class ParseCsv extends TransformerABC {
     return true;
   }
 
-  inputSchema: Schema = propertiesToSchema({
-    content: {
-      type: "string",
-      description: "The contents of the CSV file",
-    },
-  });
-
-  override outputSchema: Schema = propertiesToSchema({
-    data: {
-      type: "array",
-      description:
-        "The rows of the CSV, with a property for each header/column",
-      items: {
-        type: "object",
-        additionalProperties: true,
+  inputSchema: Schema = propertiesToSchema(
+    {
+      content: {
+        type: "string",
+        description: "The contents of the CSV file",
       },
     },
-    meta: {
-      type: "object",
-      properties: {
-        fieldNames: {
-          type: "array",
-          items: {
-            type: "string",
+    ["content"],
+  );
+
+  override outputSchema: Schema = propertiesToSchema(
+    {
+      data: {
+        type: "array",
+        description:
+          "The rows of the CSV, with a property for each header/column",
+        items: {
+          type: "object",
+          additionalProperties: true,
+        },
+      },
+      meta: {
+        type: "object",
+        properties: {
+          fieldNames: {
+            type: "array",
+            items: {
+              type: "string",
+            },
           },
         },
       },
     },
-  });
+    ["data", "meta"],
+  );
 
   async transform(
     { content }: BrickArgs<{ content: string }>,

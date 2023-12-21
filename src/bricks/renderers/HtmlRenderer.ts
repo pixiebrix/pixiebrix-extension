@@ -33,23 +33,26 @@ class HtmlRenderer extends RendererABC {
     );
   }
 
-  inputSchema = propertiesToSchema({
-    html: {
-      title: "HTML",
-      type: "string",
-      description: "The HTML string to render",
+  inputSchema = propertiesToSchema(
+    {
+      html: {
+        title: "HTML",
+        type: "string",
+        description: "The HTML string to render",
+      },
+      /**
+       * @since 1.8.5
+       */
+      allowIFrames: {
+        title: "Allow IFrames",
+        type: "boolean",
+        description:
+          "Toggle to allow the iframe tag and generally safe frame attributes",
+        default: false,
+      },
     },
-    /**
-     * @since 1.8.5
-     */
-    allowIFrames: {
-      title: "Allow IFrames",
-      type: "boolean",
-      description:
-        "Toggle to allow the iframe tag and generally safe frame attributes",
-      default: false,
-    },
-  });
+    ["html"],
+  );
 
   async render({
     html,

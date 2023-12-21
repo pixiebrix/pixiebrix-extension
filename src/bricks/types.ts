@@ -211,6 +211,13 @@ export type BrickConfig = {
    * DO NOT SET: generated automatically by the Page Editor when configuring a dynamic element.
    */
   instanceId?: UUID;
+
+  /**
+   * Comments added by the mod developer to annotate the brick. Does not affect runtime behavior.
+   *
+   * @since 1.8.6
+   */
+  comments?: string;
 };
 
 /**

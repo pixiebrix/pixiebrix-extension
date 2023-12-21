@@ -16,7 +16,7 @@
  */
 
 import { useEffect, useReducer } from "react";
-import { usePreviewInfo } from "@/pageEditor/tabs/effect/BlockPreview";
+import { usePreviewInfo } from "@/pageEditor/tabs/effect/BrickPreview";
 import { isTriggerExtensionPoint } from "@/pageEditor/starterBricks/formStateTypes";
 import { useSelector } from "react-redux";
 import {
