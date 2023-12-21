@@ -18,7 +18,7 @@
 /* eslint-disable security/detect-object-injection */
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
-import validator from "@rjsf/validator-ajv6";
+import validator from "@/validators/formValidator";
 import { type FieldTemplateProps } from "@rjsf/utils";
 import { type IChangeEvent } from "@rjsf/core";
 import {
@@ -41,6 +41,7 @@ import { type Draft } from "immer";
 import { KEYS_OF_UI_SCHEMA, type Schema } from "@/types/schemaTypes";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
+import { cloneDeep } from "lodash";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -194,7 +195,10 @@ const FormPreview: React.FC<FormPreviewProps> = ({
       formData={data}
       fields={fields}
       widgets={widgets}
-      schema={previewSchema}
+      // Deep clone the schema because otherwise the schema is not extensible, which
+      // breaks validation when @cfworker/json-schema dereferences the schema
+      // See https://github.com/cfworker/cfworker/blob/263260ea661b6f8388116db7b8daa859e0d28b25/packages/json-schema/src/dereference.ts#L115
+      schema={cloneDeep(previewSchema)}
       uiSchema={{
         ...previewUiSchema,
         "ui:submitButtonOptions": { norender: true },

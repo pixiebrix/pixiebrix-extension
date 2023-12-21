@@ -25,7 +25,7 @@ import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import bootstrapOverrides from "@/pageEditor/sidebar/sidebarBootstrapOverrides.scss?loadAsUrl";
 import custom from "@/bricks/renderers/customForm.css?loadAsUrl";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
-import validator from "@rjsf/validator-ajv6";
+import validator from "@/validators/formValidator";
 import { type IChangeEvent } from "@rjsf/core";
 import ImageCropWidget from "@/components/formBuilder/ImageCropWidget";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
@@ -34,6 +34,7 @@ import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { type UnknownObject } from "@/types/objectTypes";
+import { cloneDeep } from "lodash";
 
 const fields = {
   DescriptionField,
@@ -98,7 +99,10 @@ const CustomFormComponent: React.FunctionComponent<{
             }}
           >
             <JsonSchemaForm
-              schema={schema}
+              // Deep clone the schema because otherwise the schema is not extensible
+              // This breaks validation when @cfworker/json-schema dereferences the schema
+              // See https://github.com/cfworker/cfworker/blob/263260ea661b6f8388116db7b8daa859e0d28b25/packages/json-schema/src/dereference.ts#L115
+              schema={cloneDeep(schema)}
               uiSchema={uiSchema}
               formData={formData}
               fields={fields}
