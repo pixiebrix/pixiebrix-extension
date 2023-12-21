@@ -41,6 +41,7 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import * as semver from "semver";
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
+import { useGetRecipeQuery } from "@/services/api";
 
 export type ModListItemProps = PropsWithChildren<{
   modMetadata: Metadata;
@@ -67,8 +68,9 @@ const ModListItem: React.FC<ModListItemProps> = ({
   const { id: modId, name: savedName, version: installedVersion } = modMetadata;
   const isActive = activeModId === modId;
 
-  // TODO: Fix this so it pulls from registry, after registry fetch is implemented
-  const latestRecipeVersion = installedVersion;
+  // TODO: Fix this so it pulls from registry, after registry single-item-api-fetch is implemented
+  const { data: modDefinition } = useGetRecipeQuery({ recipeId: modId });
+  const latestRecipeVersion = modDefinition?.metadata?.version;
 
   // Set the alternate background if an extension in this recipe is active
   const hasRecipeBackground = activeElement?.recipe?.id === modId;

@@ -21,10 +21,19 @@ import { screen } from "@testing-library/react";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { render } from "@/pageEditor/testHelpers";
 import { Accordion, ListGroup } from "react-bootstrap";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { validateSemVerString } from "@/types/helpers";
 
 describe("ModListItem", () => {
-  test("it renders expanded", async () => {
+  it("renders expanded", async () => {
     const modMetadata = modMetadataFactory();
+    appApiMock.onGet(`/api/recipes/${modMetadata.id}/`).reply(
+      200,
+      modDefinitionFactory({
+        metadata: modMetadata,
+      }),
+    );
     render(
       <Accordion defaultActiveKey={modMetadata.id}>
         <ListGroup>
@@ -49,8 +58,14 @@ describe("ModListItem", () => {
     );
   });
 
-  test("it renders not expanded", async () => {
+  it("renders not expanded", async () => {
     const modMetadata = modMetadataFactory();
+    appApiMock.onGet(`/api/recipes/${modMetadata.id}/`).reply(
+      200,
+      modDefinitionFactory({
+        metadata: modMetadata,
+      }),
+    );
     render(
       <Accordion defaultActiveKey={null}>
         <ListGroup>
@@ -79,5 +94,43 @@ describe("ModListItem", () => {
     );
   });
 
-  // TODO: Add a test for the update warning indicator icon, after the feature is re-enabled
+  it("renders has-update icon properly", async () => {
+    const modMetadata = modMetadataFactory();
+    const modDefinition = modDefinitionFactory({
+      metadata: {
+        ...modMetadata,
+        version: validateSemVerString("1.0.1"),
+      },
+    });
+    appApiMock
+      .onGet(`/api/recipes/${encodeURIComponent(modMetadata.id)}/`)
+      .reply(200, {
+        config: modDefinition,
+        sharing: modDefinition.sharing,
+        updated_at: modDefinition.updated_at,
+      });
+    render(
+      <Accordion defaultActiveKey={modMetadata.id}>
+        <ListGroup>
+          <ModListItem
+            modMetadata={modMetadata}
+            onSave={jest.fn()}
+            isSaving={false}
+            onReset={jest.fn()}
+            onDeactivate={jest.fn()}
+            onClone={jest.fn()}
+          >
+            <div>test children</div>
+          </ModListItem>
+        </ListGroup>
+      </Accordion>,
+    );
+
+    const expectedMessage =
+      "You are editing version 1.0.0 of this mod, the latest version is 1.0.1.";
+
+    expect(
+      await screen.findByRole("img", { name: expectedMessage }),
+    ).toBeVisible();
+  });
 });
