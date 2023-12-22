@@ -22,12 +22,13 @@ import * as sidebar from "@/contentScript/sidebarController";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/bricks/available";
 import reportError from "@/telemetry/reportError";
-import { compact, groupBy, intersection, uniq } from "lodash";
+import { compact, debounce, groupBy, intersection, uniq } from "lodash";
+import oneEvent from "one-event";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { PromiseCancelled } from "@/errors/genericErrors";
-import { type FrameTarget, getThisFrame } from "webext-messenger";
+import { getThisFrame } from "webext-messenger";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -77,9 +78,9 @@ const _editorExtensions = new Map<UUID, StarterBrick>();
 const _activeExtensionPoints = new Set<StarterBrick>();
 
 /**
- * Mapping from frame ID to URL. Used to ignore navigation events that don't change the URL.
+ * Used to ignore navigation events that don't change the URL.
  */
-const _frameHref = new Map<number, string>();
+let lastUrl: string | undefined;
 
 /**
  * Abort controllers for navigation events for Single Page Applications (SPAs).
@@ -560,30 +561,18 @@ export async function handleNavigate({
   force,
 }: { force?: boolean } = {}): Promise<void> {
   const runReason = decideRunReason({ force });
-
-  let thisTarget: FrameTarget;
-  try {
-    // Note: We used to check for invalid (undefined) frameId after calling
-    // this, but now getThisFrame will throw an error itself internally if
-    // the frameId is not a valid number. An example situation where this
-    // happens is when the dynamic gsheets code loads a frame within the
-    // extension background page.
-    thisTarget = await getThisFrame();
-  } catch (error: unknown) {
-    console.debug("Ignoring handleNavigate because getThisFrame failed", error);
-    return;
-  }
-
+  const thisTarget = await getThisFrame();
   const { href } = location;
-
-  if (!force && _frameHref.get(thisTarget.frameId) === href) {
-    console.debug("Ignoring NOOP navigation to %s", href, thisTarget);
+  if (!force && lastUrl === href) {
+    console.debug(
+      "handleNavigate:Ignoring NOOP navigation to %s",
+      href,
+      thisTarget,
+    );
     return;
   }
 
-  _frameHref.set(thisTarget.frameId, href);
-
-  console.debug("Handling navigation to %s", href, thisTarget);
+  console.debug("handleNavigate:Handling navigation to %s", href, thisTarget);
   updateNavigationId();
   notifyNavigationListeners();
 
@@ -639,9 +628,41 @@ export async function reactivateTab(): Promise<void> {
   await handleNavigate({ force: true });
 }
 
-export function initNavigation() {
-  window.navigation?.addEventListener("navigate", async (event) => {
-    // Delay slightly to avoid catching events that navigate away from the page
-    setTimeout(handleNavigate, 0);
-  });
+// Ideally we only want to catch local URL changes, but there's no way to discern
+// navigation events that cause the current document to unload in the `navigate ` event.
+async function onNavigate(event: NavigateEvent): Promise<void> {
+  if (
+    // Ignore navigations to external pages
+    !event.destination.url.startsWith(location.origin) ||
+    // Ignore <a download> links
+    event.downloadRequest !== null // Specifically `null` and not `''`
+  ) {
+    return;
+  }
+
+  try {
+    await oneEvent(window, "beforeunload", {
+      signal: AbortSignal.timeout(0),
+    });
+  } catch {
+    // It timed out before the "beforeunload" event, so this is a same-document navigation
+    await handleNavigate();
+  }
+}
+
+export async function initNavigation() {
+  // Initiate PB for the current page
+  await handleNavigate();
+
+  // Listen to page URL changes
+  // Some sites use the hash to encode page state (e.g., filters). There are some non-navigation scenarios
+  // where the hash could change frequently (e.g., there is a timer in the state). Debounce to avoid overloading.
+  window.navigation?.addEventListener(
+    "navigate",
+    debounce(onNavigate, 100, {
+      leading: true,
+      trailing: true,
+      maxWait: 1000,
+    }),
+  );
 }

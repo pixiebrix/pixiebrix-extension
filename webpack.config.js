@@ -235,15 +235,6 @@ function customizeManifest(manifest, isProduction) {
     ...manifest.externally_connectable.matches,
     ...internal,
   ]);
-
-  if (process.env.GOOGLE_OAUTH_CLIENT_ID) {
-    manifest.oauth2 = {
-      client_id: process.env.GOOGLE_OAUTH_CLIENT_ID,
-      // Don't ask for any scopes up front, instead ask when they're required, e.g., when the user
-      // installs a brick for google sheets
-      scopes: [""],
-    };
-  }
 }
 
 function mockHeavyDependencies() {
