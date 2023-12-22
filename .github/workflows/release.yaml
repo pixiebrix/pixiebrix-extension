@@ -16,6 +16,10 @@ jobs:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
       SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
 
+    strategy:
+      matrix:
+        MV: [2, 3]
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,6 +29,7 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
+          MV: ${{ matrix.MV }}
           GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
@@ -41,7 +46,7 @@ jobs:
       - name: Save extension
         uses: actions/upload-artifact@v4
         with:
-          name: build-for-store
+          name: build-for-store-${{ matrix.MV }}
           path: |
             dist
             !dist/**/*.map
