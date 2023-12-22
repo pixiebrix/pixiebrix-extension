@@ -217,7 +217,6 @@
     "@types/mark.js": "^8.11.12",
     "@types/marked": "^6.0.0",
     "@types/mustache": "^4.2.5",
-    "@types/node": "^20.10.5",
     "@types/nunjucks": "^3.2.6",
     "@types/object-hash": "^2.1.1",
     "@types/papaparse": "^5.3.14",
