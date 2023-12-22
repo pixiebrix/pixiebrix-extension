@@ -646,7 +646,7 @@ async function onNavigate(event: NavigateEvent): Promise<void> {
   // Ignore navigations to external pages
   if (
     !event.destination.url.startsWith(location.origin) ||
-    event.downloadRequest === null // Specifically `null` and not `''`
+    event.downloadRequest !== null // Specifically `null` and not `''`
   ) {
     return;
   }
