@@ -56,6 +56,7 @@ async function onNavigation({ tabId, frameId }: Target): Promise<void> {
 // Some sites use the hash to encode page state (e.g., filters). There are some non-navigation scenarios where the hash
 // could change frequently (e.g., there is a timer in the state). Debounce to avoid overloading the messenger and
 // contentScript.
+// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- debounced form of function onNavigation
 const debouncedOnNavigation = debounce(onNavigation, 100, {
   leading: true,
   trailing: true,
