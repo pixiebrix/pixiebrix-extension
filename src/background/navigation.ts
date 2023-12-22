@@ -17,13 +17,14 @@
 
 import { reactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/utils/extensionUtils";
+import { addListener as addAuthListener } from "@/auth/token";
 import { type Target } from "@/types/messengerTypes";
 import { canAccessTab } from "@/permissions/permissionsUtils";
 import { isScriptableUrl } from "webext-content-scripts";
 import { debounce } from "lodash";
-import { syncFlagOn } from "@/store/syncFlags";
 import { canAccessTab as canInjectTab, getTabUrl } from "webext-tools";
 import { getTargetState } from "@/contentScript/ready";
+import { type UserData } from "@/auth/authTypes";
 
 export function reactivateEveryTab(): void {
   console.debug("Reactivate all tabs");
@@ -47,27 +48,27 @@ async function traceNavigation(target: Target): Promise<void> {
   });
 }
 
-async function onNavigation({ tabId, frameId }: Target): Promise<void> {
-  if (syncFlagOn("navigation-trace")) {
-    await traceNavigation({ tabId, frameId });
-  }
-}
-
 // Some sites use the hash to encode page state (e.g., filters). There are some non-navigation scenarios where the hash
 // could change frequently (e.g., there is a timer in the state). Debounce to avoid overloading the messenger and
 // contentScript.
-const debouncedOnNavigation = debounce(onNavigation, 100, {
+const debouncedTraceNavigation = debounce(traceNavigation, 100, {
   leading: true,
   trailing: true,
   maxWait: 1000,
 });
 
 function initNavigation(): void {
-  // Let the content script know about navigation from the history API. Required for handling SPA navigation
-  browser.webNavigation.onHistoryStateUpdated.addListener(onNavigation);
-  browser.webNavigation.onReferenceFragmentUpdated.addListener(
-    debouncedOnNavigation,
-  );
+  addAuthListener(async ({ flags: newFlags = [] }: UserData) => {
+    const enabled = new Set(newFlags).has("navigation-trace");
+
+    // Let the content script know about navigation from the history API. Required for handling SPA navigation
+    browser.webNavigation.onHistoryStateUpdated[
+      enabled ? "addListener" : "removeListener"
+    ](traceNavigation);
+    browser.webNavigation.onReferenceFragmentUpdated[
+      enabled ? "addListener" : "removeListener"
+    ](debouncedTraceNavigation);
+  });
 }
 
 export default initNavigation;
