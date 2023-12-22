@@ -661,6 +661,10 @@ async function onNavigate(event: NavigateEvent): Promise<void> {
   }
 }
 
-export function initNavigation() {
+export async function initNavigation() {
+  // Initiate PB for the current page
+  await handleNavigate();
+
+  // Listen to page URL changes
   window.navigation?.addEventListener("navigate", onNavigate);
 }

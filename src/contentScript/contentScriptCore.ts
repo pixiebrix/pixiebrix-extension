@@ -26,7 +26,7 @@ import registerMessenger from "@/contentScript/messenger/registration";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import brickRegistry from "@/bricks/registry";
-import { handleNavigate, initNavigation } from "@/contentScript/lifecycle";
+import { initNavigation } from "@/contentScript/lifecycle";
 import { initTelemetry } from "@/background/messenger/api";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/contentScript/ready";
 import { initToaster } from "@/utils/notify";
@@ -65,8 +65,7 @@ export async function init(): Promise<void> {
   initTelemetry();
   initToaster();
 
-  await handleNavigate();
-  initNavigation();
+  void initNavigation();
 
   void initSidebarActivation();
 
