@@ -78,6 +78,7 @@ jobs:
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.STAGE_GOOGLE_OAUTH_CLIENT_ID }}
       - name: Save extension
         uses: actions/upload-artifact@v4
+        if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
         with:
           name: build-staging-${{ matrix.MV }}
           path: |
