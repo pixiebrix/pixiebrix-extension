@@ -215,6 +215,7 @@
     "./contrib/salesforce/navigation.ts",
     "./contrib/uipath/UiPathRobot.ts",
     "./contrib/uipath/localProcess.ts",
+    "./contrib/uipath/quietLogger.ts",
     "./contrib/uipath/typeUtils.ts",
     "./contrib/uipath/uipathContract.ts",
     "./contrib/zapier/contract.ts",
