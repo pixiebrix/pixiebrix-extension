@@ -5,6 +5,10 @@ const config = configFactory(process.env, {});
 // https://knip.dev/overview/configuration#customize
 const knipConfig = {
   $schema: "https://unpkg.com/knip@3/schema.json",
+  // Try to get webpack plugin working
+  webpack: {
+    config: "webpack.config.js",
+  },
   entry: [
     ...Object.values(config.entry).map((x) =>
       `${x}.{ts,tsx,js,jsx}`.replace("./", ""),
@@ -23,9 +27,10 @@ const knipConfig = {
     // Aliases defined in tsconfig.json
     "src/contrib/uipath/quietLogger.ts",
   ],
+
   rules: {
+    // https://knip.dev/reference/issue-types/
     files: "warn",
-    classMembers: "warn",
     dependencies: "warn",
     unlisted: "warn",
     binaries: "warn",
@@ -35,6 +40,7 @@ const knipConfig = {
     types: "warn",
     nsTypes: "warn",
     enumMembers: "warn",
+    classMembers: "warn",
     // Incrementally enforce rules over time
     duplicates: "error",
   },
