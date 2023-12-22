@@ -55,7 +55,7 @@ registerMessenger();
 registerExternalMessenger();
 initBrowserAction();
 initInstaller();
-initNavigation();
+void initNavigation();
 initExecutor();
 initContextMenus();
 initContentScriptReadyListener();

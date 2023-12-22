@@ -17,14 +17,13 @@
 
 import { reactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/utils/extensionUtils";
-import { addListener as addAuthListener } from "@/auth/token";
+import { getUserData } from "@/auth/token";
 import { type Target } from "@/types/messengerTypes";
 import { canAccessTab } from "@/permissions/permissionsUtils";
 import { isScriptableUrl } from "webext-content-scripts";
-import { debounce } from "lodash";
+import { debounce, includes } from "lodash";
 import { canAccessTab as canInjectTab, getTabUrl } from "webext-tools";
 import { getTargetState } from "@/contentScript/ready";
-import { type UserData } from "@/auth/authTypes";
 
 export function reactivateEveryTab(): void {
   console.debug("Reactivate all tabs");
@@ -57,18 +56,18 @@ const debouncedTraceNavigation = debounce(traceNavigation, 100, {
   maxWait: 1000,
 });
 
-function initNavigation(): void {
-  addAuthListener(async ({ flags: newFlags = [] }: UserData) => {
-    const enabled = new Set(newFlags).has("navigation-trace");
+async function initNavigation(): Promise<void> {
+  const { flags } = await getUserData();
+  if (!includes(flags, "navigation-trace")) {
+    return;
+  }
 
-    // Let the content script know about navigation from the history API. Required for handling SPA navigation
-    browser.webNavigation.onHistoryStateUpdated[
-      enabled ? "addListener" : "removeListener"
-    ](debouncedTraceNavigation);
-    browser.webNavigation.onReferenceFragmentUpdated[
-      enabled ? "addListener" : "removeListener"
-    ](debouncedTraceNavigation);
-  });
+  browser.webNavigation.onHistoryStateUpdated.addListener(
+    debouncedTraceNavigation,
+  );
+  browser.webNavigation.onReferenceFragmentUpdated.addListener(
+    debouncedTraceNavigation,
+  );
 }
 
 export default initNavigation;
