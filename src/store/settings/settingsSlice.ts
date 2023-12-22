@@ -18,8 +18,8 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
   AUTH_METHODS,
+  type SettingsFlags,
   type SettingsState,
-  type SettingOptions,
 } from "@/store/settings/settingsTypes";
 import reportError from "@/telemetry/reportError";
 import { isEmpty, once } from "lodash";
@@ -62,7 +62,7 @@ const settingsSlice = createSlice({
     setFlag(
       state,
       action: PayloadAction<{
-        flag: keyof SettingOptions;
+        flag: keyof SettingsFlags;
         value: boolean;
       }>,
     ) {
