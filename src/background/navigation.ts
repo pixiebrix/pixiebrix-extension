@@ -17,13 +17,13 @@
 
 import { reactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/utils/extensionUtils";
-import { getUserData } from "@/auth/token";
 import { type Target } from "@/types/messengerTypes";
 import { canAccessTab } from "@/permissions/permissionsUtils";
 import { isScriptableUrl } from "webext-content-scripts";
-import { debounce, includes } from "lodash";
+import { debounce } from "lodash";
 import { canAccessTab as canInjectTab, getTabUrl } from "webext-tools";
 import { getTargetState } from "@/contentScript/ready";
+import { flagOn } from "@/auth/authUtils";
 
 export function reactivateEveryTab(): void {
   console.debug("Reactivate all tabs");
@@ -57,8 +57,7 @@ const debouncedTraceNavigation = debounce(traceNavigation, 100, {
 });
 
 async function initNavigation(): Promise<void> {
-  const { flags } = await getUserData();
-  if (!includes(flags, "navigation-trace")) {
+  if (!(await flagOn("navigation-trace"))) {
     return;
   }
 
