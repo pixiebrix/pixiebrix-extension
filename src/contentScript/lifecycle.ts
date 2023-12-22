@@ -23,6 +23,7 @@ import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/bricks/available";
 import reportError from "@/telemetry/reportError";
 import { compact, groupBy, intersection, uniq } from "lodash";
+import oneEvent from "one-event";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
@@ -639,9 +640,27 @@ export async function reactivateTab(): Promise<void> {
   await handleNavigate({ force: true });
 }
 
+// Ideally we only want to catch local URL changes, but there's no way to discern
+// navigation events that cause the current document to unload in the `navigate ` event.
+async function onNavigate(event: NavigateEvent): Promise<void> {
+  // Ignore navigations to external pages
+  if (
+    !event.destination.url.startsWith(location.origin) ||
+    event.downloadRequest === null // Specifically `null` and not `''`
+  ) {
+    return;
+  }
+
+  try {
+    await oneEvent(window, "beforeunload", {
+      signal: AbortSignal.timeout(0),
+    });
+  } catch {
+    // It timed out before the "beforeunload" event, so this is a same-document navigation
+    await handleNavigate();
+  }
+}
+
 export function initNavigation() {
-  window.navigation?.addEventListener("navigate", async (event) => {
-    // Delay slightly to avoid catching events that navigate away from the page
-    setTimeout(handleNavigate, 0);
-  });
+  window.navigation?.addEventListener("navigate", onNavigate);
 }

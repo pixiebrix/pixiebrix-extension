@@ -104,6 +104,7 @@
     "mustache": "^4.2.0",
     "nunjucks": "^3.2.4",
     "object-hash": "^2.2.0",
+    "one-event": "^4.2.0",
     "one-mutation": "^2.1.0",
     "p-defer": "^4.0.0",
     "p-memoize": "^7.0.0",
