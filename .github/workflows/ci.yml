@@ -51,6 +51,10 @@ jobs:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
       SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
 
+    strategy:
+      matrix:
+        MV: [2, 3]
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -60,6 +64,7 @@ jobs:
       - run: npm ci
       - run: npm run build:webpack
         env:
+          MV: ${{ matrix.MV }}
           ENVIRONMENT: staging
           EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*
           SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
@@ -75,7 +80,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
         with:
-          name: build-staging
+          name: build-staging-${{ matrix.MV }}
           path: |
             dist
             !dist/**/*.map
