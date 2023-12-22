@@ -15,21 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface SheetMeta {
-  id: string;
-  name: string;
-}
-
-export interface Doc extends SheetMeta {
-  serviceId: "spread" | string;
-  mimeType: "application/vnd.google-apps.spreadsheet" | string;
-}
-
-export interface Data {
-  action: google.picker.Action;
-  docs: Doc[];
-}
-
 // GSheets API Proxy types
 export type ValueRange = gapi.client.sheets.ValueRange;
 export type AppendValuesResponse = gapi.client.sheets.AppendValuesResponse;
@@ -38,7 +23,6 @@ export type BatchUpdateSpreadsheetRequest =
 export type BatchUpdateSpreadsheetResponse =
   gapi.client.sheets.BatchUpdateSpreadsheetResponse;
 export type Spreadsheet = gapi.client.sheets.Spreadsheet;
-export type SpreadsheetProperties = gapi.client.sheets.SpreadsheetProperties;
 
 export type File = {
   kind: "drive#file";

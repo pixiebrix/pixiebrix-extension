@@ -25,7 +25,7 @@ import {
   type ElementReference,
 } from "@/types/runtimeTypes";
 
-export class TraverseElements extends TransformerABC {
+class TraverseElements extends TransformerABC {
   override async isPure(): Promise<boolean> {
     return true;
   }

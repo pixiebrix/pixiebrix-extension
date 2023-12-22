@@ -17,7 +17,7 @@ import notify from "@/utils/notify";
 
 const { addElement, toggleInsert } = actions;
 
-export function useAutoInsert(type: StarterBrickType): void {
+function useAutoInsert(type: StarterBrickType): void {
   const dispatch = useDispatch();
 
   useAsyncEffect(async () => {
