@@ -34,6 +34,9 @@ import {
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
 
+// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- constant
+const TEN_HOURS = 1000 * 60 * 60 * 10;
+
 /**
  * A principal on a remote service, e.g., an Automation Anywhere Control Room.
  */
@@ -234,8 +237,6 @@ export async function safeTokenRefresh(): Promise<void> {
     console.warn("Failed to refresh partner token", error);
   }
 }
-
-const TEN_HOURS = 1000 * 60 * 60 * 10;
 
 /**
  * The Automation Anywhere JWT access token expires every 24 hours
