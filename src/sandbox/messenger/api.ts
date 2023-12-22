@@ -24,6 +24,7 @@ import pMemoize from "p-memoize";
 import * as directApi from "@/sandbox/messenger/executor";
 import { type JsonObject } from "type-fest";
 import { getSettingsState } from "@/store/settings/settingsStorage";
+import { once } from "lodash";
 
 // Uses pMemoize to allow retries after a failure
 const loadSandbox = pMemoize(async () => {
@@ -36,10 +37,10 @@ const loadSandbox = pMemoize(async () => {
 
 export default loadSandbox;
 
-async function isSandboxed(): Promise<boolean> {
+const isSandboxed = once(async (): Promise<boolean> => {
   const { sandboxedCode } = await getSettingsState();
   return Boolean(sandboxedCode);
-}
+});
 
 export async function ping() {
   return postMessage({

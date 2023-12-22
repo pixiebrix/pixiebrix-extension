@@ -64,7 +64,7 @@ const ExperimentalSettings: React.FunctionComponent = () => {
           />
           <SettingToggle
             controlId="sandboxedCode"
-            label="Sandboxed code"
+            label="Sandboxed Code"
             description="Toggle on to sandbox templating libraries"
             isEnabled={sandboxedCode}
             flag="sandboxedCode"
