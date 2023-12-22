@@ -20,7 +20,8 @@
     "build:scripts": "webpack --config scripts/webpack.scripts.js",
     "generate:headers": "NODE_OPTIONS=--stack-trace-limit=100 node scripts/bin/headers.js",
     "storybook": "storybook dev -p 6006 -s public",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "dead-code": "knip"
   },
   "engine-strict": true,
   "engines": {
@@ -199,9 +200,7 @@
     "@types/dompurify": "^3.0.5",
     "@types/downloadjs": "^1.4.6",
     "@types/gapi": "0.0.47",
-    "@types/gapi.client.oauth2": "^2.0.3",
     "@types/gapi.client.sheets-v4": "^0.0.4",
-    "@types/google.picker": "0.0.42",
     "@types/holderjs": "^2.9.4",
     "@types/html-to-text": "^9.0.4",
     "@types/iframe-resizer": "^3.5.13",
@@ -218,6 +217,7 @@
     "@types/mark.js": "^8.11.12",
     "@types/marked": "^6.0.0",
     "@types/mustache": "^4.2.5",
+    "@types/node": "^20.10.5",
     "@types/nunjucks": "^3.2.6",
     "@types/object-hash": "^2.1.1",
     "@types/papaparse": "^5.3.14",
