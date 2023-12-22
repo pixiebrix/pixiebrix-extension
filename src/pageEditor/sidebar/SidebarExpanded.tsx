@@ -103,9 +103,8 @@ const SidebarExpanded: React.FunctionComponent<{
     return sortedSidebarItems.filter((sidebarItem) => {
       if (isModSidebarItem(sidebarItem)) {
         // Don't filter out mod item if the mod is active, or the name matches the query
-        const modId = sidebarItem.modMetadata.id;
         if (
-          modId === activeModId ||
+          sidebarItem.modMetadata.id === activeModId ||
           lowerCase(sidebarItem.modMetadata.name).includes(debouncedFilterQuery)
         ) {
           return true;
