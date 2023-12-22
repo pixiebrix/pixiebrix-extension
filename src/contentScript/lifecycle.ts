@@ -28,7 +28,7 @@ import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { traces } from "@/background/messenger/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { PromiseCancelled } from "@/errors/genericErrors";
-import { type FrameTarget, getThisFrame } from "webext-messenger";
+import { getThisFrame } from "webext-messenger";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
