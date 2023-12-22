@@ -67,10 +67,16 @@ import { type OptionsArgs } from "@/types/runtimeTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { Events } from "@/telemetry/events";
 
+// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- destructuring reducer/actions, safe to recycle
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
+
+// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- destructuring reduce/actions, safe to recycle
 const { reducer: editorReducer, actions: editorActions } = editorSlice;
+
+// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- bound function, safe to recycle
 const locateAllForService = locator.locateAllForService.bind(locator);
 
+// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- constant
 const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
 
 async function setExtensionsState(state: ModComponentState): Promise<void> {

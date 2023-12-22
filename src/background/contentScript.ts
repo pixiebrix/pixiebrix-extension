@@ -27,6 +27,7 @@ import {
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { type Runtime } from "webextension-polyfill";
 
+// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- logger function
 const debug = console.debug.bind(console, "ensureContentScript:");
 
 /**
