@@ -32,7 +32,7 @@ const Header: React.FunctionComponent = () => {
   const wasContextInvalidated = useContextInvalidated();
 
   return (
-    <div className="d-flex p-2 justify-content-between align-content-center">
+    <div className="d-flex py-2 pl-2 pr-0 justify-content-between align-content-center">
       {wasContextInvalidated || ( // /* The button doesn't work after invalidation #2359 */
         <Button
           className={cx(

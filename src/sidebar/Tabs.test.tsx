@@ -426,8 +426,7 @@ describe("Tabs", () => {
   describe("Activation Panels", () => {
     const activatePanel = sidebarEntryFactory("activateMods");
 
-    test("closing the activation panel hides sidebar if it's the only open panel", async () => {
-      hideSidebarSpy.mockReset();
+    test("closing the activation panel shows the mod launcher if it's the only open panel", async () => {
       await setupPanelsAndRender({
         sidebarEntries: {
           staticPanels: [MOD_LAUNCHER],
@@ -444,9 +443,9 @@ describe("Tabs", () => {
         screen.queryByRole("tab", { name: /activate mods test 1/i }),
       ).not.toBeInTheDocument();
 
-      await waitForEffect();
-
-      expect(hideSidebarSpy).toHaveBeenCalledTimes(1);
+      await expect(
+        screen.findByRole("tab", { name: /mods/i }),
+      ).resolves.toBeInTheDocument();
     });
   });
 });

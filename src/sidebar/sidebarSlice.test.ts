@@ -287,9 +287,28 @@ describe("closed tabs", () => {
   const panelKey = eventKeyForEntry(panel);
   const modLauncherKey = eventKeyForEntry(MOD_LAUNCHER);
 
-  it("close tab", () => {
+  it("closes the tab and opens the mod launcher if there are no other visible tabs", () => {
     const state = {
       ...sidebarSlice.getInitialState(),
+    } as SidebarState;
+
+    const newState = sidebarSlice.reducer(
+      state,
+      sidebarSlice.actions.closeTab(panelKey),
+    );
+
+    expect(newState).toStrictEqual({
+      ...state,
+      closedTabs: { [panelKey]: true, [modLauncherKey]: false },
+    });
+  });
+
+  it("closes the tab but does not open the mod launcher if there are other visible tabs", () => {
+    const otherPanel = sidebarEntryFactory("panel");
+
+    const state = {
+      ...sidebarSlice.getInitialState(),
+      panels: [otherPanel],
     } as SidebarState;
 
     const newState = sidebarSlice.reducer(
