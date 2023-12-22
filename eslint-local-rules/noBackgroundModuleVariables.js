@@ -20,7 +20,7 @@ module.exports = {
     type: "problem",
     docs: {
       description:
-        "disallow module-level variables in src/background directory due to MV3",
+        "disallow mutable module-level variables in src/background directory due to MV3. Use chrome.storage.session instead.",
       category: "Possible Errors",
       recommended: true,
     },
@@ -29,19 +29,25 @@ module.exports = {
   create(context) {
     const filename = context.getFilename();
     const isBackgroundDirectory = filename.includes("/src/background/");
+    const isTest = filename.includes(".test.");
 
-    if (!isBackgroundDirectory) {
+    if (!isBackgroundDirectory || isTest) {
       return {}; // Exit early if not in the src/background directory
     }
 
     return {
       "VariableDeclaration:exit"(node) {
         if (node.parent.type === "Program") {
-          context.report({
-            node,
-            message:
-              "Module-level variables are forbidden in src/background directory",
-          });
+          for (const declaration of node.declarations) {
+            // Ignore constants
+            if (declaration.init && declaration.init.type !== "Literal") {
+              context.report({
+                node: declaration,
+                message:
+                  "Non-literal module-level variables are not allowed in src/background directory",
+              });
+            }
+          }
         }
       },
     };
