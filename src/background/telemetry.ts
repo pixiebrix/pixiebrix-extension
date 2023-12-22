@@ -39,6 +39,7 @@ import { StorageItem } from "webext-storage";
 import { getTabsWithAccess } from "@/utils/extensionUtils";
 import { type Event } from "@/telemetry/events";
 
+// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- storage item
 const uidStorage = new StorageItem<UUID>("USER_UUID");
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -47,8 +48,11 @@ const TELEMETRY_DB_VERSION_NUMBER = 1;
 const TELEMETRY_EVENT_OBJECT_STORE = "events";
 
 /**
- * Timestamp when the background page was initialized.
+ * Timestamp when the background worker was initialized.
+ *
+ * For MV3, this is the timestamp when the background worker was last initialized/restarted.
  */
+// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- constant
 const initTimestamp = Date.now();
 
 interface UserTelemetryEvent {
@@ -159,7 +163,10 @@ interface TelemetryDB extends DBSchema {
  * Map from run key (blueprintId + brickId) to the number of runs.
  *
  * It's OK to store in memory because the user generally has to be authenticated to create/run mods.
+ *
+ * @deprecated we're probably going to drop run count reporting; it was a POC for utilization reporting
  */
+// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- OK to store in volatile memory for now
 const runCountBuffer = new Map<string, number>();
 
 async function openTelemetryDB() {
@@ -313,6 +320,7 @@ async function flush(): Promise<void> {
   }
 }
 
+// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- debounced function flush
 const debouncedFlush = debounce(flush, EVENT_BUFFER_DEBOUNCE_MS, {
   trailing: true,
   leading: false,
