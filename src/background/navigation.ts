@@ -41,10 +41,10 @@ async function traceNavigation(target: Target): Promise<void> {
     ...target,
     tabUrl,
     isScriptableUrl: isScriptableUrl(tabUrl),
-    contentScriptState: await getTargetState(target),
-    canInject: await canInjectTab(target),
-    // PixieBrix has some additional constraints on which tabs can be accessed (i.e., only https:)
-    canAccessTab: await canAccessTab(target),
+    contentScriptState: getTargetState(target),
+    canInject: canInjectTab(target),
+    // PixieBrix has some additional constraints on which tabs can be accessed (i.e., only http/https)
+    canAccessTab: canAccessTab(target),
   });
 }
 
@@ -64,7 +64,7 @@ function initNavigation(): void {
     // Let the content script know about navigation from the history API. Required for handling SPA navigation
     browser.webNavigation.onHistoryStateUpdated[
       enabled ? "addListener" : "removeListener"
-    ](traceNavigation);
+    ](debouncedTraceNavigation);
     browser.webNavigation.onReferenceFragmentUpdated[
       enabled ? "addListener" : "removeListener"
     ](debouncedTraceNavigation);
