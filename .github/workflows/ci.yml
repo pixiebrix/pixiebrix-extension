@@ -157,6 +157,20 @@ jobs:
       - run: npm ci
       - run: npm run lint:full
 
+  dead-code:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: npm
+      - run: npm ci
+      # https://knip.dev/overview/getting-started#without-installation
+      - run: npm install -D knip typescript @types/node
+      - run: npm run dead-code
+
   # https://pre-commit.com/#usage-in-continuous-integration
   prettier:
     runs-on: ubuntu-latest

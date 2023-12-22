@@ -26,7 +26,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
 import { ErrorEffect } from "@/bricks/effects/error";
 import { CancelEffect } from "@/bricks/effects/cancel";
-import { CommentEffect } from "@/bricks/effects/comment";
+import CommentEffect from "@/bricks/effects/comment";
 
 const PANEL_TYPES = ["actionPanel", "panel"];
 

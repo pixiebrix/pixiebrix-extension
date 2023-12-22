@@ -46,7 +46,7 @@ import DocumentOptions, {
 import RemoteMethodOptions, {
   REMOTE_METHOD_ID,
 } from "@/pageEditor/fields/RemoteMethodOptions";
-import { TourStepTransformer } from "@/bricks/transformers/tourStep/tourStep";
+import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
 import TourStepOptions from "@/bricks/transformers/tourStep/TourStepOptions";
 import { ALERT_EFFECT_ID } from "@/bricks/effects/alert";
 import AlertOptions from "@/pageEditor/fields/AlertOptions";

@@ -44,7 +44,7 @@ export function getCopilotHostData(): ProcessDataMap {
  * @since 1.8.5
  * @see initCopilotMessenger
  */
-export class SetCopilotDataEffect extends EffectABC {
+class SetCopilotDataEffect extends EffectABC {
   static BRICK_ID = validateRegistryId(
     "@pixiebrix/automation-anywhere/set-copilot-data",
   );

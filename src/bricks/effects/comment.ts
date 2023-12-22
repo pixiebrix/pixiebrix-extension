@@ -20,7 +20,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
 
-export class CommentEffect extends EffectABC {
+class CommentEffect extends EffectABC {
   // Use an effect so PixieBrix doesn't show an output
 
   static BRICK_ID = validateRegistryId("@pixiebrix/comment");

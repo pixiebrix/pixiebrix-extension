@@ -33,7 +33,7 @@ import deepEquals from "fast-deep-equal";
  *
  * @see useDerivedAsyncState
  */
-export function useMergeAsyncState<
+function useMergeAsyncState<
   AsyncStates extends FetchableAsyncStateArray,
   Result,
 >(

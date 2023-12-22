@@ -15,32 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import cx from "classnames";
-import MarkdownLazy from "@/components/MarkdownLazy";
-
-type FormPreviewDescriptionFieldProps = {
-  id: string;
-  description: string | React.ReactElement;
-  className?: string;
-};
-
-const DescriptionFieldTemplate: React.VoidFunctionComponent<
-  FormPreviewDescriptionFieldProps
-> = ({ id, description, className }) => {
-  if (!description) {
-    return null;
-  }
-
-  return (
-    <div id={id} className={cx("mb-3", className)}>
-      {typeof description === "string" ? (
-        <MarkdownLazy markdown={description} />
-      ) : (
-        { description }
-      )}
-    </div>
-  );
-};
-
-export default DescriptionFieldTemplate;
+/**
+ * Replicate surface area used by UiPath appinsightsLogger so we can noop them
+ */
+export class ApplicationInsights {
+  trackEvent(): void {}
+  trackException(): void {}
+  trackPageView(): void {}
+  loadAppInsights(): void {}
+}

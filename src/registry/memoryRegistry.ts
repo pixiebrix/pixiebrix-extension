@@ -98,7 +98,7 @@ export interface RegistryProtocol<
 /**
  * Brick registry, with remote bricks backed by IDB.
  */
-export class MemoryRegistry<
+class MemoryRegistry<
   Id extends RegistryId = RegistryId,
   Item extends RegistryItem<Id> = RegistryItem<Id>,
 > implements RegistryProtocol<Id, Item>
