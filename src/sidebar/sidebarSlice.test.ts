@@ -303,6 +303,23 @@ describe("closed tabs", () => {
     });
   });
 
+  it("closing the mod launcher does not open the mod launcher", () => {
+    const state = {
+      ...sidebarSlice.getInitialState(),
+      closedTabs: { [modLauncherKey]: false },
+    } as SidebarState;
+
+    const newState = sidebarSlice.reducer(
+      state,
+      sidebarSlice.actions.closeTab(modLauncherKey),
+    );
+
+    expect(newState).toStrictEqual({
+      ...state,
+      closedTabs: { [modLauncherKey]: true },
+    });
+  });
+
   it("closes the tab but does not open the mod launcher if there are other visible tabs", () => {
     const otherPanel = sidebarEntryFactory("panel");
 

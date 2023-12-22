@@ -418,7 +418,11 @@ const sidebarSlice = createSlice({
     closeTab(state, action: PayloadAction<string>) {
       state.closedTabs[action.payload] = true;
 
-      if (getVisiblePanelCount(state) === 0) {
+      const modLauncherEventKey = eventKeyForEntry(MOD_LAUNCHER);
+      if (
+        getVisiblePanelCount(state) === 0 &&
+        action.payload !== modLauncherEventKey
+      ) {
         state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = false;
       }
 
