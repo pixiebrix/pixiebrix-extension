@@ -99,6 +99,8 @@ jobs:
         name: Detect webext-messenger unwanted bundles
 
       - uses: actions/upload-artifact@v4
+        # TODO: Eventually upload the MV3 report instead
+        if: matrix.MV == 2
         name: Save report.html
         with:
           name: build-staging-bundle-dependency-report
