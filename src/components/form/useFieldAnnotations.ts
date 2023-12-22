@@ -94,6 +94,10 @@ function useFieldAnnotations(fieldPath: string): FieldAnnotation[] {
         // Check that the value from redux matches the current formik value before showing
         // See: https://github.com/pixiebrix/pixiebrix-extension/pull/6846
         .filter((annotation) => {
+          if (!annotation.detail) {
+            return true;
+          }
+
           if (
             typeof annotation.detail === "object" &&
             "expression" in annotation.detail
