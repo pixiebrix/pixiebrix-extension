@@ -47,6 +47,7 @@ function migrateSettingsStateV2({
 }: SettingsStateV2 & PersistedState): SettingsStateV3 & PersistedState {
   return {
     ...state,
-    varAutosuggest: varAutosuggest == null ? true : varAutosuggest,
+    // @since 1.8.6 - Migrate all users to True for this setting, make setting required
+    varAutosuggest: true,
   };
 }
