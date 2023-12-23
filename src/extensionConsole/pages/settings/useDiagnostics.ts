@@ -60,7 +60,7 @@ async function collectDiagnostics({
   };
 }
 
-export function useDiagnostics() {
+function useDiagnostics() {
   const extensions = useSelector(selectExtensions);
   const permissionsState = useExtensionPermissions();
 

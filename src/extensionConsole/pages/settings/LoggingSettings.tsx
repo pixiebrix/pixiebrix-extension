@@ -27,7 +27,7 @@ import useUserAction from "@/hooks/useUserAction";
 import { clearTraces } from "@/telemetry/trace";
 import { clearLogs } from "@/telemetry/logging";
 import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
-import useMessengerLogging from "@/development/useMessengerLogging";
+import useMessengerLogging from "@/development/hooks/useMessengerLogging";
 
 const LoggingSettings: React.FunctionComponent = () => {
   const [logValues, setLogValues] = useLoggingConfig();

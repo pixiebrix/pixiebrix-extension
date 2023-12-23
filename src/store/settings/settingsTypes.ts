@@ -48,6 +48,11 @@ export type SkunkworksSettings = {
    * Experimental setting to track runtime performance
    */
   performanceTracing?: boolean;
+
+  /**
+   * Experimental setting to run some code in a sandbox
+   */
+  sandboxedCode?: boolean;
 };
 
 export type SettingOptions = SkunkworksSettings & {

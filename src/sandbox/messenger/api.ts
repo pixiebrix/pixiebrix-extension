@@ -21,7 +21,10 @@ import { type RegistryId } from "@/types/registryTypes";
 import injectIframe, { hiddenIframeStyle } from "@/utils/injectIframe";
 import postMessage from "@/utils/postMessage";
 import pMemoize from "p-memoize";
+import * as directApi from "@/sandbox/messenger/executor";
 import { type JsonObject } from "type-fest";
+import { getSettingsState } from "@/store/settings/settingsStorage";
+import { once } from "lodash";
 
 // Uses pMemoize to allow retries after a failure
 const loadSandbox = pMemoize(async () => {
@@ -33,6 +36,11 @@ const loadSandbox = pMemoize(async () => {
 });
 
 export default loadSandbox;
+
+const isSandboxed = once(async (): Promise<boolean> => {
+  const { sandboxedCode } = await getSettingsState();
+  return Boolean(sandboxedCode);
+});
 
 export async function ping() {
   return postMessage({
@@ -48,19 +56,23 @@ export type TemplateRenderPayload = {
 };
 
 export async function renderNunjucksTemplate(payload: TemplateRenderPayload) {
-  return postMessage({
-    recipient: await loadSandbox(),
-    payload,
-    type: "RENDER_NUNJUCKS",
-  });
+  return (await isSandboxed())
+    ? postMessage({
+        recipient: await loadSandbox(),
+        payload,
+        type: "RENDER_NUNJUCKS",
+      })
+    : directApi.renderNunjucksTemplate(payload);
 }
 
 export async function renderHandlebarsTemplate(payload: TemplateRenderPayload) {
-  return postMessage({
-    recipient: await loadSandbox(),
-    payload,
-    type: "RENDER_HANDLEBARS",
-  });
+  return (await isSandboxed())
+    ? postMessage({
+        recipient: await loadSandbox(),
+        payload,
+        type: "RENDER_HANDLEBARS",
+      })
+    : directApi.renderHandlebarsTemplate(payload);
 }
 
 export type JavaScriptPayload = {

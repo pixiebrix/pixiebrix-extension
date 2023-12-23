@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// https://developers.google.com/sheets/api/guides/authorizing
-export const GOOGLE_SHEETS_SCOPES = [
-  "https://www.googleapis.com/auth/drive.file",
-];
-export const DISCOVERY_DOCS = [
-  "https://sheets.googleapis.com/$discovery/rest?version=v4",
-];
+import useUpdatableAsyncState from "@/hooks/useUpdatableAsyncState";
+import { messengerLogging } from "@/development/messengerLogging";
+
+export default function useMessengerLogging(): [
+  boolean | undefined,
+  (value: boolean) => void,
+] {
+  return useUpdatableAsyncState(messengerLogging.get, messengerLogging.set);
+}

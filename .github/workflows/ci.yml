@@ -51,6 +51,10 @@ jobs:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
       SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
 
+    strategy:
+      matrix:
+        MV: [2, 3]
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -60,6 +64,7 @@ jobs:
       - run: npm ci
       - run: npm run build:webpack
         env:
+          MV: ${{ matrix.MV }}
           ENVIRONMENT: staging
           EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*
           SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
@@ -68,14 +73,11 @@ jobs:
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
           CHROME_EXTENSION_ID: kkomancachnjkdalpcokenmjlimmbaog
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_STAGING_PUBLIC_KEY }}
-          GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
-          GOOGLE_API_KEY: ${{ secrets.STAGE_GOOGLE_API_KEY }}
-          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.STAGE_GOOGLE_OAUTH_CLIENT_ID }}
       - name: Save extension
         uses: actions/upload-artifact@v4
         if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
         with:
-          name: build-staging
+          name: build-staging-${{ matrix.MV }}
           path: |
             dist
             !dist/**/*.map
@@ -94,6 +96,8 @@ jobs:
         name: Detect webext-messenger unwanted bundles
 
       - uses: actions/upload-artifact@v4
+        # TODO: Eventually upload the MV3 report instead
+        if: matrix.MV == 2
         name: Save report.html
         with:
           name: build-staging-bundle-dependency-report
@@ -156,6 +160,22 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint:full
+
+  dead-code:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: npm
+      - run: npm ci
+      # https://knip.dev/overview/getting-started#without-installation
+      - run: npm install -D knip typescript @types/node
+      # Do a run without an exit code. Knip's "warn" setting is not working for files and devDependencies.
+      - run: npm run dead-code -- --no-exit-code
+      - run: npm run dead-code -- --include duplicates
 
   # https://pre-commit.com/#usage-in-continuous-integration
   prettier:

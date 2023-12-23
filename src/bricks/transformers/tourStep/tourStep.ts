@@ -288,7 +288,7 @@ function markdownPipeline(markdown: string): PipelineExpression {
   ]);
 }
 
-export class TourStepTransformer extends TransformerABC {
+class TourStepTransformer extends TransformerABC {
   static BLOCK_ID = validateRegistryId("@pixiebrix/tour/step");
 
   constructor() {

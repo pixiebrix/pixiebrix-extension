@@ -19,10 +19,9 @@ import React, { type ChangeEvent } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { partial } from "lodash";
 import { Card } from "react-bootstrap";
-import {
+import TourStepTransformer, {
   type StepInputs,
   StepSchema,
-  TourStepTransformer,
 } from "@/bricks/transformers/tourStep/tourStep";
 import { useField, useFormikContext } from "formik";
 import { type Expression } from "@/types/runtimeTypes";

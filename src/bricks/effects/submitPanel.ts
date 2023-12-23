@@ -21,7 +21,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
 import { SubmitPanelAction } from "@/bricks/errors";
 
-export class SubmitPanelEffect extends EffectABC {
+class SubmitPanelEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/display/action",

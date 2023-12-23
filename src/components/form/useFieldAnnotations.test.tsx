@@ -152,11 +152,18 @@ describe("useFieldAnnotations", () => {
   test.each([
     {
       detail: { expression: toExpression("var", "@mod.foo") },
+      expectedNumberOfAnnotations: 0,
     },
-    { detail: toExpression("nunjucks", "@mod.bar") },
+    {
+      detail: toExpression("nunjucks", "@mod.bar"),
+      expectedNumberOfAnnotations: 0,
+    },
+    {
+      expectedNumberOfAnnotations: 1,
+    },
   ])(
     "does not show analysis error annotation when the annotation detail ($detail) is for a stale field value",
-    ({ detail }) => {
+    ({ detail, expectedNumberOfAnnotations }) => {
       useFormErrorSettingsMock.mockReturnValue({
         shouldUseAnalysis: true,
         showUntouchedErrors: true, // Show untouched errors, so we don't have to mark the field touched for a test
@@ -218,7 +225,7 @@ describe("useFieldAnnotations", () => {
       const annotations = renderHook(() => useFieldAnnotations(path), {
         wrapper,
       }).result.current;
-      expect(annotations).toHaveLength(0);
+      expect(annotations).toHaveLength(expectedNumberOfAnnotations);
     },
   );
 });
