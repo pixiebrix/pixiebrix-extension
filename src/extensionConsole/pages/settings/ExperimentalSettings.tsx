@@ -25,8 +25,12 @@ import { selectSettings } from "@/store/settings/settingsSelectors";
 import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
 
 const ExperimentalSettings: React.FunctionComponent = () => {
-  const { suggestElements, excludeRandomClasses, performanceTracing } =
-    useSelector(selectSettings);
+  const {
+    suggestElements,
+    excludeRandomClasses,
+    performanceTracing,
+    sandboxedCode,
+  } = useSelector(selectSettings);
 
   return (
     <Card>
@@ -57,6 +61,13 @@ const ExperimentalSettings: React.FunctionComponent = () => {
             description="Toggle on to trace runtime performance"
             isEnabled={performanceTracing}
             flag="performanceTracing"
+          />
+          <SettingToggle
+            controlId="sandboxedCode"
+            label="Sandboxed Code"
+            description="Toggle on to sandbox templating libraries"
+            isEnabled={sandboxedCode}
+            flag="sandboxedCode"
           />
         </Form>
       </Card.Body>

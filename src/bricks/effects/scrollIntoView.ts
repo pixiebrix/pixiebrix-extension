@@ -23,7 +23,7 @@ import { $safeFindElementsWithRootMode } from "@/bricks/rootModeHelpers";
 
 import { assertSingleElement } from "@/utils/domUtils";
 
-export class ScrollIntoViewEffect extends EffectABC {
+class ScrollIntoViewEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/dom/scroll",
