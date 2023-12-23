@@ -16,6 +16,10 @@ jobs:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
       SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
 
+    strategy:
+      matrix:
+        MV: [2, 3]
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,11 +29,14 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
+          MV: ${{ matrix.MV }}
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
           DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
           DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
       - run: bash scripts/upload-sourcemaps.sh
+        # TODO: Eventually upload the MV3 report instead
+        if: matrix.MV == 2
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
@@ -38,7 +45,7 @@ jobs:
       - name: Save extension
         uses: actions/upload-artifact@v4
         with:
-          name: build-for-store
+          name: build-for-store-${{ matrix.MV }}
           path: |
             dist
             !dist/**/*.map
@@ -50,6 +57,10 @@ jobs:
     env:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
       SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
+
+    strategy:
+      matrix:
+        MV: [2, 3]
 
     steps:
       - uses: actions/checkout@v4
@@ -74,7 +85,7 @@ jobs:
       - name: Save extension
         uses: actions/upload-artifact@v4
         with:
-          name: build-production
+          name: build-production-${{ matrix.MV }}
           path: |
             dist
             !dist/**/*.map
