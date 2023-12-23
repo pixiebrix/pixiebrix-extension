@@ -111,7 +111,7 @@ describe("arrangeSidebarItems()", () => {
     ]);
   });
 
-  test("group recipes and sort properly", () => {
+  test("groups recipes and sorts mod components by label", () => {
     const sidebarItems = arrangeSidebarItems({
       modComponentFormStates: [
         formStateModComponentBarE,
