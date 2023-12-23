@@ -18,6 +18,7 @@
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import type { Metadata } from "@/types/registryTypes";
+import type { UUID } from "@/types/stringTypes";
 
 export type ModComponentSidebarItem = ModComponentBase | ModComponentFormState;
 
@@ -36,4 +37,8 @@ export function isModComponentBase(
   value: ModComponentSidebarItem,
 ): value is ModComponentBase {
   return "extensionPointId" in value;
+}
+
+export function getModComponentItemId(item: ModComponentSidebarItem): UUID {
+  return isModComponentBase(item) ? item.id : item.uuid;
 }

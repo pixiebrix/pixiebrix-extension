@@ -69,6 +69,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
   const isActive = activeModId === modId;
 
   // TODO: Fix this so it pulls from registry, after registry single-item-api-fetch is implemented
+  //        (See: https://github.com/pixiebrix/pixiebrix-extension/issues/7184)
   const { data: modDefinition } = useGetRecipeQuery({ recipeId: modId });
   const latestRecipeVersion = modDefinition?.metadata?.version;
 

@@ -26,8 +26,7 @@ import {
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  isModComponentBase,
-  type ModComponentSidebarItem,
+  getModComponentItemId,
   type SidebarItem,
 } from "@/pageEditor/sidebar/common";
 import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
@@ -55,12 +54,8 @@ import AddStarterBrickButton from "./AddStarterBrickButton";
 import ModComponentListItem from "./ModComponentListItem";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useDebounce } from "use-debounce";
-import { type UUID } from "@/types/stringTypes";
 import { lowerCase } from "lodash";
-
-function getModComponentItemId(item: ModComponentSidebarItem): UUID {
-  return isModComponentBase(item) ? item.id : item.uuid;
-}
+import filterSidebarItems from "@/pageEditor/sidebar/filterSidebarItems";
 
 const SidebarExpanded: React.FunctionComponent<{
   collapseSidebar: () => void;
@@ -95,46 +90,21 @@ const SidebarExpanded: React.FunctionComponent<{
     [modComponentFormStates, cleanModComponents],
   );
 
-  const filteredSidebarItems = useMemo<SidebarItem[]>(() => {
-    if (debouncedFilterQuery.length === 0) {
-      return sortedSidebarItems;
-    }
-
-    return sortedSidebarItems.filter((sidebarItem) => {
-      if (isModSidebarItem(sidebarItem)) {
-        // Don't filter out mod item if the mod is active, or the name matches the query
-        if (
-          sidebarItem.modMetadata.id === activeModId ||
-          lowerCase(sidebarItem.modMetadata.name).includes(debouncedFilterQuery)
-        ) {
-          return true;
-        }
-
-        // Don't filter out mod item if any mod component is active, or any mod component label matches the query
-        for (const modComponentItem of sidebarItem.modComponents) {
-          if (
-            getModComponentItemId(modComponentItem) === activeModComponentId ||
-            lowerCase(modComponentItem.label).includes(debouncedFilterQuery)
-          ) {
-            return true;
-          }
-        }
-
-        return false;
-      }
-
-      // Don't filter out mod component item if the mod component is active, or the label matches the query
-      return (
-        getModComponentItemId(sidebarItem) === activeModComponentId ||
-        lowerCase(sidebarItem.label).includes(debouncedFilterQuery)
-      );
-    });
-  }, [
-    activeModComponentId,
-    activeModId,
-    debouncedFilterQuery,
-    sortedSidebarItems,
-  ]);
+  const filteredSidebarItems = useMemo<SidebarItem[]>(
+    () =>
+      filterSidebarItems({
+        sidebarItems: sortedSidebarItems,
+        filterText: debouncedFilterQuery,
+        activeModId,
+        activeModComponentId,
+      }),
+    [
+      activeModComponentId,
+      activeModId,
+      debouncedFilterQuery,
+      sortedSidebarItems,
+    ],
+  );
 
   const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
   const resetRecipe = useResetRecipe();
