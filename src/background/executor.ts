@@ -240,10 +240,16 @@ async function linkTabListener({ id, openerTabId }: Tabs.Tab): Promise<void> {
   }
 }
 
+async function unlinkTabListener(id: number): Promise<void> {
+  await tabToTarget.delete(String(id));
+  await tabToOpener.delete(String(id));
+}
+
 function initExecutor(): void {
   expectContext("background");
 
   browser.tabs.onCreated.addListener(linkTabListener);
+  browser.tabs.onRemoved.addListener(unlinkTabListener);
 }
 
 export async function activateTab(this: MessengerMeta): Promise<void> {
