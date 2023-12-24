@@ -217,16 +217,9 @@ interface ExtendedRuntime
   requestUpdateCheck(): Promise<chrome.runtime.RequestUpdateCheckStatus>;
 }
 
-// Temporary type until officially added
-type BrowserStorage = Browser["storage"];
-interface ExtendedStorage extends BrowserStorage {
-  session: Browser.storage.local;
-}
-
 // @ts-expect-error See Firefox/requestUpdateCheck-related comment above
 interface ChromeifiedBrowser extends Browser {
   runtime: ExtendedRuntime;
-  storage: ExtendedStorage;
 }
 
 declare const browser: ChromeifiedBrowser;

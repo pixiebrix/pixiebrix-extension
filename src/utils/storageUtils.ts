@@ -89,16 +89,6 @@ async function readStorage(
 
 export { readStorage };
 
-/** @deprecated Prefer: `import { StorageItem } from "webext-storage";` */
-export async function setStorage<T>(
-  storageKey: ManualStorageKey,
-  value: T,
-  area: "local" | "session" = "local",
-): Promise<void> {
-  // eslint-disable-next-line security/detect-object-injection -- type-checked constant
-  await browser.storage[area].set({ [storageKey]: value });
-}
-
 /**
  * Read the persisted redux state directly out of storage, applying any necessary migrations. This could be
  * called before the redux store is instantiated.
