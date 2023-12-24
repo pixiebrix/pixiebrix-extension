@@ -72,7 +72,7 @@
     "downloadjs": "^1.4.7",
     "escape-string-regexp": "^5.0.0",
     "exifreader": "^4.18.0",
-    "export-to-csv": "^1.2.1",
+    "export-to-csv": "^1.2.2",
     "filenamify": "^6.0.0",
     "fit-textarea": "^3.0.0",
     "formik": "^2.4.5",
