@@ -71,6 +71,7 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
+          MV: ${{ matrix.MV }}
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
