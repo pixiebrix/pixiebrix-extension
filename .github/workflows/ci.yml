@@ -53,7 +53,11 @@ jobs:
 
     strategy:
       matrix:
-        MV: [2, 3]
+        include:
+          - MV: 2
+            PUBLIC_NAME: ""
+          - MV: 3
+            PUBLIC_NAME: "-beta"
 
     steps:
       - uses: actions/checkout@v4
@@ -77,7 +81,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
         with:
-          name: build-staging-${{ matrix.MV }}
+          name: build-staging${{ matrix.PUBLIC_NAME }}
           path: |
             dist
             !dist/**/*.map
