@@ -116,7 +116,8 @@ function onStepError(error: unknown, step: string): string {
 }
 
 /**
- * Hook to create/update a single ModComponentBase defined by the Page Editor FormState.
+ * Hook that returns a callback to save a Mod Component Form State in Redux, and optionally push a Standalone Mod
+ * Component to the cloud.
  */
 function useUpsertModComponentFormState(): SaveCallback {
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't
@@ -185,10 +186,8 @@ function useUpsertModComponentFormState(): SaveCallback {
       });
 
       try {
-        const rawModComponent = adapter.selectExtension(element);
+        let modComponent = adapter.selectExtension(element);
         const updateTimestamp = new Date().toISOString();
-
-        let modComponent = rawModComponent;
 
         if (hasInnerExtensionPoint) {
           const extensionPointConfig =
@@ -216,7 +215,7 @@ function useUpsertModComponentFormState(): SaveCallback {
 
         dispatch(markSaved(element.uuid));
       } catch (error) {
-        return onStepError(error, "saving mod component");
+        return onStepError(error, "saving mod");
       }
 
       if (options.reactivateEveryTab) {
