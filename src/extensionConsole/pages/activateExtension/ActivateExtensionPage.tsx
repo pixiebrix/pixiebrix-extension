@@ -23,7 +23,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import Page from "@/layout/Page";
 import ActivateExtensionCard from "@/extensionConsole/pages/activateExtension/ActivateExtensionCard";
 import { useAuthOptions } from "@/hooks/auth";
-import { useGetCloudExtensionQuery } from "@/services/api";
+import { useGetCloudModComponentQuery } from "@/services/api";
 import { type UUID } from "@/types/stringTypes";
 
 /**
@@ -36,7 +36,7 @@ const ActivateExtensionPage: React.FunctionComponent = () => {
     data: extension,
     isFetching,
     error,
-  } = useGetCloudExtensionQuery(
+  } = useGetCloudModComponentQuery(
     { extensionId },
     {
       // Force-refetch the latest data for this extension before activation

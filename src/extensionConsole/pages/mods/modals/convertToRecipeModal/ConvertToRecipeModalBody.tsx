@@ -33,8 +33,8 @@ import Form from "@/components/form/Form";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import {
   useCreateRecipeMutation,
-  useDeleteCloudExtensionMutation,
-  useGetAllCloudExtensionsQuery,
+  useDeleteCloudModComponentMutation,
+  useGetAllCloudModComponentsQuery,
 } from "@/services/api";
 import { type FormikHelpers } from "formik";
 import { makeBlueprint } from "@/extensionConsole/pages/mods/utils/exportBlueprint";
@@ -110,8 +110,8 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
   const extensionId =
     showShareContext?.extensionId ?? showPublishContext?.extensionId;
   const extensions = useSelector(selectExtensions);
-  const { data: cloudExtensions } = useGetAllCloudExtensionsQuery();
-  const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
+  const { data: cloudModComponents } = useGetAllCloudModComponentsQuery();
+  const [deleteCloudExtension] = useDeleteCloudModComponentMutation();
 
   const extension = useMemo(() => {
     if (extensionId == null) {
@@ -120,13 +120,13 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
 
     const extension =
       extensions.find((x) => x.id === extensionId) ??
-      cloudExtensions?.find((x) => x.id === extensionId);
+      cloudModComponents?.find((x) => x.id === extensionId);
     if (extension == null) {
       throw new Error(`No persisted extension exists with id: ${extensionId}`);
     }
 
     return extension;
-  }, [cloudExtensions, extensions, extensionId]);
+  }, [cloudModComponents, extensions, extensionId]);
 
   const scope = useSelector(selectScope);
 

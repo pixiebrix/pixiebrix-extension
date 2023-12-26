@@ -20,7 +20,7 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { useGetAllCloudExtensionsQuery } from "@/services/api";
+import { useGetAllCloudModComponentsQuery } from "@/services/api";
 import { selectScope } from "@/auth/authSelectors";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { uniqBy } from "lodash";
@@ -61,7 +61,7 @@ function useMods(): ModsState {
   const unresolvedExtensions = useSelector(selectExtensions);
 
   const { data: knownRecipes, ...recipesState } = useAllModDefinitions();
-  const cloudExtensions = useGetAllCloudExtensionsQuery();
+  const cloudModComponents = useGetAllCloudModComponentsQuery();
 
   const { installedExtensionIds, installedRecipeIds } = useMemo(
     () => ({
@@ -91,12 +91,12 @@ function useMods(): ModsState {
 
   const allExtensions = useMemo(() => {
     const inactiveExtensions =
-      cloudExtensions.data
+      cloudModComponents.data
         ?.filter((x) => !installedExtensionIds.has(x.id))
         .map((x) => ({ ...x, active: false })) ?? [];
 
     return [...unresolvedExtensions, ...inactiveExtensions];
-  }, [cloudExtensions.data, installedExtensionIds, unresolvedExtensions]);
+  }, [cloudModComponents.data, installedExtensionIds, unresolvedExtensions]);
 
   const { data: resolvedExtensions, isError: resolveError } = useAsyncState(
     async () =>
@@ -146,7 +146,7 @@ function useMods(): ModsState {
       ...knownPersonalOrTeamRecipes,
       ...unavailableRecipes,
     ],
-    error: cloudExtensions.error ?? recipesState.error ?? resolveError,
+    error: cloudModComponents.error ?? recipesState.error ?? resolveError,
   };
 }
 

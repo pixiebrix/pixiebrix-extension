@@ -17,7 +17,7 @@
 
 import { type ModViewItem } from "@/types/modTypes";
 import { useModals } from "@/components/ConfirmationModal";
-import { useDeleteCloudExtensionMutation } from "@/services/api";
+import { useDeleteCloudModComponentMutation } from "@/services/api";
 import {
   getLabel,
   isResolvedModComponent,
@@ -30,7 +30,7 @@ import { Events } from "@/telemetry/events";
 function useDeleteExtensionAction(modViewItem: ModViewItem): () => void | null {
   const { mod, sharing, status } = modViewItem;
   const modals = useModals();
-  const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
+  const [deleteCloudExtension] = useDeleteCloudModComponentMutation();
   const isActive = status === "Active" || status === "Paused";
 
   const isCloudExtension =

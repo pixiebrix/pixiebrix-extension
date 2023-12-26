@@ -40,18 +40,18 @@ jest.mock("@/services/api", () => {
   const originalModule = jest.requireActual("@/services/api");
   return {
     ...originalModule,
-    useGetAllCloudExtensionsQuery: jest.fn(),
+    useGetAllCloudModComponentsQuery: jest.fn(),
     useCreateRecipeMutation: jest.fn(),
-    useDeleteCloudExtensionMutation: jest.fn(),
+    useDeleteCloudModComponentMutation: jest.fn(),
   };
 });
 
 beforeEach(() => {
-  (api.useGetAllCloudExtensionsQuery as jest.Mock).mockReturnValue({
+  (api.useGetAllCloudModComponentsQuery as jest.Mock).mockReturnValue({
     data: [],
   });
   (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([jest.fn()]);
-  (api.useDeleteCloudExtensionMutation as jest.Mock).mockReturnValue([
+  (api.useDeleteCloudModComponentMutation as jest.Mock).mockReturnValue([
     jest.fn(),
   ]);
 });
@@ -178,7 +178,7 @@ describe("it renders", () => {
   test("converts cloud mod component", async () => {
     const standaloneModDefinition = standaloneModDefinitionFactory();
 
-    (api.useGetAllCloudExtensionsQuery as jest.Mock).mockReturnValue({
+    (api.useGetAllCloudModComponentsQuery as jest.Mock).mockReturnValue({
       data: [standaloneModDefinition],
     });
     (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([
@@ -188,7 +188,7 @@ describe("it renders", () => {
       .fn()
       .mockReturnValue({ unwrap: jest.fn().mockResolvedValue({}) });
 
-    (api.useDeleteCloudExtensionMutation as jest.Mock).mockReturnValue([
+    (api.useDeleteCloudModComponentMutation as jest.Mock).mockReturnValue([
       deleteCloudExtensionMock,
     ]);
 

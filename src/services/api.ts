@@ -62,7 +62,7 @@ export const appApi = createApi({
     "MarketplaceTags",
     "EditablePackages",
     "Invitations",
-    "CloudExtensions",
+    "CloudModComponents",
     "Package",
     "PackageVersion",
     "StarterBlueprints",
@@ -197,11 +197,11 @@ export const appApi = createApi({
       query: () => ({ url: "/api/bricks/", method: "get" }),
       providesTags: ["EditablePackages"],
     }),
-    getAllCloudExtensions: builder.query<StandaloneModDefinition[], void>({
+    getAllCloudModComponents: builder.query<StandaloneModDefinition[], void>({
       query: () => ({ url: "/api/extensions/", method: "get" }),
-      providesTags: ["CloudExtensions"],
+      providesTags: ["CloudModComponents"],
     }),
-    getCloudExtension: builder.query<
+    getCloudModComponent: builder.query<
       StandaloneModDefinition,
       { extensionId: UUID }
     >({
@@ -210,11 +210,11 @@ export const appApi = createApi({
         method: "get",
       }),
       providesTags: (result, error, { extensionId }) => [
-        { type: "CloudExtensions", extensionId },
-        "CloudExtensions",
+        { type: "CloudModComponents", extensionId },
+        "CloudModComponents",
       ],
     }),
-    deleteCloudExtension: builder.mutation<
+    deleteCloudModComponent: builder.mutation<
       StandaloneModDefinition,
       { extensionId: UUID }
     >({
@@ -222,7 +222,7 @@ export const appApi = createApi({
         url: `/api/extensions/${extensionId}/`,
         method: "delete",
       }),
-      invalidatesTags: ["CloudExtensions"],
+      invalidatesTags: ["CloudModComponents"],
     }),
     getRecipe: builder.query<ModDefinition, { recipeId: RegistryId }>({
       query: ({ recipeId }) => ({
@@ -412,9 +412,9 @@ export const {
   useGetOrganizationsQuery,
   useGetGroupsQuery,
   useGetZapierKeyQuery,
-  useGetCloudExtensionQuery,
-  useGetAllCloudExtensionsQuery,
-  useDeleteCloudExtensionMutation,
+  useGetCloudModComponentQuery,
+  useGetAllCloudModComponentsQuery,
+  useDeleteCloudModComponentMutation,
   useGetEditablePackagesQuery,
   useGetRecipeQuery,
   useCreateRecipeMutation,
