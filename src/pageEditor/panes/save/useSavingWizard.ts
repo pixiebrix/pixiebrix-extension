@@ -22,7 +22,7 @@ import {
   selectActiveElement,
   selectElements,
 } from "@/pageEditor/slices/editorSelectors";
-import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
+import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import useResetExtension from "@/pageEditor/hooks/useResetExtension";
@@ -75,7 +75,7 @@ export function selectRecipeMetadata(
 
 const useSavingWizard = () => {
   const dispatch = useDispatch();
-  const create = useUpsertFormElement();
+  const upsertFormElement = useUpsertModComponentFormState();
   const reset = useResetExtension();
   const isWizardOpen = useSelector(selectIsWizardOpen);
   const isSaving = useSelector(selectIsSaving);
@@ -114,7 +114,7 @@ const useSavingWizard = () => {
    */
   async function saveNonRecipeElement() {
     dispatch(savingExtensionActions.setSavingInProgress());
-    const error = await create({
+    const error = await upsertFormElement({
       element,
       options: {
         pushToCloud: true,
@@ -144,7 +144,7 @@ const useSavingWizard = () => {
     dispatch(editorActions.addElement(personalElement));
     await reset({ extensionId: element.uuid, shouldShowConfirmation: false });
 
-    const error = await create({
+    const error = await upsertFormElement({
       element: personalElement,
       options: {
         pushToCloud: true,
@@ -210,7 +210,7 @@ const useSavingWizard = () => {
       return;
     }
 
-    const createExtensionError = await create({
+    const createExtensionError = await upsertFormElement({
       element,
       options: {
         // `pushToCloud` to false because we don't want to save a copy of the individual extension to the user's account
@@ -278,7 +278,7 @@ const useSavingWizard = () => {
       return;
     }
 
-    const error = await create({
+    const error = await upsertFormElement({
       element,
       options: {
         pushToCloud: true,

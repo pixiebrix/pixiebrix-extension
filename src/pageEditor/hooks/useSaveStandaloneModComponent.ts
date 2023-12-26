@@ -17,7 +17,7 @@
 
 import { useSelector } from "react-redux";
 import { useState } from "react";
-import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
+import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -31,7 +31,7 @@ type ExtensionSaver = {
 
 function useSaveStandaloneModComponent(): ExtensionSaver {
   const [isSaving, setIsSaving] = useState(false);
-  const create = useUpsertFormElement();
+  const create = useUpsertModComponentFormState();
   const sessionId = useSelector(selectSessionId);
 
   async function save(element: ModComponentFormState): Promise<void> {

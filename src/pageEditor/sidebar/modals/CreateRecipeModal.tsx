@@ -50,7 +50,7 @@ import Form, {
   type RenderSubmit,
 } from "@/components/form/Form";
 import { useCreateRecipeMutation } from "@/services/api";
-import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
+import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -107,7 +107,7 @@ function useSaveCallbacks({
 }) {
   const dispatch = useDispatch();
   const [createRecipe] = useCreateRecipeMutation();
-  const createExtension = useUpsertFormElement();
+  const createExtension = useUpsertModComponentFormState();
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
   const deactivateMod = useDeactivateMod();
 

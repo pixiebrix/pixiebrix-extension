@@ -118,7 +118,7 @@ function onStepError(error: unknown, step: string): string {
 /**
  * Hook to create/update a single ModComponentBase defined by the Page Editor FormState.
  */
-function useUpsertFormElement(): SaveCallback {
+function useUpsertModComponentFormState(): SaveCallback {
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't
   //  occur in the correct order on slower (CPU or network?) machines. Therefore, await all promises. We also have to
   //  make `reactivate` behave deterministically if we're still having problems (right now it's implemented as a
@@ -249,4 +249,4 @@ function useUpsertFormElement(): SaveCallback {
   );
 }
 
-export default useUpsertFormElement;
+export default useUpsertModComponentFormState;
