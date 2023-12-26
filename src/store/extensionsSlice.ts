@@ -264,7 +264,7 @@ const extensionsSlice = createSlice({
       });
     },
     // XXX: why do we expose a `extensionId` in addition ModComponentBase's `id` prop here?
-    saveExtension(
+    saveModComponent(
       state,
       {
         payload,
