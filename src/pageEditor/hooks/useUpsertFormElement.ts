@@ -211,6 +211,7 @@ function useUpsertFormElement(): SaveCallback {
 
         if (options.pushToCloud && !modComponent._deployment) {
           await saveCloudModComponent({ modComponent });
+          notify.success("pushed to cloud :)");
         }
 
         dispatch(markSaved(element.uuid));

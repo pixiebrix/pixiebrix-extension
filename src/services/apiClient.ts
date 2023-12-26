@@ -18,7 +18,6 @@
 import axios, { type AxiosInstance } from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { getAuthHeaders } from "@/auth/token";
-import { type ModComponentBase } from "@/types/modComponentTypes";
 import {
   ExtensionNotLinkedError,
   SuspiciousOperationError,
@@ -101,15 +100,4 @@ export async function getApiClient(): Promise<AxiosInstance> {
       Accept: "application/json; version=1.0",
     },
   });
-}
-
-/**
- * Upsert a singleton extension to the user's account.
- * @deprecated use RTK Query mutation
- */
-export async function saveUserExtension(
-  extension: ModComponentBase,
-): Promise<void> {
-  const client = await getLinkedApiClient();
-  await client.put(`/api/extensions/${extension.id}/`, extension);
 }

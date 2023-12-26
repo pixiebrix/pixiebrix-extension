@@ -26,7 +26,6 @@ import { selectEventData } from "@/telemetry/deployments";
 import { contextMenus } from "@/background/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import { cloneDeep, partition } from "lodash";
-import { saveUserExtension } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import { type Except } from "type-fest";
 import { assertModComponentNotResolved } from "@/runtime/runtimeUtils";

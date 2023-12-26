@@ -37,7 +37,6 @@ describe("renders DefaultPanel", () => {
         dispatch(
           extensionsSlice.actions.saveModComponent({
             modComponent: modComponentFactory() as ActivatedModComponent,
-            pushToCloud: false,
           }),
         );
 
