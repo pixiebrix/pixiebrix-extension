@@ -43,7 +43,7 @@ import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import type { RegistryId } from "@/types/registryTypes";
 
 const { saveModComponent } = extensionsSlice.actions;
-const { markSaved } = editorSlice.actions;
+const { markClean } = editorSlice.actions;
 
 async function upsertPackageConfig(
   packageUUID: UUID | null,
@@ -120,6 +120,7 @@ function onStepError(error: unknown, step: string): string {
  * Component to the cloud.
  */
 function useUpsertModComponentFormState(): SaveCallback {
+  // TODO: is this comment relevant anymore? There are promises that are not awaited in this hook
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't
   //  occur in the correct order on slower (CPU or network?) machines. Therefore, await all promises. We also have to
   //  make `reactivate` behave deterministically if we're still having problems (right now it's implemented as a
@@ -213,7 +214,7 @@ function useUpsertModComponentFormState(): SaveCallback {
           notify.success("pushed to cloud :)");
         }
 
-        dispatch(markSaved(element.uuid));
+        dispatch(markClean(element.uuid));
       } catch (error) {
         return onStepError(error, "saving mod");
       }
