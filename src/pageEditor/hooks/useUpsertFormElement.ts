@@ -27,7 +27,10 @@ import { Events } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { extensionWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
-import { useGetEditablePackagesQuery } from "@/services/api";
+import {
+  useGetEditablePackagesQuery,
+  useSaveCloudModComponentMutation,
+} from "@/services/api";
 import { type UnknownObject } from "@/types/objectTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
@@ -124,6 +127,7 @@ function useUpsertFormElement(): SaveCallback {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const { data: editablePackages } = useGetEditablePackagesQuery();
+  const [saveCloudModComponent] = useSaveCloudModComponentMutation();
 
   const saveElement = useCallback(
     async (
@@ -181,31 +185,37 @@ function useUpsertFormElement(): SaveCallback {
       });
 
       try {
-        const rawExtension = adapter.selectExtension(element);
+        const rawModComponent = adapter.selectExtension(element);
+        const updateTimestamp = new Date().toISOString();
+
+        let modComponent = rawModComponent;
+
         if (hasInnerExtensionPoint) {
           const extensionPointConfig =
             adapter.selectExtensionPointConfig(element);
-          dispatch(
-            saveModComponent({
-              extension: extensionWithInnerDefinitions(
-                rawExtension,
-                extensionPointConfig.definition,
-              ),
-              pushToCloud: options.pushToCloud,
-            }),
+          modComponent = extensionWithInnerDefinitions(
+            modComponent,
+            extensionPointConfig.definition,
           );
-        } else {
-          dispatch(
-            saveModComponent({
-              extension: rawExtension,
-              pushToCloud: options.pushToCloud,
-            }),
-          );
+        }
+
+        dispatch(
+          saveModComponent({
+            modComponent: {
+              createTimestamp: updateTimestamp,
+              ...modComponent,
+              updateTimestamp,
+            },
+          }),
+        );
+
+        if (options.pushToCloud && !modComponent._deployment) {
+          await saveCloudModComponent({ modComponent });
         }
 
         dispatch(markSaved(element.uuid));
       } catch (error) {
-        return onStepError(error, "saving extension");
+        return onStepError(error, "saving mod component");
       }
 
       if (options.reactivateEveryTab) {

@@ -269,16 +269,16 @@ const extensionsSlice = createSlice({
       {
         payload,
       }: PayloadAction<{
-        extension: (ModComponentBase | ActivatedModComponent) & {
+        modComponent: (ModComponentBase | ActivatedModComponent) & {
           createTimestamp?: string;
+          updateTimestamp?: string;
         };
-        pushToCloud: boolean;
       }>,
     ) {
       const timestamp = new Date().toISOString();
 
       const {
-        extension: {
+        modComponent: {
           id,
           apiVersion,
           extensionPointId,
@@ -287,11 +287,10 @@ const extensionsSlice = createSlice({
           label,
           optionsArgs,
           integrationDependencies,
-          _deployment,
           createTimestamp = timestamp,
+          updateTimestamp = timestamp,
           _recipe,
         },
-        pushToCloud,
       } = payload;
 
       // Support both extensionId and id to keep the API consistent with the shape of the stored extension
@@ -303,7 +302,7 @@ const extensionsSlice = createSlice({
         throw new Error("extensionPointId is required");
       }
 
-      const extension: Except<
+      const modComponent: Except<
         ActivatedModComponent,
         "_unresolvedModComponentBrand"
       > = {
@@ -318,24 +317,19 @@ const extensionsSlice = createSlice({
         integrationDependencies,
         config,
         createTimestamp,
-        updateTimestamp: timestamp,
+        updateTimestamp,
         active: true,
       };
 
-      assertModComponentNotResolved(extension);
-
-      if (pushToCloud && !_deployment) {
-        // In the future, we'll want to make the Redux action async. For now, just fail silently in the interface
-        void saveUserExtension(extension);
-      }
+      assertModComponentNotResolved(modComponent);
 
       const index = state.extensions.findIndex((x) => x.id === id);
 
       if (index >= 0) {
         // eslint-disable-next-line security/detect-object-injection -- array index from findIndex
-        state.extensions[index] = extension;
+        state.extensions[index] = modComponent;
       } else {
-        state.extensions.push(extension);
+        state.extensions.push(modComponent);
       }
     },
     updateExtension(
