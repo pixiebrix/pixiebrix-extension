@@ -188,9 +188,8 @@
 
 .addButton {
   color: $N300;
-  // 0.5rem is the default padding for the header
   // 3px is the default margin-right for the bootstrap link-variant button
-  margin-right: calc(0.5rem + 3px);
+  margin-right: 3px;
 
   svg {
     width: 0.625rem;

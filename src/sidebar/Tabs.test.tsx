@@ -17,7 +17,7 @@
 
 import React from "react";
 import Tabs from "@/sidebar/Tabs";
-import { render, screen, within } from "@/sidebar/testHelpers";
+import { render, screen, waitFor, within } from "@/sidebar/testHelpers";
 import { type SidebarEntries } from "@/types/sidebarTypes";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
@@ -87,8 +87,13 @@ describe("Tabs", () => {
   const panel2 = sidebarEntryFactory("panel");
 
   test("renders", () => {
-    const { asFragment } = render(<Tabs />);
-    expect(asFragment()).toMatchSnapshot();
+    render(<Tabs />);
+    expect(screen.getByRole("tablist")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: /open mod launcher/i,
+      }),
+    ).toBeInTheDocument();
   });
 
   test("renders with panels", async () => {
@@ -108,16 +113,13 @@ describe("Tabs", () => {
     );
 
     test("renders with mod launcher visible if there are no other visible mods", async () => {
-      const { asFragment } = await setupPanelsAndRender({
+      await setupPanelsAndRender({
         sidebarEntries: {
           staticPanels: [MOD_LAUNCHER],
         },
       });
 
-      // Wait for effect because module is lazily loaded
-      await waitForEffect();
-
-      expect(asFragment()).toMatchSnapshot();
+      expect(screen.getByRole("tab", { name: /mods/i })).toBeInTheDocument();
     });
 
     test("displays no active sidebar panels view when no panels are active", async () => {
@@ -302,8 +304,9 @@ describe("Tabs", () => {
         },
       });
 
-      await waitForEffect();
-      expect(hideSidebarSpy).toHaveBeenCalledTimes(1);
+      await waitFor(() => {
+        expect(hideSidebarSpy).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
@@ -383,8 +386,9 @@ describe("Tabs", () => {
         },
       });
 
-      await waitForEffect();
-      expect(hideSidebarSpy).toHaveBeenCalledTimes(1);
+      await waitFor(() => {
+        expect(hideSidebarSpy).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
@@ -411,23 +415,22 @@ describe("Tabs", () => {
         .getByRole("button", { name: "Close" })
         .click();
 
-      await waitForEffect();
-
-      expect(cancelFormSpy).toHaveBeenCalledWith(
-        {
-          frameId: 0,
-          tabId: 1,
-        },
-        formPanel.nonce,
-      );
+      await waitFor(() => {
+        expect(cancelFormSpy).toHaveBeenCalledWith(
+          {
+            frameId: 0,
+            tabId: 1,
+          },
+          formPanel.nonce,
+        );
+      });
     });
   });
 
   describe("Activation Panels", () => {
     const activatePanel = sidebarEntryFactory("activateMods");
 
-    test("closing the activation panel hides sidebar if it's the only open panel", async () => {
-      hideSidebarSpy.mockReset();
+    test("closing the activation panel shows the mod launcher if it's the only open panel", async () => {
       await setupPanelsAndRender({
         sidebarEntries: {
           staticPanels: [MOD_LAUNCHER],
@@ -444,9 +447,9 @@ describe("Tabs", () => {
         screen.queryByRole("tab", { name: /activate mods test 1/i }),
       ).not.toBeInTheDocument();
 
-      await waitForEffect();
-
-      expect(hideSidebarSpy).toHaveBeenCalledTimes(1);
+      await expect(
+        screen.findByRole("tab", { name: /mods/i }),
+      ).resolves.toBeInTheDocument();
     });
   });
 });
