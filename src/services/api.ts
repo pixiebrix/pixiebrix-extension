@@ -46,6 +46,7 @@ import {
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import baseQuery from "@/services/baseQuery";
+import { ModComponentBase } from "@/types/modComponentTypes";
 
 export const appApi = createApi({
   reducerPath: "appApi",
@@ -221,6 +222,17 @@ export const appApi = createApi({
       query: ({ extensionId }) => ({
         url: `/api/extensions/${extensionId}/`,
         method: "delete",
+      }),
+      invalidatesTags: ["CloudModComponents"],
+    }),
+    saveCloudModComponent: builder.mutation<
+      StandaloneModDefinition,
+      { modComponent: ModComponentBase }
+    >({
+      query: ({ modComponent }) => ({
+        url: `/api/extensions/${modComponent.id}/`,
+        method: "put",
+        data: modComponent,
       }),
       invalidatesTags: ["CloudModComponents"],
     }),
@@ -415,6 +427,7 @@ export const {
   useGetCloudModComponentQuery,
   useGetAllCloudModComponentsQuery,
   useDeleteCloudModComponentMutation,
+  useSaveCloudModComponentMutation,
   useGetEditablePackagesQuery,
   useGetRecipeQuery,
   useCreateRecipeMutation,
