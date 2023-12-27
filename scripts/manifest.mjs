@@ -15,15 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const { uniq, pull } = require("lodash");
-const Policy = require("csp-parse");
-const packageJson = require("../package.json");
-const { normalizeManifestPermissions } = require("webext-permissions");
-const { excludeDuplicatePatterns } = require("webext-patterns");
+import Policy from "csp-parse";
+import { normalizeManifestPermissions } from "webext-permissions";
+import { excludeDuplicatePatterns } from "webext-patterns";
 
 function getVersion(env) {
   // `manifest.json` only supports numbers in the version, so use the semver
-  const match = /^(?<version>\d+\.\d+\.\d+)/.exec(packageJson.version);
+  const match = /^(?<version>\d+\.\d+\.\d+)/.exec(env.npm_package_version);
   return match.groups.version;
 }
 
@@ -34,10 +32,10 @@ function getVersionName(env, isProduction) {
   }
 
   if (isProduction) {
-    return packageJson.version;
+    return env.npm_package_version;
   }
 
-  return `${packageJson.version}-local+${new Date().toISOString()}`;
+  return `${env.npm_package_version}-local+${new Date().toISOString()}`;
 }
 
 /**
@@ -140,4 +138,4 @@ function customizeManifest(manifestV2, options = {}) {
   return manifest;
 }
 
-module.exports = customizeManifest;
+export default customizeManifest;

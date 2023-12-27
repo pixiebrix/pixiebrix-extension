@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
@@ -29,7 +28,12 @@ const CopyPlugin = require("copy-webpack-plugin");
 const { compact } = require("lodash");
 const mergeWithShared = require("./webpack.sharedConfig.js");
 const { parseEnv, loadEnv } = require("./scripts/env.js");
-const customizeManifest = require("./scripts/manifest.js");
+
+// Workaround for ERR_REQUIRE_ESM error. Can be removed when/if this TS config is turned into ESM
+let customizeManifest;
+void import("./scripts/manifest.mjs").then((imported) => {
+  customizeManifest = imported.default;
+});
 
 loadEnv();
 

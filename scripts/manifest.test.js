@@ -15,13 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @shopify/jest/no-snapshots -- We want to specifically commit the entire customized manifest as a snapshot */
 /* eslint-disable no-restricted-imports -- Aliases don't work outside built files */
 
 import manifest from "../src/manifest.json";
-import { loadEnv } from "./env";
-import customizeManifest from "./manifest";
+import { loadEnv } from "./env.js";
+import customizeManifest from "./manifest.mjs";
 
 loadEnv();
 
