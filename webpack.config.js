@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-return */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
@@ -16,7 +17,6 @@
  */
 
 const path = require("node:path");
-const dotenv = require("dotenv");
 const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WebExtensionTarget = require("webpack-target-webextension");
@@ -26,60 +26,12 @@ const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const CopyPlugin = require("copy-webpack-plugin");
-const { uniq, compact, pull } = require("lodash");
-const Policy = require("csp-parse");
+const { compact } = require("lodash");
 const mergeWithShared = require("./webpack.sharedConfig.js");
+const { parseEnv, loadEnv } = require("./scripts/env.js");
+const customizeManifest = require("./scripts/manifest.js");
 
-function parseEnv(value) {
-  switch (String(value).toLowerCase()) {
-    case "undefined": {
-      return;
-    }
-
-    case "null": {
-      return null;
-    }
-
-    case "false": {
-      return false;
-    }
-
-    case "true": {
-      return true;
-    }
-
-    case "": {
-      return "";
-    }
-
-    default:
-  }
-
-  return Number.isNaN(Number(value)) ? value : Number(value);
-}
-
-// Default ENVs used by webpack
-// Note: Default ENVs used by the extension itself should be set in EnvironmentPlugin
-const defaults = {
-  DEV_NOTIFY: "true",
-  DEV_SLIM: "false",
-  DEV_REDUX_LOGGER: "true",
-  CHROME_EXTENSION_ID: "mpjjildhmpddojocokjkgmlkkkfjnepo",
-
-  // PixieBrix URL to enable connection to for credential exchange
-  SERVICE_URL: "https://app.pixiebrix.com",
-  MARKETPLACE_URL: "https://www.pixiebrix.com/marketplace/",
-};
-
-dotenv.config({
-  path: process.env.ENV_FILE ?? ".env",
-});
-
-for (const [env, defaultValue] of Object.entries(defaults)) {
-  if (!process.env[env] || parseEnv(process.env[env]) == null) {
-    process.env[env] = defaultValue;
-  }
-}
+loadEnv();
 
 console.log("SOURCE_VERSION:", process.env.SOURCE_VERSION);
 console.log("SERVICE_URL:", process.env.SERVICE_URL);
@@ -118,124 +70,7 @@ if (sourceMapPublicUrl) {
 
 console.log(sourcemapsLogMessage);
 
-function getVersion() {
-  // `manifest.json` only supports numbers in the version, so use the semver
-  const match = /^(?<version>\d+\.\d+\.\d+)/.exec(
-    process.env.npm_package_version,
-  );
-  return match.groups.version;
-}
-
-function getVersionName(isProduction) {
-  if (process.env.ENVIRONMENT === "staging") {
-    // Staging builds (i.e., from CI) are production builds, so check ENVIRONMENT first
-    return `${getVersion()}-alpha+${process.env.SOURCE_VERSION}`;
-  }
-
-  if (isProduction) {
-    return process.env.npm_package_version;
-  }
-
-  return `${process.env.npm_package_version}-local+${new Date().toISOString()}`;
-}
-
 const isProd = (options) => options.mode === "production";
-
-/**
- * @param {chrome.runtime.Manifest} manifest
- */
-function updateManifestToV3(manifest) {
-  manifest.manifest_version = 3;
-
-  // Extract host permissions
-  pull(manifest.permissions, "https://*.pixiebrix.com/*");
-  pull(manifest.optional_permissions, "*://*/*");
-  manifest.host_permissions = ["https://*.pixiebrix.com/*"];
-  manifest.permissions.push("scripting");
-
-  // Update format
-  manifest.web_accessible_resources = [
-    {
-      resources: manifest.web_accessible_resources,
-      matches: ["*://*/*"],
-    },
-  ];
-
-  // Rename keys
-  manifest.action = manifest.browser_action;
-  delete manifest.browser_action;
-
-  // Update CSP format and drop invalid values
-  const policy = new Policy(manifest.content_security_policy);
-  policy.remove("script-src", "https://apis.google.com");
-  policy.remove("script-src", "'unsafe-eval'");
-  manifest.content_security_policy = {
-    extension_pages: policy.toString(),
-
-    // Set the native default CSP
-    // https://developer.chrome.com/docs/extensions/mv3/manifest/sandbox/
-    sandbox:
-      "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';",
-  };
-
-  // Replace background script
-  manifest.background = {
-    service_worker: "background.worker.js",
-  };
-}
-
-function customizeManifest(manifest, isProduction) {
-  manifest.version = getVersion();
-  manifest.version_name = getVersionName(isProduction);
-
-  if (!isProduction) {
-    manifest.name = "PixieBrix - Development";
-  }
-
-  if (process.env.CHROME_MANIFEST_KEY) {
-    manifest.key = process.env.CHROME_MANIFEST_KEY;
-  }
-
-  const internal = isProduction
-    ? []
-    : // The port is part of the origin: https://developer.mozilla.org/en-US/docs/Web/API/URL/origin
-      [
-        "http://127.0.0.1:8000/*",
-        "http://127.0.0.1/*",
-        "http://localhost/*",
-        "http://localhost:8000/*",
-      ];
-
-  const policy = new Policy(manifest.content_security_policy);
-
-  if (!isProduction) {
-    // React Dev Tools app. See https://github.com/pixiebrix/pixiebrix-extension/wiki/Development-commands#react-dev-tools
-    policy.add("script-src", "http://localhost:8097");
-    policy.add("connect-src", "ws://localhost:8097/");
-    policy.add("img-src", "https://pixiebrix-marketplace-dev.s3.amazonaws.com");
-  }
-
-  manifest.content_security_policy = policy.toString();
-
-  if (process.env.EXTERNALLY_CONNECTABLE) {
-    manifest.externally_connectable.matches = uniq([
-      ...manifest.externally_connectable.matches,
-      ...process.env.EXTERNALLY_CONNECTABLE.split(","),
-    ]);
-  }
-
-  manifest.content_scripts[0].matches = uniq([
-    new URL("*", process.env.SERVICE_URL).href,
-    new URL("*", process.env.MARKETPLACE_URL).href,
-    ...manifest.content_scripts[0].matches,
-    ...internal,
-  ]);
-
-  manifest.externally_connectable.matches = uniq([
-    ...manifest.externally_connectable.matches,
-    ...internal,
-  ]);
-}
 
 function mockHeavyDependencies() {
   if (process.env.DEV_SLIM.toLowerCase() === "true") {
@@ -412,12 +247,13 @@ module.exports = (env, options) =>
             from: "src/manifest.json",
             transform(jsonString) {
               const manifest = JSON.parse(jsonString);
-              customizeManifest(manifest, isProd(options));
-              if (process.env.MV === "3") {
-                updateManifestToV3(manifest);
-              }
+              const customizedManifest = customizeManifest(manifest, {
+                isProduction: isProd(options),
+                manifestVersion: process.env.MV === "3" ? 3 : 2, // Default to 2 if missing
+                env: process.env,
+              });
 
-              return JSON.stringify(manifest, null, 4);
+              return JSON.stringify(customizedManifest, null, 2);
             },
           },
           {
