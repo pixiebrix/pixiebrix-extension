@@ -19,7 +19,7 @@
 /* eslint-disable no-restricted-imports -- Aliases don't work outside built files */
 
 import manifest from "../src/manifest.json";
-import { loadEnv } from "./env.js";
+import { loadEnv } from "./env.mjs";
 import customizeManifest from "./manifest.mjs";
 
 loadEnv();
