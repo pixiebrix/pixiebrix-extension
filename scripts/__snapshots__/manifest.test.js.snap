@@ -225,7 +225,7 @@ exports[`customizeManifest mv3 1`] = `
   },
   "homepage_url": "https://www.pixiebrix.com",
   "host_permissions": [
-    "https://*.pixiebrix.com/*",
+    "<all_urls>",
   ],
   "icons": {
     "128": "icons/logo128.png",
@@ -250,8 +250,6 @@ exports[`customizeManifest mv3 1`] = `
     "tabs",
     "webNavigation",
     "contextMenus",
-    "*://*/*",
-    "<all_urls>",
     "scripting",
   ],
   "sandbox": {

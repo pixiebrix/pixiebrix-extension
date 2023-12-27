@@ -47,9 +47,9 @@ function updateManifestToV3(manifestV2) {
   manifest.manifest_version = 3;
 
   // Extract host permissions
-  pull(manifest.permissions, "https://*.pixiebrix.com/*");
-  pull(manifest.optional_permissions, "*://*/*");
-  manifest.host_permissions = ["https://*.pixiebrix.com/*"];
+  pull(manifest.permissions, "*://*/*");
+  pull(manifest.permissions, "<all_urls>");
+  manifest.host_permissions = ["<all_urls>"];
   manifest.permissions.push("scripting");
 
   // Update format
