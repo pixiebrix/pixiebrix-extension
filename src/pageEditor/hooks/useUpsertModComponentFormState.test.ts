@@ -25,11 +25,24 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 
 const axiosMock = new MockAdapter(axios);
 describe("useUpsertModComponentFormState", () => {
-  it("should save form state to redux", async () => {
-    const expectedUpdateDate = new Date("2023-01-01");
+  let expectedUpdateDate: Date;
+
+  beforeAll(() => {
+    expectedUpdateDate = new Date("2023-01-01");
     jest.useFakeTimers().setSystemTime(expectedUpdateDate);
-    const modComponent = formStateFactory();
+  });
+
+  beforeEach(() => {
     axiosMock.onGet("/api/bricks/").reply(200, []);
+  });
+
+  afterEach(() => {
+    axiosMock.reset();
+  });
+
+  it("should save form state to redux", async () => {
+    const modComponent = formStateFactory();
+
     const { result, getReduxStore, waitForEffect } = renderHook(() =>
       useUpsertModComponentFormState(),
     );
@@ -46,10 +59,10 @@ describe("useUpsertModComponentFormState", () => {
       },
     });
 
-    const store = getReduxStore();
     const extensions = selectExtensions(
-      store.getState() as { options: ModComponentState },
+      getReduxStore().getState() as { options: ModComponentState },
     );
+
     expect(extensions).toHaveLength(1);
     expect(extensions[0]).toEqual(
       expect.objectContaining({
