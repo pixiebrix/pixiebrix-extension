@@ -18,6 +18,8 @@
 const { uniq, pull } = require("lodash");
 const Policy = require("csp-parse");
 const packageJson = require("../package.json");
+const { normalizeManifestPermissions } = require("webext-permissions");
+const { excludeDuplicatePatterns } = require("webext-patterns");
 
 function getVersion(env) {
   // `manifest.json` only supports numbers in the version, so use the semver
@@ -47,10 +49,9 @@ function updateManifestToV3(manifestV2) {
   manifest.manifest_version = 3;
 
   // Extract host permissions
-  pull(manifest.permissions, "*://*/*");
-  pull(manifest.permissions, "<all_urls>");
-  manifest.host_permissions = ["<all_urls>"];
-  manifest.permissions.push("scripting");
+  const { permissions, origins } = normalizeManifestPermissions(manifest);
+  manifest.permissions = [...permissions, "scripting"];
+  manifest.host_permissions = origins;
 
   // Update format
   manifest.web_accessible_resources = [
@@ -125,23 +126,12 @@ function customizeManifest(manifestV2, options = {}) {
   manifest.content_security_policy = policy.toString();
 
   if (env.EXTERNALLY_CONNECTABLE) {
-    manifest.externally_connectable.matches = uniq([
+    manifest.externally_connectable.matches = excludeDuplicatePatterns([
       ...manifest.externally_connectable.matches,
       ...env.EXTERNALLY_CONNECTABLE.split(","),
+      ...internal,
     ]);
   }
-
-  manifest.content_scripts[0].matches = uniq([
-    new URL("*", env.SERVICE_URL).href,
-    new URL("*", env.MARKETPLACE_URL).href,
-    ...manifest.content_scripts[0].matches,
-    ...internal,
-  ]);
-
-  manifest.externally_connectable.matches = uniq([
-    ...manifest.externally_connectable.matches,
-    ...internal,
-  ]);
 
   if (manifestVersion === 3) {
     return updateManifestToV3(manifest);

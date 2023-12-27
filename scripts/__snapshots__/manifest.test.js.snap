@@ -47,14 +47,8 @@ exports[`customizeManifest mv2 1`] = `
       ],
       "match_about_blank": true,
       "matches": [
-        "https://app.pixiebrix.com/*",
-        "https://www.pixiebrix.com/marketplace/*",
         "https://*/*",
         "http://*/*",
-        "http://127.0.0.1:8000/*",
-        "http://127.0.0.1/*",
-        "http://localhost/*",
-        "http://localhost:8000/*",
       ],
       "run_at": "document_idle",
     },
@@ -77,10 +71,6 @@ exports[`customizeManifest mv2 1`] = `
   "externally_connectable": {
     "matches": [
       "https://*.pixiebrix.com/*",
-      "http://127.0.0.1:8000/*",
-      "http://127.0.0.1/*",
-      "http://localhost/*",
-      "http://localhost:8000/*",
     ],
   },
   "homepage_url": "https://www.pixiebrix.com",
@@ -184,14 +174,8 @@ exports[`customizeManifest mv3 1`] = `
       ],
       "match_about_blank": true,
       "matches": [
-        "https://app.pixiebrix.com/*",
-        "https://www.pixiebrix.com/marketplace/*",
         "https://*/*",
         "http://*/*",
-        "http://127.0.0.1:8000/*",
-        "http://127.0.0.1/*",
-        "http://localhost/*",
-        "http://localhost:8000/*",
       ],
       "run_at": "document_idle",
     },
@@ -217,10 +201,6 @@ exports[`customizeManifest mv3 1`] = `
   "externally_connectable": {
     "matches": [
       "https://*.pixiebrix.com/*",
-      "http://127.0.0.1:8000/*",
-      "http://127.0.0.1/*",
-      "http://localhost/*",
-      "http://localhost:8000/*",
     ],
   },
   "homepage_url": "https://www.pixiebrix.com",
@@ -250,6 +230,7 @@ exports[`customizeManifest mv3 1`] = `
     "tabs",
     "webNavigation",
     "contextMenus",
+    "devtools",
     "scripting",
   ],
   "sandbox": {
