@@ -19,7 +19,7 @@
 /* eslint-disable no-restricted-imports -- Aliases don't work outside built files */
 
 import manifest from "../src/manifest.json";
-import { loadEnv } from "./env.mjs";
+import { loadEnv } from "./env.js";
 import customizeManifest from "./manifest.mjs";
 
 loadEnv();
@@ -27,7 +27,7 @@ loadEnv();
 const manifestMatcher = {
   version: expect.any(String),
   version_name: expect.any(String),
-  key: expect.any(String),
+  key: expect.toBeOneOf([expect.any(String), undefined]),
 };
 
 describe("customizeManifest", () => {

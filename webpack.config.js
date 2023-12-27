@@ -29,7 +29,7 @@ const { compact } = require("lodash");
 const mergeWithShared = require("./webpack.sharedConfig.js");
 const { parseEnv, loadEnv } = require("./scripts/env.js");
 
-// Workaround for ERR_REQUIRE_ESM error. Can be removed when/if this TS config is turned into ESM
+// Workaround for ERR_REQUIRE_ESM error. Can be removed when/if this config is turned into ESM
 let customizeManifest;
 void import("./scripts/manifest.mjs").then((imported) => {
   customizeManifest = imported.default;
