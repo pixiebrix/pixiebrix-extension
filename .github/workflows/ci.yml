@@ -57,7 +57,7 @@ jobs:
           - MV: 2
             PUBLIC_NAME: ""
           - MV: 3
-            PUBLIC_NAME: "-beta"
+            PUBLIC_NAME: "-mv3"
 
     steps:
       - uses: actions/checkout@v4
