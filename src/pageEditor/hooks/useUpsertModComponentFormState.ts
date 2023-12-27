@@ -199,13 +199,15 @@ function useUpsertModComponentFormState(): SaveCallback {
           );
         }
 
+        modComponent = {
+          createTimestamp: updateTimestamp,
+          ...modComponent,
+          updateTimestamp,
+        };
+
         dispatch(
           saveModComponent({
-            modComponent: {
-              createTimestamp: updateTimestamp,
-              ...modComponent,
-              updateTimestamp,
-            },
+            modComponent,
           }),
         );
 

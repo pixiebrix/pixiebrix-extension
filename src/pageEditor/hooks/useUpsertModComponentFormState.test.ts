@@ -24,6 +24,13 @@ import { type ModComponentState } from "@/store/extensionsTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
 
 const axiosMock = new MockAdapter(axios);
+const defaultOptions = {
+  pushToCloud: false,
+  checkPermissions: false,
+  notifySuccess: true,
+  reactivateEveryTab: false,
+};
+
 describe("useUpsertModComponentFormState", () => {
   let expectedUpdateDate: Date;
 
@@ -51,12 +58,7 @@ describe("useUpsertModComponentFormState", () => {
     const upsertModComponentFormState = result.current;
     await upsertModComponentFormState({
       element: modComponent,
-      options: {
-        pushToCloud: false,
-        checkPermissions: false,
-        notifySuccess: true,
-        reactivateEveryTab: false,
-      },
+      options: defaultOptions,
     });
 
     const extensions = selectExtensions(
@@ -69,6 +71,75 @@ describe("useUpsertModComponentFormState", () => {
         id: modComponent.uuid,
         extensionPointId: modComponent.extensionPoint.metadata.id,
         createTimestamp: expectedUpdateDate.toISOString(),
+        updateTimestamp: expectedUpdateDate.toISOString(),
+      }),
+    );
+  });
+
+  it("pushes mod component to the cloud with the same timestamps that are saved to redux", async () => {
+    const modComponent = formStateFactory();
+
+    const { result, getReduxStore, waitForEffect } = renderHook(() =>
+      useUpsertModComponentFormState(),
+    );
+    await waitForEffect();
+
+    const upsertModComponentFormState = result.current;
+    await upsertModComponentFormState({
+      element: modComponent,
+      options: { ...defaultOptions, pushToCloud: true },
+    });
+
+    const extensions = selectExtensions(
+      getReduxStore().getState() as { options: ModComponentState },
+    );
+
+    const expectedFields = {
+      id: modComponent.uuid,
+      extensionPointId: modComponent.extensionPoint.metadata.id,
+      createTimestamp: expectedUpdateDate.toISOString(),
+      updateTimestamp: expectedUpdateDate.toISOString(),
+    };
+
+    expect(extensions).toHaveLength(1);
+    expect(extensions[0]).toEqual(expect.objectContaining(expectedFields));
+
+    expect(axiosMock.history.put).toHaveLength(1);
+    expect(axiosMock.history.put[0].url).toEqual(
+      `/api/extensions/${modComponent.uuid}/`,
+    );
+    expect(JSON.parse(axiosMock.history.put[0].data)).toEqual(
+      expect.objectContaining(expectedFields),
+    );
+  });
+
+  it("only updates updatedTimestamp if createTimestamp is already set", async () => {
+    const expectedCreateTimestamp = new Date("2024-01-01").toISOString();
+    const modComponent = formStateFactory({
+      createTimestamp: expectedCreateTimestamp,
+    });
+
+    const { result, getReduxStore, waitForEffect } = renderHook(() =>
+      useUpsertModComponentFormState(),
+    );
+    await waitForEffect();
+
+    const upsertModComponentFormState = result.current;
+    await upsertModComponentFormState({
+      element: modComponent,
+      options: defaultOptions,
+    });
+
+    const extensions = selectExtensions(
+      getReduxStore().getState() as { options: ModComponentState },
+    );
+
+    expect(extensions).toHaveLength(1);
+    expect(extensions[0]).toEqual(
+      expect.objectContaining({
+        id: modComponent.uuid,
+        extensionPointId: modComponent.extensionPoint.metadata.id,
+        createTimestamp: expectedCreateTimestamp,
         updateTimestamp: expectedUpdateDate.toISOString(),
       }),
     );
