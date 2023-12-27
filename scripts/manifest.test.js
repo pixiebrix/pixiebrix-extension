@@ -18,32 +18,30 @@
 /* eslint-disable @shopify/jest/no-snapshots -- We want to specifically commit the entire customized manifest as a snapshot */
 /* eslint-disable no-restricted-imports -- Aliases don't work outside built files */
 
+import { omit } from "lodash";
 import manifest from "../src/manifest.json";
 import { loadEnv } from "./env.js";
 import customizeManifest from "./manifest.mjs";
 
 loadEnv();
 
-const manifestMatcher = {
-  version: expect.any(String),
-  version_name: expect.any(String),
-  key: expect.toBeOneOf([expect.any(String), undefined]),
-};
+const cleanCustomize = (...args) =>
+  omit(customizeManifest(...args), ["version", "version_name", "key"]);
 
 describe("customizeManifest", () => {
   test("mv2", () => {
     expect(
-      customizeManifest(manifest, {
+      cleanCustomize(manifest, {
         env: process.env,
       }),
-    ).toMatchSnapshot(manifestMatcher);
+    ).toMatchSnapshot();
   });
   test("mv3", () => {
     expect(
-      customizeManifest(manifest, {
+      cleanCustomize(manifest, {
         env: process.env,
         manifestVersion: 3,
       }),
-    ).toMatchSnapshot(manifestMatcher);
+    ).toMatchSnapshot();
   });
 });

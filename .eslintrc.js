@@ -134,7 +134,7 @@ module.exports = {
     },
     {
       // These rules should not be enabled for JS files
-      files: ["**/*.js"],
+      files: ["*.js", "*.mjs", "*.cjs"],
       rules: {
         "@typescript-eslint/no-unsafe-member-access": "off",
         "@typescript-eslint/no-unsafe-call": "off",

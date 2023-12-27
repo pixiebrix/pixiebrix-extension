@@ -80,7 +80,6 @@ exports[`customizeManifest mv2 1`] = `
     "32": "icons/logo32.png",
     "48": "icons/logo48.png",
   },
-  "key": toBeOneOf<Any,>,
   "manifest_version": 2,
   "minimum_chrome_version": "95.0",
   "name": "PixieBrix - Development",
@@ -110,8 +109,6 @@ exports[`customizeManifest mv2 1`] = `
   "storage": {
     "managed_schema": "managedStorageSchema.json",
   },
-  "version": Any<String>,
-  "version_name": Any<String>,
   "web_accessible_resources": [
     "css/*",
     "bundles/*",
@@ -216,7 +213,6 @@ exports[`customizeManifest mv3 1`] = `
     "32": "icons/logo32.png",
     "48": "icons/logo48.png",
   },
-  "key": toBeOneOf<Any,>,
   "manifest_version": 3,
   "minimum_chrome_version": "95.0",
   "name": "PixieBrix - Development",
@@ -246,8 +242,6 @@ exports[`customizeManifest mv3 1`] = `
   "storage": {
     "managed_schema": "managedStorageSchema.json",
   },
-  "version": Any<String>,
-  "version_name": Any<String>,
   "web_accessible_resources": [
     {
       "matches": [
