@@ -80,6 +80,7 @@ exports[`customizeManifest mv2 1`] = `
     "32": "icons/logo32.png",
     "48": "icons/logo48.png",
   },
+  "key": Any<String>,
   "manifest_version": 2,
   "minimum_chrome_version": "95.0",
   "name": "PixieBrix - Development",
@@ -109,6 +110,8 @@ exports[`customizeManifest mv2 1`] = `
   "storage": {
     "managed_schema": "managedStorageSchema.json",
   },
+  "version": Any<String>,
+  "version_name": Any<String>,
   "web_accessible_resources": [
     "css/*",
     "bundles/*",
@@ -194,7 +197,7 @@ exports[`customizeManifest mv3 1`] = `
   ],
   "content_security_policy": {
     "extension_pages": "script-src 'self' http://localhost:8097; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https: ws://localhost:8097/; object-src 'self'; img-src 'self' data: https: https://pixiebrix-marketplace-dev.s3.amazonaws.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; frame-src 'self' https:;",
-    "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';",
+    "sandbox": "sandbox allow-scripts allow-forms; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';",
   },
   "description": "Customize, extend, and integrate your favorite SaaS apps without writing a line of code!",
   "devtools_page": "devtools.html",
@@ -213,6 +216,7 @@ exports[`customizeManifest mv3 1`] = `
     "32": "icons/logo32.png",
     "48": "icons/logo48.png",
   },
+  "key": Any<String>,
   "manifest_version": 3,
   "minimum_chrome_version": "95.0",
   "name": "PixieBrix - Development",
@@ -242,6 +246,8 @@ exports[`customizeManifest mv3 1`] = `
   "storage": {
     "managed_schema": "managedStorageSchema.json",
   },
+  "version": Any<String>,
+  "version_name": Any<String>,
   "web_accessible_resources": [
     {
       "matches": [

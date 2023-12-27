@@ -24,31 +24,26 @@ import customizeManifest from "./manifest.mjs";
 
 loadEnv();
 
-function dropVariableProperties(manifest) {
-  delete manifest.version;
-  delete manifest.version_name;
-  delete manifest.key;
-  return manifest;
-}
+const manifestMatcher = {
+  version: expect.any(String),
+  version_name: expect.any(String),
+  key: expect.any(String),
+};
 
 describe("customizeManifest", () => {
   test("mv2", () => {
     expect(
-      dropVariableProperties(
-        customizeManifest(manifest, {
-          env: process.env,
-        }),
-      ),
-    ).toMatchSnapshot();
+      customizeManifest(manifest, {
+        env: process.env,
+      }),
+    ).toMatchSnapshot(manifestMatcher);
   });
   test("mv3", () => {
     expect(
-      dropVariableProperties(
-        customizeManifest(manifest, {
-          env: process.env,
-          manifestVersion: 3,
-        }),
-      ),
-    ).toMatchSnapshot();
+      customizeManifest(manifest, {
+        env: process.env,
+        manifestVersion: 3,
+      }),
+    ).toMatchSnapshot(manifestMatcher);
   });
 });

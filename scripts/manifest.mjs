@@ -70,10 +70,9 @@ function updateManifestToV3(manifestV2) {
   manifest.content_security_policy = {
     extension_pages: policy.toString(),
 
-    // Set the native default CSP
     // https://developer.chrome.com/docs/extensions/mv3/manifest/sandbox/
     sandbox:
-      "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';",
+      "sandbox allow-scripts allow-forms; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';",
   };
 
   // Replace background script
@@ -85,8 +84,8 @@ function updateManifestToV3(manifestV2) {
 }
 
 /**
- * @param {chrome.runtime.ManifestV2} manifest
- * @returns chrome.runtime.ManifestV3
+ * @param {chrome.runtime.ManifestV2} manifestV2
+ * @returns chrome.runtime.Manifest
  */
 function customizeManifest(manifestV2, options = {}) {
   const { isProduction, manifestVersion, env = {} } = options;
