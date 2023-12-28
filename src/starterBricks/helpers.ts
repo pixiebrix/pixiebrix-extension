@@ -74,9 +74,9 @@ async function mutationSelector(
   selector: string,
   signal?: AbortSignal,
   target?: HTMLElement | Document,
-): Promise<JQuery> {
+): Promise<JQuery | null> {
   let observer: MutationObserver;
-  return new Promise<JQuery>((resolve) => {
+  return new Promise<JQuery | null>((resolve) => {
     observer = initialize(
       selector,
       (i: number, element: HTMLElement) => {
@@ -85,7 +85,7 @@ async function mutationSelector(
       { target: target ?? document },
     );
     onAbort(signal, observer, () => {
-      resolve($());
+      resolve(null);
     });
   });
 }
@@ -136,6 +136,11 @@ export async function awaitElementOnce(
       signal,
       $root.get(0),
     );
+
+    if (!$nextElement) {
+      return $root;
+    }
+
     console.debug(`awaitElementOnce: found selector: ${nextSelector}`);
 
     return awaitElementOnce(selectors, $nextElement, signal);
