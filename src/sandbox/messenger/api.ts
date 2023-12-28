@@ -25,6 +25,7 @@ import * as directApi from "@/sandbox/messenger/executor";
 import { type JsonObject } from "type-fest";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import { once } from "lodash";
+import { isMV3 } from "@/mv3/api.js";
 
 // Uses pMemoize to allow retries after a failure
 const loadSandbox = pMemoize(async () => {
@@ -38,6 +39,10 @@ const loadSandbox = pMemoize(async () => {
 export default loadSandbox;
 
 const isSandboxed = once(async (): Promise<boolean> => {
+  if (isMV3()) {
+    return true;
+  }
+
   const { sandboxedCode } = await getSettingsState();
   return Boolean(sandboxedCode);
 });
