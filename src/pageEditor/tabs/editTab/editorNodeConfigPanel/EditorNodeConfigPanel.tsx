@@ -18,7 +18,7 @@
 import styles from "./EditorNodeConfigPanel.module.scss";
 
 import React from "react";
-import { Col, Row, Alert } from "react-bootstrap";
+import { Col, Row } from "react-bootstrap";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BrickConfiguration from "@/pageEditor/tabs/effect/BrickConfiguration";
 import { useAsyncState } from "@/hooks/common";
@@ -33,6 +33,7 @@ import { selectActiveNodeInfo } from "@/pageEditor/slices/editorSelectors";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import cx from "classnames";
 import { MARKETPLACE_URL } from "@/urlConstants";
+import CommentsPreview from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/CommentsPreview";
 
 const EditorNodeConfigPanel: React.FC = () => {
   const {
@@ -110,11 +111,7 @@ const EditorNodeConfigPanel: React.FC = () => {
           />
         </Col>
       </Row>
-      {comments && (
-        <Alert role="note">
-          <p className="text-success">{comments}</p>
-        </Alert>
-      )}
+      {comments && <CommentsPreview comments={comments} />}
 
       <BrickConfiguration name={brickFieldName} brickId={brickId} />
     </>
