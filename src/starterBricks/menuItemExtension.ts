@@ -513,8 +513,11 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       },
     );
 
-    const [menuPromise, cancelWait] = awaitElementOnce(containerSelector);
-    onAbort(this.cancelController, cancelWait);
+    const [menuPromise] = awaitElementOnce(
+      containerSelector,
+      undefined,
+      this.cancelController.signal,
+    );
 
     let $menuContainers;
 
@@ -789,7 +792,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
       const observer = new MutationObserver(rerun);
 
-      const cancellers: Array<() => void> = [];
+      const abortController = new AbortController();
 
       let elementCount = 0;
       for (const dependency of dependencies) {
@@ -803,8 +806,11 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
             });
           }
         } else {
-          const [elementPromise, cancel] = awaitElementOnce(dependency);
-          cancellers.push(cancel);
+          const [elementPromise] = awaitElementOnce(
+            dependency,
+            undefined,
+            abortController.signal,
+          );
           // eslint-disable-next-line promise/prefer-await-to-then -- TODO: Maybe refactor
           void elementPromise.then(() => {
             rerun();
@@ -823,13 +829,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
           console.error("Error cancelling mutation observer", error);
         }
 
-        for (const cancel of cancellers) {
-          try {
-            cancel();
-          } catch (error) {
-            console.error("Error cancelling dependency observer", error);
-          }
-        }
+        abortController.abort();
       });
     } else {
       console.debug(`Extension has no dependencies: ${extension.id}`);
