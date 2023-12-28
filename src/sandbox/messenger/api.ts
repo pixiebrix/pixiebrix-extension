@@ -25,7 +25,7 @@ import * as directApi from "@/sandbox/messenger/executor";
 import { type JsonObject } from "type-fest";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import { once } from "lodash";
-import { isMV3 } from "@/mv3/api.js";
+import { isMV3 } from "@/mv3/api";
 
 // Uses pMemoize to allow retries after a failure
 const loadSandbox = pMemoize(async () => {
