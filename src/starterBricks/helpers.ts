@@ -130,23 +130,27 @@ export function awaitElementOnce(
       signal,
       $root.get(0),
     );
-    let innerCancel = noop;
+    onAbort(signal, () => {
+      console.debug(
+        `awaitElementOnce: caller cancelled wait for selector: ${nextSelector}`,
+      );
+      internalController.abort();
+    });
     return [
       // eslint-disable-next-line promise/prefer-await-to-then -- We can return it before it resolves
       nextElementPromise.then(async ($nextElement) => {
-        const [innerPromise, inner] = awaitElementOnce(selectors, $nextElement);
-        innerCancel = inner;
+        const [innerPromise] = awaitElementOnce(
+          selectors,
+          $nextElement,
+          signal,
+        );
 
         console.debug(`awaitElementOnce: found selector: ${nextSelector}`);
 
         return innerPromise;
       }),
       () => {
-        console.debug(
-          `awaitElementOnce: caller cancelled wait for selector: ${nextSelector}`,
-        );
         internalController.abort();
-        innerCancel();
       },
     ];
   }
