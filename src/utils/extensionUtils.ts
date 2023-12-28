@@ -19,7 +19,7 @@ import pTimeout from "p-timeout";
 import { foreverPendingPromise } from "@/utils/promiseUtils";
 import { type Promisable } from "type-fest";
 import { isScriptableUrl } from "webext-content-scripts";
-import { Runtime } from "webextension-polyfill";
+import { type Runtime } from "webextension-polyfill";
 
 type TabId = number;
 
