@@ -27,15 +27,14 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   getModComponentItemId,
+  isModSidebarItem,
   type SidebarItem,
 } from "@/pageEditor/sidebar/common";
 import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import ModListItem from "@/pageEditor/sidebar/ModListItem";
 import useFlags from "@/hooks/useFlags";
-import arrangeSidebarItems, {
-  isModSidebarItem,
-} from "@/pageEditor/sidebar/arrangeSidebarItems";
+import arrangeSidebarItems from "@/pageEditor/sidebar/arrangeSidebarItems";
 import {
   selectActiveElementId,
   selectActiveRecipeId,

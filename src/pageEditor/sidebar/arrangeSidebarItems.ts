@@ -21,6 +21,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {
+  isModSidebarItem,
   type ModComponentSidebarItem,
   type ModSidebarItem,
   type SidebarItem,
@@ -30,10 +31,6 @@ type ArrangeSidebarItemsArgs = {
   modComponentFormStates: ModComponentFormState[];
   cleanModComponents: ModComponentBase[];
 };
-
-export function isModSidebarItem(item: SidebarItem): item is ModSidebarItem {
-  return "modMetadata" in item;
-}
 
 function arrangeSidebarItems({
   modComponentFormStates,

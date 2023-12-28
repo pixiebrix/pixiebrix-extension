@@ -42,3 +42,7 @@ export function isModComponentBase(
 export function getModComponentItemId(item: ModComponentSidebarItem): UUID {
   return isModComponentBase(item) ? item.id : item.uuid;
 }
+
+export function isModSidebarItem(item: SidebarItem): item is ModSidebarItem {
+  return "modMetadata" in item;
+}

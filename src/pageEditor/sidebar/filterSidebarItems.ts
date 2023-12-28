@@ -17,11 +17,11 @@
 
 import {
   getModComponentItemId,
+  isModSidebarItem,
   type SidebarItem,
 } from "@/pageEditor/sidebar/common";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
-import { isModSidebarItem } from "@/pageEditor/sidebar/arrangeSidebarItems";
 import { lowerCase } from "lodash";
 
 type FilterSidebarItemsArgs = {
