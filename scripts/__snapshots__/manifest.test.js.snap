@@ -56,7 +56,7 @@ exports[`customizeManifest mv2 1`] = `
         "loadActivationEnhancements.js",
       ],
       "matches": [
-        "*://*/*",
+        "https://*/*",
       ],
       "run_at": "document_end",
     },
@@ -178,7 +178,7 @@ exports[`customizeManifest mv3 1`] = `
         "loadActivationEnhancements.js",
       ],
       "matches": [
-        "*://*/*",
+        "https://*/*",
       ],
       "run_at": "document_end",
     },
