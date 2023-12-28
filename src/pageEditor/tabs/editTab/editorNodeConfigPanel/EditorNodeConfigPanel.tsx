@@ -18,7 +18,7 @@
 import styles from "./EditorNodeConfigPanel.module.scss";
 
 import React from "react";
-import { Col, Row } from "react-bootstrap";
+import { Col, Row, Alert } from "react-bootstrap";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BrickConfiguration from "@/pageEditor/tabs/effect/BrickConfiguration";
 import { useAsyncState } from "@/hooks/common";
@@ -106,6 +106,9 @@ const EditorNodeConfigPanel: React.FC = () => {
           />
         </Col>
       </Row>
+      <Alert role="note">
+        <p className="text-success">hello world</p>
+      </Alert>
 
       <BrickConfiguration name={blockFieldName} brickId={blockId} />
     </>
