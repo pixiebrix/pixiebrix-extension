@@ -27,7 +27,6 @@ import {
 } from "@/types/runtimeTypes";
 import { sleep } from "@/utils/timeUtils";
 import { mergeSignals } from "@/utils/promiseUtils";
-import { isError } from "lodash";
 
 export class WaitEffect extends EffectABC {
   constructor() {
@@ -85,22 +84,20 @@ export async function awaitElement({
     return awaitElementOnce(selector, $root, abortSignal);
   }
 
-  try {
-    const timeout = AbortSignal.timeout(maxWaitMillis);
-    return await awaitElementOnce(
-      selector,
-      $root,
-      mergeSignals(abortSignal, timeout),
-    );
-  } catch (error) {
-    if (isError(error) && error.name === "TimeoutError") {
-      throw new BusinessError(
-        `Element not available in ${maxWaitMillis} milliseconds`,
-      );
-    }
+  const timeout = AbortSignal.timeout(maxWaitMillis);
+  const element = await awaitElementOnce(
+    selector,
+    $root,
+    mergeSignals(abortSignal, timeout),
+  );
 
-    throw error ?? new Error("Unknown error waiting for element");
+  if (timeout.aborted) {
+    throw new BusinessError(
+      `Element not available in ${maxWaitMillis} milliseconds`,
+    );
   }
+
+  return element;
 }
 
 export class WaitElementEffect extends EffectABC {
