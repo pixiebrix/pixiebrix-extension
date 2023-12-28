@@ -70,12 +70,13 @@ export function onNodeRemoved(
   }
 }
 
-function mutationSelector(
+async function mutationSelector(
   selector: string,
+  signal: AbortSignal,
   target?: HTMLElement | Document,
-): [Promise<JQuery>, () => void] {
+): Promise<JQuery> {
   let observer: MutationObserver;
-  const promise = new Promise<JQuery>((resolve) => {
+  return new Promise<JQuery>((resolve) => {
     observer = initialize(
       selector,
       (i: number, element: HTMLElement) => {
@@ -83,13 +84,8 @@ function mutationSelector(
       },
       { target: target ?? document },
     );
+    onAbort(signal, observer);
   });
-  return [
-    promise,
-    () => {
-      observer.disconnect();
-    },
-  ];
 }
 
 /**
@@ -101,6 +97,7 @@ function mutationSelector(
 export function awaitElementOnce(
   selector: string | string[],
   $root: JQuery<HTMLElement | Document> = $(document),
+  signal?: AbortSignal,
 ): [Promise<JQuery<HTMLElement | Document>>, () => void] {
   if (selector == null) {
     throw new Error("awaitElementOnce expected selector");
@@ -126,8 +123,11 @@ export function awaitElementOnce(
       `awaitElementOnce: selector not immediately found; awaiting selector: ${nextSelector}`,
     );
 
-    const [nextElementPromise, cancel] = mutationSelector(
+    const internalController = new AbortController();
+    signal ??= internalController.signal;
+    const nextElementPromise = mutationSelector(
       nextSelector,
+      signal,
       $root.get(0),
     );
     let innerCancel = noop;
@@ -145,7 +145,7 @@ export function awaitElementOnce(
         console.debug(
           `awaitElementOnce: caller cancelled wait for selector: ${nextSelector}`,
         );
-        cancel();
+        internalController.abort();
         innerCancel();
       },
     ];
