@@ -240,9 +240,9 @@ async function linkTabListener({ id, openerTabId }: Tabs.Tab): Promise<void> {
   }
 }
 
-async function unlinkTabListener(id: number): Promise<void> {
-  await tabToTarget.delete(String(id));
-  await tabToOpener.delete(String(id));
+function unlinkTabListener(id: number): void {
+  void tabToTarget.delete(String(id));
+  void tabToOpener.delete(String(id));
 }
 
 function initExecutor(): void {
