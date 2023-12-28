@@ -180,19 +180,6 @@ interface Promise<T> {
   ): Promise<T | TResult>;
 }
 
-interface ErrorOptions {
-  cause?: unknown;
-}
-
-interface Error {
-  cause?: unknown;
-}
-
-interface ErrorConstructor {
-  new (message?: string, options?: ErrorOptions): Error;
-  (message?: string, options?: ErrorOptions): Error;
-}
-
 // This changes the return value from `any` to `JsonValue`.
 // "total-typescript" sets it to `unknown` but `JsonValue` is more useful and accurate.
 interface JSON {
@@ -206,10 +193,6 @@ interface JSON {
     text: string,
     reviver?: (this: unknown, key: string, value: unknown) => unknown,
   ): import("type-fest").JsonValue;
-}
-
-declare namespace CSS {
-  function px(length: number): string;
 }
 
 // These types are unnecessarily loose
