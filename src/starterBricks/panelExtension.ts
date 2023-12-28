@@ -215,7 +215,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
       `Awaiting panel container for ${this.id}: ${JSON.stringify(selector)}`,
     );
 
-    const [containerPromise] = awaitElementOnce(
+    const containerPromise = awaitElementOnce(
       selector,
       undefined,
       this.cancelController.signal,

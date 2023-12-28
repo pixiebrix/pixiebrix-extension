@@ -232,9 +232,14 @@ function addListeners(signal: AbortSignal, handles: Handle[]) {
 }
 
 export function onAbort(
-  abort: AbortController | AbortSignal,
+  // Accept `undefined` to replicate the common `signal?.addEventListener()` pattern
+  abort: AbortController | AbortSignal | undefined,
   ...handles: Handle[]
 ): void {
+  if (!abort) {
+    return;
+  }
+
   const signal = abort instanceof AbortController ? abort.signal : abort;
   if (signal.aborted) {
     // This pattern ensures that handlers are treated the same way even if the

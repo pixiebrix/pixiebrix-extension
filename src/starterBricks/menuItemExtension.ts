@@ -513,7 +513,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       },
     );
 
-    const [menuPromise] = awaitElementOnce(
+    const menuPromise = awaitElementOnce(
       containerSelector,
       undefined,
       this.cancelController.signal,
@@ -806,13 +806,12 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
             });
           }
         } else {
-          const [elementPromise] = awaitElementOnce(
+          void awaitElementOnce(
             dependency,
             undefined,
             abortController.signal,
-          );
-          // eslint-disable-next-line promise/prefer-await-to-then -- TODO: Maybe refactor
-          void elementPromise.then(() => {
+            // eslint-disable-next-line promise/prefer-await-to-then -- TODO: Maybe refactor
+          ).then(() => {
             rerun();
           });
         }

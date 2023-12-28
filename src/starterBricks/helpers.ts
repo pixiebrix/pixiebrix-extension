@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { castArray, noop } from "lodash";
+import { castArray } from "lodash";
 import initialize from "@/vendors/initialize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/domConstants";
 import {
@@ -72,7 +72,7 @@ export function onNodeRemoved(
 
 async function mutationSelector(
   selector: string,
-  signal: AbortSignal,
+  signal?: AbortSignal,
   target?: HTMLElement | Document,
 ): Promise<JQuery> {
   let observer: MutationObserver;
@@ -84,7 +84,9 @@ async function mutationSelector(
       },
       { target: target ?? document },
     );
-    onAbort(signal, observer);
+    onAbort(signal, observer, () => {
+      resolve($());
+    });
   });
 }
 
@@ -92,13 +94,13 @@ async function mutationSelector(
  * Recursively await an element using one or more jQuery selectors.
  * @param selector selector, or an array of selectors to
  * @param $root the root element, defaults to `document`
- * @returns [promise, cancel] the element promise and a callback for cancelling the promise
+ * @returns The element found or undefined if the signal was aborted
  */
-export function awaitElementOnce(
+export async function awaitElementOnce(
   selector: string | string[],
   $root: JQuery<HTMLElement | Document> = $(document),
   signal?: AbortSignal,
-): [Promise<JQuery<HTMLElement | Document>>, () => void] {
+): Promise<JQuery<HTMLElement | Document>> {
   if (selector == null) {
     throw new Error("awaitElementOnce expected selector");
   }
@@ -109,7 +111,7 @@ export function awaitElementOnce(
   const nextSelector = selectors.shift();
 
   if (!nextSelector) {
-    return [Promise.resolve($root), noop];
+    return $root;
   }
 
   // Find immediately, or wait for it to be initialized
@@ -123,43 +125,27 @@ export function awaitElementOnce(
       `awaitElementOnce: selector not immediately found; awaiting selector: ${nextSelector}`,
     );
 
-    const internalController = new AbortController();
-    signal ??= internalController.signal;
-    const nextElementPromise = mutationSelector(
+    signal?.addEventListener("abort", () => {
+      console.debug(
+        `awaitElementOnce: caller cancelled wait for selector: ${nextSelector}`,
+      );
+    });
+
+    const $nextElement = await mutationSelector(
       nextSelector,
       signal,
       $root.get(0),
     );
-    onAbort(signal, () => {
-      console.debug(
-        `awaitElementOnce: caller cancelled wait for selector: ${nextSelector}`,
-      );
-      internalController.abort();
-    });
-    return [
-      // eslint-disable-next-line promise/prefer-await-to-then -- We can return it before it resolves
-      nextElementPromise.then(async ($nextElement) => {
-        const [innerPromise] = awaitElementOnce(
-          selectors,
-          $nextElement,
-          signal,
-        );
+    console.debug(`awaitElementOnce: found selector: ${nextSelector}`);
 
-        console.debug(`awaitElementOnce: found selector: ${nextSelector}`);
-
-        return innerPromise;
-      }),
-      () => {
-        internalController.abort();
-      },
-    ];
+    return awaitElementOnce(selectors, $nextElement, signal);
   }
 
   if (selectors.length === 0) {
-    return [Promise.resolve($elements), noop];
+    return $elements;
   }
 
-  return awaitElementOnce(selectors, $elements);
+  return awaitElementOnce(selectors, $elements, signal);
 }
 
 /**
