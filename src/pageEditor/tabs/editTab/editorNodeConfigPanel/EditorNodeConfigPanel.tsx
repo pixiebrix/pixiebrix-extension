@@ -36,27 +36,27 @@ import { MARKETPLACE_URL } from "@/urlConstants";
 
 const EditorNodeConfigPanel: React.FC = () => {
   const {
-    blockId,
-    path: blockFieldName,
+    blockId: brickId,
+    path: brickFieldName,
     blockConfig: { comments },
   } = useSelector(selectActiveNodeInfo);
-  const [blockInfo] = useAsyncState(async () => {
-    const block = await blockRegistry.lookup(blockId);
+  const [brickInfo] = useAsyncState(async () => {
+    const brick = await blockRegistry.lookup(brickId);
     return {
-      block,
-      type: await getType(block),
+      block: brick,
+      type: await getType(brick),
     };
-  }, [blockId]);
+  }, [brickId]);
 
   const { data: listings = {} } = useGetMarketplaceListingsQuery({
-    package__name: blockId,
+    package__name: brickId,
   });
 
   const { instructions: listingInstructions, id: listingId } =
-    listings[blockId] ?? {};
+    listings[brickId] ?? {};
 
   const isOutputDisabled = !(
-    blockInfo === null || showOutputKey(blockInfo?.type)
+    brickInfo === null || showOutputKey(brickInfo?.type)
   );
   const outputDescription = isOutputDisabled
     ? "Effect and renderer bricks do not produce outputs"
@@ -77,7 +77,7 @@ const EditorNodeConfigPanel: React.FC = () => {
       <AnalysisResult />
       <Row className={cx(styles.brickInfo, "justify-content-between")}>
         <Col>
-          <p>{blockInfo?.block.name}</p>
+          <p>{brickInfo?.block.name}</p>
         </Col>
         {showDocumentationLink && (
           <Col xs="auto">
@@ -94,15 +94,15 @@ const EditorNodeConfigPanel: React.FC = () => {
       <Row className={styles.topRow}>
         <Col xl>
           <ConnectedFieldTemplate
-            name={`${blockFieldName}.label`}
+            name={`${brickFieldName}.label`}
             label="Step Name"
             fitLabelWidth
-            placeholder={blockInfo?.block.name}
+            placeholder={brickInfo?.block.name}
           />
         </Col>
         <Col xl>
           <ConnectedFieldTemplate
-            name={`${blockFieldName}.outputKey`}
+            name={`${brickFieldName}.outputKey`}
             label={PopoverOutputLabel}
             fitLabelWidth
             disabled={isOutputDisabled}
@@ -116,7 +116,7 @@ const EditorNodeConfigPanel: React.FC = () => {
         </Alert>
       )}
 
-      <BrickConfiguration name={blockFieldName} brickId={blockId} />
+      <BrickConfiguration name={brickFieldName} brickId={brickId} />
     </>
   );
 };
