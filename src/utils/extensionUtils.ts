@@ -94,7 +94,7 @@ export class RuntimeNotFoundError extends Error {
 
 export async function getTabsWithAccess(): Promise<TabId[]> {
   const tabs = await browser.tabs.query({
-    url: ["https://*/*", "http://*/*"],
+    url: ["*://*/*"],
     discarded: false,
   });
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- The type isn't tight enough for tabs.query()

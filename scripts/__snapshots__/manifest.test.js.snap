@@ -47,15 +47,11 @@ exports[`customizeManifest mv2 1`] = `
       ],
       "match_about_blank": true,
       "matches": [
-        "https://*/*",
-        "http://*/*",
+        "*://*/*",
       ],
       "run_at": "document_idle",
     },
     {
-      "exclude_matches": [
-        "https://*.googleapis.com/*",
-      ],
       "js": [
         "loadActivationEnhancements.js",
       ],
@@ -97,7 +93,6 @@ exports[`customizeManifest mv2 1`] = `
     "tabs",
     "webNavigation",
     "contextMenus",
-    "*://*/*",
     "<all_urls>",
   ],
   "sandbox": {
@@ -174,15 +169,11 @@ exports[`customizeManifest mv3 1`] = `
       ],
       "match_about_blank": true,
       "matches": [
-        "https://*/*",
-        "http://*/*",
+        "*://*/*",
       ],
       "run_at": "document_idle",
     },
     {
-      "exclude_matches": [
-        "https://*.googleapis.com/*",
-      ],
       "js": [
         "loadActivationEnhancements.js",
       ],
