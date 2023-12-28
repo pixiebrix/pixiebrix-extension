@@ -19,6 +19,7 @@ import pTimeout from "p-timeout";
 import { foreverPendingPromise } from "@/utils/promiseUtils";
 import { type Promisable } from "type-fest";
 import { isScriptableUrl } from "webext-content-scripts";
+import { Runtime } from "webextension-polyfill";
 
 type TabId = number;
 
@@ -71,10 +72,9 @@ export function getExtensionVersion(): string {
 }
 
 /** If no update is available and downloaded yet, it will return a string explaining why */
-export async function reloadIfNewVersionIsReady(): Promise<
-  "throttled" | "no_update"
-> {
-  const status = await browser.runtime.requestUpdateCheck();
+export async function reloadIfNewVersionIsReady(): Promise<Runtime.RequestUpdateCheckStatus> {
+  const [status] = await browser.runtime.requestUpdateCheck();
+
   if (status === "update_available") {
     browser.runtime.reload();
 
@@ -85,7 +85,7 @@ export async function reloadIfNewVersionIsReady(): Promise<
     });
   }
 
-  return status as "throttled" | "no_update";
+  return status;
 }
 
 export class RuntimeNotFoundError extends Error {
