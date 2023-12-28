@@ -71,7 +71,7 @@ module.exports = {
           "@/telemetry/reportUncaughtErrors",
           "@testing-library/jest-dom",
           "regenerator-runtime/runtime", // Automatic registration
-          "@/vendors/hoverintent/hoverintent", // JQuery plugin
+          "@/vendors/hoverintent", // JQuery plugin
           "iframe-resizer/js/iframeResizer.contentWindow", // vendor library imported for side-effect
         ],
       },
