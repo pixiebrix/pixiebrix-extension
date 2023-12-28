@@ -199,20 +199,22 @@ function useUpsertModComponentFormState(): SaveCallback {
           );
         }
 
-        modComponent = {
-          createTimestamp: updateTimestamp,
-          ...modComponent,
-          updateTimestamp,
-        };
-
         dispatch(
           saveModComponent({
-            modComponent,
+            modComponent: {
+              ...modComponent,
+              updateTimestamp,
+            },
           }),
         );
 
         if (options.pushToCloud && !modComponent._deployment) {
-          await saveCloudModComponent({ modComponent });
+          await saveCloudModComponent({
+            modComponent: {
+              ...modComponent,
+              updateTimestamp,
+            },
+          });
         }
 
         dispatch(markClean(element.uuid));

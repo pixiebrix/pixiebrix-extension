@@ -46,7 +46,7 @@ import {
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import baseQuery from "@/services/baseQuery";
-import { ModComponentBase } from "@/types/modComponentTypes";
+import type { ModComponentBase } from "@/types/modComponentTypes";
 
 export const appApi = createApi({
   reducerPath: "appApi",
@@ -227,7 +227,7 @@ export const appApi = createApi({
     }),
     saveCloudModComponent: builder.mutation<
       StandaloneModDefinition,
-      { modComponent: ModComponentBase }
+      { modComponent: ModComponentBase & { updateTimestamp: string } }
     >({
       query: ({ modComponent }) => ({
         url: `/api/extensions/${modComponent.id}/`,

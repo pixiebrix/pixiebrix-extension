@@ -269,7 +269,6 @@ const extensionsSlice = createSlice({
         payload,
       }: PayloadAction<{
         modComponent: (ModComponentBase | ActivatedModComponent) & {
-          createTimestamp?: string;
           updateTimestamp?: string;
         };
       }>,
@@ -286,7 +285,6 @@ const extensionsSlice = createSlice({
           label,
           optionsArgs,
           integrationDependencies,
-          createTimestamp = timestamp,
           updateTimestamp = timestamp,
           _recipe,
         },
@@ -315,7 +313,10 @@ const extensionsSlice = createSlice({
         optionsArgs,
         integrationDependencies,
         config,
-        createTimestamp,
+        // FIXME: this createTimestamp is not the same as the one on the server; however, this field must be present on
+        //  the mod component as it's used to determine mod component version 1
+        //  @see isModComponentStateV1
+        createTimestamp: updateTimestamp,
         updateTimestamp,
         active: true,
       };
