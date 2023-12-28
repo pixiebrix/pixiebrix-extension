@@ -97,7 +97,7 @@ async function mutationSelector(
  * @returns The element found or undefined if the signal was aborted
  */
 export async function awaitElementOnce(
-  selector: string | string[],
+  selector: string | readonly string[],
   $root: JQuery<HTMLElement | Document> = $(document),
   signal?: AbortSignal,
 ): Promise<JQuery<HTMLElement | Document>> {

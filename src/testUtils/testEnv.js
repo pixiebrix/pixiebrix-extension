@@ -40,3 +40,15 @@ global.PromiseRejectionEvent = class PromiseRejectionEvent extends Event {
 if (process.env.JEST_CONSOLE_DEBUG === "false") {
   console.debug = () => {};
 }
+
+// Thanks: https://gamliela.com/blog/advanced-testing-with-jest
+// TODO: Drop after jest-environment-jsdom@30
+// https://github.com/jsdom/jsdom/pull/3556
+// https://github.com/jestjs/jest/pull/13825
+global.AbortSignal.timeout ??= (milliseconds) => {
+  const controller = new AbortController();
+  setTimeout(() => {
+    controller.abort(new DOMException("TimeoutError"));
+  }, milliseconds);
+  return controller.signal;
+};

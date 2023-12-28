@@ -86,7 +86,7 @@ describe("awaitElementOnce", () => {
       '<div class="table-actions"></div>',
     ).body.innerHTML;
 
-    awaitElementOnce(selectors);
+    void awaitElementOnce(selectors);
 
     requestIdleCallback.runIdleCallbacks();
     await tick();
