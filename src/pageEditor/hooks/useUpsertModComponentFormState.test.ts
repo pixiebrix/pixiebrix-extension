@@ -103,7 +103,7 @@ describe("useUpsertModComponentFormState", () => {
     expect(extensions[0]).toEqual(expect.objectContaining(expectedFields));
 
     expect(axiosMock.history.put).toHaveLength(1);
-    expect(axiosMock.history.put[0].url).toEqual(
+    expect(axiosMock.history.put[0].url).toBe(
       `/api/extensions/${modComponent.uuid}/`,
     );
     expect(JSON.parse(axiosMock.history.put[0].data)).toEqual(
