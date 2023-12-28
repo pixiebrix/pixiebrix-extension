@@ -63,7 +63,7 @@ const ExperimentalSettings: React.FunctionComponent = () => {
             isEnabled={performanceTracing}
             flag="performanceTracing"
           />
-          {isMV3() ? null : (
+          {isMV3() && (
             <SettingToggle
               controlId="sandboxedCode"
               label="Sandboxed Code"
