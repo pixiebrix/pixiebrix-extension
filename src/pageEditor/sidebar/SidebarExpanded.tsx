@@ -16,24 +16,25 @@
  */
 
 import styles from "./Sidebar.module.scss";
-import React, { useEffect, useMemo, useState } from "react";
-import { sortBy } from "lodash";
+import React, { useMemo, useState } from "react";
 import {
   Accordion,
   Button,
-  // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-  Form,
+  FormControl,
   InputGroup,
   ListGroup,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import hash from "object-hash";
-import { isModComponentBase } from "@/pageEditor/sidebar/common";
+import {
+  getModComponentItemId,
+  isModSidebarItem,
+  type SidebarItem,
+} from "@/pageEditor/sidebar/common";
 import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import ModListItem from "@/pageEditor/sidebar/ModListItem";
 import useFlags from "@/hooks/useFlags";
-import arrangeElements from "@/pageEditor/sidebar/arrangeElements";
+import arrangeSidebarItems from "@/pageEditor/sidebar/arrangeSidebarItems";
 import {
   selectActiveElementId,
   selectActiveRecipeId,
@@ -43,11 +44,6 @@ import {
   selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getRecipeById,
-  getIdForElement,
-  getModIdForElement,
-} from "@/pageEditor/utils";
 import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
 import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
@@ -56,86 +52,56 @@ import ReloadButton from "./ReloadButton";
 import AddStarterBrickButton from "./AddStarterBrickButton";
 import ModComponentListItem from "./ModComponentListItem";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { measureDurationFromAppStart } from "@/utils/performance";
-import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { useDebounce } from "use-debounce";
+import { lowerCase } from "lodash";
+import filterSidebarItems from "@/pageEditor/sidebar/filterSidebarItems";
 
 const SidebarExpanded: React.FunctionComponent<{
   collapseSidebar: () => void;
 }> = ({ collapseSidebar }) => {
-  const { data: allModDefinitions, isLoading: isAllModDefinitionsLoading } =
-    useAllModDefinitions();
-
-  useEffect(() => {
-    if (!isAllModDefinitionsLoading) {
-      measureDurationFromAppStart("sidebarExpanded:allRecipesLoaded");
-    }
-  }, [isAllModDefinitionsLoading]);
-
   const dispatch = useDispatch();
-  const activeElementId = useSelector(selectActiveElementId);
-  const activeRecipeId = useSelector(selectActiveRecipeId);
-  const expandedRecipeId = useSelector(selectExpandedRecipeId);
-  const activated = useSelector(selectNotDeletedExtensions);
-  const elements = useSelector(selectNotDeletedElements);
+  const activeModComponentId = useSelector(selectActiveElementId);
+  const activeModId = useSelector(selectActiveRecipeId);
+  const expandedModId = useSelector(selectExpandedRecipeId);
+  const cleanModComponents = useSelector(selectNotDeletedExtensions);
+  const modComponentFormStates = useSelector(selectNotDeletedElements);
   const { availableInstalledIds, availableDynamicIds } = useSelector(
     selectExtensionAvailability,
   );
-
-  const mods = useMemo(() => {
-    const activatedAndElements = [...activated, ...elements];
-    return (
-      allModDefinitions?.filter((recipe) =>
-        activatedAndElements.some(
-          (element) => getModIdForElement(element) === recipe.metadata.id,
-        ),
-      ) ?? []
-    );
-  }, [allModDefinitions, elements, activated]);
 
   const { flagOn } = useFlags();
   const showDeveloperUI =
     process.env.ENVIRONMENT === "development" ||
     flagOn("page-editor-developer");
 
-  const [query, setQuery] = useState("");
-
-  const [debouncedQuery] = useDebounce(query, 250, {
+  const [filterQuery, setFilterQuery] = useState("");
+  const [debouncedFilterQuery] = useDebounce(lowerCase(filterQuery), 250, {
     trailing: true,
     leading: false,
   });
 
-  const elementHash = hash(
-    sortBy(
-      elements.map(
-        (formState) =>
-          `${formState.uuid}-${formState.label}-${formState.recipe?.id ?? ""}`,
-      ),
-    ),
-  );
-  const recipeHash = hash(
-    mods
-      ? mods.map((recipe) => `${recipe.metadata.id}-${recipe.metadata.name}`)
-      : "",
-  );
-  const sortedElements = useMemo(
+  const sortedSidebarItems = useMemo<SidebarItem[]>(
     () =>
-      arrangeElements({
-        elements,
-        installed: activated,
-        recipes: mods,
-        activeElementId,
-        activeRecipeId,
-        query: debouncedQuery,
+      arrangeSidebarItems({
+        modComponentFormStates,
+        cleanModComponents,
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- using elementHash and recipeHash to track changes
+    [modComponentFormStates, cleanModComponents],
+  );
+
+  const filteredSidebarItems = useMemo<SidebarItem[]>(
+    () =>
+      filterSidebarItems({
+        sidebarItems: sortedSidebarItems,
+        filterText: debouncedFilterQuery,
+        activeModId,
+        activeModComponentId,
+      }),
     [
-      activated,
-      elementHash,
-      recipeHash,
-      activeElementId,
-      activeRecipeId,
-      debouncedQuery,
+      activeModComponentId,
+      activeModId,
+      debouncedFilterQuery,
+      sortedSidebarItems,
     ],
   );
 
@@ -143,44 +109,31 @@ const SidebarExpanded: React.FunctionComponent<{
   const resetRecipe = useResetRecipe();
   const deactivateMod = useDeactivateMod();
 
-  const listItems = sortedElements.map((item) => {
-    if (Array.isArray(item)) {
-      const [recipeId, elements] = item;
-      const recipe = getRecipeById(mods, recipeId);
-      const firstElement = elements[0];
-      const installedVersion =
-        firstElement == null
-          ? // If there's no extensions in the Blueprint (empty Blueprint?), use the Blueprint's version
-            recipe?.metadata?.version
-          : isModComponentBase(firstElement)
-            ? firstElement._recipe.version
-            : firstElement.recipe.version;
-
+  const listItems = filteredSidebarItems.map((sidebarItem) => {
+    if (isModSidebarItem(sidebarItem)) {
+      const { modMetadata, modComponents } = sidebarItem;
       return (
         <ModListItem
-          key={recipeId}
-          recipe={recipe}
-          isActive={recipeId === activeRecipeId}
-          installedVersion={installedVersion}
+          key={modMetadata.id}
+          modMetadata={modMetadata}
           onSave={async () => {
-            await saveRecipe(activeRecipeId);
+            await saveRecipe(activeModId);
           }}
           isSaving={isSavingRecipe}
           onReset={async () => {
-            await resetRecipe(activeRecipeId);
+            await resetRecipe(activeModId);
           }}
           onDeactivate={async () => {
-            await deactivateMod({ modId: activeRecipeId });
+            await deactivateMod({ modId: activeModId });
           }}
           onClone={async () => {
             dispatch(actions.showCreateRecipeModal({ keepLocalCopy: true }));
           }}
         >
-          {elements.map((element) => (
+          {modComponents.map((modComponentSidebarItem) => (
             <ModComponentListItem
-              key={getIdForElement(element)}
-              modComponent={element}
-              mods={mods}
+              key={getModComponentItemId(modComponentSidebarItem)}
+              modComponentSidebarItem={modComponentSidebarItem}
               availableInstalledIds={availableInstalledIds}
               availableDynamicIds={availableDynamicIds}
               isNested
@@ -192,9 +145,8 @@ const SidebarExpanded: React.FunctionComponent<{
 
     return (
       <ModComponentListItem
-        key={getIdForElement(item)}
-        modComponent={item}
-        mods={mods}
+        key={getModComponentItemId(sidebarItem)}
+        modComponentSidebarItem={sidebarItem}
         availableInstalledIds={availableInstalledIds}
         availableDynamicIds={availableDynamicIds}
       />
@@ -227,20 +179,20 @@ const SidebarExpanded: React.FunctionComponent<{
       <div className={styles.searchWrapper}>
         <div className={styles.searchContainer}>
           <InputGroup>
-            <Form.Control
+            <FormControl
               placeholder="Quick filter"
-              value={query}
+              value={filterQuery}
               onChange={({ target }) => {
-                setQuery(target.value);
+                setFilterQuery(target.value);
               }}
             />
           </InputGroup>
-          {query.length > 0 ? (
+          {filterQuery.length > 0 ? (
             <Button
               variant="link"
               size="sm"
               onClick={() => {
-                setQuery("");
+                setFilterQuery("");
               }}
             >
               Clear
@@ -251,7 +203,7 @@ const SidebarExpanded: React.FunctionComponent<{
 
       {/* Extension List */}
       <div className={styles.extensions}>
-        <Accordion activeKey={expandedRecipeId}>
+        <Accordion activeKey={expandedModId}>
           <ListGroup>{listItems}</ListGroup>
         </Accordion>
       </div>

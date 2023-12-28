@@ -16,7 +16,7 @@
  */
 
 import React, { type PropsWithChildren } from "react";
-import { type SemVerString } from "@/types/registryTypes";
+import { type Metadata } from "@/types/registryTypes";
 import styles from "./Entry.module.scss";
 import {
   RecipeHasUpdateIcon,
@@ -34,18 +34,17 @@ import { useDispatch, useSelector } from "react-redux";
 import cx from "classnames";
 import {
   selectActiveElement,
+  selectActiveRecipeId,
   selectDirtyMetadataForRecipeId,
   selectExpandedRecipeId,
   selectRecipeIsDirty,
 } from "@/pageEditor/slices/editorSelectors";
-import { type ModDefinition } from "@/types/modDefinitionTypes";
 import * as semver from "semver";
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
+import { useGetRecipeQuery } from "@/services/api";
 
 export type ModListItemProps = PropsWithChildren<{
-  recipe: ModDefinition | undefined;
-  isActive?: boolean;
-  installedVersion: SemVerString;
+  modMetadata: Metadata;
   onSave: () => Promise<void>;
   isSaving: boolean;
   onReset: () => Promise<void>;
@@ -54,10 +53,8 @@ export type ModListItemProps = PropsWithChildren<{
 }>;
 
 const ModListItem: React.FC<ModListItemProps> = ({
-  recipe,
-  isActive,
+  modMetadata,
   children,
-  installedVersion,
   onSave,
   isSaving,
   onReset,
@@ -65,43 +62,43 @@ const ModListItem: React.FC<ModListItemProps> = ({
   onClone,
 }) => {
   const dispatch = useDispatch();
-
-  const expandedRecipeId = useSelector(selectExpandedRecipeId);
+  const activeModId = useSelector(selectActiveRecipeId);
+  const expandedModId = useSelector(selectExpandedRecipeId);
   const activeElement = useSelector(selectActiveElement);
-  const {
-    id: recipeId,
-    name: savedName,
-    version: latestRecipeVersion,
-  } = recipe?.metadata ?? {};
+  const { id: modId, name: savedName, version: installedVersion } = modMetadata;
+  const isActive = activeModId === modId;
+
+  // TODO: Fix this so it pulls from registry, after registry single-item-api-fetch is implemented
+  //        (See: https://github.com/pixiebrix/pixiebrix-extension/issues/7184)
+  const { data: modDefinition } = useGetRecipeQuery({ recipeId: modId });
+  const latestRecipeVersion = modDefinition?.metadata?.version;
 
   // Set the alternate background if an extension in this recipe is active
-  const hasRecipeBackground = activeElement?.recipe?.id === recipeId;
+  const hasRecipeBackground = activeElement?.recipe?.id === modId;
 
-  const dirtyName = useSelector(selectDirtyMetadataForRecipeId(recipeId))?.name;
+  const dirtyName = useSelector(selectDirtyMetadataForRecipeId(modId))?.name;
   const name = dirtyName ?? savedName ?? "Loading...";
-  const isDirty = useSelector(selectRecipeIsDirty(recipeId));
+  const isDirty = useSelector(selectRecipeIsDirty(modId));
 
   const hasUpdate =
     latestRecipeVersion != null &&
     installedVersion != null &&
     semver.gt(latestRecipeVersion, installedVersion);
 
-  const caretIcon = expandedRecipeId === recipeId ? faCaretDown : faCaretRight;
+  const caretIcon = expandedModId === modId ? faCaretDown : faCaretRight;
 
   return (
     <>
       <Accordion.Toggle
-        eventKey={recipeId}
+        eventKey={modId}
         as={ListGroup.Item}
         className={cx(styles.root, "list-group-item-action", {
           [styles.recipeBackground ?? ""]: hasRecipeBackground,
         })}
         tabIndex={0} // Avoid using `button` because this item includes more buttons #2343
         active={isActive}
-        key={`recipe-${recipeId}`}
-        onClick={() =>
-          recipeId != null && dispatch(actions.selectRecipeId(recipeId))
-        }
+        key={`recipe-${modId}`}
+        onClick={() => modId != null && dispatch(actions.selectRecipeId(modId))}
       >
         <span className={styles.icon}>
           <FontAwesomeIcon icon={faFile} /> <FontAwesomeIcon icon={caretIcon} />
@@ -130,7 +127,7 @@ const ModListItem: React.FC<ModListItemProps> = ({
           />
         )}
       </Accordion.Toggle>
-      <Accordion.Collapse eventKey={recipeId}>
+      <Accordion.Collapse eventKey={modId}>
         <>{children}</>
       </Accordion.Collapse>
     </>
