@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
-      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}/${{ matrix.MV }}
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}/mv${{ matrix.MV }}
 
     strategy:
       matrix:
