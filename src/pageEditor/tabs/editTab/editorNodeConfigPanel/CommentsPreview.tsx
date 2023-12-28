@@ -17,14 +17,31 @@
 
 import { Alert, Button } from "react-bootstrap";
 import React from "react";
+import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 
 const CommentsPreview: React.FunctionComponent<{
   comments: string;
-}> = ({ comments }) => (
-  <Alert role="note">
-    <p className="text-success">{comments}</p>
-    <Button variant="link">View Brick Comments</Button>
-  </Alert>
-);
+}> = ({ comments }) => {
+  const [, selectTab] = useDataPanelActiveTabKey(DataPanelTabKey.Comments);
+
+  const handleClick = () => {
+    selectTab(DataPanelTabKey.Comments);
+  };
+
+  return (
+    <Alert role="note">
+      <p className="text-success">{comments}</p>
+      <Button
+        variant="link"
+        size="sm"
+        className="text-uppercase"
+        onClick={handleClick}
+      >
+        View Brick Comments
+      </Button>
+    </Alert>
+  );
+};
 
 export default CommentsPreview;
