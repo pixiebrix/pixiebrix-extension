@@ -1,4 +1,4 @@
-const configFactory = require("./webpack.config.js");
+import configFactory from "./webpack.config.mjs";
 
 const config = configFactory(process.env, {});
 

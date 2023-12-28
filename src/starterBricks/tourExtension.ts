@@ -36,7 +36,7 @@ import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { selectAllBlocks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import "@/vendors/hoverintent/hoverintent";
+import "@/vendors/hoverintent";
 import { selectExtensionContext } from "@/starterBricks/helpers";
 import {
   type InitialValues,

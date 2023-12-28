@@ -24,11 +24,7 @@
 
 import { expectContext } from "@/utils/expectContext";
 import { type JsonValue } from "type-fest";
-import {
-  type ManualStorageKey,
-  readStorage,
-  setStorage,
-} from "@/utils/storageUtils";
+import { type ManualStorageKey } from "@/utils/storageUtils";
 
 // Just like chrome.storage.session, this must be "global"
 const storage = new Map<ManualStorageKey, JsonValue>();
@@ -56,19 +52,30 @@ export class SessionMap<Value extends JsonValue> {
 
   async get(secondaryKey: string): Promise<Value | undefined> {
     const rawStorageKey = this.getRawStorageKey(secondaryKey);
-    if (hasSession) {
-      return readStorage(rawStorageKey, undefined, "session");
+    if (!hasSession) {
+      return storage.get(rawStorageKey) as Value | undefined;
     }
 
-    return storage.get(rawStorageKey) as Value;
+    const result = await browser.storage.session.get(rawStorageKey);
+    // eslint-disable-next-line security/detect-object-injection -- `getRawStorageKey` ensures the format
+    return result[rawStorageKey] as Value | undefined;
   }
 
   async set(secondaryKey: string, value: Value): Promise<void> {
     const rawStorageKey = this.getRawStorageKey(secondaryKey);
     if (hasSession) {
-      await setStorage(rawStorageKey, value, "session");
+      await browser.storage.session.set({ [rawStorageKey]: value });
     } else {
       storage.set(rawStorageKey, value);
+    }
+  }
+
+  async delete(secondaryKey: string): Promise<void> {
+    const rawStorageKey = this.getRawStorageKey(secondaryKey);
+    if (hasSession) {
+      await browser.storage.session.remove(rawStorageKey);
+    } else {
+      storage.delete(rawStorageKey);
     }
   }
 }

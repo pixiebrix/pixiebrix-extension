@@ -19,7 +19,7 @@ import React from "react";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Form } from "react-bootstrap";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import { type SettingOptions } from "@/store/settings/settingsTypes";
+import { type SettingsFlags } from "@/store/settings/settingsTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import settingsSlice from "@/store/settings/settingsSlice";
@@ -39,7 +39,7 @@ type ToggleOverrideProps = CommonProps & {
 };
 
 type FlagProps = CommonProps & {
-  flag: keyof SettingOptions;
+  flag: keyof SettingsFlags;
   onChange?: never;
 };
 
@@ -57,7 +57,7 @@ const SettingToggle: React.FunctionComponent<SettingToggleProps> = ({
   const dispatch = useDispatch();
 
   const flagChangeHandlerFactory =
-    (flag: keyof SettingOptions) => (value: boolean) => {
+    (flag: keyof SettingsFlags) => (value: boolean) => {
       reportEvent(Events.SETTINGS_EXPERIMENTAL_CONFIGURE, {
         name: flag,
         value,

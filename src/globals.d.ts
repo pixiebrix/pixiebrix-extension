@@ -27,7 +27,7 @@ https://github.com/typescript-eslint/typescript-eslint/issues/3295#issuecomment-
 // Improve standard type library https://www.totaltypescript.com/ts-reset
 /// <reference types="@total-typescript/ts-reset" />
 
-type Browser = import("webextension-polyfill").Browser;
+declare const browser: import("webextension-polyfill").Browser;
 
 // https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
 declare module "*.svg" {
@@ -180,19 +180,6 @@ interface Promise<T> {
   ): Promise<T | TResult>;
 }
 
-interface ErrorOptions {
-  cause?: unknown;
-}
-
-interface Error {
-  cause?: unknown;
-}
-
-interface ErrorConstructor {
-  new (message?: string, options?: ErrorOptions): Error;
-  (message?: string, options?: ErrorOptions): Error;
-}
-
 // This changes the return value from `any` to `JsonValue`.
 // "total-typescript" sets it to `unknown` but `JsonValue` is more useful and accurate.
 interface JSON {
@@ -206,33 +193,6 @@ interface JSON {
     text: string,
     reviver?: (this: unknown, key: string, value: unknown) => unknown,
   ): import("type-fest").JsonValue;
-}
-
-// TODO: This overrides Firefox’ types. It's possible that the return types are different between Firefox and Chrome
-interface ExtendedRuntime
-  extends Omit<Browser["runtime"], "requestUpdateCheck"> {
-  /*
-   * Requests an update check for this app/extension.
-   */
-  requestUpdateCheck(): Promise<chrome.runtime.RequestUpdateCheckStatus>;
-}
-
-// Temporary type until officially added
-type BrowserStorage = Browser["storage"];
-interface ExtendedStorage extends BrowserStorage {
-  session: Browser.storage.local;
-}
-
-// @ts-expect-error See Firefox/requestUpdateCheck-related comment above
-interface ChromeifiedBrowser extends Browser {
-  runtime: ExtendedRuntime;
-  storage: ExtendedStorage;
-}
-
-declare const browser: ChromeifiedBrowser;
-
-declare namespace CSS {
-  function px(length: number): string;
 }
 
 // These types are unnecessarily loose

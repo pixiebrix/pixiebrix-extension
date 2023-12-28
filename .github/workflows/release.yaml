@@ -14,11 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
-      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}/mv${{ matrix.MV }}
 
     strategy:
       matrix:
-        MV: [2, 3]
+        include:
+          - MV: 2
+            PUBLIC_NAME: ""
+          - MV: 3
+            PUBLIC_NAME: "-mv3"
 
     steps:
       - uses: actions/checkout@v4
@@ -35,8 +39,6 @@ jobs:
           DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
           DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
       - run: bash scripts/upload-sourcemaps.sh
-        # TODO: Eventually upload the MV3 report instead
-        if: matrix.MV == 2
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
@@ -45,7 +47,7 @@ jobs:
       - name: Save extension
         uses: actions/upload-artifact@v4
         with:
-          name: build-for-store-${{ matrix.MV }}
+          name: build-for-store${{ matrix.PUBLIC_NAME }}
           path: |
             dist
             !dist/**/*.map
@@ -56,11 +58,15 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
-      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}/mv${{ matrix.MV }}
 
     strategy:
       matrix:
-        MV: [2, 3]
+        include:
+          - MV: 2
+            PUBLIC_NAME: ""
+          - MV: 3
+            PUBLIC_NAME: "-mv3"
 
     steps:
       - uses: actions/checkout@v4
@@ -71,6 +77,7 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
+          MV: ${{ matrix.MV }}
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
@@ -85,7 +92,7 @@ jobs:
       - name: Save extension
         uses: actions/upload-artifact@v4
         with:
-          name: build-production-${{ matrix.MV }}
+          name: build-production${{ matrix.PUBLIC_NAME }}
           path: |
             dist
             !dist/**/*.map
