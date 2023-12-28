@@ -51,7 +51,7 @@ function storeOriginalCSSOnce() {
 }
 
 function setSidebarWidth(pixels: number): void {
-  html.style.setProperty(SIDEBAR_WIDTH_CSS_PROPERTY, CSS.px(pixels));
+  html.style.setProperty(SIDEBAR_WIDTH_CSS_PROPERTY, `${pixels}px`);
 }
 
 /**
