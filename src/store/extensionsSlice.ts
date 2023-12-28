@@ -314,7 +314,8 @@ const extensionsSlice = createSlice({
         integrationDependencies,
         config,
         // FIXME: this createTimestamp is not the same as the one on the server; however, this field must be present on
-        //  the mod component as it's used to determine mod component version 1
+        //  the mod component as it's used to determine mod component version 1. Ideally we should be rehydrating
+        //  from the server
         //  @see isModComponentStateV1
         createTimestamp: updateTimestamp,
         updateTimestamp,
