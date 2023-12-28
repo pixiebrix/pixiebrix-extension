@@ -26,16 +26,17 @@ function getVersion(env) {
 }
 
 function getVersionName(env, isProduction) {
+  const mv3 = env.MV === "3" ? "-mv3" : "";
   if (env.ENVIRONMENT === "staging") {
     // Staging builds (i.e., from CI) are production builds, so check ENVIRONMENT first
-    return `${getVersion(env)}-alpha+${env.SOURCE_VERSION}`;
+    return `${getVersion(env)}${mv3}-alpha+${env.SOURCE_VERSION}`;
   }
 
   if (isProduction) {
-    return env.npm_package_version;
+    return `${env.npm_package_version}${mv3}`;
   }
 
-  return `${env.npm_package_version}-local+${new Date().toISOString()}`;
+  return `${env.npm_package_version}${mv3}-local+${new Date().toISOString()}`;
 }
 
 /**
