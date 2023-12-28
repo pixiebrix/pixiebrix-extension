@@ -18,8 +18,8 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
   AUTH_METHODS,
+  type SettingsFlags,
   type SettingsState,
-  type SettingOptions,
 } from "@/store/settings/settingsTypes";
 import reportError from "@/telemetry/reportError";
 import { isEmpty, once } from "lodash";
@@ -34,7 +34,12 @@ export const initialSettingsState: SettingsState = {
   nextUpdate: null,
   suggestElements: false,
   browserWarningDismissed: false,
-  varAutosuggest: false,
+  /**
+   * @since 1.8.6 default to true
+   */
+  // The variable popover was GA in 1.8.4; we wrote a migration to turn it on for existing installs, but forgot
+  // to update it here for new installations.
+  varAutosuggest: true,
   /**
    * True to enable the floating action button, if the user is not an enterprise/partner user.
    * @since 1.7.35 default to true
@@ -57,7 +62,7 @@ const settingsSlice = createSlice({
     setFlag(
       state,
       action: PayloadAction<{
-        flag: keyof SettingOptions;
+        flag: keyof SettingsFlags;
         value: boolean;
       }>,
     ) {
