@@ -30,7 +30,7 @@
       "run_at": "document_idle"
     },
     {
-      "matches": ["*://*/*"],
+      "matches": ["https://*/*"],
       "js": ["loadActivationEnhancements.js"],
       "run_at": "document_end"
     }
