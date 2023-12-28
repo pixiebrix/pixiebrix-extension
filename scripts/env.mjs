@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const dotenv = require("dotenv");
+import { config } from "dotenv";
 
 function parseEnv(value) {
   switch (String(value).toLowerCase()) {
@@ -59,7 +59,7 @@ function loadEnv() {
     MARKETPLACE_URL: "https://www.pixiebrix.com/marketplace/",
   };
 
-  dotenv.config({
+  config({
     path: process.env.ENV_FILE ?? ".env",
   });
 
@@ -70,4 +70,4 @@ function loadEnv() {
   }
 }
 
-module.exports = { loadEnv, parseEnv };
+export { loadEnv, parseEnv };

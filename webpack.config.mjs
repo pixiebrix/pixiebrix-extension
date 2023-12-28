@@ -15,25 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const path = require("node:path");
-const webpack = require("webpack");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const WebExtensionTarget = require("webpack-target-webextension");
-const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
-const WebpackBuildNotifierPlugin = require("webpack-build-notifier");
-const TerserPlugin = require("terser-webpack-plugin");
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
-const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
-const CopyPlugin = require("copy-webpack-plugin");
-const { compact } = require("lodash");
-const mergeWithShared = require("./webpack.sharedConfig.js");
-const { parseEnv, loadEnv } = require("./scripts/env.js");
+import path from "node:path";
+import { execSync } from "node:child_process";
+import webpack from "webpack";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import WebExtensionTarget from "webpack-target-webextension";
+import NodePolyfillPlugin from "node-polyfill-webpack-plugin";
+import WebpackBuildNotifierPlugin from "webpack-build-notifier";
+import TerserPlugin from "terser-webpack-plugin";
+import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
+import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
+import CopyPlugin from "copy-webpack-plugin";
+import { compact } from "lodash-es";
+import mergeWithShared from "./webpack.sharedConfig.js";
+import { parseEnv, loadEnv } from "./scripts/env.mjs";
+import customizeManifest from "./scripts/manifest.mjs";
+import { createRequire } from "node:module";
 
-// Workaround for ERR_REQUIRE_ESM error. Can be removed when/if this config is turned into ESM
-let customizeManifest;
-void import("./scripts/manifest.mjs").then((imported) => {
-  customizeManifest = imported.default;
-});
+const require = createRequire(import.meta.url);
 
 loadEnv();
 
@@ -47,8 +46,7 @@ console.log(
 );
 
 if (!process.env.SOURCE_VERSION) {
-  process.env.SOURCE_VERSION = require("node:child_process")
-    .execSync("git rev-parse --short HEAD")
+  process.env.SOURCE_VERSION = execSync("git rev-parse --short HEAD")
     .toString()
     .trim();
 }
@@ -88,7 +86,7 @@ function mockHeavyDependencies() {
   }
 }
 
-module.exports = (env, options) =>
+const createConfig = (env, options) =>
   mergeWithShared({
     node: {
       global: true,
@@ -315,3 +313,5 @@ module.exports = (env, options) =>
       ],
     },
   });
+
+export default createConfig;
