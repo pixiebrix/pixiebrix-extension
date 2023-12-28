@@ -170,7 +170,7 @@ export const innerStarterBrickModDefinitionFactory = ({
         definition: {
           type: "menuItem",
           isAvailable: {
-            matchPatterns: ["https://*/*"],
+            matchPatterns: ["*://*/*"],
             urlPatterns: [],
             selectors: [],
           },
