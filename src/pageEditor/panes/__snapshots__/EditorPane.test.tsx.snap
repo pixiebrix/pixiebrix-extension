@@ -2130,16 +2130,6 @@ exports[`renders the first selected node 1`] = `
               </div>
             </div>
             <div
-              class="fade alert show"
-              role="note"
-            >
-              <p
-                class="text-success"
-              >
-                hello world
-              </p>
-            </div>
-            <div
               class="formGroup form-group row"
             >
               <div

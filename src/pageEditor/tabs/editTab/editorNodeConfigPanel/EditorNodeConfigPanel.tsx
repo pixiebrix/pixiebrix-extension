@@ -35,7 +35,11 @@ import cx from "classnames";
 import { MARKETPLACE_URL } from "@/urlConstants";
 
 const EditorNodeConfigPanel: React.FC = () => {
-  const { blockId, path: blockFieldName } = useSelector(selectActiveNodeInfo);
+  const {
+    blockId,
+    path: blockFieldName,
+    blockConfig: { comments },
+  } = useSelector(selectActiveNodeInfo);
   const [blockInfo] = useAsyncState(async () => {
     const block = await blockRegistry.lookup(blockId);
     return {
@@ -106,9 +110,11 @@ const EditorNodeConfigPanel: React.FC = () => {
           />
         </Col>
       </Row>
-      <Alert role="note">
-        <p className="text-success">hello world</p>
-      </Alert>
+      {comments && (
+        <Alert role="note">
+          <p className="text-success">{comments}</p>
+        </Alert>
+      )}
 
       <BrickConfiguration name={blockFieldName} brickId={blockId} />
     </>
