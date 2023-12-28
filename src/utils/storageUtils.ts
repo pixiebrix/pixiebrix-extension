@@ -48,57 +48,6 @@ export function validateReduxStorageKey(key: string): ReduxStorageKey {
   return key as ReduxStorageKey;
 }
 
-export type StorageKey = ManualStorageKey | ReduxStorageKey;
-
-/**
- * Read a value from Chrome storage.
- *
- * Does not support enterprise managed storage. Use `readManagedStorage` for that.
- *
- * @param storageKey the storage key
- * @param defaultValue default value to return if the key is not defined in storage. To distinguish between a missing
- * key and a value of `undefined`, pass a Symbol as the default value.
- * @param area the storage area
- * @deprecated Prefer: `import { StorageItem } from "webext-storage";`
- * @see readManagedStorage
- */
-// The overload ensures that the return value is `undefined` when no `defaultValue` is specified
-async function readStorage<T>(storageKey: StorageKey): Promise<T | undefined>;
-async function readStorage<T>(
-  storageKey: StorageKey,
-  defaultValue: T,
-  area?: "local" | "session",
-): Promise<T>;
-async function readStorage(
-  storageKey: StorageKey,
-  defaultValue?: unknown,
-  area: "local" | "session" = "local",
-): Promise<unknown> {
-  // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
-  // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
-  // eslint-disable-next-line security/detect-object-injection -- type-checked
-  const result: UnknownObject = await browser.storage[area].get(storageKey);
-
-  if (Object.hasOwn(result, storageKey)) {
-    // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwn
-    return result[storageKey];
-  }
-
-  return defaultValue;
-}
-
-export { readStorage };
-
-/** @deprecated Prefer: `import { StorageItem } from "webext-storage";` */
-export async function setStorage<T>(
-  storageKey: ManualStorageKey,
-  value: T,
-  area: "local" | "session" = "local",
-): Promise<void> {
-  // eslint-disable-next-line security/detect-object-injection -- type-checked constant
-  await browser.storage[area].set({ [storageKey]: value });
-}
-
 /**
  * Read the persisted redux state directly out of storage, applying any necessary migrations. This could be
  * called before the redux store is instantiated.
@@ -119,7 +68,9 @@ export async function readReduxStorage<T extends object>(
   defaultValue: T,
   inferPersistedVersion?: (state: UnknownObject) => number,
 ): Promise<T> {
-  const storageValue = await readStorage<T>(storageKey);
+  const result = await browser.storage.local.get(storageKey);
+  // eslint-disable-next-line security/detect-object-injection -- Hardcoded keys
+  const storageValue = result[storageKey] as T | string | undefined;
 
   if (typeof storageValue !== "string") {
     if (storageValue !== undefined) {
