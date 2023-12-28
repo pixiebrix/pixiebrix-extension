@@ -172,7 +172,7 @@
     "webext-permissions": "^3.1.2",
     "webext-polyfill-kinda": "^1.0.2",
     "webext-storage": "^1.2.2",
-    "webext-tools": "^1.2.2",
+    "webext-tools": "^1.2.3",
     "webextension-polyfill": "^0.10.0",
     "whatwg-mimetype": "^4.0.0",
     "yup": "^0.32.11"
