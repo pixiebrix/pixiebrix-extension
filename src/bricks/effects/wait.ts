@@ -18,7 +18,6 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { awaitElementOnce } from "@/starterBricks/helpers";
 import { BusinessError } from "@/errors/businessErrors";
-import pTimeout, { TimeoutError } from "p-timeout";
 import { IS_ROOT_AWARE_BRICK_PROPS } from "@/bricks/rootModeHelpers";
 import { type Schema } from "@/types/schemaTypes";
 import {
@@ -27,6 +26,8 @@ import {
   type SelectorRoot,
 } from "@/types/runtimeTypes";
 import { sleep } from "@/utils/timeUtils";
+import { mergeSignals } from "@/utils/promiseUtils";
+import { isError } from "lodash";
 
 export class WaitEffect extends EffectABC {
   constructor() {
@@ -80,27 +81,27 @@ export async function awaitElement({
   maxWaitMillis: number;
   abortSignal?: AbortSignal;
 }): Promise<JQuery<HTMLElement | Document>> {
-  if (maxWaitMillis > 0) {
-    const [promise, cancel] = awaitElementOnce(selector, $root);
-    abortSignal?.addEventListener("abort", cancel);
-
-    try {
-      return await pTimeout(promise, { milliseconds: maxWaitMillis });
-    } catch (error) {
-      cancel();
-
-      if (error instanceof TimeoutError) {
-        throw new BusinessError(
-          `Element not available in ${maxWaitMillis} milliseconds`,
-        );
-      }
-
-      throw error ?? new Error("Unknown error waiting for element");
-    }
-  } else {
-    const [promise, cancel] = awaitElementOnce(selector, $root);
-    abortSignal?.addEventListener("abort", cancel);
+  if (maxWaitMillis === 0) {
+    const [promise] = awaitElementOnce(selector, $root, abortSignal);
     return promise;
+  }
+
+  try {
+    const timeout = AbortSignal.timeout(maxWaitMillis);
+    const [promise] = awaitElementOnce(
+      selector,
+      $root,
+      mergeSignals(abortSignal, timeout),
+    );
+    return await promise;
+  } catch (error) {
+    if (isError(error) && error.name === "TimeoutError") {
+      throw new BusinessError(
+        `Element not available in ${maxWaitMillis} milliseconds`,
+      );
+    }
+
+    throw error ?? new Error("Unknown error waiting for element");
   }
 }
 

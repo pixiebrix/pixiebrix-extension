@@ -246,3 +246,16 @@ export function onAbort(
     addListeners(signal, handles);
   }
 }
+
+export function mergeSignals(
+  ...signals: Array<AbortSignal | undefined>
+): AbortSignal {
+  const controller = new AbortController();
+  for (const signal of signals) {
+    if (signal) {
+      onAbort(signal, controller);
+    }
+  }
+
+  return controller.signal;
+}
