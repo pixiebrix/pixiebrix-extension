@@ -71,6 +71,15 @@ export class SessionMap<Value extends JsonValue> {
       storage.set(rawStorageKey, value);
     }
   }
+
+  async delete(secondaryKey: string): Promise<void> {
+    const rawStorageKey = this.getRawStorageKey(secondaryKey);
+    if (hasSession) {
+      await browser.storage.session.remove(rawStorageKey);
+    } else {
+      storage.delete(rawStorageKey);
+    }
+  }
 }
 
 /**
