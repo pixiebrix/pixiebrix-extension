@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
-      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}/${{ matrix.MV }}
 
     strategy:
       matrix:
@@ -39,8 +39,6 @@ jobs:
           DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
           DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
       - run: bash scripts/upload-sourcemaps.sh
-        # TODO: Eventually upload the MV3 report instead
-        if: matrix.MV == 2
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
@@ -60,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
-      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}/${{ matrix.MV }}
 
     strategy:
       matrix:
