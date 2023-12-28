@@ -19,6 +19,8 @@ import { Alert, Button } from "react-bootstrap";
 import React from "react";
 import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDataPanelActiveTabKey";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStickyNote } from "@fortawesome/free-regular-svg-icons";
 
 const CommentsPreview: React.FunctionComponent<{
   comments: string;
@@ -30,12 +32,16 @@ const CommentsPreview: React.FunctionComponent<{
   };
 
   return (
-    <Alert role="note">
+    <Alert
+      role="note"
+      className="d-flex justify-content-between align-items-center"
+    >
+      <FontAwesomeIcon icon={faStickyNote} />
       <p className="text-success">{comments}</p>
       <Button
         variant="link"
         size="sm"
-        className="text-uppercase"
+        className="text-uppercase flex-shrink-0"
         onClick={handleClick}
       >
         View Brick Comments
