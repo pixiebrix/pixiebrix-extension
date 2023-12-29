@@ -20,10 +20,13 @@ import CommentsPreview from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/Com
 import React from "react";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { actions } from "@/pageEditor/slices/editorSlice";
+import { selectNodeDataPanelTabSelected } from "@/pageEditor/slices/editorSelectors";
+import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
+import { EditorRootState } from "@/pageEditor/pageEditorTypes";
 
 const renderCommentsPreview = (comments: string) => {
   const formState = formStateFactory();
-  render(<CommentsPreview comments={comments} />, {
+  return render(<CommentsPreview comments={comments} />, {
     setupRedux(dispatch) {
       dispatch(actions.addElement(formState));
       dispatch(actions.selectElement(formState.uuid));
@@ -32,6 +35,7 @@ const renderCommentsPreview = (comments: string) => {
           formState.extension.blockPipeline[0].instanceId,
         ),
       );
+      dispatch(actions.setNodeDataPanelTabSelected(DataPanelTabKey.Context));
     },
   });
 };
@@ -42,5 +46,22 @@ describe("CommentsPreview", () => {
     renderCommentsPreview(expectedComments);
     expect(screen.getByRole("note")).toHaveTextContent(expectedComments);
     expect(screen.getByRole("button")).toHaveTextContent("View Brick Comments");
+  });
+
+  it("sets the DataPanel tab to 'Comments' when button is clicked", () => {
+    const expectedComments = "This is a comment";
+    const { getReduxStore } = renderCommentsPreview(expectedComments);
+    const store = getReduxStore();
+
+    const dataPanelTabBefore = selectNodeDataPanelTabSelected(
+      store.getState() as EditorRootState,
+    );
+    expect(dataPanelTabBefore).not.toBe("comments");
+
+    screen.getByRole("button").click();
+    const dataPanelTab = selectNodeDataPanelTabSelected(
+      store.getState() as EditorRootState,
+    );
+    expect(dataPanelTab).toBe(DataPanelTabKey.Comments);
   });
 });
