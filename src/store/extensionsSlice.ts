@@ -313,10 +313,10 @@ const extensionsSlice = createSlice({
         optionsArgs,
         integrationDependencies,
         config,
-        // FIXME: this createTimestamp is not the same as the one on the server; however, this field must be present on
-        //  the mod component as it's used to determine mod component version 1. Ideally we should be rehydrating
-        //  from the server
-        //  @see isModComponentStateV1
+        // We are unfortunately not rehydrating the createTimestamp properly from the server, so in most cases the
+        // createTimestamp saved in Redux won't match the timestamp on the server. This is OK for now because
+        // we don't use the exact value of createTimestamp for the time being.
+        // See https://github.com/pixiebrix/pixiebrix-extension/pull/7229 for more context
         createTimestamp: updateTimestamp,
         updateTimestamp,
         active: true,
