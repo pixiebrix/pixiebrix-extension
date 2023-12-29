@@ -21,6 +21,7 @@ import useDataPanelActiveTabKey from "@/pageEditor/tabs/editTab/dataPanel/useDat
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStickyNote } from "@fortawesome/free-regular-svg-icons";
+import styles from "./CommentsPreview.module.scss";
 
 const CommentsPreview: React.FunctionComponent<{
   comments: string;
@@ -32,16 +33,13 @@ const CommentsPreview: React.FunctionComponent<{
   };
 
   return (
-    <Alert
-      role="note"
-      className="d-flex justify-content-between align-items-center"
-    >
-      <FontAwesomeIcon icon={faStickyNote} />
-      <p className="text-success">{comments}</p>
+    <Alert role="note" className={styles.root}>
+      <FontAwesomeIcon icon={faStickyNote} className={styles.icon} />
+      <p className={styles.text}>{comments}</p>
       <Button
         variant="link"
         size="sm"
-        className="text-uppercase flex-shrink-0"
+        className="text-uppercase flex-shrink-0 py-0"
         onClick={handleClick}
       >
         View Brick Comments
