@@ -34,7 +34,7 @@ import {
   type ActivatedModComponent,
   type ModComponentBase,
 } from "@/types/modComponentTypes";
-import { Timestamp, type UUID } from "@/types/stringTypes";
+import { type Timestamp, type UUID } from "@/types/stringTypes";
 import {
   type ModComponentDefinition,
   type ModDefinition,

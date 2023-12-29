@@ -37,7 +37,7 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
-import { Timestamp, type UUID } from "@/types/stringTypes";
+import { type Timestamp, type UUID } from "@/types/stringTypes";
 
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import type { RegistryId } from "@/types/registryTypes";
@@ -217,7 +217,7 @@ function useUpsertModComponentFormState(): SaveCallback {
               ...modComponent,
               updateTimestamp,
             },
-          });
+          }).unwrap();
         }
 
         dispatch(markClean(element.uuid));

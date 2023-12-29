@@ -23,6 +23,7 @@ import { authSlice } from "@/auth/authSlice";
 import { type AuthState } from "@/auth/authTypes";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
+import { type Timestamp } from "@/types/stringTypes";
 
 describe("renders DefaultPanel", () => {
   it("renders Page Editor call to action", () => {
@@ -36,7 +37,10 @@ describe("renders DefaultPanel", () => {
       setupRedux(dispatch) {
         dispatch(
           extensionsSlice.actions.saveModComponent({
-            modComponent: modComponentFactory() as ActivatedModComponent,
+            modComponent: {
+              ...(modComponentFactory() as ActivatedModComponent),
+              updateTimestamp: new Date().toISOString() as Timestamp,
+            },
           }),
         );
 
