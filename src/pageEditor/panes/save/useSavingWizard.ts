@@ -75,7 +75,7 @@ export function selectRecipeMetadata(
 
 const useSavingWizard = () => {
   const dispatch = useDispatch();
-  const upsertFormElement = useUpsertModComponentFormState();
+  const upsertModComponentFormState = useUpsertModComponentFormState();
   const reset = useResetExtension();
   const isWizardOpen = useSelector(selectIsWizardOpen);
   const isSaving = useSelector(selectIsSaving);
@@ -114,7 +114,7 @@ const useSavingWizard = () => {
    */
   async function saveNonRecipeElement() {
     dispatch(savingExtensionActions.setSavingInProgress());
-    const error = await upsertFormElement({
+    const error = await upsertModComponentFormState({
       element,
       options: {
         pushToCloud: true,
@@ -144,7 +144,7 @@ const useSavingWizard = () => {
     dispatch(editorActions.addElement(personalElement));
     await reset({ extensionId: element.uuid, shouldShowConfirmation: false });
 
-    const error = await upsertFormElement({
+    const error = await upsertModComponentFormState({
       element: personalElement,
       options: {
         pushToCloud: true,
@@ -210,7 +210,7 @@ const useSavingWizard = () => {
       return;
     }
 
-    const createExtensionError = await upsertFormElement({
+    const createExtensionError = await upsertModComponentFormState({
       element,
       options: {
         // `pushToCloud` to false because we don't want to save a copy of the individual extension to the user's account
@@ -278,7 +278,7 @@ const useSavingWizard = () => {
       return;
     }
 
-    const error = await upsertFormElement({
+    const error = await upsertModComponentFormState({
       element,
       options: {
         pushToCloud: true,
