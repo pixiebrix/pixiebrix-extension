@@ -107,7 +107,7 @@ function useSaveCallbacks({
 }) {
   const dispatch = useDispatch();
   const [createRecipe] = useCreateRecipeMutation();
-  const createExtension = useUpsertModComponentFormState();
+  const upsertModComponentFormState = useUpsertModComponentFormState();
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
   const deactivateMod = useDeactivateMod();
 
@@ -145,7 +145,7 @@ function useSaveCallbacks({
             draft.recipe = selectRecipeMetadata(newRecipe, response);
           });
           dispatch(editorActions.addElement(recipeElement));
-          await createExtension({
+          await upsertModComponentFormState({
             element: recipeElement,
             options: {
               // Don't push to cloud since we're saving it with the recipe
@@ -171,7 +171,7 @@ function useSaveCallbacks({
       ),
     [
       activeElement,
-      createExtension,
+      upsertModComponentFormState,
       createRecipe,
       dispatch,
       keepLocalCopy,
