@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { isEmpty, isEqual, pickBy, omit } from "lodash";
 import { Nav, Tab } from "react-bootstrap";
 import dataPanelStyles from "@/pageEditor/tabs/dataPanelTabs.module.scss";
@@ -58,6 +58,8 @@ import { fallbackValue } from "@/utils/asyncStateUtils";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { joinPathParts } from "@/utils/formUtils";
 import CommentsTab from "@/pageEditor/tabs/editTab/dataPanel/tabs/CommentsTab";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -159,6 +161,14 @@ const DataPanel: React.FC = () => {
       ? DataPanelTabKey.Preview
       : DataPanelTabKey.Output,
   );
+
+  useEffect(() => {
+    reportEvent(Events.DATA_PANEL_TAB_SELECT, {
+      modId: activeElement.recipe?.id,
+      brickId,
+      activeTabKey,
+    });
+  }, [activeTabKey]);
 
   const [nodePreviewActiveElement, setNodePreviewActiveElement] = useReduxState(
     selectNodePreviewActiveElement,

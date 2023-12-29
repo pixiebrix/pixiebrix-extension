@@ -29,6 +29,8 @@ export const Events = {
 
   CUSTOM_USER_EVENT: "CustomUserEvent",
 
+  DATA_PANEL_TAB_SELECT: "DataPanelTabSelect",
+
   DEPLOYMENT_ACTIVATE: "DeploymentActivate",
   DEPLOYMENT_DEACTIVATE_ALL: "DeploymentDeactivateAll",
   DEPLOYMENT_DEACTIVATE_UNASSIGNED: "DeploymentDeactivateUnassigned",
