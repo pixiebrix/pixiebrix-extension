@@ -206,7 +206,7 @@ export type RegistryPackage = Pick<
 
 /**
  * @deprecated because ModDefinition will be used for singluar mods
- * A personal user extension synced/saved to the cloud.
+ * A mod component that is not packaged inside a mod that is synced/saved to the cloud.
  */
 export type StandaloneModDefinition<Config extends UnknownObject = JsonObject> =
   Except<ActivatedModComponent<Config>, "active"> & {

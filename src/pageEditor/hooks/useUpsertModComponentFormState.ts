@@ -27,20 +27,23 @@ import { Events } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
 import { extensionWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
-import { useGetEditablePackagesQuery } from "@/services/api";
+import {
+  useGetEditablePackagesQuery,
+  useSaveStandaloneModDefinitionMutation,
+} from "@/services/api";
 import { type UnknownObject } from "@/types/objectTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
-import { type UUID } from "@/types/stringTypes";
+import { type Timestamp, type UUID } from "@/types/stringTypes";
 
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import type { RegistryId } from "@/types/registryTypes";
 
-const { saveExtension } = extensionsSlice.actions;
-const { markSaved } = editorSlice.actions;
+const { saveModComponent } = extensionsSlice.actions;
+const { markClean } = editorSlice.actions;
 
 async function upsertPackageConfig(
   packageUUID: UUID | null,
@@ -113,9 +116,10 @@ function onStepError(error: unknown, step: string): string {
 }
 
 /**
- * Hook to create/update a single ModComponentBase defined by the Page Editor FormState.
+ * Hook that returns a callback to save a Mod Component Form State in Redux, and optionally push a Standalone Mod
+ * Component to the cloud.
  */
-function useUpsertFormElement(): SaveCallback {
+function useUpsertModComponentFormState(): SaveCallback {
   // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't
   //  occur in the correct order on slower (CPU or network?) machines. Therefore, await all promises. We also have to
   //  make `reactivate` behave deterministically if we're still having problems (right now it's implemented as a
@@ -124,6 +128,8 @@ function useUpsertFormElement(): SaveCallback {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const { data: editablePackages } = useGetEditablePackagesQuery();
+  const [saveStandaloneModDefinition] =
+    useSaveStandaloneModDefinitionMutation();
 
   const saveElement = useCallback(
     async (
@@ -181,31 +187,42 @@ function useUpsertFormElement(): SaveCallback {
       });
 
       try {
-        const rawExtension = adapter.selectExtension(element);
+        let modComponent = adapter.selectExtension(element);
+        const updateTimestamp: Timestamp =
+          new Date().toISOString() as Timestamp;
+
         if (hasInnerExtensionPoint) {
           const extensionPointConfig =
             adapter.selectExtensionPointConfig(element);
-          dispatch(
-            saveExtension({
-              extension: extensionWithInnerDefinitions(
-                rawExtension,
-                extensionPointConfig.definition,
-              ),
-              pushToCloud: options.pushToCloud,
-            }),
-          );
-        } else {
-          dispatch(
-            saveExtension({
-              extension: rawExtension,
-              pushToCloud: options.pushToCloud,
-            }),
+          modComponent = extensionWithInnerDefinitions(
+            modComponent,
+            extensionPointConfig.definition,
           );
         }
 
-        dispatch(markSaved(element.uuid));
+        dispatch(
+          saveModComponent({
+            modComponent: {
+              ...modComponent,
+              // Note that it is unfortunately the client's responsibility to make sure the `updateTimestamp` is the
+              // same in Redux as it is on the server.
+              updateTimestamp,
+            },
+          }),
+        );
+
+        if (options.pushToCloud && !modComponent._deployment) {
+          await saveStandaloneModDefinition({
+            modComponent: {
+              ...modComponent,
+              updateTimestamp,
+            },
+          }).unwrap();
+        }
+
+        dispatch(markClean(element.uuid));
       } catch (error) {
-        return onStepError(error, "saving extension");
+        return onStepError(error, "saving mod");
       }
 
       if (options.reactivateEveryTab) {
@@ -238,4 +255,4 @@ function useUpsertFormElement(): SaveCallback {
   );
 }
 
-export default useUpsertFormElement;
+export default useUpsertModComponentFormState;

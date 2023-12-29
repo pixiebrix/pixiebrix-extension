@@ -23,7 +23,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import Page from "@/layout/Page";
 import ActivateExtensionCard from "@/extensionConsole/pages/activateExtension/ActivateExtensionCard";
 import { useAuthOptions } from "@/hooks/auth";
-import { useGetCloudExtensionQuery } from "@/services/api";
+import { useGetStandaloneModDefinitionQuery } from "@/services/api";
 import { type UUID } from "@/types/stringTypes";
 
 /**
@@ -33,10 +33,10 @@ const ActivateExtensionPage: React.FunctionComponent = () => {
   const { extensionId } = useParams<{ extensionId: UUID }>();
 
   const {
-    data: extension,
+    data: standaloneModDefinition,
     isFetching,
     error,
-  } = useGetCloudExtensionQuery(
+  } = useGetStandaloneModDefinitionQuery(
     { extensionId },
     {
       // Force-refetch the latest data for this extension before activation
@@ -56,9 +56,9 @@ const ActivateExtensionPage: React.FunctionComponent = () => {
       <Row>
         <Col xs={12} xl={10}>
           <ErrorBoundary>
-            {extension && authOptions && (
+            {standaloneModDefinition && authOptions && (
               <ActivateExtensionCard
-                extension={extension}
+                extension={standaloneModDefinition}
                 authOptions={authOptions}
                 refreshAuthOptions={refreshAuthOptions}
               />

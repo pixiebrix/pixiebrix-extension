@@ -22,7 +22,7 @@ import { Provider } from "react-redux";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import { savingExtensionSlice } from "./savingExtensionSlice";
 import useSavingWizard from "./useSavingWizard";
-import useUpsertFormElementMock from "@/pageEditor/hooks/useUpsertFormElement";
+import useUpsertFormElementMock from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import useResetExtensionMock from "@/pageEditor/hooks/useResetExtension";
 import {
   useCreateRecipeMutation as useCreateRecipeMutationMock,
@@ -46,7 +46,7 @@ import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinition
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { minimalUiSchemaFactory } from "@/utils/schemaUtils";
 
-jest.mock("@/pageEditor/hooks/useUpsertFormElement");
+jest.mock("@/pageEditor/hooks/useUpsertModComponentFormState");
 jest.mock("@/pageEditor/hooks/useResetExtension");
 
 jest.mock("@/services/api", () => ({
