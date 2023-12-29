@@ -28,11 +28,9 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import reportError from "@/telemetry/reportError";
 import { ListGroup } from "react-bootstrap";
 import {
-  NotAvailableIcon,
   ExtensionIcon,
+  NotAvailableIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
-import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { initRecipeOptionsIfNeeded } from "@/pageEditor/starterBricks/base";
 import {
   disableOverlay,
   enableOverlay,
@@ -49,6 +47,9 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { type UUID } from "@/types/stringTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
+import { appApi } from "@/services/api";
+import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
+import { type Schema } from "@/types/schemaTypes";
 
 /**
  * A sidebar menu entry corresponding to an untouched mod component
@@ -56,10 +57,9 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
  */
 const ActivatedModComponentListItem: React.FunctionComponent<{
   modComponent: ModComponentBase;
-  mods: ModDefinition[];
   isAvailable: boolean;
   isNested?: boolean;
-}> = ({ modComponent, mods, isAvailable, isNested = false }) => {
+}> = ({ modComponent, isAvailable, isNested = false }) => {
   const sessionId = useSelector(selectSessionId);
   const dispatch = useDispatch();
   const [type] = useAsyncState(
@@ -67,14 +67,16 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
     [modComponent.extensionPointId],
   );
 
-  const activeRecipeId = useSelector(selectActiveRecipeId);
+  const [getModDefinition] = appApi.endpoints.getRecipe.useLazyQuery();
+
+  const activeModId = useSelector(selectActiveRecipeId);
   const activeElement = useSelector(selectActiveElement);
   const isActive = activeElement?.uuid === modComponent.id;
-  // Get the selected recipe id, or the recipe id of the selected item
-  const recipeId = activeRecipeId ?? activeElement?.recipe?.id;
+  // Get the selected mod id, or the mod id of the selected mod component
+  const modId = activeModId ?? activeElement?.recipe?.id;
   // Set the alternate background if this item isn't active, but either its recipe or another item in its recipe is active
-  const hasRecipeBackground =
-    !isActive && recipeId && modComponent._recipe?.id === recipeId;
+  const hasActiveModBackground =
+    !isActive && modId && modComponent._recipe?.id === modId;
 
   const selectHandler = useCallback(
     async (modComponent: ModComponentBase) => {
@@ -84,10 +86,31 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           extensionId: modComponent.id,
         });
 
-        const state = await extensionToFormState(modComponent);
-        initRecipeOptionsIfNeeded(state, mods);
+        const modComponentFormState = await extensionToFormState(modComponent);
 
-        dispatch(actions.selectInstalled(state));
+        // Initialize mod options schema if needed
+        if (modComponent._recipe) {
+          const { data: modDefinition } = await getModDefinition(
+            { recipeId: modComponent._recipe.id },
+            true,
+          );
+          if (modDefinition) {
+            modComponentFormState.optionsDefinition =
+              modDefinition.options == null
+                ? emptyModOptionsDefinitionFactory()
+                : {
+                    schema: modDefinition.options.schema.properties
+                      ? modDefinition.options.schema
+                      : ({
+                          type: "object",
+                          properties: modDefinition.options.schema,
+                        } as Schema),
+                    uiSchema: modDefinition.options.uiSchema,
+                  };
+          }
+        }
+
+        dispatch(actions.selectInstalled(modComponentFormState));
         dispatch(actions.checkActiveElementAvailability());
 
         if (type === "actionPanel") {
@@ -104,7 +127,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
         dispatch(actions.adapterError({ uuid: modComponent.id, error }));
       }
     },
-    [dispatch, sessionId, mods, type],
+    [sessionId, dispatch, type, getModDefinition],
   );
 
   const isButton = type === "menuItem";
@@ -120,7 +143,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
   return (
     <ListGroup.Item
       className={cx(styles.root, {
-        [styles.recipeBackground ?? ""]: hasRecipeBackground,
+        [styles.recipeBackground ?? ""]: hasActiveModBackground,
       })}
       action
       active={isActive}

@@ -19,6 +19,7 @@ import { type MigrationManifest, type PersistedState } from "redux-persist";
 import {
   type SettingsStateV1,
   type SettingsStateV2,
+  type SettingsStateV3,
 } from "@/store/settings/settingsTypes";
 
 export const migrations: MigrationManifest = {
@@ -27,13 +28,26 @@ export const migrations: MigrationManifest = {
   0: (state) => state,
   1: (state) => state,
   2: (state: SettingsStateV1 & PersistedState) => migrateSettingsStateV1(state),
+  3: (state: SettingsStateV2 & PersistedState) => migrateSettingsStateV2(state),
 };
 
-function migrateSettingsStateV1(
-  state: SettingsStateV1 & PersistedState,
-): SettingsStateV2 & PersistedState {
+function migrateSettingsStateV1({
+  authServiceId,
+  ...state
+}: SettingsStateV1 & PersistedState): SettingsStateV2 & PersistedState {
   return {
     ...state,
-    authIntegrationId: state.authServiceId,
+    authIntegrationId: authServiceId,
+  };
+}
+
+function migrateSettingsStateV2({
+  varAutosuggest,
+  ...state
+}: SettingsStateV2 & PersistedState): SettingsStateV3 & PersistedState {
+  return {
+    ...state,
+    // @since 1.8.6 - Migrate all users to True for this setting, make setting required
+    varAutosuggest: true,
   };
 }

@@ -16,14 +16,14 @@
  */
 import styles from "@/sidebar/modLauncher/ActiveSidebarModsList.module.scss";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { type Mod, type ModViewItem } from "@/types/modTypes";
 import { ListGroup, Row } from "react-bootstrap";
 import useModViewItems from "@/mods/useModViewItems";
 import { type Column, useTable } from "react-table";
 import Loader from "@/components/Loader";
 import ActiveSidebarModsListItem from "@/sidebar/modLauncher/ActiveSidebarModsListItem";
-import { isEmpty } from "lodash";
+import { isEmpty, sortBy } from "lodash";
 import workshopIllustration from "@img/workshop.svg";
 
 import { MARKETPLACE_URL } from "@/urlConstants";
@@ -36,6 +36,7 @@ import {
   isUnavailableMod,
 } from "@/utils/modUtils";
 import useIsEnterpriseUser from "@/hooks/useIsEnterpriseUser";
+import { splitStartingEmoji } from "@/utils/stringUtils";
 
 const columns: Array<Column<PanelEntry>> = [
   {
@@ -139,9 +140,17 @@ export const ActiveSidebarModsList: React.FunctionComponent<{
       modViewItem.status === "Active" && !modViewItem.unavailable,
   );
 
+  const sortedSidebarPanels = useMemo(
+    () =>
+      sortBy(sidebarPanels, (panel) =>
+        splitStartingEmoji(panel.heading).rest.trim(),
+      ),
+    [sidebarPanels],
+  );
+
   const tableInstance = useTable<PanelEntry>({
     columns,
-    data: sidebarPanels,
+    data: sortedSidebarPanels,
   });
 
   const renderBody = isEmpty(sidebarPanels) ? (

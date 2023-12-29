@@ -49,4 +49,28 @@ describe("ModLauncher", () => {
     await expect(screen.findByText("🎁")).resolves.toBeInTheDocument();
     expect(screen.queryByText("🎁 Test Mod")).toBeNull();
   });
+
+  it("sorts panels", async () => {
+    render(<ModLauncher />, {
+      setupRedux(dispatch) {
+        dispatch(
+          sidebarSlice.actions.setPanels({
+            panels: [
+              sidebarEntryFactory("panel", { heading: "🎁 Test Mod" }),
+              sidebarEntryFactory("panel", { heading: "AAA Mod" }),
+            ],
+          }),
+        );
+      },
+    });
+
+    const testMod = await screen.findByText("Test Mod");
+    const aaaMod = await screen.findByText("AAA Mod");
+
+    // Reports the position of its argument node relative to the node on which it is called.
+    // https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition
+    expect(aaaMod.compareDocumentPosition(testMod)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+  });
 });

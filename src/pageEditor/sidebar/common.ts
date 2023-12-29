@@ -17,15 +17,32 @@
 
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import type { Metadata } from "@/types/registryTypes";
+import type { UUID } from "@/types/stringTypes";
 
-type SidebarItem = ModComponentBase | ModComponentFormState;
+export type ModComponentSidebarItem = ModComponentBase | ModComponentFormState;
+
+export type ModSidebarItem = {
+  modMetadata: Metadata;
+  modComponents: ModComponentSidebarItem[];
+};
+
+export type SidebarItem = ModSidebarItem | ModComponentSidebarItem;
 
 export function getLabel(extension: ModComponentFormState): string {
   return extension.label ?? extension.extensionPoint.metadata.name;
 }
 
 export function isModComponentBase(
-  value: SidebarItem,
+  value: ModComponentSidebarItem,
 ): value is ModComponentBase {
   return "extensionPointId" in value;
+}
+
+export function getModComponentItemId(item: ModComponentSidebarItem): UUID {
+  return isModComponentBase(item) ? item.id : item.uuid;
+}
+
+export function isModSidebarItem(item: SidebarItem): item is ModSidebarItem {
+  return "modMetadata" in item;
 }

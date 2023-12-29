@@ -5,6 +5,8 @@ on: push
 env:
   # Creates and uploads sourcemaps to Rollbar, and save the built extension as an artifact
   PUBLIC_RELEASE: ${{ github.ref == 'refs/heads/main' }}
+  # Staging URL, also directly used by webpack
+  SERVICE_URL: https://app-stg.pixiebrix.com/
 
 jobs:
   test:
@@ -49,11 +51,15 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
-      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}/mv${{ matrix.MV }}
 
     strategy:
       matrix:
-        MV: [2, 3]
+        include:
+          - MV: 2
+            PUBLIC_NAME: ""
+          - MV: 3
+            PUBLIC_NAME: "-mv3"
 
     steps:
       - uses: actions/checkout@v4
@@ -66,8 +72,7 @@ jobs:
         env:
           MV: ${{ matrix.MV }}
           ENVIRONMENT: staging
-          EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*
-          SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
+          EXTERNALLY_CONNECTABLE: ${{ env.SERVICE_URL }}*,http://127.0.0.1/*
           MARKETPLACE_URL: ${{ secrets.STAGING_MARKETPLACE_URL }}
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
@@ -77,7 +82,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
         with:
-          name: build-staging-${{ matrix.MV }}
+          name: build-staging${{ matrix.PUBLIC_NAME }}
           path: |
             dist
             !dist/**/*.map
@@ -172,7 +177,7 @@ jobs:
           cache: npm
       - run: npm ci
       # https://knip.dev/overview/getting-started#without-installation
-      - run: npm install -D knip typescript @types/node
+      - run: npm install -D knip
       # Do a run without an exit code. Knip's "warn" setting is not working for files and devDependencies.
       - run: npm run dead-code -- --no-exit-code
       - run: npm run dead-code -- --include duplicates

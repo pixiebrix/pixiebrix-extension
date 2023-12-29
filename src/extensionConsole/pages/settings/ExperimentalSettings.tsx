@@ -23,6 +23,7 @@ import { faFlask } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { selectSettings } from "@/store/settings/settingsSelectors";
 import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
+import { isMV3 } from "@/mv3/api";
 
 const ExperimentalSettings: React.FunctionComponent = () => {
   const {
@@ -62,13 +63,15 @@ const ExperimentalSettings: React.FunctionComponent = () => {
             isEnabled={performanceTracing}
             flag="performanceTracing"
           />
-          <SettingToggle
-            controlId="sandboxedCode"
-            label="Sandboxed Code"
-            description="Toggle on to sandbox templating libraries"
-            isEnabled={sandboxedCode}
-            flag="sandboxedCode"
-          />
+          {!isMV3() && (
+            <SettingToggle
+              controlId="sandboxedCode"
+              label="Sandboxed Code"
+              description="Toggle on to sandbox templating libraries"
+              isEnabled={sandboxedCode}
+              flag="sandboxedCode"
+            />
+          )}
         </Form>
       </Card.Body>
     </Card>

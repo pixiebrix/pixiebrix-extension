@@ -43,6 +43,11 @@
 })(function ($) {
   "use strict";
 
+  // jQuery loaded in a non-document context
+  if (!$.fn) {
+    return;
+  }
+
   // default configuration values
   var _cfg = {
     interval: 100,

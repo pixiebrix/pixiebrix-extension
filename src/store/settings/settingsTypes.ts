@@ -28,7 +28,7 @@ export const AUTH_METHODS = [
   "partner-oauth2",
 ] as const;
 
-export type SkunkworksSettings = {
+export type SkunkworksSettingsFlags = {
   /**
    * Experimental feature to suggest HTML elements to select in the Page Editor
    */
@@ -38,11 +38,6 @@ export type SkunkworksSettings = {
    * Experimental setting to detect and exclude random classes when generating selectors
    */
   excludeRandomClasses?: boolean;
-
-  /**
-   * Experimental setting to support autosuggest for variables in the Page Editor
-   */
-  varAutosuggest?: boolean;
 
   /**
    * Experimental setting to track runtime performance
@@ -55,7 +50,7 @@ export type SkunkworksSettings = {
   sandboxedCode?: boolean;
 };
 
-export type SettingOptions = SkunkworksSettings & {
+export type GeneralSettingsFlags = {
   /**
    * Setting to support autosuggest for variables in the Page Editor
    */
@@ -67,75 +62,73 @@ export type SettingOptions = SkunkworksSettings & {
   isFloatingActionButtonEnabled?: boolean;
 };
 
+export type SettingsFlags = SkunkworksSettingsFlags & GeneralSettingsFlags;
+
 /**
  * @deprecated - Do not use versioned state types directly
  */
-export type SettingsStateV1 = SkunkworksSettings & {
-  /**
-   * Whether the extension is synced to the app for provisioning.
-   *
-   * NOTE: `local` is broken in many places. The only current valid value is remote.
-   */
-  mode: InstallMode;
+export type SettingsStateV1 = SkunkworksSettingsFlags &
+  GeneralSettingsFlags & {
+    /**
+     * Whether the extension is synced to the app for provisioning.
+     *
+     * NOTE: `local` is broken in many places. The only current valid value is remote.
+     */
+    mode: InstallMode;
 
-  /**
-   * Time to snooze updates until (in milliseconds from the epoch), or null.
-   *
-   * The banners still show, however no modals will be shown for the browser extension or team deployments.
-   */
-  nextUpdate: number | null;
+    /**
+     * Time to snooze updates until (in milliseconds from the epoch), or null.
+     *
+     * The banners still show, however no modals will be shown for the browser extension or team deployments.
+     */
+    nextUpdate: number | null;
 
-  /**
-   * Timestamps the update modal was first shown. Used to calculate time remaining for enforceUpdateMillis
-   *
-   * @since 1.7.1
-   * @see AuthState.enforceUpdateMillis
-   */
-  updatePromptTimestamp: number | null;
+    /**
+     * Timestamps the update modal was first shown. Used to calculate time remaining for enforceUpdateMillis
+     *
+     * @since 1.7.1
+     * @see AuthState.enforceUpdateMillis
+     */
+    updatePromptTimestamp: number | null;
 
-  /**
-   * Whether the non-Chrome browser warning has been dismissed.
-   */
-  browserWarningDismissed: boolean;
+    /**
+     * Whether the non-Chrome browser warning has been dismissed.
+     */
+    browserWarningDismissed: boolean;
 
-  /**
-   * Button to enable the floating action button on the page
-   */
-  isFloatingActionButtonEnabled: boolean;
+    /**
+     * Partner id for the user, if any.
+     */
+    partnerId: string | null;
 
-  /**
-   * Partner id for the user, if any.
-   */
-  partnerId: string | null;
+    /**
+     * Registry id of the integration to use for authentication with the PixieBrix server.
+     *
+     * For partner integrations, PixieBrix is supporting using partner JWT for authenticating. The PixieBrix server
+     * verifies the JWT.
+     *
+     * Only set if the user has provided the settings on the Settings Screen. Otherwise, is determined by configuration
+     * of the user's primary organization.
+     *
+     * @since 1.7.5
+     */
+    authServiceId: RegistryId | null;
 
-  /**
-   * Registry id of the integration to use for authentication with the PixieBrix server.
-   *
-   * For partner integrations, PixieBrix is supporting using partner JWT for authenticating. The PixieBrix server
-   * verifies the JWT.
-   *
-   * Only set if the user has provided the settings on the Settings Screen. Otherwise, is determined by configuration
-   * of the user's primary organization.
-   *
-   * @since 1.7.5
-   */
-  authServiceId: RegistryId | null;
+    /**
+     * Force a particular authentication method. Will force user to authenticate, even if the user is authenticated via
+     * another method.
+     *
+     * Use "default" to infer based on primary organization, etc.
+     *
+     * @since 1.7.12
+     */
+    authMethod: (typeof AUTH_METHODS)[number] | null;
 
-  /**
-   * Force a particular authentication method. Will force user to authenticate, even if the user is authenticated via
-   * another method.
-   *
-   * Use "default" to infer based on primary organization, etc.
-   *
-   * @since 1.7.12
-   */
-  authMethod: (typeof AUTH_METHODS)[number] | null;
-
-  /**
-   * Theme name for the extension
-   */
-  theme: Theme;
-};
+    /**
+     * Theme name for the extension
+     */
+    theme: Theme;
+  };
 
 /**
  * @deprecated - Do not use versioned state types directly
@@ -156,7 +149,17 @@ export type SettingsStateV2 = Except<SettingsStateV1, "authServiceId"> & {
   authIntegrationId: RegistryId | null;
 };
 
-export type SettingsState = SettingsStateV2;
+/**
+ * @deprecated - Do not use versioned state types directly
+ */
+export type SettingsStateV3 = SettingsStateV2 & {
+  /**
+   * @since 1.8.6 SettingsStateV3 makes varAutosuggest required
+   */
+  varAutosuggest: boolean;
+};
+
+export type SettingsState = SettingsStateV3;
 
 export type SettingsRootState = {
   settings: SettingsState;
