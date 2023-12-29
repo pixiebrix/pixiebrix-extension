@@ -22,7 +22,7 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { selectNodeDataPanelTabSelected } from "@/pageEditor/slices/editorSelectors";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
-import { EditorRootState } from "@/pageEditor/pageEditorTypes";
+import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 
 const renderCommentsPreview = (comments: string) => {
   const formState = formStateFactory();
