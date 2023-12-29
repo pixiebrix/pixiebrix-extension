@@ -63,7 +63,7 @@ export const appApi = createApi({
     "MarketplaceTags",
     "EditablePackages",
     "Invitations",
-    "CloudModComponents",
+    "StandaloneModDefinitions",
     "Package",
     "PackageVersion",
     "StarterBlueprints",
@@ -198,11 +198,14 @@ export const appApi = createApi({
       query: () => ({ url: "/api/bricks/", method: "get" }),
       providesTags: ["EditablePackages"],
     }),
-    getAllCloudModComponents: builder.query<StandaloneModDefinition[], void>({
+    getAllStandaloneModDefinitions: builder.query<
+      StandaloneModDefinition[],
+      void
+    >({
       query: () => ({ url: "/api/extensions/", method: "get" }),
-      providesTags: ["CloudModComponents"],
+      providesTags: ["StandaloneModDefinitions"],
     }),
-    getCloudModComponent: builder.query<
+    getStandaloneModDefinition: builder.query<
       StandaloneModDefinition,
       { extensionId: UUID }
     >({
@@ -211,11 +214,11 @@ export const appApi = createApi({
         method: "get",
       }),
       providesTags: (result, error, { extensionId }) => [
-        { type: "CloudModComponents", extensionId },
-        "CloudModComponents",
+        { type: "StandaloneModDefinitions", extensionId },
+        "StandaloneModDefinitions",
       ],
     }),
-    deleteCloudModComponent: builder.mutation<
+    deleteStandaloneModDefinition: builder.mutation<
       StandaloneModDefinition,
       { extensionId: UUID }
     >({
@@ -223,9 +226,9 @@ export const appApi = createApi({
         url: `/api/extensions/${extensionId}/`,
         method: "delete",
       }),
-      invalidatesTags: ["CloudModComponents"],
+      invalidatesTags: ["StandaloneModDefinitions"],
     }),
-    saveCloudModComponent: builder.mutation<
+    saveStandaloneModDefinition: builder.mutation<
       StandaloneModDefinition,
       { modComponent: ModComponentBase & { updateTimestamp: string } }
     >({
@@ -234,7 +237,7 @@ export const appApi = createApi({
         method: "put",
         data: modComponent,
       }),
-      invalidatesTags: ["CloudModComponents"],
+      invalidatesTags: ["StandaloneModDefinitions"],
     }),
     getRecipe: builder.query<ModDefinition, { recipeId: RegistryId }>({
       query: ({ recipeId }) => ({
@@ -424,10 +427,10 @@ export const {
   useGetOrganizationsQuery,
   useGetGroupsQuery,
   useGetZapierKeyQuery,
-  useGetCloudModComponentQuery,
-  useGetAllCloudModComponentsQuery,
-  useDeleteCloudModComponentMutation,
-  useSaveCloudModComponentMutation,
+  useGetStandaloneModDefinitionQuery,
+  useGetAllStandaloneModDefinitionsQuery,
+  useDeleteStandaloneModDefinitionMutation,
+  useSaveStandaloneModDefinitionMutation,
   useGetEditablePackagesQuery,
   useGetRecipeQuery,
   useCreateRecipeMutation,

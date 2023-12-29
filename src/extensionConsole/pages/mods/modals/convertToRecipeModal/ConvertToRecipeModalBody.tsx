@@ -33,8 +33,8 @@ import Form from "@/components/form/Form";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import {
   useCreateRecipeMutation,
-  useDeleteCloudModComponentMutation,
-  useGetAllCloudModComponentsQuery,
+  useDeleteStandaloneModDefinitionMutation,
+  useGetAllStandaloneModDefinitionsQuery,
 } from "@/services/api";
 import { type FormikHelpers } from "formik";
 import { makeBlueprint } from "@/extensionConsole/pages/mods/utils/exportBlueprint";
@@ -110,8 +110,10 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
   const extensionId =
     showShareContext?.extensionId ?? showPublishContext?.extensionId;
   const extensions = useSelector(selectExtensions);
-  const { data: cloudModComponents } = useGetAllCloudModComponentsQuery();
-  const [deleteCloudExtension] = useDeleteCloudModComponentMutation();
+  const { data: standaloneModDefinitions } =
+    useGetAllStandaloneModDefinitionsQuery();
+  const [deleteStandaloneModDefinition] =
+    useDeleteStandaloneModDefinitionMutation();
 
   const extension = useMemo(() => {
     if (extensionId == null) {
@@ -120,13 +122,13 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
 
     const extension =
       extensions.find((x) => x.id === extensionId) ??
-      cloudModComponents?.find((x) => x.id === extensionId);
+      standaloneModDefinitions?.find((x) => x.id === extensionId);
     if (extension == null) {
       throw new Error(`No persisted extension exists with id: ${extensionId}`);
     }
 
     return extension;
-  }, [cloudModComponents, extensions, extensionId]);
+  }, [standaloneModDefinitions, extensions, extensionId]);
 
   const scope = useSelector(selectScope);
 
@@ -184,7 +186,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
       } else {
         // In case of cloud extension, we need to delete it
         // Since it's now a part of the blueprint
-        await deleteCloudExtension({
+        await deleteStandaloneModDefinition({
           extensionId: extension.id,
         }).unwrap();
       }

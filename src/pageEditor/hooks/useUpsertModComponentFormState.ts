@@ -29,7 +29,7 @@ import { objToYaml } from "@/utils/objToYaml";
 import { extensionWithInnerDefinitions } from "@/pageEditor/starterBricks/base";
 import {
   useGetEditablePackagesQuery,
-  useSaveCloudModComponentMutation,
+  useSaveStandaloneModDefinitionMutation,
 } from "@/services/api";
 import { type UnknownObject } from "@/types/objectTypes";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -129,7 +129,8 @@ function useUpsertModComponentFormState(): SaveCallback {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
   const { data: editablePackages } = useGetEditablePackagesQuery();
-  const [saveCloudModComponent] = useSaveCloudModComponentMutation();
+  const [saveStandaloneModDefinition] =
+    useSaveStandaloneModDefinitionMutation();
 
   const saveElement = useCallback(
     async (
@@ -203,13 +204,15 @@ function useUpsertModComponentFormState(): SaveCallback {
           saveModComponent({
             modComponent: {
               ...modComponent,
+              // Note that it is unfortunately the client's responsibility to make sure the `updateTimestamp` is the
+              // same in Redux as it is on the server.
               updateTimestamp,
             },
           }),
         );
 
         if (options.pushToCloud && !modComponent._deployment) {
-          await saveCloudModComponent({
+          await saveStandaloneModDefinition({
             modComponent: {
               ...modComponent,
               updateTimestamp,
