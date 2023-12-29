@@ -34,7 +34,7 @@ import {
   type ActivatedModComponent,
   type ModComponentBase,
 } from "@/types/modComponentTypes";
-import { type UUID } from "@/types/stringTypes";
+import { Timestamp, type UUID } from "@/types/stringTypes";
 import {
   type ModComponentDefinition,
   type ModDefinition,
@@ -262,14 +262,24 @@ const extensionsSlice = createSlice({
         reinstall: isReinstall,
       });
     },
-    // XXX: why do we expose a `extensionId` in addition ModComponentBase's `id` prop here?
+    /**
+     * Warning: this action saves the mod component to Redux, but it does not save the mod component to the cloud.
+     * You are likely looking for the `useUpsertModComponentFormState` hook, which saves the mod component
+     * form state using this action with options to push it to the server.
+     *
+     * Prefer using `useUpsertModComponentFormState` over calling this action directly.
+     *
+     * @see useUpsertModComponentFormState
+     *
+     * XXX: why do we expose a `extensionId` in addition ModComponentBase's `id` prop here?
+     */
     saveModComponent(
       state,
       {
         payload,
       }: PayloadAction<{
         modComponent: (ModComponentBase | ActivatedModComponent) & {
-          updateTimestamp: string;
+          updateTimestamp: Timestamp;
         };
       }>,
     ) {

@@ -37,7 +37,7 @@ import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
-import { type UUID } from "@/types/stringTypes";
+import { Timestamp, type UUID } from "@/types/stringTypes";
 
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import type { RegistryId } from "@/types/registryTypes";
@@ -188,7 +188,8 @@ function useUpsertModComponentFormState(): SaveCallback {
 
       try {
         let modComponent = adapter.selectExtension(element);
-        const updateTimestamp = new Date().toISOString();
+        const updateTimestamp: Timestamp =
+          new Date().toISOString() as Timestamp;
 
         if (hasInnerExtensionPoint) {
           const extensionPointConfig =
