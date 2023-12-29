@@ -269,12 +269,10 @@ const extensionsSlice = createSlice({
         payload,
       }: PayloadAction<{
         modComponent: (ModComponentBase | ActivatedModComponent) & {
-          updateTimestamp?: string;
+          updateTimestamp: string;
         };
       }>,
     ) {
-      const timestamp = new Date().toISOString();
-
       const {
         modComponent: {
           id,
@@ -285,7 +283,7 @@ const extensionsSlice = createSlice({
           label,
           optionsArgs,
           integrationDependencies,
-          updateTimestamp = timestamp,
+          updateTimestamp,
           _recipe,
         },
       } = payload;
