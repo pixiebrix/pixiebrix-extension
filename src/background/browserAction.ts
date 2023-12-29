@@ -18,7 +18,7 @@
 import { ensureContentScript } from "@/background/contentScript";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import webextAlert from "./webextAlert";
-import { browserAction, type Tab } from "@/mv3/api";
+import { browserAction, isMV3, type Tab } from "@/mv3/api";
 import { executeScript, isScriptableUrl } from "webext-content-scripts";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
@@ -105,7 +105,11 @@ function getPopoverUrl(tabUrl: string | null): string | null {
 }
 
 export default function initBrowserAction(): void {
-  browserAction.onClicked.addListener(handleBrowserAction);
+  if (isMV3()) {
+    chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
+  } else {
+    browserAction.onClicked.addListener(handleBrowserAction);
+  }
 
   // Track the active tab URL. We need to update the popover every time status the active tab/active URL changes.
   // https://github.com/facebook/react/blob/bbb9cb116dbf7b6247721aa0c4bcb6ec249aa8af/packages/react-devtools-extensions/src/background/tabsManager.js#L29

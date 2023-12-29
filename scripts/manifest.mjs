@@ -52,6 +52,12 @@ function updateManifestToV3(manifestV2) {
   manifest.permissions = [...permissions, "scripting"];
   manifest.host_permissions = origins;
 
+  // Add sidePanel
+  manifest.permissions.push("sidePanel");
+  manifest.side_panel = {
+    default_panel: "sidebar.html",
+  };
+
   // Update format
   manifest.web_accessible_resources = [
     {
