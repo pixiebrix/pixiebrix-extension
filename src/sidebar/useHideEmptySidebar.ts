@@ -16,7 +16,7 @@
  */
 
 import useAsyncEffect from "use-async-effect";
-import { getTopLevelFrame } from "webext-messenger";
+import { getTopLevelFrame } from "./sidePanel";
 import {
   getReservedSidebarEntries,
   hideSidebar,

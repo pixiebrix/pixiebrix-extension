@@ -106,7 +106,12 @@ function getPopoverUrl(tabUrl: string | null): string | null {
 
 export default function initBrowserAction(): void {
   if (isMV3()) {
-    chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
+    chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
+
+    browserAction.onClicked.addListener((tab) => {
+      console.log("xxxxxxxxxx", { tabId: tab.id });
+      chrome.sidePanel.open({ tabId: tab.id });
+    });
   } else {
     browserAction.onClicked.addListener(handleBrowserAction);
   }

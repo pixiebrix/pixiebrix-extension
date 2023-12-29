@@ -55,7 +55,7 @@ function updateManifestToV3(manifestV2) {
   // Add sidePanel
   manifest.permissions.push("sidePanel");
   manifest.side_panel = {
-    default_panel: "sidebar.html",
+    default_path: "sidebar.html",
   };
 
   // Update format

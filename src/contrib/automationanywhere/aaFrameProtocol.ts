@@ -17,7 +17,7 @@
 
 import { type UnknownObject } from "@/types/objectTypes";
 import { expectContext } from "@/utils/expectContext";
-import { getTopLevelFrame } from "webext-messenger";
+import { getTopLevelFrame } from "@/sidebar/sidePanel";
 import { getCopilotHostData } from "@/contentScript/messenger/api";
 
 /**

@@ -42,7 +42,7 @@ import {
   ensureExtensionPointsInstalled,
   getReservedSidebarEntries,
 } from "@/contentScript/messenger/api";
-import { getTopLevelFrame } from "webext-messenger";
+import { getTopLevelFrame } from "./sidePanel";
 import useAsyncEffect from "use-async-effect";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
 
