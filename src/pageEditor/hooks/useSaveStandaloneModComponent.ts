@@ -31,14 +31,14 @@ type ExtensionSaver = {
 
 function useSaveStandaloneModComponent(): ExtensionSaver {
   const [isSaving, setIsSaving] = useState(false);
-  const create = useUpsertModComponentFormState();
+  const upsertModComponentFormState = useUpsertModComponentFormState();
   const sessionId = useSelector(selectSessionId);
 
   async function save(element: ModComponentFormState): Promise<void> {
     setIsSaving(true);
 
     try {
-      const error = await create({
+      const error = await upsertModComponentFormState({
         element,
         options: {
           pushToCloud: true,

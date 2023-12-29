@@ -55,7 +55,7 @@ type RecipeSaver = {
 
 function useSaveRecipe(): RecipeSaver {
   const dispatch = useDispatch();
-  const upsertFormElement = useUpsertModComponentFormState();
+  const upsertModComponentFormState = useUpsertModComponentFormState();
   const {
     data: recipes,
     isLoading: isRecipesLoading,
@@ -154,7 +154,7 @@ function useSaveRecipe(): RecipeSaver {
     // Don't push to cloud since we're saving it with the recipe
     await Promise.all(
       dirtyRecipeElements.map(async (element) =>
-        upsertFormElement({
+        upsertModComponentFormState({
           element,
           options: {
             pushToCloud: false,
