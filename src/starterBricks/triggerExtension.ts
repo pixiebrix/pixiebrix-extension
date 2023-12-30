@@ -49,7 +49,7 @@ import pluralize from "@/utils/pluralize";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { BusinessError } from "@/errors/businessErrors";
 import { guessSelectedElement } from "@/utils/selectionController";
-import "@/vendors/hoverintent/hoverintent";
+import "@/vendors/hoverintent";
 import ArrayCompositeReader from "@/bricks/readers/ArrayCompositeReader";
 import {
   type AttachMode,

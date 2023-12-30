@@ -38,9 +38,8 @@ import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { getAttributeSelectorRegex } from "@/utils/inference/selectorInferenceUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 
-export const NON_EXISTENT_TAG_NAME = "selectnothing";
 /** Valid selector that never returns any element (no `<selectnothing>` element exists) */
-export const SELECTOR_THAT_MATCHES_NOTHING = NON_EXISTENT_TAG_NAME;
+export const NON_EXISTENT_TAG_NAME = "selectnothing";
 export const BUTTON_TAGS: string[] = [
   "li",
   "button",
@@ -240,7 +239,7 @@ export function safeCssSelector(
   // https://github.com/fczbkk/css-selector-generator
   const firstElement = elements[0];
   if (!firstElement) {
-    return SELECTOR_THAT_MATCHES_NOTHING;
+    return NON_EXISTENT_TAG_NAME;
   }
 
   const siteSelectorHint = getSiteSelectorHint(firstElement);
@@ -532,7 +531,7 @@ export function inferMultiElementSelector({
   const firstElement = elements[0];
   if (!firstElement) {
     return {
-      selectors: [SELECTOR_THAT_MATCHES_NOTHING],
+      selectors: [NON_EXISTENT_TAG_NAME],
       tagName: NON_EXISTENT_TAG_NAME,
       parent: null,
       isMulti: true,

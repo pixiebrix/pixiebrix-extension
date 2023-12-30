@@ -19,7 +19,7 @@ import { ensureContentScript } from "@/background/contentScript";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import webextAlert from "./webextAlert";
 import { browserAction, type Tab } from "@/mv3/api";
-import { isScriptableUrl } from "webext-content-scripts";
+import { executeScript, isScriptableUrl } from "webext-content-scripts";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import {
@@ -44,13 +44,12 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
   // Load the raw toggle script first, then the content script. The browser executes them
   // in order, but we don't need to use `Promise.all` to await them at the same time as we
   // want to catch each error separately.
-  // Call browser.tabs.executeScript instead of using webext-content-scripts:executeScript because we need to
-  // await the script running. See https://github.com/fregante/webext-content-scripts/issues/22
-  const sidebarTogglePromise = browser.tabs.executeScript(tabId, {
-    file: "browserActionInstantHandler.js",
+  const sidebarTogglePromise = executeScript({
+    tabId,
+    frameId: TOP_LEVEL_FRAME_ID,
+    files: ["browserActionInstantHandler.js"],
     matchAboutBlank: false,
     allFrames: false,
-    frameId: TOP_LEVEL_FRAME_ID,
     // Run at end instead of idle to ensure immediate feedback to clicking the browser action icon
     runAt: "document_end",
   });

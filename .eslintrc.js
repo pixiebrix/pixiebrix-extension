@@ -72,7 +72,7 @@ module.exports = {
           "@/telemetry/reportUncaughtErrors",
           "@testing-library/jest-dom",
           "regenerator-runtime/runtime", // Automatic registration
-          "@/vendors/hoverintent/hoverintent", // JQuery plugin
+          "@/vendors/hoverintent", // JQuery plugin
           "iframe-resizer/js/iframeResizer.contentWindow", // vendor library imported for side-effect
         ],
       },
@@ -102,7 +102,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ["webpack.*.js", "*.config.js"],
+      files: ["webpack.*.js", "*.config.js", "scripts/*"],
       // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/development.js
       extends: ["pixiebrix/development"],
       rules: {
@@ -111,6 +111,7 @@ module.exports = {
     },
     {
       files: [
+        "*/scripts/*",
         "**/__mocks__/**",
         "**/testUtils/**",
         "**/*.test.ts",
@@ -130,6 +131,16 @@ module.exports = {
       rules: {
         "testing-library/render-result-naming-convention": "off",
         "testing-library/no-await-sync-queries": "off",
+      },
+    },
+    {
+      // These rules should not be enabled for JS files
+      files: ["*.js", "*.mjs", "*.cjs"],
+      rules: {
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-return": "off",
       },
     },
   ],

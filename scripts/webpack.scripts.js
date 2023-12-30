@@ -34,7 +34,7 @@ module.exports = mergeWithShared({
     nunjucks: "{}",
     rollbar: "{init(){}}",
     "webextension-polyfill": "{}",
-    "@/vendors/hoverintent/hoverintent": "{}",
+    "@/vendors/hoverintent": "{}",
   },
   resolve: {
     // Auto-mocks. See documentation in ../src/__mocks__/readme.md

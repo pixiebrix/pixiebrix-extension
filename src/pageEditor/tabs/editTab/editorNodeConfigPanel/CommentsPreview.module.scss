@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,12 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useRef } from "react";
+@import "@/themes/colors.scss";
 
-export default function useRenderCount() {
-  const count = useRef(0);
+.root {
+  background-color: $S100;
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  count.current += 1;
+.icon {
+  color: $S500;
+  margin-right: 8px;
+}
 
-  return count.current;
+.text {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: $json-tree-theme-base0B;
+  flex-grow: 1;
+  margin: 0;
 }

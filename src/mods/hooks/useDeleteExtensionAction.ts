@@ -17,7 +17,7 @@
 
 import { type ModViewItem } from "@/types/modTypes";
 import { useModals } from "@/components/ConfirmationModal";
-import { useDeleteCloudExtensionMutation } from "@/services/api";
+import { useDeleteStandaloneModDefinitionMutation } from "@/services/api";
 import {
   getLabel,
   isResolvedModComponent,
@@ -30,7 +30,8 @@ import { Events } from "@/telemetry/events";
 function useDeleteExtensionAction(modViewItem: ModViewItem): () => void | null {
   const { mod, sharing, status } = modViewItem;
   const modals = useModals();
-  const [deleteCloudExtension] = useDeleteCloudExtensionMutation();
+  const [deleteStandaloneModDefinition] =
+    useDeleteStandaloneModDefinitionMutation();
   const isActive = status === "Active" || status === "Paused";
 
   const isCloudExtension =
@@ -57,7 +58,7 @@ function useDeleteExtensionAction(modViewItem: ModViewItem): () => void | null {
         throw new CancelError();
       }
 
-      await deleteCloudExtension({ extensionId: mod.id }).unwrap();
+      await deleteStandaloneModDefinition({ extensionId: mod.id }).unwrap();
     },
     {
       successMessage: `Deleted mod ${getLabel(mod)} from your account`,

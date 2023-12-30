@@ -22,7 +22,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { getDiagnostics as collectFrameDiagnostics } from "@/contentScript/performanceMonitoring";
 import { collectPerformanceDiagnostics as collectExtensionDiagnostics } from "@/background/messenger/api";
 
-export class ExtensionDiagnostics extends TransformerABC {
+class ExtensionDiagnostics extends TransformerABC {
   defaultOutputKey = "diagnostics";
 
   constructor() {

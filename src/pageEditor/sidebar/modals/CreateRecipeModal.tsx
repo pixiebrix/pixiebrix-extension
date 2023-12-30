@@ -50,7 +50,7 @@ import Form, {
   type RenderSubmit,
 } from "@/components/form/Form";
 import { useCreateRecipeMutation } from "@/services/api";
-import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
+import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -107,7 +107,7 @@ function useSaveCallbacks({
 }) {
   const dispatch = useDispatch();
   const [createRecipe] = useCreateRecipeMutation();
-  const createExtension = useUpsertFormElement();
+  const upsertModComponentFormState = useUpsertModComponentFormState();
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
   const deactivateMod = useDeactivateMod();
 
@@ -145,7 +145,7 @@ function useSaveCallbacks({
             draft.recipe = selectRecipeMetadata(newRecipe, response);
           });
           dispatch(editorActions.addElement(recipeElement));
-          await createExtension({
+          await upsertModComponentFormState({
             element: recipeElement,
             options: {
               // Don't push to cloud since we're saving it with the recipe
@@ -171,7 +171,7 @@ function useSaveCallbacks({
       ),
     [
       activeElement,
-      createExtension,
+      upsertModComponentFormState,
       createRecipe,
       dispatch,
       keepLocalCopy,

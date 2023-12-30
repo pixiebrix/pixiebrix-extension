@@ -21,9 +21,9 @@ import { type Target } from "@/types/messengerTypes";
 import { canAccessTab } from "@/permissions/permissionsUtils";
 import { isScriptableUrl } from "webext-content-scripts";
 import { debounce } from "lodash";
-import { syncFlagOn } from "@/store/syncFlags";
 import { canAccessTab as canInjectTab, getTabUrl } from "webext-tools";
 import { getTargetState } from "@/contentScript/ready";
+import { flagOn } from "@/auth/authUtils";
 
 export function reactivateEveryTab(): void {
   console.debug("Reactivate all tabs");
@@ -40,34 +40,33 @@ async function traceNavigation(target: Target): Promise<void> {
     ...target,
     tabUrl,
     isScriptableUrl: isScriptableUrl(tabUrl),
-    contentScriptState: await getTargetState(target),
-    canInject: await canInjectTab(target),
-    // PixieBrix has some additional constraints on which tabs can be accessed (i.e., only https:)
-    canAccessTab: await canAccessTab(target),
+    contentScriptState: getTargetState(target),
+    canInject: canInjectTab(target),
+    // PixieBrix has some additional constraints on which tabs can be accessed (i.e., only http/https)
+    canAccessTab: canAccessTab(target),
   });
-}
-
-async function onNavigation({ tabId, frameId }: Target): Promise<void> {
-  if (syncFlagOn("navigation-trace")) {
-    await traceNavigation({ tabId, frameId });
-  }
 }
 
 // Some sites use the hash to encode page state (e.g., filters). There are some non-navigation scenarios where the hash
 // could change frequently (e.g., there is a timer in the state). Debounce to avoid overloading the messenger and
 // contentScript.
-// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- debounced form of function onNavigation
-const debouncedOnNavigation = debounce(onNavigation, 100, {
+// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- Functions are fine
+const debouncedTraceNavigation = debounce(traceNavigation, 100, {
   leading: true,
   trailing: true,
   maxWait: 1000,
 });
 
-function initNavigation(): void {
-  // Let the content script know about navigation from the history API. Required for handling SPA navigation
-  browser.webNavigation.onHistoryStateUpdated.addListener(onNavigation);
+async function initNavigation(): Promise<void> {
+  if (!(await flagOn("navigation-trace"))) {
+    return;
+  }
+
+  browser.webNavigation.onHistoryStateUpdated.addListener(
+    debouncedTraceNavigation,
+  );
   browser.webNavigation.onReferenceFragmentUpdated.addListener(
-    debouncedOnNavigation,
+    debouncedTraceNavigation,
   );
 }
 

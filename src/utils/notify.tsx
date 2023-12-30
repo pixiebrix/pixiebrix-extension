@@ -241,7 +241,7 @@ function _show(
 }
 
 // Please only add logic to `showNotification`
-export const notify = {
+const notify = {
   /**
    * @example notify.error('User message')
    * @example notify.error({error: new Error('Error that can be shown to the user')})

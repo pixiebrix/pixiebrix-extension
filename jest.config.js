@@ -22,21 +22,15 @@ const config = {
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "yaml", "yml", "json"],
   testPathIgnorePatterns: ["<rootDir>/selenium/"],
   transform: {
-    "^.+\\.[jt]sx?$": [
-      "@swc/jest",
-      {
-        jsc: {
-          target: "es2022",
-        },
-      },
-    ],
+    "^.+\\.[jt]sx?$": "@swc/jest",
+    "^.+\\.mjs$": "@swc/jest",
     "^.+\\.ya?ml$": "yaml-jest-transform",
     "^.+\\.ya?ml\\?loadAsText$":
       "<rootDir>/src/testUtils/rawJestTransformer.mjs",
     "^.+\\.txt$": "<rootDir>/src/testUtils/rawJestTransformer.mjs",
   },
   transformIgnorePatterns: [
-    "node_modules/(?!@cfworker|escape-string-regex|filename-reserved-regex|filenamify|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|strip-outer|trim-repeated|mimic-fn|urlpattern-polyfill|url-join|uuid|nanoid|use-debounce|copy-text-to-clipboard|linkify-urls|create-html-element|stringify-attributes|escape-goat|stemmer|uint8array-extras)",
+    "node_modules/(?!@cfworker|escape-string-regex|filename-reserved-regex|filenamify|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|strip-outer|trim-repeated|mimic-fn|urlpattern-polyfill|url-join|uuid|nanoid|use-debounce|copy-text-to-clipboard|linkify-urls|create-html-element|stringify-attributes|escape-goat|stemmer|uint8array-extras|one-event)",
   ],
   setupFiles: [
     "dotenv/config",

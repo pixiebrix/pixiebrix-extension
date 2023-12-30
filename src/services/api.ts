@@ -46,6 +46,7 @@ import {
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import baseQuery from "@/services/baseQuery";
+import type { ModComponentBase } from "@/types/modComponentTypes";
 
 export const appApi = createApi({
   reducerPath: "appApi",
@@ -62,7 +63,7 @@ export const appApi = createApi({
     "MarketplaceTags",
     "EditablePackages",
     "Invitations",
-    "CloudExtensions",
+    "StandaloneModDefinitions",
     "Package",
     "PackageVersion",
     "StarterBlueprints",
@@ -197,11 +198,14 @@ export const appApi = createApi({
       query: () => ({ url: "/api/bricks/", method: "get" }),
       providesTags: ["EditablePackages"],
     }),
-    getAllCloudExtensions: builder.query<StandaloneModDefinition[], void>({
+    getAllStandaloneModDefinitions: builder.query<
+      StandaloneModDefinition[],
+      void
+    >({
       query: () => ({ url: "/api/extensions/", method: "get" }),
-      providesTags: ["CloudExtensions"],
+      providesTags: ["StandaloneModDefinitions"],
     }),
-    getCloudExtension: builder.query<
+    getStandaloneModDefinition: builder.query<
       StandaloneModDefinition,
       { extensionId: UUID }
     >({
@@ -210,11 +214,11 @@ export const appApi = createApi({
         method: "get",
       }),
       providesTags: (result, error, { extensionId }) => [
-        { type: "CloudExtensions", extensionId },
-        "CloudExtensions",
+        { type: "StandaloneModDefinitions", extensionId },
+        "StandaloneModDefinitions",
       ],
     }),
-    deleteCloudExtension: builder.mutation<
+    deleteStandaloneModDefinition: builder.mutation<
       StandaloneModDefinition,
       { extensionId: UUID }
     >({
@@ -222,7 +226,18 @@ export const appApi = createApi({
         url: `/api/extensions/${extensionId}/`,
         method: "delete",
       }),
-      invalidatesTags: ["CloudExtensions"],
+      invalidatesTags: ["StandaloneModDefinitions"],
+    }),
+    saveStandaloneModDefinition: builder.mutation<
+      StandaloneModDefinition,
+      { modComponent: ModComponentBase & { updateTimestamp: string } }
+    >({
+      query: ({ modComponent }) => ({
+        url: `/api/extensions/${modComponent.id}/`,
+        method: "put",
+        data: modComponent,
+      }),
+      invalidatesTags: ["StandaloneModDefinitions"],
     }),
     getRecipe: builder.query<ModDefinition, { recipeId: RegistryId }>({
       query: ({ recipeId }) => ({
@@ -412,9 +427,10 @@ export const {
   useGetOrganizationsQuery,
   useGetGroupsQuery,
   useGetZapierKeyQuery,
-  useGetCloudExtensionQuery,
-  useGetAllCloudExtensionsQuery,
-  useDeleteCloudExtensionMutation,
+  useGetStandaloneModDefinitionQuery,
+  useGetAllStandaloneModDefinitionsQuery,
+  useDeleteStandaloneModDefinitionMutation,
+  useSaveStandaloneModDefinitionMutation,
   useGetEditablePackagesQuery,
   useGetRecipeQuery,
   useCreateRecipeMutation,
