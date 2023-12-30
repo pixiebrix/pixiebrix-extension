@@ -411,7 +411,7 @@ export const editorSlice = createSlice({
 
       activateElement(state, element);
     },
-    markSaved(state, action: PayloadAction<UUID>) {
+    markClean(state, action: PayloadAction<UUID>) {
       const element = state.elements.find((x) => action.payload === x.uuid);
       if (!element) {
         throw new Error(`Unknown dynamic element: ${action.payload}`);
