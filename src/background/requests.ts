@@ -79,7 +79,6 @@ type SanitizedResponse<T = unknown> = Pick<
   _sanitizedResponseBrand: null;
 };
 
-// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- constant
 const UNAUTHORIZED_STATUS_CODES = new Set([401, 403]);
 
 function sanitizeResponse<T>(

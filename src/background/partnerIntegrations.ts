@@ -34,7 +34,7 @@ import {
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
 
-// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- constant
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const TEN_HOURS = 1000 * 60 * 60 * 10;
 
 /**

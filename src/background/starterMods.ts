@@ -34,7 +34,7 @@ import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 
-// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- no state; destructuring reduce and actions
+// eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reduce and actions
 const { reducer, actions } = extensionsSlice;
 
 const PLAYGROUND_URL = "https://www.pixiebrix.com/welcome";

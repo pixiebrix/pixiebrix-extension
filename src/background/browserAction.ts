@@ -34,7 +34,7 @@ const ERR_UNABLE_TO_OPEN =
 // The sidebar is always injected to into the top level frame
 const TOP_LEVEL_FRAME_ID = 0;
 
-// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- OK to clear on worker recycle
+// eslint-disable-next-line local-rules/persistBackgroundData -- OK to clear on worker recycle
 const toggleSidebar = memoizeUntilSettled(_toggleSidebar);
 
 // Don't accept objects here as they're not easily memoizable

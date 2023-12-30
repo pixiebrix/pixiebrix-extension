@@ -20,12 +20,11 @@
  * TODO: It's not yet using the Messenger: https://github.com/pixiebrix/webext-messenger/issues/6
  */
 
-import { _liftBackground } from "@/background/externalProtocol";
+import { _liftBackground as liftExternal } from "@/background/externalProtocol";
 import * as local from "@/background/messenger/external/_implementation";
 import { readPartnerAuthData } from "@/auth/token";
 
 // Disabled for now because we don't support Firefox
-// eslint-disable-next-line import/no-restricted-paths -- Legacy code, needs https://github.com/pixiebrix/webext-messenger/issues/6
 // import { liftExternalToContentScript } from "@/contentScript/externalProtocol";
 // import { isChrome } from "webext-detect-page";
 // import { type SerializableResponse } from "@/types/messengerTypes";
@@ -40,8 +39,6 @@ import { readPartnerAuthData } from "@/auth/token";
 //       const liftedToBackground = _liftBackground(`BACKGROUND_${type}`, method);
 //       return liftExternalToContentScript(type, liftedToBackground);
 //     };
-
-const liftExternal = _liftBackground;
 
 export const connectPage = liftExternal("CONNECT_PAGE", async () =>
   browser.runtime.getManifest(),

@@ -31,7 +31,7 @@ module.exports = {
       "VariableDeclaration:exit"(node) {
         if (node.parent.type === "Program") {
           for (const declaration of node.declarations) {
-            const { init } = declaration;
+            const { init, id } = declaration;
             if (
               [
                 "Literal",
@@ -52,10 +52,14 @@ module.exports = {
               return;
             }
 
+            if (id.type === "Identifier" && id.name.toUpperCase() === id.name) {
+              return;
+            }
+
             context.report({
               node: declaration,
               message:
-                "Non-literal module-level variables are not allowed in src/background directory",
+                "Ensure that mutable module-level variables are not used in background files due to MV3. Use SessionMap or SessionValue instead. If this is a function or immutable value, ignore this rule with the comment 'Static', 'Function', or add more details as to why it should be ignored.",
             });
           }
         }

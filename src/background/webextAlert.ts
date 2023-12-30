@@ -23,7 +23,7 @@ function windowAlert(message: string): void {
   });
 }
 
-// eslint-disable-next-line local-rules/noBackgroundModuleVariables -- IIFE
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const webextAlert = ((): typeof alert => {
   if ((isFirefox() && isBackgroundPage()) || isBackgroundWorker()) {
     // Firefox and workers don't support alert() in background pages

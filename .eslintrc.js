@@ -131,7 +131,7 @@ module.exports = {
       ],
       excludedFiles: ["**/*.test.*"],
       rules: {
-        "local-rules/noBackgroundModuleVariables": "error",
+        "local-rules/persistBackgroundData": "error",
       },
     },
     {
