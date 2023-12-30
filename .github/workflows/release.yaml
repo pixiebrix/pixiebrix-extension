@@ -50,7 +50,7 @@ jobs:
           # Not included in the build for the store
           CHROME_MANIFEST_KEY: ${{ matrix.INSTALL_TYPE == 'production' && matrix.CHROME_MANIFEST_KEY }}
       - run: bash scripts/upload-sourcemaps.sh
-        if: matrix.INSTALL_TYPE == 'production'
+        if: matrix.INSTALL_TYPE == 'for-store'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
