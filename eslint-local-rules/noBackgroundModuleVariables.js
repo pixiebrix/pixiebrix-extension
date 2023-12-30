@@ -27,26 +27,36 @@ module.exports = {
     schema: [], // No options
   },
   create(context) {
-    const filename = context.getFilename();
-    const isBackgroundDirectory = filename.includes("/src/background/");
-    const isTest = filename.includes(".test.");
-
-    if (!isBackgroundDirectory || isTest) {
-      return {}; // Exit early if not in the src/background directory
-    }
-
     return {
       "VariableDeclaration:exit"(node) {
         if (node.parent.type === "Program") {
           for (const declaration of node.declarations) {
-            // Ignore constants
-            if (declaration.init && declaration.init.type !== "Literal") {
-              context.report({
-                node: declaration,
-                message:
-                  "Non-literal module-level variables are not allowed in src/background directory",
-              });
+            const { init } = declaration;
+            if (
+              [
+                "Literal",
+                "FunctionExpression",
+                "ArrowFunctionExpression",
+              ].includes(init.type)
+            ) {
+              return;
             }
+
+            if (
+              init.type === "NewExpression" &&
+              init.callee.type === "Identifier" &&
+              ["SessionMap", "SessionValue", "StorageItem"].includes(
+                init.callee.name,
+              )
+            ) {
+              return;
+            }
+
+            context.report({
+              node: declaration,
+              message:
+                "Non-literal module-level variables are not allowed in src/background directory",
+            });
           }
         }
       },

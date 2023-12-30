@@ -41,11 +41,9 @@ type TabId = number;
 // Arbitrary number of tabs above which performance *might* be degraded
 const LARGE_AMOUNT_OF_TABS = 20;
 
-// FIXME: move to session storage
 // TODO: One tab could have multiple targets, but `tabToTarget` currently only supports one at a time
 const tabToTarget = new SessionMap<TabId>("tabToTarget", import.meta.url);
 
-// FIXME: move to session storage
 // We shouldn't need to store this value, but Chrome loses it often
 // https://bugs.chromium.org/p/chromium/issues/detail?id=967150
 const tabToOpener = new SessionMap<TabId>("tabToOpener", import.meta.url);

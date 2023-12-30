@@ -48,7 +48,6 @@ module.exports = {
     "local-rules/noInvalidDataTestId": "error",
     "local-rules/noExpressionLiterals": "error",
     "local-rules/notBothLabelAndLockableProps": "error",
-    "local-rules/noBackgroundModuleVariables": "error",
     "local-rules/preferNullish": "warn",
     "local-rules/preferNullishable": "warn",
     "import/no-restricted-paths": [
@@ -123,6 +122,16 @@ module.exports = {
       extends: ["pixiebrix/development", "pixiebrix/tests"],
       rules: {
         "unicorn/prefer-spread": "off",
+      },
+    },
+    {
+      files: [
+        // background folder
+        "./src/background/**",
+      ],
+      excludedFiles: ["**/*.test.*"],
+      rules: {
+        "local-rules/noBackgroundModuleVariables": "error",
       },
     },
     {
