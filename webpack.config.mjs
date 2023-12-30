@@ -215,6 +215,7 @@ const createConfig = (env, options) =>
       new webpack.EnvironmentPlugin({
         // If not found, these values will be used as defaults
         DEBUG: !isProd(options),
+        MV: "2",
         NODE_DEBUG: false,
         REDUX_DEV_TOOLS: !isProd(options),
         NPM_PACKAGE_VERSION: process.env.npm_package_version,

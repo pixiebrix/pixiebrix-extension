@@ -26,7 +26,6 @@ import { selectEventData } from "@/telemetry/deployments";
 import { contextMenus } from "@/background/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import { cloneDeep, partition } from "lodash";
-import { saveUserExtension } from "@/services/apiClient";
 import reportError from "@/telemetry/reportError";
 import { type Except } from "type-fest";
 import { assertModComponentNotResolved } from "@/runtime/runtimeUtils";
@@ -35,7 +34,7 @@ import {
   type ActivatedModComponent,
   type ModComponentBase,
 } from "@/types/modComponentTypes";
-import { type UUID } from "@/types/stringTypes";
+import { type Timestamp, type UUID } from "@/types/stringTypes";
 import {
   type ModComponentDefinition,
   type ModDefinition,
@@ -263,22 +262,29 @@ const extensionsSlice = createSlice({
         reinstall: isReinstall,
       });
     },
-    // XXX: why do we expose a `extensionId` in addition ModComponentBase's `id` prop here?
-    saveExtension(
+    /**
+     * Warning: this action saves the mod component to Redux, but it does not save the mod component to the cloud.
+     * You are likely looking for the `useUpsertModComponentFormState` hook, which saves the mod component
+     * form state using this action with options to push it to the server.
+     *
+     * Prefer using `useUpsertModComponentFormState` over calling this action directly.
+     *
+     * @see useUpsertModComponentFormState
+     *
+     * XXX: why do we expose a `extensionId` in addition ModComponentBase's `id` prop here?
+     */
+    saveModComponent(
       state,
       {
         payload,
       }: PayloadAction<{
-        extension: (ModComponentBase | ActivatedModComponent) & {
-          createTimestamp?: string;
+        modComponent: (ModComponentBase | ActivatedModComponent) & {
+          updateTimestamp: Timestamp;
         };
-        pushToCloud: boolean;
       }>,
     ) {
-      const timestamp = new Date().toISOString();
-
       const {
-        extension: {
+        modComponent: {
           id,
           apiVersion,
           extensionPointId,
@@ -287,11 +293,9 @@ const extensionsSlice = createSlice({
           label,
           optionsArgs,
           integrationDependencies,
-          _deployment,
-          createTimestamp = timestamp,
+          updateTimestamp,
           _recipe,
         },
-        pushToCloud,
       } = payload;
 
       // Support both extensionId and id to keep the API consistent with the shape of the stored extension
@@ -303,7 +307,7 @@ const extensionsSlice = createSlice({
         throw new Error("extensionPointId is required");
       }
 
-      const extension: Except<
+      const modComponent: Except<
         ActivatedModComponent,
         "_unresolvedModComponentBrand"
       > = {
@@ -317,25 +321,24 @@ const extensionsSlice = createSlice({
         optionsArgs,
         integrationDependencies,
         config,
-        createTimestamp,
-        updateTimestamp: timestamp,
+        // We are unfortunately not rehydrating the createTimestamp properly from the server, so in most cases the
+        // createTimestamp saved in Redux won't match the timestamp on the server. This is OK for now because
+        // we don't use the exact value of createTimestamp for the time being.
+        // See https://github.com/pixiebrix/pixiebrix-extension/pull/7229 for more context
+        createTimestamp: updateTimestamp,
+        updateTimestamp,
         active: true,
       };
 
-      assertModComponentNotResolved(extension);
-
-      if (pushToCloud && !_deployment) {
-        // In the future, we'll want to make the Redux action async. For now, just fail silently in the interface
-        void saveUserExtension(extension);
-      }
+      assertModComponentNotResolved(modComponent);
 
       const index = state.extensions.findIndex((x) => x.id === id);
 
       if (index >= 0) {
         // eslint-disable-next-line security/detect-object-injection -- array index from findIndex
-        state.extensions[index] = extension;
+        state.extensions[index] = modComponent;
       } else {
-        state.extensions.push(extension);
+        state.extensions.push(modComponent);
       }
     },
     updateExtension(
