@@ -76,7 +76,6 @@ const { reducer: editorReducer, actions: editorActions } = editorSlice;
 // eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const locateAllForService = locator.locateAllForService.bind(locator);
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
 
 async function setExtensionsState(state: ModComponentState): Promise<void> {

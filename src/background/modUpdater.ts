@@ -43,7 +43,6 @@ import {
 import type { ModComponentState } from "@/store/extensionsTypes";
 import { uninstallContextMenu } from "@/background/contextMenus";
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
 type ActivatedModState = {
