@@ -217,7 +217,6 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
     const containerPromise = awaitElementOnce(
       selector,
-      undefined,
       this.cancelController.signal,
     );
 

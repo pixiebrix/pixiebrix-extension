@@ -561,7 +561,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     // Await for the element(s) to appear on the page so that we can
     const rootPromise = isEmpty(rootSelector)
       ? document
-      : awaitElementOnce(rootSelector, undefined, this.abortController.signal);
+      : awaitElementOnce(rootSelector, this.abortController.signal);
 
     try {
       await rootPromise;

@@ -98,8 +98,8 @@ async function mutationSelector(
  */
 export async function awaitElementOnce(
   selector: string | readonly string[],
-  $root: JQuery<HTMLElement | Document> = $(document),
   signal?: AbortSignal,
+  $root: JQuery<HTMLElement | Document> = $(document),
 ): Promise<JQuery<HTMLElement | Document>> {
   if (selector == null) {
     throw new Error("awaitElementOnce expected selector");
@@ -143,14 +143,14 @@ export async function awaitElementOnce(
 
     console.debug(`awaitElementOnce: found selector: ${nextSelector}`);
 
-    return awaitElementOnce(selectors, $nextElement, signal);
+    return awaitElementOnce(selectors, signal, $nextElement);
   }
 
   if (selectors.length === 0) {
     return $elements;
   }
 
-  return awaitElementOnce(selectors, $elements, signal);
+  return awaitElementOnce(selectors, signal, $elements);
 }
 
 /**

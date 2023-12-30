@@ -515,7 +515,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
     const menuPromise = awaitElementOnce(
       containerSelector,
-      undefined,
       this.cancelController.signal,
     );
 
@@ -808,7 +807,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         } else {
           void awaitElementOnce(
             dependency,
-            undefined,
             abortController.signal,
             // eslint-disable-next-line promise/prefer-await-to-then -- TODO: Maybe refactor
           ).then(() => {

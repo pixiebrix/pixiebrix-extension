@@ -81,14 +81,14 @@ export async function awaitElement({
   abortSignal?: AbortSignal;
 }): Promise<JQuery<HTMLElement | Document>> {
   if (maxWaitMillis === 0) {
-    return awaitElementOnce(selector, $root, abortSignal);
+    return awaitElementOnce(selector, abortSignal, $root);
   }
 
   const timeout = AbortSignal.timeout(maxWaitMillis);
   const element = await awaitElementOnce(
     selector,
-    $root,
     mergeSignals(abortSignal, timeout),
+    $root,
   );
 
   if (timeout.aborted) {
