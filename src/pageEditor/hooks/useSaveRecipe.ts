@@ -38,7 +38,7 @@ import {
 } from "@/pageEditor/panes/save/saveHelpers";
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
-import useUpsertFormElement from "@/pageEditor/hooks/useUpsertFormElement";
+import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { reactivateEveryTab } from "@/background/messenger/api";
@@ -55,7 +55,7 @@ type RecipeSaver = {
 
 function useSaveRecipe(): RecipeSaver {
   const dispatch = useDispatch();
-  const create = useUpsertFormElement();
+  const upsertModComponentFormState = useUpsertModComponentFormState();
   const {
     data: recipes,
     isLoading: isRecipesLoading,
@@ -154,7 +154,7 @@ function useSaveRecipe(): RecipeSaver {
     // Don't push to cloud since we're saving it with the recipe
     await Promise.all(
       dirtyRecipeElements.map(async (element) =>
-        create({
+        upsertModComponentFormState({
           element,
           options: {
             pushToCloud: false,
