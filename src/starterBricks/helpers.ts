@@ -24,7 +24,7 @@ import {
 } from "@/types/modComponentTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { $safeFind } from "@/utils/domUtils";
-import { onAbort } from "@/utils/promiseUtils";
+import { onAbort } from "abort-utils";
 
 /**
  * Attach a callback to be called when a node is removed from the DOM

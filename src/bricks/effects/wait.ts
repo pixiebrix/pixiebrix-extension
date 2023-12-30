@@ -26,7 +26,7 @@ import {
   type SelectorRoot,
 } from "@/types/runtimeTypes";
 import { sleep } from "@/utils/timeUtils";
-import { mergeSignals } from "@/utils/promiseUtils";
+import { mergeSignals } from "abort-utils";
 
 export class WaitEffect extends EffectABC {
   constructor() {

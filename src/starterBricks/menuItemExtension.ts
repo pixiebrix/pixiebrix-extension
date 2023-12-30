@@ -86,7 +86,7 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/utils/domUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
-import { onAbort } from "@/utils/promiseUtils";
+import { onAbort } from "abort-utils";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
