@@ -54,6 +54,10 @@ jobs:
             CHROME_MANIFEST_KEY: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhYpgz6Nt3vv5n3d8jyrsWXjkvAxh7bz8WJW05RFrtJx9t0BiVVclO+WpAmhKanB2BiTDw4+Dnlf2lQfTo62LIBnkfTiGzukKqTu3plF0D/Tl/yG1st1xKaQ6dekeThcsgxrFD8+kIUwF4Vq0wPpQ5upl+vf6kX4t9eDev8Eg86mHzUEG/QoS/bu5evN3I1Z0HsiF84VWlrV0b/1GSqpn+dMrFFdcwo2Sn0Ec65nSNfzauDUm5n0NToQ8iYdHkuottREXKJ7/Uy4tO0eMmfokVixbm0i2m9aHEOior5CmNG9X/yGtR2CiM1N4DSEY5mTFu5hPOrALspJ+t7+Is7YnFwIDAQAB
           - MV: 3
             PUBLIC_NAME: "-mv3"
+        # TODO: Add `CHROME_MANIFEST_KEY` for MV3 above; remove `exclude` below
+        exclude:
+          - INSTALL_TYPE: production
+            MV: 3
 
     name: build-${{ matrix.INSTALL_TYPE }}${{ matrix.PUBLIC_NAME }}
     env:
