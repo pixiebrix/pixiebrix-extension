@@ -50,6 +50,7 @@ async function traceNavigation(target: Target): Promise<void> {
 // Some sites use the hash to encode page state (e.g., filters). There are some non-navigation scenarios where the hash
 // could change frequently (e.g., there is a timer in the state). Debounce to avoid overloading the messenger and
 // contentScript.
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const debouncedTraceNavigation = debounce(traceNavigation, 100, {
   leading: true,
   trailing: true,

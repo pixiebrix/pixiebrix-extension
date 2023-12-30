@@ -20,25 +20,25 @@
  * TODO: It's not yet using the Messenger: https://github.com/pixiebrix/webext-messenger/issues/6
  */
 
-import { _liftBackground } from "@/background/externalProtocol";
+import { _liftBackground as liftExternal } from "@/background/externalProtocol";
 import * as local from "@/background/messenger/external/_implementation";
-// eslint-disable-next-line import/no-restricted-paths -- Legacy code, needs https://github.com/pixiebrix/webext-messenger/issues/6
-import { liftExternalToContentScript } from "@/contentScript/externalProtocol";
-import { isChrome } from "webext-detect-page";
-import { type SerializableResponse } from "@/types/messengerTypes";
 import { readPartnerAuthData } from "@/auth/token";
 
-const liftExternal = isChrome()
-  ? // Chrome can communicate directly via the standard chrome.runtime.sendMessage API.
-    _liftBackground
-  : // Firefox doesn't support web-to-background communication, so it must be travel via the content script.
-    <TArguments extends unknown[], R extends SerializableResponse>(
-      type: string,
-      method: (...args: TArguments) => Promise<R>,
-    ) => {
-      const liftedToBackground = _liftBackground(`BACKGROUND_${type}`, method);
-      return liftExternalToContentScript(type, liftedToBackground);
-    };
+// Disabled for now because we don't support Firefox
+// import { liftExternalToContentScript } from "@/contentScript/externalProtocol";
+// import { isChrome } from "webext-detect-page";
+// import { type SerializableResponse } from "@/types/messengerTypes";
+// const liftExternal = isChrome()
+//   ? // Chrome can communicate directly via the standard chrome.runtime.sendMessage API.
+//     _liftBackground
+//   : // Firefox doesn't support web-to-background communication, so it must be travel via the content script.
+//     <TArguments extends unknown[], R extends SerializableResponse>(
+//       type: string,
+//       method: (...args: TArguments) => Promise<R>,
+//     ) => {
+//       const liftedToBackground = _liftBackground(`BACKGROUND_${type}`, method);
+//       return liftExternalToContentScript(type, liftedToBackground);
+//     };
 
 export const connectPage = liftExternal("CONNECT_PAGE", async () =>
   browser.runtime.getManifest(),

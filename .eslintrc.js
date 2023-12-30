@@ -125,6 +125,16 @@ module.exports = {
       },
     },
     {
+      files: [
+        // background folder
+        "./src/background/**",
+      ],
+      excludedFiles: ["**/*.test.*"],
+      rules: {
+        "local-rules/persistBackgroundData": "error",
+      },
+    },
+    {
       // Settings for regular ts files that should only apply to react component rests
       files: ["**/!(*.test)*.ts?(x)", "**/*.ts"],
       rules: {

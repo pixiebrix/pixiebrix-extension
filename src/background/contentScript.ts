@@ -27,12 +27,14 @@ import {
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { type Runtime } from "webextension-polyfill";
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const debug = console.debug.bind(console, "ensureContentScript:");
 
 /**
  * @see makeSenderKey
  * @see makeTargetKey
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- promises would be lost on recycle anyway
 const targetReadyPromiseMap = new Map<string, DeferredPromise<Event>>();
 
 export function makeSenderKey(sender: Runtime.MessageSender): string {
