@@ -55,6 +55,10 @@ const renderDataPanel = () => {
 const reportEventMock = jest.mocked(reportEvent);
 
 describe("DataPanel", () => {
+  beforeEach(() => {
+    reportEventMock.mockClear();
+  });
+
   test("it renders with form state and trace data", async () => {
     const { asFragment } = renderDataPanel();
     await waitForEffect();
