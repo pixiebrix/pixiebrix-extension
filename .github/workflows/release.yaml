@@ -10,6 +10,17 @@ env:
   PUBLIC_RELEASE: true
 
 jobs:
+  notify:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: release-notifications
+          SLACK_MESSAGE: "Chrome release build succeeded :rocket:"
+
   build:
     runs-on: ubuntu-latest
 
@@ -65,10 +76,3 @@ jobs:
             !dist/**/*.map
           retention-days: 30
           if-no-files-found: error
-      - name: Slack Notification
-        if: matrix.INSTALL_TYPE == 'for-store' && matrix.MV == 2
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_CHANNEL: "release-notifications"
-          SLACK_MESSAGE: "Chrome release build succeeded :rocket:"
