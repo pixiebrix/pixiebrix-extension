@@ -29,25 +29,30 @@ import { formStateWithTraceDataFactory } from "@/testUtils/factories/pageEditorF
 // Need at least one item so callers see the registry as initialized
 bricksRegistry.register([echoBrick]);
 
+const renderDataPanel = () => {
+  const { formState, records } = formStateWithTraceDataFactory();
+  const extensionId = formState.uuid;
+  const { instanceId } = formState.extension.blockPipeline[1];
+
+  return render(<DataPanel />, {
+    initialValues: formState,
+    setupRedux(dispatch) {
+      dispatch(editorActions.addElement(formState));
+      dispatch(editorActions.selectElement(formState.uuid));
+      dispatch(
+        runtimeSlice.actions.setExtensionTrace({ extensionId, records }),
+      );
+      dispatch(editorActions.setElementActiveNodeId(instanceId));
+      dispatch(
+        editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Context),
+      );
+    },
+  });
+};
+
 describe("DataPanel", () => {
   test("it renders with form state and trace data", async () => {
-    const { formState, records } = formStateWithTraceDataFactory();
-    const extensionId = formState.uuid;
-    const { instanceId } = formState.extension.blockPipeline[1];
-    const { asFragment } = render(<DataPanel />, {
-      initialValues: formState,
-      setupRedux(dispatch) {
-        dispatch(editorActions.addElement(formState));
-        dispatch(editorActions.selectElement(formState.uuid));
-        dispatch(
-          runtimeSlice.actions.setExtensionTrace({ extensionId, records }),
-        );
-        dispatch(editorActions.setElementActiveNodeId(instanceId));
-        dispatch(
-          editorActions.setNodeDataPanelTabSelected(DataPanelTabKey.Context),
-        );
-      },
-    });
+    const { asFragment } = renderDataPanel();
     await waitForEffect();
 
     expect(asFragment()).toMatchSnapshot();

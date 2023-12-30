@@ -163,7 +163,7 @@ const DataPanel: React.FC = () => {
   );
 
   useEffect(() => {
-    reportEvent(Events.DATA_PANEL_TAB_SELECT, {
+    reportEvent(Events.DATA_PANEL_TAB_VIEW, {
       modId: activeElement.recipe?.id,
       brickId,
       activeTabKey,
