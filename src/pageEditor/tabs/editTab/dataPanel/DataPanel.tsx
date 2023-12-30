@@ -166,7 +166,7 @@ const DataPanel: React.FC = () => {
     reportEvent(Events.DATA_PANEL_TAB_VIEW, {
       modId: activeElement.recipe?.id,
       brickId,
-      activeTabKey,
+      tabName: activeTabKey,
     });
   }, [activeTabKey]);
 
