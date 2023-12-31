@@ -17,10 +17,6 @@
 
 import { type Manifest, type Permissions } from "webextension-polyfill";
 import { castArray, cloneDeep, remove, uniq } from "lodash";
-import {
-  containsPermissions,
-  openPopupPrompt,
-} from "@/background/messenger/api";
 import { isScriptableUrl } from "webext-content-scripts";
 import { isUrlPermittedByManifest } from "webext-additional-permissions";
 import {
@@ -151,30 +147,7 @@ async function requestPermissionsFromUserGesture(
     remove(permissions.origins, (origin) => isUrlPermittedByManifest(origin));
   }
 
-  // Make request on Chromium. Doesn't show a popup if the permissions already exist.
-  if (browser.permissions) {
-    return browser.permissions.request(permissions);
-  }
-
-  // On Firefox, first check if the permissions already exist to avoid showing the popup.
-  if (await containsPermissions(permissions)) {
-    return true;
-  }
-
-  const page = new URL(browser.runtime.getURL("permissionsPopup.html"));
-  for (const origin of permissions.origins ?? []) {
-    page.searchParams.append("origin", origin);
-  }
-
-  for (const permission of permissions.permissions ?? []) {
-    page.searchParams.append("permission", permission);
-  }
-
-  // TODO: This only works in the Dev Tools; We should query the current or front-most window
-  //  when this is missing in order to make it work in other contexts as well
-  const { tabId } = browser.devtools.inspectedWindow;
-  await openPopupPrompt(tabId, page.toString());
-  return containsPermissions(permissions);
+  return browser.permissions.request(permissions);
 }
 
 /**

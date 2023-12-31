@@ -118,7 +118,6 @@ const createConfig = (env, options) =>
         "tinyPages/ephemeralForm",
         "tinyPages/walkthroughModal",
         "tinyPages/ephemeralPanel",
-        "tinyPages/permissionsPopup",
         "tinyPages/restrictedUrlPopup",
 
         // Tiny files without imports
