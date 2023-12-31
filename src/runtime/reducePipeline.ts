@@ -82,6 +82,7 @@ import { type Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 let brickRegistry: RegistryProtocol<RegistryId, Brick> = {
   async lookup(): Promise<Brick> {
     throw new Error(

@@ -319,7 +319,6 @@ async function flush(): Promise<void> {
   }
 }
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const debouncedFlush = debounce(flush, EVENT_BUFFER_DEBOUNCE_MS, {
   trailing: true,
   leading: false,

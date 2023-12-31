@@ -159,6 +159,7 @@ export type MenuItemStarterBrickConfig = {
   onSuccess?: MessageConfig | boolean;
 };
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const actionSchema: Schema = {
   oneOf: [
     { $ref: "https://app.pixiebrix.com/schemas/effect#" },
@@ -167,7 +168,7 @@ const actionSchema: Schema = {
       items: { $ref: "https://app.pixiebrix.com/schemas/block#" },
     },
   ],
-};
+} as const;
 
 async function cancelOnNavigation<T>(promise: Promise<T>): Promise<T> {
   // XXX: should introduce abortable promises listening for navigation vs. checking functions that compares

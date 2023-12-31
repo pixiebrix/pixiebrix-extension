@@ -106,6 +106,7 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
  * The singleton brick registry instance
  * @see initRuntime
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const registry = new BrickRegistry();
 
 export default registry;

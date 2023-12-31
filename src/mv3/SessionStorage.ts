@@ -27,8 +27,10 @@ import { type JsonValue } from "type-fest";
 import { type ManualStorageKey } from "@/utils/storageUtils";
 
 // Just like chrome.storage.session, this must be "global"
+// eslint-disable-next-line local-rules/persistBackgroundData -- MV2-only
 const storage = new Map<ManualStorageKey, JsonValue>();
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const hasSession = "session" in chrome.storage;
 
 /**

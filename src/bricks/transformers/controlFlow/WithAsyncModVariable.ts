@@ -37,6 +37,7 @@ import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
 /**
  * Map to keep track of the current execution nonce for each Mod Variable. Used to ignore stale request results.
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const modVariableNonces = new Map<string, UUID>();
 
 /**

@@ -26,7 +26,6 @@ const promises: SharedPromise[] = [];
 
 // TODO: use https://github.com/sindresorhus/p-memoize#caching-strategy because we will want to use
 //  the library in some other places too. We'll need to define a custom key method
-
 async function cachePromise<T = unknown>(
   dependencies: unknown[],
   defaultFactory: () => Promise<T>,

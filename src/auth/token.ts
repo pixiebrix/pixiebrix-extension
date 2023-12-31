@@ -39,6 +39,8 @@ const partnerTokenStorage = new StorageItem("partnerToken", {
 
 type AuthListener = (auth: Partial<TokenAuthData>) => void;
 
+// TODO: Use SimpleEventTarget instead
+// eslint-disable-next-line local-rules/persistBackgroundData -- Functions
 const listeners = new Set<AuthListener>();
 
 // Use listeners to allow inversion of control and avoid circular dependency with rollbar.

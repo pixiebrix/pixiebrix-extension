@@ -52,9 +52,11 @@ export type RegisteredPanel = {
 
 export type PlaceholderPanel = SetOptional<RegisteredPanel, "entry">;
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const panels = new Map<UUID, RegisteredPanel | PlaceholderPanel>();
 
 // Mapping from extensionId to active panel nonces
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const extensionNonces = new Map<UUID, Set<UUID>>();
 
 /**

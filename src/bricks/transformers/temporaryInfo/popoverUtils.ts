@@ -51,9 +51,11 @@ type PopoverOptions = {
 /**
  * Pool of available popovers that can be re-used to avoid frame cold-start.
  */
+/* eslint-disable local-rules/persistBackgroundData -- Unused there */
 const popoverPool: HTMLElement[] = [];
 const popperMap = new WeakMap<HTMLElement, PopperInstance>();
 const resizerMap = new WeakMap<HTMLElement, IFrameComponent>();
+/* eslint-enable local-rules/persistBackgroundData */
 
 /**
  * Creates a new popover toolip/frame, or reuses an existing one.

@@ -22,6 +22,8 @@ import { getReloadOnNextNavigate } from "@/contentScript/ready";
 
 type MenuHandler = (args: Menus.OnClickData) => Promise<void>;
 
+// TODO: Replace with `SimpleEventTarget` (e.g. target.emit(extensionId))
+// eslint-disable-next-line local-rules/persistBackgroundData -- Functions
 const handlers = new Map<UUID, MenuHandler>();
 
 /**
