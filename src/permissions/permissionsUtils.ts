@@ -29,42 +29,11 @@ import {
   type PermissionsStatus,
 } from "@/permissions/permissionsTypes";
 
-// Copied from the `permissions` section of manifest.json for required permissions
-const MANDATORY_PERMISSIONS = new Set([
-  "activeTab",
-  "storage",
-  "identity",
-  "tabs",
-  "webNavigation",
-  "contextMenus",
-]);
-
 /**
  * Returns an empty-set of permissions.
  */
 export function emptyPermissionsFactory(): Required<Permissions.Permissions> {
   return { origins: [], permissions: [] };
-}
-
-/**
- * Exclude MANDATORY_PERMISSIONS that were already granted on install. Firefox errors when you request a permission
- * that's in the permissions, but not the optional_permissions
- */
-function normalizeOptionalPermissions(
-  permissions: Permissions.Permissions,
-): Required<Permissions.Permissions> {
-  if (permissions == null) {
-    return emptyPermissionsFactory();
-  }
-
-  return {
-    origins: uniq(castArray(permissions.origins ?? [])),
-    permissions: uniq(
-      castArray(permissions.permissions ?? []).filter(
-        (permission) => !MANDATORY_PERMISSIONS.has(permission),
-      ),
-    ),
-  };
 }
 
 /** Filters to only include permissions that are part of `optional_permissions` */
@@ -121,31 +90,6 @@ export async function ensurePermissionsFromUserGesture(
   const permissions = isPermissionsStatus(permissionsOrStatus)
     ? permissionsOrStatus.permissions
     : permissionsOrStatus;
-
-  // `normalize` to ensure the request will succeed on Firefox. See normalizeOptionalPermissions
-  return requestPermissionsFromUserGesture(
-    normalizeOptionalPermissions(permissions),
-  );
-}
-
-/**
- * An alternative API to permissions.request() that works in Firefox’s Dev Tools.
- * @see ensurePermissionsFromUserGesture
- */
-async function requestPermissionsFromUserGesture(
-  permissions: Permissions.Permissions,
-): Promise<boolean> {
-  // TODO: Make requestPermissionsFromUserGesture work in contentScripts, or any context that doesn't have the extension API
-
-  // We're going to alter this object so we should clone it
-  permissions = cloneDeep(permissions);
-
-  // Don't request permissions for pixiebrix.com, the browser will always show a prompt.
-  // We can't use `await browser.permissions.contains()` before `request() `because we might lose the "user action" flag
-  // https://github.com/pixiebrix/pixiebrix-extension/issues/1759
-  if (Array.isArray(permissions.origins)) {
-    remove(permissions.origins, (origin) => isUrlPermittedByManifest(origin));
-  }
 
   return browser.permissions.request(permissions);
 }
