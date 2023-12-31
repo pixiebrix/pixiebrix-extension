@@ -25,7 +25,7 @@ import {
   getTargetState,
 } from "@/contentScript/ready";
 import { injectContentScript } from "webext-content-scripts";
-import { getAdditionalPermissions } from "webext-additional-permissions";
+import { queryAdditionalPermissions } from "webext-permissions";
 import pDefer from "p-defer";
 import { setContext } from "@/testUtils/detectPageMock";
 
@@ -45,14 +45,14 @@ jest.mock("webext-content-scripts", () => ({
     .mockRejectedValue(new Error("Not Implemented")),
 }));
 
-jest.mock("webext-additional-permissions", () => ({
-  getAdditionalPermissions: jest.fn().mockResolvedValue({ origins: [] }),
+jest.mock("webext-permissions", () => ({
+  queryAdditionalPermissions: jest.fn().mockResolvedValue({ origins: [] }),
 }));
 
 let messageListener: any;
 
 const addListenerMock = browser.runtime.onMessage.addListener as jest.Mock;
-const getAdditionalPermissionsMock = jest.mocked(getAdditionalPermissions);
+const queryAdditionalPermissionsMock = jest.mocked(queryAdditionalPermissions);
 const getTargetStateMock = jest.mocked(getTargetState);
 const injectContentScriptMock = jest.mocked(injectContentScript);
 
@@ -109,7 +109,7 @@ describe("ensureContentScript", () => {
       ready: false,
     });
 
-    getAdditionalPermissionsMock.mockResolvedValue({
+    queryAdditionalPermissionsMock.mockResolvedValue({
       origins: [],
       permissions: [],
     });
@@ -157,7 +157,7 @@ describe("ensureContentScript", () => {
       ready: false,
     });
 
-    getAdditionalPermissionsMock.mockResolvedValue({
+    queryAdditionalPermissionsMock.mockResolvedValue({
       origins: ["https://www.example.com/*"],
       permissions: [],
     });
