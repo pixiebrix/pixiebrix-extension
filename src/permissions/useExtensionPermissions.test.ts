@@ -17,7 +17,7 @@
 
 import { renderHook } from "@testing-library/react-hooks";
 import useExtensionPermissions from "./useExtensionPermissions";
-import { selectAdditionalPermissionsSync } from "webext-additional-permissions";
+import { extractAdditionalPermissions } from "webext-permissions";
 import {
   loadingAsyncStateFactory,
   valueToAsyncState,
@@ -25,11 +25,11 @@ import {
 import { setPermissions } from "@/testUtils/permissionsMock";
 import { INTERNAL_reset } from "@/hooks/useAsyncExternalStore";
 
-const selectAdditionalMock = jest.mocked(selectAdditionalPermissionsSync);
+const selectAdditionalMock = jest.mocked(extractAdditionalPermissions);
 
-jest.mock("webext-additional-permissions", () => ({
-  ...jest.requireActual("webext-additional-permissions"),
-  selectAdditionalPermissionsSync: jest.fn(),
+jest.mock("webext-permissions", () => ({
+  ...jest.requireActual("webext-permissions"),
+  extractAdditionalPermissions: jest.fn(),
 }));
 
 const manifestPermission = "https://p.com/*";
