@@ -18,6 +18,7 @@
 import { type Manifest, type Permissions } from "webextension-polyfill";
 import { uniq } from "lodash";
 import { isScriptableUrl } from "webext-content-scripts";
+import { extractAdditionalPermissions } from "webext-permissions";
 import {
   getTabUrl,
   canAccessTab as _canAccessTab,
@@ -90,7 +91,9 @@ export async function ensurePermissionsFromUserGesture(
     ? permissionsOrStatus.permissions
     : permissionsOrStatus;
 
-  return browser.permissions.request(permissions);
+  return browser.permissions.request(
+    extractAdditionalPermissions(permissions) as Permissions.Permissions,
+  );
 }
 
 /**
