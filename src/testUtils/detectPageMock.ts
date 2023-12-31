@@ -15,13 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-type ContextName =
-  | "contentScript"
-  | "background"
-  | "options"
-  | "devToolsPage"
-  | "extension"
-  | "web";
+import { type ContextName } from "webext-detect-page";
 
 let _context: ContextName = "extension";
 
@@ -55,6 +49,10 @@ export function isWeb() {
 
 export function isContentScript() {
   return _context === "contentScript";
+}
+
+export function isSidePanel() {
+  return _context === "sidePanel";
 }
 
 export function getContextName(): ContextName {
