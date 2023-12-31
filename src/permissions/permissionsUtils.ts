@@ -16,9 +16,8 @@
  */
 
 import { type Manifest, type Permissions } from "webextension-polyfill";
-import { castArray, cloneDeep, remove, uniq } from "lodash";
+import { uniq } from "lodash";
 import { isScriptableUrl } from "webext-content-scripts";
-import { isUrlPermittedByManifest } from "webext-additional-permissions";
 import {
   getTabUrl,
   canAccessTab as _canAccessTab,
