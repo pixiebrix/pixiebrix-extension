@@ -36,7 +36,6 @@
     "./background/dataStore.ts",
     "./background/eventUtils.ts",
     "./background/externalProtocol.ts",
-    "./background/firefoxCompat.ts",
     "./background/partnerTheme.ts",
     "./background/webextAlert.ts",
     "./bricks/available.ts",

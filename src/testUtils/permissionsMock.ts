@@ -114,11 +114,6 @@ export function setPermissions(
   extensionPermissions = newPermissions;
 }
 
-// Mock these until we can get a fake/mock registry working for tests
-jest
-  .mocked(backgroundApi.containsPermissions)
-  .mockImplementation(browser.permissions.contains);
-
 jest.mock("@/modDefinitions/modDefinitionPermissionsHelpers", () => {
   const originalModule = jest.requireActual(
     "@/modDefinitions/modDefinitionPermissionsHelpers",

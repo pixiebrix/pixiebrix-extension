@@ -141,7 +141,7 @@ async function requestPermissionsFromUserGesture(
   permissions = cloneDeep(permissions);
 
   // Don't request permissions for pixiebrix.com, the browser will always show a prompt.
-  // We can't use `await containsPermissions()` before `request() `because we might lose the "user action" flag
+  // We can't use `await browser.permissions.contains()` before `request() `because we might lose the "user action" flag
   // https://github.com/pixiebrix/pixiebrix-extension/issues/1759
   if (Array.isArray(permissions.origins)) {
     remove(permissions.origins, (origin) => isUrlPermittedByManifest(origin));
