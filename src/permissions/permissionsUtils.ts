@@ -22,7 +22,7 @@ import {
   openPopupPrompt,
 } from "@/background/messenger/api";
 import { isScriptableUrl } from "webext-content-scripts";
-import { isUrlPermittedByManifest } from "webext-additional-permissions";
+import { isUrlPermittedByManifest } from "webext-permissions";
 import {
   getTabUrl,
   canAccessTab as _canAccessTab,
