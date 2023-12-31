@@ -17,7 +17,6 @@
 
 import { type Permissions } from "webextension-polyfill";
 import { remove } from "lodash";
-import * as backgroundApi from "@/background/messenger/api";
 
 // Permissions from the manifest.json
 const initialPermissions: Permissions.AnyPermissions = {
