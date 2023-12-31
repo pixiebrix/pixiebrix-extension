@@ -22,6 +22,7 @@ type SharedPromise<T = unknown> = {
   promise: Promise<T>;
 };
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Short-lived
 const promises: SharedPromise[] = [];
 
 // TODO: use https://github.com/sindresorhus/p-memoize#caching-strategy because we will want to use
