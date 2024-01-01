@@ -25,7 +25,6 @@ import {
   ensurePermissionsFromUserGesture,
   mergePermissions,
 } from "@/permissions/permissionsUtils";
-import { containsPermissions } from "@/background/messenger/api";
 import { isEmpty } from "lodash";
 import { type Permissions } from "webextension-polyfill";
 import extensionPointRegistry from "@/starterBricks/registry";
@@ -107,7 +106,7 @@ export async function checkModDefinitionPermissions(
   }
 
   return {
-    hasPermissions: await containsPermissions(permissions),
+    hasPermissions: await browser.permissions.contains(permissions),
     permissions,
   };
 }

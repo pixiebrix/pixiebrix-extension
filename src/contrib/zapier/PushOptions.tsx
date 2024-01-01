@@ -24,10 +24,7 @@ import { type Webhook } from "@/contrib/zapier/contract";
 import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import { getBaseURL } from "@/services/baseService";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";
-import {
-  containsPermissions,
-  performConfiguredRequestInBackground,
-} from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import AsyncButton from "@/components/AsyncButton";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
@@ -101,7 +98,7 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
   const permissionsState = useExtensionPermissions();
 
   const [hasPermissions] = useAsyncState(
-    async () => containsPermissions(ZAPIER_PERMISSIONS),
+    async () => browser.permissions.contains(ZAPIER_PERMISSIONS),
     [permissionsState],
   );
 

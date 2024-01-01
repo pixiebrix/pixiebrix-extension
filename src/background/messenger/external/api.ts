@@ -24,22 +24,6 @@ import { _liftBackground as liftExternal } from "@/background/externalProtocol";
 import * as local from "@/background/messenger/external/_implementation";
 import { readPartnerAuthData } from "@/auth/token";
 
-// Disabled for now because we don't support Firefox
-// import { liftExternalToContentScript } from "@/contentScript/externalProtocol";
-// import { isChrome } from "webext-detect-page";
-// import { type SerializableResponse } from "@/types/messengerTypes";
-// const liftExternal = isChrome()
-//   ? // Chrome can communicate directly via the standard chrome.runtime.sendMessage API.
-//     _liftBackground
-//   : // Firefox doesn't support web-to-background communication, so it must be travel via the content script.
-//     <TArguments extends unknown[], R extends SerializableResponse>(
-//       type: string,
-//       method: (...args: TArguments) => Promise<R>,
-//     ) => {
-//       const liftedToBackground = _liftBackground(`BACKGROUND_${type}`, method);
-//       return liftExternalToContentScript(type, liftedToBackground);
-//     };
-
 export const connectPage = liftExternal("CONNECT_PAGE", async () =>
   browser.runtime.getManifest(),
 );

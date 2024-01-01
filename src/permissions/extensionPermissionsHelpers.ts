@@ -23,7 +23,6 @@ import { castArray, compact } from "lodash";
 import { mergePermissions } from "@/permissions/permissionsUtils";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { collectIntegrationOriginPermissions } from "@/integrations/util/permissionsHelpers";
-import { containsPermissions } from "@/background/messenger/api";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 
 type PermissionOptions = {
@@ -107,6 +106,6 @@ export async function checkExtensionPermissions(
 
   return {
     permissions,
-    hasPermissions: await containsPermissions(permissions),
+    hasPermissions: await browser.permissions.contains(permissions),
   };
 }

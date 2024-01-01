@@ -16,13 +16,9 @@
  */
 
 import { type Manifest, type Permissions } from "webextension-polyfill";
-import { castArray, cloneDeep, remove, uniq } from "lodash";
-import {
-  containsPermissions,
-  openPopupPrompt,
-} from "@/background/messenger/api";
+import { uniq } from "lodash";
 import { isScriptableUrl } from "webext-content-scripts";
-import { isUrlPermittedByManifest } from "webext-permissions";
+import { extractAdditionalPermissions } from "webext-permissions";
 import {
   getTabUrl,
   canAccessTab as _canAccessTab,
@@ -33,42 +29,11 @@ import {
   type PermissionsStatus,
 } from "@/permissions/permissionsTypes";
 
-// Copied from the `permissions` section of manifest.json for required permissions
-const MANDATORY_PERMISSIONS = new Set([
-  "activeTab",
-  "storage",
-  "identity",
-  "tabs",
-  "webNavigation",
-  "contextMenus",
-]);
-
 /**
  * Returns an empty-set of permissions.
  */
 export function emptyPermissionsFactory(): Required<Permissions.Permissions> {
   return { origins: [], permissions: [] };
-}
-
-/**
- * Exclude MANDATORY_PERMISSIONS that were already granted on install. Firefox errors when you request a permission
- * that's in the permissions, but not the optional_permissions
- */
-function normalizeOptionalPermissions(
-  permissions: Permissions.Permissions,
-): Required<Permissions.Permissions> {
-  if (permissions == null) {
-    return emptyPermissionsFactory();
-  }
-
-  return {
-    origins: uniq(castArray(permissions.origins ?? [])),
-    permissions: uniq(
-      castArray(permissions.permissions ?? []).filter(
-        (permission) => !MANDATORY_PERMISSIONS.has(permission),
-      ),
-    ),
-  };
 }
 
 /** Filters to only include permissions that are part of `optional_permissions` */
@@ -126,55 +91,9 @@ export async function ensurePermissionsFromUserGesture(
     ? permissionsOrStatus.permissions
     : permissionsOrStatus;
 
-  // `normalize` to ensure the request will succeed on Firefox. See normalizeOptionalPermissions
-  return requestPermissionsFromUserGesture(
-    normalizeOptionalPermissions(permissions),
+  return browser.permissions.request(
+    extractAdditionalPermissions(permissions) as Permissions.Permissions,
   );
-}
-
-/**
- * An alternative API to permissions.request() that works in Firefox’s Dev Tools.
- * @see ensurePermissionsFromUserGesture
- */
-async function requestPermissionsFromUserGesture(
-  permissions: Permissions.Permissions,
-): Promise<boolean> {
-  // TODO: Make requestPermissionsFromUserGesture work in contentScripts, or any context that doesn't have the extension API
-
-  // We're going to alter this object so we should clone it
-  permissions = cloneDeep(permissions);
-
-  // Don't request permissions for pixiebrix.com, the browser will always show a prompt.
-  // We can't use `await containsPermissions()` before `request() `because we might lose the "user action" flag
-  // https://github.com/pixiebrix/pixiebrix-extension/issues/1759
-  if (Array.isArray(permissions.origins)) {
-    remove(permissions.origins, (origin) => isUrlPermittedByManifest(origin));
-  }
-
-  // Make request on Chromium. Doesn't show a popup if the permissions already exist.
-  if (browser.permissions) {
-    return browser.permissions.request(permissions);
-  }
-
-  // On Firefox, first check if the permissions already exist to avoid showing the popup.
-  if (await containsPermissions(permissions)) {
-    return true;
-  }
-
-  const page = new URL(browser.runtime.getURL("permissionsPopup.html"));
-  for (const origin of permissions.origins ?? []) {
-    page.searchParams.append("origin", origin);
-  }
-
-  for (const permission of permissions.permissions ?? []) {
-    page.searchParams.append("permission", permission);
-  }
-
-  // TODO: This only works in the Dev Tools; We should query the current or front-most window
-  //  when this is missing in order to make it work in other contexts as well
-  const { tabId } = browser.devtools.inspectedWindow;
-  await openPopupPrompt(tabId, page.toString());
-  return containsPermissions(permissions);
 }
 
 /**
