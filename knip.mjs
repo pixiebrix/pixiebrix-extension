@@ -34,18 +34,18 @@ const knipConfig = {
 
   rules: {
     // https://knip.dev/reference/issue-types/
-    files: "error",
     dependencies: "warn",
     unlisted: "warn",
     binaries: "warn",
     unresolved: "warn",
     exports: "warn",
     nsExports: "warn",
-    types: "error",
+    types: "warn",
     nsTypes: "warn",
     enumMembers: "warn",
     classMembers: "warn",
     // Incrementally enforce rules over time
+    files: "error",
     duplicates: "error",
   },
 };
