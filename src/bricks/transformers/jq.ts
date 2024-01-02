@@ -81,7 +81,6 @@ export class JQTransformer extends TransformerABC {
       "@pixiebrix/jq",
       "jq - JSON processor",
       "Apply a jq expression: https://stedolan.github.io/jq/",
-      "faCode",
     );
   }
 

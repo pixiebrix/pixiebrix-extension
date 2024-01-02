@@ -27,7 +27,6 @@ export class Prompt extends TransformerABC {
       "@pixiebrix/prompt",
       "Prompt for input",
       "Show a browser prompt for a single input",
-      "faCode",
     );
   }
 

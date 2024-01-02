@@ -43,7 +43,6 @@ export class RegexTransformer extends TransformerABC {
       "@pixiebrix/regex",
       "Regex Extractor",
       "Extract data using a Regex (regular expression)",
-      "faCode",
     );
   }
 

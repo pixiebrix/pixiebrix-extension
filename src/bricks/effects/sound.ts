@@ -26,7 +26,6 @@ export class SoundEffect extends EffectABC {
       "@pixiebrix/audio",
       "Play Sound Effect",
       "Play a built-in sound effect",
-      "faPlay",
     );
   }
 

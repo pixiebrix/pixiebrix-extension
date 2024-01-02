@@ -62,7 +62,6 @@ export class FormTransformer extends TransformerABC {
       FormTransformer.BLOCK_ID,
       "Show a modal or sidebar form",
       "Show a form as a modal or in the sidebar, and return the input",
-      "faCode",
     );
   }
 

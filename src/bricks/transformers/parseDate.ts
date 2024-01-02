@@ -53,7 +53,6 @@ export class ParseDate extends TransformerABC {
       "@pixiebrix/parse-date",
       "Parse date",
       "Parse a date string and return multiple formats",
-      "faCalendarDay",
     );
   }
 

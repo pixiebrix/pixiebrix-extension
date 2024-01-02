@@ -156,7 +156,6 @@ export class SearchText extends TransformerABC {
       "@pixiebrix/text/search",
       "Search Text",
       "Search for word and/or phrase(s) in text",
-      "faCode",
     );
   }
 

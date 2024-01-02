@@ -27,7 +27,6 @@ export class Readable extends TransformerABC {
       "@pixiebrix/extract/readable",
       "Extract Article or Readable Content",
       "Extract the article or other readable content from a web page",
-      "faCode",
     );
   }
 

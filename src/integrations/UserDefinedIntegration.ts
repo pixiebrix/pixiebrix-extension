@@ -66,8 +66,8 @@ export class UserDefinedIntegration<
   public readonly version?: SemVerString;
 
   constructor(definition: TDefinition) {
-    const { id, name, description, icon, version } = definition.metadata;
-    super(id, name, description, icon);
+    const { id, name, description, version } = definition.metadata;
+    super(id, name, description);
     this._definition = definition;
     this.schema = this._definition.inputSchema;
     this.uiSchema = this._definition.uiSchema;

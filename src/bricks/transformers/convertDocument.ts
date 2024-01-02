@@ -92,7 +92,6 @@ class ConvertDocument extends TransformerABC {
       "@pixiebrix/convert",
       "Convert Document",
       "Convert between document formats (e.g., HTML to Text)",
-      "faCode",
     );
   }
 

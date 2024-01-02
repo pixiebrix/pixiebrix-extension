@@ -39,7 +39,6 @@ class TraverseElements extends TransformerABC {
       "@pixiebrix/html/traverse",
       "Traverse Elements",
       "Traverse elements in an HTML document using a selector/filter",
-      "faCode",
     );
   }
 

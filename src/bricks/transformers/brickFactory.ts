@@ -149,8 +149,8 @@ class UserDefinedBrick extends BrickABC {
     private readonly registry: BrickRegistryProtocol,
     public readonly component: BrickDefinition,
   ) {
-    const { id, name, description, icon, version } = component.metadata;
-    super(id, name, description, icon);
+    const { id, name, description, version } = component.metadata;
+    super(id, name, description);
     // Fall back to v1 for backward compatability
     this.apiVersion = component.apiVersion ?? "v1";
     this.component = component;
