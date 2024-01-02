@@ -29,6 +29,7 @@ type ProcessDataMap = Record<string, UnknownObject>;
 
 // Must track host data on content script instead of the frame parent because the frame parent might not be attached
 // to the page at the time this data is set.
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const hostData = new Map<string, UnknownObject>();
 
 /**

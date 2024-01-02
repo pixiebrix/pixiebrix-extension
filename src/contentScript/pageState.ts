@@ -22,6 +22,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import { expectContext } from "@/utils/expectContext";
 import { type JsonObject } from "type-fest";
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const extensionState = new Map<UUID, JsonObject>();
 
 type MergeStrategy = "shallow" | "replace" | "deep";
@@ -29,6 +30,7 @@ type MergeStrategy = "shallow" | "replace" | "deep";
 /**
  * The blueprint page state, or null for shared state
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const blueprintState = new Map<RegistryId | null, JsonObject>();
 
 function mergeState(

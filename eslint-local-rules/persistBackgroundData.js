@@ -15,6 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+const ALLOWED_TYPES = [
+  "Literal",
+  "TemplateLiteral",
+  "FunctionExpression",
+  "ArrowFunctionExpression",
+];
+const ALLOWED_CONSTRUCTORS = [
+  "SessionMap",
+  "SessionValue",
+  "StorageItem",
+  "WeakMap",
+];
+const ALLOWED_FUNCTIONS = [
+  "getMethod",
+  "pMemoize",
+  "memoizeUntilSettled",
+  "once",
+  "debounce",
+  "throttle",
+  "getNotifier",
+  "createSelector",
+  "createSlice",
+  "createAsyncThunk",
+  "Boolean",
+];
+
 module.exports = {
   meta: {
     type: "problem",
@@ -33,11 +59,8 @@ module.exports = {
           for (const declaration of node.declarations) {
             const { init, id } = declaration;
             if (
-              [
-                "Literal",
-                "FunctionExpression",
-                "ArrowFunctionExpression",
-              ].includes(init.type)
+              !init || // Exclude "let"
+              ALLOWED_TYPES.includes(init.type)
             ) {
               return;
             }
@@ -45,14 +68,21 @@ module.exports = {
             if (
               init.type === "NewExpression" &&
               init.callee.type === "Identifier" &&
-              ["SessionMap", "SessionValue", "StorageItem"].includes(
-                init.callee.name,
-              )
+              ALLOWED_CONSTRUCTORS.includes(init.callee.name)
             ) {
               return;
             }
 
-            if (id.type === "Identifier" && id.name.toUpperCase() === id.name) {
+            // Ignore `CONSTANTS` and `Components`
+            if (id.type === "Identifier" && /[A-Z]/.test(id.name[0])) {
+              return;
+            }
+
+            if (
+              init.type === "CallExpression" &&
+              init.callee.type === "Identifier" &&
+              ALLOWED_FUNCTIONS.includes(init.callee.name)
+            ) {
               return;
             }
 

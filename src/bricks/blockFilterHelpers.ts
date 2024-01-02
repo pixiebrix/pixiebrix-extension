@@ -30,7 +30,7 @@ import CommentEffect from "@/bricks/effects/comment";
 
 const PANEL_TYPES = ["actionPanel", "panel"];
 
-const alwaysShow = new Set([
+const ALWAYS_SHOW = new Set([
   // Cancel/Error provide meaningful control flow for all bricks
   CancelEffect.BRICK_ID,
   ErrorEffect.BRICK_ID,
@@ -109,5 +109,5 @@ export function makeIsBlockAllowedForPipeline(
   }
 
   return ({ type, block }: TypedBrickPair) =>
-    type !== excludedType || alwaysShow.has(block.id);
+    type !== excludedType || ALWAYS_SHOW.has(block.id);
 }

@@ -206,6 +206,7 @@ class QuickBarRegistry {
 /**
  * Singleton registry for the content script.
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- OK to re-init on load
 const quickBarRegistry = new QuickBarRegistry();
 
 export default quickBarRegistry;

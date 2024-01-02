@@ -84,7 +84,7 @@ interface TourDB extends DBSchema {
   };
 }
 
-const indexKeys = ["tourName", "packageId", "extensionId"] as const;
+const INDEX_KEYS = ["tourName", "packageId", "extensionId"] as const;
 
 async function openTourDB(): Promise<IDBPDatabase<TourDB>> {
   return openDB<TourDB>(STORAGE_KEY, DB_VERSION_NUMBER, {
@@ -94,7 +94,7 @@ async function openTourDB(): Promise<IDBPDatabase<TourDB>> {
         keyPath: "id",
       });
 
-      for (const key of indexKeys) {
+      for (const key of INDEX_KEYS) {
         store.createIndex(key, key, {
           unique: false,
         });

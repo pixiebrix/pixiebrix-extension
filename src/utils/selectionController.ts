@@ -55,6 +55,7 @@ export function guessSelectedElement(): HTMLElement | null {
  * https://github.com/pixiebrix/pixiebrix-extension/issues/2443
  */
 let selectionOverride: Range | undefined;
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const selectionController = {
   save(): void {
     const selection = getSelection();
