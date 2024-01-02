@@ -31,7 +31,6 @@ import SharingTable from "./SharingTable";
 import { sortBy } from "lodash";
 import { type UUID } from "@/types/stringTypes";
 import BrickReference from "@/extensionConsole/pages/brickEditor/referenceTab/BrickReference";
-import { useAsyncState } from "@/hooks/common";
 import serviceRegistry from "@/integrations/registry";
 import blockRegistry from "@/bricks/registry";
 import extensionPointRegistry from "@/starterBricks/registry";
@@ -44,6 +43,7 @@ import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { isMac } from "@/utils/browserUtils";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import { appApi } from "@/services/api";
+import useAsyncState from "@/hooks/useAsyncState";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -112,7 +112,7 @@ const Editor = ({ showLogs = true }: OwnProps) => {
   const { errors, values, dirty } = useFormikContext<EditorValues>();
   const { id: brickId } = useParams<{ id: UUID }>();
 
-  const [bricks] = useAsyncState(async () => {
+  const { data: bricks } = useAsyncState(async () => {
     const [extensionPoints, bricks, services] = await Promise.all([
       extensionPointRegistry.all(),
       blockRegistry.all(),

@@ -19,7 +19,6 @@ import React, { useEffect } from "react";
 import validator from "@/validators/formValidator";
 import { Theme } from "@rjsf/bootstrap-4";
 import { withTheme, getDefaultRegistry } from "@rjsf/core";
-import { useAsyncState } from "@/hooks/common";
 import {
   getFormDefinition,
   resolveForm,
@@ -37,6 +36,7 @@ import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { cloneDeep } from "lodash";
+import useAsyncState from "@/hooks/useAsyncState";
 
 const fields = {
   DescriptionField,
@@ -86,10 +86,11 @@ const EphemeralForm: React.FC = () => {
     : { tabId: opener.tabId, frameId: TOP_LEVEL_FRAME_ID };
   const FormContainer = isModal ? ModalLayout : PanelLayout;
 
-  const [definition, isLoading, error] = useAsyncState(
-    async () => getFormDefinition(target, nonce),
-    [nonce],
-  );
+  const {
+    data: definition,
+    isLoading,
+    error,
+  } = useAsyncState(async () => getFormDefinition(target, nonce), [nonce]);
 
   // Report error once
   useEffect(() => {

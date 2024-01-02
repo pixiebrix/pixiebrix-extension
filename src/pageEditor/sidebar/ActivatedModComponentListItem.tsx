@@ -19,7 +19,6 @@ import styles from "./Entry.module.scss";
 
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useAsyncState } from "@/hooks/common";
 import {
   extensionToFormState,
   selectType,
@@ -50,6 +49,7 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { appApi } from "@/services/api";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { type Schema } from "@/types/schemaTypes";
+import useAsyncState from "@/hooks/useAsyncState";
 
 /**
  * A sidebar menu entry corresponding to an untouched mod component
@@ -62,7 +62,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
 }> = ({ modComponent, isAvailable, isNested = false }) => {
   const sessionId = useSelector(selectSessionId);
   const dispatch = useDispatch();
-  const [type] = useAsyncState(
+  const { data: type } = useAsyncState(
     async () => selectType(modComponent),
     [modComponent.extensionPointId],
   );

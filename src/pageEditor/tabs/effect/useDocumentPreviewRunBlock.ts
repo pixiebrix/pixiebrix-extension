@@ -32,11 +32,11 @@ import { runRendererBlock } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
 import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";
-import { useAsyncState } from "@/hooks/common";
 import { type UUID } from "@/types/stringTypes";
 import { type BrickArgsContext } from "@/types/runtimeTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import useAsyncState from "@/hooks/useAsyncState";
 
 type Location = "modal" | "panel";
 
@@ -115,9 +115,11 @@ export default function useDocumentPreviewRunBlock(
     selectActiveElementNodeInfo(blockInstanceId),
   );
 
-  const [blockInfo, isBlockLoading, blockError] = usePreviewInfo(
-    blockConfig.id,
-  );
+  const {
+    data: blockInfo,
+    isLoading: isBlockLoading,
+    error: blockError,
+  } = usePreviewInfo(blockConfig.id);
 
   useEffect(() => {
     if (blockError) {
@@ -137,10 +139,10 @@ export default function useDocumentPreviewRunBlock(
   const traceRecord = useSelector(
     selectActiveElementTraceForBlock(blockInstanceId),
   );
-  const [serviceContext, isLoadingServiceContext] = useAsyncState(
-    makeServiceContextFromDependencies(integrationDependencies),
-    [integrationDependencies],
-  );
+  const { data: serviceContext, isLoading: isLoadingServiceContext } =
+    useAsyncState(makeServiceContextFromDependencies(integrationDependencies), [
+      integrationDependencies,
+    ]);
   const context = {
     ...traceRecord?.templateContext,
     ...serviceContext,

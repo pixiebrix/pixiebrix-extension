@@ -19,7 +19,6 @@ import { useField } from "formik";
 import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 import { UIPATH_SERVICE_IDS } from "@/contrib/uipath/process";
 import { useMemo } from "react";
-import { useAsyncState } from "@/hooks/common";
 import { releaseSchema } from "@/contrib/uipath/typeUtils";
 import { optionalFactory } from "@/contrib/remoteOptionUtils";
 import { type Option } from "@/components/form/widgets/SelectWidget";
@@ -30,6 +29,7 @@ import {
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import cachePromise from "@/utils/cachePromise";
+import useAsyncState from "@/hooks/useAsyncState";
 
 const optionalFetchReleases = optionalFactory(fetchReleases);
 
@@ -66,7 +66,7 @@ export function useSelectedRelease(releaseKeyFieldName: string) {
     [sanitizedConfig],
   );
 
-  const [selectedRelease] = useAsyncState(async () => {
+  const { data: selectedRelease } = useAsyncState(async () => {
     const options = await releasesPromise;
     const { data: release } = (options as ReleaseOption[]).find(
       (option) => option.data.Key === releaseKey,
