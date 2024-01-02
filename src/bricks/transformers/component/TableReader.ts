@@ -39,7 +39,7 @@ export class TableReader extends TransformerABC {
     super(TABLE_READER_ID, "Table Reader", "Extract data from table");
   }
 
-  defaultOutputKey = "table";
+  override defaultOutputKey = "table";
 
   inputSchema: Schema = {
     type: "object",
@@ -121,7 +121,7 @@ export class TablesReader extends TransformerABC {
     );
   }
 
-  defaultOutputKey = "tables";
+  override defaultOutputKey = "tables";
 
   inputSchema: Schema = {
     type: "object",

@@ -27,17 +27,17 @@ import { type AxiosRequestConfig } from "axios";
 import { isNullOrBlank } from "@/utils/stringUtils";
 
 export class GetAPITransformer extends TransformerABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/get");
+  static BRICK_ID = validateRegistryId("@pixiebrix/get");
 
   constructor() {
     super(
-      GetAPITransformer.BLOCK_ID,
+      GetAPITransformer.BRICK_ID,
       "[Deprecated] HTTP GET",
       "Fetch data from an API",
     );
   }
 
-  defaultOutputKey = "response";
+  override defaultOutputKey = "response";
 
   inputSchema: Schema = propertiesToSchema(
     {

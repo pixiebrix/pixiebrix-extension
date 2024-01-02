@@ -77,7 +77,7 @@ class AssignModVariable extends EffectABC {
     ["variableName", "value"],
   );
 
-  uiSchema = {
+  override uiSchema = {
     "ui:order": ["variableName", "value"],
   };
 

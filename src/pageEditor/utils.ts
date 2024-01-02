@@ -102,7 +102,7 @@ export function getPipelinePropNames(
 ): string[] {
   switch (blockConfig.id) {
     // Special handling for tour step to avoid clutter and input type alternatives
-    case TourStepTransformer.BLOCK_ID: {
+    case TourStepTransformer.BRICK_ID: {
       const propNames = [];
 
       // Only show onBeforeShow if it's provided, to avoid cluttering the UI
@@ -168,7 +168,7 @@ export function getVariableKeyForSubPipeline(
   let keyPropName: string = null;
 
   if (
-    [ForEach.BLOCK_ID, ForEachElement.BLOCK_ID, MapValues.BRICK_ID].includes(
+    [ForEach.BRICK_ID, ForEachElement.BRICK_ID, MapValues.BRICK_ID].includes(
       brickConfig.id,
     ) &&
     pipelinePropName === "body"
@@ -176,7 +176,7 @@ export function getVariableKeyForSubPipeline(
     keyPropName = "elementKey";
   }
 
-  if (brickConfig.id === TryExcept.BLOCK_ID && pipelinePropName === "except") {
+  if (brickConfig.id === TryExcept.BRICK_ID && pipelinePropName === "except") {
     keyPropName = "errorKey";
   }
 

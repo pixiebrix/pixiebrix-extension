@@ -58,7 +58,7 @@ export class UrlParams extends TransformerABC {
     return true;
   }
 
-  defaultOutputKey = "url";
+  override defaultOutputKey = "url";
 
   constructor() {
     super(

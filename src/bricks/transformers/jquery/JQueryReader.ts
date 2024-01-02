@@ -35,7 +35,7 @@ export class JQueryReader extends TransformerABC {
     );
   }
 
-  defaultOutputKey = "data";
+  override defaultOutputKey = "data";
 
   inputSchema: Schema = {
     type: "object",

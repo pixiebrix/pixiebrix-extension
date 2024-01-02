@@ -289,17 +289,17 @@ function markdownPipeline(markdown: string): PipelineExpression {
 }
 
 class TourStepTransformer extends TransformerABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/tour/step");
+  static BRICK_ID = validateRegistryId("@pixiebrix/tour/step");
 
   constructor() {
     super(
-      TourStepTransformer.BLOCK_ID,
+      TourStepTransformer.BRICK_ID,
       "Show Tour Step",
       "Show a step in a tour",
     );
   }
 
-  defaultOutputKey = "step";
+  override defaultOutputKey = "step";
 
   override async isRootAware(): Promise<boolean> {
     return true;

@@ -20,7 +20,7 @@ import { type JsonObject } from "type-fest";
 import { type Schema } from "@/types/schemaTypes";
 
 export class PageSemanticReader extends ReaderABC {
-  defaultOutputKey = "metadata";
+  override defaultOutputKey = "metadata";
 
   constructor() {
     super(

@@ -29,7 +29,7 @@ export class SelectionReader extends ReaderABC {
     );
   }
 
-  defaultOutputKey = "selection";
+  override defaultOutputKey = "selection";
 
   override async isRootAware(): Promise<boolean> {
     return false;

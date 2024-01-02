@@ -30,7 +30,7 @@ export class Readable extends TransformerABC {
     );
   }
 
-  defaultOutputKey = "article";
+  override defaultOutputKey = "article";
 
   override async isPure(): Promise<boolean> {
     // Technically is not pure, because value depends on document state. But it generally won't change

@@ -61,7 +61,7 @@ export class JavaScriptTransformer extends TransformerABC {
     ["function"],
   );
 
-  uiSchema: UiSchema = {
+  override uiSchema: UiSchema = {
     function: {
       "ui:widget": "CodeEditorWidget",
     },

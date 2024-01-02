@@ -30,7 +30,7 @@ export class Prompt extends TransformerABC {
     );
   }
 
-  defaultOutputKey = "userInput";
+  override defaultOutputKey = "userInput";
 
   inputSchema: Schema = propertiesToSchema(
     {

@@ -32,7 +32,7 @@ function isCheckbox(
 }
 
 export class FormData extends TransformerABC {
-  defaultOutputKey = "form";
+  override defaultOutputKey = "form";
 
   constructor() {
     super(

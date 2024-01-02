@@ -19,7 +19,7 @@ import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 export class PageMetadataReader extends ReaderABC {
-  defaultOutputKey = "metadata";
+  override defaultOutputKey = "metadata";
 
   constructor() {
     super(

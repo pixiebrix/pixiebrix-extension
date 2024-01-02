@@ -39,7 +39,7 @@ class RunMetadataTransformer extends TransformerABC {
     );
   }
 
-  defaultOutputKey = "meta";
+  override defaultOutputKey = "meta";
 
   inputSchema: Schema = SCHEMA_EMPTY_OBJECT;
 

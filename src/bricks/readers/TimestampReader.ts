@@ -19,7 +19,7 @@ import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 class TimestampReader extends ReaderABC {
-  defaultOutputKey = "instant";
+  override defaultOutputKey = "instant";
 
   constructor() {
     super(

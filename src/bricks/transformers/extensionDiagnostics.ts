@@ -23,7 +23,7 @@ import { getDiagnostics as collectFrameDiagnostics } from "@/contentScript/perfo
 import { collectPerformanceDiagnostics as collectExtensionDiagnostics } from "@/background/messenger/api";
 
 class ExtensionDiagnostics extends TransformerABC {
-  defaultOutputKey = "diagnostics";
+  override defaultOutputKey = "diagnostics";
 
   constructor() {
     super(

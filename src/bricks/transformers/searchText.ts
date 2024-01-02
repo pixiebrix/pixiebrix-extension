@@ -159,7 +159,7 @@ export class SearchText extends TransformerABC {
     );
   }
 
-  defaultOutputKey = "matches";
+  override defaultOutputKey = "matches";
 
   override async isPure(): Promise<boolean> {
     return true;

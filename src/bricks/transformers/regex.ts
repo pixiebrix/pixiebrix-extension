@@ -46,7 +46,7 @@ export class RegexTransformer extends TransformerABC {
     );
   }
 
-  defaultOutputKey = "extracted";
+  override defaultOutputKey = "extracted";
 
   inputSchema: Schema = propertiesToSchema(
     {

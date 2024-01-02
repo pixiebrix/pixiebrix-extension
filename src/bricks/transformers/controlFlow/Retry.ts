@@ -28,11 +28,11 @@ import { BusinessError } from "@/errors/businessErrors";
 import { sleep } from "@/utils/timeUtils";
 
 class Retry extends TransformerABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/retry");
-  defaultOutputKey = "retryOutput";
+  static BRICK_ID = validateRegistryId("@pixiebrix/retry");
+  override defaultOutputKey = "retryOutput";
 
   constructor() {
-    super(Retry.BLOCK_ID, "Retry", "Retry bricks on error");
+    super(Retry.BRICK_ID, "Retry", "Retry bricks on error");
   }
 
   override async isPure(): Promise<boolean> {

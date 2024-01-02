@@ -29,12 +29,12 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 
 class TryExcept extends TransformerABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/try-catch");
-  defaultOutputKey = "tryExceptOutput";
+  static BRICK_ID = validateRegistryId("@pixiebrix/try-catch");
+  override defaultOutputKey = "tryExceptOutput";
 
   constructor() {
     super(
-      TryExcept.BLOCK_ID,
+      TryExcept.BRICK_ID,
       "Try-Except",
       "Try to run a brick, and recover on error",
     );

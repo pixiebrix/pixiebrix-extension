@@ -60,12 +60,12 @@ export function getSubPipelineFlavor(
     return PipelineFlavor.NoEffect;
   }
 
-  if (parentNodeId === DisplayTemporaryInfo.BLOCK_ID) {
+  if (parentNodeId === DisplayTemporaryInfo.BRICK_ID) {
     // Temporary Info renderer shouldn't have side effects
     return PipelineFlavor.NoEffect;
   }
 
-  if (parentNodeId === TourStepTransformer.BLOCK_ID) {
+  if (parentNodeId === TourStepTransformer.BRICK_ID) {
     const pathParts = pipelinePath.split(".");
     if (pathParts.at(-2) === "body") {
       // Tour step body should have no side effects

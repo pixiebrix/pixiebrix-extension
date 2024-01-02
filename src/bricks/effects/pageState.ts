@@ -61,7 +61,7 @@ export class SetPageState extends TransformerABC {
     return true;
   }
 
-  defaultOutputKey = "state";
+  override defaultOutputKey = "state";
 
   inputSchema: Schema = propertiesToSchema(
     {
@@ -97,7 +97,7 @@ export class SetPageState extends TransformerABC {
     ["data"],
   );
 
-  uiSchema = {
+  override uiSchema = {
     "ui:order": ["namespace", "mergeStrategy", "data"],
   };
 
@@ -165,7 +165,7 @@ export class GetPageState extends TransformerABC {
     );
   }
 
-  defaultOutputKey = "state";
+  override defaultOutputKey = "state";
 
   inputSchema: Schema = propertiesToSchema(
     {

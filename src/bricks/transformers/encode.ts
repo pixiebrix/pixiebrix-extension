@@ -20,7 +20,7 @@ import { type BrickArgs } from "@/types/runtimeTypes";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class Base64Encode extends TransformerABC {
-  defaultOutputKey = "encoded";
+  override defaultOutputKey = "encoded";
 
   override async isPure(): Promise<boolean> {
     return true;
@@ -52,7 +52,7 @@ export class Base64Encode extends TransformerABC {
 }
 
 export class Base64Decode extends TransformerABC {
-  defaultOutputKey = "decoded";
+  override defaultOutputKey = "decoded";
 
   constructor() {
     super(

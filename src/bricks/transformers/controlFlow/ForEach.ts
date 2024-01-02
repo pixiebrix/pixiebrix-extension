@@ -28,12 +28,12 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 
 class ForEach extends TransformerABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/for-each");
-  defaultOutputKey = "forEachOutput";
+  static BRICK_ID = validateRegistryId("@pixiebrix/for-each");
+  override defaultOutputKey = "forEachOutput";
 
   constructor() {
     super(
-      ForEach.BLOCK_ID,
+      ForEach.BRICK_ID,
       "For-Each Loop",
       "Loop over elements in a list/array, returning the value of the last iteration",
     );

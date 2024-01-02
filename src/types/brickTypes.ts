@@ -145,6 +145,10 @@ export abstract class BrickABC implements Brick {
 
   abstract readonly inputSchema: Schema;
 
+  uiSchema?: UiSchema = undefined;
+
+  defaultOutputKey?: string = undefined;
+
   outputSchema?: Schema = undefined;
 
   readonly permissions = {};

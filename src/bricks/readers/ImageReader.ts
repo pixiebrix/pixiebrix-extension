@@ -41,7 +41,7 @@ function getBase64Image(img: HTMLImageElement) {
 }
 
 export class ImageReader extends ReaderABC {
-  defaultOutputKey = "image";
+  override defaultOutputKey = "image";
 
   constructor() {
     super(

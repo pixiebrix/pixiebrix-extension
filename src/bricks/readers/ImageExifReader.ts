@@ -45,7 +45,7 @@ async function getData(img: HTMLImageElement): Promise<ArrayBuffer> {
 }
 
 export class ImageExifReader extends ReaderABC {
-  defaultOutputKey = "image";
+  override defaultOutputKey = "image";
 
   constructor() {
     super(

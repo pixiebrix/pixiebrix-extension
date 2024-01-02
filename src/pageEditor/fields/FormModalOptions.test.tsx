@@ -34,7 +34,7 @@ beforeAll(() => {
 
 describe("FormModalOptions", () => {
   it("renders default values without crashing", async () => {
-    const brick = createNewConfiguredBrick(FormTransformer.BLOCK_ID);
+    const brick = createNewConfiguredBrick(FormTransformer.BRICK_ID);
 
     const initialValues = formStateFactory({
       extension: baseExtensionStateFactory({
