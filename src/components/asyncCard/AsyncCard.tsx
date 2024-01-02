@@ -6,7 +6,7 @@ import Loader from "@/components/Loader";
 type OwnProps = {
   header: React.ReactNode;
   error: unknown;
-  isPending: boolean;
+  isLoading: boolean;
   renderActions?: (options: { isLoaded: boolean }) => React.ReactNode;
   children: () => React.ReactNode;
 };
@@ -18,12 +18,12 @@ const AsyncCard: React.FC<OwnProps> = ({
   header,
   renderActions,
   error,
-  isPending,
+  isLoading,
   children,
 }) => {
   let body: React.ReactNode;
 
-  if (isPending) {
+  if (isLoading) {
     body = <Loader />;
   } else if (error) {
     body = (
@@ -40,7 +40,7 @@ const AsyncCard: React.FC<OwnProps> = ({
       <Card.Header className="d-flex align-items-center">
         <div className="flex-grow-1">{header}</div>
         {renderActions && (
-          <div>{renderActions({ isLoaded: !isPending && !error })}</div>
+          <div>{renderActions({ isLoaded: !isLoading && !error })}</div>
         )}
       </Card.Header>
       <Card.Body className="p-0">{body}</Card.Body>

@@ -23,7 +23,7 @@ import {
 } from "@/types/sliceTypes";
 import { once } from "lodash";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { useIsMounted } from "@/hooks/common";
+import useIsMounted from "@/hooks/useIsMounted";
 import { useReducer, useRef } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import { checkAsyncStateInvariants } from "@/utils/asyncStateUtils";

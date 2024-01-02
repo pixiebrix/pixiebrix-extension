@@ -23,7 +23,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { getBaseURL } from "@/services/baseService";
-import { useAsyncState } from "@/hooks/common";
 import {
   addListener as addAuthListener,
   readPartnerAuthData,
@@ -37,11 +36,12 @@ import { selectAuth } from "@/auth/authSelectors";
 import { type ThemeLogo } from "@/themes/themeUtils";
 import useLinkState from "@/auth/useLinkState";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import useAsyncState from "@/hooks/useAsyncState";
 
 function useAdminConsoleUrl(): string {
   // Need to update serviceURL on changes to partner auth data:
   // https://github.com/pixiebrix/pixiebrix-extension/issues/4594
-  const [serviceURL, _serviceUrlPending, _serviceUrlError, refreshServiceUrl] =
+  const { data: serviceURL, refetch: refreshServiceUrl } =
     useAsyncState<string>(async () => {
       const baseURL = await getBaseURL();
       const partnerAuth = await readPartnerAuthData();
@@ -49,12 +49,12 @@ function useAdminConsoleUrl(): string {
         ? new URL("partner-auth", baseURL)
         : new URL(baseURL);
       return url.toString();
-    });
+    }, []);
 
   useEffect(() => {
     // Listen for token invalidation
-    const handler = async () => {
-      void refreshServiceUrl();
+    const handler = () => {
+      refreshServiceUrl();
     };
 
     addAuthListener(handler);

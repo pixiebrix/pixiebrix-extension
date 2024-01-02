@@ -16,7 +16,6 @@
  */
 
 import React, { useState } from "react";
-import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
 import { useAsyncEffect } from "use-async-effect";
 import { isLinked } from "@/auth/token";
@@ -24,10 +23,11 @@ import { Card } from "react-bootstrap";
 import urljoin from "url-join";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import useAsyncState from "@/hooks/useAsyncState";
 
 const ConnectExtensionCard: React.FunctionComponent = () => {
   const [hasExtensionKey, setHasExtensionKey] = useState(true);
-  const [serviceURL] = useAsyncState(getBaseURL);
+  const { data: serviceURL } = useAsyncState(getBaseURL, []);
 
   useAsyncEffect(
     async (isMounted) => {

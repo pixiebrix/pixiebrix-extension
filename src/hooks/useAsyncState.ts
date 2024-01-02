@@ -19,7 +19,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { useCallback, useReducer, useRef } from "react";
 import { useAsyncEffect } from "use-async-effect";
-import { useIsMounted } from "@/hooks/common";
+import useIsMounted from "@/hooks/useIsMounted";
 import { once } from "lodash";
 import { uuidv4 } from "@/types/helpers";
 import {

@@ -36,12 +36,12 @@ import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu";
 import { PanelStarterBrickABC } from "@/starterBricks/panelExtension";
 import { SidebarStarterBrickABC } from "@/starterBricks/sidebarExtension";
 import { appApi } from "@/services/api";
-import { useAsyncState } from "@/hooks/common";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { type MarketplaceListing } from "@/types/contract";
 import getType from "@/runtime/getType";
 import { type BrickType } from "@/runtime/runtimeTypes";
 import { type Metadata } from "@/types/registryTypes";
+import useAsyncState from "@/hooks/useAsyncState";
 
 function getDefaultBrickIcon<T extends Metadata>(
   brick: T,
@@ -132,7 +132,7 @@ const BrickIcon = <T extends Metadata>({
 
   const listing: MarketplaceListing | null = listings[brick.id];
 
-  const [type] = useAsyncState(async () => getType(brick), [brick]);
+  const { data: type } = useAsyncState(async () => getType(brick), [brick]);
 
   const listingFaIcon = useAsyncIcon(
     listing?.fa_icon,

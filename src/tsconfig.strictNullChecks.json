@@ -254,7 +254,7 @@
     "./extensionConsole/pages/workshop/workshopUtils.ts",
     "./extensionContext.ts",
     "./globals.d.ts",
-    "./hooks/common.ts",
+    "./hooks/useIsMounted.ts",
     "./hooks/useAsyncExternalStore.ts",
     "./hooks/useAsyncState.ts",
     "./hooks/useAuthorizationGrantFlow.ts",

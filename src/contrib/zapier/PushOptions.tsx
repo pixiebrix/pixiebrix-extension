@@ -18,7 +18,6 @@
 import React, { useMemo } from "react";
 import { type BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { useField } from "formik";
-import { useAsyncState } from "@/hooks/common";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { type Webhook } from "@/contrib/zapier/contract";
 import { pixiebrixConfigurationFactory } from "@/integrations/locator";
@@ -39,13 +38,11 @@ import useRequestPermissionsCallback from "@/permissions/useRequestPermissionsCa
 import { isExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
 import defaultFieldFactory from "@/components/fields/schemaFields/defaultFieldFactory";
+import useAsyncState from "@/hooks/useAsyncState";
+import type { AsyncState } from "@/types/sliceTypes";
 
-function useHooks(): {
-  hooks: Webhook[];
-  isPending: boolean;
-  error: unknown;
-} {
-  const [hooks, isPending, error] = useAsyncState(async () => {
+function useHooks(): AsyncState<Webhook[]> {
+  return useAsyncState(async () => {
     const { data } = await performConfiguredRequestInBackground<{
       new_push_fields: Webhook[];
     }>(await pixiebrixConfigurationFactory(), {
@@ -56,8 +53,6 @@ function useHooks(): {
 
     return data.new_push_fields;
   }, []);
-
-  return { hooks, isPending, error };
 }
 
 const ZapField: React.FunctionComponent<
@@ -97,7 +92,7 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const permissionsState = useExtensionPermissions();
 
-  const [hasPermissions] = useAsyncState(
+  const { data: hasPermissions } = useAsyncState(
     async () => browser.permissions.contains(ZAPIER_PERMISSIONS),
     [permissionsState],
   );
@@ -109,7 +104,7 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
     `${basePath}.pushKey`,
   );
 
-  const { hooks, error } = useHooks();
+  const { data: hooks, error } = useHooks();
 
   const hook = useMemo(
     () => hooks?.find((x) => x.display_name === pushKey),

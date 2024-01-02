@@ -37,7 +37,7 @@ import { loadBrickYaml } from "@/runtime/brickYaml";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { type Package } from "@/types/contract";
 import { useGetPackageQuery } from "@/services/api";
-import { useIsMounted } from "@/hooks/common";
+import useIsMounted from "@/hooks/useIsMounted";
 import { type UUID } from "@/types/stringTypes";
 import { type Definition } from "@/types/registryTypes";
 
