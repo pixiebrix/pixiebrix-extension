@@ -30,7 +30,6 @@ const knipConfig = {
     "src/contrib/uipath/quietLogger.ts",
     // Development/debugging helpers
     "src/development/hooks/**",
-    "src/testUtils/hooks/**",
   ],
 
   rules: {

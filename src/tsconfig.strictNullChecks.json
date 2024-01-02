@@ -235,8 +235,6 @@
     "./errors/networkErrorHelpers.ts",
     "./errors/rejectOnCancelled.ts",
     "./extensionConsole/components/ServiceFieldError.tsx",
-    "./extensionConsole/messenger/api.ts",
-    "./extensionConsole/messenger/registration.ts",
     "./extensionConsole/pages/activateExtension/activateTypes.ts",
     "./extensionConsole/pages/activateMod/IntegrationDescriptor.tsx",
     "./extensionConsole/pages/brickEditor/CodeEditor.tsx",
