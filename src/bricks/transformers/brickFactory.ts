@@ -34,7 +34,7 @@ import {
   type ApiVersion,
   type BrickArgs,
   type BrickOptions,
-  OutputKey,
+  type OutputKey,
   validateBrickArgsContext,
 } from "@/types/runtimeTypes";
 import {
