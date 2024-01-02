@@ -40,7 +40,7 @@ export const PARENT_ELEMENT_TYPES: DocumentElementType[] = [
   "list",
 ];
 
-const allowedChildTypes: Record<string, DocumentElementType[]> = {
+const ALLOWED_CHILD_TYPES: Record<string, DocumentElementType[]> = {
   container: ["row", "list"],
   row: ["column", "list"],
   column: ["header", "text", "image", "card", "pipeline", "button", "list"],
@@ -55,5 +55,5 @@ export const VALID_HEADER_TAGS = ["h1", "h2", "h3", "h4", "h5", "h6"];
 export function getAllowedChildTypes(
   parentElement: DocumentElement,
 ): DocumentElementType[] {
-  return allowedChildTypes[parentElement.type] ?? [];
+  return ALLOWED_CHILD_TYPES[parentElement.type] ?? [];
 }

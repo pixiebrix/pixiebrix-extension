@@ -22,7 +22,7 @@ import { type JsonObject } from "type-fest";
 import { type Schema } from "@/types/schemaTypes";
 
 class SessionReader extends ReaderABC {
-  defaultOutputKey = "session";
+  override defaultOutputKey = "session";
 
   constructor() {
     super(

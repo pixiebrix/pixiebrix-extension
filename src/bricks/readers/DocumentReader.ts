@@ -20,7 +20,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 
 class DocumentReader extends ReaderABC {
-  defaultOutputKey = "context";
+  override defaultOutputKey = "context";
 
   constructor() {
     super(

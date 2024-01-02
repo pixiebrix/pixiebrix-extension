@@ -61,6 +61,7 @@ let pendingLoadPromise: Promise<StarterBrick[]> | null;
  *
  * @see _editorExtensions
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const _persistedExtensions = new Map<UUID, StarterBrick>();
 
 /**
@@ -70,11 +71,13 @@ const _persistedExtensions = new Map<UUID, StarterBrick>();
  *
  * @see _persistedExtensions
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const _editorExtensions = new Map<UUID, StarterBrick>();
 
 /**
  * Extension points active/installed on the page.
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const _activeExtensionPoints = new Set<StarterBrick>();
 
 /**
@@ -85,6 +88,7 @@ let lastUrl: string | undefined;
 /**
  * Abort controllers for navigation events for Single Page Applications (SPAs).
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- Functions
 const _navigationListeners = new Set<() => void>();
 
 const WAIT_LOADED_INTERVAL_MS = 25;

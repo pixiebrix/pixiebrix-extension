@@ -83,7 +83,7 @@ export class WithAsyncModVariable extends TransformerABC {
     ["body", "stateKey"],
   );
 
-  defaultOutputKey = "async";
+  override defaultOutputKey = "async";
 
   override outputSchema: Schema = {
     type: "object",

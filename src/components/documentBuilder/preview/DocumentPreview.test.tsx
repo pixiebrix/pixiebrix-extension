@@ -151,7 +151,7 @@ describe("Show live preview", () => {
     const documentElement = createNewElement("container");
     const formState = formStateFactory(undefined, [
       {
-        id: DisplayTemporaryInfo.BLOCK_ID,
+        id: DisplayTemporaryInfo.BRICK_ID,
         instanceId: uuidSequence(1),
         config: {
           title: toExpression("nunjucks", "Test Tab"),

@@ -24,7 +24,6 @@ import {
   type StarterBrickType,
   type StarterBrick,
 } from "@/types/starterBrickTypes";
-import { type BrickIcon } from "@/types/iconTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Logger } from "@/types/loggerTypes";
@@ -126,8 +125,6 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
 
   public readonly name: string;
 
-  public readonly icon?: BrickIcon;
-
   public readonly description?: string;
 
   /**
@@ -163,7 +160,6 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
   protected constructor(metadata: Metadata, logger: Logger) {
     this.id = validateRegistryId(metadata.id);
     this.name = metadata.name;
-    this.icon = metadata.icon;
     this.description = metadata.description;
     this.instanceNonce = uuidv4();
     this.logger = logger.childLogger({ extensionPointId: this.id });

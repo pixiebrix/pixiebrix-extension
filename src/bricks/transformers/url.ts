@@ -58,14 +58,13 @@ export class UrlParams extends TransformerABC {
     return true;
   }
 
-  defaultOutputKey = "url";
+  override defaultOutputKey = "url";
 
   constructor() {
     super(
       "@pixiebrix/url-params",
       "Construct URL",
       "Construct a URL with encoded search parameter",
-      "faCode",
     );
   }
 

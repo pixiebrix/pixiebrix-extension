@@ -30,7 +30,7 @@ function makeBaseState() {
   // Extension type doesn't really matter here...
   const baseFormState = menuItemFormStateFactory();
   baseFormState.extension.blockPipeline = [
-    createNewConfiguredBrick(TourStep.BLOCK_ID),
+    createNewConfiguredBrick(TourStep.BRICK_ID),
   ];
   return baseFormState;
 }

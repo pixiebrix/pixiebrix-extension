@@ -26,18 +26,18 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { isObject } from "./objectUtils";
 import { type BrickPipeline } from "@/bricks/types";
 
-const templateTypes: TemplateEngine[] = [
+const TEMPLATE_TYPES = [
   "mustache",
   "nunjucks",
   "handlebars",
   "var",
-];
+] as const satisfies TemplateEngine[];
 
-const expressionTypes: ExpressionType[] = [
-  ...templateTypes,
+const EXPRESSION_TYPES = [
+  ...TEMPLATE_TYPES,
   "pipeline",
   "defer",
-];
+] as const satisfies ExpressionType[];
 
 /**
  * A PipelineExpression with an attached lexical environment. Internal type used by the runtime
@@ -54,7 +54,7 @@ export type PipelineClosureExpression = PipelineExpression & {
 export function isTemplateExpression(
   value: unknown,
 ): value is Expression<string, TemplateEngine> {
-  return isExpression(value) && templateTypes.includes(value.__type__);
+  return isExpression(value) && TEMPLATE_TYPES.includes(value.__type__);
 }
 
 /**
@@ -101,7 +101,7 @@ export function isDeferExpression<TValue = UnknownObject>(
  */
 export function isExpression(value: unknown): value is Expression<unknown> {
   if (isObject(value) && typeof value.__type__ === "string") {
-    return expressionTypes.includes(value.__type__);
+    return EXPRESSION_TYPES.includes(value.__type__);
   }
 
   return false;

@@ -29,7 +29,7 @@ import { isVisible } from "@/utils/domUtils";
  * @see HtmlReader
  */
 export class ElementReader extends ReaderABC {
-  defaultOutputKey = "element";
+  override defaultOutputKey = "element";
 
   constructor() {
     super(

@@ -92,7 +92,6 @@ class ConvertDocument extends TransformerABC {
       "@pixiebrix/convert",
       "Convert Document",
       "Convert between document formats (e.g., HTML to Text)",
-      "faCode",
     );
   }
 
@@ -100,7 +99,7 @@ class ConvertDocument extends TransformerABC {
     return true;
   }
 
-  defaultOutputKey = "document";
+  override defaultOutputKey = "document";
 
   inputSchema: Schema = propertiesToSchema(
     {

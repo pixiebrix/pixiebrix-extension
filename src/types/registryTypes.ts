@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickIcon } from "@/types/iconTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { type UnknownObject } from "@/types/objectTypes";
@@ -68,11 +67,6 @@ export interface Metadata {
 
   // Currently optional because it defaults to the browser extension version for bricks defined in JS
   readonly version?: SemVerString;
-
-  /**
-   * @deprecated experimental prop that will likely be removed in the future
-   */
-  readonly icon?: BrickIcon;
 
   /**
    * PixieBrix extension version required to install the brick/run the ModComponent

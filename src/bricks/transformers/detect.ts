@@ -25,7 +25,7 @@ import {
 } from "@/bricks/rootModeHelpers";
 
 export class DetectElement extends TransformerABC {
-  defaultOutputKey = "match";
+  override defaultOutputKey = "match";
 
   constructor() {
     super(

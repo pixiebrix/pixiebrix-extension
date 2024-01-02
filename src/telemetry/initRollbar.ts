@@ -22,7 +22,7 @@ import { type UserData } from "@/auth/authTypes";
 import { getUID } from "@/background/messenger/api";
 import pMemoize from "p-memoize";
 
-const accessToken = process.env.ROLLBAR_BROWSER_ACCESS_TOKEN;
+const ACCESS_TOKEN = process.env.ROLLBAR_BROWSER_ACCESS_TOKEN;
 
 type Frame = {
   filename: string;
@@ -57,7 +57,7 @@ async function initRollbar(): Promise<Rollbar> {
     console.warn("Unsupported call to initRollbar in the contentScript");
   }
 
-  if (accessToken) {
+  if (ACCESS_TOKEN) {
     console.debug("Initializing Rollbar error telemetry");
   } else {
     console.debug("Rollbar token missing, errors won’t be reported");
@@ -77,8 +77,9 @@ async function initRollbar(): Promise<Rollbar> {
     // @since 1.7.40 - We need to hard-filter out the ResizeObserver loop errors because they are flooding Rollbar
 
     return Rollbar.init({
-      enabled: accessToken && accessToken !== "undefined" && !isContentScript(),
-      accessToken,
+      enabled:
+        ACCESS_TOKEN && ACCESS_TOKEN !== "undefined" && !isContentScript(),
+      accessToken: ACCESS_TOKEN,
       captureIp: "anonymize",
       codeVersion: process.env.SOURCE_VERSION,
       // https://docs.rollbar.com/docs/rollbarjs-telemetry

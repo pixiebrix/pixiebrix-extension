@@ -4,15 +4,15 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 
 // IDB Connection Error message strings:
 // https://app.rollbar.com/a/pixiebrix/fix/item/pixiebrix/6675
-const connectionErrors = ["Error Opening IndexedDB"];
+const CONNECTION_ERRORS = ["Error Opening IndexedDB"] as const;
 
 // IDB Quota Error message strings:
 // https://app.rollbar.com/a/pixiebrix/fix/item/pixiebrix/7979
 // https://app.rollbar.com/a/pixiebrix/fix/item/pixiebrix/6681
-const quotaErrors = [
+const QUOTA_ERRORS = [
   "Encountered full disk while opening backing store for indexedDB.open",
   "IndexedDB Full",
-];
+] as const;
 
 /**
  * Delete an IndexedDB database.
@@ -39,7 +39,7 @@ export async function deleteDatabase(databaseName: string): Promise<void> {
  */
 export function isIDBConnectionError(error: unknown): boolean {
   const message = getErrorMessage(error);
-  return connectionErrors.some((connectionError) =>
+  return CONNECTION_ERRORS.some((connectionError) =>
     message.includes(connectionError),
   );
 }
@@ -51,5 +51,5 @@ export function isIDBConnectionError(error: unknown): boolean {
  */
 export function isIDBQuotaError(error: unknown): boolean {
   const message = getErrorMessage(error);
-  return quotaErrors.some((quotaError) => message.includes(quotaError));
+  return QUOTA_ERRORS.some((quotaError) => message.includes(quotaError));
 }

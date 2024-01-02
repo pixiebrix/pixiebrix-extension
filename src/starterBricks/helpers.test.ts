@@ -32,7 +32,7 @@ describe("awaitElementOnce", () => {
     document.body.innerHTML = getDocument(
       '<div id="root"><div id="menu"></div></div>',
     ).body.innerHTML;
-    const [promise] = awaitElementOnce(".newClass #menu");
+    const promise = awaitElementOnce(".newClass #menu");
     document.querySelector("#root").classList.add("newClass");
 
     requestIdleCallback.runIdleCallbacks();
@@ -45,7 +45,7 @@ describe("awaitElementOnce", () => {
     document.body.innerHTML = getDocument(
       '<div id="root"><h1>Foo</h1><div id="menu"></div></div>',
     ).body.innerHTML;
-    const [promise] = awaitElementOnce('#root:has(h1:contains("Bar")) #menu');
+    const promise = awaitElementOnce('#root:has(h1:contains("Bar")) #menu');
     document.querySelector("h1").textContent = "Bar";
 
     requestIdleCallback.runIdleCallbacks();
@@ -61,7 +61,7 @@ describe("awaitElementOnce", () => {
       '<div id="root"></div>',
     ).body.innerHTML;
 
-    const [promise] = awaitElementOnce(
+    const promise = awaitElementOnce(
       'div[data-test-modal-id="send-invite-modal"] div:has(>button[aria-label="Cancel adding a note"])',
     );
 
@@ -86,7 +86,7 @@ describe("awaitElementOnce", () => {
       '<div class="table-actions"></div>',
     ).body.innerHTML;
 
-    awaitElementOnce(selectors);
+    void awaitElementOnce(selectors);
 
     requestIdleCallback.runIdleCallbacks();
     await tick();

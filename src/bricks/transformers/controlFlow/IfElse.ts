@@ -27,12 +27,12 @@ import { validateRegistryId } from "@/types/helpers";
 import { boolean } from "@/utils/typeUtils";
 
 class IfElse extends TransformerABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/if-else");
-  defaultOutputKey = "ifElseOutput";
+  static BRICK_ID = validateRegistryId("@pixiebrix/if-else");
+  override defaultOutputKey = "ifElseOutput";
 
   constructor() {
     super(
-      IfElse.BLOCK_ID,
+      IfElse.BRICK_ID,
       "If-Else",
       "Run multiple bricks if a condition is met",
     );

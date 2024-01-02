@@ -54,6 +54,7 @@ type TourRun = {
 /**
  * Stack of tours in progress, with nested tours appearing toward the end of the array.
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const tourStack: TourRun[] = [];
 
 export type RegisteredTour = {
@@ -76,6 +77,7 @@ export type RegisteredTour = {
  * @see RunSubTourEffect
  * @see ModComponentBase.label
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const blueprintTourRegistry = new Map<
   RegistryId,
   Map<string, RegisteredTour>

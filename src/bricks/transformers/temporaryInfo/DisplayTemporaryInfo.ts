@@ -327,12 +327,12 @@ export async function displayTemporaryInfo({
 }
 
 class DisplayTemporaryInfo extends TransformerABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/display");
-  defaultOutputKey = "infoOutput";
+  static BRICK_ID = validateRegistryId("@pixiebrix/display");
+  override defaultOutputKey = "infoOutput";
 
   constructor() {
     super(
-      DisplayTemporaryInfo.BLOCK_ID,
+      DisplayTemporaryInfo.BRICK_ID,
       "Display Temporary Information",
       "Display a document in a temporary sidebar panel",
     );

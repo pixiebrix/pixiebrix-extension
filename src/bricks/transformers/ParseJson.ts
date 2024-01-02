@@ -91,7 +91,6 @@ class ParseJson extends TransformerABC {
       "@pixiebrix/parse/json",
       "Parse JSON",
       "Parse a JSON string, with JSON5 support",
-      "faCode",
     );
   }
 

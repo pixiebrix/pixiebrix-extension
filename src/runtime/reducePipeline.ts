@@ -19,7 +19,6 @@ import { type Logger } from "@/types/loggerTypes";
 import { castArray, isPlainObject, once } from "lodash";
 import {
   clearExtensionDebugLogs,
-  recordBrickRun,
   requestRun,
   sendDeploymentAlert,
   traces,
@@ -82,6 +81,7 @@ import { type Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 let brickRegistry: RegistryProtocol<RegistryId, Brick> = {
   async lookup(): Promise<Brick> {
     throw new Error(
@@ -585,15 +585,6 @@ export async function runBlock(
       props.context,
       logger.context,
     );
-  }
-
-  if (!selectTraceEnabled(trace)) {
-    // We're currently not recording runs while using the Page Editor to develop a mod
-    // Uses messenger notifier, so won't slow down execution
-    recordBrickRun({
-      blockId: block.id,
-      blueprintId: logger.context.blueprintId,
-    });
   }
 
   try {

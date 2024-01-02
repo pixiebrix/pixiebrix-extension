@@ -46,7 +46,6 @@ class RunBrickByIdTransformer extends TransformerABC {
       RunBrickByIdTransformer.BRICK_ID,
       "[Experimental] Run Brick by ID",
       "Run a brick by its registry ID",
-      "faCode",
     );
   }
 

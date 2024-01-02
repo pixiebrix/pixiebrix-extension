@@ -27,11 +27,10 @@ export class RandomNumber extends TransformerABC {
       "@pixiebrix/random",
       "Random Number",
       "Generate a random integer or decimal number",
-      "faCode",
     );
   }
 
-  defaultOutputKey = "random";
+  override defaultOutputKey = "random";
 
   override async isPure(): Promise<boolean> {
     return false;

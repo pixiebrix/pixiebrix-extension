@@ -30,7 +30,7 @@ import { BusinessError } from "@/errors/businessErrors";
  * Transformer that fills a template using the current context.
  */
 export class TemplateTransformer extends TransformerABC {
-  defaultOutputKey = "filled";
+  override defaultOutputKey = "filled";
 
   override async isPure(): Promise<boolean> {
     return true;
@@ -41,7 +41,6 @@ export class TemplateTransformer extends TransformerABC {
       "@pixiebrix/template",
       "Fill template",
       "Fill in a template using the current context",
-      "faCode",
     );
   }
 

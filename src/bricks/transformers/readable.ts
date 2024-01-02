@@ -27,11 +27,10 @@ export class Readable extends TransformerABC {
       "@pixiebrix/extract/readable",
       "Extract Article or Readable Content",
       "Extract the article or other readable content from a web page",
-      "faCode",
     );
   }
 
-  defaultOutputKey = "article";
+  override defaultOutputKey = "article";
 
   override async isPure(): Promise<boolean> {
     // Technically is not pure, because value depends on document state. But it generally won't change

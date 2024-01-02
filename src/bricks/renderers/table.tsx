@@ -27,12 +27,6 @@ import { type SafeHTML } from "@/types/stringTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
 
-// Type ColumnDefinition = {
-//   label: string;
-//   property: string;
-//   href: string;
-// };
-
 function makeLinkRenderer(href: string) {
   return (value: unknown, row: Row) => {
     // Currently for TableRenderer we only support directly accessing the href. This matches the behavior in
@@ -56,7 +50,6 @@ export class TableRenderer extends RendererABC {
       "@pixiebrix/table",
       "A customizable table",
       "A customizable table that displays a list of values",
-      "faTable",
     );
   }
 

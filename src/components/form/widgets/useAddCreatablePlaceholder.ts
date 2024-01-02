@@ -18,11 +18,11 @@
 import { useMemo } from "react";
 
 // Disabled placeholder option to indicate that a user can create an option
-const creatablePlaceholder = {
+const CREATABLE_PLACEHOLDER = {
   value: "",
   label: "Start typing to filter or create new entry",
   isDisabled: true,
-};
+} as const;
 
 /**
  * Adds a disabled placeholder options if creatable === true and the text-input is empty
@@ -42,7 +42,7 @@ export default function useAddCreatablePlaceholder<OptionType>({
   return useMemo(
     () =>
       creatable && textInputValue.length === 0
-        ? [creatablePlaceholder, ...options]
+        ? [CREATABLE_PLACEHOLDER, ...options]
         : options,
     [creatable, options, textInputValue],
   );

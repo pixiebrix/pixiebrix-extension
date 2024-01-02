@@ -1,3 +1,6 @@
+const { readFileSync } = require("fs");
+const { resolve } = require("path");
+
 const restrictedZones = [
   "background",
   "contentScript",
@@ -126,10 +129,15 @@ module.exports = {
     },
     {
       files: [
-        // background folder
         "./src/background/**",
+        ...readFileSync(
+          resolve(__dirname, "eslint-local-rules/persistBackgroundData.txt"),
+          "utf8",
+        )
+          .split("\n")
+          .filter((line) => line.startsWith("./src/")),
       ],
-      excludedFiles: ["**/*.test.*"],
+      excludedFiles: ["**/*.test.*", "**/api.ts"],
       rules: {
         "local-rules/persistBackgroundData": "error",
       },

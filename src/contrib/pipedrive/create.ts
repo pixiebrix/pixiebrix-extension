@@ -30,7 +30,6 @@ export class AddOrganization extends EffectABC {
       "pipedrive/organizations-add",
       "Add Organization in Pipedrive",
       "Add an organization in Pipedrive CRM if it does not already exist",
-      "faUserPlus",
     );
   }
 
@@ -100,7 +99,6 @@ export class AddPerson extends EffectABC {
       "pipedrive/persons-add",
       "Add Person in Pipedrive",
       "Add a person in Pipedrive CRM if they do not already exist",
-      "faUserPlus",
     );
   }
 
