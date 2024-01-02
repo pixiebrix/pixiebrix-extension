@@ -34,7 +34,6 @@ export class GetAPITransformer extends TransformerABC {
       GetAPITransformer.BLOCK_ID,
       "[Deprecated] HTTP GET",
       "Fetch data from an API",
-      "faCloud",
     );
   }
 

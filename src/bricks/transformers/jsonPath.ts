@@ -29,7 +29,6 @@ export class JSONPathTransformer extends TransformerABC {
       "@pixiebrix/jsonpath",
       "JSONPath",
       "Apply a JSONPath expression: https://github.com/s3u/JSONPath",
-      "faCode",
     );
   }
 

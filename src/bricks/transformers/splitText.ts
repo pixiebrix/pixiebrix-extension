@@ -38,7 +38,6 @@ export class SplitText extends TransformerABC {
       "@pixiebrix/text/split",
       "Split/Chunk Text",
       "Split/chunk text into chunks, e.g., for providing to an LLM",
-      "faCode",
     );
   }
 

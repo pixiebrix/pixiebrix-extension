@@ -41,7 +41,6 @@ export class TemplateTransformer extends TransformerABC {
       "@pixiebrix/template",
       "Fill template",
       "Fill in a template using the current context",
-      "faCode",
     );
   }
 

@@ -52,7 +52,6 @@ export class UrlParser extends TransformerABC {
       "@pixiebrix/parse-url",
       "Parse URL",
       "Parse a URL into its components",
-      "faCode",
     );
   }
 

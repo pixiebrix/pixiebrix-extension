@@ -27,7 +27,6 @@ export class RandomNumber extends TransformerABC {
       "@pixiebrix/random",
       "Random Number",
       "Generate a random integer or decimal number",
-      "faCode",
     );
   }
 

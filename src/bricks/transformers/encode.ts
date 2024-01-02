@@ -31,7 +31,6 @@ export class Base64Encode extends TransformerABC {
       "@pixiebrix/encode/btoa",
       "Encode a string as Base64",
       "Returns an ASCII string containing the Base64 representation of stringToEncode.",
-      "faCode",
     );
   }
 
@@ -60,7 +59,6 @@ export class Base64Decode extends TransformerABC {
       "@pixiebrix/encode/atob",
       "Decode a Base64 string",
       "Returns an ASCII string containing decoded data from encodedData",
-      "faCode",
     );
   }
 

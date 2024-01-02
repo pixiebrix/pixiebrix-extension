@@ -19,7 +19,6 @@ import { type AxiosRequestConfig } from "axios";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
-import { type BrickIcon } from "@/types/iconTypes";
 import { type Except, type JsonObject, type JsonValue } from "type-fest";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 
@@ -360,7 +359,6 @@ export abstract class IntegrationABC<
     public id: RegistryId,
     public name: string,
     public description?: string,
-    public icon?: BrickIcon,
   ) {
     // No body necessary https://www.typescriptlang.org/docs/handbook/2/classes.html#parameter-properties
   }

@@ -36,7 +36,6 @@ class RunMetadataTransformer extends TransformerABC {
       "@pixiebrix/reflect/run-metadata",
       "[Experimental] Run Metadata",
       "Returns metadata for the current run",
-      "faCode",
     );
   }
 
