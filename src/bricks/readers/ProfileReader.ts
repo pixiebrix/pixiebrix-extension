@@ -21,7 +21,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { type UserData } from "@/auth/authTypes";
 
 class ProfileReader extends ReaderABC {
-  defaultOutputKey = "profile";
+  override defaultOutputKey = "profile";
 
   constructor() {
     super(

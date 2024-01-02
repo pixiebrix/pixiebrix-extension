@@ -54,12 +54,12 @@ export async function createFrameSource(
 }
 
 export class FormTransformer extends TransformerABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/form-modal");
-  defaultOutputKey = "form";
+  static BRICK_ID = validateRegistryId("@pixiebrix/form-modal");
+  override defaultOutputKey = "form";
 
   constructor() {
     super(
-      FormTransformer.BLOCK_ID,
+      FormTransformer.BRICK_ID,
       "Show a modal or sidebar form",
       "Show a form as a modal or in the sidebar, and return the input",
       "faCode",

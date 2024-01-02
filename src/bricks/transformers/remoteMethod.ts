@@ -75,7 +75,7 @@ export class RemoteMethod extends TransformerABC {
     );
   }
 
-  defaultOutputKey = "response";
+  override defaultOutputKey = "response";
 
   inputSchema: Schema = propertiesToSchema(inputProperties, ["url"]);
 

@@ -33,12 +33,12 @@ import { validateRegistryId } from "@/types/helpers";
  * - Performance tracing
  */
 class Run extends TransformerABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/run");
-  defaultOutputKey = "runOutput";
+  static BRICK_ID = validateRegistryId("@pixiebrix/run");
+  override defaultOutputKey = "runOutput";
 
   constructor() {
     super(
-      Run.BLOCK_ID,
+      Run.BRICK_ID,
       "Run Bricks",
       "Run one or more bricks synchronously or asynchronously",
     );

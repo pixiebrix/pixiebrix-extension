@@ -100,7 +100,7 @@ class ConvertDocument extends TransformerABC {
     return true;
   }
 
-  defaultOutputKey = "document";
+  override defaultOutputKey = "document";
 
   inputSchema: Schema = propertiesToSchema(
     {

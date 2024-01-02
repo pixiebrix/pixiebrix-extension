@@ -78,7 +78,7 @@ test("should invoke the callback for the pipeline bricks", () => {
 test("should invoke the callback for the sub pipeline bricks", () => {
   const subPipeline = pipelineFactory();
   const forEachBrick = brickConfigFactory({
-    id: ForEach.BLOCK_ID,
+    id: ForEach.BRICK_ID,
     config: {
       elements: toExpression("var", "@elements"),
       body: toExpression("pipeline", subPipeline),

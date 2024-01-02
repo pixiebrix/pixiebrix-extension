@@ -31,7 +31,7 @@ export class SplitText extends TransformerABC {
     return true;
   }
 
-  defaultOutputKey = "split";
+  override defaultOutputKey = "split";
 
   constructor() {
     super(

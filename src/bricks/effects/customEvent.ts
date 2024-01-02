@@ -48,7 +48,7 @@ class CustomEventEffect extends EffectABC {
     required: ["eventName"],
   };
 
-  uiSchema: UiSchema = {
+  override uiSchema: UiSchema = {
     eventName: {
       "ui:widget": "SchemaCustomEventWidget",
     },

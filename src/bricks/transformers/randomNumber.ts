@@ -31,7 +31,7 @@ export class RandomNumber extends TransformerABC {
     );
   }
 
-  defaultOutputKey = "random";
+  override defaultOutputKey = "random";
 
   override async isPure(): Promise<boolean> {
     return false;

@@ -38,7 +38,7 @@ export class ComponentReader extends TransformerABC {
     );
   }
 
-  defaultOutputKey = "data";
+  override defaultOutputKey = "data";
 
   inputSchema: Schema = {
     type: "object",

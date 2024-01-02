@@ -46,7 +46,7 @@ export class ParseDate extends TransformerABC {
     return true;
   }
 
-  defaultOutputKey = "parsedDate";
+  override defaultOutputKey = "parsedDate";
 
   constructor() {
     super(

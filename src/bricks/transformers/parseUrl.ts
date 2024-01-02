@@ -45,7 +45,7 @@ export class UrlParser extends TransformerABC {
     return true;
   }
 
-  defaultOutputKey = "parsedUrl";
+  override defaultOutputKey = "parsedUrl";
 
   constructor() {
     super(
