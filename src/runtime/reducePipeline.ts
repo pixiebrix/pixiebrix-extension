@@ -19,7 +19,6 @@ import { type Logger } from "@/types/loggerTypes";
 import { castArray, isPlainObject, once } from "lodash";
 import {
   clearExtensionDebugLogs,
-  recordBrickRun,
   requestRun,
   sendDeploymentAlert,
   traces,
@@ -585,15 +584,6 @@ export async function runBlock(
       props.context,
       logger.context,
     );
-  }
-
-  if (!selectTraceEnabled(trace)) {
-    // We're currently not recording runs while using the Page Editor to develop a mod
-    // Uses messenger notifier, so won't slow down execution
-    recordBrickRun({
-      blockId: block.id,
-      blueprintId: logger.context.blueprintId,
-    });
   }
 
   try {
