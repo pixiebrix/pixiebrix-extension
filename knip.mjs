@@ -65,14 +65,14 @@ const knipConfig = {
     exports: "warn",
     nsExports: "warn",
     types: "warn",
-    nsTypes: "warn",
-    enumMembers: "warn",
     // Incrementally enforce rules over time
     files: "error",
     duplicates: "error",
     dependencies: "error",
+    enumMembers: "error",
     classMembers: "error",
     binaries: "error",
+    nsTypes: "error",
   },
 };
 
