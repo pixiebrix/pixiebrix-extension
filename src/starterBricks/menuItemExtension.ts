@@ -86,7 +86,7 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/utils/domUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
-import { onAbort } from "@/utils/promiseUtils";
+import { onAbort } from "abort-utils";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -514,8 +514,10 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       },
     );
 
-    const [menuPromise, cancelWait] = awaitElementOnce(containerSelector);
-    onAbort(this.cancelController, cancelWait);
+    const menuPromise = awaitElementOnce(
+      containerSelector,
+      this.cancelController.signal,
+    );
 
     let $menuContainers;
 
@@ -790,7 +792,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
       const observer = new MutationObserver(rerun);
 
-      const cancellers: Array<() => void> = [];
+      const abortController = new AbortController();
 
       let elementCount = 0;
       for (const dependency of dependencies) {
@@ -804,10 +806,11 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
             });
           }
         } else {
-          const [elementPromise, cancel] = awaitElementOnce(dependency);
-          cancellers.push(cancel);
-          // eslint-disable-next-line promise/prefer-await-to-then -- TODO: Maybe refactor
-          void elementPromise.then(() => {
+          void awaitElementOnce(
+            dependency,
+            abortController.signal,
+            // eslint-disable-next-line promise/prefer-await-to-then -- TODO: Maybe refactor
+          ).then(() => {
             rerun();
           });
         }
@@ -824,13 +827,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
           console.error("Error cancelling mutation observer", error);
         }
 
-        for (const cancel of cancellers) {
-          try {
-            cancel();
-          } catch (error) {
-            console.error("Error cancelling dependency observer", error);
-          }
-        }
+        abortController.abort();
       });
     } else {
       console.debug(`Extension has no dependencies: ${extension.id}`);
