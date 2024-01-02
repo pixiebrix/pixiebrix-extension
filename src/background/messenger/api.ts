@@ -115,7 +115,6 @@ export const performConfiguredRequestInBackground = getMethod(
 
 export const recordLog = getNotifier("RECORD_LOG", bg);
 export const recordWarning = getNotifier("RECORD_WARNING", bg);
-export const recordBrickRun = getNotifier("RECORD_BRICK_RUN", bg);
 export const clearLogs = getMethod("CLEAR_LOGS", bg);
 export const clearLog = getMethod("CLEAR_LOG", bg);
 export const clearExtensionDebugLogs = getMethod(
