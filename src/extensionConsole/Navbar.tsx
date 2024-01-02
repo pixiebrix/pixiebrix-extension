@@ -53,8 +53,8 @@ function useAdminConsoleUrl(): string {
 
   useEffect(() => {
     // Listen for token invalidation
-    const handler = async () => {
-      void refreshServiceUrl();
+    const handler = () => {
+      refreshServiceUrl();
     };
 
     addAuthListener(handler);
