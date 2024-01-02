@@ -40,6 +40,7 @@ const TIMEOUT_MS = 3000;
 
 type Payload = JsonValue;
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const log = process.env.SANDBOX_LOGGING ? console.debug : () => {};
 
 export type RequestPacket = {

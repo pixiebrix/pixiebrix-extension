@@ -229,6 +229,7 @@ class FormValidator<
   }
 }
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- OK to reinit on load
 const validator = new FormValidator();
 
 export default validator;

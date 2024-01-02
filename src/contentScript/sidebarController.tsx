@@ -57,6 +57,7 @@ let renderSequenceNumber = 0;
  */
 export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const panels: PanelEntry[] = [];
 
 let modActivationPanelEntry: ModActivationPanelEntry | null = null;

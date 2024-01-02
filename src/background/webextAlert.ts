@@ -1,8 +1,4 @@
-import {
-  isBackgroundPage,
-  isBackgroundWorker,
-  isFirefox,
-} from "webext-detect-page";
+import { isBackgroundWorker } from "webext-detect-page";
 
 function windowAlert(message: string): void {
   const url = new URL(browser.runtime.getURL("alert.html"));
@@ -23,13 +19,8 @@ function windowAlert(message: string): void {
   });
 }
 
-const webextAlert = ((): typeof alert => {
-  if ((isFirefox() && isBackgroundPage()) || isBackgroundWorker()) {
-    // Firefox and workers don't support alert() in background pages
-    return windowAlert;
-  }
-
-  return alert;
-})();
+// No alert() in background workers
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
+const webextAlert = isBackgroundWorker() ? windowAlert : alert;
 
 export default webextAlert;

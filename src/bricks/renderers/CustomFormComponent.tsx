@@ -36,15 +36,15 @@ import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { type UnknownObject } from "@/types/objectTypes";
 import { cloneDeep } from "lodash";
 
-const fields = {
+const FIELDS = {
   DescriptionField,
-};
+} as const;
 
-const uiWidgets = {
+const UI_WIDGETS = {
   imageCrop: ImageCropWidget,
   SelectWidget: RjsfSelectWidget,
   TextareaWidget: TextAreaWidget,
-};
+} as const;
 
 const CustomFormComponent: React.FunctionComponent<{
   schema: Schema;
@@ -105,8 +105,8 @@ const CustomFormComponent: React.FunctionComponent<{
               schema={cloneDeep(schema)}
               uiSchema={uiSchema}
               formData={formData}
-              fields={fields}
-              widgets={uiWidgets}
+              fields={FIELDS}
+              widgets={UI_WIDGETS}
               validator={validator}
               templates={templates}
               onChange={async ({ formData }: IChangeEvent<UnknownObject>) => {

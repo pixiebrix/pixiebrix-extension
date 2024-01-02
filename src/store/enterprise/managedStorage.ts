@@ -27,6 +27,9 @@ const MAX_MANAGED_STORAGE_WAIT_MILLIS = 2000;
  * The managedStorageState, or undefined if it hasn't been initialized yet.
  */
 let managedStorageState: ManagedStorageState | undefined;
+
+// TODO: Use `SimpleEventTarget` instead
+// eslint-disable-next-line local-rules/persistBackgroundData -- Functions
 const listeners = new Set<(state: ManagedStorageState) => void>();
 
 function notifyAll(managedStorageState: ManagedStorageState): void {

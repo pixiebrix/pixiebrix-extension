@@ -33,6 +33,7 @@ export type RegisteredForm = {
   blueprintId: RegistryId | null;
 };
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const forms = new Map<UUID, RegisteredForm>();
 
 /**

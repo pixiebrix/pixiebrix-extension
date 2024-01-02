@@ -39,6 +39,7 @@ type ChromeMessageSender = chrome.runtime.MessageSender;
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/";
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static, filled on load
 const handlers = new Map<string, HandlerEntry>();
 
 /**

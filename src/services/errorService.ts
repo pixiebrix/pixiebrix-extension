@@ -42,6 +42,7 @@ import { flagOn } from "@/auth/authUtils";
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Short-lived
 const buffer: ErrorItem[] = [];
 
 const debouncedFlush = debounce(flush, EVENT_BUFFER_DEBOUNCE_MS, {

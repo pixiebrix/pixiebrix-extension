@@ -31,14 +31,14 @@ export type SavingExtensionState = {
   isSaving: boolean;
 };
 
-const initialState: SavingExtensionState = {
+const INITIAL_STATE: SavingExtensionState = {
   isWizardOpen: false,
   isSaving: false,
 };
 
 export const savingExtensionSlice = createSlice({
   name: "savingExtension",
-  initialState,
+  initialState: INITIAL_STATE,
   reducers: {
     openWizard(state) {
       state.isWizardOpen = true;

@@ -24,7 +24,6 @@ import {
   preloadContextMenus,
   uninstallContextMenu,
 } from "@/background/contextMenus";
-import { openPopupPrompt } from "@/background/permissionPrompt";
 import {
   activateTab,
   closeTab,
@@ -99,11 +98,9 @@ declare global {
 
     GET_AVAILABLE_VERSION: typeof getAvailableVersion;
     INJECT_SCRIPT: typeof ensureContentScript;
-    CONTAINS_PERMISSIONS: typeof browser.permissions.contains;
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
-    OPEN_POPUP_PROMPT: typeof openPopupPrompt;
 
     ACTIVATE_PARTNER_THEME: typeof initPartnerTheme;
     GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
@@ -189,12 +186,10 @@ export default function registerMessenger(): void {
 
     GET_AVAILABLE_VERSION: getAvailableVersion,
     INJECT_SCRIPT: ensureContentScript,
-    CONTAINS_PERMISSIONS: browser.permissions.contains,
 
     PRELOAD_CONTEXT_MENUS: preloadContextMenus,
     UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
     ENSURE_CONTEXT_MENU: ensureContextMenu,
-    OPEN_POPUP_PROMPT: openPopupPrompt,
 
     GET_UID: uid,
     WAIT_FOR_TARGET_BY_URL: waitForTargetByUrl,

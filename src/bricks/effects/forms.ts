@@ -48,7 +48,7 @@ type SetValueData = RequireExactlyOne<
   "selector" | "name"
 >;
 
-const optionFields = ["checkbox", "radio"];
+const OPTION_FIELDS = new Set(["checkbox", "radio"]);
 
 type FieldElement = HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
 
@@ -91,7 +91,7 @@ async function setFieldValue(
 
   // `instanceof` is there as a type guard only
   if (
-    !optionFields.includes(field.type) ||
+    !OPTION_FIELDS.has(field.type) ||
     field instanceof HTMLTextAreaElement ||
     field instanceof HTMLSelectElement
   ) {
@@ -107,7 +107,7 @@ async function setFieldValue(
 
   if (dispatchEvent) {
     if (
-      !(optionFields.includes(field.type) || field instanceof HTMLSelectElement)
+      !(OPTION_FIELDS.has(field.type) || field instanceof HTMLSelectElement)
     ) {
       // Browsers normally fire these text events while typing
       field.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true }));
@@ -163,7 +163,7 @@ async function setValue({
   const isOption =
     isNameBased &&
     fields.some(
-      (field) => field.value === value && optionFields.includes(field.type),
+      (field) => field.value === value && OPTION_FIELDS.has(field.type),
     );
 
   return Promise.all(

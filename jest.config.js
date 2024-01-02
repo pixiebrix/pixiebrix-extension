@@ -17,7 +17,7 @@
 
 const config = {
   silent: true,
-  testEnvironment: "./FixJsdomEnvironment.js",
+  testEnvironment: "./src/testUtils/FixJsdomEnvironment.js",
   modulePaths: ["/src"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "yaml", "yml", "json"],
   testPathIgnorePatterns: ["<rootDir>/selenium/"],

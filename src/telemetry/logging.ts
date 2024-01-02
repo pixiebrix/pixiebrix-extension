@@ -102,14 +102,15 @@ type IndexKey = keyof Except<
   | "serviceVersion"
   | "extensionLabel"
 >;
-const indexKeys: IndexKey[] = [
+
+const INDEX_KEYS = [
   "extensionId",
   "blueprintId",
   "blockId",
   "extensionPointId",
   "serviceId",
   "authId",
-];
+] as const satisfies IndexKey[];
 
 async function openLoggingDB() {
   // Always return a new DB connection. IDB performance seems to be better than reusing the same connection.
@@ -135,7 +136,7 @@ async function openLoggingDB() {
         keyPath: "uuid",
       });
 
-      for (const key of indexKeys) {
+      for (const key of INDEX_KEYS) {
         store.createIndex(key, `context.${key}`, {
           unique: false,
         });
@@ -177,7 +178,7 @@ function makeMatchEntry(
   context: MessageContext = {},
 ): (entry: LogEntry) => boolean {
   return (entry: LogEntry) =>
-    indexKeys.every((key) => {
+    INDEX_KEYS.every((key) => {
       // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
       const toMatch = context[key];
       // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
@@ -261,7 +262,7 @@ export async function getLogEntries(
       .objectStore(ENTRY_OBJECT_STORE);
 
     let indexKey: IndexKey;
-    for (const key of indexKeys) {
+    for (const key of INDEX_KEYS) {
       // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
       if (context[key] != null) {
         indexKey = key;

@@ -27,7 +27,7 @@ type DocumentState = {
   options: BrickOptions<BrickArgsContext>;
 };
 
-const blankContext = {
+const BLANK_CONTEXT = {
   "@input": {},
   "@options": {},
 } as BrickArgsContext;
@@ -42,7 +42,7 @@ export const initialValue: DocumentState = {
       extensionId: UNSET_UUID,
       branches: [],
     },
-    ctxt: blankContext,
+    ctxt: BLANK_CONTEXT,
     // The root should correspond to the host page's content script. If we passed document here, it would end up being
     // the document what's rendering the document (e.g., the sidebar panel's iframe document)
     // XXX: BrickOptions.root is not nullable, so we'll need to adjust the type or behavior when introducing null checks

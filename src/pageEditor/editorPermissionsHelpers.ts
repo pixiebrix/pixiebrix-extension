@@ -26,7 +26,6 @@ import {
 import notify from "@/utils/notify";
 import { type Permissions } from "webextension-polyfill";
 import { castArray } from "lodash";
-import { containsPermissions } from "@/background/messenger/api";
 
 export async function calculatePermissionsForElement(
   element: ModComponentFormState,
@@ -46,7 +45,7 @@ export async function calculatePermissionsForElement(
     extensionPoint: starterBrick,
   });
 
-  const hasPermissions = await containsPermissions(permissions);
+  const hasPermissions = await browser.permissions.contains(permissions);
 
   return { hasPermissions, permissions };
 }

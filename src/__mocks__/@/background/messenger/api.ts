@@ -28,15 +28,6 @@ import { RegistryId } from "@/types/registryTypes";
 // Bypass auto-mocks
 export * from "../../../../background/messenger/api";
 
-// Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely
-export const containsPermissions = jest
-  .fn()
-  .mockRejectedValue(
-    new Error(
-      "Internal mocking error: jest should be using containsPermissions from mockPermissions",
-    ),
-  );
-
 export const getUID = jest.fn().mockResolvedValue(uuidv4());
 
 export const pong = jest.fn(() => ({

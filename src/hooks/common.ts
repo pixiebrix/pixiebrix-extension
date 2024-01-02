@@ -46,15 +46,15 @@ type State = {
   error: unknown;
 };
 
-const defaultAsyncState: State = {
+const DEFAULT_ASYNC_STATE: State = {
   data: undefined,
   isLoading: true,
   error: undefined,
-};
+} as const;
 
 const slice = createSlice({
   name: "asyncSlice",
-  initialState: defaultAsyncState,
+  initialState: DEFAULT_ASYNC_STATE,
   reducers: {
     start(state) {
       // NOTE: do not set `state.data = undefined` because that would immediately reset the initialState passed into
@@ -84,7 +84,7 @@ export function useAsyncState<T>(
   initialState?: T | undefined,
 ): AsyncState<T> {
   const [{ data, isLoading, error }, dispatch] = useReducer(slice.reducer, {
-    ...defaultAsyncState,
+    ...DEFAULT_ASYNC_STATE,
     isLoading: initialState === undefined,
     data: initialState,
   });

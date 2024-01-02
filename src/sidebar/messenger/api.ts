@@ -19,6 +19,7 @@
 import { getMethod, getNotifier } from "webext-messenger";
 
 const target = { tabId: "this", page: "/sidebar.html" } as const;
+
 const sidebarInThisTab = {
   renderPanels: getMethod("SIDEBAR_RENDER_PANELS", target),
   activatePanel: getMethod("SIDEBAR_ACTIVATE_PANEL", target),

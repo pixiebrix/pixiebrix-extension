@@ -50,6 +50,7 @@ function createExpression(tag: ExpressionType): yaml.Type {
   });
 }
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const deferExpression = new yaml.Type("!defer", {
   kind: "mapping",
 
@@ -65,6 +66,7 @@ const deferExpression = new yaml.Type("!defer", {
   represent: (data) => (data as UnknownObject).__value__,
 });
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const pipelineExpression = new yaml.Type("!pipeline", {
   kind: "sequence",
 
