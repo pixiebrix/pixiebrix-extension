@@ -427,7 +427,6 @@
     "./testUtils/factories/sidebarEntryFactories.ts",
     "./testUtils/factories/stringFactories.ts",
     "./testUtils/factories/traceFactories.ts",
-    "./testUtils/storePersistorMock.ts",
     "./testUtils/testMiddleware.ts",
     "./themes/light.ts",
     "./themes/themeStore.ts",

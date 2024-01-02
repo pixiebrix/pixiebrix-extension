@@ -22,22 +22,27 @@ const knipConfig = {
   ignore: [
     "**/__mocks__/**",
     "@contrib/**",
+    // App external messenger
+    "src/contentScript/externalProtocol.ts",
+    // Polyfills
+    "src/vendors/process.js",
     // Aliases defined in tsconfig.json
     "src/contrib/uipath/quietLogger.ts",
     // Development/debugging helpers
-    "src/development/hook/**",
+    "src/development/hooks/**",
+    "src/testUtils/hooks/**",
   ],
 
   rules: {
     // https://knip.dev/reference/issue-types/
-    files: "warn",
+    files: "error",
     dependencies: "warn",
     unlisted: "warn",
     binaries: "warn",
     unresolved: "warn",
     exports: "warn",
     nsExports: "warn",
-    types: "warn",
+    types: "error",
     nsTypes: "warn",
     enumMembers: "warn",
     classMembers: "warn",

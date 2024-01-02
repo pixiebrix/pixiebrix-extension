@@ -180,7 +180,7 @@ jobs:
       - run: npm install -D knip
       # Do a run without an exit code. Knip's "warn" setting is not working for files and devDependencies.
       - run: npm run dead-code -- --no-exit-code
-      - run: npm run dead-code -- --include duplicates
+      - run: npm run dead-code -- --include duplicates --include files --include types
 
   # https://pre-commit.com/#usage-in-continuous-integration
   prettier:
