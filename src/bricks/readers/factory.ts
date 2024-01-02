@@ -70,7 +70,6 @@ export type Read<TConfig = unknown> = (
   root: SelectorRoot,
 ) => Promise<JsonObject>;
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const _readerFactories = new Map<string, Read>();
 
 export function registerFactory(readerType: string, read: Read): void {
