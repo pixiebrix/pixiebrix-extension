@@ -29,7 +29,6 @@ import App from "@/extensionConsole/App";
 import { initToaster } from "@/utils/notify";
 import { initTelemetry } from "@/background/messenger/api";
 import { initMessengerLogging } from "@/development/messengerLogging";
-import registerMessenger from "@/extensionConsole/messenger/registration";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 
@@ -39,7 +38,6 @@ function init(): void {
 
 void initMessengerLogging();
 void initRuntimeLogging();
-registerMessenger();
 initToaster();
 initTelemetry();
 void initPerformanceMonitoring();
