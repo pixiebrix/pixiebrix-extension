@@ -26,7 +26,7 @@ import {
   insertSidebarFrame,
   isSidebarFrameVisible,
   removeSidebarFrame,
-} from "./sidebarDomControllerLite";
+} from "@/contentScript/sidebarDomControllerLite";
 import { type Except } from "type-fest";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";

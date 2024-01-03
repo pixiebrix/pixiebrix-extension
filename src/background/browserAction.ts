@@ -106,11 +106,22 @@ function getPopoverUrl(tabUrl: string | null): string | null {
 
 export default function initBrowserAction(): void {
   if (isMV3()) {
-    chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
+    void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
 
-    browserAction.onClicked.addListener((tab) => {
-      console.log("xxxxxxxxxx", { tabId: tab.id });
-      chrome.sidePanel.open({ tabId: tab.id });
+    browserAction.onClicked.addListener(async (tab) => {
+      const tabId = tab.id;
+
+      // Call open then setOptions
+      // https://github.com/GoogleChrome/chrome-extensions-samples/blob/main/functional-samples/cookbook.sidepanel-open/script.js#L9
+      await chrome.sidePanel.open({
+        tabId,
+      });
+
+      await chrome.sidePanel.setOptions({
+        tabId,
+        path: `sidebar.html?tabId=${tabId}`,
+        enabled: true,
+      });
     });
   } else {
     browserAction.onClicked.addListener(handleBrowserAction);

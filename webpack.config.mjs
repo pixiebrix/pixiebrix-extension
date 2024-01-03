@@ -36,6 +36,7 @@ const require = createRequire(import.meta.url);
 
 loadEnv();
 
+console.log("MV:", process.env.MV);
 console.log("SOURCE_VERSION:", process.env.SOURCE_VERSION);
 console.log("SERVICE_URL:", process.env.SERVICE_URL);
 console.log("MARKETPLACE_URL:", process.env.MARKETPLACE_URL);
@@ -136,6 +137,14 @@ const createConfig = (env, options) =>
 
         ...(isProd(options) || process.env.DEV_REDUX_LOGGER === "false"
           ? { "redux-logger": false }
+          : {}),
+
+        // Swap the sidebarDomControllerLite implementation based on the manifest version
+        ...(process.env.MV === "3"
+          ? {
+              [path.resolve("src/contentScript/sidebarDomControllerLite")]:
+                path.resolve("src/contentScript/sidebarDomControllerLiteMv3"),
+            }
           : {}),
       },
     },

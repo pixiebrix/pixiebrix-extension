@@ -24,6 +24,11 @@ import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/domConstants";
 import shadowWrap from "@/utils/shadowWrap";
 import { expectContext } from "@/utils/expectContext";
 import { uuidv4 } from "@/types/helpers";
+import { isMV3 } from "@/mv3/api";
+
+if (isMV3()) {
+  throw new Error("sidebarDomControllerLite.ts should not be imported in MV3");
+}
 
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";

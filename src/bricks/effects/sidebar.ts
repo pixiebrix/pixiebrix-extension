@@ -22,6 +22,8 @@ import { hideSidebar, showSidebar } from "@/contentScript/sidebarController";
 import { propertiesToSchema } from "@/validators/generic";
 
 import { logPromiseDuration } from "@/utils/promiseUtils";
+import { isMV3 } from "@/mv3/api";
+import { BusinessError } from "@/errors/businessErrors";
 
 export class ShowSidebar extends EffectABC {
   constructor() {
@@ -87,6 +89,12 @@ export class HideSidebar extends EffectABC {
   inputSchema: Schema = SCHEMA_EMPTY_OBJECT;
 
   async effect(): Promise<void> {
+    if (isMV3()) {
+      // No way to programmatically hide yet, even from user gesture
+      // https://developer.chrome.com/docs/extensions/reference/api/sidePanel
+      throw new BusinessError("Hide Sidebar is not supported in Chromium MV3");
+    }
+
     hideSidebar();
   }
 }
