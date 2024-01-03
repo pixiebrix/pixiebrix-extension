@@ -46,7 +46,8 @@ export function isSidebarFrameVisible(): boolean {
   // - Might be able to subscribe via https://stackoverflow.com/a/77106777/402560. But may need extra machinery
   //   to handle background worker restarts.
 
-  return false;
+  // For now, mark as true so mods run
+  return true;
 }
 
 /** Removes the element; Returns false if no element was found */
