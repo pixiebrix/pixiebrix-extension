@@ -156,11 +156,10 @@ export class SearchText extends TransformerABC {
       "@pixiebrix/text/search",
       "Search Text",
       "Search for word and/or phrase(s) in text",
-      "faCode",
     );
   }
 
-  defaultOutputKey = "matches";
+  override defaultOutputKey = "matches";
 
   override async isPure(): Promise<boolean> {
     return true;

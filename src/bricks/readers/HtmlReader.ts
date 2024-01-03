@@ -29,7 +29,7 @@ import { type SelectorRoot } from "@/types/runtimeTypes";
  * @see ElementReader
  */
 export class HtmlReader extends ReaderABC {
-  defaultOutputKey = "html";
+  override defaultOutputKey = "html";
 
   constructor() {
     super(

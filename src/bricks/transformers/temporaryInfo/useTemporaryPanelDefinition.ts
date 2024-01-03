@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAsyncState } from "@/hooks/common";
 import { getPanelDefinition } from "@/contentScript/messenger/api";
 import { type UUID } from "@/types/stringTypes";
 import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
@@ -27,6 +26,7 @@ import {
   removeListener,
 } from "@/bricks/transformers/temporaryInfo/receiverProtocol";
 import { validateUUID } from "@/types/helpers";
+import useAsyncState from "@/hooks/useAsyncState";
 
 type PanelDefinition = {
   /**
@@ -62,7 +62,12 @@ function useTemporaryPanelDefinition(
 
   const [panelNonce, setNonce] = useState(initialNonce);
 
-  const [entry, isLoading, error, recalculate] = useAsyncState(async () => {
+  const {
+    data: entry,
+    isLoading,
+    error,
+    refetch,
+  } = useAsyncState(async () => {
     if (panelNonce) {
       return getPanelDefinition(target, panelNonce);
     }
@@ -79,7 +84,7 @@ function useTemporaryPanelDefinition(
         if (newEntry.nonce === panelNonce) {
           // Slightly inefficient to getPanelDefinition because the entry is available in the message. However, this
           // is the cleaner use of useAsyncState
-          void recalculate();
+          refetch();
         }
       },
       onSetPanelNonce(payload) {
@@ -101,7 +106,7 @@ function useTemporaryPanelDefinition(
     return () => {
       removeListener(listener);
     };
-  }, [frameNonce, panelNonce, recalculate]);
+  }, [frameNonce, panelNonce, refetch]);
 
   return {
     panelNonce,

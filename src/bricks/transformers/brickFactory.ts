@@ -34,6 +34,7 @@ import {
   type ApiVersion,
   type BrickArgs,
   type BrickOptions,
+  type OutputKey,
   validateBrickArgsContext,
 } from "@/types/runtimeTypes";
 import {
@@ -141,16 +142,14 @@ class UserDefinedBrick extends BrickABC {
 
   readonly inputSchema: Schema;
 
-  readonly uiSchema?: UiSchema;
-
   readonly version: SemVerString;
 
   constructor(
     private readonly registry: BrickRegistryProtocol,
     public readonly component: BrickDefinition,
   ) {
-    const { id, name, description, icon, version } = component.metadata;
-    super(id, name, description, icon);
+    const { id, name, description, version } = component.metadata;
+    super(id, name, description);
     // Fall back to v1 for backward compatability
     this.apiVersion = component.apiVersion ?? "v1";
     this.component = component;
@@ -158,16 +157,17 @@ class UserDefinedBrick extends BrickABC {
     this.uiSchema = this.component.uiSchema;
     this.outputSchema = this.component.outputSchema;
     this.version = version;
+    this.defaultOutputKey = UserDefinedBrick.parseDefaultOutputKey(component);
   }
 
-  get defaultOutputKey(): string | null {
-    if (!this.component.defaultOutputKey) {
+  private static parseDefaultOutputKey(definition: BrickDefinition): OutputKey {
+    if (!definition.defaultOutputKey) {
       return null;
     }
 
     try {
       // Already validated in the JSON Schema, but be defensive
-      return validateOutputKey(this.component.defaultOutputKey);
+      return validateOutputKey(definition.defaultOutputKey);
     } catch {
       return null;
     }

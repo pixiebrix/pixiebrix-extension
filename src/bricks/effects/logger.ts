@@ -37,7 +37,6 @@ export class LogEffect extends EffectABC {
       "@pixiebrix/browser/log",
       "Log To Console",
       "Log a message to the Browser's console",
-      "faSearch",
     );
   }
 

@@ -27,7 +27,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useModals } from "@/components/ConfirmationModal";
 import { type Permissions } from "webextension-polyfill";
-import { selectAdditionalPermissionsSync } from "webext-additional-permissions";
+import { extractAdditionalPermissions } from "webext-permissions";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { revertAll } from "@/store/commonActions";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
@@ -35,7 +35,7 @@ import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
 async function revokeAllAdditionalPermissions() {
   const permissions: Permissions.AnyPermissions =
     await browser.permissions.getAll();
-  const additional = selectAdditionalPermissionsSync(
+  const additional = extractAdditionalPermissions(
     permissions,
   ) as Permissions.Permissions;
   await browser.permissions.remove(additional);

@@ -30,7 +30,7 @@ import { type Schema } from "@/types/schemaTypes";
 
 class MapValues extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/map");
-  defaultOutputKey = "mapped";
+  override defaultOutputKey = "mapped";
 
   constructor() {
     super(

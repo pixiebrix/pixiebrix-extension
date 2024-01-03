@@ -40,7 +40,6 @@ class GetBrickInterfaceTransformer extends TransformerABC {
       GetBrickInterfaceTransformer.BRICK_ID,
       "[Experimental] Get Brick Interface",
       "Return the interface for a brick",
-      "faCode",
     );
   }
 

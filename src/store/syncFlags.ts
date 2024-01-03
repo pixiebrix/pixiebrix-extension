@@ -19,6 +19,7 @@ import { getUserData, addListener as addAuthListener } from "@/auth/token";
 import { expectContext } from "@/utils/expectContext";
 import { type UserData } from "@/auth/authTypes";
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Just a local cache of stored data
 let flags = new Set<string>();
 
 async function initFlags() {

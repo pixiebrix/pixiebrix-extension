@@ -169,6 +169,7 @@ export function propertiesToSchema(
   };
 }
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const pixieResolver: ResolverOptions = {
   order: 1,
   canRead: /^https?:\/\//i,
@@ -179,7 +180,7 @@ const pixieResolver: ResolverOptions = {
 
     throw new Error(`Unknown file ${file.url}`);
   },
-};
+} as const;
 
 export async function bundle(schema: Schema): Promise<Schema> {
   return $RefParser.bundle(schema, {

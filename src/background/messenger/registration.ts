@@ -24,7 +24,6 @@ import {
   preloadContextMenus,
   uninstallContextMenu,
 } from "@/background/contextMenus";
-import { openPopupPrompt } from "@/background/permissionPrompt";
 import {
   activateTab,
   closeTab,
@@ -66,7 +65,6 @@ import {
   collectPerformanceDiagnostics,
   initTelemetry,
   pong,
-  recordBrickRun,
   recordEvent,
   sendDeploymentAlert,
   uid,
@@ -99,11 +97,9 @@ declare global {
 
     GET_AVAILABLE_VERSION: typeof getAvailableVersion;
     INJECT_SCRIPT: typeof ensureContentScript;
-    CONTAINS_PERMISSIONS: typeof browser.permissions.contains;
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
-    OPEN_POPUP_PROMPT: typeof openPopupPrompt;
 
     ACTIVATE_PARTNER_THEME: typeof initPartnerTheme;
     GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
@@ -148,7 +144,6 @@ declare global {
     RECORD_LOG: typeof recordLog;
     RECORD_WARNING: typeof recordWarning;
     RECORD_ERROR: typeof recordError;
-    RECORD_BRICK_RUN: typeof recordBrickRun;
     RECORD_EVENT: typeof recordEvent;
     CLEAR_LOGS: typeof clearLogs;
     CLEAR_LOG: typeof clearLog;
@@ -189,12 +184,10 @@ export default function registerMessenger(): void {
 
     GET_AVAILABLE_VERSION: getAvailableVersion,
     INJECT_SCRIPT: ensureContentScript,
-    CONTAINS_PERMISSIONS: browser.permissions.contains,
 
     PRELOAD_CONTEXT_MENUS: preloadContextMenus,
     UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
     ENSURE_CONTEXT_MENU: ensureContextMenu,
-    OPEN_POPUP_PROMPT: openPopupPrompt,
 
     GET_UID: uid,
     WAIT_FOR_TARGET_BY_URL: waitForTargetByUrl,
@@ -233,7 +226,6 @@ export default function registerMessenger(): void {
     RECORD_LOG: recordLog,
     RECORD_WARNING: recordWarning,
     RECORD_ERROR: recordError,
-    RECORD_BRICK_RUN: recordBrickRun,
     RECORD_EVENT: recordEvent,
     CLEAR_LOGS: clearLogs,
     CLEAR_LOG: clearLog,

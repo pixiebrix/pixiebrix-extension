@@ -93,6 +93,7 @@ const getIcon = (
   color: string,
 ) => <Icon style={{ height: 24, color, flex: "0 0 24px" }} />;
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const toastStyle: ToastStyle = {
   success: {
     style: {
@@ -241,6 +242,7 @@ function _show(
 }
 
 // Please only add logic to `showNotification`
+// eslint-disable-next-line local-rules/persistBackgroundData -- Functions
 const notify = {
   /**
    * @example notify.error('User message')

@@ -22,7 +22,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import { type UnknownObject } from "@/types/objectTypes";
 
 export class MappingTransformer extends TransformerABC {
-  defaultOutputKey = "value";
+  override defaultOutputKey = "value";
 
   override async isPure(): Promise<boolean> {
     return true;
@@ -33,7 +33,6 @@ export class MappingTransformer extends TransformerABC {
       "@pixiebrix/mapping",
       "Map/Lookup Value",
       "Apply a mapping/lookup table",
-      "faCode",
     );
   }
 

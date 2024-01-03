@@ -140,6 +140,7 @@ export function searchData(query: string, data: unknown): unknown {
     : undefined;
 }
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const jsonTreeTheme: Theme = {
   extend: theme,
   nestedNodeItemString: {

@@ -21,7 +21,6 @@ import SelectWidget, {
   type SelectLike,
 } from "@/components/form/widgets/SelectWidget";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { type AsyncState, useAsyncState } from "@/hooks/common";
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
 import isPromise from "is-promise";
 import useReportError from "@/hooks/useReportError";
@@ -30,6 +29,8 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { type UnknownObject } from "@/types/objectTypes";
+import useAsyncState from "@/hooks/useAsyncState";
+import type { FetchableAsyncState } from "@/types/sliceTypes";
 
 export type OptionsFactory<T = unknown> = (
   config: SanitizedIntegrationConfig,
@@ -51,7 +52,7 @@ export function useOptionsResolver<T>(
   config: SanitizedIntegrationConfig,
   optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>,
   factoryArgs: UnknownObject,
-): AsyncState<Array<Option<T>>> {
+): FetchableAsyncState<Array<Option<T>>> {
   return useAsyncState<Array<Option<T>>>(async () => {
     if (isPromise(optionsFactory)) {
       console.debug("Options is a promise, returning promise directly");
@@ -79,11 +80,12 @@ const RemoteSelectWidget: React.FC<RemoteSelectWidgetProps> = ({
   factoryArgs,
   ...selectProps
 }) => {
-  const [options, isLoading, error, refreshOptions] = useOptionsResolver(
-    config,
-    optionsFactory,
-    factoryArgs,
-  );
+  const {
+    data: options,
+    isLoading,
+    error,
+    refetch: refreshOptions,
+  } = useOptionsResolver(config, optionsFactory, factoryArgs);
 
   useReportError(error);
 

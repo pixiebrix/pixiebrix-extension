@@ -29,7 +29,6 @@ import {
 } from "@/errors/networkErrorHelpers";
 import styles from "./ErrorDetail.module.scss";
 import useAsyncState from "@/hooks/useAsyncState";
-import { containsPermissions } from "@/background/messenger/api";
 import AsyncStateGate from "@/components/AsyncStateGate";
 
 function tryParse(value: unknown): unknown {
@@ -51,7 +50,7 @@ const NetworkErrorDetail: React.FunctionComponent<{
   const absoluteUrl = selectAbsoluteUrl(error.config);
 
   const permissionsState = useAsyncState<boolean | undefined>(
-    async () => containsPermissions({ origins: [absoluteUrl] }),
+    async () => browser.permissions.contains({ origins: [absoluteUrl] }),
     [absoluteUrl],
   );
 

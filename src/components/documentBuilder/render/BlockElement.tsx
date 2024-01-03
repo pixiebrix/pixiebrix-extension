@@ -17,7 +17,6 @@
 
 import React, { useContext } from "react";
 import { type BrickPipeline } from "@/bricks/types";
-import { useAsyncState } from "@/hooks/common";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { runRendererPipeline } from "@/contentScript/messenger/api";
@@ -30,6 +29,7 @@ import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
 import { getTopLevelFrame } from "webext-messenger";
 import { type PanelContext } from "@/types/sidebarTypes";
 import { type RendererRunPayload } from "@/types/rendererTypes";
+import useAsyncState from "@/hooks/useAsyncState";
 
 type BlockElementProps = {
   pipeline: BrickPipeline;
@@ -48,25 +48,28 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
   // Logger context will have both extensionId and blueprintId because they're passed from the containing PanelBody
   const panelContext = logger.context as PanelContext;
 
-  const [payload, isLoading, error] =
-    useAsyncState<RendererRunPayload>(async () => {
-      // We currently only support associating the sidebar with the content script in the top-level frame (frameId: 0)
-      const topLevelFrame = await getTopLevelFrame();
+  const {
+    data: payload,
+    isLoading,
+    error,
+  } = useAsyncState<RendererRunPayload>(async () => {
+    // We currently only support associating the sidebar with the content script in the top-level frame (frameId: 0)
+    const topLevelFrame = await getTopLevelFrame();
 
-      return runRendererPipeline(topLevelFrame, {
-        nonce: uuidv4(),
-        context: ctxt,
-        pipeline,
-        meta: {
-          ...meta,
-          // The pipeline is static, so don't need to maintain run counter on branches
-          branches: [...meta.branches, ...mapPathToTraceBranches(tracePath)],
-        },
-        // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
-        options: apiVersionOptions("v3"),
-        messageContext: logger.context,
-      });
-    }, [pipeline]);
+    return runRendererPipeline(topLevelFrame, {
+      nonce: uuidv4(),
+      context: ctxt,
+      pipeline,
+      meta: {
+        ...meta,
+        // The pipeline is static, so don't need to maintain run counter on branches
+        branches: [...meta.branches, ...mapPathToTraceBranches(tracePath)],
+      },
+      // TODO: pass runtime version via DocumentContext instead of hard-coding it. This will break for v4+
+      options: apiVersionOptions("v3"),
+      messageContext: logger.context,
+    });
+  }, [pipeline]);
 
   if (isLoading) {
     return (

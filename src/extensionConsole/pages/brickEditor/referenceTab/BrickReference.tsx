@@ -33,11 +33,11 @@ import Loader from "@/components/Loader";
 import BrickDetail from "./BrickDetail";
 import BlockResult from "./BlockResult";
 import { isOfficial } from "@/bricks/util";
-import { useAsyncState } from "@/hooks/common";
 import { find } from "@/registry/packageRegistry";
 import { brickToYaml } from "@/utils/objToYaml";
 import { useGetOrganizationsQuery } from "@/services/api";
 import { type Metadata } from "@/types/registryTypes";
+import useAsyncState from "@/hooks/useAsyncState";
 
 type BrickReferenceProps<T extends Metadata> = {
   bricks: T[];
@@ -68,19 +68,20 @@ const BrickReference = ({
     }
   }, [sortedBricks, selected, setSelected]);
 
-  const [brickConfig, isBrickConfigLoading] = useAsyncState(async () => {
-    if (!selected?.id) {
+  const { data: brickConfig, isLoading: isBrickConfigLoading } =
+    useAsyncState(async () => {
+      if (!selected?.id) {
+        return null;
+      }
+
+      const brickPackage = await find(selected.id);
+      if (brickPackage?.config) {
+        delete brickPackage.config.sharing;
+        return brickToYaml(brickPackage.config);
+      }
+
       return null;
-    }
-
-    const brickPackage = await find(selected.id);
-    if (brickPackage?.config) {
-      delete brickPackage.config.sharing;
-      return brickToYaml(brickPackage.config);
-    }
-
-    return null;
-  }, [selected]);
+    }, [selected]);
 
   const fuse: Fuse<Metadata> = useMemo(
     () =>

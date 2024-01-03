@@ -73,7 +73,7 @@ describe("normalizePipeline", () => {
   test("For-Each block", async () => {
     const pipeline: BrickConfig[] = [
       {
-        id: ForEach.BLOCK_ID,
+        id: ForEach.BRICK_ID,
         config: {
           elements: toExpression("var", "@input"),
           body: toExpression("pipeline", [echoBlockConfig, teapotBlockConfig]),
@@ -94,7 +94,7 @@ describe("normalizePipeline", () => {
   test("If-Else block", async () => {
     const pipeline: BrickConfig[] = [
       {
-        id: IfElse.BLOCK_ID,
+        id: IfElse.BRICK_ID,
         config: {
           condition: true,
           if: toExpression("pipeline", [echoBlockConfig]),
@@ -123,7 +123,7 @@ describe("normalizePipeline", () => {
   test("If-Else block with only If branch", async () => {
     const pipeline: BrickConfig[] = [
       {
-        id: IfElse.BLOCK_ID,
+        id: IfElse.BRICK_ID,
         config: {
           condition: true,
           if: toExpression("pipeline", [echoBlockConfig, teapotBlockConfig]),
@@ -148,7 +148,7 @@ describe("normalizePipeline", () => {
   test("Try-Except block", async () => {
     const pipeline: BrickConfig[] = [
       {
-        id: TryExcept.BLOCK_ID,
+        id: TryExcept.BRICK_ID,
         config: {
           try: toExpression("pipeline", [echoBlockConfig]),
           except: toExpression("pipeline", [teapotBlockConfig]),
@@ -176,7 +176,7 @@ describe("normalizePipeline", () => {
   test("Try-Except block with only Try branch", async () => {
     const pipeline: BrickConfig[] = [
       {
-        id: TryExcept.BLOCK_ID,
+        id: TryExcept.BRICK_ID,
         config: {
           try: toExpression("pipeline", [echoBlockConfig, teapotBlockConfig]),
         },
@@ -201,7 +201,7 @@ describe("normalizePipeline", () => {
     const createForEachBlock: (body: BrickConfig[]) => BrickConfig = (
       body,
     ) => ({
-      id: ForEach.BLOCK_ID,
+      id: ForEach.BRICK_ID,
       config: {
         elements: toExpression("var", "@input"),
         body: toExpression("pipeline", body),
@@ -268,7 +268,7 @@ describe("omitEditorMetadata", () => {
   test("For-Each block", () => {
     const pipeline: BrickConfig[] = [
       {
-        id: ForEach.BLOCK_ID,
+        id: ForEach.BRICK_ID,
         instanceId: uuidSequence(3),
         config: {
           elements: toExpression("var", "@input"),
@@ -288,7 +288,7 @@ describe("omitEditorMetadata", () => {
   test("If-Else block", () => {
     const pipeline: BrickConfig[] = [
       {
-        id: IfElse.BLOCK_ID,
+        id: IfElse.BRICK_ID,
         instanceId: uuidSequence(3),
         config: {
           condition: true,
@@ -316,7 +316,7 @@ describe("omitEditorMetadata", () => {
   test("Try-Except block", () => {
     const pipeline: BrickConfig[] = [
       {
-        id: TryExcept.BLOCK_ID,
+        id: TryExcept.BRICK_ID,
         instanceId: uuidSequence(3),
         config: {
           try: toExpression("pipeline", [echoBlockConfig]),
@@ -345,7 +345,7 @@ describe("omitEditorMetadata", () => {
       n: number,
       body: BrickConfig[],
     ) => BrickConfig = (n, body) => ({
-      id: ForEach.BLOCK_ID,
+      id: ForEach.BRICK_ID,
       instanceId: uuidSequence(n),
       config: {
         elements: toExpression("var", "@input"),

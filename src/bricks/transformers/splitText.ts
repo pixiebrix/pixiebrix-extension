@@ -31,14 +31,13 @@ export class SplitText extends TransformerABC {
     return true;
   }
 
-  defaultOutputKey = "split";
+  override defaultOutputKey = "split";
 
   constructor() {
     super(
       "@pixiebrix/text/split",
       "Split/Chunk Text",
       "Split/chunk text into chunks, e.g., for providing to an LLM",
-      "faCode",
     );
   }
 

@@ -56,6 +56,8 @@ type DatabaseChangeListener = {
 /**
  * `backgroundRegistry` database change listeners.
  */
+// TODO: Use SimpleEventTarget instead
+// eslint-disable-next-line local-rules/persistBackgroundData -- Functions
 const databaseChangeListeners: DatabaseChangeListener[] = [];
 
 function notifyDatabaseListeners() {

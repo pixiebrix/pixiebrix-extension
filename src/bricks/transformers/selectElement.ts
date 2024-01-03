@@ -29,7 +29,7 @@ export class SelectElement extends TransformerABC {
     );
   }
 
-  defaultOutputKey = "selected";
+  override defaultOutputKey = "selected";
 
   // In the future, can add options for selecting multiple elements, providing instructions to the user, filtering
   // valid elements, etc.

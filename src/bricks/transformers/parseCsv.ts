@@ -23,12 +23,7 @@ import { BusinessError } from "@/errors/businessErrors";
 
 export class ParseCsv extends TransformerABC {
   constructor() {
-    super(
-      "@pixiebrix/parse/csv",
-      "Parse CSV",
-      "Parse a string as a CSV file",
-      "faCode",
-    );
+    super("@pixiebrix/parse/csv", "Parse CSV", "Parse a string as a CSV file");
   }
 
   override async isPure(): Promise<boolean> {

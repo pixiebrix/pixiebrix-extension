@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAsyncState } from "@/hooks/common";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Button } from "react-bootstrap";
 import Centered from "@/components/Centered";
 import { getBaseURL } from "@/services/baseService";
+import useAsyncState from "@/hooks/useAsyncState";
 
 const LoginCard: React.VoidFunctionComponent = () => {
-  const [baseURL] = useAsyncState(getBaseURL, []);
+  const { data: baseURL } = useAsyncState(getBaseURL, []);
 
   return (
     <Centered vertically>

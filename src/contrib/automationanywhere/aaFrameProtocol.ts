@@ -57,6 +57,7 @@ export type SetCopilotDataMessage = {
 /**
  * Mapping from processId to form data.
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const hostData = new Map<string, UnknownObject>();
 
 function setHostData(processDataMap: ProcessDataMap): void {

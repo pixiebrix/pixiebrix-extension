@@ -21,13 +21,18 @@ const path = require("node:path");
 
 const ruleFiles = fs
   .readdirSync(__dirname)
-  .filter((file) => !file.endsWith("test.js") && !file.endsWith("index.js"));
+  .filter(
+    (file) =>
+      !file.endsWith("test.js") &&
+      !file.endsWith("index.js") &&
+      file.endsWith(".js"),
+  );
 
 const rules = Object.fromEntries(
   ruleFiles.map((file) => [
     path.basename(file, ".js"),
     // eslint-disable-next-line security/detect-non-literal-require
-    require("./" + file),
+    require(`./${file}`),
   ]),
 );
 

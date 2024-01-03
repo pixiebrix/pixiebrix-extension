@@ -25,14 +25,8 @@ import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
-// Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely
-export const containsPermissions = browser.permissions
-  ? browser.permissions.contains
-  : getMethod("CONTAINS_PERMISSIONS", bg);
-
 export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
 export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
-export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT", bg);
 export const getUID = getMethod("GET_UID", bg);
 export const waitForTargetByUrl = getMethod("WAIT_FOR_TARGET_BY_URL", bg);
 
@@ -121,7 +115,6 @@ export const performConfiguredRequestInBackground = getMethod(
 
 export const recordLog = getNotifier("RECORD_LOG", bg);
 export const recordWarning = getNotifier("RECORD_WARNING", bg);
-export const recordBrickRun = getNotifier("RECORD_BRICK_RUN", bg);
 export const clearLogs = getMethod("CLEAR_LOGS", bg);
 export const clearLog = getMethod("CLEAR_LOG", bg);
 export const clearExtensionDebugLogs = getMethod(

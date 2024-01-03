@@ -47,6 +47,7 @@ function createError(
   return new errorOrCtor(defaultMessage);
 }
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const contexts = [
   "web",
   "extension",
@@ -55,6 +56,8 @@ const contexts = [
   "devTools",
   "sidebar",
 ] as const;
+
+// eslint-disable-next-line local-rules/persistBackgroundData -- Functions
 const contextMap = new Map<(typeof contexts)[number], () => boolean>([
   ["web", isWebPage],
   ["extension", isExtensionContext],

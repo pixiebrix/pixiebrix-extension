@@ -45,14 +45,13 @@ export class UrlParser extends TransformerABC {
     return true;
   }
 
-  defaultOutputKey = "parsedUrl";
+  override defaultOutputKey = "parsedUrl";
 
   constructor() {
     super(
       "@pixiebrix/parse-url",
       "Parse URL",
       "Parse a URL into its components",
-      "faCode",
     );
   }
 

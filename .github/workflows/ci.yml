@@ -5,6 +5,8 @@ on: push
 env:
   # Creates and uploads sourcemaps to Rollbar, and save the built extension as an artifact
   PUBLIC_RELEASE: ${{ github.ref == 'refs/heads/main' }}
+  # Staging URL, also directly used by webpack
+  SERVICE_URL: https://app-stg.pixiebrix.com/
 
 jobs:
   test:
@@ -70,8 +72,7 @@ jobs:
         env:
           MV: ${{ matrix.MV }}
           ENVIRONMENT: staging
-          EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*
-          SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
+          EXTERNALLY_CONNECTABLE: ${{ env.SERVICE_URL }}*,http://127.0.0.1/*
           MARKETPLACE_URL: ${{ secrets.STAGING_MARKETPLACE_URL }}
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
@@ -178,8 +179,8 @@ jobs:
       # https://knip.dev/overview/getting-started#without-installation
       - run: npm install -D knip
       # Do a run without an exit code. Knip's "warn" setting is not working for files and devDependencies.
-      - run: npm run dead-code -- --no-exit-code
-      - run: npm run dead-code -- --include duplicates
+      - run: npm run dead-code -- --config knip.mjs --no-exit-code
+      - run: npm run dead-code -- --config knip.mjs --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes
 
   # https://pre-commit.com/#usage-in-continuous-integration
   prettier:

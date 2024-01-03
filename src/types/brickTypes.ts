@@ -21,7 +21,6 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
-import { type BrickIcon } from "@/types/iconTypes";
 
 /**
  * An instance of a re-usable brick.
@@ -144,9 +143,11 @@ export abstract class BrickABC implements Brick {
 
   readonly description?: string;
 
-  readonly icon?: BrickIcon;
-
   abstract readonly inputSchema: Schema;
+
+  uiSchema?: UiSchema = undefined;
+
+  defaultOutputKey?: string = undefined;
 
   outputSchema?: Schema = undefined;
 
@@ -188,21 +189,15 @@ export abstract class BrickABC implements Brick {
    */
   getPipelineVariableSchema(
     _config: BrickConfig,
-    pipelineName: string,
+    _pipelineName: string,
   ): Schema | undefined {
     return undefined;
   }
 
-  protected constructor(
-    id: string,
-    name: string,
-    description?: string,
-    icon?: BrickIcon,
-  ) {
+  protected constructor(id: string, name: string, description?: string) {
     this.id = validateRegistryId(id);
     this.name = name;
     this.description = description;
-    this.icon = icon;
   }
 
   abstract run(value: BrickArgs, options: BrickOptions): Promise<unknown>;

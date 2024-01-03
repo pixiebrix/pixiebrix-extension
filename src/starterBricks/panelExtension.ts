@@ -62,7 +62,6 @@ import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { boolean } from "@/utils/typeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
-import { onAbort } from "@/utils/promiseUtils";
 
 export type PanelConfig = {
   heading?: string;
@@ -216,8 +215,10 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
       `Awaiting panel container for ${this.id}: ${JSON.stringify(selector)}`,
     );
 
-    const [containerPromise, cancelInstall] = awaitElementOnce(selector);
-    onAbort(this.cancelController, cancelInstall);
+    const containerPromise = awaitElementOnce(
+      selector,
+      this.cancelController.signal,
+    );
 
     this.$container = (await containerPromise) as JQuery;
 

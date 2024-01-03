@@ -708,7 +708,7 @@ describe("Collecting available vars", () => {
   describe("if-else brick", () => {
     beforeAll(async () => {
       const ifElseBlock = {
-        id: IfElse.BLOCK_ID,
+        id: IfElse.BRICK_ID,
         outputKey: validateOutputKey("ifOutput"),
         config: {
           condition: true,
@@ -936,7 +936,7 @@ describe("Collecting available vars", () => {
   describe("try-except brick", () => {
     beforeAll(async () => {
       const tryExceptBlock = {
-        id: TryExcept.BLOCK_ID,
+        id: TryExcept.BRICK_ID,
         outputKey: validateOutputKey("typeExcept"),
         config: {
           errorKey: "error",
@@ -976,7 +976,7 @@ describe("Collecting available vars", () => {
   describe("for-each element brick", () => {
     beforeAll(async () => {
       const forEachBlock = {
-        id: ForEachElement.BLOCK_ID,
+        id: ForEachElement.BRICK_ID,
         outputKey: validateOutputKey("forEachOutput"),
         config: {
           elementKey: "element",
@@ -1007,7 +1007,7 @@ describe("Collecting available vars", () => {
   describe("for-each brick", () => {
     beforeAll(async () => {
       const forEachBlock = {
-        id: ForEach.BLOCK_ID,
+        id: ForEach.BRICK_ID,
         outputKey: validateOutputKey("forEachOutput"),
         config: {
           elementKey: "element",

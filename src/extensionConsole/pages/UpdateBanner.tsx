@@ -17,15 +17,15 @@
 
 import React from "react";
 import { Button } from "react-bootstrap";
-import { useAsyncState } from "@/hooks/common";
 import { getAvailableVersion } from "@/background/messenger/api";
 import reportError from "@/telemetry/reportError";
 import Banner from "@/components/banner/Banner";
 import { gt } from "semver";
+import useAsyncState from "@/hooks/useAsyncState";
 
 // XXX: move this kind of async state to the Redux state.
-export function useUpdateAvailable() {
-  const [updateAvailable] = useAsyncState(async () => {
+export function useUpdateAvailable(): boolean {
+  const { data: updateAvailable } = useAsyncState(async () => {
     try {
       const available = await getAvailableVersion();
       const installed = browser.runtime.getManifest().version;
