@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useAsyncState } from "@/hooks/common";
 import {
   addListener as addAuthListener,
   isLinked,
   removeListener as removeAuthListener,
 } from "@/auth/token";
+import useAsyncState from "@/hooks/useAsyncState";
 import { useEffect } from "react";
 
 type LinkState = {
@@ -40,16 +40,18 @@ type LinkState = {
 function useLinkState(): LinkState {
   // See component documentation for why both isLinked and useGetMeQuery are required
   // hasToken is true for either native PixieBrix token, or partner Bearer JWT
-  const [hasToken, tokenLoading, tokenError, refreshTokenState] = useAsyncState(
-    isLinked,
-    [],
-  );
+  const {
+    data: hasToken,
+    isLoading: tokenLoading,
+    isError: tokenError,
+    refetch: refreshTokenState,
+  } = useAsyncState(isLinked, []);
 
   useEffect(() => {
     // Listen for token invalidation
     const handler = async () => {
       console.debug("Auth state changed, checking for token");
-      void refreshTokenState();
+      refreshTokenState();
     };
 
     addAuthListener(handler);

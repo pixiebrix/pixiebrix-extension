@@ -148,9 +148,11 @@ export function isTraceError(
   return "error" in traceRecord && traceRecord.error != null;
 }
 
-const indexKeys: Array<
-  keyof Pick<TraceRecordMeta, "runId" | "blockInstanceId" | "extensionId">
-> = ["runId", "blockInstanceId", "extensionId"];
+const INDEX_KEYS = [
+  "runId",
+  "blockInstanceId",
+  "extensionId",
+] as const satisfies Array<keyof TraceRecordMeta>;
 
 interface TraceDB extends DBSchema {
   [ENTRY_OBJECT_STORE]: {
@@ -189,7 +191,7 @@ async function openTraceDB() {
       });
 
       // Create individual indexes
-      for (const indexKey of indexKeys) {
+      for (const indexKey of INDEX_KEYS) {
         store.createIndex(indexKey, indexKey, {
           unique: false,
         });

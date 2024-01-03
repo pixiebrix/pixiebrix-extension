@@ -1,12 +1,12 @@
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 import { camelCase } from "lodash";
 import { type IconStringDefinition } from "@/types/contract";
-import { useAsyncState } from "@/hooks/common";
 import { useEffect } from "react";
 import {
   type IconName,
   type IconPrefix,
 } from "@fortawesome/free-solid-svg-icons";
+import useAsyncState from "@/hooks/useAsyncState";
 
 type ModuleImport = Promise<{ definition: IconProp }>;
 
@@ -82,7 +82,7 @@ export function useAsyncIcon(
   defaultIcon: IconProp,
   placeholder: IconProp = defaultIcon,
 ): IconProp {
-  const [value, , error] = useAsyncState(
+  const { data: value, error } = useAsyncState(
     async () => {
       if (icon == null) {
         return defaultIcon;
@@ -91,7 +91,9 @@ export function useAsyncIcon(
       return fetchFortAwesomeIcon(icon);
     },
     [icon, defaultIcon],
-    placeholder,
+    {
+      initialValue: placeholder,
+    },
   );
 
   useEffect(() => {

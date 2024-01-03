@@ -39,13 +39,13 @@ import { boolean } from "@/utils/typeUtils";
 import { joinPathParts } from "@/utils/formUtils";
 
 // Legacy header components, where each header type was a separate element
-const headerComponents = {
+const HEADER_COMPONENTS = {
   header_1: "h1",
   header_2: "h2",
   header_3: "h3",
 } as const;
 
-const gridComponents = {
+const GRID_COMPONENTS = {
   container: Container,
   row: Row,
   column: Col,
@@ -110,7 +110,7 @@ export function getComponentDefinition(
 
       return {
         // eslint-disable-next-line security/detect-object-injection -- componentType is header_1, header_2, or header_3
-        Component: headerComponents[componentType],
+        Component: HEADER_COMPONENTS[componentType],
         props,
       };
     }
@@ -153,7 +153,7 @@ export function getComponentDefinition(
       const props = { ...config, "data-testid": componentType };
 
       // eslint-disable-next-line security/detect-object-injection -- componentType is container, row, or column
-      return { Component: gridComponents[componentType], props };
+      return { Component: GRID_COMPONENTS[componentType], props };
     }
 
     case "card": {

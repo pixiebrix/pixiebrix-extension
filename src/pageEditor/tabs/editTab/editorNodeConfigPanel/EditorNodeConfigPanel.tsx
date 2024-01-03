@@ -21,7 +21,6 @@ import React from "react";
 import { Col, Row } from "react-bootstrap";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BrickConfiguration from "@/pageEditor/tabs/effect/BrickConfiguration";
-import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/bricks/registry";
 import { showOutputKey } from "@/pageEditor/tabs/editTab/editHelpers";
 import KeyNameWidget from "@/components/form/widgets/KeyNameWidget";
@@ -34,6 +33,7 @@ import { useGetMarketplaceListingsQuery } from "@/services/api";
 import cx from "classnames";
 import { MARKETPLACE_URL } from "@/urlConstants";
 import CommentsPreview from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/CommentsPreview";
+import useAsyncState from "@/hooks/useAsyncState";
 
 const EditorNodeConfigPanel: React.FC = () => {
   const {
@@ -41,7 +41,7 @@ const EditorNodeConfigPanel: React.FC = () => {
     path: brickFieldName,
     blockConfig: { comments },
   } = useSelector(selectActiveNodeInfo);
-  const [brickInfo] = useAsyncState(async () => {
+  const { data: brickInfo } = useAsyncState(async () => {
     const brick = await blockRegistry.lookup(brickId);
     return {
       block: brick,

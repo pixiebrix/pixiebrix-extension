@@ -139,7 +139,7 @@ export class GoogleSheetsLookup extends TransformerABC {
     );
   }
 
-  defaultOutputKey = "row";
+  override defaultOutputKey = "row";
 
   inputSchema: Schema = LOOKUP_SCHEMA;
 

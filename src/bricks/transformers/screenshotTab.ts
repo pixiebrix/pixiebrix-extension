@@ -45,7 +45,7 @@ export class ScreenshotTab extends TransformerABC {
     },
   };
 
-  defaultOutputKey = "screenshot";
+  override defaultOutputKey = "screenshot";
 
   async transform(): Promise<unknown> {
     try {

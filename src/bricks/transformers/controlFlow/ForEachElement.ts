@@ -31,12 +31,12 @@ import { PropError } from "@/errors/businessErrors";
 import { $safeFind } from "@/utils/domUtils";
 
 class ForEachElement extends TransformerABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/for-each-element");
-  defaultOutputKey = "forEachResult";
+  static BRICK_ID = validateRegistryId("@pixiebrix/for-each-element");
+  override defaultOutputKey = "forEachResult";
 
   constructor() {
     super(
-      ForEachElement.BLOCK_ID,
+      ForEachElement.BRICK_ID,
       "For-Each Element",
       "Loop over elements on the page, returning the value of the last iteration",
     );

@@ -25,7 +25,7 @@ import {
   throwBrick,
 } from "./pipelineTestHelpers";
 import { uuidv4 } from "@/types/helpers";
-import { recordBrickRun, traces } from "@/background/messenger/api";
+import { traces } from "@/background/messenger/api";
 import {
   type TraceEntryData,
   type TraceExitData,
@@ -40,14 +40,12 @@ import { toExpression } from "@/utils/expressionUtils";
 
 const addEntryMock = jest.mocked(traces.addEntry);
 const addExitMock = jest.mocked(traces.addExit);
-const recordBrickRunMock = jest.mocked(recordBrickRun);
 
 beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register([echoBrick, contextBrick, throwBrick]);
   addEntryMock.mockReset();
   addExitMock.mockReset();
-  recordBrickRunMock.mockReset();
 });
 
 describe("Trace normal exit", () => {
@@ -83,9 +81,6 @@ describe("Trace normal exit", () => {
         skippedRun: false,
       }),
     );
-
-    // Should not record brick run when tracing is enabled
-    expect(recordBrickRunMock).toHaveBeenCalledTimes(0);
   });
 
   test("skip trace by default", async () => {
@@ -404,8 +399,6 @@ describe("Tracing disabled", () => {
     );
 
     expect(result).toStrictEqual({ message: "hello" });
-
-    expect(recordBrickRunMock).toHaveBeenCalledTimes(1);
   });
 
   it("Does not call addEntry or addExit if tracing is disabled", async () => {

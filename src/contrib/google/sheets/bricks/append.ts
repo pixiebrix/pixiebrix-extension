@@ -259,7 +259,6 @@ export class GoogleSheetsAppend extends EffectABC {
       GOOGLE_SHEETS_APPEND_ID,
       "Add Google sheet row",
       "Add a row of data to a Google sheet with headings",
-      "faTable",
     );
   }
 

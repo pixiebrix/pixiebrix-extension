@@ -60,13 +60,13 @@ import {
 } from "@/components/addBlockModal/addBlockModalTypes";
 import { getItemKey } from "@/components/addBlockModal/addBlockModalHelpers";
 import useAddBlock from "@/components/addBlockModal/useAddBlock";
-import { useAsyncState } from "@/hooks/common";
 import { useGetTheme } from "@/hooks/useTheme";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import aaLogo from "@img/aa-logo-small.svg";
 import { scrollbarWidth } from "@xobotyi/scrollbar-width";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
+import useAsyncState from "@/hooks/useAsyncState";
 
 const TAG_POPULAR = "Popular";
 const TAG_UIPATH = "UiPath";
@@ -270,7 +270,7 @@ const AddBlockModal: React.FC = () => {
     return [...popular, ...regular];
   }, [searchResults, state.query, taggedBrickIds]);
 
-  const [invalidBlockMessages] = useAsyncState<
+  const { data: invalidBlockMessages } = useAsyncState<
     BlockGridData["invalidBlockMessages"]
   >(
     async () =>

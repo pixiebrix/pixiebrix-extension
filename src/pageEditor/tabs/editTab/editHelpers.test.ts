@@ -64,7 +64,7 @@ describe("getPipelineMap", () => {
   test("should map pipeline with sub pipeline", () => {
     const subPipeline = pipelineFactory();
     const forEachBrick = brickConfigFactory({
-      id: ForEach.BLOCK_ID,
+      id: ForEach.BRICK_ID,
       config: {
         elements: toExpression("var", "@elements"),
         body: toExpression("pipeline", subPipeline),
@@ -171,12 +171,12 @@ describe("generateFreshOutputKey", () => {
 
   it("should use declared key", async () => {
     class TransformerBrick extends TransformerABC {
-      static BLOCK_ID = validateRegistryId("test/transformer");
+      static BRICK_ID = validateRegistryId("test/transformer");
       constructor() {
-        super(TransformerBrick.BLOCK_ID, "Transformer Brick");
+        super(TransformerBrick.BRICK_ID, "Transformer Brick");
       }
 
-      defaultOutputKey = "foo";
+      override defaultOutputKey = "foo";
 
       inputSchema = {};
 

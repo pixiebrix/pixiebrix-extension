@@ -45,7 +45,7 @@ class BrickTypeAnalysis extends AnalysisVisitorWithResolvedBricksABC {
     );
 
     if (
-      blockConfig.id === TourStepTransformer.BLOCK_ID &&
+      blockConfig.id === TourStepTransformer.BRICK_ID &&
       this.extension.type !== "tour"
     ) {
       this.annotations.push({

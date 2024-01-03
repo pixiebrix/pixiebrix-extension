@@ -15,25 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
-import { registerMethods } from "webext-messenger";
-import { expectContext } from "@/utils/expectContext";
-import notify from "@/utils/notify";
+import { useEffect, useRef } from "react";
 
-expectContext("extension");
+/**
+ * Returns a function that returns true if the component is still mounted.
+ */
+function useIsMounted(): () => boolean {
+  const isMountedRef = useRef(true);
 
-declare global {
-  interface MessengerMethods {
-    NOTIFY_INFO: typeof notify.info;
-    NOTIFY_ERROR: typeof notify.error;
-    NOTIFY_SUCCESS: typeof notify.success;
-  }
+  useEffect(
+    () => () => {
+      isMountedRef.current = false;
+    },
+    [],
+  );
+
+  return () => isMountedRef.current;
 }
 
-export default function registerMessenger(): void {
-  registerMethods({
-    NOTIFY_INFO: notify.info,
-    NOTIFY_ERROR: notify.error,
-    NOTIFY_SUCCESS: notify.success,
-  });
-}
+export default useIsMounted;

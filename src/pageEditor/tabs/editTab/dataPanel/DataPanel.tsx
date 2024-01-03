@@ -148,11 +148,11 @@ const DataPanel: React.FC = () => {
         : record.output
       : null;
 
-  const [previewInfo] = usePreviewInfo(brickId);
+  const { data: previewInfo } = usePreviewInfo(brickId);
 
   const showFormPreview =
     brickId === CustomFormRenderer.BLOCK_ID ||
-    brickId === FormTransformer.BLOCK_ID;
+    brickId === FormTransformer.BRICK_ID;
   const showDocumentPreview = brickId === DocumentRenderer.BLOCK_ID;
   const showBrickPreview = record || previewInfo?.traceOptional;
 

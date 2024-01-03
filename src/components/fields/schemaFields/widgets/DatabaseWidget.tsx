@@ -28,7 +28,7 @@ import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeCo
 import { type UUID } from "@/types/stringTypes";
 import { type Expression } from "@/types/runtimeTypes";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { useIsMounted } from "@/hooks/common";
+import useIsMounted from "@/hooks/useIsMounted";
 import { isUUID } from "@/types/helpers";
 import { isExpression, toExpression } from "@/utils/expressionUtils";
 

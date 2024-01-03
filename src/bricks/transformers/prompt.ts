@@ -27,11 +27,10 @@ export class Prompt extends TransformerABC {
       "@pixiebrix/prompt",
       "Prompt for input",
       "Show a browser prompt for a single input",
-      "faCode",
     );
   }
 
-  defaultOutputKey = "userInput";
+  override defaultOutputKey = "userInput";
 
   inputSchema: Schema = propertiesToSchema(
     {

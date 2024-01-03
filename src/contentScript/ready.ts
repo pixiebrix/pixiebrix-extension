@@ -40,6 +40,7 @@ import { forbidContext } from "@/utils/expectContext";
 import { executeFunction } from "webext-content-scripts";
 import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/domConstants";
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const html = globalThis.document?.documentElement;
 
 // These two must be synched in `getTargetState`

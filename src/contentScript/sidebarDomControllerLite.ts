@@ -29,6 +29,7 @@ export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
 
 // Use ? because it's not defined during header generation. But otherwise it will always be defined.
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const html: HTMLElement = globalThis.document?.documentElement;
 const SIDEBAR_WIDTH_PX = 400;
 

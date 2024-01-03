@@ -26,6 +26,7 @@ const knownElementReferences = new WeakMap<
   ElementOrDocument,
   ElementReference
 >();
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const elementLookup = new Map<ElementReference, WeakRef<ElementOrDocument>>();
 
 /**

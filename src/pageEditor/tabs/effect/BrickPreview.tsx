@@ -17,7 +17,6 @@
 
 import React, { useEffect, useReducer } from "react";
 import { type BrickConfig } from "@/bricks/types";
-import { type AsyncState, useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/bricks/registry";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "react-bootstrap";
@@ -48,6 +47,8 @@ import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import type { FetchableAsyncState } from "@/types/sliceTypes";
+import useAsyncState from "@/hooks/useAsyncState";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -75,7 +76,9 @@ type PreviewInfo = {
 /**
  * Return metadata about preview requirements for a block.
  */
-export function usePreviewInfo(blockId: RegistryId): AsyncState<PreviewInfo> {
+export function usePreviewInfo(
+  blockId: RegistryId,
+): FetchableAsyncState<PreviewInfo> {
   return useAsyncState(async () => {
     const block = await blockRegistry.lookup(blockId);
     const type = await getType(block);
@@ -153,7 +156,11 @@ const BrickPreview: React.FunctionComponent<{
     "integrationDependencies",
   );
 
-  const [brickInfo, brickLoading, brickError] = usePreviewInfo(brickConfig.id);
+  const {
+    data: brickInfo,
+    isLoading: brickLoading,
+    error: brickError,
+  } = usePreviewInfo(brickConfig.id);
 
   // This defaults to "inherit" as described in the doc, see BrickConfig.rootMode
   const brickRootMode = brickConfig.rootMode ?? "inherit";

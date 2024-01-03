@@ -98,7 +98,7 @@ type State = {
   loadingMessage?: string;
 };
 
-const initialPanelState: State = {
+const INITIAL_PANEL_STATE: State = {
   component: null,
   isLoading: true,
   isFetching: true,
@@ -107,7 +107,7 @@ const initialPanelState: State = {
 
 const slice = createSlice({
   name: "panelSlice",
-  initialState: initialPanelState,
+  initialState: INITIAL_PANEL_STATE,
   reducers: {
     setLoadingMessage(state, action: PayloadAction<string>) {
       state.loadingMessage = action.payload;
@@ -144,7 +144,7 @@ const PanelBody: React.FunctionComponent<{
   context: PanelContext;
   onAction: (action: SubmitPanelAction) => void;
 }> = ({ payload, context, isRootPanel = false, onAction, tracePath }) => {
-  const [state, dispatch] = useReducer(slice.reducer, initialPanelState);
+  const [state, dispatch] = useReducer(slice.reducer, INITIAL_PANEL_STATE);
 
   useAsyncEffect(
     async (isMounted) => {

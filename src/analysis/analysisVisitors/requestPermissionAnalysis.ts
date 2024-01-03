@@ -55,7 +55,7 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
     if (
       !(
         blockConfig.id === RemoteMethod.BLOCK_ID ||
-        blockConfig.id === GetAPITransformer.BLOCK_ID
+        blockConfig.id === GetAPITransformer.BRICK_ID
       ) ||
       blockConfig.config.service != null
     ) {

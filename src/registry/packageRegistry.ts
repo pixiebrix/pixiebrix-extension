@@ -29,7 +29,7 @@ const DATABASE_NAME = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
 const VERSION = 1;
 
-export type Version = {
+type Version = {
   major: number;
   minor: number;
   patch: number;

@@ -20,7 +20,6 @@ import {
   memoizeUntilSettled,
   retryWithJitter,
   asyncMapValues,
-  onAbort,
 } from "@/utils/promiseUtils";
 
 // From https://github.com/sindresorhus/p-memoize/blob/52fe6052ff2287f528c954c4c67fc5a61ff21360/test.ts#LL198
@@ -144,91 +143,5 @@ describe("asyncMapValues", () => {
       a: 2,
       b: 4,
     });
-  });
-});
-
-describe("onAbort", () => {
-  test("it calls the callback when the AbortSignal is aborted", () => {
-    const controller = new AbortController();
-    const callback = jest.fn();
-    onAbort(controller.signal, callback);
-
-    expect(callback).not.toHaveBeenCalled();
-    controller.abort();
-    expect(callback).toHaveBeenCalledTimes(1);
-  });
-
-  test("it calls the callback immediately if the AbortSignal is already aborted", () => {
-    const controller = new AbortController();
-    controller.abort();
-    const callback = jest.fn();
-    onAbort(controller.signal, callback);
-
-    expect(callback).toHaveBeenCalledTimes(1);
-  });
-
-  test("it accepts multiple handles", () => {
-    const controller = new AbortController();
-    const callback1 = jest.fn();
-    const callback2 = { disconnect: jest.fn(), otherData: 1 };
-    onAbort(controller.signal, callback1, callback2);
-
-    expect(callback1).not.toHaveBeenCalled();
-    expect(callback2.disconnect).not.toHaveBeenCalled();
-    controller.abort();
-    expect(callback1).toHaveBeenCalledTimes(1);
-    expect(callback2.disconnect).toHaveBeenCalledTimes(1);
-  });
-
-  test("it binds the object handles", () => {
-    const signal = AbortSignal.abort();
-    const callback1 = { disconnect: jest.fn(), otherData: 1 };
-    const callback2 = { abort: jest.fn(), otherData: 2 };
-    onAbort(signal, callback1, callback2);
-    expect(callback1.disconnect).toHaveBeenCalledTimes(1);
-    expect(callback1.disconnect.mock.instances[0]).toBe(callback1);
-    expect(callback2.abort).toHaveBeenCalledTimes(1);
-    expect(callback2.abort.mock.instances[0]).toBe(callback2);
-  });
-
-  test("it will run all the handlers even if one throws", () => {
-    const controller = new AbortController();
-    const callback1 = jest.fn(() => {
-      throw new Error("error");
-    });
-    const callback2 = jest.fn();
-    onAbort(controller.signal, callback1, callback2);
-
-    expect(callback1).not.toHaveBeenCalled();
-    expect(callback2).not.toHaveBeenCalled();
-    controller.abort();
-    expect(callback1).toHaveBeenCalledTimes(1);
-    expect(callback2).toHaveBeenCalledTimes(1);
-  });
-
-  test("it will run all the handlers even if one throws (pre-aborted)", () => {
-    const signal = AbortSignal.abort();
-    const callback1 = jest.fn(() => {
-      throw new Error("error");
-    });
-    const callback2 = jest.fn();
-    onAbort(signal, callback1, callback2);
-    expect(callback1).toHaveBeenCalledTimes(1);
-    expect(callback2).toHaveBeenCalledTimes(1);
-  });
-
-  test("it will run all the handlers even if one throws (passing in a controller instead of a signal)", () => {
-    const controller = new AbortController();
-    const callback1 = jest.fn(() => {
-      throw new Error("error");
-    });
-    const callback2 = jest.fn();
-    onAbort(controller, callback1, callback2);
-
-    expect(callback1).not.toHaveBeenCalled();
-    expect(callback2).not.toHaveBeenCalled();
-    controller.abort();
-    expect(callback1).toHaveBeenCalledTimes(1);
-    expect(callback2).toHaveBeenCalledTimes(1);
   });
 });

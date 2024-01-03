@@ -19,8 +19,8 @@ import React from "react";
 import { getExtensionAuth } from "@/auth/token";
 import { isExtensionContext } from "webext-detect-page";
 import { connectPage } from "@/background/messenger/external/api";
-import { useAsyncState } from "@/hooks/common";
 import Banner, { type BannerVariant } from "@/components/banner/Banner";
+import useAsyncState from "@/hooks/useAsyncState";
 
 // TODO: don't use process.env here so that we can use the same JS app bundle for all environments
 //  see https://github.com/pixiebrix/pixiebrix-app/issues/259
@@ -35,12 +35,12 @@ const variantMap = new Map<string, BannerVariant>([
 ]);
 
 const EnvironmentBannerMessage: React.VFC = () => {
-  const [hostname] = useAsyncState(async () => {
+  const { data: hostname } = useAsyncState(async () => {
     const { hostname } = await getExtensionAuth();
     return hostname;
   }, []);
 
-  const [versionName] = useAsyncState(async () => {
+  const { data: versionName } = useAsyncState(async () => {
     const manifest = isExtension
       ? browser.runtime.getManifest()
       : await connectPage();

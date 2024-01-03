@@ -17,8 +17,8 @@
 
 import {
   dropOverlappingPermissions,
-  selectAdditionalPermissionsSync,
-} from "webext-additional-permissions";
+  extractAdditionalPermissions,
+} from "webext-permissions";
 import { type AsyncState } from "@/types/sliceTypes";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 
@@ -32,7 +32,7 @@ export type DetailedPermissions = Array<{
 async function getDetailedPermissions() {
   const all = await browser.permissions.getAll();
   const unique = dropOverlappingPermissions(all);
-  const additional = selectAdditionalPermissionsSync(all);
+  const additional = extractAdditionalPermissions(all);
 
   return [
     ...(all.permissions ?? []).sort().map((permission) => ({

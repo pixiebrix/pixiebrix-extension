@@ -1,3 +1,6 @@
+const { readFileSync } = require("fs");
+const { resolve } = require("path");
+
 const restrictedZones = [
   "background",
   "contentScript",
@@ -122,6 +125,21 @@ module.exports = {
       extends: ["pixiebrix/development", "pixiebrix/tests"],
       rules: {
         "unicorn/prefer-spread": "off",
+      },
+    },
+    {
+      files: [
+        "./src/background/**",
+        ...readFileSync(
+          resolve(__dirname, "eslint-local-rules/persistBackgroundData.txt"),
+          "utf8",
+        )
+          .split("\n")
+          .filter((line) => line.startsWith("./src/")),
+      ],
+      excludedFiles: ["**/*.test.*", "**/api.ts"],
+      rules: {
+        "local-rules/persistBackgroundData": "error",
       },
     },
     {

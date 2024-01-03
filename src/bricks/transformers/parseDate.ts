@@ -46,14 +46,13 @@ export class ParseDate extends TransformerABC {
     return true;
   }
 
-  defaultOutputKey = "parsedDate";
+  override defaultOutputKey = "parsedDate";
 
   constructor() {
     super(
       "@pixiebrix/parse-date",
       "Parse date",
       "Parse a date string and return multiple formats",
-      "faCalendarDay",
     );
   }
 

@@ -20,7 +20,7 @@ import Select from "react-select";
 
 type OptionType = { label: string; value: string };
 
-const defaultOption: OptionType[] = [];
+const DEFAULT_OPTION: OptionType[] = [];
 
 const RjsfSelectWidget: React.FC<WidgetProps> = ({
   schema,
@@ -52,7 +52,7 @@ const RjsfSelectWidget: React.FC<WidgetProps> = ({
   // Check to ensure enumOptions is an array
   // RJSF seems to occasionally set enumOptions as FALSE. Maybe related to async options:
   // https://github.com/rjsf-team/react-jsonschema-form/issues/415
-  const enumOptions = (options.enumOptions || defaultOption) as OptionType[];
+  const enumOptions = (options.enumOptions || DEFAULT_OPTION) as OptionType[];
 
   const selectOptions =
     enumOptions.map(({ value, label }) => ({

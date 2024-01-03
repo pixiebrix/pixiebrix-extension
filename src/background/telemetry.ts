@@ -17,7 +17,7 @@
 
 import { type JsonObject } from "type-fest";
 import { uuidv4 } from "@/types/helpers";
-import { compact, debounce, isEmpty, once, throttle, uniq } from "lodash";
+import { compact, debounce, once, throttle, uniq } from "lodash";
 import { isLinked } from "@/auth/token";
 import { type UUID } from "@/types/stringTypes";
 import { getModComponentState } from "@/store/extensionsStorage";
@@ -30,8 +30,6 @@ import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { type UnknownObject } from "@/types/objectTypes";
 import { deleteDatabase } from "@/utils/idbUtils";
 import { detectBrowser } from "@/vendors/mixpanel";
-import { type RegistryId } from "@/types/registryTypes";
-import { syncFlagOn } from "@/store/syncFlags";
 import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
 import { count as traceSize } from "@/telemetry/trace";
@@ -47,8 +45,11 @@ const TELEMETRY_DB_VERSION_NUMBER = 1;
 const TELEMETRY_EVENT_OBJECT_STORE = "events";
 
 /**
- * Timestamp when the background page was initialized.
+ * Timestamp when the background worker was initialized.
+ *
+ * For MV3, this is the timestamp when the background worker was last initialized/restarted.
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- OK to reevaluate
 const initTimestamp = Date.now();
 
 interface UserTelemetryEvent {
@@ -154,13 +155,6 @@ interface TelemetryDB extends DBSchema {
     key: string;
   };
 }
-
-/**
- * Map from run key (blueprintId + brickId) to the number of runs.
- *
- * It's OK to store in memory because the user generally has to be authenticated to create/run mods.
- */
-const runCountBuffer = new Map<string, number>();
 
 async function openTelemetryDB() {
   // Always return a new DB connection. IDB performance seems to be better than reusing the same connection.
@@ -272,38 +266,10 @@ export const uid = once(async (): Promise<UUID> => {
   return uuid;
 });
 
-/**
- * Returns UserTelemetryEvent associated with current brick run counts and flush the buffer.
- */
-function flushRunCountBuffer(): UserTelemetryEvent[] {
-  const timestamp = Date.now();
-
-  const events = [...runCountBuffer.entries()].map(([runKey, count]) => {
-    const [blueprintId, brickId] = runKey.split(":");
-    return {
-      uid: uuidv4(),
-      event: "BrickRunCount",
-      timestamp,
-      data: {
-        blueprintId: isEmpty(blueprintId) ? null : blueprintId,
-        brickId,
-        count,
-      },
-    };
-  });
-
-  runCountBuffer.clear();
-
-  return events;
-}
-
 async function flush(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
   if (client) {
-    const runEvents = flushRunCountBuffer();
-    const productEvents = await flushEvents();
-
-    const events = [...runEvents, ...productEvents];
+    const events = await flushEvents();
 
     if (events.length > 0) {
       await client.post("/api/events/", {
@@ -373,33 +339,6 @@ export const initTelemetry = throttle(init, 30 * 60 * 1000, {
   leading: true,
   trailing: true,
 });
-
-/**
- * Record a single brick run.
- * @param blockId the registry id of the brick
- * @param blueprintId the registry id of the blueprint, or null if run in the context of a standalone mod
- */
-export async function recordBrickRun({
-  blockId,
-  blueprintId,
-}: {
-  blockId: RegistryId;
-  blueprintId: RegistryId | null;
-}) {
-  if (
-    !syncFlagOn("telemetry-bricks") ||
-    // Don't record runs for restricted enterprise users to reduce event volume
-    syncFlagOn("restricted-marketplace")
-  ) {
-    return;
-  }
-
-  const runKey = `${blueprintId}:${blockId}`;
-  const previousCount = runCountBuffer.get(runKey) ?? 0;
-  runCountBuffer.set(runKey, previousCount + 1);
-
-  await debouncedFlush();
-}
 
 /** @deprecated Use instead: `import reportEvent from "@/telemetry/reportEvent"` */
 export async function recordEvent({

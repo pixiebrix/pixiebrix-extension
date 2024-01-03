@@ -55,11 +55,11 @@ const RemoteMultiSelectWidget: React.FC<RemoteMultiSelectWidgetProps> = ({
   ...props
 }) => {
   const [field, , helpers] = useField<unknown[]>(props);
-  const [options, isLoading, loadError] = useOptionsResolver(
-    config,
-    optionsFactory,
-    factoryArgs,
-  );
+  const {
+    data: options,
+    isLoading,
+    error: loadError,
+  } = useOptionsResolver(config, optionsFactory, factoryArgs);
   useReportError(loadError);
 
   if (loadError) {

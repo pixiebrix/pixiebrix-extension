@@ -33,6 +33,7 @@ import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughM
 
 const PIXIEBRIX_SECTION = "PixieBrix";
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const defaultActions: Action[] = [
   {
     id: "marketplace",

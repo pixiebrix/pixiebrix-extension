@@ -79,6 +79,8 @@ type SanitizedResponse<T = unknown> = Pick<
   _sanitizedResponseBrand: null;
 };
 
+const UNAUTHORIZED_STATUS_CODES = new Set([401, 403]);
+
 function sanitizeResponse<T>(
   response: AxiosResponse<T> | null,
 ): SanitizedResponse<T> | null {
@@ -263,8 +265,6 @@ async function proxyRequest<T>(
     $$proxied: true,
   };
 }
-
-const UNAUTHORIZED_STATUS_CODES = new Set([401, 403]);
 
 function isAuthenticationError(error: Pick<AxiosError, "response">): boolean {
   // Response should be an object, but be defensive

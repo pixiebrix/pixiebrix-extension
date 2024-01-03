@@ -43,7 +43,7 @@ export function trimEndOnce(value: string, chars: string): string {
   return value;
 }
 
-const punctuation = [...".,;:?!"];
+const PUNCTUATION = [...".,;:?!"] as const;
 
 /**
  * Appends a period to a string as long as it doesn't end with one.
@@ -54,7 +54,7 @@ export function smartAppendPeriod(string: string): string {
   const [secondLastChar = "", lastChar = ""] = trimmed.slice(-2);
 
   const isAlreadyPunctuated =
-    punctuation.includes(lastChar) || punctuation.includes(secondLastChar);
+    PUNCTUATION.includes(lastChar) || PUNCTUATION.includes(secondLastChar);
   if (isAlreadyPunctuated) {
     return trimmed;
   }

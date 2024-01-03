@@ -36,11 +36,10 @@ class RunMetadataTransformer extends TransformerABC {
       "@pixiebrix/reflect/run-metadata",
       "[Experimental] Run Metadata",
       "Returns metadata for the current run",
-      "faCode",
     );
   }
 
-  defaultOutputKey = "meta";
+  override defaultOutputKey = "meta";
 
   inputSchema: Schema = SCHEMA_EMPTY_OBJECT;
 

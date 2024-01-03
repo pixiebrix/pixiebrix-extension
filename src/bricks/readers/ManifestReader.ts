@@ -19,7 +19,7 @@ import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 
 class ManifestReader extends ReaderABC {
-  defaultOutputKey = "manifest";
+  override defaultOutputKey = "manifest";
 
   constructor() {
     super(

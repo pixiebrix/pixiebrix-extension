@@ -29,9 +29,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { find } from "@/registry/packageRegistry";
-import { useAsyncState } from "@/hooks/common";
 import { type Organization } from "@/types/contract";
 import { type Metadata, type Sharing } from "@/types/registryTypes";
+import useAsyncState from "@/hooks/useAsyncState";
 
 type SharingTagProps<T extends Metadata> = {
   block: T;
@@ -42,14 +42,14 @@ const SharingTag = <T extends Metadata>({
   block,
   organizations,
 }: SharingTagProps<T>) => {
-  const [sharing] = useAsyncState(async () => {
+  const { data: sharing } = useAsyncState(async () => {
     const brickPackage = await find(block.id);
     if (brickPackage?.config) {
       return brickPackage.config.sharing as Sharing;
     }
 
     return null;
-  }, []);
+  }, [block.id]);
 
   const organization = useMemo(() => {
     if (!sharing) {

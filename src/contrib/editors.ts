@@ -78,7 +78,7 @@ export default function registerEditors() {
   optionsRegistry.set(DATABASE_PUT_ID, DatabasePutOptions);
   optionsRegistry.set(REMOTE_METHOD_ID, RemoteMethodOptions);
   optionsRegistry.set(DOCUMENT_ID, DocumentOptions);
-  optionsRegistry.set(TourStepTransformer.BLOCK_ID, TourStepOptions);
+  optionsRegistry.set(TourStepTransformer.BRICK_ID, TourStepOptions);
   optionsRegistry.set(ALERT_EFFECT_ID, AlertOptions);
   optionsRegistry.set(JQueryReader.BRICK_ID, JQueryReaderOptions);
   optionsRegistry.set(AssignModVariable.BRICK_ID, AssignModVariableOptions);

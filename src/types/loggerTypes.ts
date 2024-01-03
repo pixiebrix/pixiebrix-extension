@@ -17,11 +17,8 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId, type SemVerString } from "@/types/registryTypes";
-import { type contextNames } from "webext-detect-page";
+import { type ContextName } from "webext-detect-page";
 import { type UnknownObject } from "@/types/objectTypes";
-
-// `ContextName`s from webext-detect-page
-type ContextName = keyof typeof contextNames | "unknown";
 
 /**
  * Log event metadata for the extensions internal logging infrastructure.
@@ -51,7 +48,7 @@ export type MessageContext = {
   readonly serviceId?: RegistryId;
   readonly serviceVersion?: SemVerString;
   readonly authId?: UUID;
-  readonly pageName?: ContextName;
+  readonly pageName?: ContextName | "unknown";
 };
 
 export interface Logger {

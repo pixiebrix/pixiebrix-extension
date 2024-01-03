@@ -17,7 +17,6 @@
 
 import { type Permissions } from "webextension-polyfill";
 import { remove } from "lodash";
-import * as backgroundApi from "@/background/messenger/api";
 
 // Permissions from the manifest.json
 const initialPermissions: Permissions.AnyPermissions = {
@@ -113,11 +112,6 @@ export function setPermissions(
 ): void {
   extensionPermissions = newPermissions;
 }
-
-// Mock these until we can get a fake/mock registry working for tests
-jest
-  .mocked(backgroundApi.containsPermissions)
-  .mockImplementation(browser.permissions.contains);
 
 jest.mock("@/modDefinitions/modDefinitionPermissionsHelpers", () => {
   const originalModule = jest.requireActual(

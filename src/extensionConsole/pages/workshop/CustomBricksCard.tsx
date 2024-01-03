@@ -139,7 +139,7 @@ const CustomBricksCard: React.FunctionComponent<
 > = ({ navigate, bricks, isFetching, error }) => {
   const columns = useMemo(() => columnFactory(), []);
   return (
-    <AsyncCard header="Custom Bricks" isPending={isFetching} error={error}>
+    <AsyncCard header="Custom Bricks" isLoading={isFetching} error={error}>
       {() => (
         <PaginatedTable
           columns={columns}

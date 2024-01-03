@@ -35,7 +35,6 @@ class IdentityTransformer extends TransformerABC {
       IdentityTransformer.BRICK_ID,
       "Identity Function",
       "Return/echo the value passed into it. Use to construct return values/event data.",
-      "faCode",
     );
   }
 

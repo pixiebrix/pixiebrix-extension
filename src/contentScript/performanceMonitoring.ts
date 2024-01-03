@@ -71,6 +71,7 @@ let isMonitoringEnabled = false;
  * Pings that exceeded the warning threshold.
  * @see PING_WARNING_THRESHOLD_MS
  */
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const pingWarnings: PingTiming[] = [];
 
 /**

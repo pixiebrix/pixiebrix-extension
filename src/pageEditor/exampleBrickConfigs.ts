@@ -74,7 +74,7 @@ export function getExampleBrickConfig(
       };
     }
 
-    case FormTransformer.BLOCK_ID: {
+    case FormTransformer.BRICK_ID: {
       return {
         schema: {
           title: "Example Form",
@@ -183,7 +183,7 @@ export function getExampleBrickConfig(
       };
     }
 
-    case DisplayTemporaryInfo.BLOCK_ID: {
+    case DisplayTemporaryInfo.BRICK_ID: {
       return {
         title: "Example Info",
         location: "panel",
@@ -194,7 +194,7 @@ export function getExampleBrickConfig(
       };
     }
 
-    case TourStep.BLOCK_ID: {
+    case TourStep.BRICK_ID: {
       return {
         title: "Example Step",
         body: "Step content. **Markdown** is supported.",
