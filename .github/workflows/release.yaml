@@ -1,6 +1,7 @@
 name: Release Build
 
 on:
+  # The "upload" step has further name-based conditions
   push:
     branches:
       - "release/**"
@@ -73,7 +74,8 @@ jobs:
   upload:
     # TODO: Enable once the secrets are in
     # https://github.com/fregante/chrome-webstore-upload-keys
-    if: false
+    # when the branch name doesn't contain alpha or beta
+    if: ${{ !contains(github.ref, 'alpha') && !contains(github.ref, 'beta') }}
     needs: build
     runs-on: ubuntu-latest
     steps:
