@@ -3,8 +3,8 @@ name: Release Build
 on:
   # The "upload" step has further name-based conditions
   push:
-    branches:
-      - "release/**"
+    # branches:
+    #   - "release/**"
 
 env:
   # Creates and uploads sourcemaps to Rollbar, and save the built extension as an artifact
@@ -74,7 +74,6 @@ jobs:
   upload:
     # TODO: Enable once the secrets are in
     # https://github.com/fregante/chrome-webstore-upload-keys
-    # when the branch name doesn't contain alpha or beta
     if: ${{ !contains(github.ref, 'alpha') && !contains(github.ref, 'beta') }}
     needs: build
     runs-on: ubuntu-latest
@@ -84,13 +83,13 @@ jobs:
           name: build-for-store
       - name: Upload to Chrome Web Store (without publishing)
         run: npx chrome-webstore-upload-cli@3 upload
-        working-directory: artifact
         env:
           EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
   notify:
+    if: false
     needs: build
     runs-on: ubuntu-latest
     steps:
