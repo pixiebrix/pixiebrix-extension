@@ -59,7 +59,7 @@ function updateManifestToV3(manifestV2) {
   manifest.permissions.push("sidePanel");
 
   manifest.side_panel = {
-    default_path: "sidebar-empty.html",
+    default_path: "sidebar.html",
   };
 
   // Update format
