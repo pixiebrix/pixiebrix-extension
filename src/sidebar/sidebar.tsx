@@ -34,6 +34,7 @@ import { initToaster } from "@/utils/notify";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { initCopilotMessenger } from "@/contrib/automationanywhere/aaFrameProtocol";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
+import { isMV3 } from "@/mv3/api";
 
 function init(): void {
   ReactDOM.render(<App />, document.querySelector("#container"));
@@ -50,3 +51,33 @@ init();
 
 // Handle an embedded AA business copilot frame
 void initCopilotMessenger();
+
+// Device to let background page know if sidepanel is open: https://stackoverflow.com/a/77106777/402560
+if (isMV3()) {
+  let port = chrome.runtime.connect({ name: "sidepanel" });
+
+  port.onDisconnect.addListener(() => {
+    // Reconnect if service worker is recycled
+    port = chrome.runtime.connect({ name: "sidepanel" });
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    port.postMessage({
+      type: "keepalive",
+      href: location.href,
+      hidden: document.hidden,
+    });
+  });
+
+  // Keep the background worker open. Is this necessary given the reconnection logic above?
+  setInterval(
+    () => {
+      port.postMessage({
+        type: "keepalive",
+        href: location.href,
+        hidden: document.hidden,
+      });
+    },
+    15 * 60 * 1000,
+  );
+}

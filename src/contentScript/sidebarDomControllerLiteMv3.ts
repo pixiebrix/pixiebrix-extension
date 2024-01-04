@@ -32,6 +32,10 @@ if (!isMV3()) {
 // TODO: drop constant. Is referenced by notify.tsx to calculate offset
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 
+// FIXME: fix to true for now so mods run. The device at the bottom of the file wasn't working properly. Might be
+//  interfering with the background port handling
+let sidePanelOpen = true;
+
 /**
  * Return true if side panel is open. The PixieBrix sidebar might not be initialized yet.
  */
@@ -45,9 +49,7 @@ export function isSidebarFrameVisible(): boolean {
   // - Can we use chrome.sidePanel.getOptions() to signal if it's open?
   // - Might be able to subscribe via https://stackoverflow.com/a/77106777/402560. But may need extra machinery
   //   to handle background worker restarts.
-
-  // For now, mark as true so mods run
-  return true;
+  return sidePanelOpen;
 }
 
 /** Removes the element; Returns false if no element was found */
@@ -85,3 +87,23 @@ export function toggleSidebarFrame(): boolean {
   insertSidebarFrame();
   return true;
 }
+
+// Not working properly. Might be interfering with the background port handling
+// // TODO: wrap in initializer method. Will need to introduce initializer in sidebarDomController.ts
+// chrome.runtime.onConnect.addListener((port) => {
+//   if (port.name === "sidepanel") {
+//     sidePanelOpen = true;
+//
+//     port.onDisconnect.addListener(async () => {
+//       sidePanelOpen = false;
+//     });
+//
+//     port.onMessage.addListener(async (message) => {
+//       // FIXME: filter out messages from side panels associated with other tabs
+//       if (message.type === "keepalive") {
+//         console.debug("sidebarDomControllerLiteMv3:keepalive", message);
+//         sidePanelOpen = !message.hidden;
+//       }
+//     });
+//   }
+// });

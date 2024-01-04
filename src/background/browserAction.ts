@@ -34,6 +34,9 @@ const ERR_UNABLE_TO_OPEN =
 // The sidebar is always injected to into the top level frame
 const TOP_LEVEL_FRAME_ID = 0;
 
+// `true` if the sidepanel is open, false if closed
+let sidePanelOpen = false;
+
 const toggleSidebar = memoizeUntilSettled(_toggleSidebar);
 
 // Don't accept objects here as they're not easily memoizable
@@ -108,6 +111,24 @@ export default function initBrowserAction(): void {
   if (isMV3()) {
     void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
 
+    chrome.runtime.onConnect.addListener((port) => {
+      if (port.name === "sidepanel") {
+        sidePanelOpen = true;
+
+        port.onDisconnect.addListener(async () => {
+          sidePanelOpen = false;
+        });
+
+        port.onMessage.addListener(async (message) => {
+          // FIXME: keep track based on tab
+          if (message.type === "keepalive") {
+            console.debug("browserAction:keepalive", message);
+            sidePanelOpen = !message.hidden;
+          }
+        });
+      }
+    });
+
     browserAction.onClicked.addListener(async (tab) => {
       const tabId = tab.id;
 
@@ -139,20 +160,39 @@ export default function initBrowserAction(): void {
       //   We'll likely need to keep track of current state in a module variable. See comments in
       //   sidebarDomControllerLiteMv3.ts:isSidebarFrameVisible
 
-      // Call setOptions first to handle case where the sidebar has been disabled on the page to hide the sidebar
-      // Use callback to keep the user gesture context. See bug comment above.
-      chrome.sidePanel.setOptions(
-        {
+      if (sidePanelOpen) {
+        // Force switch over to PixieBrix panel so disabling it closes the whole sidebar
+        await chrome.sidePanel.open({
           tabId,
-          path: `sidebar.html?tabId=${tabId}`,
-          enabled: true,
-        },
-        () => {
-          void chrome.sidePanel.open({
+        });
+
+        void chrome.sidePanel.setOptions({
+          tabId,
+          enabled: false,
+        });
+
+        sidePanelOpen = false;
+      } else {
+        // Call setOptions first to handle case where the sidebar has been disabled on the page to hide the sidebar
+        // Use callback to keep the user gesture context. See bug comment above.
+        chrome.sidePanel.setOptions(
+          {
             tabId,
-          });
-        },
-      );
+            path: `sidebar.html?tabId=${tabId}`,
+            enabled: true,
+          },
+          () => {
+            chrome.sidePanel.open(
+              {
+                tabId,
+              },
+              () => {
+                sidePanelOpen = true;
+              },
+            );
+          },
+        );
+      }
     });
   } else {
     browserAction.onClicked.addListener(handleBrowserAction);
