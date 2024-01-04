@@ -66,7 +66,7 @@ if (isMV3()) {
   // Background and content scripts communicate on different ports
   // https://developer.chrome.com/docs/extensions/develop/concepts/messaging
   let backgroundPort = chrome.runtime.connect({ name: SIDEPANEL_PORT_NAME });
-  const tabPort = chrome.tabs.connect(tabId, { name: SIDEPANEL_PORT_NAME });
+  let tabPort = chrome.tabs.connect(tabId, { name: SIDEPANEL_PORT_NAME });
 
   const sendStatusMessage = (port: chrome.runtime.Port) => {
     port.postMessage({
@@ -83,12 +83,17 @@ if (isMV3()) {
     backgroundPort = chrome.runtime.connect({ name: SIDEPANEL_PORT_NAME });
   });
 
+  tabPort.onDisconnect.addListener(() => {
+    // Reconnect if the tab does a full navigation (i.e., the content script is reloaded)
+    tabPort = chrome.tabs.connect(tabId, { name: SIDEPANEL_PORT_NAME });
+  });
+
   document.addEventListener("visibilitychange", () => {
     sendStatusMessage(backgroundPort);
     sendStatusMessage(tabPort);
   });
 
-  // Keep the background worker open. Is keep alive necessary given the reconnection logic above?
+  // XXX: Keep the background worker alive. Is keep alive necessary given the reconnection logic above?
   setInterval(
     () => {
       sendStatusMessage(backgroundPort);

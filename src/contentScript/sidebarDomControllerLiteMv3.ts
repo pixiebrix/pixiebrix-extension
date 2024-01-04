@@ -33,9 +33,13 @@ if (!isMV3()) {
   );
 }
 
-// TODO: drop constant. Is referenced by notify.tsx to calculate offset
+// TODO: drop/refactor constant. Is referenced by notify.tsx to calculate offset
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 
+/**
+ * The Chrome Side Panel API doesn't have a method yet for checking if the sidebar is open, so track it ourselves.
+ * @see init
+ */
 let sidePanelOpen = false;
 
 /**

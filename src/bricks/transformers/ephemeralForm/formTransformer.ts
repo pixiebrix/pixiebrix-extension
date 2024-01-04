@@ -35,6 +35,7 @@ import { getThisFrame } from "webext-messenger";
 import { type BrickConfig } from "@/bricks/types";
 import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
 import { isExpression } from "@/utils/expressionUtils";
+import { isMV3 } from "@/mv3/api";
 
 // The modes for createFrameSrc are different than the location argument for FormTransformer. The mode for the frame
 // just determines the layout container of the form
@@ -44,7 +45,16 @@ export async function createFrameSource(
   nonce: string,
   mode: Mode,
 ): Promise<URL> {
-  const target = await getThisFrame();
+  let target;
+
+  if (mode === "panel" && isMV3()) {
+    // In MV3, the sidebar is not "in" the page. But the data source is the top-level content script for the tab
+    const tabId = new URLSearchParams(location.search).get("tabId");
+    target = { tabId: Number(tabId), frameId: 0 };
+  } else {
+    // `getThisFrame` doesn't work the Chrome Side Panel it's not a normal frame
+    target = await getThisFrame();
+  }
 
   const frameSource = new URL(browser.runtime.getURL("ephemeralForm.html"));
   frameSource.searchParams.set("nonce", nonce);
