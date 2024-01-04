@@ -21,7 +21,7 @@
  */
 
 import { isMV3 } from "@/mv3/api";
-import { showSidebarPanel } from "@/background/messenger/api";
+import { hideSidebarPanel, showSidebarPanel } from "@/background/messenger/api";
 
 if (!isMV3()) {
   throw new Error(
@@ -52,7 +52,12 @@ export function isSidebarFrameVisible(): boolean {
 
 /** Removes the element; Returns false if no element was found */
 export function removeSidebarFrame(): boolean {
-  throw new Error("Hiding sidebar is not supported in MV3");
+  if (isSidebarFrameVisible()) {
+    void hideSidebarPanel();
+    return true;
+  }
+
+  return false;
 }
 
 /** Inserts the element; Returns false if it already existed */

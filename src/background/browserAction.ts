@@ -111,17 +111,48 @@ export default function initBrowserAction(): void {
     browserAction.onClicked.addListener(async (tab) => {
       const tabId = tab.id;
 
-      // Call open then setOptions
+      // The Chrome example calls open first:
       // https://github.com/GoogleChrome/chrome-extensions-samples/blob/main/functional-samples/cookbook.sidepanel-open/script.js#L9
-      await chrome.sidePanel.open({
-        tabId,
-      });
 
-      await chrome.sidePanel.setOptions({
-        tabId,
-        path: `sidebar.html?tabId=${tabId}`,
-        enabled: true,
-      });
+      // Needs be called first so it's from the user gesture. Could be this timing bug:
+      // - https://stackoverflow.com/a/77213912
+      // - https://bugs.chromium.org/p/chromium/issues/detail?id=1478648
+
+      // FIXME: this works, but then errors out if the sidebar has been hidden via
+      //   await chrome.sidePanel.setOptions({
+      //     tabId,
+      //     enabled: false,
+      //  });
+
+      // await chrome.sidePanel.open({
+      //   tabId,
+      // });
+
+      // await chrome.sidePanel.setOptions({
+      //   tabId,
+      //   path: `sidebar.html?tabId=${tabId}`,
+      //   enabled: true,
+      // });
+
+      // TODO: figure out how to toggle based on the current state. I tried wrapping in a chrome.sidePanel.getOptions
+      //   but to check if it's enabled for the tab, but that causes the user gesture to be lost during the check.
+      //   We'll likely need to keep track of current state in a module variable. See comments in
+      //   sidebarDomControllerLiteMv3.ts:isSidebarFrameVisible
+
+      // Call setOptions first to handle case where the sidebar has been disabled on the page to hide the sidebar
+      // Use callback to keep the user gesture context. See bug comment above.
+      chrome.sidePanel.setOptions(
+        {
+          tabId,
+          path: `sidebar.html?tabId=${tabId}`,
+          enabled: true,
+        },
+        () => {
+          void chrome.sidePanel.open({
+            tabId,
+          });
+        },
+      );
     });
   } else {
     browserAction.onClicked.addListener(handleBrowserAction);

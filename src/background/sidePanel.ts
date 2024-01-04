@@ -32,3 +32,12 @@ export async function showSidebarPanel(this: MessengerMeta): Promise<void> {
     enabled: true,
   });
 }
+
+export async function hideSidebarPanel(this: MessengerMeta): Promise<void> {
+  const tabId = this.trace[0].tab.id;
+
+  await chrome.sidePanel.setOptions({
+    tabId,
+    enabled: false,
+  });
+}
