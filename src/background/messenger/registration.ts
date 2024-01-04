@@ -80,6 +80,7 @@ import {
   getCachedAuthData,
 } from "@/background/auth/authStorage";
 import { setCopilotProcessData } from "@/background/partnerHandlers";
+import { hideSidebarPanel, showSidebarPanel } from "@/background/sidePanel";
 
 expectContext("background");
 
@@ -113,6 +114,9 @@ declare global {
 
     PING: typeof pong;
     COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
+
+    SHOW_SIDEBAR_PANEL: typeof showSidebarPanel;
+    HIDE_SIDEBAR_PANEL: typeof hideSidebarPanel;
 
     ACTIVATE_TAB: typeof activateTab;
     REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
@@ -194,6 +198,9 @@ export default function registerMessenger(): void {
 
     PING: pong,
     COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
+
+    SHOW_SIDEBAR_PANEL: showSidebarPanel,
+    HIDE_SIDEBAR_PANEL: hideSidebarPanel,
 
     ACTIVATE_TAB: activateTab,
     REACTIVATE_EVERY_TAB: reactivateEveryTab,

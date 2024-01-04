@@ -87,6 +87,8 @@ export class HideSidebar extends EffectABC {
   inputSchema: Schema = SCHEMA_EMPTY_OBJECT;
 
   async effect(): Promise<void> {
+    // XXX: for MV3, do we need to catch a potential user gesture error and rethrow as business error? Would required
+    //  making hideSidebar async and the hide a method instead of notifier
     hideSidebar();
   }
 }
