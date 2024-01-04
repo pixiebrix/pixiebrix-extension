@@ -57,7 +57,7 @@ async function showSidebarActivationForMods(
   const controller = new AbortController();
 
   await ensureSidebar();
-  showModActivationInSidebar({
+  await showModActivationInSidebar({
     modIds,
     heading: "Activating",
   });
@@ -71,7 +71,7 @@ async function showSidebarActivationForMods(
     },
   );
   controller.signal.addEventListener("abort", () => {
-    hideModActivationInSidebar();
+    void hideModActivationInSidebar();
   });
 }
 

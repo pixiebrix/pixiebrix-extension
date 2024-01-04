@@ -161,7 +161,7 @@ export async function displayTemporaryInfo({
     updatePanelDefinition(newEntry);
 
     if (location === "panel") {
-      updateTemporarySidebarPanel(newEntry);
+      void updateTemporarySidebarPanel(newEntry);
     } else {
       updateTemporaryOverlayPanel(newEntry);
     }
@@ -178,7 +178,7 @@ export async function displayTemporaryInfo({
     await ensureSidebar();
 
     // Show loading
-    showTemporarySidebarPanel({
+    await showTemporarySidebarPanel({
       ...panelEntryMetadata,
       nonce,
       payload: {
@@ -199,7 +199,7 @@ export async function displayTemporaryInfo({
     );
 
     controller.signal.addEventListener("abort", () => {
-      hideTemporarySidebarPanel(nonce);
+      void hideTemporarySidebarPanel(nonce);
       void stopWaitingForTemporaryPanels([nonce]);
     });
   } else {

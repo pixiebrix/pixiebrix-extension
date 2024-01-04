@@ -112,12 +112,12 @@ export async function rehydrateSidebar(
   }
 }
 
-function renderPanelsIfVisible(): void {
+async function renderPanelsIfVisible(): Promise<void> {
   expectContext("contentScript");
 
   console.debug("sidebarController:renderPanelsIfVisible");
 
-  if (isSidebarFrameVisible()) {
+  if (await isSidePanelOpen()) {
     const seqNum = renderSequenceNumber;
     renderSequenceNumber++;
     void sidebarInThisTab.renderPanels(seqNum, panels);
@@ -128,10 +128,12 @@ function renderPanelsIfVisible(): void {
   }
 }
 
-export function showSidebarForm(entry: Except<FormPanelEntry, "type">): void {
+export async function showSidebarForm(
+  entry: Except<FormPanelEntry, "type">,
+): Promise<void> {
   expectContext("contentScript");
 
-  if (!isSidebarFrameVisible()) {
+  if (!(await isSidePanelOpen())) {
     throw new Error("Cannot add sidebar form if the sidebar is not visible");
   }
 
@@ -140,10 +142,10 @@ export function showSidebarForm(entry: Except<FormPanelEntry, "type">): void {
   void sidebarInThisTab.showForm(seqNum, { type: "form", ...entry });
 }
 
-export function hideSidebarForm(nonce: UUID): void {
+export async function hideSidebarForm(nonce: UUID): Promise<void> {
   expectContext("contentScript");
 
-  if (!isSidebarFrameVisible()) {
+  if (!(await isSidePanelOpen())) {
     // Already hidden
     return;
   }
@@ -153,12 +155,12 @@ export function hideSidebarForm(nonce: UUID): void {
   void sidebarInThisTab.hideForm(seqNum, nonce);
 }
 
-export function showTemporarySidebarPanel(
+export async function showTemporarySidebarPanel(
   entry: Except<TemporaryPanelEntry, "type">,
-): void {
+): Promise<void> {
   expectContext("contentScript");
 
-  if (!isSidebarFrameVisible()) {
+  if (!(await isSidePanelOpen())) {
     throw new Error(
       "Cannot add temporary sidebar panel if the sidebar is not visible",
     );
@@ -171,12 +173,12 @@ export function showTemporarySidebarPanel(
   });
 }
 
-export function updateTemporarySidebarPanel(
+export async function updateTemporarySidebarPanel(
   entry: Except<TemporaryPanelEntry, "type">,
-): void {
+): Promise<void> {
   expectContext("contentScript");
 
-  if (!isSidebarFrameVisible()) {
+  if (!(await isSidePanelOpen())) {
     throw new Error(
       "Cannot add temporary sidebar panel if the sidebar is not visible",
     );
@@ -189,10 +191,10 @@ export function updateTemporarySidebarPanel(
   });
 }
 
-export function hideTemporarySidebarPanel(nonce: UUID): void {
+export async function hideTemporarySidebarPanel(nonce: UUID): Promise<void> {
   expectContext("contentScript");
 
-  if (!isSidebarFrameVisible()) {
+  if (!(await isSidePanelOpen())) {
     return;
   }
 
@@ -212,7 +214,7 @@ export function removeExtensions(extensionIds: UUID[]): void {
   // `panels` is const, so replace the contents
   const current = panels.splice(0, panels.length);
   panels.push(...current.filter((x) => !extensionIds.includes(x.extensionId)));
-  renderPanelsIfVisible();
+  void renderPanelsIfVisible();
 }
 
 /**
@@ -242,7 +244,7 @@ export function removeExtensionPoint(
     ),
   );
 
-  renderPanelsIfVisible();
+  void renderPanelsIfVisible();
 }
 
 /**
@@ -277,7 +279,7 @@ export function reservePanels(refs: ModComponentRef[]): void {
     }
   }
 
-  renderPanelsIfVisible();
+  void renderPanelsIfVisible();
 }
 
 export function updateHeading(extensionId: UUID, heading: string): void {
@@ -296,7 +298,7 @@ export function updateHeading(extensionId: UUID, heading: string): void {
       entry.extensionPointId,
       { ...entry },
     );
-    renderPanelsIfVisible();
+    void renderPanelsIfVisible();
   } else {
     console.warn(
       "updateHeading: No panel exists for extension %s",
@@ -344,7 +346,7 @@ export function upsertPanel(
     });
   }
 
-  renderPanelsIfVisible();
+  void renderPanelsIfVisible();
 }
 
 /**
@@ -353,12 +355,12 @@ export function upsertPanel(
  * @param entry the mod activation panel entry
  * @throws Error if the sidebar frame is not visible
  */
-export function showModActivationInSidebar(
+export async function showModActivationInSidebar(
   entry: Except<ModActivationPanelEntry, "type">,
-): void {
+): Promise<void> {
   expectContext("contentScript");
 
-  if (!isSidebarFrameVisible()) {
+  if (!(await isSidePanelOpen())) {
     throw new Error(
       "Cannot activate mods in the sidebar if the sidebar is not visible",
     );
@@ -380,13 +382,13 @@ export function showModActivationInSidebar(
  * Hide the mod activation panel in the sidebar.
  * @see showModActivationInSidebar
  */
-export function hideModActivationInSidebar(): void {
+export async function hideModActivationInSidebar(): Promise<void> {
   expectContext("contentScript");
 
   // Clear out in in-memory tracking
   modActivationPanelEntry = null;
 
-  if (!isSidebarFrameVisible()) {
+  if (!(await isSidePanelOpen())) {
     return;
   }
 

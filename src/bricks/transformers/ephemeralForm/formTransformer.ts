@@ -158,7 +158,7 @@ export class FormTransformer extends TransformerABC {
       // Ensure the sidebar is visible (which may also be showing persistent panels)
       await ensureSidebar();
 
-      showSidebarForm({
+      await showSidebarForm({
         extensionId: logger.context.extensionId,
         blueprintId: logger.context.blueprintId,
         nonce: formNonce,
@@ -182,7 +182,7 @@ export class FormTransformer extends TransformerABC {
         // NOTE: we're not hiding the side panel here to avoid closing the sidebar if the user already had it open.
         // In the future we might creating/sending a closeIfEmpty message to the sidebar, so that it would close
         // if this form was the only entry in the panel
-        hideSidebarForm(formNonce);
+        void hideSidebarForm(formNonce);
         void cancelForm(formNonce);
       });
     } else {
