@@ -35,6 +35,10 @@ import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { initCopilotMessenger } from "@/contrib/automationanywhere/aaFrameProtocol";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
 import { isMV3 } from "@/mv3/api";
+import {
+  type SidebarStatusMessage,
+  SIDEPANEL_PORT_NAME,
+} from "@/types/sidebarControllerTypes";
 
 function init(): void {
   ReactDOM.render(<App />, document.querySelector("#container"));
@@ -54,29 +58,40 @@ void initCopilotMessenger();
 
 // Device to let background page know if sidepanel is open: https://stackoverflow.com/a/77106777/402560
 if (isMV3()) {
-  let port = chrome.runtime.connect({ name: "sidepanel" });
+  const tabId = Number.parseInt(
+    new URLSearchParams(location.search).get("tabId"),
+    10,
+  );
 
-  port.onDisconnect.addListener(() => {
-    // Reconnect if service worker is recycled
-    port = chrome.runtime.connect({ name: "sidepanel" });
+  // Background and content scripts communicate on different ports
+  // https://developer.chrome.com/docs/extensions/develop/concepts/messaging
+  let backgroundPort = chrome.runtime.connect({ name: SIDEPANEL_PORT_NAME });
+  const tabPort = chrome.tabs.connect(tabId, { name: SIDEPANEL_PORT_NAME });
+
+  const sendStatusMessage = (port: chrome.runtime.Port) => {
+    port.postMessage({
+      type: "status",
+      payload: {
+        tabId,
+        hidden: document.hidden,
+      },
+    } satisfies SidebarStatusMessage);
+  };
+
+  backgroundPort.onDisconnect.addListener(() => {
+    // Reconnect if service worker is recycled despite keep-alive
+    backgroundPort = chrome.runtime.connect({ name: SIDEPANEL_PORT_NAME });
   });
 
   document.addEventListener("visibilitychange", () => {
-    port.postMessage({
-      type: "keepalive",
-      href: location.href,
-      hidden: document.hidden,
-    });
+    sendStatusMessage(backgroundPort);
+    sendStatusMessage(tabPort);
   });
 
-  // Keep the background worker open. Is this necessary given the reconnection logic above?
+  // Keep the background worker open. Is keep alive necessary given the reconnection logic above?
   setInterval(
     () => {
-      port.postMessage({
-        type: "keepalive",
-        href: location.href,
-        hidden: document.hidden,
-      });
+      sendStatusMessage(backgroundPort);
     },
     15 * 60 * 1000,
   );

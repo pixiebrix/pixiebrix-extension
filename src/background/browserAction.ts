@@ -27,6 +27,7 @@ import {
   DISPLAY_REASON_RESTRICTED_URL,
 } from "@/tinyPages/restrictedUrlPopupConstants";
 import { setActionPopup } from "webext-tools";
+import { isSidebarStatusMessage } from "@/types/sidebarControllerTypes";
 
 const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
@@ -119,11 +120,11 @@ export default function initBrowserAction(): void {
           sidePanelOpen = false;
         });
 
-        port.onMessage.addListener(async (message) => {
-          // FIXME: keep track based on tab
-          if (message.type === "keepalive") {
+        port.onMessage.addListener(async (message: unknown) => {
+          // FIXME: need to keep track based on tab, or only update if its the active tab
+          if (isSidebarStatusMessage(message)) {
             console.debug("browserAction:keepalive", message);
-            sidePanelOpen = !message.hidden;
+            sidePanelOpen = !message.payload.hidden;
           }
         });
       }
