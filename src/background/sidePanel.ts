@@ -20,16 +20,36 @@ import type { MessengerMeta } from "webext-messenger";
 export async function showSidebarPanel(this: MessengerMeta): Promise<void> {
   const tabId = this.trace[0].tab.id;
 
-  // Call open then setOptions
-  // https://github.com/GoogleChrome/chrome-extensions-samples/blob/main/functional-samples/cookbook.sidepanel-open/script.js#L9
-  await chrome.sidePanel.open({
-    tabId,
-  });
+  return new Promise<void>((resolve, reject) => {
+    // Unlike the Chrome example, call setOptions first to handle the case where the sidebar was closed on the tab
+    // https://github.com/GoogleChrome/chrome-extensions-samples/blob/main/functional-samples/cookbook.sidepanel-open/script.js#L9
 
-  await chrome.sidePanel.setOptions({
-    tabId,
-    path: `sidebar.html?tabId=${tabId}`,
-    enabled: true,
+    // Use callback form to help prevent the user gesture from getting lost
+    chrome.sidePanel.setOptions(
+      {
+        tabId,
+        path: `sidebar.html?tabId=${tabId}`,
+        enabled: true,
+      },
+      () => {
+        chrome.sidePanel.open(
+          {
+            tabId,
+          },
+          () => {
+            resolve();
+          },
+        );
+
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        }
+      },
+    );
+
+    if (chrome.runtime.lastError) {
+      reject(chrome.runtime.lastError);
+    }
   });
 }
 

@@ -32,8 +32,7 @@ if (!isMV3()) {
 // TODO: drop constant. Is referenced by notify.tsx to calculate offset
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 
-// FIXME: fix to true for now so mods run. The device at the bottom of the file wasn't working properly. Might be
-//  interfering with the background port handling
+// FIXME: fix to true for now so mods run. The device at the bottom of the file to keep in sync isn't working properly.
 let sidePanelOpen = true;
 
 /**
@@ -88,22 +87,25 @@ export function toggleSidebarFrame(): boolean {
   return true;
 }
 
-// Not working properly. Might be interfering with the background port handling
-// // TODO: wrap in initializer method. Will need to introduce initializer in sidebarDomController.ts
-// chrome.runtime.onConnect.addListener((port) => {
-//   if (port.name === "sidepanel") {
-//     sidePanelOpen = true;
-//
-//     port.onDisconnect.addListener(async () => {
-//       sidePanelOpen = false;
-//     });
-//
-//     port.onMessage.addListener(async (message) => {
-//       // FIXME: filter out messages from side panels associated with other tabs
-//       if (message.type === "keepalive") {
-//         console.debug("sidebarDomControllerLiteMv3:keepalive", message);
-//         sidePanelOpen = !message.hidden;
-//       }
-//     });
-//   }
-// });
+export function init(): void {
+  console.debug("sidebarDomControllerLiteMv3:initialize");
+
+  // FIXME: this doesn't see onConnect event from the sidebar
+  chrome.runtime.onConnect.addListener((port) => {
+    if (port.name === "sidepanel") {
+      sidePanelOpen = true;
+
+      port.onDisconnect.addListener(async () => {
+        sidePanelOpen = false;
+      });
+
+      port.onMessage.addListener(async (message) => {
+        // FIXME: filter out messages from side panels associated with other tabs
+        if (message.type === "keepalive") {
+          console.debug("sidebarDomControllerLiteMv3:keepalive", message);
+          sidePanelOpen = !message.hidden;
+        }
+      });
+    }
+  });
+}

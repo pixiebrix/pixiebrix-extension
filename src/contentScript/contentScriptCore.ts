@@ -36,6 +36,7 @@ import {
   notifyContextInvalidated,
 } from "@/errors/contextInvalidated";
 import { onUncaughtError } from "@/errors/errorHelpers";
+import { init as initSidebarController } from "@/contentScript/sidebarDomControllerLite";
 import initFloatingActions from "@/components/floatingActions/initFloatingActions";
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
@@ -68,6 +69,7 @@ export async function init(): Promise<void> {
   void initNavigation();
 
   void initSidebarActivation();
+  initSidebarController();
 
   // Inform `ensureContentScript`
   void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });

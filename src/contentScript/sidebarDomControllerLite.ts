@@ -163,3 +163,7 @@ export function toggleSidebarFrame(): boolean {
   insertSidebarFrame();
   return true;
 }
+
+export function init(): void {
+  // NOP for MV2
+}
