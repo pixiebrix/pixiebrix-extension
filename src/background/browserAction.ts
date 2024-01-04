@@ -188,6 +188,11 @@ export default function initBrowserAction(): void {
               },
               () => {
                 sidePanelOpen = true;
+
+                // NOTE: at this point, the sidebar should already be visible on the page, even if not ready.
+                void rehydrateSidebar({
+                  tabId,
+                });
               },
             );
           },
