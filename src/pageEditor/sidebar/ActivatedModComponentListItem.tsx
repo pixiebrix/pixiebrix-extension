@@ -30,11 +30,8 @@ import {
   ExtensionIcon,
   NotAvailableIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
-import {
-  disableOverlay,
-  enableOverlay,
-  showSidebar,
-} from "@/contentScript/messenger/api";
+import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
+import { showSidebarFromPageEditor } from "@/mv3/sidePanel";
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
@@ -116,7 +113,7 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
         if (type === "actionPanel") {
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
           // frequently between extensions within the same blueprint.
-          void showSidebar(thisTab, {
+          void showSidebarFromPageEditor({
             extensionId: modComponent.id,
             force: true,
             refresh: false,

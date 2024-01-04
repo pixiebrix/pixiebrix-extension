@@ -18,12 +18,16 @@
 /**
  * @file This file MUST not have dependencies as it's meant to be tiny
  * and imported by browserActionInstantHandler.ts
+ * @file MV3 NOTE: This file should eventually be dropped as it's just a shim
+ * for the old API. The new sidePanel does not depend on the DOM.
  */
 
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/domConstants";
 import shadowWrap from "@/utils/shadowWrap";
 import { expectContext } from "@/utils/expectContext";
 import { uuidv4 } from "@/types/helpers";
+import { hideSidebarPanel, showSidebarPanel } from "@/background/messenger/api";
+import { isMV3 } from "@/mv3/api";
 
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
@@ -68,82 +72,94 @@ function getSidebar(): Element | null {
  * Return true if the sidebar frame is in the DOM. The sidebar might not be initialized yet.
  */
 export function isSidebarFrameVisible(): boolean {
+  if (isMV3()) {
+    console.warn(
+      "isSidebarFrameVisible: MV3 requires a different implementation",
+    );
+    return null as unknown as false;
+  }
+
   return Boolean(getSidebar());
 }
 
 /** Removes the element; Returns false if no element was found */
-export function removeSidebarFrame(): boolean {
-  const sidebar = getSidebar();
+export const removeSidebarFrame = isMV3()
+  ? hideSidebarPanel
+  : (): boolean => {
+      const sidebar = getSidebar();
 
-  console.debug("sidebarDomControllerLite:removeSidebarFrame", {
-    isSidebarFrameVisible: Boolean(sidebar),
-  });
+      console.debug("sidebarDomControllerLite:removeSidebarFrame", {
+        isSidebarFrameVisible: Boolean(sidebar),
+      });
 
-  if (sidebar) {
-    sidebar.remove();
-    setSidebarWidth(0);
-  }
+      if (sidebar) {
+        sidebar.remove();
+        setSidebarWidth(0);
+      }
 
-  return Boolean(sidebar);
-}
+      return Boolean(sidebar);
+    };
 
 /** Inserts the element; Returns false if it already existed */
-export function insertSidebarFrame(): boolean {
-  console.debug("sidebarDomControllerLite:insertSidebarFrame", {
-    isSidebarFrameVisible: isSidebarFrameVisible(),
-  });
+export const insertSidebarFrame = isMV3()
+  ? showSidebarPanel
+  : (): boolean => {
+      console.debug("sidebarDomControllerLite:insertSidebarFrame", {
+        isSidebarFrameVisible: isSidebarFrameVisible(),
+      });
 
-  if (isSidebarFrameVisible()) {
-    console.debug("insertSidebarFrame: sidebar frame already exists");
-    return false;
-  }
+      if (isSidebarFrameVisible()) {
+        console.debug("insertSidebarFrame: sidebar frame already exists");
+        return false;
+      }
 
-  storeOriginalCSSOnce();
-  const nonce = uuidv4();
-  const actionURL = browser.runtime.getURL("sidebar.html");
+      storeOriginalCSSOnce();
+      const nonce = uuidv4();
+      const actionURL = browser.runtime.getURL("sidebar.html");
 
-  setSidebarWidth(SIDEBAR_WIDTH_PX);
+      setSidebarWidth(SIDEBAR_WIDTH_PX);
 
-  const iframe = document.createElement("iframe");
-  iframe.src = `${actionURL}?nonce=${nonce}`;
+      const iframe = document.createElement("iframe");
+      iframe.src = `${actionURL}?nonce=${nonce}`;
 
-  Object.assign(iframe.style, {
-    position: "fixed",
-    top: 0,
-    right: 0,
-    // `-1` keeps it under the QuickBar #4130
-    zIndex: MAX_Z_INDEX - 1,
+      Object.assign(iframe.style, {
+        position: "fixed",
+        top: 0,
+        right: 0,
+        // `-1` keeps it under the QuickBar #4130
+        zIndex: MAX_Z_INDEX - 1,
 
-    // Note that it can't use the variable because the frame is in the shadow DOM
-    width: CSS.px(SIDEBAR_WIDTH_PX),
-    height: "100%",
-    border: 0,
-    borderLeft: "1px solid lightgray",
+        // Note that it can't use the variable because the frame is in the shadow DOM
+        width: CSS.px(SIDEBAR_WIDTH_PX),
+        height: "100%",
+        border: 0,
+        borderLeft: "1px solid lightgray",
 
-    // Note that it can't use our CSS variables because this element lives on the host
-    background: "#f9f8fa",
-  });
+        // Note that it can't use our CSS variables because this element lives on the host
+        background: "#f9f8fa",
+      });
 
-  const wrapper = shadowWrap(iframe);
-  wrapper.id = PANEL_FRAME_ID;
-  html.append(wrapper);
+      const wrapper = shadowWrap(iframe);
+      wrapper.id = PANEL_FRAME_ID;
+      html.append(wrapper);
 
-  iframe.animate([{ translate: "50%" }, { translate: 0 }], {
-    duration: 500,
-    easing: "cubic-bezier(0.23, 1, 0.32, 1)",
-  });
+      iframe.animate([{ translate: "50%" }, { translate: 0 }], {
+        duration: 500,
+        easing: "cubic-bezier(0.23, 1, 0.32, 1)",
+      });
 
-  if (!isSidebarFrameVisible()) {
-    console.error(
-      "Post-condition failed: isSidebarFrameVisible is false after insertSidebarFrame",
-    );
-  }
+      if (!isSidebarFrameVisible()) {
+        console.error(
+          "Post-condition failed: isSidebarFrameVisible is false after insertSidebarFrame",
+        );
+      }
 
-  return true;
-}
+      return true;
+    };
 
 /**
  * Toggle the sidebar frame. Returns true if the sidebar is now visible, false otherwise.
+ * MV2 only
  */
 export function toggleSidebarFrame(): boolean {
   console.debug("sidebarDomControllerLite:toggleSidebarFrame", {

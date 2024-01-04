@@ -19,14 +19,10 @@ import { ensureContentScript } from "@/background/contentScript";
 import { rehydrateSidebar } from "@/contentScript/messenger/api";
 import webextAlert from "./webextAlert";
 import { browserAction, isMV3, type Tab } from "@/mv3/api";
-import { executeScript, isScriptableUrl } from "webext-content-scripts";
+import { executeScript } from "webext-content-scripts";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
-import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
-import {
-  DISPLAY_REASON_EXTENSION_CONSOLE,
-  DISPLAY_REASON_RESTRICTED_URL,
-} from "@/tinyPages/restrictedUrlPopupConstants";
 import { setActionPopup } from "webext-tools";
+import { getPopoverUrl, getSidebarPath, openSidePanel } from "@/mv3/sidePanel";
 
 const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
@@ -82,51 +78,35 @@ async function handleBrowserAction(tab: Tab): Promise<void> {
   await toggleSidebar(tab.id, url);
 }
 
-/**
- * Show a popover on restricted URLs because we're unable to inject content into the page. Previously we'd open
- * the Extension Console, but that was confusing because the action was inconsistent with how the button behaves
- * other pages.
- * @param tabUrl the url of the tab, or null if not accessible
- */
-function getPopoverUrl(tabUrl: string | null): string | null {
-  const popoverUrl = browser.runtime.getURL("restrictedUrlPopup.html");
+async function initBrowserActionMv3(): Promise<void> {
+  void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
 
-  if (tabUrl?.startsWith(getExtensionConsoleUrl())) {
-    return `${popoverUrl}?reason=${DISPLAY_REASON_EXTENSION_CONSOLE}`;
-  }
-
-  if (!isScriptableUrl(tabUrl)) {
-    return `${popoverUrl}?reason=${DISPLAY_REASON_RESTRICTED_URL}`;
-  }
-
-  // The popup is disabled, and the extension will receive browserAction.onClicked events.
-  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setPopup#popup
-  return null;
-}
-
-export default function initBrowserAction(): void {
-  if (isMV3()) {
-    void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
-
-    // Disable by default, so that it can be enabled on a per-tab basis
-    void chrome.sidePanel.setOptions({
-      enabled: false,
-    });
-    browserAction.onClicked.addListener((tab) => {
-      console.log("xxxxxxxxxx", { tabId: tab.id });
-      // Simultaneously define, enable, and open the side panel
+  // Disable by default, so that it can be enabled on a per-tab basis
+  void chrome.sidePanel.setOptions({
+    enabled: false,
+  });
+  browserAction.onClicked.addListener(async (tab) => {
+    await openSidePanel(tab.id, tab.url);
+  });
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.url) {
+      // TODO: Drop this once the popover URL behavior is merged into sidebar.html
       void chrome.sidePanel.setOptions({
-        tabId: tab.id,
-        path: getPopoverUrl(tab.url) ?? "sidebar.html?tabId=" + tab.id,
-        enabled: true,
+        tabId,
+        path: getSidebarPath(tabId, changeInfo.url),
       });
-      void chrome.sidePanel.open({ tabId: tab.id });
-    });
-  } else {
-    browserAction.onClicked.addListener(handleBrowserAction);
-
-    // Track the active tab URL. We need to update the popover every time status the active tab/active URL changes.
-    // https://github.com/facebook/react/blob/bbb9cb116dbf7b6247721aa0c4bcb6ec249aa8af/packages/react-devtools-extensions/src/background/tabsManager.js#L29
-    setActionPopup(getPopoverUrl);
-  }
+    }
+  });
 }
+
+async function initBrowserActionMv2() {
+  browserAction.onClicked.addListener(handleBrowserAction);
+
+  // Track the active tab URL. We need to update the popover every time status the active tab/active URL changes.
+  // https://github.com/facebook/react/blob/bbb9cb116dbf7b6247721aa0c4bcb6ec249aa8af/packages/react-devtools-extensions/src/background/tabsManager.js#L29
+  setActionPopup(getPopoverUrl);
+}
+
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
+const initBrowserAction = isMV3() ? initBrowserActionMv3 : initBrowserActionMv2;
+export default initBrowserAction;

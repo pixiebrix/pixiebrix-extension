@@ -20,6 +20,7 @@ import type { MessengerMeta } from "webext-messenger";
 export async function showSidebarPanel(this: MessengerMeta): Promise<void> {
   const tabId = this.trace[0].tab.id;
 
+  // TODO: Use the native promises if possible
   return new Promise<void>((resolve, reject) => {
     // Unlike the Chrome example, call setOptions first to handle the case where the sidebar was closed on the tab
     // https://github.com/GoogleChrome/chrome-extensions-samples/blob/main/functional-samples/cookbook.sidepanel-open/script.js#L9

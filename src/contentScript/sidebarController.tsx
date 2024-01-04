@@ -44,6 +44,8 @@ import { getTemporaryPanelSidebarEntries } from "@/bricks/transformers/temporary
 import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
 import { logPromiseDuration } from "@/utils/promiseUtils";
 import { waitAnimationFrame } from "@/utils/domUtils";
+import { isMV3 } from "@/mv3/api";
+import { showSidebarPanel } from "@/background/messenger/api";
 
 export const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
@@ -66,7 +68,55 @@ let modActivationPanelEntry: ModActivationPanelEntry | null = null;
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
  * @param activateOptions options controlling the visible panel in the sidebar
  */
-export async function showSidebar(
+export const showSidebar: typeof showSidebarMv2 /* Ensure that the API matches */ =
+  isMV3() ? showSidebarMv3 : showSidebarMv2;
+
+async function showSidebarMv3(
+  activateOptions: ActivatePanelOptions = {},
+): Promise<void> {
+  console.debug("sidebarController:showSidebar");
+  reportEvent(Events.SIDEBAR_SHOW);
+  await showSidebarPanel();
+
+  try {
+    await sidebarInThisTab.pingSidebar();
+  } catch (error) {
+    throw new Error("The sidebar did not respond in time", { cause: error });
+  }
+
+  if (activateOptions.refresh ?? true) {
+    // Run the sidebar extension points available on the page. If the sidebar is already in the page, running
+    // all the callbacks ensures the content is up-to-date
+
+    // Currently, this runs the listening SidebarExtensionPoint.run callbacks in not particular order. Also note that
+    // we're not awaiting their resolution (because they may contain long-running bricks).
+    if (!isSidebarFrameVisible()) {
+      console.error(
+        "Pre-condition failed: sidebar is not attached in the page for call to sidebarShowEvents.emit",
+      );
+    }
+
+    console.debug("sidebarController:showSidebar emitting sidebarShowEvents", {
+      isSidebarFrameVisible: isSidebarFrameVisible(),
+    });
+
+    sidebarShowEvents.emit({ reason: RunReason.MANUAL });
+  }
+
+  if (!isEmpty(activateOptions)) {
+    const seqNum = renderSequenceNumber;
+    renderSequenceNumber++;
+
+    // The sidebarSlice handles the race condition with the panels loading by keeping track of the latest pending
+    // activatePanel request.
+    await sidebarInThisTab.activatePanel(seqNum, {
+      ...activateOptions,
+      force: activateOptions.force,
+    });
+  }
+}
+
+async function showSidebarMv2(
   activateOptions: ActivatePanelOptions = {},
 ): Promise<void> {
   console.debug("sidebarController:showSidebar", {
@@ -77,7 +127,7 @@ export async function showSidebar(
   const isAlreadyShowing = isSidebarFrameVisible();
 
   if (!isAlreadyShowing) {
-    insertSidebarFrame();
+    await insertSidebarFrame();
   }
 
   try {
