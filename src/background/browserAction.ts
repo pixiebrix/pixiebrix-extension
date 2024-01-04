@@ -27,7 +27,10 @@ import {
   DISPLAY_REASON_RESTRICTED_URL,
 } from "@/tinyPages/restrictedUrlPopupConstants";
 import { setActionPopup } from "webext-tools";
-import { isSidebarStatusMessage } from "@/types/sidebarControllerTypes";
+import {
+  isSidebarStatusMessage,
+  SIDEPANEL_PORT_NAME,
+} from "@/types/sidebarControllerTypes";
 
 const ERR_UNABLE_TO_OPEN =
   "PixieBrix was unable to open the Sidebar. Try refreshing the page.";
@@ -113,7 +116,7 @@ export default function initBrowserAction(): void {
     void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
 
     chrome.runtime.onConnect.addListener((port) => {
-      if (port.name === "sidepanel") {
+      if (port.name === SIDEPANEL_PORT_NAME) {
         sidePanelOpen = true;
 
         port.onDisconnect.addListener(async () => {
@@ -123,7 +126,6 @@ export default function initBrowserAction(): void {
         port.onMessage.addListener(async (message: unknown) => {
           // FIXME: need to keep track based on tab, or only update if its the active tab
           if (isSidebarStatusMessage(message)) {
-            console.debug("browserAction:keepalive", message);
             sidePanelOpen = !message.payload.hidden;
           }
         });
