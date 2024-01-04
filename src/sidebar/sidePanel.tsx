@@ -18,5 +18,13 @@
 /** @file This file defines the internal API for the sidePanel, only meant to be run in the sidePanel itself */
 
 import { expectContext } from "@/utils/expectContext";
+import {
+  getAssociatedTabId,
+  hideSidePanel,
+} from "@/sidebar/sidePanel/messenger/api";
 
-expectContext("sidePanel");
+expectContext("sidebar");
+
+export async function hideSelf() {
+  return hideSidePanel(getAssociatedTabId());
+}

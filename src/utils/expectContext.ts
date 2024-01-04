@@ -21,7 +21,6 @@ import {
   isExtensionContext,
   isWebPage,
   contextNames,
-  isSidePanel,
 } from "webext-detect-page";
 
 function isBrowserSidebar(): boolean {
@@ -59,7 +58,6 @@ const contextMap = new Map<(typeof contexts)[number], () => boolean>([
   ["background", isBackground],
   ["contentScript", isContentScript],
   ["sidebar", isBrowserSidebar],
-  ["sidePanel", isSidePanel],
   ["devTools", () => "devtools" in chrome],
 ]);
 

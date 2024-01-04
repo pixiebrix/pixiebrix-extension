@@ -16,19 +16,21 @@
  */
 
 /* Do not use `registerMethod` in this file */
-import { expectContext } from "@/utils/expectContext";
+import { isContentScript } from "webext-detect-page";
 import { getMethod, getNotifier, getThisFrame } from "webext-messenger";
-
-expectContext("contentScript");
 
 const target = { page: "/sidebar.html" };
 
-// Unavoidable race condition: we can't message the sidebar until we know the tabId.
-// If this causes issues (unlikely), we can make `getMethod` accept an async function
-// that generates the target, like `getMethod('FOO', getThisFramesSideBarUrl())`.
-void getThisFrame().then((frame) => {
-  target.page += "?tabId=" + frame.tabId;
-});
+// This should be an expectContext, but it's the usual "everyone imports the registry" problem
+if (isContentScript()) {
+  // Unavoidable race condition: we can't message the sidebar until we know the tabId.
+  // If this causes issues (unlikely), we can make `getMethod` accept an async function
+  // that generates the target, like `getMethod('FOO', getThisFramesSideBarUrl())`.
+  // eslint-disable-next-line promise/prefer-await-to-then
+  void getThisFrame().then((frame) => {
+    target.page += "?tabId=" + frame.tabId;
+  });
+}
 
 const sidebarInThisTab = {
   renderPanels: getMethod("SIDEBAR_RENDER_PANELS", target),

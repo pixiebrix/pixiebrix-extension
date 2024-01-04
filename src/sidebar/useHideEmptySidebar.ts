@@ -24,6 +24,7 @@ import {
   selectVisiblePanelCount,
 } from "@/sidebar/sidebarSelectors";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import { hideSelf } from "./sidePanel";
 
 /**
  * Hide the sidebar if there are no visible panels. We use this to close the sidebar if the user closes all panels.
@@ -52,13 +53,7 @@ export const useHideEmptySidebar = () => {
         visiblePanelCount === 0 &&
         openReservedPanels.length === 0
       ) {
-        // TODO: Move to own function
-        await chrome.sidePanel.setOptions({
-          tabId: Number(
-            new URLSearchParams(window.location.search).get("tabId"),
-          ),
-          enabled: false,
-        });
+        await hideSelf();
       }
     },
     [visiblePanelCount],

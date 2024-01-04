@@ -33,7 +33,7 @@ import { expectContext } from "@/utils/expectContext";
 import { type Target } from "webext-messenger";
 
 export function getAssociatedTabId(): number {
-  expectContext("sidePanel");
+  expectContext("sidebar");
   const tabId = new URLSearchParams(window.location.search).get("tabId");
   return Number(tabId);
 }
@@ -45,7 +45,7 @@ export function getAssociatedTarget(): Target {
 const PING_MESSAGE = "PING_SIDE_PANEL";
 // Do not use the messenger because it doesn't support retry-less messaging
 export function initSidePanelPingResponder() {
-  expectContext("sidePanel");
+  expectContext("sidebar");
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (
       isObject(message) &&
