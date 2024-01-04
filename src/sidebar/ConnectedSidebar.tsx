@@ -42,7 +42,7 @@ import {
   ensureExtensionPointsInstalled,
   getReservedSidebarEntries,
 } from "@/contentScript/messenger/api";
-import { getTopLevelFrame } from "./sidePanel";
+import { getAssociatedTarget } from "./sidePanel/messenger/api";
 import useAsyncEffect from "use-async-effect";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
 
@@ -98,7 +98,7 @@ const ConnectedSidebar: React.VFC = () => {
   // We could instead consider moving the initial panel logic to SidebarApp.tsx and pass the entries as the
   // initial state to the sidebarSlice reducer.
   useAsyncEffect(async () => {
-    const topFrame = await getTopLevelFrame();
+    const topFrame = getAssociatedTarget();
 
     // Ensure persistent sidebar extension points have been installed to have reserve their panels for the sidebar
     await ensureExtensionPointsInstalled(topFrame);

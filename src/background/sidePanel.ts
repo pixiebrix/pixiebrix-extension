@@ -15,50 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import {
+  openSidePanel,
+  hideSidePanel,
+} from "@/sidebar/sidePanel/messenger/api";
 import type { MessengerMeta } from "webext-messenger";
 
-export async function showSidebarPanel(this: MessengerMeta): Promise<void> {
-  const tabId = this.trace[0].tab.id;
-
-  // TODO: Use the native promises if possible
-  return new Promise<void>((resolve, reject) => {
-    // Unlike the Chrome example, call setOptions first to handle the case where the sidebar was closed on the tab
-    // https://github.com/GoogleChrome/chrome-extensions-samples/blob/main/functional-samples/cookbook.sidepanel-open/script.js#L9
-
-    // Use callback form to help prevent the user gesture from getting lost
-    chrome.sidePanel.setOptions(
-      {
-        tabId,
-        path: `sidebar.html?tabId=${tabId}`,
-        enabled: true,
-      },
-      () => {
-        chrome.sidePanel.open(
-          {
-            tabId,
-          },
-          () => {
-            resolve();
-          },
-        );
-
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
-        }
-      },
-    );
-
-    if (chrome.runtime.lastError) {
-      reject(chrome.runtime.lastError);
-    }
-  });
+export async function showMySidePanel(this: MessengerMeta): Promise<void> {
+  await openSidePanel(this.trace[0].tab.id, this.trace[0].url);
 }
 
-export async function hideSidebarPanel(this: MessengerMeta): Promise<void> {
-  const tabId = this.trace[0].tab.id;
-
-  await chrome.sidePanel.setOptions({
-    tabId,
-    enabled: false,
-  });
+export async function hideMySidePanel(this: MessengerMeta): Promise<void> {
+  await hideSidePanel(this.trace[0].tab.id);
 }

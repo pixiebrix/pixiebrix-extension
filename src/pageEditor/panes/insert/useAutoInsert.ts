@@ -6,7 +6,7 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import { getExampleBrickPipeline } from "@/pageEditor/exampleStarterBrickConfigs";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
-import { showSidebarFromPageEditor } from "@/sidebar/sidePanel";
+import { showSidebarFromPageEditor } from "@/pageEditor/sidePanel";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { type StarterBrickType } from "@/types/starterBrickTypes";

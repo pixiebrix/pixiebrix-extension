@@ -15,8 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file This file defines the internal API for the sidePanel, only meant to be run in the sidePanel itself */
+import { type ActivatePanelOptions } from "@/types/sidebarTypes";
+import { getCurrentURL } from "@/pageEditor/utils";
+import { openSidePanel } from "@/sidebar/sidePanel/messenger/api";
 
-import { expectContext } from "@/utils/expectContext";
-
-expectContext("sidePanel");
+export async function showSidebarFromPageEditor(
+  activateOptions?: ActivatePanelOptions,
+) {
+  await openSidePanel(
+    chrome.devtools.inspectedWindow.tabId,
+    await getCurrentURL(),
+  );
+}

@@ -62,7 +62,7 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
-import { isSidePanelOpen } from "@/sidebar/sidePanel";
+import { isSidePanelOpen } from "@/sidebar/sidePanel/messenger/api";
 
 export type SidebarConfig = {
   heading: string;

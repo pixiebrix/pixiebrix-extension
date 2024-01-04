@@ -16,7 +16,7 @@
  */
 
 import useAsyncEffect from "use-async-effect";
-import { getTopLevelFrame } from "./sidePanel";
+import { getAssociatedTarget } from "@/sidebar/sidePanel/messenger/api";
 import { getReservedSidebarEntries } from "@/contentScript/messenger/api";
 import { useSelector } from "react-redux";
 import {
@@ -34,8 +34,9 @@ export const useHideEmptySidebar = () => {
 
   useAsyncEffect(
     async (isMounted) => {
-      const topFrame = await getTopLevelFrame();
-      const reservedPanelEntries = await getReservedSidebarEntries(topFrame);
+      const reservedPanelEntries = await getReservedSidebarEntries(
+        getAssociatedTarget(),
+      );
 
       // We don't want to hide the Sidebar if there are any open reserved panels.
       // Otherwise, we would hide the Sidebar when a user re-renders a panel, e.g. when using

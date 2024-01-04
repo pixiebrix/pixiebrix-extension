@@ -15,8 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browserAction, type Tab } from "@/mv3/api";
-import { getSidebarPath, openSidePanel } from "@/sidebar/sidePanel";
+import { browserAction } from "@/mv3/api";
+import {
+  getSidebarPath,
+  openSidePanel,
+} from "@/sidebar/sidePanel/messenger/api";
 
 export default async function initBrowserAction(): Promise<void> {
   void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });

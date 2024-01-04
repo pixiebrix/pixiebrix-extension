@@ -16,10 +16,19 @@
  */
 
 /* Do not use `registerMethod` in this file */
-import { getMethod, getNotifier } from "webext-messenger";
-import { getAssociatedTabId } from "@/sidebar/sidePanel";
+import { expectContext } from "@/utils/expectContext";
+import { getMethod, getNotifier, getThisFrame } from "webext-messenger";
 
-const target = { page: "/sidebar.html?tabId=" + getAssociatedTabId() } as const;
+expectContext("contentScript");
+
+const target = { page: "/sidebar.html" };
+
+// Unavoidable race condition: we can't message the sidebar until we know the tabId.
+// If this causes issues (unlikely), we can make `getMethod` accept an async function
+// that generates the target, like `getMethod('FOO', getThisFramesSideBarUrl())`.
+void getThisFrame().then((frame) => {
+  target.page += "?tabId=" + frame.tabId;
+});
 
 const sidebarInThisTab = {
   renderPanels: getMethod("SIDEBAR_RENDER_PANELS", target),
