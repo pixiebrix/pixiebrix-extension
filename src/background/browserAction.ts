@@ -106,17 +106,27 @@ function getPopoverUrl(tabUrl: string | null): string | null {
 
 export default function initBrowserAction(): void {
   if (isMV3()) {
-    chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
+    void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
 
+    // Disable by default, so that it can be enabled on a per-tab basis
+    void chrome.sidePanel.setOptions({
+      enabled: false,
+    });
     browserAction.onClicked.addListener((tab) => {
       console.log("xxxxxxxxxx", { tabId: tab.id });
-      chrome.sidePanel.open({ tabId: tab.id });
+      // Simultaneously define, enable, and open the side panel
+      void chrome.sidePanel.setOptions({
+        tabId: tab.id,
+        path: getPopoverUrl(tab.url) ?? "sidebar.html?tabId=" + tab.id,
+        enabled: true,
+      });
+      void chrome.sidePanel.open({ tabId: tab.id });
     });
   } else {
     browserAction.onClicked.addListener(handleBrowserAction);
-  }
 
-  // Track the active tab URL. We need to update the popover every time status the active tab/active URL changes.
-  // https://github.com/facebook/react/blob/bbb9cb116dbf7b6247721aa0c4bcb6ec249aa8af/packages/react-devtools-extensions/src/background/tabsManager.js#L29
-  setActionPopup(getPopoverUrl);
+    // Track the active tab URL. We need to update the popover every time status the active tab/active URL changes.
+    // https://github.com/facebook/react/blob/bbb9cb116dbf7b6247721aa0c4bcb6ec249aa8af/packages/react-devtools-extensions/src/background/tabsManager.js#L29
+    setActionPopup(getPopoverUrl);
+  }
 }
