@@ -20,14 +20,13 @@ import { isEmpty } from "lodash";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Button } from "react-bootstrap";
-import { reloadSidebar } from "@/contentScript/messenger/api";
-import { getTopLevelFrame } from "webext-messenger";
+import sidebarInThisTab from "@/sidebar/messenger/api";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
 class SidebarErrorBoundary extends ErrorBoundary {
   async reloadSidebar() {
-    const topLevelFrame = await getTopLevelFrame();
-    await reloadSidebar(topLevelFrame);
+    sidebarInThisTab.reload();
+    // FIXME: Should this also wait for the sidebar to finish loading?
   }
 
   override render(): React.ReactNode {

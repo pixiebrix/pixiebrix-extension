@@ -18,7 +18,7 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
-import { hideSidebar, showSidebar } from "@/contentScript/sidebarController";
+import { showSidebar } from "@/contentScript/sidebarController";
 import { propertiesToSchema } from "@/validators/generic";
 
 import { logPromiseDuration } from "@/utils/promiseUtils";

@@ -19,7 +19,6 @@ import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import {
   ensureSidebar,
-  HIDE_SIDEBAR_EVENT_NAME,
   hideModActivationInSidebar,
   showModActivationInSidebar,
 } from "@/contentScript/sidebarController";

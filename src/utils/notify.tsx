@@ -32,9 +32,6 @@ import { type Except, type RequireAtLeastOne } from "type-fest";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { merge, truncate } from "lodash";
 
-// While correct, the `sidebarDomControllerLite` name implies that it's a small, pure module and it's unlikely to cause issues
-// eslint-disable-next-line import/no-restricted-paths
-import { SIDEBAR_WIDTH_CSS_PROPERTY } from "@/contentScript/sidebarDomControllerLite";
 import ErrorIcon from "@/icons/error.svg?loadAsComponent";
 import WarningIcon from "@/icons/warning.svg?loadAsComponent";
 
@@ -171,8 +168,6 @@ export function showNotification({
   const options: ToastOptions = {
     id,
     duration,
-    // Keep the notification centered on the document even when the sidebar is open
-    style: { marginLeft: `calc(var(${SIDEBAR_WIDTH_CSS_PROPERTY}, 0) * -1)` },
   };
   const component = <Message {...{ message, id, dismissable }} />;
 

@@ -46,8 +46,6 @@ export const rehydrateSidebar = getMethod("REHYDRATE_SIDEBAR");
 export const getReservedSidebarEntries = getMethod(
   "GET_RESERVED_SIDEBAR_ENTRIES",
 );
-export const showSidebar = getMethod("SHOW_SIDEBAR");
-export const hideSidebar = getMethod("HIDE_SIDEBAR");
 export const reloadSidebar = getMethod("RELOAD_SIDEBAR");
 export const removeSidebars = getMethod("REMOVE_SIDEBARS");
 export const insertPanel = getMethod("INSERT_PANEL");

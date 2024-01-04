@@ -34,6 +34,7 @@ import { initToaster } from "@/utils/notify";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { initCopilotMessenger } from "@/contrib/automationanywhere/aaFrameProtocol";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
+import { initSidePanelPingResponder } from "./sidePanel";
 
 function init(): void {
   ReactDOM.render(<App />, document.querySelector("#container"));
@@ -47,6 +48,7 @@ registerContribBlocks();
 registerBuiltinBricks();
 initToaster();
 init();
+initSidePanelPingResponder();
 
 // Handle an embedded AA business copilot frame
 void initCopilotMessenger();

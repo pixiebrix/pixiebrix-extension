@@ -109,7 +109,6 @@ const createConfig = (env, options) =>
         "background/background",
         "contentScript/contentScript",
         "contentScript/loadActivationEnhancements",
-        "contentScript/browserActionInstantHandler",
         "pageEditor/pageEditor",
         "extensionConsole/options",
         "sidebar/sidebar",

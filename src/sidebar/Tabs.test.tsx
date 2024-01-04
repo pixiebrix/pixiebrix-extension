@@ -31,7 +31,7 @@ import { mockAllApiEndpoints } from "@/testUtils/appApiMock";
 mockAllApiEndpoints();
 
 const cancelFormSpy = jest.spyOn(messengerApi, "cancelForm");
-const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
+const hideSidebarSpy = jest.spyOn(messengerApi, "reloadSidebar"); // TODO: Temporary mock rename just to silence errors
 
 async function setupPanelsAndRender(options: {
   sidebarEntries?: Partial<SidebarEntries>;

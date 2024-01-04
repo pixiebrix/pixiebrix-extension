@@ -31,7 +31,7 @@ import {
   NotAvailableIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
 import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
-import { showSidebarFromPageEditor } from "@/mv3/sidePanel";
+import { showSidebarFromPageEditor } from "@/sidebar/sidePanel";
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";

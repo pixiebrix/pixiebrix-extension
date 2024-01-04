@@ -44,6 +44,7 @@ declare global {
     SIDEBAR_SHOW_FORM: typeof showForm;
     SIDEBAR_HIDE_FORM: typeof hideForm;
     SIDEBAR_PING: typeof noop;
+    SIDEBAR_RELOAD: typeof location.reload;
     SIDEBAR_SHOW_TEMPORARY_PANEL: typeof showTemporaryPanel;
     SIDEBAR_UPDATE_TEMPORARY_PANEL: typeof updateTemporaryPanel;
     SIDEBAR_HIDE_TEMPORARY_PANEL: typeof hideTemporaryPanel;
@@ -59,6 +60,7 @@ export default function registerMessenger(): void {
     SIDEBAR_SHOW_FORM: showForm,
     SIDEBAR_HIDE_FORM: hideForm,
     SIDEBAR_PING: noop,
+    SIDEBAR_RELOAD: location.reload.bind(location),
     SIDEBAR_SHOW_TEMPORARY_PANEL: showTemporaryPanel,
     SIDEBAR_UPDATE_TEMPORARY_PANEL: updateTemporaryPanel,
     SIDEBAR_HIDE_TEMPORARY_PANEL: hideTemporaryPanel,

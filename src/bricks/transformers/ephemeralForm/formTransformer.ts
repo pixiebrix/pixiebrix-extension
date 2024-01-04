@@ -27,7 +27,6 @@ import { expectContext } from "@/utils/expectContext";
 import {
   ensureSidebar,
   hideSidebarForm,
-  HIDE_SIDEBAR_EVENT_NAME,
   showSidebarForm,
 } from "@/contentScript/sidebarController";
 import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";

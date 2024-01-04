@@ -24,7 +24,6 @@ import {
 import { expectContext } from "@/utils/expectContext";
 import {
   ensureSidebar,
-  HIDE_SIDEBAR_EVENT_NAME,
   hideTemporarySidebarPanel,
   showTemporarySidebarPanel,
   updateTemporarySidebarPanel,

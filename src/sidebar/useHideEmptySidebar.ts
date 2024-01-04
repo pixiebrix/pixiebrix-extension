@@ -17,10 +17,7 @@
 
 import useAsyncEffect from "use-async-effect";
 import { getTopLevelFrame } from "./sidePanel";
-import {
-  getReservedSidebarEntries,
-  hideSidebar,
-} from "@/contentScript/messenger/api";
+import { getReservedSidebarEntries } from "@/contentScript/messenger/api";
 import { useSelector } from "react-redux";
 import {
   selectClosedTabs,
@@ -54,8 +51,13 @@ export const useHideEmptySidebar = () => {
         visiblePanelCount === 0 &&
         openReservedPanels.length === 0
       ) {
-        const topLevelFrame = await getTopLevelFrame();
-        void hideSidebar(topLevelFrame);
+        // TODO: Move to own function
+        await chrome.sidePanel.setOptions({
+          tabId: Number(
+            new URLSearchParams(window.location.search).get("tabId"),
+          ),
+          enabled: false,
+        });
       }
     },
     [visiblePanelCount],

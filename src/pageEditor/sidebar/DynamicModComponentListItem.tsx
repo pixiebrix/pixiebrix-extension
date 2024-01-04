@@ -28,7 +28,7 @@ import {
 } from "@/pageEditor/sidebar/ExtensionIcons";
 import { type UUID } from "@/types/stringTypes";
 import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
-import { showSidebarFromPageEditor } from "@/mv3/sidePanel";
+import { showSidebarFromPageEditor } from "@/sidebar/sidePanel";
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import reportEvent from "@/telemetry/reportEvent";
