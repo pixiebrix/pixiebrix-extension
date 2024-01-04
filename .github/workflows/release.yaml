@@ -3,8 +3,8 @@ name: Release Build
 on:
   # The "upload" step has further name-based conditions
   push:
-    # branches:
-    #   - "release/**"
+    branches:
+      - "release/**"
 
 env:
   # Creates and uploads sourcemaps to Rollbar, and save the built extension as an artifact
@@ -72,9 +72,10 @@ jobs:
           if-no-files-found: error
 
   upload:
-    # TODO: Enable once the secrets are in
+    # Currently disable via `false &&`
+    # TODO: Enable once the secrets are in.
     # https://github.com/fregante/chrome-webstore-upload-keys
-    if: ${{ !contains(github.ref, 'alpha') && !contains(github.ref, 'beta') }}
+    if: ${{ false && !contains(github.ref, 'alpha') && !contains(github.ref, 'beta') }}
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -89,7 +90,6 @@ jobs:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
   notify:
-    if: false
     needs: build
     runs-on: ubuntu-latest
     steps:
