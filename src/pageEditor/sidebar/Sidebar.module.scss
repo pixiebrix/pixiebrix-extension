@@ -78,6 +78,10 @@
 
 .actionsLeft {
   display: flex;
+  :global(.btn) {
+    // Matches the height of the nav-tabs on its right
+    border: 0;
+  }
   > :global(.dropdown) {
     // Makes the Add button fit the height of the action bar
     display: flex;
