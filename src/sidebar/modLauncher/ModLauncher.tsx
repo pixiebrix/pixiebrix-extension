@@ -18,8 +18,6 @@ import styles from "./ModLauncher.module.scss";
 
 import React from "react";
 import { Container, Navbar } from "react-bootstrap";
-import useMods from "@/mods/useMods";
-import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import { ActiveSidebarModsList } from "@/sidebar/modLauncher/ActiveSidebarModsList";
 import useFlags from "@/hooks/useFlags";
 import reportEvent from "@/telemetry/reportEvent";
@@ -28,18 +26,13 @@ import { showWalkthroughModal } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
 
 const ModLauncher: React.FunctionComponent = () => {
-  const { mods, error } = useMods();
   const { permit } = useFlags();
 
   return (
     <div className="d-flex flex-column h-100">
       <div className="full-height flex-grow">
         <Container className="scrollable-area">
-          {error ? (
-            <ErrorDisplay error={error} />
-          ) : (
-            <ActiveSidebarModsList mods={mods} />
-          )}
+          <ActiveSidebarModsList />
         </Container>
       </div>
       {permit("page-editor") && (
