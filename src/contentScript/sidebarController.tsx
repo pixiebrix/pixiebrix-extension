@@ -36,8 +36,8 @@ import type {
 } from "@/types/sidebarTypes";
 import { getTemporaryPanelSidebarEntries } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
-import { showMySidePanel } from "@/background/messenger/api";
 import { isSidePanelOpen } from "@/sidebar/sidePanel/messenger/api";
+import { backgroundTarget, getMethod } from "webext-messenger";
 
 /**
  * Sequence number for ensuring render requests are handled in order
@@ -61,7 +61,8 @@ let modActivationPanelEntry: ModActivationPanelEntry | null = null;
 export async function showSidebar(): Promise<void> {
   console.debug("sidebarController:showSidebar");
   reportEvent(Events.SIDEBAR_SHOW);
-  await showMySidePanel();
+  // TODO: Import from background/messenger/api.ts after the strictNullChecks migration
+  await getMethod("SHOW_MY_SIDE_PANEL" as "PING", backgroundTarget)();
 }
 
 /**
