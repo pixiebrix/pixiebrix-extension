@@ -143,7 +143,6 @@ export function getComponentDefinition(
     case "image": {
       const { url, ...props } = config;
       props.src = url;
-      props.height = props.height ?? 50;
       return { Component: Image, props };
     }
 
