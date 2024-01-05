@@ -17,7 +17,7 @@
 
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { createSelector } from "@reduxjs/toolkit";
-import { ActivatedModComponent } from "@/types/modComponentTypes";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { isEmpty } from "lodash";
 import { type UUID } from "@/types/stringTypes";
