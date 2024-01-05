@@ -126,6 +126,7 @@ export const ActiveSidebarModsList: React.FunctionComponent = () => {
         {tableInstance.rows.map((row) => {
           tableInstance.prepareRow(row);
 
+          // TODO: use useMemo to create a map so we don't have to do this lookup for every row
           const modComponent = modComponents.find(
             (x) => x.id === row.original.extensionId,
           );
