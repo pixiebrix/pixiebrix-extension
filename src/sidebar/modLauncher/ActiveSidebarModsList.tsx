@@ -29,7 +29,6 @@ import { useSelector } from "react-redux";
 import { selectSidebarPanels } from "@/sidebar/sidebarSelectors";
 import useIsEnterpriseUser from "@/hooks/useIsEnterpriseUser";
 import { splitStartingEmoji } from "@/utils/stringUtils";
-import { selectExtensions } from "@/store/extensionsSelectors";
 
 const columns: Array<Column<PanelEntry>> = [
   {
@@ -101,7 +100,6 @@ const NoActiveSidebarPanelsView: React.FunctionComponent = () => {
 
 export const ActiveSidebarModsList: React.FunctionComponent = () => {
   const sidebarPanels = useSelector(selectSidebarPanels);
-  const modComponents = useSelector(selectExtensions);
 
   const sortedSidebarPanels = useMemo(
     () =>
@@ -125,17 +123,10 @@ export const ActiveSidebarModsList: React.FunctionComponent = () => {
       <ListGroup {...tableInstance.getTableProps()} className="flex-grow">
         {tableInstance.rows.map((row) => {
           tableInstance.prepareRow(row);
-
-          // TODO: use useMemo to create a map so we don't have to do this lookup for every row
-          const modComponent = modComponents.find(
-            (x) => x.id === row.original.extensionId,
-          );
-
           return (
             <ActiveSidebarModsListItem
               key={row.original.extensionId}
               panel={row.original}
-              modComponent={modComponent}
             />
           );
         })}

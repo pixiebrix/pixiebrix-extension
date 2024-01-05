@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,31 +14,5 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-@import "@/themes/colors.scss";
 
-.root {
-  display: flex;
-  border: none;
-  border-bottom: $S1 1px solid;
-  height: 4.5rem;
-  padding: 1.5rem 1rem;
-  align-items: center;
-  cursor: pointer;
-
-  &:hover {
-    background-color: $mod-page-list-item-hover;
-  }
-}
-
-.lineClampOneLine {
-  margin: 0;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  overflow: hidden;
-}
-
-.icon {
-  margin-right: 1rem;
-  width: 1.25em;
-}
+export const DEFAULT_TEXT_ICON_COLOR = "#241C32";

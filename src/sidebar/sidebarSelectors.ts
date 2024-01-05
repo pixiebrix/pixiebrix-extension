@@ -22,6 +22,9 @@ import {
 import { isEmpty } from "lodash";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { getVisiblePanelCount } from "@/sidebar/utils";
+import { createSelector } from "@reduxjs/toolkit";
+import { selectExtensions } from "@/store/extensionsSelectors";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
 
 export const selectIsSidebarEmpty = ({ sidebar }: SidebarRootState) =>
   isEmpty(sidebar.panels) &&
@@ -49,16 +52,43 @@ export const selectSidebarModActivationPanel = ({
   sidebar,
 }: SidebarRootState) => sidebar.modActivationPanel;
 
+const selectSidebarEntries = ({ sidebar }: SidebarRootState) => [
+  ...sidebar.panels,
+  ...sidebar.forms,
+  ...sidebar.temporaryPanels,
+  ...sidebar.staticPanels,
+  sidebar.modActivationPanel,
+];
+
+const extensionForEventKeySelector = createSelector(
+  selectSidebarEntries,
+  selectExtensions,
+  (state: SidebarRootState, eventKey: string) => eventKey,
+  (entries, extensions, eventKey) => {
+    // Get sidebar entry by event key
+    const sidebarEntry = entries.find(
+      (entry) => eventKeyForEntry(entry) === eventKey,
+    );
+
+    if (!isBaseModComponentPanelEntry(sidebarEntry)) {
+      return;
+    }
+
+    return extensions.find(
+      (extension) => extension.id === sidebarEntry.extensionId,
+    );
+  },
+);
+
+export const selectModComponentForEventKey =
+  (eventKey: string) => (state: SidebarRootState) =>
+    extensionForEventKeySelector(state, eventKey);
+
 export const selectExtensionFromEventKey =
-  ({ options, sidebar }: SidebarRootState) =>
-  (eventKey: string) => {
-    const sidebarEntries = [
-      ...sidebar.panels,
-      ...sidebar.forms,
-      ...sidebar.temporaryPanels,
-      ...sidebar.staticPanels,
-      sidebar.modActivationPanel,
-    ];
+  (state: SidebarRootState) =>
+  (eventKey: string): ActivatedModComponent | undefined => {
+    const sidebarEntries = selectSidebarEntries(state);
+    const extensions = selectExtensions(state);
 
     // Get sidebar entry by event key
     const sidebarEntry = sidebarEntries.find(
@@ -69,7 +99,7 @@ export const selectExtensionFromEventKey =
       return;
     }
 
-    return options.extensions.find(
+    return extensions.find(
       (extension) => extension.id === sidebarEntry.extensionId,
     );
   };

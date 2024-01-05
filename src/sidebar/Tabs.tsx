@@ -15,24 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, type MouseEvent, Suspense, lazy } from "react";
+import React, { lazy, type MouseEvent, Suspense, useEffect } from "react";
 import {
-  type PanelEntry,
-  type SidebarEntry,
-  isTemporaryPanelEntry,
   isFormPanelEntry,
   isModActivationPanelEntry,
+  isTemporaryPanelEntry,
+  type PanelEntry,
+  type SidebarEntry,
 } from "@/types/sidebarTypes";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { getBodyForStaticPanel } from "./staticPanelUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import {
+  Button,
   CloseButton,
   Nav,
   type NavLinkProps,
   Tab,
-  Button,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -43,14 +43,14 @@ import cx from "classnames";
 import { BusinessError } from "@/errors/businessErrors";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  selectClosedTabs,
   selectExtensionFromEventKey,
   selectSidebarActiveTabKey,
   selectSidebarForms,
-  selectSidebarPanels,
   selectSidebarModActivationPanel,
+  selectSidebarPanels,
   selectSidebarStaticPanels,
   selectSidebarTemporaryPanels,
-  selectClosedTabs,
 } from "@/sidebar/sidebarSelectors";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { selectEventData } from "@/telemetry/deployments";

@@ -22,17 +22,14 @@ import {
   faCubes,
   faExclamationCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { useAsyncIcon } from "@/components/asyncIcon";
-import { type MarketplaceListing } from "@/types/contract";
 import { type Mod } from "@/types/modTypes";
 import {
   getPackageId,
   isModDefinition,
   isUnavailableMod,
 } from "@/utils/modUtils";
-import cx from "classnames";
-import styles from "./ModIcon.module.scss";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import MarketplaceListingModIcon from "@/components/MarketplaceListingModIcon";
+import { DEFAULT_TEXT_ICON_COLOR } from "@/icons/constants";
 
 function getDefaultModIcon(mod: Mod) {
   if (isUnavailableMod(mod)) {
@@ -46,31 +43,15 @@ function getDefaultModIcon(mod: Mod) {
   return faCube;
 }
 
-export const DEFAULT_TEXT_ICON_COLOR = "#241C32";
-
 const ModIcon: React.FunctionComponent<{
   mod: Mod;
   size?: "1x" | "2x";
-  /**
-   * Sets a className only in cases where a <FontAwesomeIcon/> is used
-   */
-  faIconClass?: string;
-}> = ({ mod, size = "1x", faIconClass = "" }) => {
-  const {
-    data: listings,
-    isLoading,
-    isSuccess,
-  } = useGetMarketplaceListingsQuery();
-
-  const listing: MarketplaceListing | null = isSuccess
-    ? listings[getPackageId(mod)]
-    : null;
-
+}> = ({ mod, size = "1x" }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps -- only load default icon once
   const defaultIcon = useMemo(() => getDefaultModIcon(mod), []);
-  const listingFaIcon = useAsyncIcon(listing?.fa_icon, defaultIcon);
+  const modId = getPackageId(mod);
 
-  if (isLoading) {
+  if (!modId) {
     return (
       <FontAwesomeIcon
         icon={faCube}
@@ -81,22 +62,11 @@ const ModIcon: React.FunctionComponent<{
     );
   }
 
-  return listing?.image ? (
-    <img
-      src={listing.image.url}
-      alt="Icon"
-      className={cx(styles.imageIcon, {
-        [styles.size1 ?? ""]: size === "1x",
-        [styles.size2 ?? ""]: size === "2x",
-      })}
-    />
-  ) : (
-    <FontAwesomeIcon
-      icon={listingFaIcon}
-      color={listing?.icon_color ?? DEFAULT_TEXT_ICON_COLOR}
-      className={faIconClass}
+  return (
+    <MarketplaceListingModIcon
+      modId={modId}
+      defaultIcon={defaultIcon}
       size={size}
-      fixedWidth
     />
   );
 };

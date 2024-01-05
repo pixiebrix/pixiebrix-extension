@@ -19,27 +19,26 @@ import styles from "@/sidebar/modLauncher/ActiveSidebarModsListItem.module.scss"
 
 import React, { useMemo } from "react";
 import { ListGroup } from "react-bootstrap";
-import { DEFAULT_TEXT_ICON_COLOR } from "@/mods/ModIcon";
 import { type PanelEntry } from "@/types/sidebarTypes";
 import { useDispatch, useSelector } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { selectEventData } from "@/telemetry/deployments";
 import reportEvent from "@/telemetry/reportEvent";
-import { selectExtensionFromEventKey } from "@/sidebar/sidebarSelectors";
+import { selectModComponentForEventKey } from "@/sidebar/sidebarSelectors";
 import { Events } from "@/telemetry/events";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { splitStartingEmoji } from "@/utils/stringUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
-import DelayedRender from "@/components/DelayedRender";
-import type { UnresolvedModComponent } from "@/types/modComponentTypes";
+import { DEFAULT_TEXT_ICON_COLOR } from "@/icons/constants";
+import MarketplaceListingModIcon from "@/components/MarketplaceListingModIcon";
 
 /**
  * Returns the emoji icon and title for a given heading
  * @see useGetActionNameAndIcon
  */
-function useEmojiIcon(heading: string) {
+function useSplitEmojiIcon(heading: string) {
   return useMemo(() => {
     const { startingEmoji, rest } = splitStartingEmoji(heading);
     return {
@@ -49,35 +48,18 @@ function useEmojiIcon(heading: string) {
   }, [heading]);
 }
 
-/**
- * Default icon for when mod is not provided for an entry.
- * @constructor
- */
-const DelayedDefaultIcon: React.FunctionComponent = () => (
-  // Apply a delay so there's no flash if/when the mod is passed through
-  <DelayedRender millis={600}>
-    <FontAwesomeIcon
-      icon={faCube}
-      color={DEFAULT_TEXT_ICON_COLOR}
-      size="1x"
-      fixedWidth
-    />
-  </DelayedRender>
-);
-
 const ActiveSidebarModsListItem: React.FunctionComponent<{
-  modComponent?: UnresolvedModComponent;
   panel: PanelEntry;
-}> = ({ modComponent, panel }) => {
+}> = ({ panel }) => {
   const dispatch = useDispatch();
-  const getModComponentFromEventKey = useSelector(selectExtensionFromEventKey);
+  const eventKey = eventKeyForEntry(panel);
+  const modComponent = useSelector(selectModComponentForEventKey(eventKey));
   const { heading: originalHeading } = panel;
-  const { title, emojiIcon } = useEmojiIcon(originalHeading);
+  const { title, emojiIcon } = useSplitEmojiIcon(originalHeading);
 
   const onClick = () => {
-    const eventKey = eventKeyForEntry(panel);
     reportEvent(Events.VIEW_SIDEBAR_PANEL, {
-      ...selectEventData(getModComponentFromEventKey(eventKey)),
+      ...selectEventData(modComponent),
       initialLoad: false,
       source: "modLauncher",
     });
@@ -85,30 +67,26 @@ const ActiveSidebarModsListItem: React.FunctionComponent<{
     dispatch(sidebarSlice.actions.closeTab(eventKeyForEntry(MOD_LAUNCHER)));
   };
 
+  // Start with basic default icon for mod components
   let icon: React.ReactNode = (
-    // Use DelayedDefaultIcon instead of passing null to ModIcon because ModIcon does not support a null mod argument.
-    // Having the caller decide how to handle the null mod case provides freedom of choosing the default icon
-    // based on the calling context, e.g., single vs. multiple block icon
-    <div className={styles.defaultIcon}>
-      <DelayedDefaultIcon />
-    </div>
+    <FontAwesomeIcon icon={faCube} color={DEFAULT_TEXT_ICON_COLOR} fixedWidth />
   );
 
-  // Prefer emoji icon over mod icon
+  // Apply emoji icon or mod icon if available
   if (emojiIcon) {
-    icon = <div className={styles.emojiIcon}>{emojiIcon}</div>;
-  } else if (modComponent) {
-    // TODO: refactor ModIcon to support passing packageId and fallback icon
-    // icon = (
-    //   <div className={styles.modIcon}>
-    //     <ModIcon mod={mod} />
-    //   </div>
-    // );
+    icon = emojiIcon;
+  } else if (modComponent._recipe) {
+    icon = (
+      <MarketplaceListingModIcon
+        modId={modComponent._recipe.id}
+        defaultIcon={faCube}
+      />
+    );
   }
 
   return (
     <ListGroup.Item className={styles.root} onClick={onClick}>
-      {icon}
+      <span className={styles.icon}>{icon}</span>
       <h5 className={styles.lineClampOneLine}>{title}</h5>
     </ListGroup.Item>
   );
