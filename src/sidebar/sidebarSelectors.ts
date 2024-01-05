@@ -64,7 +64,7 @@ const extensionForEventKeySelector = createSelector(
   selectSidebarEntries,
   selectExtensions,
   (state: SidebarRootState, eventKey: string) => eventKey,
-  (entries, extensions, eventKey) => {
+  (entries, extensions, eventKey): ActivatedModComponent | undefined => {
     // Get sidebar entry by event key
     const sidebarEntry = entries.find(
       (entry) => eventKeyForEntry(entry) === eventKey,

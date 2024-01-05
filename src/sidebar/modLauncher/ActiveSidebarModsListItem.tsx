@@ -33,6 +33,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { DEFAULT_TEXT_ICON_COLOR } from "@/icons/constants";
 import MarketplaceListingModIcon from "@/components/MarketplaceListingModIcon";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
 
 /**
  * Returns the emoji icon and title for a given heading
@@ -53,7 +54,9 @@ const ActiveSidebarModsListItem: React.FunctionComponent<{
 }> = ({ panel }) => {
   const dispatch = useDispatch();
   const eventKey = eventKeyForEntry(panel);
-  const modComponent = useSelector(selectModComponentForEventKey(eventKey));
+  const modComponent: ActivatedModComponent | undefined = useSelector(
+    selectModComponentForEventKey(eventKey),
+  );
   const { heading: originalHeading } = panel;
   const { title, emojiIcon } = useSplitEmojiIcon(originalHeading);
 
@@ -75,7 +78,7 @@ const ActiveSidebarModsListItem: React.FunctionComponent<{
   // Apply emoji icon or mod icon if available
   if (emojiIcon) {
     icon = emojiIcon;
-  } else if (modComponent._recipe) {
+  } else if (modComponent?._recipe) {
     icon = (
       <MarketplaceListingModIcon
         modId={modComponent._recipe.id}
