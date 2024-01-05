@@ -143,6 +143,14 @@ export function getComponentDefinition(
     case "image": {
       const { url, ...props } = config;
       props.src = url;
+      if (!props.height && !props.width) {
+        // Fit image to screen of the size hasn't been defined
+        // Defining it conditionally lets the user override it if the want the image to be in its natural size
+        props.style = {
+          maxWidth: "100%",
+        } satisfies Partial<CSSStyleDeclaration>;
+      }
+
       return { Component: Image, props };
     }
 
