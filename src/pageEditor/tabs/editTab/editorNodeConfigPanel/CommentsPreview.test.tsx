@@ -23,6 +23,7 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import { selectNodeDataPanelTabSelected } from "@/pageEditor/slices/editorSelectors";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
+import { type UnknownObject } from "@/types/objectTypes";
 
 const renderCommentsPreview = (comments: string) => {
   const formState = formStateFactory();
@@ -63,5 +64,22 @@ describe("CommentsPreview", () => {
       store.getState() as EditorRootState,
     );
     expect(dataPanelTab).toBe(DataPanelTabKey.Comments);
+  });
+
+  it("opens the DataPanel tab when button is clicked", () => {
+    function getDataPanelExtended(state: UnknownObject) {
+      return (state as EditorRootState).editor.isDataPanelExpanded;
+    }
+
+    const expectedComments = "This is a comment";
+    const { getReduxStore } = renderCommentsPreview(expectedComments);
+    const store = getReduxStore();
+
+    store.dispatch(actions.setDataSectionExpanded({ isExpanded: false }));
+
+    expect(getDataPanelExtended(store.getState())).toBeFalse();
+
+    screen.getByRole("button").click();
+    expect(getDataPanelExtended(store.getState())).toBeTrue();
   });
 });
