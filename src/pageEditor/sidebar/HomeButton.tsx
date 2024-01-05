@@ -23,7 +23,10 @@ import home from "@img/home.svg";
 import styles from "./HomeButton.module.scss";
 import { Button } from "react-bootstrap";
 
-const HomeButton: React.FunctionComponent = () => {
+const HomeButton: React.FunctionComponent<{ onClick?: VoidCallback }> = ({
+  onClick,
+  children,
+}) => {
   const dispatch = useDispatch();
 
   return (
@@ -31,11 +34,14 @@ const HomeButton: React.FunctionComponent = () => {
       size="sm"
       className={styles.button}
       title="Home"
-      onClick={() => {
-        dispatch(editorSlice.actions.showHomePane());
-      }}
+      onClick={
+        onClick ??
+        (() => {
+          dispatch(editorSlice.actions.showHomePane());
+        })
+      }
     >
-      <img src={home} alt="Return to Page Editor Home" />
+      {children ?? <img src={home} alt="Return to Page Editor Home" />}
     </Button>
   );
 };

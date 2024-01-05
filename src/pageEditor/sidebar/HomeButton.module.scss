@@ -18,9 +18,16 @@
 @import "@/themes/colors.scss";
 
 .button {
-  background-color: $P500;
-  border-color: $P500;
+  &,
+  &:active,
+  &:hover {
+    // Override native blue
+    background-color: $P500;
+    border-color: $P500;
+  }
 
-  display: flex;
-  align-items: center;
+  &:hover {
+    background-color: $P500;
+    filter: brightness(0.75);
+  }
 }
