@@ -16,34 +16,18 @@
  */
 
 import React from "react";
-import { useDispatch } from "react-redux";
-import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import home from "@img/home.svg";
 
 import styles from "./HomeButton.module.scss";
 import { Button } from "react-bootstrap";
 
-const HomeButton: React.FunctionComponent<{ onClick?: VoidCallback }> = ({
+const HomeButton: React.FunctionComponent<{ onClick: VoidCallback }> = ({
   onClick,
   children,
-}) => {
-  const dispatch = useDispatch();
-
-  return (
-    <Button
-      size="sm"
-      className={styles.button}
-      title="Home"
-      onClick={
-        onClick ??
-        (() => {
-          dispatch(editorSlice.actions.showHomePane());
-        })
-      }
-    >
-      {children ?? <img src={home} alt="Return to Page Editor Home" />}
-    </Button>
-  );
-};
+}) => (
+  <Button size="sm" className={styles.button} title="Home" onClick={onClick}>
+    {children ?? <img src={home} alt="Return to Page Editor Home" />}
+  </Button>
+);
 
 export default HomeButton;

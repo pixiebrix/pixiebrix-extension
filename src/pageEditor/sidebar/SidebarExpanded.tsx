@@ -51,7 +51,7 @@ import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
 import AddStarterBrickButton from "./AddStarterBrickButton";
 import ModComponentListItem from "./ModComponentListItem";
-import { actions } from "@/pageEditor/slices/editorSlice";
+import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import { useDebounce } from "use-debounce";
 import { lowerCase } from "lodash";
 import filterSidebarItems from "@/pageEditor/sidebar/filterSidebarItems";
@@ -158,7 +158,9 @@ const SidebarExpanded: React.FunctionComponent<{
       <div className={styles.header}>
         <div className={styles.actions}>
           <div className={styles.actionsLeft}>
-            <HomeButton />
+            <HomeButton
+              onClick={() => dispatch(editorSlice.actions.showHomePane())}
+            />
 
             <AddStarterBrickButton />
 
