@@ -18,9 +18,8 @@
 import styles from "@/sidebar/modLauncher/ActiveSidebarModsListItem.module.scss";
 
 import React, { useMemo } from "react";
-import { type Mod } from "@/types/modTypes";
 import { ListGroup } from "react-bootstrap";
-import ModIcon, { DEFAULT_TEXT_ICON_COLOR } from "@/mods/ModIcon";
+import { DEFAULT_TEXT_ICON_COLOR } from "@/mods/ModIcon";
 import { type PanelEntry } from "@/types/sidebarTypes";
 import { useDispatch, useSelector } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
@@ -34,6 +33,7 @@ import { splitStartingEmoji } from "@/utils/stringUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 import DelayedRender from "@/components/DelayedRender";
+import type { UnresolvedModComponent } from "@/types/modComponentTypes";
 
 /**
  * Returns the emoji icon and title for a given heading
@@ -66,9 +66,9 @@ const DelayedDefaultIcon: React.FunctionComponent = () => (
 );
 
 const ActiveSidebarModsListItem: React.FunctionComponent<{
-  mod?: Mod;
+  modComponent?: UnresolvedModComponent;
   panel: PanelEntry;
-}> = ({ mod, panel }) => {
+}> = ({ modComponent, panel }) => {
   const dispatch = useDispatch();
   const getModComponentFromEventKey = useSelector(selectExtensionFromEventKey);
   const { heading: originalHeading } = panel;
@@ -97,12 +97,13 @@ const ActiveSidebarModsListItem: React.FunctionComponent<{
   // Prefer emoji icon over mod icon
   if (emojiIcon) {
     icon = <div className={styles.emojiIcon}>{emojiIcon}</div>;
-  } else if (mod) {
-    icon = (
-      <div className={styles.modIcon}>
-        <ModIcon mod={mod} />
-      </div>
-    );
+  } else if (modComponent) {
+    // TODO: refactor ModIcon to support passing packageId and fallback icon
+    // icon = (
+    //   <div className={styles.modIcon}>
+    //     <ModIcon mod={mod} />
+    //   </div>
+    // );
   }
 
   return (

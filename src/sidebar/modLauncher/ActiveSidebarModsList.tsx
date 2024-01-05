@@ -17,11 +17,8 @@
 import styles from "@/sidebar/modLauncher/ActiveSidebarModsList.module.scss";
 
 import React, { useMemo } from "react";
-import { type Mod, type ModViewItem } from "@/types/modTypes";
 import { ListGroup, Row } from "react-bootstrap";
-import useModViewItems from "@/mods/useModViewItems";
 import { type Column, useTable } from "react-table";
-import Loader from "@/components/Loader";
 import ActiveSidebarModsListItem from "@/sidebar/modLauncher/ActiveSidebarModsListItem";
 import { isEmpty, sortBy } from "lodash";
 import workshopIllustration from "@img/workshop.svg";
@@ -30,13 +27,9 @@ import { MARKETPLACE_URL } from "@/urlConstants";
 import { type PanelEntry } from "@/types/sidebarTypes";
 import { useSelector } from "react-redux";
 import { selectSidebarPanels } from "@/sidebar/sidebarSelectors";
-import {
-  isModDefinition,
-  isResolvedModComponent,
-  isUnavailableMod,
-} from "@/utils/modUtils";
 import useIsEnterpriseUser from "@/hooks/useIsEnterpriseUser";
 import { splitStartingEmoji } from "@/utils/stringUtils";
+import { selectExtensions } from "@/store/extensionsSelectors";
 
 const columns: Array<Column<PanelEntry>> = [
   {
@@ -106,39 +99,9 @@ const NoActiveSidebarPanelsView: React.FunctionComponent = () => {
   );
 };
 
-function getModViewItemForPanel(
-  modViewItems: ModViewItem[],
-  panel: PanelEntry,
-): ModViewItem | null {
-  return (
-    modViewItems.find(({ mod }) => {
-      if (isUnavailableMod(mod)) {
-        return false;
-      }
-
-      if (isModDefinition(mod) && "id" in mod) {
-        return mod.id === panel.blueprintId;
-      }
-
-      if (isResolvedModComponent(mod)) {
-        return mod.id === panel.extensionId;
-      }
-
-      return false;
-    }) ?? null
-  );
-}
-
-export const ActiveSidebarModsList: React.FunctionComponent<{
-  mods: Mod[];
-}> = ({ mods }) => {
-  const { modViewItems, isLoading } = useModViewItems(mods);
+export const ActiveSidebarModsList: React.FunctionComponent = () => {
   const sidebarPanels = useSelector(selectSidebarPanels);
-
-  const activeMods = modViewItems.filter(
-    (modViewItem) =>
-      modViewItem.status === "Active" && !modViewItem.unavailable,
-  );
+  const modComponents = useSelector(selectExtensions);
 
   const sortedSidebarPanels = useMemo(
     () =>
@@ -153,27 +116,29 @@ export const ActiveSidebarModsList: React.FunctionComponent<{
     data: sortedSidebarPanels,
   });
 
-  const renderBody = isEmpty(sidebarPanels) ? (
-    <NoActiveSidebarPanelsView />
-  ) : (
+  if (isEmpty(sidebarPanels)) {
+    return <NoActiveSidebarPanelsView />;
+  }
+
+  return (
     <Row>
       <ListGroup {...tableInstance.getTableProps()} className="flex-grow">
         {tableInstance.rows.map((row) => {
           tableInstance.prepareRow(row);
-          const { mod } =
-            getModViewItemForPanel(activeMods, row.original) ?? {};
+
+          const modComponent = modComponents.find(
+            (x) => x.id === row.original.extensionId,
+          );
 
           return (
             <ActiveSidebarModsListItem
               key={row.original.extensionId}
               panel={row.original}
-              mod={mod}
+              modComponent={modComponent}
             />
           );
         })}
       </ListGroup>
     </Row>
   );
-
-  return isLoading ? <Loader /> : renderBody;
 };
