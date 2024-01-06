@@ -17,6 +17,7 @@
 
 import styles from "./Sidebar.module.scss";
 import React from "react";
+import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
@@ -35,9 +36,15 @@ const SidebarCollapsed: React.VoidFunctionComponent<{
 
   return (
     <div className={cx(styles.root, styles.collapsed)}>
-      <HomeButton onClick={expandSidebar}>
-        <FontAwesomeIcon icon={faAngleDoubleRight} fixedWidth />
-      </HomeButton>
+      <HomeButton />
+      <Button
+        variant="light"
+        className={styles.toggle}
+        type="button"
+        onClick={expandSidebar}
+      >
+        <FontAwesomeIcon icon={faAngleDoubleRight} />
+      </Button>
       {showDeveloperUI && <ReloadButton />}
     </div>
   );
