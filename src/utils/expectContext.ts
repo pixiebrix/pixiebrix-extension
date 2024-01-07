@@ -20,6 +20,7 @@ import {
   isContentScript,
   isExtensionContext,
   isWebPage,
+  contextNames,
 } from "webext-detect-page";
 
 function isBrowserSidebar(): boolean {
@@ -48,14 +49,7 @@ function createError(
 }
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const contexts = [
-  "web",
-  "extension",
-  "background",
-  "contentScript",
-  "devTools",
-  "sidebar",
-] as const;
+const contexts = [...contextNames, "sidebar"] as const;
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Functions
 const contextMap = new Map<(typeof contexts)[number], () => boolean>([
