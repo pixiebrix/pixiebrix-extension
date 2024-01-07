@@ -17,14 +17,14 @@
 
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { createSelector } from "@reduxjs/toolkit";
-import { type UnresolvedModComponent } from "@/types/modComponentTypes";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { isEmpty } from "lodash";
 import { type UUID } from "@/types/stringTypes";
 
 export function selectExtensions({
   options,
-}: ModComponentsRootState): UnresolvedModComponent[] {
+}: ModComponentsRootState): ActivatedModComponent[] {
   if (!Array.isArray(options.extensions)) {
     console.warn("state migration has not been applied yet", {
       options,

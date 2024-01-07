@@ -24,7 +24,7 @@ import styles from "./GridCard.module.scss";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-import { DEFAULT_TEXT_ICON_COLOR } from "@/mods/ModIcon";
+import { DEFAULT_TEXT_ICON_COLOR } from "@/icons/constants";
 
 type Props = {
   /**
