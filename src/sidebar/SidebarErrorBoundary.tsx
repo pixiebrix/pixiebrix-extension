@@ -20,15 +20,9 @@ import { isEmpty } from "lodash";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Button } from "react-bootstrap";
-import sidebarInThisTab from "@/sidebar/messenger/api";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
 class SidebarErrorBoundary extends ErrorBoundary {
-  async reloadSidebar() {
-    sidebarInThisTab.reload();
-    // FIXME: Should this also wait for the sidebar to finish loading?
-  }
-
   override render(): React.ReactNode {
     if (this.state.hasError) {
       return (
@@ -44,7 +38,12 @@ class SidebarErrorBoundary extends ErrorBoundary {
             <p>Please close and re-open the sidebar panel.</p>
 
             <div>
-              <Button variant="light" onClick={this.reloadSidebar}>
+              <Button
+                variant="light"
+                onClick={() => {
+                  location.reload();
+                }}
+              >
                 <FontAwesomeIcon icon={faRedo} /> Reload Sidebar
               </Button>
             </div>
