@@ -51,7 +51,7 @@ const { actions: optionsActions, reducer: extensionsReducer } = extensionsSlice;
 describe("checkAvailableInstalledExtensions", () => {
   test("it checks installed extensions correctly", async () => {
     const testUrl = "https://www.myUrl.com/*";
-    (getCurrentURL as jest.Mock).mockResolvedValue(testUrl);
+    jest.mocked(getCurrentURL).mockResolvedValue(testUrl);
 
     const availableButtonId = validateRegistryId("test/available-button");
     const availableButton = standaloneModDefinitionFactory({
@@ -114,10 +114,12 @@ describe("checkAvailableInstalledExtensions", () => {
     const availableQuickbarExtensionPoint = new RemoteQuickBarExtensionPoint(
       availableQuickbarStarterBrickConfig,
     );
-    (getInstalledExtensionPoints as jest.Mock).mockResolvedValue([
-      availableButtonExtensionPoint,
-      availableQuickbarExtensionPoint,
-    ]);
+    jest
+      .mocked(getInstalledExtensionPoints)
+      .mockResolvedValue([
+        availableButtonExtensionPoint,
+        availableQuickbarExtensionPoint,
+      ]);
 
     const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {

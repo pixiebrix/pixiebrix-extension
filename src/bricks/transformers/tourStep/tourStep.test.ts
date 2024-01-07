@@ -90,7 +90,7 @@ function makeOptions({
 
 describe("tourStep", () => {
   beforeEach(() => {
-    (Element.prototype.scrollIntoView as jest.Mock).mockReset();
+    jest.mocked(Element.prototype.scrollIntoView).mockReset();
     showModalMock.mockReset();
     showPopoverMock.mockReset();
 

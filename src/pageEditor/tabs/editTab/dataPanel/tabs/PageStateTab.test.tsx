@@ -29,7 +29,7 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 describe("PageStateTab", () => {
   beforeAll(() => {
-    (getPageState as jest.Mock).mockResolvedValue({
+    jest.mocked(getPageState).mockResolvedValue({
       foo: "bar",
       baz: 32,
     });

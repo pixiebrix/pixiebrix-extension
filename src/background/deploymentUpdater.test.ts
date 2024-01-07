@@ -404,7 +404,7 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    expect((uninstallAllDeployments as jest.Mock).mock.calls).toHaveLength(0);
+    expect(jest.mocked(uninstallAllDeployments).mock.calls).toHaveLength(0);
     expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(0);
   });

@@ -64,16 +64,16 @@ const Locator = locator.default;
 afterEach(() => {
   axiosMock.reset();
   axiosMock.resetHistory();
-  (Locator as jest.Mock).mockClear();
+  jest.mocked(Locator).mockClear();
 });
 
-(token.getExtensionToken as jest.Mock).mockResolvedValue("abc123");
+jest.mocked(token.getExtensionToken).mockResolvedValue("abc123");
 
 // Use real version of pixiebrixConfigurationFactory
 const { pixiebrixConfigurationFactory } = jest.requireActual(
   "@/integrations/locator",
 );
-(locator.pixiebrixConfigurationFactory as jest.Mock) =
+jest.mocked(locator.pixiebrixConfigurationFactory) =
   pixiebrixConfigurationFactory;
 
 const EXAMPLE_SERVICE_API = validateRegistryId("example/api");

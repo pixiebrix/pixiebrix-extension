@@ -70,13 +70,13 @@ const mockHooks = ({
   hasPermissions?: boolean;
   canPublish?: boolean;
 } = {}) => {
-  (useFlags as jest.Mock).mockImplementation(() => ({
+  jest.mocked(useFlags).mockImplementation(() => ({
     permit: () => !restricted,
     restrict: () => restricted,
     flagOn: () => canPublish,
   }));
 
-  (useModPermissions as jest.Mock).mockImplementation(() => ({
+  jest.mocked(useModPermissions).mockImplementation(() => ({
     hasPermissions,
     requestPermissions() {},
   }));

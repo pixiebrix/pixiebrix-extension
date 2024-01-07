@@ -47,13 +47,13 @@ jest.mock("@/services/api", () => {
 });
 
 beforeEach(() => {
-  (api.useGetAllStandaloneModDefinitionsQuery as jest.Mock).mockReturnValue({
+  jest.mocked(api.useGetAllStandaloneModDefinitionsQuery).mockReturnValue({
     data: [],
   });
-  (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([jest.fn()]);
-  (api.useDeleteStandaloneModDefinitionMutation as jest.Mock).mockReturnValue([
-    jest.fn(),
-  ]);
+  jest.mocked(api.useCreateRecipeMutation).mockReturnValue([jest.fn()]);
+  jest
+    .mocked(api.useDeleteStandaloneModDefinitionMutation)
+    .mockReturnValue([jest.fn()]);
 });
 afterEach(() => {
   jest.clearAllMocks();
@@ -127,7 +127,7 @@ describe("it renders", () => {
   ] as const)(
     "opens $name modal after converting extension to blueprint",
     async ({ sharingAction, contextToBeEmpty, sharingContext }) => {
-      (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([
+      jest.mocked(api.useCreateRecipeMutation).mockReturnValue([
         jest.fn().mockReturnValue({
           unwrap: jest.fn().mockResolvedValue({
             public: false,
@@ -178,19 +178,21 @@ describe("it renders", () => {
   test("converts cloud mod component", async () => {
     const standaloneModDefinition = standaloneModDefinitionFactory();
 
-    (api.useGetAllStandaloneModDefinitionsQuery as jest.Mock).mockReturnValue({
+    jest.mocked(api.useGetAllStandaloneModDefinitionsQuery).mockReturnValue({
       data: [standaloneModDefinition],
     });
-    (api.useCreateRecipeMutation as jest.Mock).mockReturnValue([
-      jest.fn().mockReturnValue({ unwrap: jest.fn().mockResolvedValue({}) }),
-    ]);
+    jest
+      .mocked(api.useCreateRecipeMutation)
+      .mockReturnValue([
+        jest.fn().mockReturnValue({ unwrap: jest.fn().mockResolvedValue({}) }),
+      ]);
     const deleteCloudExtensionMock = jest
       .fn()
       .mockReturnValue({ unwrap: jest.fn().mockResolvedValue({}) });
 
-    (api.useDeleteStandaloneModDefinitionMutation as jest.Mock).mockReturnValue(
-      [deleteCloudExtensionMock],
-    );
+    jest
+      .mocked(api.useDeleteStandaloneModDefinitionMutation)
+      .mockReturnValue([deleteCloudExtensionMock]);
 
     const { getReduxStore } = render(<ConvertToRecipeModal />, {
       setupRedux(dispatch) {

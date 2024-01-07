@@ -86,7 +86,7 @@ const renderUseSavingWizard = (store: Store) =>
 
 test("maintains wizard open state", () => {
   const recipe = defaultModDefinitionFactory();
-  (useAllModDefinitions as jest.Mock).mockReturnValue({
+  jest.mocked(useAllModDefinitions).mockReturnValue({
     data: [recipe],
     isLoading: false,
   });
@@ -129,7 +129,7 @@ test("saves non recipe element", async () => {
   store.dispatch(editorSlice.actions.addElement(element));
 
   const createMock = jest.fn();
-  (useUpsertFormElementMock as jest.Mock).mockReturnValueOnce(createMock);
+  jest.mocked(useUpsertFormElementMock).mockReturnValueOnce(createMock);
 
   const { result } = renderUseSavingWizard(store);
 
@@ -166,12 +166,12 @@ describe("saving a Recipe Extension", () => {
     const recipe = defaultModDefinitionFactory({
       options: recipeOptions,
     });
-    (useAllModDefinitions as jest.Mock).mockReturnValue({
+    jest.mocked(useAllModDefinitions).mockReturnValue({
       data: [recipe],
       isLoading: false,
     });
 
-    (useGetEditablePackagesQueryMock as jest.Mock).mockReturnValue({
+    jest.mocked(useGetEditablePackagesQueryMock).mockReturnValue({
       data: [{ name: recipe.metadata.id, id: uuidv4() }],
       isLoading: false,
     });
@@ -196,21 +196,21 @@ describe("saving a Recipe Extension", () => {
     store.dispatch(editorSlice.actions.addElement(element));
 
     const createMock = jest.fn();
-    (useUpsertFormElementMock as jest.Mock).mockReturnValue(createMock);
+    jest.mocked(useUpsertFormElementMock).mockReturnValue(createMock);
 
     const resetMock = jest.fn();
     resetMock.mockResolvedValue(undefined);
-    (useResetExtensionMock as jest.Mock).mockReturnValue(resetMock);
+    jest.mocked(useResetExtensionMock).mockReturnValue(resetMock);
 
     const createRecipeMock = jest.fn();
-    (useCreateRecipeMutationMock as jest.Mock).mockReturnValue([
-      createRecipeMock,
-    ]);
+    jest
+      .mocked(useCreateRecipeMutationMock)
+      .mockReturnValue([createRecipeMock]);
 
     const updateRecipeMock = jest.fn();
-    (useUpdateRecipeMutationMock as jest.Mock).mockReturnValue([
-      updateRecipeMock,
-    ]);
+    jest
+      .mocked(useUpdateRecipeMutationMock)
+      .mockReturnValue([updateRecipeMock]);
 
     return {
       store,

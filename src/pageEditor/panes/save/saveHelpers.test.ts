@@ -109,7 +109,7 @@ describe("replaceRecipeExtension round trip", () => {
       }),
     );
 
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue(starterBrick);
+    jest.mocked(lookupExtensionPoint).mockResolvedValue(starterBrick);
 
     const element = await menuItemExtensionAdapter.fromExtension(
       state.extensions[0],
@@ -153,7 +153,7 @@ describe("replaceRecipeExtension round trip", () => {
       }),
     );
 
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue(starterBrick);
+    jest.mocked(lookupExtensionPoint).mockResolvedValue(starterBrick);
 
     const element = await menuItemExtensionAdapter.fromExtension(
       state.extensions[0],
@@ -189,7 +189,7 @@ describe("replaceRecipeExtension round trip", () => {
     );
 
     // Mimic what would come back via internal.ts:resolveRecipe
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue({
+    jest.mocked(lookupExtensionPoint).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
         id: makeInternalId(modDefinition.definitions.extensionPoint),
@@ -239,7 +239,7 @@ describe("replaceRecipeExtension round trip", () => {
     );
 
     // Mimic what would come back via internal.ts:resolveRecipe
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue({
+    jest.mocked(lookupExtensionPoint).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
         id: makeInternalId(modDefinition.definitions.extensionPoint),
@@ -299,7 +299,7 @@ describe("replaceRecipeExtension round trip", () => {
     );
 
     // Mimic what would come back via internal.ts:resolveRecipe
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue({
+    jest.mocked(lookupExtensionPoint).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
         id: makeInternalId(modDefinition.definitions.extensionPoint),
@@ -355,7 +355,7 @@ describe("replaceRecipeExtension round trip", () => {
       }),
     );
 
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue(starterBrick);
+    jest.mocked(lookupExtensionPoint).mockResolvedValue(starterBrick);
 
     const element = await menuItemExtensionAdapter.fromExtension({
       ...state.extensions[0],
@@ -404,7 +404,7 @@ describe("replaceRecipeExtension round trip", () => {
       }),
     );
 
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue(starterBrick);
+    jest.mocked(lookupExtensionPoint).mockResolvedValue(starterBrick);
 
     const element = await menuItemExtensionAdapter.fromExtension({
       ...state.extensions[0],
@@ -640,7 +640,7 @@ describe("buildRecipe", () => {
     const adapter = ADAPTERS.get(starterBrick.definition.type);
 
     // Mock this lookup for the adapter call that follows
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue(starterBrick);
+    jest.mocked(lookupExtensionPoint).mockResolvedValue(starterBrick);
 
     // Use the adapter to convert to FormState
     const element = (await adapter.fromExtension(
@@ -784,7 +784,7 @@ describe("buildRecipe", () => {
         for (let i = 0; i < dirtyExtensionCount; i++) {
           const extensionPoint = extensionPoints[i];
           // Mock this lookup for the adapter call that follows
-          (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
+          jest.mocked(lookupExtensionPoint).mockResolvedValue(extensionPoint);
 
           // Recipe was installed, so get the extension from state
           const extension = state.extensions[i];

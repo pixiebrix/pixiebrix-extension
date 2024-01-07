@@ -377,15 +377,15 @@ describe("When rendered in panel", () => {
 
   test("renders block", async () => {
     const markdown = "Pipeline text for card test.";
-    (contentScriptAPI.runRendererPipeline as jest.Mock).mockResolvedValueOnce({
+    jest.mocked(contentScriptAPI.runRendererPipeline).mockResolvedValueOnce({
       blockId: markdownBlock.id,
       key: uuidv4(),
       args: { markdown },
       ctxt: { "@input": {}, "@options": {} },
     });
-    (contentScriptAPI.runMapArgs as jest.Mock).mockImplementationOnce(
-      async (inputConfig) => inputConfig,
-    );
+    jest
+      .mocked(contentScriptAPI.runMapArgs)
+      .mockImplementationOnce(async (inputConfig) => inputConfig);
 
     const yamlConfig = `
 type: pipeline

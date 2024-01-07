@@ -48,7 +48,7 @@ jest.mock("@/contentScript/messenger/api", () => ({
 describe("error alerting in the UI", () => {
   test("shows error when checkAvailableDynamicElements fails", async () => {
     const message = "testing error";
-    (getCurrentURL as jest.Mock).mockImplementation(() => {
+    jest.mocked(getCurrentURL).mockImplementation(() => {
       throw new Error(message);
     });
 
@@ -68,7 +68,7 @@ describe("error alerting in the UI", () => {
 
   test("shows error when checkAvailableInstalledExtensions fails", async () => {
     const message = "testing error";
-    (getInstalledExtensionPoints as jest.Mock).mockImplementation(() => {
+    jest.mocked(getInstalledExtensionPoints).mockImplementation(() => {
       throw new Error(message);
     });
 

@@ -48,7 +48,7 @@ const mockOnboarding = ({
 
   mockAllApiEndpoints();
 
-  (useAllModDefinitions as jest.Mock).mockImplementation(() => ({
+  jest.mocked(useAllModDefinitions).mockImplementation(() => ({
     data: hasTeamBlueprints
       ? [
           {
@@ -60,7 +60,7 @@ const mockOnboarding = ({
       : [],
   }));
 
-  (useFlags as jest.Mock).mockImplementation(() => ({
+  jest.mocked(useFlags).mockImplementation(() => ({
     restrict: () => hasRestrictedFlag,
   }));
 };

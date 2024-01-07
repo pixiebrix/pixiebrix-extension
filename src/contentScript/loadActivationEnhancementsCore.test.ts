@@ -89,7 +89,7 @@ describe("marketplace enhancements", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
     document.body.innerHTML = getDocument(activateButtonsHtml).body.innerHTML;
-    (isReadyInThisDocument as jest.Mock).mockImplementation(() => true);
+    jest.mocked(isReadyInThisDocument).mockImplementation(() => true);
     getActivatedModIdsMock.mockResolvedValue(new Set());
   });
 
