@@ -78,8 +78,7 @@ function testStore(initialState?: {
   });
 }
 
-const useManagedStorageStateMock =
-  useManagedStorageState as jest.MockedFunction<typeof useManagedStorageState>;
+const useManagedStorageStateMock = jest.mocked(useManagedStorageState);
 
 beforeEach(() => {
   useManagedStorageStateMock.mockReturnValue({

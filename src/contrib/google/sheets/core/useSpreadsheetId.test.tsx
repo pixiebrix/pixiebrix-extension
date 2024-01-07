@@ -32,9 +32,7 @@ import { toExpression } from "@/utils/expressionUtils";
 const TEST_SPREADSHEET_ID = uuidSequence(1);
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 
-const servicesLocateMock = services.locate as jest.MockedFunction<
-  typeof services.locate
->;
+const servicesLocateMock = jest.mocked(services.locate);
 
 describe("useSpreadsheetId", () => {
   beforeAll(() => {

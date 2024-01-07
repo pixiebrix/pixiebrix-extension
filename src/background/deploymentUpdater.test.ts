@@ -95,9 +95,7 @@ jest.mock("@/background/installer", () => ({
   isUpdateAvailable: jest.fn().mockReturnValue(false),
 }));
 
-const registryFindMock = registry.find as jest.MockedFunction<
-  typeof registry.find
->;
+const registryFindMock = jest.mocked(registry.find);
 
 const isLinkedMock = isLinked as jest.Mock;
 const readAuthDataMock = readAuthData as jest.Mock;
