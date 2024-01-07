@@ -43,13 +43,13 @@ jest.mock("@/background/locator", () => ({
   },
 }));
 
-const createTabMock = browser.tabs.create as jest.Mock;
-const updateTabMock = browser.tabs.update as jest.Mock;
-const queryTabsMock = browser.tabs.query as jest.Mock;
-const isLinkedMock = auth.isLinked as jest.Mock;
-const getExtensionTokenMock = auth.getExtensionToken as jest.Mock;
-const getUserData = auth.getUserData as jest.Mock;
-const locateAllForServiceMock = locator.locateAllForService as jest.Mock;
+const createTabMock = jest.mocked(browser.tabs.create);
+const updateTabMock = jest.mocked(browser.tabs.update);
+const queryTabsMock = jest.mocked(browser.tabs.query);
+const isLinkedMock = jest.mocked(auth.isLinked);
+const getExtensionTokenMock = jest.mocked(auth.getExtensionToken);
+const getUserData = jest.mocked(auth.getUserData);
+const locateAllForServiceMock = jest.mocked(locator.locateAllForService);
 
 beforeEach(() => {
   jest.clearAllMocks();

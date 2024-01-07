@@ -42,7 +42,7 @@ jest.mock("@/services/apiClient", () =>
 setContext("background");
 
 const axiosMock = new MockAdapter(axios);
-const mockGetToken = getToken as jest.Mock;
+const mockGetToken = jest.mocked(getToken);
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 

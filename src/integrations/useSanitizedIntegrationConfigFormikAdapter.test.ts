@@ -56,9 +56,7 @@ jest.mock("@/integrations/registry", () => {
   };
 });
 
-const serviceRegistryMock = serviceRegistry as jest.Mocked<
-  typeof serviceRegistry
->;
+const serviceRegistryMock = jest.mocked(serviceRegistry);
 
 describe("useSanitizedIntegrationConfigFormikAdapter", () => {
   beforeEach(() => {

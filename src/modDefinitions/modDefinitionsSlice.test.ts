@@ -43,9 +43,7 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
-const syncRemotePackagesMock = syncRemotePackages as jest.MockedFn<
-  typeof syncRemotePackages
->;
+const syncRemotePackagesMock = jest.mocked(syncRemotePackages);
 
 describe("loadModDefinitionsFromCache", () => {
   test("calls registry and dispatches setModDefinitionsFromCache action", async () => {

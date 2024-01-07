@@ -43,7 +43,7 @@ jest.mock("@/runtime/reducePipeline", () => ({
   reduceExtensionPipeline: jest.fn().mockResolvedValue(undefined),
 }));
 
-const reduceExtensionPipelineMock = reduceExtensionPipeline as jest.Mock;
+const reduceExtensionPipelineMock = jest.mocked(reduceExtensionPipeline);
 
 globalThis.requestIdleCallback = jest.fn((callback) => {
   (callback as any)();

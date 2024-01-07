@@ -52,9 +52,7 @@ jest.mock("@/activation/useActivateRecipe.ts", () => ({
   default: jest.fn(),
 }));
 
-const activateRecipeHookMock = jest.mocked(
-  useActivateRecipe,
-) as jest.MockedFunction<typeof useActivateRecipe>;
+const activateRecipeHookMock = jest.mocked(useActivateRecipe);
 
 jest.mock("@/extensionConsole/pages/useRegistryIdParam", () => ({
   __esModule: true,

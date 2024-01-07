@@ -35,8 +35,8 @@ jest.mock("@/extensionConsole/pages/UpdateBanner", () => ({
 
 browser.runtime.reload = jest.fn();
 
-const reloadMock = browser.runtime.reload as jest.Mock;
-const useUpdateAvailableMock = useUpdateAvailable as jest.Mock;
+const reloadMock = jest.mocked(browser.runtime.reload);
+const useUpdateAvailableMock = jest.mocked(useUpdateAvailable);
 
 beforeEach(() => {
   reloadMock.mockReset();

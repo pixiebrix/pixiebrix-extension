@@ -97,15 +97,15 @@ jest.mock("@/background/installer", () => ({
 
 const registryFindMock = jest.mocked(registry.find);
 
-const isLinkedMock = isLinked as jest.Mock;
-const readAuthDataMock = readAuthData as jest.Mock;
-const getManifestMock = browser.runtime.getManifest as jest.Mock;
-const openOptionsPageMock = browser.runtime.openOptionsPage as jest.Mock;
-const browserManagedStorageMock = browser.storage.managed.get as jest.Mock;
-const refreshRegistriesMock = refreshRegistries as unknown as jest.Mock;
-const isUpdateAvailableMock = isUpdateAvailable as jest.Mock;
-const getSettingsStateMock = getSettingsState as jest.Mock;
-const saveSettingsStateMock = saveSettingsState as jest.Mock;
+const isLinkedMock = jest.mocked(isLinked);
+const readAuthDataMock = jest.mocked(readAuthData);
+const getManifestMock = jest.mocked(browser.runtime.getManifest);
+const openOptionsPageMock = jest.mocked(browser.runtime.openOptionsPage);
+const browserManagedStorageMock = jest.mocked(browser.storage.managed.get);
+const refreshRegistriesMock = jest.mocked(refreshRegistries);
+const isUpdateAvailableMock = jest.mocked(isUpdateAvailable);
+const getSettingsStateMock = jest.mocked(getSettingsState);
+const saveSettingsStateMock = jest.mocked(saveSettingsState);
 
 async function clearEditorReduxState() {
   await browser.storage.local.remove("persist:editor");
