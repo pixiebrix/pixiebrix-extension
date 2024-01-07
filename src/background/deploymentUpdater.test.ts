@@ -128,13 +128,13 @@ beforeEach(async () => {
 
   getSettingsStateMock.mockResolvedValue({
     nextUpdate: undefined,
-  });
+  } as any);
 
   browserManagedStorageMock.mockResolvedValue({});
 
   readAuthDataMock.mockResolvedValue({
     organizationId: "00000000-00000000-00000000-00000000",
-  });
+  } as any);
 
   getManifestMock.mockClear();
   refreshRegistriesMock.mockClear();
@@ -467,7 +467,7 @@ describe("updateDeployments", () => {
     getSettingsStateMock.mockResolvedValue({
       nextUpdate: Date.now() + 1_000_000,
       updatePromptTimestamp: null,
-    });
+    } as any);
 
     axiosMock.onGet().reply(200, {
       flags: [],
@@ -490,7 +490,7 @@ describe("updateDeployments", () => {
     getSettingsStateMock.mockResolvedValue({
       nextUpdate: Date.now() + 1_000_000,
       updatePromptTimestamp: null,
-    });
+    } as any);
 
     axiosMock.onGet().reply(200, {
       flags: [],
@@ -511,7 +511,7 @@ describe("updateDeployments", () => {
     isUpdateAvailableMock.mockReturnValue(true);
     getSettingsStateMock.mockResolvedValue({
       nextUpdate: Date.now() + 1_000_000,
-    });
+    } as any);
 
     axiosMock.onGet().reply(200, {
       flags: ["restricted-version"],

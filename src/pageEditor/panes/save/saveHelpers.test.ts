@@ -196,7 +196,7 @@ describe("replaceRecipeExtension round trip", () => {
         name: "Internal Starter Brick",
         version: validateSemVerString("1.0.0"),
       },
-    });
+    } as any);
 
     const element = await menuItemExtensionAdapter.fromExtension(
       state.extensions[0],
@@ -246,7 +246,7 @@ describe("replaceRecipeExtension round trip", () => {
         name: "Internal Starter Brick",
         version: validateSemVerString("1.0.0"),
       },
-    });
+    } as any);
 
     const element = await menuItemExtensionAdapter.fromExtension(
       state.extensions[0],
@@ -306,7 +306,7 @@ describe("replaceRecipeExtension round trip", () => {
         name: "Internal Starter Brick",
         version: validateSemVerString("1.0.0"),
       },
-    });
+    } as any);
 
     const element = await menuItemExtensionAdapter.fromExtension(
       state.extensions[0],

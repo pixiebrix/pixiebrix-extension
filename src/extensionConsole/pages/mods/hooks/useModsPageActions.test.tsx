@@ -70,16 +70,22 @@ const mockHooks = ({
   hasPermissions?: boolean;
   canPublish?: boolean;
 } = {}) => {
-  jest.mocked(useFlags).mockImplementation(() => ({
-    permit: () => !restricted,
-    restrict: () => restricted,
-    flagOn: () => canPublish,
-  }));
+  jest.mocked(useFlags).mockImplementation(
+    () =>
+      ({
+        permit: () => !restricted,
+        restrict: () => restricted,
+        flagOn: () => canPublish,
+      }) as any,
+  );
 
-  jest.mocked(useModPermissions).mockImplementation(() => ({
-    hasPermissions,
-    requestPermissions() {},
-  }));
+  jest.mocked(useModPermissions).mockImplementation(
+    () =>
+      ({
+        hasPermissions,
+        requestPermissions() {},
+      }) as any,
+  );
 };
 
 const modViewItemFactory = ({

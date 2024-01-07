@@ -23,7 +23,9 @@ import {
 
 describe("openShortcutsTabs", () => {
   it("defaults to quickbar shortcut", async () => {
-    jest.mocked(browser.runtime.getManifest).mockReturnValue(manifestJson);
+    jest
+      .mocked(browser.runtime.getManifest)
+      .mockReturnValue(manifestJson as any);
     await openShortcutsTab();
     expect(browser.tabs.create).toHaveBeenCalledExactlyOnceWith({
       url: "chrome://extensions/shortcuts#:~:text=Toggle%20Quick%20Bar",

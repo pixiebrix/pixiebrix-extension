@@ -89,7 +89,7 @@ test("maintains wizard open state", () => {
   jest.mocked(useAllModDefinitions).mockReturnValue({
     data: [recipe],
     isLoading: false,
-  });
+  } as any);
 
   const recipeMetadata = modMetadataFactory(recipe.metadata);
   const element = formStateFactory({
@@ -169,12 +169,12 @@ describe("saving a Recipe Extension", () => {
     jest.mocked(useAllModDefinitions).mockReturnValue({
       data: [recipe],
       isLoading: false,
-    });
+    } as any);
 
     jest.mocked(useGetEditablePackagesQueryMock).mockReturnValue({
       data: [{ name: recipe.metadata.id, id: uuidv4() }],
       isLoading: false,
-    });
+    } as any);
 
     const extensionLabel = recipe.extensionPoints[0].label;
     const element = menuItemFormStateFactory({
@@ -205,12 +205,12 @@ describe("saving a Recipe Extension", () => {
     const createRecipeMock = jest.fn();
     jest
       .mocked(useCreateRecipeMutationMock)
-      .mockReturnValue([createRecipeMock]);
+      .mockReturnValue([createRecipeMock] as any);
 
     const updateRecipeMock = jest.fn();
     jest
       .mocked(useUpdateRecipeMutationMock)
-      .mockReturnValue([updateRecipeMock]);
+      .mockReturnValue([updateRecipeMock] as any);
 
     return {
       store,

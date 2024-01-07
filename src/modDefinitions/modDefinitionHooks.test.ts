@@ -28,7 +28,7 @@ registry.syncRemote = jest.fn();
 
 describe("useRequiredModDefinitions", () => {
   it("only errors if mod definition not found after remote fetch", async () => {
-    const deferred = pDefer();
+    const deferred = pDefer<void>();
     jest
       .mocked(registry.syncRemote)
       .mockImplementation(async () => deferred.promise);
@@ -50,7 +50,7 @@ describe("useRequiredModDefinitions", () => {
       }),
     );
 
-    deferred.resolve([]);
+    deferred.resolve([] as any);
     await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual(
@@ -65,7 +65,7 @@ describe("useRequiredModDefinitions", () => {
 
 describe("useOptionalModDefinition", () => {
   it("returns null if not found", async () => {
-    const deferred = pDefer();
+    const deferred = pDefer<void>();
     jest
       .mocked(registry.syncRemote)
       .mockImplementation(async () => deferred.promise);
@@ -86,7 +86,7 @@ describe("useOptionalModDefinition", () => {
       }),
     );
 
-    deferred.resolve([]);
+    deferred.resolve([] as any);
     await wrapper.waitForEffect();
 
     expect(wrapper.result.current).toEqual(

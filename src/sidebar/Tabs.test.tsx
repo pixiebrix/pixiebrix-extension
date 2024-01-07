@@ -43,15 +43,16 @@ async function setupPanelsAndRender(options: {
     showModLauncher = true,
     reservedSidebarEntries = {},
   } = options;
-  jest
-    .mocked(messengerApi.getReservedSidebarEntries)
-    .mockImplementation(() => ({
-      panels: [],
-      temporaryPanels: [],
-      forms: [],
-      modActivationPanel: null,
-      ...reservedSidebarEntries,
-    }));
+  jest.mocked(messengerApi.getReservedSidebarEntries).mockImplementation(
+    () =>
+      ({
+        panels: [],
+        temporaryPanels: [],
+        forms: [],
+        modActivationPanel: null,
+        ...reservedSidebarEntries,
+      }) as any,
+  );
 
   const utils = render(<Tabs />, {
     setupRedux(dispatch) {
@@ -103,14 +104,15 @@ describe("Tabs", () => {
   });
 
   describe("Mod Launcher", () => {
-    jest
-      .mocked(messengerApi.getReservedSidebarEntries)
-      .mockImplementation(() => ({
-        panels: [],
-        temporaryPanels: [],
-        forms: [],
-        modActivationPanel: null,
-      }));
+    jest.mocked(messengerApi.getReservedSidebarEntries).mockImplementation(
+      () =>
+        ({
+          panels: [],
+          temporaryPanels: [],
+          forms: [],
+          modActivationPanel: null,
+        }) as any,
+    );
 
     test("renders with mod launcher visible if there are no other visible mods", async () => {
       await setupPanelsAndRender({
@@ -225,14 +227,15 @@ describe("Tabs", () => {
   });
 
   describe("Persistent Panels", () => {
-    jest
-      .mocked(messengerApi.getReservedSidebarEntries)
-      .mockImplementation(() => ({
-        panels: [],
-        temporaryPanels: [],
-        forms: [],
-        modActivationPanel: null,
-      }));
+    jest.mocked(messengerApi.getReservedSidebarEntries).mockImplementation(
+      () =>
+        ({
+          panels: [],
+          temporaryPanels: [],
+          forms: [],
+          modActivationPanel: null,
+        }) as any,
+    );
 
     test("can close a panel when mod launcher is available", async () => {
       await setupPanelsAndRender({

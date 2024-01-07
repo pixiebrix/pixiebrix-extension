@@ -56,7 +56,7 @@ jest.mock("@/services/api", () => ({
 
 function mockMeQuery(state: { isLoading: boolean; data?: Me; error?: any }) {
   jest.mocked(appApi.endpoints.getMe.useQueryState).mockReturnValue(state);
-  jest.mocked(useGetMeQuery).mockReturnValue(state);
+  jest.mocked(useGetMeQuery).mockReturnValue(state as any);
 }
 
 const MockLoginPage: React.VFC = () => <div>Login</div>;

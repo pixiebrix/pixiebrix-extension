@@ -114,7 +114,7 @@ describe("Collecting available vars", () => {
         options: {
           schema: optionsSchema,
         },
-      }),
+      }) as any,
     );
   }
 
@@ -450,7 +450,7 @@ describe("Collecting available vars", () => {
               },
             },
           ],
-        ]),
+        ]) as any,
       );
 
       await analysis.run(extension);

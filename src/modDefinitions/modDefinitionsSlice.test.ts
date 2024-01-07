@@ -51,7 +51,7 @@ describe("loadModDefinitionsFromCache", () => {
     const cachedModDefinitions = [defaultModDefinitionFactory()];
     jest
       .mocked(modDefinitionsRegistry.all)
-      .mockResolvedValueOnce(cachedModDefinitions);
+      .mockResolvedValueOnce(cachedModDefinitions as any);
 
     const thunkFunction = modDefinitionsActions.loadModDefinitionsFromCache();
     await thunkFunction(
@@ -92,7 +92,7 @@ describe("syncRemoteModDefinitions", () => {
     const cachedModDefinitions = [defaultModDefinitionFactory()];
     jest
       .mocked(modDefinitionsRegistry.all)
-      .mockResolvedValueOnce(cachedModDefinitions);
+      .mockResolvedValueOnce(cachedModDefinitions as any);
 
     const thunkFunction = modDefinitionsActions.syncRemoteModDefinitions();
     await thunkFunction(

@@ -382,7 +382,7 @@ describe("When rendered in panel", () => {
       key: uuidv4(),
       args: { markdown },
       ctxt: { "@input": {}, "@options": {} },
-    });
+    } as any);
     jest
       .mocked(contentScriptAPI.runMapArgs)
       .mockImplementationOnce(async (inputConfig) => inputConfig);
