@@ -39,9 +39,13 @@ import {
 } from "@/contentScript/sidebarController";
 import { setPageState } from "@/contentScript/pageState";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
-import { PANEL_FRAME_ID } from "@/domConstants";
 import brickRegistry from "@/bricks/registry";
 import { sleep } from "@/utils/timeUtils";
+import { isSidePanelOpen } from "@/sidebar/sidePanel/messenger/api";
+
+jest.mock("@/sidebar/sidePanel/messenger/api");
+
+const isSidePanelOpenMock = jest.mocked(isSidePanelOpen);
 
 const rootReader = new RootReader();
 
@@ -188,7 +192,8 @@ describe("sidebarExtension", () => {
     expect(rootReader.readCount).toBe(0);
 
     // Fake the sidebar being added to the page
-    $(document.body).append(`<div id="${PANEL_FRAME_ID}"></div>`);
+    isSidePanelOpenMock.mockResolvedValueOnce(true);
+    expect(isSidePanelOpenMock).toHaveBeenCalledTimes(1);
     sidebarShowEvents.emit({ reason: RunReason.MANUAL });
 
     await tick();
@@ -249,7 +254,7 @@ describe("sidebarExtension", () => {
     await extensionPoint.install();
 
     // Fake the sidebar being added to the page
-    $(document.body).append(`<div id="${PANEL_FRAME_ID}"></div>`);
+    isSidePanelOpenMock.mockResolvedValueOnce(true);
     sidebarShowEvents.emit({ reason: RunReason.MANUAL });
 
     await tick();
