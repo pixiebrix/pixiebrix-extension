@@ -32,6 +32,7 @@ import { Events } from "@/telemetry/events";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getActivatedModIds } from "@/store/extensionsStorage";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import { onSidePanelClosure } from "@/sidebar/sidePanel/messenger/api";
 
 let listener: EventListener | null;
 
@@ -61,15 +62,9 @@ async function showSidebarActivationForMods(
     modIds,
     heading: "Activating",
   });
-  window.addEventListener(
-    HIDE_SIDEBAR_EVENT_NAME,
-    () => {
-      controller.abort();
-    },
-    {
-      signal: controller.signal,
-    },
-  );
+
+  onSidePanelClosure(controller);
+
   controller.signal.addEventListener("abort", () => {
     void hideModActivationInSidebar();
   });

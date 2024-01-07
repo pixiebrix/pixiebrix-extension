@@ -32,6 +32,9 @@ import { isObject } from "@/utils/objectUtils";
 import { expectContext } from "@/utils/expectContext";
 import { type Target } from "webext-messenger";
 
+// Approximate sidebar width in pixels. Used to determine whether it's open
+const MINIMUM_SIDEBAR_WIDTH = 300;
+
 export function getAssociatedTabId(): number {
   expectContext("sidebar");
   const tabId = new URLSearchParams(window.location.search).get("tabId");
@@ -100,4 +103,18 @@ export async function hideSidePanel(tabId: number) {
     tabId,
     enabled: false,
   });
+}
+
+export function onSidePanelClosure(controller?: AbortController): void {
+  expectContext("contentScript");
+  const getDifference = () => window.outerWidth - window.innerWidth;
+  window.addEventListener(
+    "resize",
+    () => {
+      if (getDifference() < MINIMUM_SIDEBAR_WIDTH) {
+        controller.abort();
+      }
+    },
+    { signal: controller.signal },
+  );
 }
