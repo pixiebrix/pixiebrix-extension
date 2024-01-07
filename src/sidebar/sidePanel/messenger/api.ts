@@ -27,13 +27,9 @@ import {
   DISPLAY_REASON_RESTRICTED_URL,
 } from "@/tinyPages/restrictedUrlPopupConstants";
 import { isScriptableUrl } from "webext-content-scripts";
-
 import { isObject } from "@/utils/objectUtils";
 import { expectContext } from "@/utils/expectContext";
 import { type Target } from "webext-messenger";
-
-// Approximate sidebar width in pixels. Used to determine whether it's open
-const MINIMUM_SIDEBAR_WIDTH = 300;
 
 export function getAssociatedTabId(): number {
   expectContext("sidebar");
@@ -62,6 +58,11 @@ export function initSidePanelPingResponder() {
 }
 
 export async function isSidePanelOpen(): Promise<boolean> {
+  // Sync check where possible
+  if (isSidePanelOpenSync() === false) {
+    return false;
+  }
+
   const response = await chrome.runtime.sendMessage<
     { type: string },
     boolean | undefined
@@ -106,13 +107,33 @@ export async function hideSidePanel(tabId: number) {
   });
 }
 
+// Approximate sidebar width in pixels. Used to determine whether it's open
+const MINIMUM_SIDEBAR_WIDTH = 300;
+
+/**
+ * Determines whether the sidebar is open.
+ * @returns false when it's definitely closed
+ * @returns 'unknown' when it cannot be determined
+ */
+// The type cannot be `undefined` due to strictNullChecks
+function isSidePanelOpenSync(): false | "unknown" {
+  if (!globalThis.window) {
+    return "unknown";
+  }
+
+  return window.outerWidth - window.innerWidth > MINIMUM_SIDEBAR_WIDTH
+    ? "unknown"
+    : false;
+}
+
+// TODO: It doesn't work when the dev tools are open on the side
+// Official event requested in https://github.com/w3c/webextensions/issues/517
 export function onSidePanelClosure(controller: AbortController): void {
   expectContext("contentScript");
-  const getDifference = () => window.outerWidth - window.innerWidth;
   window.addEventListener(
     "resize",
     () => {
-      if (getDifference() < MINIMUM_SIDEBAR_WIDTH) {
+      if (isSidePanelOpenSync() === false) {
         controller.abort();
       }
     },
