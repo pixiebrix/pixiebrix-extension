@@ -91,12 +91,6 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
   });
 }
 
-/**
- * Awaitable version of showSidebar which does not reload existing panels if the sidebar is already visible
- * @see showSidebar
- */
-export const ensureSidebar = showSidebar; // TODO: Verify behavior match
-
 export async function rehydrateSidebar(
   activateOptions: ActivatePanelOptions = {},
 ): Promise<void> {

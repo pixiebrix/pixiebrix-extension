@@ -47,6 +47,7 @@ export function getAssociatedTarget(): Target {
 
 const PING_MESSAGE = "PING_SIDE_PANEL";
 // Do not use the messenger because it doesn't support retry-less messaging
+// TODO: Drop after https://github.com/pixiebrix/webext-messenger/issues/59
 export function initSidePanelPingResponder() {
   expectContext("sidebar");
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

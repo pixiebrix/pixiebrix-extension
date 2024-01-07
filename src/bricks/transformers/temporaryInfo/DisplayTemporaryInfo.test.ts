@@ -67,7 +67,7 @@ jest.mock("@/bricks/transformers/ephemeralForm/modalUtils", () => ({
 const showModalMock = jest.mocked(showModal);
 
 jest.mock("@/contentScript/sidebarController", () => ({
-  ensureSidebar: jest.fn(),
+  showSidebar: jest.fn(),
   showTemporarySidebarPanel: jest.fn(),
   updateTemporarySidebarPanel: jest.fn(),
 }));

@@ -37,7 +37,7 @@ import { array } from "cooky-cutter";
 import { MARKETPLACE_URL } from "@/urlConstants";
 
 jest.mock("@/contentScript/sidebarController", () => ({
-  ensureSidebar: jest.fn(),
+  showSidebar: jest.fn(),
   showModActivationInSidebar: jest.fn(),
   hideModActivationInSidebar: jest.fn(),
 }));

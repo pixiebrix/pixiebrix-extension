@@ -18,7 +18,7 @@
 import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import {
-  ensureSidebar,
+  showSidebar,
   hideModActivationInSidebar,
   showModActivationInSidebar,
 } from "@/contentScript/sidebarController";
@@ -57,7 +57,7 @@ async function showSidebarActivationForMods(
 ): Promise<void> {
   const controller = new AbortController();
 
-  await ensureSidebar();
+  await showSidebar();
   await showModActivationInSidebar({
     modIds,
     heading: "Activating",

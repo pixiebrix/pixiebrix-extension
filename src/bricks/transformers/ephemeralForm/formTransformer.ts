@@ -25,7 +25,7 @@ import {
 } from "@/contentScript/ephemeralFormProtocol";
 import { expectContext } from "@/utils/expectContext";
 import {
-  ensureSidebar,
+  showSidebar,
   hideSidebarForm,
   showSidebarForm,
 } from "@/contentScript/sidebarController";
@@ -157,7 +157,7 @@ export class FormTransformer extends TransformerABC {
 
     if (location === "sidebar") {
       // Ensure the sidebar is visible (which may also be showing persistent panels)
-      await ensureSidebar();
+      await showSidebar();
 
       await showSidebarForm({
         extensionId: logger.context.extensionId,

@@ -23,7 +23,7 @@ import {
 } from "@/types/runtimeTypes";
 import { expectContext } from "@/utils/expectContext";
 import {
-  ensureSidebar,
+  showSidebar,
   hideTemporarySidebarPanel,
   showTemporarySidebarPanel,
   updateTemporarySidebarPanel,
@@ -176,7 +176,7 @@ export async function displayTemporaryInfo({
       extensionId: panelEntryMetadata.extensionId,
     });
 
-    await ensureSidebar();
+    await showSidebar();
 
     // Show loading
     await showTemporarySidebarPanel({
