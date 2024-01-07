@@ -198,7 +198,7 @@
     "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/user-event": "^14.5.2",
     "@total-typescript/ts-reset": "^0.5.1",
-    "@types/chrome": "^0.0.254",
+    "@types/chrome": "^0.0.256",
     "@types/dompurify": "^3.0.5",
     "@types/downloadjs": "^1.4.6",
     "@types/holderjs": "^2.9.4",
