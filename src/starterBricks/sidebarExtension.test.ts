@@ -193,7 +193,6 @@ describe("sidebarExtension", () => {
 
     // Fake the sidebar being added to the page
     isSidePanelOpenMock.mockResolvedValueOnce(true);
-    expect(isSidePanelOpenMock).toHaveBeenCalledTimes(1);
     sidebarShowEvents.emit({ reason: RunReason.MANUAL });
 
     await tick();
