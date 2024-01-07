@@ -20,7 +20,7 @@ import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { performConfiguredRequest } from "./requests";
 import * as token from "@/auth/token";
-import * as locator from "@/integrations/locator";
+import Locator, * as locator from "@/integrations/locator";
 import { validateRegistryId } from "@/types/helpers";
 import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
 import { ContextError } from "@/errors/genericErrors";
@@ -39,6 +39,7 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 jest.mock("@/services/apiClient", () =>
   jest.requireActual("../services/apiClient.ts"),
 );
+
 setContext("background");
 
 const axiosMock = new MockAdapter(axios);
@@ -57,9 +58,12 @@ jest.mock("@/background/auth/getToken", () => ({
 jest.mock("@/auth/token");
 jest.mock("@/integrations/locator");
 
-enrichAxiosErrors();
+// Use real version of pixiebrixConfigurationFactory
+(locator.pixiebrixConfigurationFactory as any) = jest.requireActual(
+  "@/integrations/locator",
+).pixiebrixConfigurationFactory;
 
-const Locator = locator.default;
+enrichAxiosErrors();
 
 afterEach(() => {
   axiosMock.reset();
@@ -68,13 +72,6 @@ afterEach(() => {
 });
 
 jest.mocked(token.getExtensionToken).mockResolvedValue("abc123");
-
-// Use real version of pixiebrixConfigurationFactory
-const { pixiebrixConfigurationFactory } = jest.requireActual(
-  "@/integrations/locator",
-);
-jest.mocked(locator.pixiebrixConfigurationFactory) =
-  pixiebrixConfigurationFactory;
 
 const EXAMPLE_SERVICE_API = validateRegistryId("example/api");
 const EXAMPLE_SERVICE_TOKEN_API = validateRegistryId("example/token");
