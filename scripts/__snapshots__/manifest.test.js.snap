@@ -205,7 +205,7 @@ exports[`customizeManifest mv3 1`] = `
     "48": "icons/logo48.png",
   },
   "manifest_version": 3,
-  "minimum_chrome_version": "95.0",
+  "minimum_chrome_version": "116.0",
   "name": "PixieBrix - Development",
   "optional_permissions": [
     "clipboardWrite",
@@ -223,6 +223,7 @@ exports[`customizeManifest mv3 1`] = `
     "contextMenus",
     "devtools",
     "scripting",
+    "sidePanel",
   ],
   "sandbox": {
     "pages": [
@@ -230,6 +231,9 @@ exports[`customizeManifest mv3 1`] = `
     ],
   },
   "short_name": "PixieBrix",
+  "side_panel": {
+    "default_path": "sidebar.html",
+  },
   "storage": {
     "managed_schema": "managedStorageSchema.json",
   },

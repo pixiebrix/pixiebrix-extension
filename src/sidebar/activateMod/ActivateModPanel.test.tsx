@@ -39,7 +39,7 @@ import {
   marketplaceListingFactory,
   modDefinitionToMarketplacePackage,
 } from "@/testUtils/factories/marketplaceFactories";
-import { hideSelf as hideSidebar } from "@/sidebar/sidePanel";
+import * as sidePanel from "@/sidebar/sidePanel";
 import ActivateMultipleModsPanel from "@/sidebar/activateMod/ActivateMultipleModsPanel";
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
@@ -68,7 +68,7 @@ const checkModDefinitionPermissionsMock = jest.mocked(
   checkModDefinitionPermissions,
 );
 
-const hideSidebarSpy = jest.mocked(hideSidebar);
+const hideSidebarSpy = jest.spyOn(sidePanel, "hideSelf");
 
 jest.mock("@/starterBricks/starterBrickModUtils", () => {
   const actualUtils = jest.requireActual(

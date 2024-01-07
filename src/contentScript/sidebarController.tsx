@@ -61,8 +61,14 @@ let modActivationPanelEntry: ModActivationPanelEntry | null = null;
 export async function showSidebar(): Promise<void> {
   console.debug("sidebarController:showSidebar");
   reportEvent(Events.SIDEBAR_SHOW);
-  // TODO: Import from background/messenger/api.ts after the strictNullChecks migration
-  await getMethod("SHOW_MY_SIDE_PANEL" as "PING", backgroundTarget)();
+  // TODO: Import from background/messenger/api.ts after the strictNullChecks migration, drop "SIDEBAR_PING" string
+  await getMethod("SHOW_MY_SIDE_PANEL" as "SIDEBAR_PING", backgroundTarget)();
+
+  try {
+    await sidebarInThisTab.pingSidebar();
+  } catch (error) {
+    throw new Error("The sidebar did not respond in time", { cause: error });
+  }
 }
 
 /**

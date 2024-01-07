@@ -105,7 +105,7 @@ export async function hideSidePanel(tabId: number) {
   });
 }
 
-export function onSidePanelClosure(controller?: AbortController): void {
+export function onSidePanelClosure(controller: AbortController): void {
   expectContext("contentScript");
   const getDifference = () => window.outerWidth - window.innerWidth;
   window.addEventListener(
