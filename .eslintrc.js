@@ -106,6 +106,12 @@ module.exports = {
           "Use `jest.mocked(fn)` instead of `fn as jest.MockedFunction`.",
         selector: "TSAsExpression TSQualifiedName[right.name='MockedFunction']",
       },
+      {
+        message:
+          "Unless you're using .then(), calling `.mockResolvedValue(undefined)` is the same as leaving it out",
+        selector:
+          "CallExpression[callee.property.name='mockResolvedValue'][arguments.0.value='undefined']",
+      },
     ],
 
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775

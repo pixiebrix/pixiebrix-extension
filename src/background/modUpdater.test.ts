@@ -47,9 +47,7 @@ import { uninstallContextMenu } from "@/background/contextMenus";
 
 const axiosMock = new MockAdapter(axios);
 jest.mock("@/telemetry/reportError");
-jest.mock("@/utils/extensionUtils", () => ({
-  forEachTab: jest.fn().mockResolvedValue(undefined),
-}));
+jest.mock("@/utils/extensionUtils");
 jest.mock("@/background/contextMenus");
 
 const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);

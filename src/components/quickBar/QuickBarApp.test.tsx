@@ -133,9 +133,7 @@ describe("QuickBarApp", () => {
 
   it("debounces action generation on typing", async () => {
     const user = userEvent.setup({ delay: null });
-    const generatorMock: ActionGenerator = jest
-      .fn()
-      .mockResolvedValue(undefined);
+    const generatorMock: ActionGenerator = jest.fn();
     quickBarRegistry.addGenerator(generatorMock, null);
 
     render(<QuickBarApp />);

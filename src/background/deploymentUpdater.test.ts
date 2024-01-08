@@ -64,7 +64,7 @@ jest.mock("@/store/settings/settingsStorage");
 jest.mock("@/hooks/useRefreshRegistries");
 
 jest.mock("@/utils/extensionUtils", () => ({
-  forEachTab: jest.fn().mockResolvedValue(undefined),
+  forEachTab: jest.fn(),
   getExtensionVersion: () => browser.runtime.getManifest().version,
 }));
 

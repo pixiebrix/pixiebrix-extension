@@ -33,13 +33,13 @@ import { type Draft } from "immer";
 jest.mock("@/sidebar/messenger/api");
 
 jest.mock("@/contentScript/messenger/api", () => ({
-  closeTemporaryPanel: jest.fn().mockResolvedValue(undefined),
-  cancelTemporaryPanel: jest.fn().mockResolvedValue(undefined),
-  cancelForm: jest.fn().mockResolvedValue(undefined),
+  closeTemporaryPanel: jest.fn(),
+  cancelTemporaryPanel: jest.fn(),
+  cancelForm: jest.fn(),
 }));
 
 jest.mock("@/bricks/transformers/temporaryInfo/messenger/api", () => ({
-  updateTemporaryPanel: jest.fn().mockResolvedValue(undefined),
+  updateTemporaryPanel: jest.fn(),
 }));
 
 const cancelTemporaryPanelMock = jest.mocked(cancelTemporaryPanel);

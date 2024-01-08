@@ -25,7 +25,6 @@ import {
 } from "@/pageEditor/panes/save/saveHelpers";
 import { validateRegistryId, validateSemVerString } from "@/types/helpers";
 import menuItemExtensionAdapter from "@/pageEditor/starterBricks/menuItem";
-import { type UnknownObject } from "@/types/objectTypes";
 import {
   internalStarterBrickMetaFactory,
   lookupExtensionPoint,

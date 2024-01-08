@@ -65,7 +65,6 @@ describe("getOAuth2AuthData", () => {
     const integration = {
       id: integrationId,
     } as unknown as Integration;
-    getCachedAuthDataMock.mockResolvedValue(undefined);
     launchOAuth2FlowMock.mockResolvedValue(data);
     await expect(
       getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig),
@@ -88,7 +87,6 @@ describe("getOAuth2AuthData", () => {
     const integration = {
       id: integrationId,
     } as unknown as Integration;
-    getCachedAuthDataMock.mockResolvedValue(undefined);
     launchOAuth2FlowMock.mockResolvedValue(data);
     await Promise.all([
       expect(

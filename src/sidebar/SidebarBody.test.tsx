@@ -23,7 +23,7 @@ import useContextInvalidated from "@/hooks/useContextInvalidated";
 jest.mock("@/hooks/useContextInvalidated");
 
 jest.mock("@/contentScript/messenger/api", () => ({
-  ensureExtensionPointsInstalled: jest.fn().mockResolvedValue(undefined),
+  ensureExtensionPointsInstalled: jest.fn(),
   getReservedSidebarEntries: jest.fn().mockResolvedValue({
     panels: [],
     forms: [],
