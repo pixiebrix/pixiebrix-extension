@@ -19,7 +19,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import sidebarInThisTab from "@/sidebar/messenger/api";
-import { isEmpty } from "lodash";
+import { isEmpty, throttle } from "lodash";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { type Except } from "type-fest";
 import { type RunArgs } from "@/types/runtimeTypes";
@@ -38,6 +38,21 @@ import { getTemporaryPanelSidebarEntries } from "@/bricks/transformers/temporary
 import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
 import { isSidePanelOpen } from "@/sidebar/sidePanel/messenger/api";
 import { backgroundTarget, getMethod } from "webext-messenger";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
+
+// - Only start one ping at a time
+// - Limit to one request every second (if the user closes the sidebar that quickly, we likely see those errors anyway)
+// - Throw custom error if the sidebar doesn't respond in time
+export const pingSidebar = memoizeUntilSettled(
+  throttle(async () => {
+    try {
+      await sidebarInThisTab.pingSidebar();
+    } catch (error) {
+      // TODO: Use TimeoutError after https://github.com/sindresorhus/p-timeout/issues/41
+      throw new Error("The sidebar did not respond in time", { cause: error });
+    }
+  }, 1000),
+);
 
 /**
  * Sequence number for ensuring render requests are handled in order
@@ -63,12 +78,7 @@ export async function showSidebar(): Promise<void> {
   reportEvent(Events.SIDEBAR_SHOW);
   // TODO: Import from background/messenger/api.ts after the strictNullChecks migration, drop "SIDEBAR_PING" string
   await getMethod("SHOW_MY_SIDE_PANEL" as "SIDEBAR_PING", backgroundTarget)();
-
-  try {
-    await sidebarInThisTab.pingSidebar();
-  } catch (error) {
-    throw new Error("The sidebar did not respond in time", { cause: error });
-  }
+  await pingSidebar();
 }
 
 /**
@@ -94,11 +104,7 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
 export async function updateSidebar(
   activateOptions: ActivatePanelOptions = {},
 ): Promise<void> {
-  try {
-    await sidebarInThisTab.pingSidebar();
-  } catch (error) {
-    throw new Error("The sidebar did not respond in time", { cause: error });
-  }
+  await pingSidebar();
 
   if (!isEmpty(activateOptions)) {
     const seqNum = renderSequenceNumber;
