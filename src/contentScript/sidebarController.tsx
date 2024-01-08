@@ -91,7 +91,7 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
   });
 }
 
-export async function rehydrateSidebar(
+export async function updateSidebar(
   activateOptions: ActivatePanelOptions = {},
 ): Promise<void> {
   try {

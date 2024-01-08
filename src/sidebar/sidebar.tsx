@@ -34,8 +34,7 @@ import { initToaster } from "@/utils/notify";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { initCopilotMessenger } from "@/contrib/automationanywhere/aaFrameProtocol";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
-import { initSidePanelPingResponder } from "./sidePanel/messenger/api";
-import { rehydrateSidebar } from "@/contentScript/sidebarController";
+import { initSidePanel } from "./sidePanel";
 
 function init(): void {
   ReactDOM.render(<App />, document.querySelector("#container"));
@@ -49,11 +48,7 @@ registerContribBlocks();
 registerBuiltinBricks();
 initToaster();
 init();
-initSidePanelPingResponder();
-
-// The sidePanel is that one that requests data from the content script
-// FIXME: This should be moved elsewhere, because it also needs to listen to URL changes in the connected page
-void rehydrateSidebar();
+void initSidePanel();
 
 // Handle an embedded AA business copilot frame
 void initCopilotMessenger();

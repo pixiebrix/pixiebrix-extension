@@ -32,7 +32,7 @@ import {
   cancelForm,
 } from "@/contentScript/ephemeralFormProtocol";
 import {
-  rehydrateSidebar,
+  updateSidebar,
   removeExtensions as removeSidebars,
   getReservedPanelEntries,
 } from "@/contentScript/sidebarController";
@@ -100,7 +100,7 @@ declare global {
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
-    REHYDRATE_SIDEBAR: typeof rehydrateSidebar;
+    UPDATE_SIDEBAR: typeof updateSidebar;
     GET_RESERVED_SIDEBAR_ENTRIES: typeof getReservedPanelEntries;
     REMOVE_SIDEBARS: typeof removeSidebars;
 
@@ -166,7 +166,7 @@ export default function registerMessenger(): void {
 
     TOGGLE_QUICK_BAR: toggleQuickBar,
     HANDLE_MENU_ACTION: handleMenuAction,
-    REHYDRATE_SIDEBAR: rehydrateSidebar,
+    UPDATE_SIDEBAR: updateSidebar,
     REMOVE_SIDEBARS: removeSidebars,
 
     INSERT_PANEL: insertPanel,

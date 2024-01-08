@@ -18,7 +18,7 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
-import { rehydrateSidebar } from "@/contentScript/sidebarController";
+import { updateSidebar } from "@/contentScript/sidebarController";
 import { hideMySidePanel, showMySidePanel } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { logPromiseDuration } from "@/utils/promiseUtils";
@@ -67,7 +67,7 @@ export class ShowSidebar extends EffectABC {
     await showMySidePanel();
     void logPromiseDuration(
       "ShowSidebar:showSidebar",
-      rehydrateSidebar({
+      updateSidebar({
         force: forcePanel,
         panelHeading,
         blueprintId: logger.context.blueprintId,

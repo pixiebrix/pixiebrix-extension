@@ -20,11 +20,22 @@
 import { expectContext } from "@/utils/expectContext";
 import {
   getAssociatedTabId,
+  getAssociatedTarget,
   hideSidePanel,
+  respondToPings,
 } from "@/sidebar/sidePanel/messenger/api";
+import { updateSidebar } from "@/contentScript/messenger/api";
 
 expectContext("sidebar");
 
 export async function hideSelf() {
   return hideSidePanel(getAssociatedTabId());
+}
+
+export function initSidePanel() {
+  respondToPings();
+
+  // The sidePanel can load independently of the content script, so it should
+  // automatically fetch the data from the content script when it loads.
+  updateSidebar(getAssociatedTarget());
 }
