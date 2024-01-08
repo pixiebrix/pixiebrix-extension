@@ -34,9 +34,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 
-const dataStoreGetMock = dataStore.get as jest.MockedFunction<
-  typeof dataStore.get
->;
+const dataStoreGetMock = jest.mocked(dataStore.get);
 
 describe("form data normalization", () => {
   const normalizationTestCases = [

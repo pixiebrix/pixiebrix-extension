@@ -41,7 +41,7 @@ describe("SidebarBody", () => {
   });
 
   test("it renders error when context is invalidated", () => {
-    (useContextInvalidated as jest.Mock).mockReturnValue(true);
+    jest.mocked(useContextInvalidated).mockReturnValue(true);
     const { asFragment } = render(<SidebarBody />);
     expect(asFragment()).toMatchSnapshot();
   });

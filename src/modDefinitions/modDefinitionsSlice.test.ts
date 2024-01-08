@@ -43,17 +43,15 @@ afterEach(() => {
   jest.resetAllMocks();
 });
 
-const syncRemotePackagesMock = syncRemotePackages as jest.MockedFn<
-  typeof syncRemotePackages
->;
+const syncRemotePackagesMock = jest.mocked(syncRemotePackages);
 
 describe("loadModDefinitionsFromCache", () => {
   test("calls registry and dispatches setModDefinitionsFromCache action", async () => {
     const dispatch = jest.fn();
     const cachedModDefinitions = [defaultModDefinitionFactory()];
-    (modDefinitionsRegistry.all as jest.Mock).mockResolvedValueOnce(
-      cachedModDefinitions,
-    );
+    jest
+      .mocked(modDefinitionsRegistry.all)
+      .mockResolvedValueOnce(cachedModDefinitions as any);
 
     const thunkFunction = modDefinitionsActions.loadModDefinitionsFromCache();
     await thunkFunction(
@@ -92,9 +90,9 @@ describe("syncRemoteModDefinitions", () => {
     const dispatch = jest.fn();
 
     const cachedModDefinitions = [defaultModDefinitionFactory()];
-    (modDefinitionsRegistry.all as jest.Mock).mockResolvedValueOnce(
-      cachedModDefinitions,
-    );
+    jest
+      .mocked(modDefinitionsRegistry.all)
+      .mockResolvedValueOnce(cachedModDefinitions as any);
 
     const thunkFunction = modDefinitionsActions.syncRemoteModDefinitions();
     await thunkFunction(

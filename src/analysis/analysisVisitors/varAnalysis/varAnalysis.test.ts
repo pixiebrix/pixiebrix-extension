@@ -109,12 +109,12 @@ jest.mock("@/modDefinitions/registry", () => ({
 
 describe("Collecting available vars", () => {
   function mockBlueprintWithOptions(optionsSchema: any) {
-    (recipeRegistry.lookup as jest.Mock).mockResolvedValue(
+    jest.mocked(recipeRegistry.lookup).mockResolvedValue(
       defaultModDefinitionFactory({
         options: {
           schema: optionsSchema,
         },
-      }),
+      }) as any,
     );
   }
 
@@ -439,7 +439,7 @@ describe("Collecting available vars", () => {
         }),
         brickConfigFactory(),
       ]);
-      (blockRegistry.allTyped as jest.Mock).mockResolvedValue(
+      jest.mocked(blockRegistry.allTyped).mockResolvedValue(
         new Map([
           [
             extension.extension.blockPipeline[0].id,
@@ -450,7 +450,7 @@ describe("Collecting available vars", () => {
               },
             },
           ],
-        ]),
+        ]) as any,
       );
 
       await analysis.run(extension);

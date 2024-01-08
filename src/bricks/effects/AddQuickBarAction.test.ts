@@ -32,7 +32,7 @@ jest.mock("@/components/quickBar/quickBarRegistry", () => ({
   },
 }));
 
-const addActionMock = quickbarRegistry.addAction as jest.Mock;
+const addActionMock = jest.mocked(quickbarRegistry.addAction);
 
 const logger = new ConsoleLogger({
   extensionId: uuidv4(),

@@ -97,6 +97,15 @@ module.exports = {
         selector:
           "CallExpression[callee.object.property.name='runtime'][callee.property.name='getURL'][arguments.0.value='options.html']",
       },
+      {
+        message: "Use `jest.mocked(fn)` instead of `fn as jest.Mock`.",
+        selector: "TSAsExpression TSQualifiedName[right.name='Mock']",
+      },
+      {
+        message:
+          "Use `jest.mocked(fn)` instead of `fn as jest.MockedFunction`.",
+        selector: "TSAsExpression TSQualifiedName[right.name='MockedFunction']",
+      },
     ],
 
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775

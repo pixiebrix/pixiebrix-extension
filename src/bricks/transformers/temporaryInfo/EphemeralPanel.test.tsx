@@ -47,17 +47,12 @@ jest.mock("@/sidebar/PanelBody", () => ({
   default: jest.fn(() => <div data-testid="panel-body"></div>),
 }));
 
-const useTemporaryPanelDefinitionMock =
-  useTemporaryPanelDefinition as jest.MockedFunction<
-    typeof useTemporaryPanelDefinition
-  >;
+const useTemporaryPanelDefinitionMock = jest.mocked(
+  useTemporaryPanelDefinition,
+);
 
-const cancelTemporaryPanelMock = cancelTemporaryPanel as jest.MockedFunction<
-  typeof cancelTemporaryPanel
->;
-const resolveTemporaryPanelMock = resolveTemporaryPanel as jest.MockedFunction<
-  typeof resolveTemporaryPanel
->;
+const cancelTemporaryPanelMock = jest.mocked(cancelTemporaryPanel);
+const resolveTemporaryPanelMock = jest.mocked(resolveTemporaryPanel);
 
 describe("EphemeralPanel", () => {
   beforeEach(() => {

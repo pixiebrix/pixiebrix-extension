@@ -23,9 +23,7 @@ import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { toExpression } from "@/utils/expressionUtils";
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
-const containsMock = browser.permissions.contains as jest.MockedFunction<
-  typeof browser.permissions.contains
->;
+const containsMock = jest.mocked(browser.permissions.contains);
 
 function blockExtensionFactory(url: string) {
   const extension = triggerFormStateFactory();

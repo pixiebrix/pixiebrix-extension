@@ -62,12 +62,12 @@ const useGoogleAccountMock = jest.mocked(useGoogleAccount);
 const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
 
 function mockModDefinition(modDefinition: ModDefinition): void {
-  (useAllModDefinitions as jest.Mock).mockReturnValue(
-    valueToAsyncCacheState([modDefinition]),
-  );
-  (useOptionalModDefinition as jest.Mock).mockReturnValue(
-    valueToAsyncCacheState(modDefinition),
-  );
+  jest
+    .mocked(useAllModDefinitions)
+    .mockReturnValue(valueToAsyncCacheState([modDefinition]));
+  jest
+    .mocked(useOptionalModDefinition)
+    .mockReturnValue(valueToAsyncCacheState(modDefinition));
 }
 
 const GOOGLE_PKCE_INTEGRATION_ID = validateRegistryId("google/oauth2-pkce");

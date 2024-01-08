@@ -43,13 +43,13 @@ jest.mock("@/background/locator", () => ({
   },
 }));
 
-const createTabMock = browser.tabs.create as jest.Mock;
-const updateTabMock = browser.tabs.update as jest.Mock;
-const queryTabsMock = browser.tabs.query as jest.Mock;
-const isLinkedMock = auth.isLinked as jest.Mock;
-const getExtensionTokenMock = auth.getExtensionToken as jest.Mock;
-const getUserData = auth.getUserData as jest.Mock;
-const locateAllForServiceMock = locator.locateAllForService as jest.Mock;
+const createTabMock = jest.mocked(browser.tabs.create);
+const updateTabMock = jest.mocked(browser.tabs.update);
+const queryTabsMock = jest.mocked(browser.tabs.query);
+const isLinkedMock = jest.mocked(auth.isLinked);
+const getExtensionTokenMock = jest.mocked(auth.getExtensionToken);
+const getUserData = jest.mocked(auth.getUserData);
+const locateAllForServiceMock = jest.mocked(locator.locateAllForService);
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -62,7 +62,7 @@ describe("openInstallPage", () => {
         id: 1,
         url: `${APP_BASE_URL}/setup`,
       },
-    ]);
+    ] as any);
     await openInstallPage();
     expect(updateTabMock).toHaveBeenCalledWith(1, {
       url: APP_BASE_URL,
@@ -77,7 +77,7 @@ describe("openInstallPage", () => {
         id: 1,
         url: `${APP_BASE_URL}/start?hostname=enterprise.com`,
       },
-    ]);
+    ] as any);
     await openInstallPage();
     expect(updateTabMock).toHaveBeenCalledWith(1, {
       url: "chrome-extension://abcxyz/options.html#/start?hostname=enterprise.com",
@@ -92,7 +92,7 @@ describe("openInstallPage", () => {
         id: 1,
         url: `${APP_BASE_URL}/start?hostname=community2.cloud-2.automationanywhere.digital`,
       },
-    ]);
+    ] as any);
     await openInstallPage();
     expect(updateTabMock).toHaveBeenCalledWith(1, {
       url: APP_BASE_URL,
@@ -140,7 +140,7 @@ describe("checkPartnerAuth", () => {
         id: uuidv4(),
         theme: "automation-anywhere",
       },
-    });
+    } as any);
 
     await requirePartnerAuth();
 
@@ -154,14 +154,14 @@ describe("checkPartnerAuth", () => {
     getExtensionTokenMock.mockResolvedValue("abc123");
     locateAllForServiceMock.mockResolvedValue([
       // Include a cloud configuration to clarify that local integration is still required
-      { id: uuidv4(), serviceId: "automation-anywhere", proxy: true },
+      { id: uuidv4(), serviceId: "automation-anywhere", proxy: true } as any,
     ]);
     getUserData.mockResolvedValue({
       partner: {
         id: uuidv4(),
         theme: "automation-anywhere",
       },
-    });
+    } as any);
 
     await requirePartnerAuth();
 
@@ -178,7 +178,7 @@ describe("checkPartnerAuth", () => {
         id: 1,
         url: APP_BASE_URL,
       },
-    ]);
+    ] as any);
     isLinkedMock.mockResolvedValue(true);
     getExtensionTokenMock.mockResolvedValue("abc123");
     getUserData.mockResolvedValue({
@@ -186,7 +186,7 @@ describe("checkPartnerAuth", () => {
         id: uuidv4(),
         theme: "automation-anywhere",
       },
-    });
+    } as any);
 
     await requirePartnerAuth();
 
@@ -203,14 +203,14 @@ describe("checkPartnerAuth", () => {
     isLinkedMock.mockResolvedValue(true);
     getExtensionTokenMock.mockResolvedValue("abc123");
     locateAllForServiceMock.mockResolvedValue([
-      { id: uuidv4(), serviceId: "automation-anywhere" },
+      { id: uuidv4(), serviceId: "automation-anywhere" } as any,
     ]);
     getUserData.mockResolvedValue({
       partner: {
         id: uuidv4(),
         theme: "automation-anywhere",
       },
-    });
+    } as any);
 
     await requirePartnerAuth();
 

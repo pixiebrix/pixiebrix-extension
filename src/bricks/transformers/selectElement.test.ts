@@ -24,9 +24,7 @@ jest.mock("@/contentScript/pageEditor/elementPicker", () => ({
   userSelectElement: jest.fn(),
 }));
 
-const userSelectElementMock = userSelectElement as jest.MockedFunction<
-  typeof userSelectElement
->;
+const userSelectElementMock = jest.mocked(userSelectElement);
 
 const brick = new SelectElement();
 

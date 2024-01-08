@@ -50,9 +50,7 @@ jest.mock("@/components/form/FormErrorContext", () => ({
   useFormErrorSettings: jest.fn(),
 }));
 
-const useFormErrorSettingsMock = useFormErrorSettings as jest.MockedFunction<
-  typeof useFormErrorSettings
->;
+const useFormErrorSettingsMock = jest.mocked(useFormErrorSettings);
 
 describe("useFieldAnnotations", () => {
   test("shows formik error annotation", () => {

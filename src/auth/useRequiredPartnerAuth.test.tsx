@@ -60,7 +60,7 @@ function mockMeQuery(state: {
   error?: any;
   isSuccess?: boolean;
 }) {
-  (appApi.endpoints.getMe.useQueryState as jest.Mock).mockReturnValue(state);
+  jest.mocked(appApi.endpoints.getMe.useQueryState).mockReturnValue(state);
 }
 
 function testStore(initialState?: {
@@ -78,8 +78,7 @@ function testStore(initialState?: {
   });
 }
 
-const useManagedStorageStateMock =
-  useManagedStorageState as jest.MockedFunction<typeof useManagedStorageState>;
+const useManagedStorageStateMock = jest.mocked(useManagedStorageState);
 
 beforeEach(() => {
   useManagedStorageStateMock.mockReturnValue({
