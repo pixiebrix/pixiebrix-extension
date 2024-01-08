@@ -45,6 +45,7 @@ registerDefaultWidgets();
 const testModId = validateRegistryId("@test/mod");
 
 const activateModCallbackMock =
+  // eslint-disable-next-line no-restricted-syntax -- TODO
   jest.fn() as jest.MockedFunction<ActivateRecipeFormCallback>;
 
 jest.mock("@/activation/useActivateRecipe.ts", () => ({
