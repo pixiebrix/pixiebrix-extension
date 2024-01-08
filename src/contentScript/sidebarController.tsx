@@ -51,7 +51,7 @@ export const pingSidebar = memoizeUntilSettled(
       // TODO: Use TimeoutError after https://github.com/sindresorhus/p-timeout/issues/41
       throw new Error("The sidebar did not respond in time", { cause: error });
     }
-  }, 1000),
+  }, 1000) as () => Promise<void>,
 );
 
 /**
