@@ -44,7 +44,7 @@ const ReloadButton: React.FunctionComponent = () => (
     className="mt-auto"
     onClick={onReload}
   >
-    <FontAwesomeIcon icon={faSync} />
+    <FontAwesomeIcon icon={faSync} fixedWidth />
   </Button>
 );
 

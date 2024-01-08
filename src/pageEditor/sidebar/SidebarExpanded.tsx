@@ -170,7 +170,7 @@ const SidebarExpanded: React.FunctionComponent<{
             type="button"
             onClick={collapseSidebar}
           >
-            <FontAwesomeIcon icon={faAngleDoubleLeft} />
+            <FontAwesomeIcon icon={faAngleDoubleLeft} fixedWidth />
           </Button>
         </div>
       </div>

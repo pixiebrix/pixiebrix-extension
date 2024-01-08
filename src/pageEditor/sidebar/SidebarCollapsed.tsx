@@ -36,13 +36,13 @@ const SidebarCollapsed: React.VoidFunctionComponent<{
 
   return (
     <div className={cx(styles.root, styles.collapsed)}>
+      <HomeButton />
       <Button
         variant="light"
         className={styles.toggle}
         type="button"
         onClick={expandSidebar}
       >
-        <HomeButton />
         <FontAwesomeIcon icon={faAngleDoubleRight} />
       </Button>
       {showDeveloperUI && <ReloadButton />}
