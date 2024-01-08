@@ -31,6 +31,7 @@ const knipConfig = {
   // https://knip.dev/guides/handling-issues#mocks-and-other-implicit-imports
   ignore: [
     "**/__mocks__/**",
+    "eslint-local-rules/noRestrictedSyntax.test.ts",
     "@contrib/**",
     // Polyfills
     "src/vendors/process.js",
