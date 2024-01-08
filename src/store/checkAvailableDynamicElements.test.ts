@@ -44,7 +44,7 @@ const { reducer: extensionsReducer } = extensionsSlice;
 describe("checkAvailableDynamicElements", () => {
   test("it checks dynamic elements correctly", async () => {
     const testUrl = "https://www.myUrl.com/*";
-    (getCurrentURL as jest.Mock).mockResolvedValue(testUrl);
+    jest.mocked(getCurrentURL).mockResolvedValue(testUrl);
 
     const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {
@@ -92,13 +92,15 @@ describe("checkAvailableDynamicElements", () => {
     store.dispatch(actions.addElement(unavailableDynamicExtension));
     store.dispatch(actions.selectInstalled(availableDynamicExtension));
 
-    (checkAvailable as jest.Mock).mockImplementation(
-      async (
-        target: Target | PageTarget,
-        availability: Availability,
-        url: string,
-      ) => backgroundCheckAvailable(availability, url),
-    );
+    jest
+      .mocked(checkAvailable)
+      .mockImplementation(
+        async (
+          target: Target | PageTarget,
+          availability: Availability,
+          url: string,
+        ) => backgroundCheckAvailable(availability, url),
+      );
 
     await store.dispatch(actions.checkAvailableDynamicElements());
     await store.dispatch(actions.checkAvailableInstalledExtensions());

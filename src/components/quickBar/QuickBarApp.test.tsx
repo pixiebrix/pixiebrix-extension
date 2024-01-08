@@ -66,9 +66,7 @@ jest.mock("react-shadow/emotion", () => ({
   },
 }));
 
-const saveSelectionMock = selectionController.save as jest.MockedFunction<
-  typeof selectionController.save
->;
+const saveSelectionMock = jest.mocked(selectionController.save);
 
 mockAnimationsApi();
 

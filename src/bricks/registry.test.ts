@@ -22,12 +22,8 @@ import { parsePackage } from "@/registry/packageRegistry";
 import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { brickFactory } from "@/testUtils/factories/brickFactories";
 
-const getByKindsMock = backgroundRegistry.getByKinds as jest.MockedFunction<
-  typeof backgroundRegistry.getByKinds
->;
-const findMock = backgroundRegistry.find as jest.MockedFunction<
-  typeof backgroundRegistry.find
->;
+const getByKindsMock = jest.mocked(backgroundRegistry.getByKinds);
+const findMock = jest.mocked(backgroundRegistry.find);
 
 beforeEach(() => {
   jest.restoreAllMocks();

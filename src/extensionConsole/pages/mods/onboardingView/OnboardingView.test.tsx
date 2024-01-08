@@ -48,21 +48,27 @@ const mockOnboarding = ({
 
   mockAllApiEndpoints();
 
-  (useAllModDefinitions as jest.Mock).mockImplementation(() => ({
-    data: hasTeamBlueprints
-      ? [
-          {
-            sharing: {
-              organizations: [{} as Organization],
-            },
-          },
-        ]
-      : [],
-  }));
+  jest.mocked(useAllModDefinitions).mockImplementation(
+    () =>
+      ({
+        data: hasTeamBlueprints
+          ? [
+              {
+                sharing: {
+                  organizations: [{} as Organization],
+                },
+              },
+            ]
+          : [],
+      }) as any,
+  );
 
-  (useFlags as jest.Mock).mockImplementation(() => ({
-    restrict: () => hasRestrictedFlag,
-  }));
+  jest.mocked(useFlags).mockImplementation(
+    () =>
+      ({
+        restrict: () => hasRestrictedFlag,
+      }) as any,
+  );
 };
 
 describe("useOnboarding", () => {

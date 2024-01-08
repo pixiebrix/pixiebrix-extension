@@ -53,7 +53,7 @@ jest.mock("@/extensionConsole/pages/mods/utils/useReinstall", () => ({
   default: jest.fn(),
 }));
 
-const errorMock = notify.error as jest.Mock;
+const errorMock = jest.mocked(notify.error);
 
 function testStore(initialState?: {
   auth: AuthState;

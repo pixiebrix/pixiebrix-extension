@@ -23,10 +23,7 @@ const brick = new ScrollIntoViewEffect();
 
 Element.prototype.scrollIntoView = jest.fn();
 
-const scrollIntoViewMock = Element.prototype
-  .scrollIntoView as jest.MockedFunction<
-  typeof Element.prototype.scrollIntoView
->;
+const scrollIntoViewMock = jest.mocked(Element.prototype.scrollIntoView);
 
 describe("ScrollToElementEffect", () => {
   beforeEach(() => {

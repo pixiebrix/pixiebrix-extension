@@ -55,8 +55,8 @@ const logger = new ConsoleLogger({
 
 const brick = new TourStepTransformer();
 
-const showModalMock = showModal as jest.MockedFn<typeof showModal>;
-const showPopoverMock = showPopover as jest.MockedFn<typeof showPopover>;
+const showModalMock = jest.mocked(showModal);
+const showPopoverMock = jest.mocked(showPopover);
 
 function startTour() {
   const nonce = uuidv4();
@@ -90,7 +90,7 @@ function makeOptions({
 
 describe("tourStep", () => {
   beforeEach(() => {
-    (Element.prototype.scrollIntoView as jest.Mock).mockReset();
+    jest.mocked(Element.prototype.scrollIntoView).mockReset();
     showModalMock.mockReset();
     showPopoverMock.mockReset();
 

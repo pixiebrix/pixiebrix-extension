@@ -34,9 +34,7 @@ chrome.tabs = {
   ...originalTabs,
   query: jest.fn(),
 };
-const queryMock = chrome.tabs.query as jest.MockedFunction<
-  typeof chrome.tabs.query
->;
+const queryMock = jest.mocked(chrome.tabs.query);
 
 const originalLocation = location;
 

@@ -111,7 +111,7 @@ function renderOptions(formState: ModComponentFormState = makeBaseState()) {
 
 beforeAll(() => {
   registerDefaultWidgets();
-  (useAuthOptions as jest.Mock).mockReturnValue(valueToAsyncState([]));
+  jest.mocked(useAuthOptions).mockReturnValue(valueToAsyncState([]));
 });
 
 beforeEach(() => {
