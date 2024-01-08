@@ -243,15 +243,9 @@ function useSaveCallbacks({
           isReinstall: false,
         }),
       );
-
-      dispatch(
-        editorActions.finishSaveAsNewRecipe({
-          oldRecipeId: recipeId,
-          newRecipeId: savedRecipe.metadata.id,
-          metadata,
-          options,
-        }),
-      );
+      dispatch(editorActions.editRecipeMetadata(metadata));
+      dispatch(editorActions.editRecipeOptionsDefinitions(options));
+      dispatch(editorActions.selectRecipeId(savedRecipe.metadata.id));
 
       reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
         copiedFrom: recipeId,
