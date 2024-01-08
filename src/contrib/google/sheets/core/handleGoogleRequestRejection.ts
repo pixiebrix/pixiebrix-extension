@@ -25,7 +25,7 @@ import { isObject } from "@/utils/objectUtils";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { deleteCachedAuthData } from "@/background/messenger/api";
 
-export class PermissionsError extends Error {
+class PermissionsError extends Error {
   override name = "PermissionsError";
 
   public readonly status: number;

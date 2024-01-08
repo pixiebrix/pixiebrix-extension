@@ -21,10 +21,7 @@ import {
 } from "@/types/modDefinitionTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { resolveRecipeInnerDefinitions } from "@/registry/internal";
-import {
-  ensurePermissionsFromUserGesture,
-  mergePermissions,
-} from "@/permissions/permissionsUtils";
+import { mergePermissions } from "@/permissions/permissionsUtils";
 import { isEmpty } from "lodash";
 import { type Permissions } from "webextension-polyfill";
 import extensionPointRegistry from "@/starterBricks/registry";
@@ -109,21 +106,4 @@ export async function checkModDefinitionPermissions(
     hasPermissions: await browser.permissions.contains(permissions),
     permissions,
   };
-}
-
-/**
- * Ensures that the mod definition has the necessary permissions to run. If not, prompts the user to grant them. NOTE: Must
- * be called from a user gesture.
- * @param modDefinition the mod definition
- * @param configuredDependencies mod integration dependencies with defined configs
- * @see checkModDefinitionPermissions
- */
-export async function ensureModDefinitionPermissionsFromUserGesture(
-  modDefinition: ModDefinition,
-  configuredDependencies: IntegrationDependency[],
-): Promise<boolean> {
-  // Single method to make mocking in tests easier
-  return ensurePermissionsFromUserGesture(
-    await checkModDefinitionPermissions(modDefinition, configuredDependencies),
-  );
 }

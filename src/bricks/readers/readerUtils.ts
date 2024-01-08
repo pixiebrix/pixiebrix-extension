@@ -22,24 +22,7 @@ import { isPlainObject, mapValues } from "lodash";
 import CompositeReader from "@/bricks/readers/CompositeReader";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Reader } from "@/types/bricks/readerTypes";
-import { type RegistryId } from "@/types/registryTypes";
 import { resolveObj } from "@/utils/promiseUtils";
-
-export function selectReaderIds(config: ReaderConfig): RegistryId[] {
-  if (typeof config === "string") {
-    return [config];
-  }
-
-  if (Array.isArray(config)) {
-    return config.flatMap((x) => selectReaderIds(x));
-  }
-
-  if (typeof config === "object") {
-    return Object.values(config).flatMap((x) => selectReaderIds(x));
-  }
-
-  return [];
-}
 
 /** Instantiate a reader from a reader configuration. */
 export async function mergeReaders(

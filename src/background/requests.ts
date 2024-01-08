@@ -117,7 +117,7 @@ function prepareErrorForMessenger(error: unknown): unknown {
   return error;
 }
 
-export async function serializableAxiosRequest<T>(
+async function serializableAxiosRequest<T>(
   config: AxiosRequestConfig,
 ): Promise<SanitizedResponse<T>> {
   // Network requests must go through background page for permissions/CORS to work properly

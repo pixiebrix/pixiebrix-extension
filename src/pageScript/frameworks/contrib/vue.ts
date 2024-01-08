@@ -20,7 +20,6 @@
 // https://github.com/vuejs/vue-devtools/blob/dev/packages/app-backend/src/utils.js
 
 import { pickBy, isEmpty, set } from "lodash";
-import { type RootInstanceVisitor } from "@/pageScript/frameworks/scanner";
 import { type WriteableComponentAdapter } from "@/pageScript/frameworks/component";
 
 declare global {
@@ -69,63 +68,6 @@ interface Instance {
 
 interface VueHTMLElement {
   __vue__: Instance;
-}
-
-// Interface VNode {
-//   _isVue: boolean;
-//   $el: HTMLElement;
-// }
-
-export class VueRootVisitor implements RootInstanceVisitor<Instance> {
-  public rootInstances: Instance[] = [];
-
-  private inFragment = false;
-
-  private currentFragment: Instance = null;
-
-  private processInstance(instance: Instance): boolean {
-    if (instance) {
-      if (!this.rootInstances.includes(instance.$root)) {
-        instance = instance.$root;
-      }
-
-      if (instance._isFragment) {
-        this.inFragment = true;
-        this.currentFragment = instance;
-      }
-
-      let baseVue = instance.constructor;
-      while (baseVue.super) {
-        baseVue = baseVue.super;
-      }
-
-      if (baseVue.config) {
-        this.rootInstances.push(instance);
-      }
-
-      return true;
-    }
-
-    return false;
-  }
-
-  visit(node: Node | Element): boolean {
-    if (this.inFragment) {
-      if (node === this.currentFragment._fragmentEnd) {
-        this.inFragment = false;
-        this.currentFragment = null;
-      }
-
-      return true;
-    }
-
-    const instance = (node as unknown as VueHTMLElement).__vue__;
-    return this.processInstance(instance);
-  }
-}
-
-export function getVersion(): string | null {
-  return window.Vue?.version;
 }
 
 function isManaged(

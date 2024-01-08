@@ -77,7 +77,7 @@ type ChildSelectorDefinition = SelectorDefinition & {
   data?: never;
 };
 
-export function isChildrenSelectorDefinition(
+function isChildrenSelectorDefinition(
   selector: SelectorDefinition,
 ): selector is ChildSelectorDefinition {
   return "find" in selector;

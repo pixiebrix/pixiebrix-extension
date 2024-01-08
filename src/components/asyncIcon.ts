@@ -24,7 +24,7 @@ async function handleIconImport(moduleImport: ModuleImport): Promise<IconProp> {
  * Asynchronously fetch a FortAwesome icon definition
  * @param iconDefinition the FontAwesome icon prefix and iconName as a string, e.g. "fas fa-coffee"
  */
-export async function fetchFortAwesomeIcon(
+async function fetchFortAwesomeIcon(
   iconDefinition: IconStringDefinition,
 ): Promise<IconProp> {
   const [prefix, iconName] = iconDefinition.split(" ") as [

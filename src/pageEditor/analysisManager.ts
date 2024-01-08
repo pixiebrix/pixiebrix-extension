@@ -54,7 +54,7 @@ const pageEditorAnalysisManager = new ReduxAnalysisManager();
  * components that are active on the page.
  * @param state the Page Editor Redux State
  */
-export async function selectActiveModFormStates(
+async function selectActiveModFormStates(
   state: RootState,
 ): Promise<ModComponentFormState[]> {
   const element = selectActiveElement(state);

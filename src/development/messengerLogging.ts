@@ -22,10 +22,6 @@ export const messengerLogging = new StorageItem("MESSENGER_LOGGING", {
   defaultValue: false,
 });
 
-export async function setMessengerLogging(config: boolean): Promise<void> {
-  await messengerLogging.set(config);
-}
-
 export async function initMessengerLogging(): Promise<void> {
   if (await messengerLogging.get()) {
     toggleLogging(true);

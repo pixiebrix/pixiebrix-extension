@@ -32,7 +32,7 @@ function isMarketplacePage(): boolean {
 /**
  * Read all id search params from the URL. Handles both `id` and `id[]`.
  */
-export function extractIdsFromUrl(searchParams: URLSearchParams): RegistryId[] {
+function extractIdsFromUrl(searchParams: URLSearchParams): RegistryId[] {
   const rawIds = [...searchParams.getAll("id"), ...searchParams.getAll("id[]")];
   return rawIds.filter((x) => isRegistryId(x)) as RegistryId[];
 }

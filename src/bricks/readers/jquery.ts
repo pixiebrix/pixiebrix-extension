@@ -66,12 +66,6 @@ export interface ChildrenSelector {
 
 export type CommonSelector = ChildrenSelector | SingleSelector;
 
-export function isChildrenSelector(
-  selector: CommonSelector,
-): selector is ChildrenSelector {
-  return "find" in selector;
-}
-
 export type SelectorConfig = CommonSelector & {
   selector?: string;
 

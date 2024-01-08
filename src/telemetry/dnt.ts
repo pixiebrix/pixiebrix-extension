@@ -22,7 +22,7 @@ import { StorageItem } from "webext-storage";
 
 export const dntConfig = new StorageItem<boolean>("DNT");
 
-export async function setDNT(enable: boolean): Promise<void> {
+async function setDNT(enable: boolean): Promise<void> {
   await dntConfig.set(enable);
 }
 

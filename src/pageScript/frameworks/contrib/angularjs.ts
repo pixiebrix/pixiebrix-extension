@@ -53,10 +53,6 @@ interface AngularElement {
   0: Node;
 }
 
-export function getVersion(): string | null {
-  return window.angular?.version?.full;
-}
-
 function getComponent(node: Node): AngularElement | null {
   if (!window.angular) {
     throw new FrameworkNotFound("Angular not found");

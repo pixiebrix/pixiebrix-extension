@@ -260,6 +260,7 @@
     "jest-webextension-mock": "^3.8.9",
     "jsdom": "^23.1.0",
     "jsdom-testing-mocks": "^1.11.0",
+    "knip": "^3.13.0",
     "min-document": "^2.19.0",
     "mini-css-extract-plugin": "^2.6.1",
     "mockdate": "^3.0.5",
