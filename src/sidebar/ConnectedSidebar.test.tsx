@@ -30,10 +30,7 @@ import {
 } from "@/testUtils/factories/authFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 
-jest.mock("@/auth/useLinkState", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+jest.mock("@/auth/useLinkState");
 
 jest.mock("@/contentScript/messenger/api", () => ({
   ensureExtensionPointsInstalled: jest.fn().mockResolvedValue(undefined),

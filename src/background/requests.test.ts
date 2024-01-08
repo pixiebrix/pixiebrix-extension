@@ -26,14 +26,8 @@ import {
 } from "@/testUtils/factories/integrationFactories";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
-jest.mock("@/background/auth/authStorage.ts", () => ({
-  getCachedAuthData: jest.fn(),
-}));
-
-jest.mock("@/background/auth/launchOAuth2Flow", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+jest.mock("@/background/auth/authStorage.ts");
+jest.mock("@/background/auth/launchOAuth2Flow");
 
 const getCachedAuthDataMock = jest.mocked(getCachedAuthData);
 const launchOAuth2FlowMock = jest.mocked(launchOAuth2Flow);

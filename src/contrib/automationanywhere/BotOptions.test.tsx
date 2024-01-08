@@ -36,18 +36,11 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 import { toExpression } from "@/utils/expressionUtils";
 
-jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-
 const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
   useSanitizedIntegrationConfigFormikAdapter,
 );
 
-jest.mock("@/hooks/auth", () => ({
-  useAuthOptions: jest.fn(),
-}));
+jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter");
 jest.mock("@/hooks/auth");
 jest.mock("@/contentScript/messenger/api");
 

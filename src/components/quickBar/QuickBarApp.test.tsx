@@ -47,14 +47,7 @@ jest.mock("kbar", () => {
   };
 });
 
-jest.mock("@/utils/selectionController", () => ({
-  __esModule: true,
-  default: {
-    save: jest.fn(),
-    restore: jest.fn(),
-    get: jest.fn(),
-  },
-}));
+jest.mock("@/utils/selectionController");
 
 // TODO: fix tests so they properly handle shadow dom events
 jest.mock("react-shadow/emotion", () => ({

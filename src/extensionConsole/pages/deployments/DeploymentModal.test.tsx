@@ -29,9 +29,7 @@ import { authSlice } from "@/auth/authSlice";
 import { useUpdateAvailable } from "@/extensionConsole/pages/UpdateBanner";
 import { type AuthState } from "@/auth/authTypes";
 
-jest.mock("@/extensionConsole/pages/UpdateBanner", () => ({
-  useUpdateAvailable: jest.fn(),
-}));
+jest.mock("@/extensionConsole/pages/UpdateBanner");
 
 browser.runtime.reload = jest.fn();
 

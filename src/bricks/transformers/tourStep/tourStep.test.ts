@@ -38,9 +38,7 @@ beforeEach(() => {
 
 Element.prototype.scrollIntoView = jest.fn();
 
-jest.mock("@/bricks/transformers/ephemeralForm/modalUtils", () => ({
-  showModal: jest.fn().mockResolvedValue(undefined),
-}));
+jest.mock("@/bricks/transformers/ephemeralForm/modalUtils");
 
 jest.mock("@/bricks/transformers/temporaryInfo/popoverUtils", () => ({
   showPopover: jest.fn().mockReturnValue({

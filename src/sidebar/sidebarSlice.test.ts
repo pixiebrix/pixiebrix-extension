@@ -30,10 +30,7 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { type Draft } from "immer";
 
-jest.mock("@/sidebar/messenger/api", () => ({
-  // :shrug: imported via testUtils/factories
-  renderPanels: jest.fn(),
-}));
+jest.mock("@/sidebar/messenger/api");
 
 jest.mock("@/contentScript/messenger/api", () => ({
   closeTemporaryPanel: jest.fn().mockResolvedValue(undefined),

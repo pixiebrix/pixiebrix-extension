@@ -33,11 +33,7 @@ jest.mock("@/pageEditor/EditorLayout", () => ({
   default: () => <div>EditorLayout</div>,
 }));
 
-jest.mock("@/contentScript/messenger/api", () => ({
-  __esModule: true,
-  removeInstalledExtension: jest.fn(),
-  updateDynamicElement: jest.fn(),
-}));
+jest.mock("@/contentScript/messenger/api");
 
 jest.mock("redux-persist/integration/react", () => ({
   __esModule: true,

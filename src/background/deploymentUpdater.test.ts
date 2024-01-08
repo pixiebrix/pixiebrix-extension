@@ -59,14 +59,9 @@ import { type RegistryPackage } from "@/types/contract";
 setContext("background");
 const axiosMock = new MockAdapter(axios);
 
-jest.mock("@/store/settings/settingsStorage", () => ({
-  getSettingsState: jest.fn(),
-  saveSettingsState: jest.fn(),
-}));
+jest.mock("@/store/settings/settingsStorage");
 
-jest.mock("@/hooks/useRefreshRegistries", () => ({
-  refreshRegistries: jest.fn(),
-}));
+jest.mock("@/hooks/useRefreshRegistries");
 
 jest.mock("@/utils/extensionUtils", () => ({
   forEachTab: jest.fn().mockResolvedValue(undefined),
@@ -77,9 +72,7 @@ jest.mock("@/utils/extensionUtils", () => ({
 jest.mock("@/telemetry/reportEvent");
 
 jest.mock("@/sidebar/messenger/api", () => {});
-jest.mock("@/contentScript/messenger/api", () => ({
-  insertButton: jest.fn(),
-}));
+jest.mock("@/contentScript/messenger/api");
 
 jest.mock("@/auth/token", () => ({
   getExtensionToken: async () => "TESTTOKEN",
@@ -392,9 +385,7 @@ describe("updateDeployments", () => {
     isLinkedMock.mockResolvedValue(false);
     readAuthDataMock.mockResolvedValue({} as any);
 
-    jest.doMock("@/background/deploymentUpdater", () => ({
-      uninstallAllDeployments: jest.fn(),
-    }));
+    jest.doMock("@/background/deploymentUpdater");
 
     const { uninstallAllDeployments } = await import(
       "@/background/deploymentUpdater"

@@ -43,17 +43,10 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { produce } from "immer";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 
-jest.mock("@/hooks/auth", () => ({
-  useAuthOptions: jest.fn(),
-}));
+jest.mock("@/hooks/auth");
+jest.mock("@/integrations/util/getModDefinitionIntegrationIds");
 
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
-
-jest.mock("@/integrations/util/getModDefinitionIntegrationIds", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-
 const getIntegrationIdsMock = jest.mocked(getModDefinitionIntegrationIds);
 
 const integrationId1 = validateRegistryId("test/integration1");
