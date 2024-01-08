@@ -112,7 +112,7 @@ module.exports = {
         selector:
           "CallExpression[callee.property.name='mockResolvedValue'][arguments.0.name='undefined'][arguments.0.type='Identifier']",
       },
-      // NOTE: If you add more rules, add the tests to eslint-local-rules/noRestrictedSyntax.test.ts
+      // NOTE: If you add more rules, add the tests to eslint-local-rules/noRestrictedSyntax.ts
     ],
 
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
