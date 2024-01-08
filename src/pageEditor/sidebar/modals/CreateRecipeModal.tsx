@@ -243,8 +243,6 @@ function useSaveCallbacks({
           isReinstall: false,
         }),
       );
-      dispatch(editorActions.editRecipeMetadata(metadata));
-      dispatch(editorActions.editRecipeOptionsDefinitions(options));
       dispatch(editorActions.selectRecipeId(savedRecipe.metadata.id));
 
       reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
