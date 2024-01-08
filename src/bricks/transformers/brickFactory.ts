@@ -50,6 +50,7 @@ import {
 import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineExpression } from "@/utils/expressionUtils";
 import { isContentScript } from "webext-detect-page";
+import { getAssociatedTarget } from "@/sidebar/sidePanel/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
 import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
@@ -61,6 +62,7 @@ import {
   unionSchemaDefinitionTypes,
 } from "@/utils/schemaUtils";
 import type BaseRegistry from "@/registry/memoryRegistry";
+import { isBrowserSidebar } from "@/utils/expectContext";
 
 // Interface to avoid circular dependency with the implementation
 type BrickRegistryProtocol = BaseRegistry<RegistryId, Brick>;
@@ -343,7 +345,9 @@ class UserDefinedBrick extends BrickABC {
     // Components which can't be serialized across messenger boundaries.
 
     // TODO: call top-level contentScript directly after https://github.com/pixiebrix/webext-messenger/issues/72
-    const topLevelFrame = await getTopLevelFrame();
+    const topLevelFrame = isBrowserSidebar()
+      ? getAssociatedTarget()
+      : await getTopLevelFrame();
 
     try {
       return await runHeadlessPipeline(topLevelFrame, {

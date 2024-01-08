@@ -23,7 +23,7 @@ import {
   contextNames,
 } from "webext-detect-page";
 
-function isBrowserSidebar(): boolean {
+export function isBrowserSidebar(): boolean {
   return isExtensionContext() && location.pathname === "/sidebar.html";
 }
 

@@ -46,7 +46,7 @@ import DelayedRender from "@/components/DelayedRender";
 import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { getTopLevelFrame } from "webext-messenger";
+import { getAssociatedTarget } from "@/sidebar/sidePanel/messenger/api";
 import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
 
@@ -205,7 +205,7 @@ const PanelBody: React.FunctionComponent<{
               );
             }
 
-            const topLevelFrame = await getTopLevelFrame();
+            const topLevelFrame = getAssociatedTarget();
 
             await runHeadlessPipeline(topLevelFrame, {
               nonce: uuidv4(),

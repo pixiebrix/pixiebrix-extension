@@ -30,7 +30,7 @@ import AsyncButton from "@/components/AsyncButton";
 import { useDispatch } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { reloadMarketplaceEnhancements as reloadMarketplaceEnhancementsInContentScript } from "@/contentScript/messenger/api";
-import { getTopLevelFrame } from "webext-messenger";
+import { getAssociatedTarget } from "@/sidebar/sidePanel/messenger/api";
 import cx from "classnames";
 import { isEmpty } from "lodash";
 import ActivateModInputs from "@/sidebar/activateMod/ActivateModInputs";
@@ -109,7 +109,7 @@ const { setNeedsPermissions, activateStart, activateSuccess, activateError } =
   activationSlice.actions;
 
 async function reloadMarketplaceEnhancements() {
-  const topFrame = await getTopLevelFrame();
+  const topFrame = getAssociatedTarget();
   // Make sure the content script has the most recent state of the store before reloading.
   // Prevents race condition where the content script reloads before the store is persisted.
   await persistor.flush();

@@ -25,7 +25,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
 import { isEmpty, isPlainObject, set } from "lodash";
-import { getTopLevelFrame } from "webext-messenger";
+import { getAssociatedTarget } from "@/sidebar/sidePanel/messenger/api";
 import { type UUID } from "@/types/stringTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import {
@@ -341,7 +341,7 @@ async function getInitialData(
 
     case "state": {
       const namespace = storage.namespace ?? "blueprint";
-      const topLevelFrame = await getTopLevelFrame();
+      const topLevelFrame = getAssociatedTarget();
       // Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
       // sidebar which runs in the context of the top-level frame
       return getPageState(topLevelFrame, {
@@ -411,7 +411,7 @@ async function setData(
     }
 
     case "state": {
-      const topLevelFrame = await getTopLevelFrame();
+      const topLevelFrame = getAssociatedTarget();
       // Target the top level frame. Inline panels aren't generally available, so the renderer will always be in the
       // sidebar which runs in the context of the top-level frame
       await setPageState(topLevelFrame, {

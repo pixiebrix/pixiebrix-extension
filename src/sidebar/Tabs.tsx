@@ -57,7 +57,7 @@ import { selectEventData } from "@/telemetry/deployments";
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
-import { getTopLevelFrame } from "webext-messenger";
+import { getAssociatedTarget } from "@/sidebar/sidePanel/messenger/api";
 import { cancelForm } from "@/contentScript/messenger/api";
 import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
 
@@ -167,7 +167,7 @@ const Tabs: React.FC = () => {
     if (isTemporaryPanelEntry(panel)) {
       dispatch(sidebarSlice.actions.removeTemporaryPanel(panel.nonce));
     } else if (isFormPanelEntry(panel)) {
-      const frame = await getTopLevelFrame();
+      const frame = getAssociatedTarget();
       cancelForm(frame, panel.nonce);
     } else if (isModActivationPanelEntry(panel)) {
       dispatch(sidebarSlice.actions.hideModActivationPanel());
