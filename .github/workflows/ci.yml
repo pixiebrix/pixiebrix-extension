@@ -72,7 +72,7 @@ jobs:
         env:
           MV: ${{ matrix.MV }}
           ENVIRONMENT: staging
-          EXTERNALLY_CONNECTABLE: ${{ env.SERVICE_URL }}*,http://127.0.0.1/*
+          EXTERNALLY_CONNECTABLE: "${{ env.SERVICE_URL }}*"
           MARKETPLACE_URL: ${{ secrets.STAGING_MARKETPLACE_URL }}
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}

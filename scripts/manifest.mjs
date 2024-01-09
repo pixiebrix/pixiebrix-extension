@@ -123,13 +123,15 @@ function customizeManifest(manifestV2, options = {}) {
 
   manifest.content_security_policy = policy.toString();
 
-  if (env.EXTERNALLY_CONNECTABLE) {
-    manifest.externally_connectable.matches = excludeDuplicatePatterns([
-      ...manifest.externally_connectable.matches,
-      ...env.EXTERNALLY_CONNECTABLE.split(","),
-      ...internal,
-    ]);
-  }
+  const externallyConnectable = [
+    ...manifest.externally_connectable.matches,
+    ...(env.EXTERNALLY_CONNECTABLE?.split(",") ?? []),
+    ...internal,
+  ];
+
+  manifest.externally_connectable.matches = excludeDuplicatePatterns(
+    externallyConnectable,
+  );
 
   if (manifestVersion === 3) {
     return updateManifestToV3(manifest);

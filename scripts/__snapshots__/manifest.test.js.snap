@@ -67,6 +67,10 @@ exports[`customizeManifest mv2 1`] = `
   "externally_connectable": {
     "matches": [
       "https://*.pixiebrix.com/*",
+      "http://127.0.0.1:8000/*",
+      "http://127.0.0.1/*",
+      "http://localhost/*",
+      "http://localhost:8000/*",
     ],
   },
   "homepage_url": "https://www.pixiebrix.com",
@@ -192,6 +196,10 @@ exports[`customizeManifest mv3 1`] = `
   "externally_connectable": {
     "matches": [
       "https://*.pixiebrix.com/*",
+      "http://127.0.0.1:8000/*",
+      "http://127.0.0.1/*",
+      "http://localhost/*",
+      "http://localhost:8000/*",
     ],
   },
   "homepage_url": "https://www.pixiebrix.com",
