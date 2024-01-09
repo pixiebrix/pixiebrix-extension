@@ -18,15 +18,21 @@
 import { browserAction } from "@/mv3/api";
 import { type MessengerMeta } from "webext-messenger";
 
+export const DEFAULT_BADGE_COLOR = "red";
+
 export function setToolbarBadge(
   this: MessengerMeta,
   text: string | null,
 ): void {
-  const tabId = this.trace?.[0].tab.id;
+  const tabId = this?.trace?.[0].tab.id;
 
-  // TODO: Set the badge color
   void browserAction.setBadgeText({
     text,
+    tabId,
+  });
+
+  void browserAction.setBadgeBackgroundColor({
+    color: DEFAULT_BADGE_COLOR,
     tabId,
   });
 }

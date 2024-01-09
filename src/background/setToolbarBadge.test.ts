@@ -16,7 +16,10 @@
  */
 
 import { browserAction } from "@/mv3/api";
-import { setToolbarBadge } from "@/background/toolbarBadge";
+import {
+  DEFAULT_BADGE_COLOR,
+  setToolbarBadge,
+} from "@/background/toolbarBadge";
 import { messengerMetaFactory } from "@/testUtils/factories/messengerFactories";
 
 describe("setToolbarBadge", () => {
@@ -27,6 +30,11 @@ describe("setToolbarBadge", () => {
 
     expect(browserAction.setBadgeText).toHaveBeenCalledWith({
       text: expectedText,
+      tabId: messengerMeta.trace?.[0].tab.id,
+    });
+
+    expect(browserAction.setBadgeBackgroundColor).toHaveBeenCalledWith({
+      color: DEFAULT_BADGE_COLOR,
       tabId: messengerMeta.trace?.[0].tab.id,
     });
   });
