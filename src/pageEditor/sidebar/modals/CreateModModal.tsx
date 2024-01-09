@@ -118,10 +118,10 @@ function useSaveCallbacks({
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
 
   const createModFromComponent = useCallback(
-    // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
     (
       modComponentFormState: ModComponentFormState,
       modMetadata: ModMetadataFormState,
+      // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
     ) =>
       // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
       ensureElementPermissionsFromUserGesture(modComponentFormState).then(
