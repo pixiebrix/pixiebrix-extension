@@ -53,18 +53,6 @@ export type PanelPayload =
   | RendererLoadingPayload
   | RendererErrorPayload;
 
-// Currently unused, but keeping for completeness for discriminating PanelPayload sub-types.
-export function isRendererRunPayload(
-  payload: PanelPayload,
-): payload is RendererRunPayload {
-  return (
-    isObject(payload) &&
-    "blockId" in payload &&
-    "args" in payload &&
-    "ctxt" in payload
-  );
-}
-
 export function isRendererLoadingPayload(
   payload: PanelPayload,
 ): payload is RendererLoadingPayload {

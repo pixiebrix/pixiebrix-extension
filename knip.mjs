@@ -17,8 +17,10 @@ const knipConfig = {
       `${x}.{ts,tsx,js,jsx}`.replace("./", ""),
     ),
     "src/development/headers.ts",
-    // App messenger
+    // App messenger and common storage
     "src/contentScript/externalProtocol.ts",
+    "src/background/messenger/external/api.ts",
+    "src/store/browserExtensionIdStorage.ts",
     // Jest setup files
     "src/testUtils/testEnv.js",
     "src/testUtils/testAfterEnv.ts",
@@ -30,15 +32,25 @@ const knipConfig = {
   project: ["src/**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"],
   // https://knip.dev/guides/handling-issues#mocks-and-other-implicit-imports
   ignore: [
-    "**/__mocks__/**",
-    "eslint-local-rules/noRestrictedSyntax.ts",
     "@contrib/**",
+    // Test Mocks
+    "**/__mocks__/**",
+    "src/testUtils/detectPageMock.ts",
+    // Dummy file to test lint rules
+    "eslint-local-rules/noRestrictedSyntax.ts",
+    // `Render` method is unused currently, but may be used in the future. Keep for consistency of API with other
+    // render helper modules.
+    "src/testUtils/renderWithCommonStore.ts",
     // Polyfills
     "src/vendors/process.js",
     // Aliases defined in tsconfig.json
     "src/contrib/uipath/quietLogger.ts",
     // Development/debugging helpers
     "src/development/hooks/**",
+    // Vendor files, to keep parity with upstream
+    "src/vendors/page-metadata-parser/**",
+    // False positive - dynamically imported in initRobot
+    "src/contrib/uipath/UiPathRobot.ts",
   ],
   ignoreDependencies: [
     // Browser environment types
@@ -63,10 +75,10 @@ const knipConfig = {
     // Issue Type reference: https://knip.dev/reference/issue-types/
     unlisted: "warn",
     unresolved: "warn",
-    exports: "warn",
-    nsExports: "warn",
     types: "warn",
     // Incrementally enforce rules over time
+    exports: "error",
+    nsExports: "error",
     files: "error",
     duplicates: "error",
     dependencies: "error",

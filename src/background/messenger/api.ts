@@ -28,8 +28,6 @@ import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes
 export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
 export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
 export const getUID = getMethod("GET_UID", bg);
-export const waitForTargetByUrl = getMethod("WAIT_FOR_TARGET_BY_URL", bg);
-
 export const activatePartnerTheme = getMethod("ACTIVATE_PARTNER_THEME", bg);
 export const getPartnerPrincipals = getMethod("GET_PARTNER_PRINCIPALS", bg);
 export const launchAuthIntegration = getMethod("LAUNCH_AUTH_INTEGRATION", bg);
@@ -114,7 +112,6 @@ export const performConfiguredRequestInBackground = getMethod(
 // export const recordEvent = getNotifier("RECORD_EVENT", bg);
 
 export const recordLog = getNotifier("RECORD_LOG", bg);
-export const recordWarning = getNotifier("RECORD_WARNING", bg);
 export const clearLogs = getMethod("CLEAR_LOGS", bg);
 export const clearLog = getMethod("CLEAR_LOG", bg);
 export const clearExtensionDebugLogs = getMethod(

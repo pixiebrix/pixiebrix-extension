@@ -72,7 +72,7 @@ jobs:
         env:
           MV: ${{ matrix.MV }}
           ENVIRONMENT: staging
-          EXTERNALLY_CONNECTABLE: ${{ env.SERVICE_URL }}*,http://127.0.0.1/*
+          EXTERNALLY_CONNECTABLE: "${{ env.SERVICE_URL }}*"
           MARKETPLACE_URL: ${{ secrets.STAGING_MARKETPLACE_URL }}
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
@@ -180,7 +180,7 @@ jobs:
       - run: npm install -D knip
       # Do a run without an exit code. Knip's "warn" setting is not working for files and devDependencies.
       - run: npm run dead-code -- --config knip.mjs --no-exit-code
-      - run: npm run dead-code -- --config knip.mjs --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes
+      - run: npm run dead-code -- --config knip.mjs --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports
 
   # https://pre-commit.com/#usage-in-continuous-integration
   prettier:

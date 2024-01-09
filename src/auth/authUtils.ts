@@ -21,7 +21,7 @@ import { type UUID } from "@/types/stringTypes";
 import { readAuthData } from "@/auth/token";
 
 // Used by the app
-export function selectOrganizations(
+function selectOrganizations(
   organizationMemberships: Me["organization_memberships"],
 ): AuthState["organizations"] {
   if (organizationMemberships == null) {

@@ -36,8 +36,6 @@ const loadSandbox = pMemoize(async () => {
   return iframe.contentWindow;
 });
 
-export default loadSandbox;
-
 const isSandboxed = once(async (): Promise<boolean> => {
   if (isMV3()) {
     return true;
@@ -46,13 +44,6 @@ const isSandboxed = once(async (): Promise<boolean> => {
   const { sandboxedCode } = await getSettingsState();
   return Boolean(sandboxedCode);
 });
-
-export async function ping() {
-  return postMessage({
-    recipient: await loadSandbox(),
-    type: "SANDBOX_PING",
-  });
-}
 
 export type TemplateRenderPayload = {
   template: string;

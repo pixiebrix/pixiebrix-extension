@@ -182,14 +182,6 @@ const pixieResolver: ResolverOptions = {
   },
 } as const;
 
-export async function bundle(schema: Schema): Promise<Schema> {
-  return $RefParser.bundle(schema, {
-    // Disable built-in resolvers
-    // https://apitools.dev/json-schema-ref-parser/docs/options.html
-    resolve: { pixieResolver, http: false, file: false },
-  }) as Promise<Schema>;
-}
-
 export async function dereference(schema: Schema): Promise<Schema> {
   return $RefParser.dereference(schema, {
     // Disable built-in resolvers

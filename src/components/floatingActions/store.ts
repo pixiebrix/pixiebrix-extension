@@ -16,7 +16,7 @@
  */
 
 import { configureStore, type Middleware } from "@reduxjs/toolkit";
-import { persistReducer, persistStore } from "redux-persist";
+import { persistReducer } from "redux-persist";
 import { createLogger } from "redux-logger";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import { persistSettingsConfig } from "@/store/settings/settingsStorage";
@@ -34,8 +34,6 @@ const store = configureStore({
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
   },
 });
-
-export const persistor = persistStore(store);
 
 // https://redux-toolkit.js.org/rtk-query/overview#configure-the-store
 // Optional, but required for refetchOnFocus/refetchOnReconnect behaviors see `setupListeners` docs - takes an optional

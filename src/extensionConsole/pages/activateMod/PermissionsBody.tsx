@@ -34,7 +34,7 @@ function selectedAuths(values: WizardValues): IntegrationDependency[] {
   return values.integrationDependencies.filter(({ configId }) => configId);
 }
 
-export function useSelectedAuths(): IntegrationDependency[] {
+function useSelectedAuths(): IntegrationDependency[] {
   const { values } = useFormikContext<WizardValues>();
   return useMemo(() => selectedAuths(values), [values]);
 }

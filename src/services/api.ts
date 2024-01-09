@@ -425,7 +425,6 @@ export const {
   useGetMarketplaceListingsQuery,
   useGetMarketplaceTagsQuery,
   useGetOrganizationsQuery,
-  useGetGroupsQuery,
   useGetZapierKeyQuery,
   useGetStandaloneModDefinitionQuery,
   useGetAllStandaloneModDefinitionsQuery,

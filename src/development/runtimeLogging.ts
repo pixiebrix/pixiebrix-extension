@@ -54,7 +54,7 @@ const runtimeLogging = new StorageItem("RUNTIME_LOGGING", {
   defaultValue: Boolean(DEBUG),
 });
 
-export async function setRuntimeLogging(config: boolean): Promise<void> {
+async function setRuntimeLogging(config: boolean): Promise<void> {
   await runtimeLogging.set(config);
 }
 

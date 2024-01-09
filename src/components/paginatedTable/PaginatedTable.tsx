@@ -107,23 +107,6 @@ function setSearchParams(
   });
 }
 
-export const CommaListCell: React.VoidFunctionComponent<{
-  links: React.ReactNode[];
-}> = ({ links }) => (
-  <p>
-    {(links ?? []).map((link, index) => (
-      <React.Fragment key={index}>
-        {index > 0 && ", "}
-        {link}
-      </React.Fragment>
-    ))}
-  </p>
-);
-
-export const TruncatedCell: React.VoidFunctionComponent<{
-  children: React.ReactNode;
-}> = ({ children }) => <div className={styles.truncatedCell}>{children}</div>;
-
 function findPageIndex<TRow extends Record<string, unknown>>({
   record,
   rows,

@@ -91,7 +91,7 @@ export function inputProperties(inputSchema: Schema): SchemaProperties {
  * Returns true if the schema uses anyOf/oneOf/allOf/not.
  * @param schema the JSON Schema
  */
-export function isComplexSchema(schema: Schema): boolean {
+function isComplexSchema(schema: Schema): boolean {
   // https://json-schema.org/understanding-json-schema/reference/combining.html
   return (
     Boolean(schema.anyOf) ||

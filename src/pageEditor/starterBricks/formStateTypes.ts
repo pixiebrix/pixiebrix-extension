@@ -293,22 +293,3 @@ export type ModComponentFormState =
   | QuickBarFormState
   | QuickBarProviderFormState
   | TourFormState;
-
-export function isModComponentFormState(
-  formState: unknown,
-): formState is ModComponentFormState {
-  if (
-    typeof formState !== "object" ||
-    formState === null ||
-    Array.isArray(formState)
-  ) {
-    return false;
-  }
-
-  return (
-    "uuid" in formState &&
-    "type" in formState &&
-    "extensionPoint" in formState &&
-    "extension" in formState
-  );
-}
