@@ -59,6 +59,7 @@ export function isContextInvalidatedError(possibleError: unknown): boolean {
  */
 export const wasContextInvalidated = () => !chrome.runtime?.id;
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused in background
 const invalidatedContextController = new AbortController();
 export const invalidatedContextSignal = invalidatedContextController.signal;
 
