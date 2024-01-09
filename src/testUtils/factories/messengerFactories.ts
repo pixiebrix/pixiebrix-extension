@@ -22,7 +22,6 @@ export const messengerMetaFactory = define<MessengerMeta>({
   trace: [
     {
       tab: {
-        // TODO: make me dynamic
         id: 42,
       },
     } as Sender,

@@ -18,7 +18,7 @@
 import { browserAction } from "@/mv3/api";
 import { type MessengerMeta } from "webext-messenger";
 
-export const DEFAULT_BADGE_COLOR = "#CB2431";
+export const DEFAULT_BADGE_COLOR = "#b4183f";
 
 export async function setToolbarBadge(
   this: MessengerMeta,
