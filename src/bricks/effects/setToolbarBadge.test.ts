@@ -22,9 +22,8 @@ import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 const brick = new SetToolbarBadge();
 describe("SetToolbarBadge", () => {
   it("runs without error", async () => {
-    await brick.run(
-      unsafeAssumeValidArg({ text: "test" }),
-      brickOptionsFactory(),
-    );
+    await expect(
+      brick.run(unsafeAssumeValidArg({ text: "test" }), brickOptionsFactory()),
+    ).resolves.not.toThrow();
   });
 });
