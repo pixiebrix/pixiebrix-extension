@@ -305,7 +305,7 @@ function useInitialFormState({
     };
   }
 
-  // Handle creating a new blueprint from a selected extension
+  // Handle creating a new mod from a selected mod component
   if (activeElement) {
     return {
       id: generatePackageId(scope, activeElement.label),

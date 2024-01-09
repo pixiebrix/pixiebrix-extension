@@ -236,39 +236,39 @@ describe("useSaveMod", () => {
 });
 
 describe("isModEditable", () => {
-  test("returns true if recipe is in editable packages", () => {
-    const recipe = defaultModDefinitionFactory();
+  test("returns true if mod is in editable packages", () => {
+    const mod = defaultModDefinitionFactory();
     const editablePackages: EditablePackageMetadata[] = [
       {
         id: null,
-        name: validateRegistryId("test/recipe"),
+        name: validateRegistryId("test/mod"),
       },
       {
         id: null,
-        name: recipe.metadata.id,
-      },
-    ] as EditablePackageMetadata[];
-
-    expect(isModEditable(editablePackages, recipe)).toBe(true);
-  });
-
-  test("returns false if recipe is not in editable packages", () => {
-    const recipe = defaultModDefinitionFactory();
-    const editablePackages: EditablePackageMetadata[] = [
-      {
-        id: null,
-        name: validateRegistryId("test/recipe"),
+        name: mod.metadata.id,
       },
     ] as EditablePackageMetadata[];
 
-    expect(isModEditable(editablePackages, recipe)).toBe(false);
+    expect(isModEditable(editablePackages, mod)).toBe(true);
   });
 
-  test("returns false if recipe is null", () => {
+  test("returns false if mod is not in editable packages", () => {
+    const mod = defaultModDefinitionFactory();
     const editablePackages: EditablePackageMetadata[] = [
       {
         id: null,
-        name: validateRegistryId("test/recipe"),
+        name: validateRegistryId("test/mod"),
+      },
+    ] as EditablePackageMetadata[];
+
+    expect(isModEditable(editablePackages, mod)).toBe(false);
+  });
+
+  test("returns false if mod is null", () => {
+    const editablePackages: EditablePackageMetadata[] = [
+      {
+        id: null,
+        name: validateRegistryId("test/mod"),
       },
     ] as EditablePackageMetadata[];
 

@@ -52,7 +52,7 @@ export function isModEditable(
   editablePackages: EditablePackageMetadata[],
   recipe: ModDefinition,
 ): boolean {
-  // The user might lose access to the recipe while they were editing it (the recipe or an extension)
+  // The user might lose access to the mod while they were editing it (the mod or a mod component)
   // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
   const recipeId = recipe?.metadata?.id;
   return recipeId != null && editablePackages.some((x) => x.name === recipeId);
@@ -114,7 +114,7 @@ function useSaveMod(): ModSaver {
       return false;
     }
 
-    // eslint-disable-next-line security/detect-object-injection -- recipeId
+    // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
     const deletedModComponentFormStates = deletedComponentsByModId[modId] ?? [];
     const deletedModComponentIds = new Set(
       deletedModComponentFormStates.map(({ uuid }) => uuid),
@@ -133,18 +133,19 @@ function useSaveMod(): ModSaver {
     void ensureElementPermissionsFromUserGesture(dirtyModComponentFormStates);
 
     const cleanModComponents = activatedModComponents.filter(
-      (extension) =>
-        extension._recipe?.id === modId &&
+      (modComponent) =>
+        modComponent._recipe?.id === modId &&
         !dirtyModComponentFormStates.some(
-          (element) => element.uuid === extension.id,
+          (modComponentFormState) =>
+            modComponentFormState.uuid === modComponent.id,
         ) &&
-        !deletedModComponentIds.has(extension.id),
+        !deletedModComponentIds.has(modComponent.id),
     );
 
     // Dirty options/metadata or null if there are no staged changes.
-    // eslint-disable-next-line security/detect-object-injection -- recipe IDs are sanitized in the form validation
+    // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
     const dirtyModOptions = allDirtyModOptions[modId];
-    // eslint-disable-next-line security/detect-object-injection -- recipe IDs are sanitized in the form validation
+    // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
     const dirtyModMetadata = allDirtyModMetadatas[modId];
 
     const newMod = buildNewMod({
@@ -167,7 +168,7 @@ function useSaveMod(): ModSaver {
 
     const newModMetadata = selectRecipeMetadata(newMod, upsertResponse);
 
-    // Don't push to cloud since we're saving it with the recipe
+    // Don't push to cloud since we're saving it with the mod
     await Promise.all(
       dirtyModComponentFormStates.map(async (modComponentFormState) =>
         upsertModComponentFormState({
@@ -185,15 +186,15 @@ function useSaveMod(): ModSaver {
       ),
     );
 
-    // Update the recipe metadata on extensions in the options slice
+    // Update the mod metadata on mod components in the options slice
     dispatch(optionsActions.updateRecipeMetadataForExtensions(newModMetadata));
 
-    // Update the recipe metadata on elements in the page editor slice
+    // Update the mod metadata on mod component form states in the page editor slice
     dispatch(editorActions.updateRecipeMetadataForElements(newModMetadata));
 
-    // Remove any deleted elements from the extensions slice
-    for (const extensionId of deletedModComponentIds) {
-      dispatch(optionsActions.removeExtension({ extensionId }));
+    // Remove any deleted mod component form states from the extensions slice
+    for (const modComponentId of deletedModComponentIds) {
+      dispatch(optionsActions.removeExtension({ extensionId: modComponentId }));
     }
 
     // Clear the dirty states

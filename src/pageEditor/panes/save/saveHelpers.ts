@@ -187,13 +187,13 @@ export function selectExtensionPointIntegrations({
  * NOTE: the caller is responsible for updating an extensionPoint package (i.e., that has its own version). This method
  * only handles the extensionPoint if it's an inner definition
  *
- * @param sourceMod the original recipe
+ * @param sourceMod the original mod
  * @param modMetadata the metadata for the new mod
  * @param activatedModComponents the user's locally activated mod components (i.e., from optionsSlice). Used to locate the
  * mod component's position in sourceMod
  * @param newModComponent the new mod component state (i.e., submitted via Formik)
  */
-export function replaceRecipeExtension(
+export function replaceModComponent(
   sourceMod: ModDefinition,
   modMetadata: Metadata,
   activatedModComponents: ModComponentBase[],
@@ -226,7 +226,7 @@ export function replaceRecipeExtension(
         }
       } else {
         throw new Error(
-          `Element's API Version (${newModComponent.apiVersion}) does not match mod's API Version (${sourceMod.apiVersion}) and mod's API Version cannot be updated`,
+          `Mod component's API Version (${newModComponent.apiVersion}) does not match mod's API Version (${sourceMod.apiVersion}) and mod's API Version cannot be updated`,
         );
       }
     }
@@ -276,12 +276,12 @@ export function replaceRecipeExtension(
         sourceMod.extensionPoints.filter((x) => x.id === originalInnerId)
           .length > 1
       ) {
-        // Multiple extensions share the same inner extension point definition. If the inner extension point definition
-        // was modified, the behavior we want (at least for now) is to create new extensionPoint entry instead of
-        // modifying the shared entry. If we wasn't modified, we don't have to make any changes.
+        // Multiple mod components share the same inner extension point definition. If the inner extension point
+        // definition was modified, the behavior we want (at least for now) is to create new extensionPoint entry
+        // instead of modifying the shared entry. If it wasn't modified, we don't have to make any changes.
 
         // NOTE: there are some non-functional changes (e.g., services being normalized from undefined to {}) that will
-        // cause the definitions to not be equal. This is OK for now -- in practice it won't happen for blueprints
+        // cause the definitions to not be equal. This is OK for now -- in practice it won't happen for mods
         // originally built using the Page Editor since it produces configs that include the explicit {} and [] objects
         // instead of undefined.
         if (
@@ -318,7 +318,7 @@ export function replaceRecipeExtension(
       };
     } else {
       // It's not currently possible to switch from using an extensionPoint package to an inner extensionPoint
-      // definition in the Page Editor. Therefore we can just use the rawModComponent.extensionPointId directly here.
+      // definition in the Page Editor. So, we can just use the rawModComponent.extensionPointId directly here.
       // eslint-disable-next-line security/detect-object-injection -- false positive for number
       draft.extensionPoints[modComponentIndex] = {
         id: rawModComponent.extensionPointId,
@@ -373,12 +373,12 @@ const emptyModDefinition: UnsavedModDefinition = {
 };
 
 /**
- * Create a copy of `sourceMod` (if provided) with `metadata` and `elements`.
+ * Create a copy of `sourceMod` (if provided) with given mod metadata, mod options, and mod components.
  *
  * NOTE: the caller is responsible for updating an extensionPoint package (i.e., that has its own version). This method
  * only handles the extensionPoint if it's an inner definition
  *
- * @param sourceRecipe the original mod definition, or undefined for new mods
+ * @param sourceMod the original mod definition, or undefined for new mods
  * @param cleanModComponents the mod's unchanged, activated mod components
  * @param dirtyModComponentFormStates the mod's component form states (i.e., submitted via Formik)
  * @param dirtyModOptions the mod's options form state, or nullish if there are no dirty options
@@ -391,11 +391,12 @@ export function buildNewMod({
   dirtyModOptions,
   dirtyModMetadata,
 }: ModParts): UnsavedModDefinition {
-  // If there's no source recipe, then we're creating a new one, so we
-  // start with an empty recipe definition that will be filled in
-  const recipe: UnsavedModDefinition = sourceMod ?? emptyModDefinition;
+  // If there's no source mod, then we're creating a new one, so we
+  // start with an empty mod definition that will be filled in
+  const unsavedModDefinition: UnsavedModDefinition =
+    sourceMod ?? emptyModDefinition;
 
-  return produce(recipe, (draft: UnsavedModDefinition): void => {
+  return produce(unsavedModDefinition, (draft: UnsavedModDefinition): void => {
     // Options dirty state is only populated if a change is made
     if (dirtyModOptions) {
       draft.options = isModOptionsSchemaEmpty(dirtyModOptions)
@@ -413,7 +414,8 @@ export function buildNewMod({
       ...dirtyModComponentFormStates,
     ];
     // We need to handle the unlikely edge-case of zero mod components here, hence the null-coalesce
-    const itemsApiVersion = versionedItems[0]?.apiVersion ?? recipe.apiVersion;
+    const itemsApiVersion =
+      versionedItems[0]?.apiVersion ?? unsavedModDefinition.apiVersion;
     const badApiVersion = versionedItems.find(
       (item) => item.apiVersion !== itemsApiVersion,
     )?.apiVersion;
@@ -424,9 +426,9 @@ export function buildNewMod({
       );
     }
 
-    if (itemsApiVersion !== recipe.apiVersion) {
+    if (itemsApiVersion !== unsavedModDefinition.apiVersion) {
       throw new Error(
-        `Mod uses API Version ${recipe.apiVersion}, but it's bricks have version ${itemsApiVersion}. Please use the Workshop to edit this mod.`,
+        `Mod uses API Version ${unsavedModDefinition.apiVersion}, but it's bricks have version ${itemsApiVersion}. Please use the Workshop to edit this mod.`,
       );
     }
 
@@ -458,7 +460,7 @@ export function buildNewMod({
     ]);
 
     // This sorting is mostly for test ergonomics for easier equality assertions when
-    // things stay in the same order in this array. The clean/dirty elements
+    // things stay in the same order in this array. The clean/dirty mod components
     // split/recombination logic causes things to get out of order in the result.
     draft.extensionPoints = sortBy(extensionPoints, (x) => x.id);
     draft.definitions = innerDefinitions;
@@ -525,7 +527,7 @@ function buildExtensionPoints(
       }
 
       if (isDefinitionAlreadyAdded) {
-        // This definition has already been added to the recipe, so we can move on
+        // This definition has already been added to the mod, so we can move on
         continue;
       }
 
