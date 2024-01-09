@@ -17,6 +17,8 @@
 
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { propertiesToSchema } from "@/validators/generic";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { BusinessError } from "@/errors/businessErrors";
 
 class SetToolbarBadge extends EffectABC {
   constructor() {
@@ -41,7 +43,9 @@ class SetToolbarBadge extends EffectABC {
   );
 
   async effect() {
-    // TODO
+    if (isLoadedInIframe()) {
+      throw new BusinessError("Cannot set toolbar badge from an iframe.");
+    }
   }
 }
 

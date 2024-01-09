@@ -31,6 +31,8 @@ export function setToolbarBadge(
     tabId,
   });
 
+  // TODO: setBadgeTextColor is not supported in MV2
+
   void browserAction.setBadgeBackgroundColor({
     color: DEFAULT_BADGE_COLOR,
     tabId,

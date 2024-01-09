@@ -18,12 +18,24 @@
 import SetToolbarBadge from "@/bricks/effects/setToolbarBadge";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 
 const brick = new SetToolbarBadge();
+jest.mock("@/utils/iframeUtils", () => ({
+  isLoadedInIframe: jest.fn(() => false),
+}));
+
 describe("SetToolbarBadge", () => {
   it("runs without error", async () => {
     await expect(
       brick.run(unsafeAssumeValidArg({ text: "test" }), brickOptionsFactory()),
     ).resolves.not.toThrow();
+  });
+
+  it("thows a BusinessError if run in an iframe", async () => {
+    jest.mocked(isLoadedInIframe).mockReturnValueOnce(true);
+    await expect(
+      brick.run(unsafeAssumeValidArg({ text: "test" }), brickOptionsFactory()),
+    ).rejects.toThrow("Cannot set toolbar badge from an iframe.");
   });
 });
