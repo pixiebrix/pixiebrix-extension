@@ -84,20 +84,26 @@ function updateManifestToV3(manifestV2) {
   return manifest;
 }
 
-function addInternalUrlsToSetExtensionIdInAppContentScript(manifest, internal) {
-  const setExtensionIdInAppIndex = manifest.content_scripts.findIndex((x) =>
-    (x.js ?? []).includes("setExtensionIdInApp.js"),
-  );
+/**
+ * Add internal URLs to the content scripts targeting the Admin Console so the Extension can talk to
+ * a locally running Admin Console during development.
+ *
+ * @param {chrome.runtime.Manifest} manifest
+ * @param {string[]} internal
+ */
+function addInternalUrlsToContentScripts(manifest, internal) {
+  const ADMIN_CONSOLE_MATCH_PATTERN = "https://*.pixiebrix.com/*";
 
-  if (setExtensionIdInAppIndex === -1) {
-    throw new Error("setExtensionIdInApp.js not found in content_scripts");
+  for (const [index, contentScript] of Object.entries(
+    manifest.content_scripts,
+  )) {
+    if (contentScript.matches.includes(ADMIN_CONSOLE_MATCH_PATTERN)) {
+      manifest.content_scripts[index].matches = excludeDuplicatePatterns([
+        ...contentScript.matches,
+        ...internal,
+      ]);
+    }
   }
-
-  manifest.content_scripts[setExtensionIdInAppIndex].matches =
-    excludeDuplicatePatterns([
-      ...manifest.content_scripts[setExtensionIdInAppIndex].matches,
-      ...internal,
-    ]);
 }
 
 /**
@@ -149,7 +155,7 @@ function customizeManifest(manifestV2, options = {}) {
     externallyConnectable,
   );
 
-  addInternalUrlsToSetExtensionIdInAppContentScript(manifest, internal);
+  addInternalUrlsToContentScripts(manifest, internal);
 
   if (manifestVersion === 3) {
     return updateManifestToV3(manifest);
