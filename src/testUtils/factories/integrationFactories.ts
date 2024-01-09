@@ -90,7 +90,7 @@ export const integrationDependencyFactory = define<IntegrationDependency>({
   apiVersion: "v1",
 });
 
-export const keyAuthIntegrationDefinitionFactory = define<
+const keyAuthIntegrationDefinitionFactory = define<
   IntegrationDefinition<KeyAuthenticationDefinition>
 >({
   metadata: metadataFactory,

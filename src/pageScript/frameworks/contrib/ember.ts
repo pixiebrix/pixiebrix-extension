@@ -66,10 +66,6 @@ declare global {
   }
 }
 
-export function getVersion(): string | null {
-  return window.Ember?.VERSION;
-}
-
 function getEmberApplication(): EmberApplication {
   // https://stackoverflow.com/questions/32971707/how-to-access-the-ember-data-store-from-the-console
   if (window.Ember) {

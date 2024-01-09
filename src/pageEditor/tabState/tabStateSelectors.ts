@@ -19,9 +19,6 @@ import { type TabStateRootState } from "@/pageEditor/tabState/tabStateTypes";
 import { deserializeError } from "serialize-error";
 import { CONTEXT_INVALIDATED_MESSAGE } from "@/pageEditor/tabState/tabStateSlice";
 
-export const selectFrameState = ({ tabState }: TabStateRootState) =>
-  tabState.frameState;
-
 export const selectTabStateError = ({ tabState }: TabStateRootState) =>
   tabState.error ? deserializeError(tabState.error) : null;
 

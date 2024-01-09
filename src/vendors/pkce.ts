@@ -12,18 +12,24 @@
 
 // Code verifier: Random URL-safe string with a minimum length of 43 characters.
 // Code challenge: Base64 URL-encoded SHA-256 hash of the code verifier.
-export const MIN_VERIFIER_LENGTH = 43;
-export const MAX_VERIFIER_LENGTH = 128;
-export const DEFAULT_CODE_CHALLENGE_METHOD = "S256";
+const MIN_VERIFIER_LENGTH = 43;
 
-// converts a string to base64 (url/filename safe variant)
-export function stringToBase64Url(str: string): string {
-  var b64 = btoa(str);
+const MAX_VERIFIER_LENGTH = 128;
+
+/**
+ * Converts a string to base64 (url/filename safe variant)
+ * @param str the string to convert to base64 URL
+ */
+function stringToBase64Url(str: string): string {
+  const b64 = btoa(str);
   return base64ToBase64Url(b64);
 }
 
-// converts a standard base64-encoded string to a "url/filename safe" variant
-export function base64ToBase64Url(b64: string): string {
+/**
+ * Convert a standard base64-encoded string to a "url/filename safe" variant
+ * @param b64 base64-encoded string
+ */
+function base64ToBase64Url(b64: string): string {
   return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
@@ -31,7 +37,7 @@ function dec2hex(dec: number): string {
   return ("0" + dec.toString(16)).substr(-2);
 }
 
-export function getRandomString(length: number) {
+export function getRandomString(length: number): string {
   var a = new Uint8Array(Math.ceil(length / 2));
   crypto.getRandomValues(a);
   var str = Array.from(a, dec2hex).join("");
@@ -47,7 +53,7 @@ export function generateVerifier(prefix?: string): string {
   return encodeURIComponent(verifier).slice(0, MAX_VERIFIER_LENGTH);
 }
 
-export function computeChallenge(str: string): PromiseLike<any> {
+export function computeChallenge(str: string): PromiseLike<string> {
   var buffer = new TextEncoder().encode(str);
   return crypto.subtle.digest("SHA-256", buffer).then(function (arrayBuffer) {
     var hash = String.fromCharCode.apply(null, [

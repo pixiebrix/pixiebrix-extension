@@ -22,14 +22,14 @@ import { type PathSpec } from "@/bricks/readers/window";
 import { type JsonObject } from "type-fest";
 import { mapObject } from "@/utils/objectUtils";
 
-export async function checkRoute(expectedRoute: string): Promise<boolean> {
+async function checkRoute(expectedRoute: string): Promise<boolean> {
   const { route } = await withReadWindow({
     pathSpec: { route: "app.router?.lastRoute" },
   });
   return route === expectedRoute;
 }
 
-export class PipedriveReader extends ReaderABC {
+class PipedriveReader extends ReaderABC {
   private get ROOT_PATH() {
     return "app.router.currentView.model.attributes";
   }

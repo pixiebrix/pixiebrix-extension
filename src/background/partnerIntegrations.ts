@@ -229,7 +229,7 @@ export async function _refreshPartnerToken(): Promise<void> {
   }
 }
 
-export async function safeTokenRefresh(): Promise<void> {
+async function safeTokenRefresh(): Promise<void> {
   try {
     await _refreshPartnerToken();
   } catch (error) {

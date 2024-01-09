@@ -8,7 +8,7 @@ const ModLauncher = lazy(
     ),
 );
 
-export const STATIC_PANEL_BODY_MAP: Record<string, ReactNode> = {
+const STATIC_PANEL_BODY_MAP: Record<string, ReactNode> = {
   modLauncher: <ModLauncher />,
 };
 

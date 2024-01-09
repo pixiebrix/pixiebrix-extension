@@ -42,7 +42,7 @@ function reportReposition() {
   }
 }
 
-export function FloatingActions() {
+function FloatingActions() {
   const { isFloatingActionButtonEnabled } = useSelector(selectSettings);
 
   return (

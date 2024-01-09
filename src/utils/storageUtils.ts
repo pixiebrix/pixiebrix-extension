@@ -159,8 +159,6 @@ export async function setReduxStorage<T extends object>(
  * @param object the object to jsonify
  */
 // eslint-disable-next-line @typescript-eslint/ban-types -- Record breaks type inference at call-sites
-export function jsonifyObject<T extends object>(
-  object: T,
-): Record<string, string> {
+function jsonifyObject<T extends object>(object: T): Record<string, string> {
   return mapValues(object, (value) => JSON.stringify(value));
 }

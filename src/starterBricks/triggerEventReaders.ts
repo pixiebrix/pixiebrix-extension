@@ -88,7 +88,7 @@ export function pickEventProperties(nativeEvent: Event): JsonObject {
 /**
  * A reader "stub" for KeyboardEvent triggers
  */
-export class KeyboardEventReader extends ReaderABC {
+class KeyboardEventReader extends ReaderABC {
   constructor() {
     super(
       "@pixiebrix/event/keyboard",
@@ -149,7 +149,7 @@ export class KeyboardEventReader extends ReaderABC {
 /**
  * A reader "stub" for KeyboardEvent triggers
  */
-export class SelectionChangedReader extends ReaderABC {
+class SelectionChangedReader extends ReaderABC {
   constructor() {
     super(
       "@pixiebrix/event/selection",
@@ -186,7 +186,7 @@ export class SelectionChangedReader extends ReaderABC {
 /**
  * A reader "stub" for KeyboardEvent triggers
  */
-export class CustomEventReader extends ReaderABC {
+class CustomEventReader extends ReaderABC {
   constructor() {
     super(
       "@pixiebrix/event/custom",

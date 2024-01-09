@@ -333,7 +333,7 @@ export interface QuickBarProviderDefinition extends StarterBrickDefinition {
   defaultOptions?: QuickBarProviderDefaultOptions;
 }
 
-export class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderStarterBrickABC {
+class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderStarterBrickABC {
   private readonly _definition: QuickBarProviderDefinition;
 
   public readonly permissions: Permissions.Permissions;

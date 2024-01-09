@@ -177,7 +177,7 @@ export function detectShape(rowValues: RowValues): KnownShape {
 
 // Validate the shape wrt the provided rowValues. Could refactor the JSON Schema to perform the validation. There would
 // be 4 oneOf clauses, one for each shape.
-export function validateShape(shape: KnownShape, rowValues: RowValues) {
+function validateShape(shape: KnownShape, rowValues: RowValues) {
   switch (shape) {
     case "entries": {
       const entryKeys = new Set(["header", "value"]);

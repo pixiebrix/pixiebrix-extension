@@ -20,7 +20,6 @@ import {
   ComponentNotFoundError,
   ignoreNotFound,
 } from "@/pageScript/frameworks/errors";
-import { type RootInstanceVisitor } from "@/pageScript/frameworks/scanner";
 import {
   type ReadableComponentAdapter,
   traverse,
@@ -32,10 +31,6 @@ import { isNode } from "@/pageScript/frameworks/dom";
 // https://indepth.dev/posts/1008/inside-fiber-in-depth-overview-of-the-new-reconciliation-algorithm-in-react#memoizedprops
 // https://github.com/Venryx/mobx-devtools-advanced/blob/master/Docs/TreeTraversal.md
 // https://stackoverflow.com/questions/29321742/react-getting-a-component-from-a-dom-element-for-debugging
-
-interface RootInstance {
-  _reactRootContainer: unknown;
-}
 
 /**
  * Structure from:
@@ -127,19 +122,6 @@ function findReactComponent(node: Node, traverseUp = 0): Fiber {
   }
 
   return traverse(getComponentFiber, getComponentFiber(domFiber), traverseUp);
-}
-
-export class ReactRootVisitor implements RootInstanceVisitor<RootInstance> {
-  public rootInstances: RootInstance[] = [];
-
-  visit(node: Element | Node): boolean {
-    if ("_reactRootContainer" in node) {
-      this.rootInstances.push(node);
-      return false;
-    }
-
-    return true;
-  }
 }
 
 const adapter: ReadableComponentAdapter<Fiber> = {

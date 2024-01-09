@@ -32,7 +32,7 @@
  * @param [r=0] - Corner Radius. Keep this smaller than half of width or height.
  * @returns - Rounded rectangle overlay path data.
  */
-export function makeOverlayPath({
+function makeOverlayPath({
   width,
   height,
   x = 0,
@@ -135,7 +135,7 @@ function _getScrollParent(element: HTMLElement | null): HTMLElement | null {
  * @param {HTMLElement} scrollParent The scrollable parent of the target element
  * @param {HTMLElement} targetElement The element the opening will expose
  */
-export function positionModal(
+function positionModal(
   modalOverlayOpeningPadding: number,
   modalOverlayOpeningRadius: number,
   scrollParent: HTMLElement | null,

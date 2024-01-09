@@ -64,5 +64,4 @@ function useReinstall(): Reinstall {
   );
 }
 
-export { inferConfiguredModIntegrations, inferRecipeOptions };
 export default useReinstall;

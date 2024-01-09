@@ -344,7 +344,6 @@
     "./pageEditor/uiState/uiStateTypes.ts",
     "./pageScript/frameworks/dom.ts",
     "./pageScript/frameworks/errors.ts",
-    "./pageScript/frameworks/scanner.ts",
     "./pageScript/messenger/api.ts",
     "./pageScript/messenger/constants.ts",
     "./pageScript/messenger/receiver.ts",
