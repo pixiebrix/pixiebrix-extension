@@ -47,14 +47,7 @@ jest.mock("kbar", () => {
   };
 });
 
-jest.mock("@/utils/selectionController", () => ({
-  __esModule: true,
-  default: {
-    save: jest.fn(),
-    restore: jest.fn(),
-    get: jest.fn(),
-  },
-}));
+jest.mock("@/utils/selectionController");
 
 // TODO: fix tests so they properly handle shadow dom events
 jest.mock("react-shadow/emotion", () => ({
@@ -140,9 +133,7 @@ describe("QuickBarApp", () => {
 
   it("debounces action generation on typing", async () => {
     const user = userEvent.setup({ delay: null });
-    const generatorMock: ActionGenerator = jest
-      .fn()
-      .mockResolvedValue(undefined);
+    const generatorMock: ActionGenerator = jest.fn();
     quickBarRegistry.addGenerator(generatorMock, null);
 
     render(<QuickBarApp />);

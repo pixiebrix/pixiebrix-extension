@@ -199,7 +199,6 @@ describe("saving a Recipe Extension", () => {
     jest.mocked(useUpsertFormElementMock).mockReturnValue(createMock);
 
     const resetMock = jest.fn();
-    resetMock.mockResolvedValue(undefined);
     jest.mocked(useResetExtensionMock).mockReturnValue(resetMock);
 
     const createRecipeMock = jest.fn();

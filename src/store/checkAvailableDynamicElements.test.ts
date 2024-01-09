@@ -31,13 +31,9 @@ import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
-jest.mock("@/contentScript/messenger/api", () => ({
-  checkAvailable: jest.fn(),
-}));
+jest.mock("@/contentScript/messenger/api");
 
-jest.mock("@/pageEditor/utils", () => ({
-  getCurrentURL: jest.fn(),
-}));
+jest.mock("@/pageEditor/utils");
 
 const { reducer: extensionsReducer } = extensionsSlice;
 

@@ -36,10 +36,7 @@ import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSaniti
 
 setContext("devToolsPage");
 
-jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter");
 
 const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
   useSanitizedIntegrationConfigFormikAdapter,

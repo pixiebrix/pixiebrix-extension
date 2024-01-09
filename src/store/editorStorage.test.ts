@@ -333,7 +333,6 @@ describe("dynamicElementStorage when no state is persisted", () => {
   });
 
   test("getEditorState returns undefined when readReduxStorage returns undefined", async () => {
-    readReduxStorageMock.mockResolvedValue(undefined);
     const state = await getEditorState();
     expect(state).toBeUndefined();
   });
@@ -347,12 +346,10 @@ describe("dynamicElementStorage when no state is persisted", () => {
   );
 
   test("removeDynamicElementsForRecipe doesn't crash when readReduxStorage returns undefined", async () => {
-    readReduxStorageMock.mockResolvedValue(undefined);
     await removeDynamicElementsForRecipe(validateRegistryId("@test/recipe"));
   });
 
   test("removeDynamicElements doesn't crash when readReduxStorage returns undefined", async () => {
-    readReduxStorageMock.mockResolvedValue(undefined);
     await removeDynamicElements([uuidSequence(0), uuidSequence(1)]);
   });
 });

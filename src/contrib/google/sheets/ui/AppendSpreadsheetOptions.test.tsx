@@ -55,14 +55,9 @@ function newId(): UUID {
   return uuidSequence(idSequence++);
 }
 
+jest.mock("@/hooks/auth");
 const servicesLocateMock = jest.mocked(services.locate);
-
-jest.mock("@/hooks/auth", () => ({
-  useAuthOptions: jest.fn(),
-}));
-
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
-
 const isLoggedInMock = jest.mocked(sheets.isLoggedIn);
 const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
 const getSpreadsheetMock = jest.mocked(sheets.getSpreadsheet);

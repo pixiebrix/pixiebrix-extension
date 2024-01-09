@@ -38,13 +38,9 @@ import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFa
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 
-jest.mock("@/contentScript/messenger/api", () => ({
-  getInstalledExtensionPoints: jest.fn(),
-}));
+jest.mock("@/contentScript/messenger/api");
 
-jest.mock("@/pageEditor/utils", () => ({
-  getCurrentURL: jest.fn(),
-}));
+jest.mock("@/pageEditor/utils");
 
 const { actions: optionsActions, reducer: extensionsReducer } = extensionsSlice;
 

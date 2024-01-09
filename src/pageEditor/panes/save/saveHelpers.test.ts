@@ -25,7 +25,6 @@ import {
 } from "@/pageEditor/panes/save/saveHelpers";
 import { validateRegistryId, validateSemVerString } from "@/types/helpers";
 import menuItemExtensionAdapter from "@/pageEditor/starterBricks/menuItem";
-import { type UnknownObject } from "@/types/objectTypes";
 import {
   internalStarterBrickMetaFactory,
   lookupExtensionPoint,
@@ -71,8 +70,7 @@ import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 jest.mock("@/background/contextMenus");
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Wrong
-  ...(jest.requireActual("@/pageEditor/starterBricks/base") as UnknownObject),
+  ...jest.requireActual("@/pageEditor/starterBricks/base"),
   lookupExtensionPoint: jest.fn(),
 }));
 
