@@ -28,7 +28,10 @@ export function testMatchPatterns(
 ): boolean {
   for (const pattern of patterns) {
     try {
-      if (patternToRegex(pattern).test(url)) {
+      if (
+        (pattern === "<all_urls>" && url === "about:srcdoc") ||
+        patternToRegex(pattern).test(url)
+      ) {
         return true;
       }
     } catch {
