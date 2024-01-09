@@ -33,6 +33,11 @@
       "matches": ["https://*/*"],
       "js": ["loadActivationEnhancements.js"],
       "run_at": "document_end"
+    },
+    {
+      "matches": ["https://*.pixiebrix.com/*"],
+      "js": ["setExtensionIdInApp.js"],
+      "run_at": "document_end"
     }
   ],
   "sandbox": {

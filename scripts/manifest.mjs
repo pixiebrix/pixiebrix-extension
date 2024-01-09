@@ -84,6 +84,22 @@ function updateManifestToV3(manifestV2) {
   return manifest;
 }
 
+function addInternalUrlsToSetExtensionIdInAppContentScript(manifest, internal) {
+  const setExtensionIdInAppIndex = manifest.content_scripts.findIndex((x) =>
+    (x.js ?? []).includes("setExtensionIdInApp.js"),
+  );
+
+  if (setExtensionIdInAppIndex === -1) {
+    throw new Error("setExtensionIdInApp.js not found in content_scripts");
+  }
+
+  manifest.content_scripts[setExtensionIdInAppIndex].matches =
+    excludeDuplicatePatterns([
+      ...manifest.content_scripts[setExtensionIdInAppIndex].matches,
+      ...internal,
+    ]);
+}
+
 /**
  * @param {chrome.runtime.ManifestV2} manifestV2
  * @returns chrome.runtime.Manifest
@@ -132,6 +148,8 @@ function customizeManifest(manifestV2, options = {}) {
   manifest.externally_connectable.matches = excludeDuplicatePatterns(
     externallyConnectable,
   );
+
+  addInternalUrlsToSetExtensionIdInAppContentScript(manifest, internal);
 
   if (manifestVersion === 3) {
     return updateManifestToV3(manifest);
