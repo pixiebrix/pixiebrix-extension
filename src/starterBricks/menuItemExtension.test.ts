@@ -39,9 +39,7 @@ import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
-jest.mock("@/runtime/reducePipeline", () => ({
-  reduceExtensionPipeline: jest.fn(),
-}));
+jest.mock("@/runtime/reducePipeline");
 
 const reduceExtensionPipelineMock = jest.mocked(reduceExtensionPipeline);
 

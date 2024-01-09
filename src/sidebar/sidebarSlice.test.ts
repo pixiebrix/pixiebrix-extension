@@ -31,16 +31,8 @@ import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { type Draft } from "immer";
 
 jest.mock("@/sidebar/messenger/api");
-
-jest.mock("@/contentScript/messenger/api", () => ({
-  closeTemporaryPanel: jest.fn(),
-  cancelTemporaryPanel: jest.fn(),
-  cancelForm: jest.fn(),
-}));
-
-jest.mock("@/bricks/transformers/temporaryInfo/messenger/api", () => ({
-  updateTemporaryPanel: jest.fn(),
-}));
+jest.mock("@/contentScript/messenger/api");
+jest.mock("@/bricks/transformers/temporaryInfo/messenger/api");
 
 const cancelTemporaryPanelMock = jest.mocked(cancelTemporaryPanel);
 const closeTemporaryPanelMock = jest.mocked(closeTemporaryPanel);
