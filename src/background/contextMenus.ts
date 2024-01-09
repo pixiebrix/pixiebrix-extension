@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import pTimeout from "p-timeout";
 import { type Menus, type Tabs } from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
 import reportError from "@/telemetry/reportError";
@@ -34,7 +33,11 @@ import {
   type ModComponentBase,
   type ResolvedModComponent,
 } from "@/types/modComponentTypes";
-import { allSettledValues, memoizeUntilSettled } from "@/utils/promiseUtils";
+import {
+  allSettledValues,
+  logPromiseDuration,
+  memoizeUntilSettled,
+} from "@/utils/promiseUtils";
 
 const MENU_PREFIX = "pixiebrix-";
 
@@ -74,15 +77,15 @@ async function dispatchMenu(
     throw new TypeError(`Not a PixieBrix menu item: ${info.menuItemId}`);
   }
 
-  console.time("ensureContentScript");
-
   // Browser will add at document_idle. But ensure it's ready before continuing
-  await pTimeout(ensureContentScript(target), {
-    milliseconds: CONTEXT_SCRIPT_INSTALL_MS,
-    message: `contentScript for context menu handler not ready in ${CONTEXT_SCRIPT_INSTALL_MS}ms`,
-  });
-
-  console.timeEnd("ensureContentScript");
+  await logPromiseDuration(
+    "ensureContentScript",
+    ensureContentScript(
+      target,
+      CONTEXT_SCRIPT_INSTALL_MS,
+      `contentScript for context menu handler not ready in ${CONTEXT_SCRIPT_INSTALL_MS}ms`,
+    ),
+  );
 
   try {
     await handleMenuAction(target, {

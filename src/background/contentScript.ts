@@ -18,7 +18,7 @@
 import pDefer, { type DeferredPromise } from "p-defer";
 import { isRemoteProcedureCallRequest } from "@/utils/legacyMessengerUtils";
 import { expectContext } from "@/utils/expectContext";
-import pTimeout from "p-timeout";
+import { TimeoutError } from "p-timeout";
 import type { Target } from "@/types/messengerTypes";
 import {
   ENSURE_CONTENT_SCRIPT_READY,
@@ -107,30 +107,21 @@ export async function onReadyNotification(
 }
 
 /**
- * Ensures that the contentScript is ready on the specified page, regardless of its status.
- * - If it's not expected to be injected automatically, it also injects it into the page.
- * - If it's been injected, it will resolve once the content script is ready.
+ * Ensures that the contentScript is ready on the specified page
  */
 export const ensureContentScript = memoizeUntilSettled(
-  async (target: Target, timeoutMillis = 4000): Promise<void> => {
+  async (
+    target: Target,
+    timeoutMillis = 4000,
+    timeoutError = `contentScript not ready in ${timeoutMillis}ms`,
+  ): Promise<void> => {
     expectContext("background");
+    const timeout = AbortSignal.timeout(timeoutMillis);
+    debug("requested", target);
 
-    const controller = new AbortController();
-    const { signal } = controller;
-
-    try {
-      debug("requested", target);
-
-      // TODO: Simplify after https://github.com/sindresorhus/p-timeout/issues/31
-      await pTimeout(ensureContentScriptWithoutTimeout(target, signal), {
-        signal,
-        milliseconds: timeoutMillis,
-        message: `contentScript not ready in ${timeoutMillis}ms`,
-      });
-
-      debug("ready", target);
-    } finally {
-      controller.abort();
+    await ensureContentScriptWithoutTimeout(target, timeout);
+    if (timeout.aborted) {
+      throw new TimeoutError(timeoutError);
     }
   },
   // Stringify because Target is an object
