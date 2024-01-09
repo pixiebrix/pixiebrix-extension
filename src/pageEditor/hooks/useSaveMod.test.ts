@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { renderHook } from "@/pageEditor/testHelpers";
-import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
+import useSaveMod, { isModEditable } from "@/pageEditor/hooks/useSaveMod";
 import { validateRegistryId } from "@/types/helpers";
 import { act } from "@testing-library/react-hooks";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -28,6 +28,7 @@ import { loadBrickYaml } from "@/runtime/brickYaml";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import type { components } from "@/types/swagger";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import type { EditablePackageMetadata } from "@/types/contract";
 
 const modId = validateRegistryId("@test/mod");
 
@@ -40,7 +41,7 @@ jest.mock("@/components/ConfirmationModal", () => ({
   }),
 }));
 
-describe("useSaveRecipe", () => {
+describe("useSaveMod", () => {
   it("saves with no dirty changes", async () => {
     appApiMock.reset();
 
@@ -68,7 +69,7 @@ describe("useSaveRecipe", () => {
 
     appApiMock.onPut(`/api/bricks/${editablePackage.id}/`).reply(200, {});
 
-    const { result, waitForEffect } = renderHook(() => useSaveRecipe(), {});
+    const { result, waitForEffect } = renderHook(() => useSaveMod(), {});
 
     await waitForEffect();
 
@@ -121,7 +122,7 @@ describe("useSaveRecipe", () => {
       .onPut(`/api/bricks/${editablePackage.id}/`)
       .reply(200, {});
 
-    const { result, waitForEffect } = renderHook(() => useSaveRecipe(), {});
+    const { result, waitForEffect } = renderHook(() => useSaveMod(), {});
 
     await waitForEffect();
 
@@ -180,7 +181,7 @@ describe("useSaveRecipe", () => {
       .onPut(`/api/bricks/${editablePackage.id}/`)
       .reply(200, {});
 
-    const { result, waitForEffect } = renderHook(() => useSaveRecipe(), {
+    const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(editorSlice.actions.selectRecipeId(modId));
         dispatch(
@@ -225,5 +226,46 @@ describe("useSaveRecipe", () => {
         "ui:order": ["test", "*"],
       },
     });
+  });
+});
+
+describe("isModEditable", () => {
+  test("returns true if mod is in editable packages", () => {
+    const mod = defaultModDefinitionFactory();
+    const editablePackages: EditablePackageMetadata[] = [
+      {
+        id: null,
+        name: validateRegistryId("test/mod"),
+      },
+      {
+        id: null,
+        name: mod.metadata.id,
+      },
+    ] as EditablePackageMetadata[];
+
+    expect(isModEditable(editablePackages, mod)).toBe(true);
+  });
+
+  test("returns false if mod is not in editable packages", () => {
+    const mod = defaultModDefinitionFactory();
+    const editablePackages: EditablePackageMetadata[] = [
+      {
+        id: null,
+        name: validateRegistryId("test/mod"),
+      },
+    ] as EditablePackageMetadata[];
+
+    expect(isModEditable(editablePackages, mod)).toBe(false);
+  });
+
+  test("returns false if mod is null", () => {
+    const editablePackages: EditablePackageMetadata[] = [
+      {
+        id: null,
+        name: validateRegistryId("test/mod"),
+      },
+    ] as EditablePackageMetadata[];
+
+    expect(isModEditable(editablePackages, null)).toBe(false);
   });
 });
