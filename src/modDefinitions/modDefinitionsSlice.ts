@@ -112,7 +112,12 @@ const loadModDefinitionsFromCache = createAsyncThunk<
 
   try {
     dispatch(modDefinitionsSlice.actions.startFetchingFromCache());
-    const modDefinitions = await modDefinitionRegistry.all();
+    const registryModDefinitions = await modDefinitionRegistry.all();
+    // Remove the top level registry item id to satisfy types properly
+    const modDefinitions: ModDefinition[] = registryModDefinitions.map((x) => {
+      const { id, ...rest } = x;
+      return rest;
+    });
     dispatch(
       modDefinitionsSlice.actions.setModDefinitionsFromCache(modDefinitions),
     );
@@ -133,7 +138,12 @@ export const syncRemoteModDefinitions = createAsyncThunk<
   try {
     dispatch(modDefinitionsSlice.actions.startFetchingFromRemote());
     await syncRemotePackages();
-    const modDefinitions = await modDefinitionRegistry.all();
+    const registryModDefinitions = await modDefinitionRegistry.all();
+    // Remove the top level registry item id to satisfy types properly
+    const modDefinitions: ModDefinition[] = registryModDefinitions.map((x) => {
+      const { id, ...rest } = x;
+      return rest;
+    });
     dispatch(modDefinitionsSlice.actions.setModDefinitions(modDefinitions));
   } catch (error) {
     // Serialize because stored in Redux

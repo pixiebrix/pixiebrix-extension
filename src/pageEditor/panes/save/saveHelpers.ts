@@ -388,7 +388,7 @@ const emptyRecipe: UnsavedModDefinition = {
  * @param cleanRecipeExtensions the recipe's unchanged, installed extensions
  * @param dirtyRecipeElements the recipe's extension form states (i.e., submitted via Formik)
  * @param options the recipe's options form state, or nullish if there are no dirty options
- * @param metadata the recipe's metadata form state, or nullish if there are no dirty options
+ * @param metadata the recipe's metadata form state, or nullish if there is no dirty mod metadata
  */
 export function buildRecipe({
   sourceRecipe,
