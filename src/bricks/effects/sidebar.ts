@@ -66,7 +66,7 @@ export class ShowSidebar extends EffectABC {
     // not the extensionId of the extension toggling the sidebar
     await showMySidePanel();
     void logPromiseDuration(
-      "ShowSidebar:showSidebar",
+      "ShowSidebar:updateSidebar",
       updateSidebar({
         force: forcePanel,
         panelHeading,
