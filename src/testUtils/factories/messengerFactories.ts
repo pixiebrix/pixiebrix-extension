@@ -15,34 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EffectABC } from "@/types/bricks/effectTypes";
-import { propertiesToSchema } from "@/validators/generic";
+import { define } from "cooky-cutter";
+import { type MessengerMeta, type Sender } from "webext-messenger";
 
-class SetToolbarBadge extends EffectABC {
-  constructor() {
-    super(
-      "@pixiebrix/set-toolbar-badge",
-      "Set Toolbar Badge",
-      // TODO: only about 4 characters can fit in the badge space
-      "Sets a badge on the PixieBrix toolbar icon with the specified text. Will replace any existing badge.",
-    );
-  }
-
-  inputSchema = propertiesToSchema(
+export const messengerMetaFactory = define<MessengerMeta>({
+  trace: [
     {
-      text: {
-        title: "Text",
-        type: "string",
-        description:
-          "The text to display in the toolbar badge. Omit to remove the badge.",
+      tab: {
+        // TODO: make me dynamic
+        id: 42,
       },
-    },
-    [],
-  );
-
-  async effect() {
-    // TODO
-  }
-}
-
-export default SetToolbarBadge;
+    } as Sender,
+  ],
+});

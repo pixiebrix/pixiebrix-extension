@@ -16,17 +16,18 @@
  */
 
 import { browserAction } from "@/mv3/api";
-import { type MessengerMeta } from "webext-messenger";
+import { setToolbarBadge } from "@/background/toolbarBadge";
+import { messengerMetaFactory } from "@/testUtils/factories/messengerFactories";
 
-export function setToolbarBadge(
-  this: MessengerMeta,
-  text: string | null,
-): void {
-  const tabId = this.trace?.[0].tab.id;
+describe("setToolbarBadge", () => {
+  it("calls browserAction.setBadgeText with given text", () => {
+    const expectedText = "test";
+    const messengerMeta = messengerMetaFactory();
+    setToolbarBadge.call(messengerMeta, expectedText);
 
-  // TODO: Set the badge color
-  void browserAction.setBadgeText({
-    text,
-    tabId,
+    expect(browserAction.setBadgeText).toHaveBeenCalledWith({
+      text: expectedText,
+      tabId: messengerMeta.trace?.[0].tab.id,
+    });
   });
-}
+});
