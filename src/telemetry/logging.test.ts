@@ -42,9 +42,7 @@ jest.mock("@/auth/authUtils", () => ({
 
 const flagOnMock = jest.mocked(flagOn);
 
-jest.mock("@/telemetry/initRollbar", () => ({
-  getRollbar: jest.fn(),
-}));
+jest.mock("@/telemetry/initRollbar");
 
 const rollbarErrorMock = jest.fn();
 jest.mocked(getRollbar).mockResolvedValue({

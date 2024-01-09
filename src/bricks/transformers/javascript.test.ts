@@ -20,9 +20,7 @@ import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
 import { runUserJs } from "@/sandbox/messenger/api";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
-jest.mock("@/sandbox/messenger/api", () => ({
-  runUserJs: jest.fn(),
-}));
+jest.mock("@/sandbox/messenger/api");
 
 const runUserJsMock = jest.mocked(runUserJs);
 

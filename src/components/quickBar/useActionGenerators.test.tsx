@@ -22,12 +22,7 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { KBarProvider } from "kbar";
 
-jest.mock("@/components/quickBar/quickBarRegistry", () => ({
-  __esModule: true,
-  default: {
-    generateActions: jest.fn(),
-  },
-}));
+jest.mock("@/components/quickBar/quickBarRegistry");
 
 describe("useActionGenerators", () => {
   it("generates once on mount", async () => {

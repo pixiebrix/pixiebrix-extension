@@ -38,9 +38,7 @@ import { act, screen } from "@testing-library/react";
 
 import { toExpression } from "@/utils/expressionUtils";
 
-jest.mock("@/hooks/auth", () => ({
-  useAuthOptions: jest.fn(),
-}));
+jest.mock("@/hooks/auth");
 
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
 

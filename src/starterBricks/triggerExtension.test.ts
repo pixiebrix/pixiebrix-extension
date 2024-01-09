@@ -56,16 +56,11 @@ jest.mock("@/errors/contextInvalidated", () => {
   const actual = jest.requireActual("@/errors/contextInvalidated");
   return {
     ...actual,
-    notifyContextInvalidated: jest.fn().mockResolvedValue(undefined),
+    notifyContextInvalidated: jest.fn(),
   };
 });
 
-jest.mock("@/utils/notify", () => ({
-  __esModule: true,
-  default: {
-    error: jest.fn().mockResolvedValue(undefined),
-  },
-}));
+jest.mock("@/utils/notify");
 
 const reportErrorMock = jest.mocked(reportError);
 const notifyErrorMock = jest.mocked(notify.error);

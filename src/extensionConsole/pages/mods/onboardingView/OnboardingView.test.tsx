@@ -28,10 +28,8 @@ import { renderHook } from "@/extensionConsole/testHelpers";
 
 import { organizationStateFactory } from "@/testUtils/factories/authFactories";
 
-jest.mock("@/hooks/useFlags", () => jest.fn());
-jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
-  useAllModDefinitions: jest.fn(),
-}));
+jest.mock("@/hooks/useFlags");
+jest.mock("@/modDefinitions/modDefinitionHooks");
 
 const mockOnboarding = ({
   hasOrganization = false,

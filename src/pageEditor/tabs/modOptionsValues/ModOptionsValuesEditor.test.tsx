@@ -40,10 +40,7 @@ import { validateRegistryId } from "@/types/helpers";
 import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
 import { sheets } from "@/background/messenger/api";
 
-jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
-  useOptionalModDefinition: jest.fn(),
-  useAllModDefinitions: jest.fn(),
-}));
+jest.mock("@/modDefinitions/modDefinitionHooks");
 
 jest.mock("@/hooks/useFlags", () => ({
   __esModule: true,
@@ -52,10 +49,7 @@ jest.mock("@/hooks/useFlags", () => ({
   }),
 }));
 
-jest.mock("@/contrib/google/sheets/core/useGoogleAccount", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+jest.mock("@/contrib/google/sheets/core/useGoogleAccount");
 
 const useGoogleAccountMock = jest.mocked(useGoogleAccount);
 

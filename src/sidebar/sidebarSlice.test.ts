@@ -30,20 +30,9 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { type Draft } from "immer";
 
-jest.mock("@/sidebar/messenger/api", () => ({
-  // :shrug: imported via testUtils/factories
-  renderPanels: jest.fn(),
-}));
-
-jest.mock("@/contentScript/messenger/api", () => ({
-  closeTemporaryPanel: jest.fn().mockResolvedValue(undefined),
-  cancelTemporaryPanel: jest.fn().mockResolvedValue(undefined),
-  cancelForm: jest.fn().mockResolvedValue(undefined),
-}));
-
-jest.mock("@/bricks/transformers/temporaryInfo/messenger/api", () => ({
-  updateTemporaryPanel: jest.fn().mockResolvedValue(undefined),
-}));
+jest.mock("@/sidebar/messenger/api");
+jest.mock("@/contentScript/messenger/api");
+jest.mock("@/bricks/transformers/temporaryInfo/messenger/api");
 
 const cancelTemporaryPanelMock = jest.mocked(cancelTemporaryPanel);
 const closeTemporaryPanelMock = jest.mocked(closeTemporaryPanel);

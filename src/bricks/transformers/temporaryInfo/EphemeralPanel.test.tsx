@@ -29,18 +29,9 @@ import {
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import userEvent from "@testing-library/user-event";
 
-jest.mock(
-  "@/bricks/transformers/temporaryInfo/useTemporaryPanelDefinition",
-  () => ({
-    __esModule: true,
-    default: jest.fn(),
-  }),
-);
+jest.mock("@/bricks/transformers/temporaryInfo/useTemporaryPanelDefinition");
 
-jest.mock("@/contentScript/messenger/api", () => ({
-  cancelTemporaryPanel: jest.fn(),
-  resolveTemporaryPanel: jest.fn(),
-}));
+jest.mock("@/contentScript/messenger/api");
 
 jest.mock("@/sidebar/PanelBody", () => ({
   __esModule: true,

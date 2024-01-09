@@ -41,9 +41,7 @@ jest.mock("@/pageEditor/utils", () => {
 
 jest.mock("@/pageEditor/hooks/useCurrentUrl");
 
-jest.mock("@/contentScript/messenger/api", () => ({
-  getInstalledExtensionPoints: jest.fn(),
-}));
+jest.mock("@/contentScript/messenger/api");
 
 describe("error alerting in the UI", () => {
   test("shows error when checkAvailableDynamicElements fails", async () => {

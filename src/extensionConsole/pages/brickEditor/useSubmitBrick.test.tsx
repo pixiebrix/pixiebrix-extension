@@ -40,18 +40,9 @@ import notify from "@/utils/notify";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { uuidv4 } from "@/types/helpers";
 
-jest.mock("@/utils/notify", () => ({
-  __esModule: true,
-  default: {
-    error: jest.fn(),
-  },
-}));
+jest.mock("@/utils/notify");
 
-jest.mock("@/extensionConsole/pages/mods/utils/useReinstall", () => ({
-  __esModule: true,
-  useReinstall: jest.fn(),
-  default: jest.fn(),
-}));
+jest.mock("@/extensionConsole/pages/mods/utils/useReinstall");
 
 const errorMock = jest.mocked(notify.error);
 

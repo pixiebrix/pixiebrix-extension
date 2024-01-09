@@ -47,7 +47,7 @@ const integrationDefinitionMap = new Map([
 
 jest.mock("@/auth/token", () => ({
   readPartnerAuthData: jest.fn().mockResolvedValue({}),
-  setPartnerAuth: jest.fn().mockResolvedValue(undefined),
+  setPartnerAuth: jest.fn(),
 }));
 
 jest.mock("@/integrations/registry", () => {
@@ -60,9 +60,7 @@ jest.mock("@/integrations/registry", () => {
   };
 });
 
-jest.mock("@/background/auth/authStorage", () => ({
-  setCachedAuthData: jest.fn().mockResolvedValue(undefined),
-}));
+jest.mock("@/background/auth/authStorage");
 
 // Module mocked via __mocks__/@/background/messenger/api
 jest.mocked(registry.find).mockImplementation(async (id: RegistryId) => {

@@ -32,13 +32,7 @@ import type { EditablePackageMetadata } from "@/types/contract";
 
 const modId = validateRegistryId("@test/mod");
 
-jest.mock("@/utils/notify", () => ({
-  __esModule: true,
-  default: {
-    error: jest.fn(),
-    success: jest.fn(),
-  },
-}));
+jest.mock("@/utils/notify");
 
 jest.mock("@/components/ConfirmationModal", () => ({
   __esModule: true,

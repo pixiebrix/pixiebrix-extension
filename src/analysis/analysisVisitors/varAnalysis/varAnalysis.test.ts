@@ -100,12 +100,7 @@ jest.mock("@/bricks/registry", () => ({
   },
 }));
 
-jest.mock("@/modDefinitions/registry", () => ({
-  __esModule: true,
-  default: {
-    lookup: jest.fn(),
-  },
-}));
+jest.mock("@/modDefinitions/registry");
 
 describe("Collecting available vars", () => {
   function mockBlueprintWithOptions(optionsSchema: any) {

@@ -48,10 +48,7 @@ const activateModCallbackMock =
   // eslint-disable-next-line no-restricted-syntax -- TODO
   jest.fn() as jest.MockedFunction<ActivateRecipeFormCallback>;
 
-jest.mock("@/activation/useActivateRecipe.ts", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+jest.mock("@/activation/useActivateRecipe.ts");
 
 const activateRecipeHookMock = jest.mocked(useActivateRecipe);
 

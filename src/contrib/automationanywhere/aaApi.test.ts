@@ -26,9 +26,7 @@ import {
 
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 
-jest.mock("@/background/messenger/api", () => ({
-  performConfiguredRequestInBackground: jest.fn(),
-}));
+jest.mock("@/background/messenger/api");
 
 const performConfiguredRequestInBackgroundMock = jest.mocked(
   performConfiguredRequestInBackground,

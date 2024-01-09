@@ -21,10 +21,7 @@ import { render, screen } from "@/pageEditor/testHelpers";
 import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
 import { waitFor } from "@testing-library/react";
 
-jest.mock("@/pageEditor/hooks/useCurrentUrl", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+jest.mock("@/pageEditor/hooks/useCurrentUrl");
 
 describe("PermissionsPane", () => {
   test("it renders", () => {
