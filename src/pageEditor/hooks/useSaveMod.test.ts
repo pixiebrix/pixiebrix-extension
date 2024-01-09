@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { renderHook } from "@/pageEditor/testHelpers";
-import useSaveRecipe, { isModEditable } from "@/pageEditor/hooks/useSaveRecipe";
+import useSaveMod, { isModEditable } from "@/pageEditor/hooks/useSaveMod";
 import { validateRegistryId } from "@/types/helpers";
 import { act } from "@testing-library/react-hooks";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -47,7 +47,7 @@ jest.mock("@/components/ConfirmationModal", () => ({
   }),
 }));
 
-describe("useSaveRecipe", () => {
+describe("useSaveMod", () => {
   it("saves with no dirty changes", async () => {
     appApiMock.reset();
 
@@ -75,7 +75,7 @@ describe("useSaveRecipe", () => {
 
     appApiMock.onPut(`/api/bricks/${editablePackage.id}/`).reply(200, {});
 
-    const { result, waitForEffect } = renderHook(() => useSaveRecipe(), {});
+    const { result, waitForEffect } = renderHook(() => useSaveMod(), {});
 
     await waitForEffect();
 
@@ -128,7 +128,7 @@ describe("useSaveRecipe", () => {
       .onPut(`/api/bricks/${editablePackage.id}/`)
       .reply(200, {});
 
-    const { result, waitForEffect } = renderHook(() => useSaveRecipe(), {});
+    const { result, waitForEffect } = renderHook(() => useSaveMod(), {});
 
     await waitForEffect();
 
@@ -187,7 +187,7 @@ describe("useSaveRecipe", () => {
       .onPut(`/api/bricks/${editablePackage.id}/`)
       .reply(200, {});
 
-    const { result, waitForEffect } = renderHook(() => useSaveRecipe(), {
+    const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(editorSlice.actions.selectRecipeId(modId));
         dispatch(

@@ -63,7 +63,7 @@ type ModSaver = {
   isSaving: boolean;
 };
 
-function useSaveRecipe(): ModSaver {
+function useSaveMod(): ModSaver {
   const dispatch = useDispatch();
   const upsertModComponentFormState = useUpsertModComponentFormState();
   const {
@@ -244,4 +244,4 @@ function useSaveRecipe(): ModSaver {
   };
 }
 
-export default useSaveRecipe;
+export default useSaveMod;

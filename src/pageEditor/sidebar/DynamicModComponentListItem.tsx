@@ -52,7 +52,7 @@ import {
   DELETE_STANDALONE_MOD_COMPONENT_MODAL_PROPS,
   DELETE_STARTER_BRICK_MODAL_PROPS,
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
-import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
+import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import { selectIsModComponentSavedOnCloud } from "@/store/extensionsSelectors";
 
 type DynamicModComponentListItemProps = {
@@ -102,7 +102,7 @@ const DynamicModComponentListItem: React.FunctionComponent<
     isSaving: isSavingStandaloneModComponent,
   } = useSaveStandaloneModComponent();
   const resetExtension = useResetExtension();
-  const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
+  const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveMod();
 
   const deleteModComponent = async () =>
     removeModComponentFromStorage({
