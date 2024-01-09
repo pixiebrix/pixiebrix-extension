@@ -29,6 +29,8 @@ export function testMatchPatterns(
   for (const pattern of patterns) {
     try {
       if (
+        // <all_urls> doesn't officially include about:srcdoc, but it works in some cases
+        // TODO: Maybe remove after https://github.com/fregante/webext-patterns/issues/13
         (pattern === "<all_urls>" && url === "about:srcdoc") ||
         patternToRegex(pattern).test(url)
       ) {
