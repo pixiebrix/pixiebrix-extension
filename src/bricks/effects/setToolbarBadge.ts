@@ -27,7 +27,6 @@ class SetToolbarBadge extends EffectABC {
     super(
       "@pixiebrix/set-toolbar-badge",
       "Set Toolbar Badge",
-      // TODO: only about 4 characters can fit in the badge space
       "Sets a badge on the PixieBrix toolbar icon with the specified text. Will replace any existing badge.",
     );
   }
