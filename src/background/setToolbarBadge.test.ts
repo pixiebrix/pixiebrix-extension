@@ -23,10 +23,10 @@ import {
 import { messengerMetaFactory } from "@/testUtils/factories/messengerFactories";
 
 describe("setToolbarBadge", () => {
-  it("calls browserAction.setBadgeText with given text", () => {
+  it("calls browserAction.setBadgeText with given text", async () => {
     const expectedText = "test";
     const messengerMeta = messengerMetaFactory();
-    setToolbarBadge.call(messengerMeta, expectedText);
+    await setToolbarBadge.call(messengerMeta, expectedText);
 
     expect(browserAction.setBadgeText).toHaveBeenCalledWith({
       text: expectedText,

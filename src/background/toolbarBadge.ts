@@ -18,22 +18,22 @@
 import { browserAction } from "@/mv3/api";
 import { type MessengerMeta } from "webext-messenger";
 
-export const DEFAULT_BADGE_COLOR = "red";
+export const DEFAULT_BADGE_COLOR = "#CB2431";
 
-export function setToolbarBadge(
+export async function setToolbarBadge(
   this: MessengerMeta,
   text: string | null,
-): void {
+): Promise<void> {
   const tabId = this?.trace?.[0].tab.id;
 
-  void browserAction.setBadgeText({
+  await browserAction.setBadgeText({
     text,
     tabId,
   });
 
   // TODO: setBadgeTextColor is not supported in MV2
 
-  void browserAction.setBadgeBackgroundColor({
+  await browserAction.setBadgeBackgroundColor({
     color: DEFAULT_BADGE_COLOR,
     tabId,
   });
