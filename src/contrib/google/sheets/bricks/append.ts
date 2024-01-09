@@ -129,11 +129,11 @@ function makeRowCells(headerRow: string[], rowEntries: Entry[]): CellValue[] {
     const rowValue = rowEntries.find(
       (x) => normalizeHeader(x.header) === normalizedHeader,
     );
+    // The Sheets API is flexible enough to handle empty columns itself, so we
+    // don't need to manually add empty/blank cells to our appending row data
     if (rowValue) {
       matched.add(rowValue.header);
       row.push(rowValue.value);
-    } else {
-      row.push(null);
     }
   }
 
