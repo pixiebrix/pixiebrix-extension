@@ -113,7 +113,6 @@ export const initialState: EditorState = {
   visibleModalKey: null,
   keepLocalCopyOnCreateRecipe: false,
   deletedElementsByRecipeId: {},
-  newRecipeIds: [],
   availableInstalledIds: [],
   isPendingInstalledExtensions: false,
   availableDynamicIds: [],

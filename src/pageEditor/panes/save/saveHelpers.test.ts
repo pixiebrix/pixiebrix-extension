@@ -16,10 +16,9 @@
  */
 
 import {
-  buildRecipe,
+  buildNewMod,
   findMaxIntegrationDependencyApiVersion,
   generateScopeBrickId,
-  isRecipeEditable,
   replaceRecipeExtension,
   selectExtensionPointIntegrations,
 } from "@/pageEditor/panes/save/saveHelpers";
@@ -52,7 +51,6 @@ import {
   type ModComponentBase,
   type UnresolvedModComponent,
 } from "@/types/modComponentTypes";
-import { type EditablePackageMetadata } from "@/types/contract";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   defaultModDefinitionFactory,
@@ -549,47 +547,6 @@ describe("blueprint options", () => {
   });
 });
 
-describe("isRecipeEditable", () => {
-  test("returns true if recipe is in editable packages", () => {
-    const recipe = defaultModDefinitionFactory();
-    const editablePackages: EditablePackageMetadata[] = [
-      {
-        id: null,
-        name: validateRegistryId("test/recipe"),
-      },
-      {
-        id: null,
-        name: recipe.metadata.id,
-      },
-    ] as EditablePackageMetadata[];
-
-    expect(isRecipeEditable(editablePackages, recipe)).toBe(true);
-  });
-
-  test("returns false if recipe is not in editable packages", () => {
-    const recipe = defaultModDefinitionFactory();
-    const editablePackages: EditablePackageMetadata[] = [
-      {
-        id: null,
-        name: validateRegistryId("test/recipe"),
-      },
-    ] as EditablePackageMetadata[];
-
-    expect(isRecipeEditable(editablePackages, recipe)).toBe(false);
-  });
-
-  test("returns false if recipe is null", () => {
-    const editablePackages: EditablePackageMetadata[] = [
-      {
-        id: null,
-        name: validateRegistryId("test/recipe"),
-      },
-    ] as EditablePackageMetadata[];
-
-    expect(isRecipeEditable(editablePackages, null)).toBe(false);
-  });
-});
-
 function selectExtensionPoints(
   recipe: UnsavedModDefinition,
 ): StarterBrickConfig[] {
@@ -612,10 +569,10 @@ describe("buildRecipe", () => {
     }) as UnresolvedModComponent;
 
     // Call the function under test
-    const newRecipe = buildRecipe({
-      sourceRecipe: null,
-      cleanRecipeExtensions: [modComponent],
-      dirtyRecipeElements: [],
+    const newRecipe = buildNewMod({
+      sourceMod: null,
+      cleanModComponents: [modComponent],
+      dirtyModComponentFormStates: [],
     });
 
     expect(newRecipe.extensionPoints).toHaveLength(1);
@@ -648,10 +605,10 @@ describe("buildRecipe", () => {
     )) as ModComponentFormState;
 
     // Call the function under test
-    const newRecipe = buildRecipe({
-      sourceRecipe: null,
-      cleanRecipeExtensions: [],
-      dirtyRecipeElements: [element],
+    const newRecipe = buildNewMod({
+      sourceMod: null,
+      cleanModComponents: [],
+      dirtyModComponentFormStates: [element],
     });
 
     expect(newRecipe.extensionPoints).toHaveLength(1);
@@ -686,10 +643,10 @@ describe("buildRecipe", () => {
     });
 
     // Call the function under test
-    const newRecipe = buildRecipe({
-      sourceRecipe: null,
-      cleanRecipeExtensions: modComponents,
-      dirtyRecipeElements: [],
+    const newRecipe = buildNewMod({
+      sourceMod: null,
+      cleanModComponents: modComponents,
+      dirtyModComponentFormStates: [],
     });
 
     expect(Object.keys(newRecipe.definitions)).toStrictEqual([
@@ -723,10 +680,10 @@ describe("buildRecipe", () => {
     });
 
     // Call the function under test
-    const newRecipe = buildRecipe({
-      sourceRecipe: null,
-      cleanRecipeExtensions: modComponents,
-      dirtyRecipeElements: [],
+    const newRecipe = buildNewMod({
+      sourceMod: null,
+      cleanModComponents: modComponents,
+      dirtyModComponentFormStates: [],
     });
 
     expect(Object.keys(newRecipe.definitions)).toStrictEqual([
@@ -806,11 +763,11 @@ describe("buildRecipe", () => {
       }
 
       // Call the function under test
-      const newRecipe = buildRecipe({
-        sourceRecipe: modDefinition,
+      const newRecipe = buildNewMod({
+        sourceMod: modDefinition,
         // Only pass in the unchanged clean extensions
-        cleanRecipeExtensions: state.extensions.slice(dirtyExtensionCount),
-        dirtyRecipeElements: elements,
+        cleanModComponents: state.extensions.slice(dirtyExtensionCount),
+        dirtyModComponentFormStates: elements,
       });
 
       // Update the source recipe with the expected label changes

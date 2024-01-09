@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { renderHook } from "@/pageEditor/testHelpers";
-import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
+import useSaveRecipe, { isModEditable } from "@/pageEditor/hooks/useSaveRecipe";
 import { validateRegistryId } from "@/types/helpers";
 import { act } from "@testing-library/react-hooks";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -28,6 +28,7 @@ import { loadBrickYaml } from "@/runtime/brickYaml";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import type { components } from "@/types/swagger";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
+import type { EditablePackageMetadata } from "@/types/contract";
 
 const modId = validateRegistryId("@test/mod");
 
@@ -231,5 +232,46 @@ describe("useSaveRecipe", () => {
         "ui:order": ["test", "*"],
       },
     });
+  });
+});
+
+describe("isModEditable", () => {
+  test("returns true if recipe is in editable packages", () => {
+    const recipe = defaultModDefinitionFactory();
+    const editablePackages: EditablePackageMetadata[] = [
+      {
+        id: null,
+        name: validateRegistryId("test/recipe"),
+      },
+      {
+        id: null,
+        name: recipe.metadata.id,
+      },
+    ] as EditablePackageMetadata[];
+
+    expect(isModEditable(editablePackages, recipe)).toBe(true);
+  });
+
+  test("returns false if recipe is not in editable packages", () => {
+    const recipe = defaultModDefinitionFactory();
+    const editablePackages: EditablePackageMetadata[] = [
+      {
+        id: null,
+        name: validateRegistryId("test/recipe"),
+      },
+    ] as EditablePackageMetadata[];
+
+    expect(isModEditable(editablePackages, recipe)).toBe(false);
+  });
+
+  test("returns false if recipe is null", () => {
+    const editablePackages: EditablePackageMetadata[] = [
+      {
+        id: null,
+        name: validateRegistryId("test/recipe"),
+      },
+    ] as EditablePackageMetadata[];
+
+    expect(isModEditable(editablePackages, null)).toBe(false);
   });
 });

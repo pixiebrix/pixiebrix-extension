@@ -32,10 +32,7 @@ import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import {
-  buildRecipe,
-  isRecipeEditable,
-} from "@/pageEditor/panes/save/saveHelpers";
+import { buildNewMod } from "@/pageEditor/panes/save/saveHelpers";
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
@@ -45,31 +42,44 @@ import { reactivateEveryTab } from "@/background/messenger/api";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
+import type { EditablePackageMetadata } from "@/types/contract";
+import type { ModDefinition } from "@/types/modDefinitionTypes";
 
 const { actions: optionsActions } = extensionsSlice;
 
-type RecipeSaver = {
-  save: (recipeId: RegistryId) => Promise<void>;
+// Exported for testing
+export function isModEditable(
+  editablePackages: EditablePackageMetadata[],
+  recipe: ModDefinition,
+): boolean {
+  // The user might lose access to the recipe while they were editing it (the recipe or an extension)
+  // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
+  const recipeId = recipe?.metadata?.id;
+  return recipeId != null && editablePackages.some((x) => x.name === recipeId);
+}
+
+type ModSaver = {
+  save: (modId: RegistryId) => Promise<void>;
   isSaving: boolean;
 };
 
-function useSaveRecipe(): RecipeSaver {
+function useSaveRecipe(): ModSaver {
   const dispatch = useDispatch();
   const upsertModComponentFormState = useUpsertModComponentFormState();
   const {
-    data: recipes,
-    isLoading: isRecipesLoading,
-    error: recipesError,
+    data: modDefinitions,
+    isLoading: isModDefinitionsLoading,
+    error: modDefinitionsError,
   } = useAllModDefinitions();
   const { data: editablePackages, isLoading: isEditablePackagesLoading } =
     useGetEditablePackagesQuery();
-  const [updateRecipe] = useUpdateRecipeMutation();
-  const editorFormElements = useSelector(selectElements);
-  const isDirtyByElementId = useSelector(selectDirty);
-  const installedExtensions = useSelector(selectExtensions);
-  const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptionDefinitions);
-  const dirtyRecipeMetadata = useSelector(selectDirtyRecipeMetadata);
-  const deletedElementsByRecipeId = useSelector(selectDeletedElements);
+  const [updateMod] = useUpdateRecipeMutation();
+  const modComponentFormStates = useSelector(selectElements);
+  const isDirtyByModComponentId = useSelector(selectDirty);
+  const activatedModComponents = useSelector(selectExtensions);
+  const allDirtyModOptions = useSelector(selectDirtyRecipeOptionDefinitions);
+  const allDirtyModMetadatas = useSelector(selectDirtyRecipeMetadata);
+  const deletedComponentsByModId = useSelector(selectDeletedElements);
   const { showConfirmation } = useModals();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -78,15 +88,17 @@ function useSaveRecipe(): RecipeSaver {
    * Throws errors for various bad states
    * @return boolean indicating successful save
    */
-  async function save(recipeId: RegistryId): Promise<boolean> {
-    const recipe = recipes?.find((recipe) => recipe.metadata.id === recipeId);
-    if (recipe == null) {
+  async function save(modId: RegistryId): Promise<boolean> {
+    const modDefinition = modDefinitions?.find(
+      (mod) => mod.metadata.id === modId,
+    );
+    if (modDefinition == null) {
       throw new Error(
         "You no longer have edit permissions for the mod. Please reload the Page Editor.",
       );
     }
 
-    if (!isRecipeEditable(editablePackages, recipe)) {
+    if (!isModEditable(editablePackages, modDefinition)) {
       dispatch(editorActions.showSaveAsNewRecipeModal());
       return false;
     }
@@ -103,59 +115,63 @@ function useSaveRecipe(): RecipeSaver {
     }
 
     // eslint-disable-next-line security/detect-object-injection -- recipeId
-    const deletedElements = deletedElementsByRecipeId[recipeId] ?? [];
-    const deletedElementIds = new Set(deletedElements.map(({ uuid }) => uuid));
+    const deletedModComponentFormStates = deletedComponentsByModId[modId] ?? [];
+    const deletedModComponentIds = new Set(
+      deletedModComponentFormStates.map(({ uuid }) => uuid),
+    );
 
-    const dirtyRecipeElements = editorFormElements.filter(
-      (element) =>
-        element.recipe?.id === recipeId &&
-        isDirtyByElementId[element.uuid] &&
-        !deletedElementIds.has(element.uuid),
+    const dirtyModComponentFormStates = modComponentFormStates.filter(
+      (modComponentFormState) =>
+        modComponentFormState.recipe?.id === modId &&
+        isDirtyByModComponentId[modComponentFormState.uuid] &&
+        !deletedModComponentIds.has(modComponentFormState.uuid),
     );
 
     // XXX: this might need to come before the confirmation modal in order to avoid timout if the user takes too
     // long to confirm?
     // Check permissions as early as possible
-    void ensureElementPermissionsFromUserGesture(dirtyRecipeElements);
+    void ensureElementPermissionsFromUserGesture(dirtyModComponentFormStates);
 
-    const cleanRecipeExtensions = installedExtensions.filter(
+    const cleanModComponents = activatedModComponents.filter(
       (extension) =>
-        extension._recipe?.id === recipeId &&
-        !dirtyRecipeElements.some((element) => element.uuid === extension.id) &&
-        !deletedElementIds.has(extension.id),
+        extension._recipe?.id === modId &&
+        !dirtyModComponentFormStates.some(
+          (element) => element.uuid === extension.id,
+        ) &&
+        !deletedModComponentIds.has(extension.id),
     );
 
     // Dirty options/metadata or null if there are no staged changes.
     // eslint-disable-next-line security/detect-object-injection -- recipe IDs are sanitized in the form validation
-    const dirtyOptions = dirtyRecipeOptions[recipeId];
+    const dirtyModOptions = allDirtyModOptions[modId];
     // eslint-disable-next-line security/detect-object-injection -- recipe IDs are sanitized in the form validation
-    const dirtyMetadata = dirtyRecipeMetadata[recipeId];
+    const dirtyModMetadata = allDirtyModMetadatas[modId];
 
-    const newRecipe = buildRecipe({
-      sourceRecipe: recipe,
-      cleanRecipeExtensions,
-      dirtyRecipeElements,
-      options: dirtyOptions,
-      metadata: dirtyMetadata,
+    const newMod = buildNewMod({
+      sourceMod: modDefinition,
+      cleanModComponents,
+      dirtyModComponentFormStates,
+      dirtyModOptions,
+      dirtyModMetadata,
     });
 
     const packageId = editablePackages.find(
       // Bricks endpoint uses "name" instead of id
-      (x) => x.name === newRecipe.metadata.id,
+      (x) => x.name === newMod.metadata.id,
     )?.id;
 
-    const response = await updateRecipe({
+    const upsertResponse = await updateMod({
       packageId,
-      recipe: newRecipe,
+      recipe: newMod,
     }).unwrap();
 
-    const newRecipeMetadata = selectRecipeMetadata(newRecipe, response);
+    const newModMetadata = selectRecipeMetadata(newMod, upsertResponse);
 
     // Don't push to cloud since we're saving it with the recipe
     await Promise.all(
-      dirtyRecipeElements.map(async (element) =>
+      dirtyModComponentFormStates.map(async (modComponentFormState) =>
         upsertModComponentFormState({
-          element,
+          element: modComponentFormState,
           options: {
             pushToCloud: false,
             // Permissions were already checked earlier in the save function here
@@ -164,54 +180,50 @@ function useSaveRecipe(): RecipeSaver {
             notifySuccess: false,
             reactivateEveryTab: false,
           },
-          modId: newRecipeMetadata.id,
+          modId: newModMetadata.id,
         }),
       ),
     );
 
     // Update the recipe metadata on extensions in the options slice
-    dispatch(
-      optionsActions.updateRecipeMetadataForExtensions(newRecipeMetadata),
-    );
+    dispatch(optionsActions.updateRecipeMetadataForExtensions(newModMetadata));
 
     // Update the recipe metadata on elements in the page editor slice
-    dispatch(editorActions.updateRecipeMetadataForElements(newRecipeMetadata));
+    dispatch(editorActions.updateRecipeMetadataForElements(newModMetadata));
 
     // Remove any deleted elements from the extensions slice
-    for (const extensionId of deletedElementIds) {
+    for (const extensionId of deletedModComponentIds) {
       dispatch(optionsActions.removeExtension({ extensionId }));
     }
 
     // Clear the dirty states
-    dispatch(
-      editorActions.resetMetadataAndOptionsForRecipe(newRecipeMetadata.id),
-    );
-    dispatch(editorActions.clearDeletedElementsForRecipe(newRecipeMetadata.id));
+    dispatch(editorActions.resetMetadataAndOptionsForRecipe(newModMetadata.id));
+    dispatch(editorActions.clearDeletedElementsForRecipe(newModMetadata.id));
 
     reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
-      modId: newRecipe.metadata.id,
+      modId: newMod.metadata.id,
     });
 
     return true;
   }
 
-  async function safeSave(recipeId: RegistryId) {
-    if (recipesError) {
+  async function safeSave(modId: RegistryId) {
+    if (modDefinitionsError) {
       notify.error({
         message: "Error fetching mod definitions",
-        error: recipesError,
+        error: modDefinitionsError,
       });
 
       return;
     }
 
-    if (isRecipesLoading || isEditablePackagesLoading) {
+    if (isModDefinitionsLoading || isEditablePackagesLoading) {
       return;
     }
 
     setIsSaving(true);
     try {
-      const success = await save(recipeId);
+      const success = await save(modId);
       if (success) {
         notify.success("Saved mod");
         reactivateEveryTab();
