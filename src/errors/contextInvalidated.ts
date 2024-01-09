@@ -59,6 +59,10 @@ export function isContextInvalidatedError(possibleError: unknown): boolean {
  */
 export const wasContextInvalidated = () => !chrome.runtime?.id;
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Unused in background
+const invalidatedContextController = new AbortController();
+export const invalidatedContextSignal = invalidatedContextController.signal;
+
 /**
  * Returns a promise that resolves when the background script is unloaded,
  * which can only happens once per script lifetime.
@@ -70,6 +74,7 @@ export const onContextInvalidated = once(async (): Promise<void> => {
     const interval = setInterval(() => {
       if (wasContextInvalidated()) {
         resolve();
+        invalidatedContextController.abort();
         clearInterval(interval);
       }
     }, 200);
