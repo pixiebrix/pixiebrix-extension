@@ -24,7 +24,7 @@ export async function setToolbarBadge(
   this: MessengerMeta,
   text: string | null,
 ): Promise<void> {
-  const tabId = this?.trace?.[0].tab.id;
+  const tabId = this?.trace?.[0]?.tab?.id;
 
   await browserAction.setBadgeText({
     text,
