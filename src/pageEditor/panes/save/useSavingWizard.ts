@@ -38,7 +38,7 @@ import {
   useGetEditablePackagesQuery,
   useUpdateRecipeMutation,
 } from "@/services/api";
-import { replaceRecipeExtension } from "./saveHelpers";
+import { replaceModComponent } from "./saveHelpers";
 import extensionsSlice from "@/store/extensionsSlice";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { type PackageUpsertResponse } from "@/types/contract";
@@ -186,7 +186,7 @@ const useSavingWizard = () => {
       id: validateRegistryId(recipeMeta.id),
     };
 
-    const newRecipe: UnsavedModDefinition = replaceRecipeExtension(
+    const newRecipe: UnsavedModDefinition = replaceModComponent(
       recipe,
       newMeta,
       extensions,
@@ -251,7 +251,7 @@ const useSavingWizard = () => {
     const elementRecipeMeta = element.recipe;
     const recipe = recipes.find((x) => x.metadata.id === elementRecipeMeta.id);
 
-    const newRecipe: UnsavedModDefinition = replaceRecipeExtension(
+    const newRecipe: UnsavedModDefinition = replaceModComponent(
       recipe,
       recipeMeta,
       extensions,

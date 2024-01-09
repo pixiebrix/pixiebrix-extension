@@ -47,7 +47,6 @@ import {
 } from "@/types/modComponentTypes";
 import { type SafeString } from "@/types/stringTypes";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
-import { type EditablePackageMetadata } from "@/types/contract";
 import { freshIdentifier } from "@/utils/variableUtils";
 import {
   type IntegrationDependency,
@@ -75,59 +74,49 @@ export function generateScopeBrickId(
   );
 }
 
-export function isRecipeEditable(
-  editablePackages: EditablePackageMetadata[],
-  recipe: ModDefinition,
-): boolean {
-  // The user might lose access to the recipe while they were editing it (the recipe or an extension)
-  // See https://github.com/pixiebrix/pixiebrix-extension/issues/2813
-  const recipeId = recipe?.metadata?.id;
-  return recipeId != null && editablePackages.some((x) => x.name === recipeId);
-}
-
 /**
- * Return the index of the extension in the recipe. Throws an error if a match isn't found.
+ * Return the index of the mod component in the mod. Throws an error if a match isn't found.
  *
- * There are a couple corner cases in the recipe specification and version handling:
- * - A user modified the recipe in the workshop but didn't change the version number of the recipe
- * - Labels in a recipe aren't guaranteed to be unique. However, they generally will be in practice
+ * There are a couple corner cases in the mod specification and version handling:
+ * - A user modified the mod in the workshop but didn't change the version number
+ * - Labels in a mod aren't guaranteed to be unique. However, they generally will be in practice
  *
  * For now, we'll just handle the normal case and send people to the workshop for the corner cases.
  */
-function findRecipeIndex(
-  sourceRecipe: ModDefinition,
-  extension: ModComponentBase,
+function findModComponentIndex(
+  modDefinition: ModDefinition,
+  modComponent: ModComponentBase,
 ): number {
-  if (sourceRecipe.metadata.version !== extension._recipe.version) {
+  if (modDefinition.metadata.version !== modComponent._recipe.version) {
     console.warn(
-      "Extension was installed using a different version of the recipe",
+      "Mod component was installed using a different version of the mod",
       {
-        recipeVersion: sourceRecipe.metadata.version,
-        extensionVersion: extension._recipe.version,
+        modDefinitionVersion: modDefinition.metadata.version,
+        mocComponentModVersion: modComponent._recipe.version,
       },
     );
   }
 
-  // Labels in the recipe aren't guaranteed to be unique
-  const labelMatches = sourceRecipe.extensionPoints.filter(
-    (x) => x.label === extension.label,
+  // Labels in the mod aren't guaranteed to be unique
+  const labelMatches = modDefinition.extensionPoints.filter(
+    (x) => x.label === modComponent.label,
   );
 
   if (labelMatches.length === 0) {
     throw new Error(
-      `There are no starter bricks in the mod with label "${extension.label}". You must edit the mod in the Workshop`,
+      `There are no starter bricks in the mod with label "${modComponent.label}". You must edit the mod in the Workshop`,
     );
   }
 
   if (labelMatches.length > 1) {
     throw new Error(
-      `There are multiple starter bricks in the mod with label "${extension.label}". You must edit the mod in the Workshop`,
+      `There are multiple starter bricks in the mod with label "${modComponent.label}". You must edit the mod in the Workshop`,
     );
   }
 
   if (labelMatches.length === 1) {
-    return sourceRecipe.extensionPoints.findIndex(
-      (x) => x.label === extension.label,
+    return modDefinition.extensionPoints.findIndex(
+      (x) => x.label === modComponent.label,
     );
   }
 }
@@ -193,70 +182,74 @@ export function selectExtensionPointIntegrations({
 }
 
 /**
- * Create a copy of `sourceRecipe` with `metadata` and `element`.
+ * Create a copy of `sourceMod` with `modMetadata` and `modComponent`.
  *
  * NOTE: the caller is responsible for updating an extensionPoint package (i.e., that has its own version). This method
  * only handles the extensionPoint if it's an inner definition
  *
- * @param sourceRecipe the original recipe
- * @param metadata the metadata for the new recipe
- * @param installedExtensions the user's locally installed extensions (i.e., from optionsSlice). Used to locate the
- * element's position in sourceRecipe
- * @param element the new extension state (i.e., submitted via Formik)
+ * @param sourceMod the original mod
+ * @param modMetadata the metadata for the new mod
+ * @param activatedModComponents the user's locally activated mod components (i.e., from optionsSlice). Used to locate the
+ * mod component's position in sourceMod
+ * @param newModComponent the new mod component state (i.e., submitted via Formik)
  */
-export function replaceRecipeExtension(
-  sourceRecipe: ModDefinition,
-  metadata: Metadata,
-  installedExtensions: ModComponentBase[],
-  element: ModComponentFormState,
+export function replaceModComponent(
+  sourceMod: ModDefinition,
+  modMetadata: Metadata,
+  activatedModComponents: ModComponentBase[],
+  newModComponent: ModComponentFormState,
 ): UnsavedModDefinition {
-  const installedExtension = installedExtensions.find(
-    (x) => x.id === element.uuid,
+  const activatedModComponent = activatedModComponents.find(
+    (x) => x.id === newModComponent.uuid,
   );
 
-  if (installedExtension == null) {
+  if (activatedModComponent == null) {
     throw new Error(
-      `Could not find local copy of starter brick: ${element.uuid}`,
+      `Could not find local copy of starter brick: ${newModComponent.uuid}`,
     );
   }
 
-  return produce(sourceRecipe, (draft: ModDefinition) => {
-    draft.metadata = metadata;
+  return produce(sourceMod, (draft: ModDefinition) => {
+    draft.metadata = modMetadata;
 
-    if (sourceRecipe.apiVersion !== element.apiVersion) {
-      const canUpdateRecipeApiVersion =
-        sourceRecipe.extensionPoints.length <= 1;
-      if (canUpdateRecipeApiVersion) {
-        draft.apiVersion = element.apiVersion;
+    if (sourceMod.apiVersion !== newModComponent.apiVersion) {
+      const canUpdateModApiVersion = sourceMod.extensionPoints.length <= 1;
+      if (canUpdateModApiVersion) {
+        draft.apiVersion = newModComponent.apiVersion;
 
-        const extensionPointId = sourceRecipe.extensionPoints[0]?.id;
+        const extensionPointId = sourceMod.extensionPoints[0]?.id;
         // eslint-disable-next-line security/detect-object-injection -- getting a property by extension id
         const extensionPointDefinition = draft.definitions?.[extensionPointId];
 
         if (extensionPointDefinition?.apiVersion != null) {
-          extensionPointDefinition.apiVersion = element.apiVersion;
+          extensionPointDefinition.apiVersion = newModComponent.apiVersion;
         }
       } else {
         throw new Error(
-          `Element's API Version (${element.apiVersion}) does not match mod's API Version (${sourceRecipe.apiVersion}) and mod's API Version cannot be updated`,
+          `Mod component's API Version (${newModComponent.apiVersion}) does not match mod's API Version (${sourceMod.apiVersion}) and mod's API Version cannot be updated`,
         );
       }
     }
 
-    draft.options = isModOptionsSchemaEmpty(element.optionsDefinition)
+    draft.options = isModOptionsSchemaEmpty(newModComponent.optionsDefinition)
       ? undefined
-      : element.optionsDefinition;
+      : newModComponent.optionsDefinition;
 
-    const index = findRecipeIndex(sourceRecipe, installedExtension);
+    const modComponentIndex = findModComponentIndex(
+      sourceMod,
+      activatedModComponent,
+    );
 
-    const adapter = ADAPTERS.get(element.type);
-    const rawExtension = adapter.selectExtension(element);
-    const extensionPointId = element.extensionPoint.metadata.id;
+    const { selectExtension, selectExtensionPointConfig } = ADAPTERS.get(
+      newModComponent.type,
+    );
+    const rawModComponent = selectExtension(newModComponent);
+    const extensionPointId = newModComponent.extensionPoint.metadata.id;
     const hasInnerExtensionPoint =
       isInnerDefinitionRegistryId(extensionPointId);
 
-    const commonExtensionConfig: Except<ModComponentDefinition, "id"> = {
-      ...pick(rawExtension, [
+    const commonModComponentConfig: Except<ModComponentDefinition, "id"> = {
+      ...pick(rawModComponent, [
         "label",
         "config",
         "permissions",
@@ -265,29 +258,30 @@ export function replaceRecipeExtension(
     };
 
     // The `services` field is optional, so only add it to the config if the raw
-    // extension has a value. Normalizing here makes testing harder because we
+    // mod component has a value. Normalizing here makes testing harder because we
     // then have to account for the normalized value in assertions.
-    if (rawExtension.integrationDependencies) {
-      commonExtensionConfig.services =
-        selectExtensionPointIntegrations(rawExtension);
+    if (rawModComponent.integrationDependencies) {
+      commonModComponentConfig.services =
+        selectExtensionPointIntegrations(rawModComponent);
     }
 
     if (hasInnerExtensionPoint) {
-      const extensionPointConfig = adapter.selectExtensionPointConfig(element);
+      const extensionPointConfig = selectExtensionPointConfig(newModComponent);
 
-      const originalInnerId = sourceRecipe.extensionPoints.at(index).id;
+      const originalInnerId =
+        sourceMod.extensionPoints.at(modComponentIndex).id;
       let newInnerId = originalInnerId;
 
       if (
-        sourceRecipe.extensionPoints.filter((x) => x.id === originalInnerId)
+        sourceMod.extensionPoints.filter((x) => x.id === originalInnerId)
           .length > 1
       ) {
-        // Multiple extensions share the same inner extension point definition. If the inner extension point definition
-        // was modified, the behavior we want (at least for now) is to create new extensionPoint entry instead of
-        // modifying the shared entry. If we wasn't modified, we don't have to make any changes.
+        // Multiple mod components share the same inner extension point definition. If the inner extension point
+        // definition was modified, the behavior we want (at least for now) is to create new extensionPoint entry
+        // instead of modifying the shared entry. If it wasn't modified, we don't have to make any changes.
 
         // NOTE: there are some non-functional changes (e.g., services being normalized from undefined to {}) that will
-        // cause the definitions to not be equal. This is OK for now -- in practice it won't happen for blueprints
+        // cause the definitions to not be equal. This is OK for now -- in practice it won't happen for mods
         // originally built using the Page Editor since it produces configs that include the explicit {} and [] objects
         // instead of undefined.
         if (
@@ -299,7 +293,7 @@ export function replaceRecipeExtension(
         ) {
           const freshId = freshIdentifier(
             "extensionPoint" as SafeString,
-            Object.keys(sourceRecipe.definitions),
+            Object.keys(sourceMod.definitions),
           ) as InnerDefinitionRef;
           newInnerId = freshId;
           // eslint-disable-next-line security/detect-object-injection -- generated with freshIdentifier
@@ -318,17 +312,17 @@ export function replaceRecipeExtension(
       }
 
       // eslint-disable-next-line security/detect-object-injection -- false positive for number
-      draft.extensionPoints[index] = {
+      draft.extensionPoints[modComponentIndex] = {
         id: newInnerId,
-        ...commonExtensionConfig,
+        ...commonModComponentConfig,
       };
     } else {
       // It's not currently possible to switch from using an extensionPoint package to an inner extensionPoint
-      // definition in the Page Editor. Therefore we can just use the rawExtension.extensionPointId directly here.
+      // definition in the Page Editor. So, we can just use the rawModComponent.extensionPointId directly here.
       // eslint-disable-next-line security/detect-object-injection -- false positive for number
-      draft.extensionPoints[index] = {
-        id: rawExtension.extensionPointId,
-        ...commonExtensionConfig,
+      draft.extensionPoints[modComponentIndex] = {
+        id: rawModComponent.extensionPointId,
+        ...commonModComponentConfig,
       };
     }
 
@@ -337,36 +331,36 @@ export function replaceRecipeExtension(
 }
 
 function selectExtensionPointConfig(
-  extension: ModComponentBase,
+  modComponent: ModComponentBase,
 ): ModComponentDefinition {
   const extensionPoint: ModComponentDefinition = {
-    ...pick(extension, ["label", "config", "permissions", "templateEngine"]),
-    id: extension.extensionPointId,
+    ...pick(modComponent, ["label", "config", "permissions", "templateEngine"]),
+    id: modComponent.extensionPointId,
   };
 
   // To make round-trip testing easier, don't add a `services` property if it didn't already exist
-  if (extension.integrationDependencies != null) {
-    extensionPoint.services = selectExtensionPointIntegrations(extension);
+  if (modComponent.integrationDependencies != null) {
+    extensionPoint.services = selectExtensionPointIntegrations(modComponent);
   }
 
   return extensionPoint;
 }
 
-type RecipeParts = {
-  sourceRecipe?: ModDefinition;
-  cleanRecipeExtensions: UnresolvedModComponent[];
-  dirtyRecipeElements: ModComponentFormState[];
+type ModParts = {
+  sourceMod?: ModDefinition;
+  cleanModComponents: UnresolvedModComponent[];
+  dirtyModComponentFormStates: ModComponentFormState[];
   /**
    * Dirty/new options to save. Undefined if there are no changes.
    */
-  options?: ModOptionsDefinition;
+  dirtyModOptions?: ModOptionsDefinition;
   /**
    * Dirty/new metadata to save. Undefined if there are no changes.
    */
-  metadata?: ModMetadataFormState;
+  dirtyModMetadata?: ModMetadataFormState;
 };
 
-const emptyRecipe: UnsavedModDefinition = {
+const emptyModDefinition: UnsavedModDefinition = {
   apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   kind: "recipe",
   metadata: {
@@ -379,44 +373,49 @@ const emptyRecipe: UnsavedModDefinition = {
 };
 
 /**
- * Create a copy of `sourceRecipe` (if provided) with `metadata` and `elements`.
+ * Create a copy of `sourceMod` (if provided) with given mod metadata, mod options, and mod components.
  *
  * NOTE: the caller is responsible for updating an extensionPoint package (i.e., that has its own version). This method
  * only handles the extensionPoint if it's an inner definition
  *
- * @param sourceRecipe the original recipe, or undefined for new recipes
- * @param cleanRecipeExtensions the recipe's unchanged, installed extensions
- * @param dirtyRecipeElements the recipe's extension form states (i.e., submitted via Formik)
- * @param options the recipe's options form state, or nullish if there are no dirty options
- * @param metadata the recipe's metadata form state, or nullish if there is no dirty mod metadata
+ * @param sourceMod the original mod definition, or undefined for new mods
+ * @param cleanModComponents the mod's unchanged, activated mod components
+ * @param dirtyModComponentFormStates the mod's component form states (i.e., submitted via Formik)
+ * @param dirtyModOptions the mod's options form state, or nullish if there are no dirty options
+ * @param dirtyModMetadata the mod's metadata form state, or nullish if there is no dirty mod metadata
  */
-export function buildRecipe({
-  sourceRecipe,
-  cleanRecipeExtensions,
-  dirtyRecipeElements,
-  options,
-  metadata,
-}: RecipeParts): UnsavedModDefinition {
-  // If there's no source recipe, then we're creating a new one, so we
-  // start with an empty recipe definition that will be filled in
-  const recipe: UnsavedModDefinition = sourceRecipe ?? emptyRecipe;
+export function buildNewMod({
+  sourceMod,
+  cleanModComponents,
+  dirtyModComponentFormStates,
+  dirtyModOptions,
+  dirtyModMetadata,
+}: ModParts): UnsavedModDefinition {
+  // If there's no source mod, then we're creating a new one, so we
+  // start with an empty mod definition that will be filled in
+  const unsavedModDefinition: UnsavedModDefinition =
+    sourceMod ?? emptyModDefinition;
 
-  return produce(recipe, (draft: UnsavedModDefinition): void => {
+  return produce(unsavedModDefinition, (draft: UnsavedModDefinition): void => {
     // Options dirty state is only populated if a change is made
-    if (options) {
-      draft.options = isModOptionsSchemaEmpty(options)
+    if (dirtyModOptions) {
+      draft.options = isModOptionsSchemaEmpty(dirtyModOptions)
         ? undefined
-        : normalizeModOptionsDefinition(options);
+        : normalizeModOptionsDefinition(dirtyModOptions);
     }
 
     // Metadata dirty state is only populated if a change is made
-    if (metadata) {
-      draft.metadata = metadata;
+    if (dirtyModMetadata) {
+      draft.metadata = dirtyModMetadata;
     }
 
-    const versionedItems = [...cleanRecipeExtensions, ...dirtyRecipeElements];
-    // We need to handle the unlikely edge-case of zero extensions here, hence the null-coalesce
-    const itemsApiVersion = versionedItems[0]?.apiVersion ?? recipe.apiVersion;
+    const versionedItems = [
+      ...cleanModComponents,
+      ...dirtyModComponentFormStates,
+    ];
+    // We need to handle the unlikely edge-case of zero mod components here, hence the null-coalesce
+    const itemsApiVersion =
+      versionedItems[0]?.apiVersion ?? unsavedModDefinition.apiVersion;
     const badApiVersion = versionedItems.find(
       (item) => item.apiVersion !== itemsApiVersion,
     )?.apiVersion;
@@ -427,39 +426,41 @@ export function buildRecipe({
       );
     }
 
-    if (itemsApiVersion !== recipe.apiVersion) {
+    if (itemsApiVersion !== unsavedModDefinition.apiVersion) {
       throw new Error(
-        `Mod uses API Version ${recipe.apiVersion}, but it's bricks have version ${itemsApiVersion}. Please use the Workshop to edit this mod.`,
+        `Mod uses API Version ${unsavedModDefinition.apiVersion}, but it's bricks have version ${itemsApiVersion}. Please use the Workshop to edit this mod.`,
       );
     }
 
-    const dirtyRecipeExtensions: ModComponentBase[] = dirtyRecipeElements.map(
-      (element) => {
-        const adapter = ADAPTERS.get(element.type);
-        const extension = adapter.selectExtension(element);
+    const unsavedModComponents: ModComponentBase[] =
+      dirtyModComponentFormStates.map((modComponentFormStates) => {
+        const { selectExtension, selectExtensionPointConfig } = ADAPTERS.get(
+          modComponentFormStates.type,
+        );
+        const unsavedModComponent = selectExtension(modComponentFormStates);
 
-        if (isInnerDefinitionRegistryId(extension.extensionPointId)) {
-          const extensionPointConfig =
-            adapter.selectExtensionPointConfig(element);
-          extension.definitions = {
-            [extension.extensionPointId]: {
+        if (isInnerDefinitionRegistryId(unsavedModComponent.extensionPointId)) {
+          const extensionPointConfig = selectExtensionPointConfig(
+            modComponentFormStates,
+          );
+          unsavedModComponent.definitions = {
+            [unsavedModComponent.extensionPointId]: {
               kind: "extensionPoint",
               definition: extensionPointConfig.definition,
             },
           };
         }
 
-        return extension;
-      },
-    );
+        return unsavedModComponent;
+      });
 
     const { innerDefinitions, extensionPoints } = buildExtensionPoints([
-      ...cleanRecipeExtensions,
-      ...dirtyRecipeExtensions,
+      ...cleanModComponents,
+      ...unsavedModComponents,
     ]);
 
     // This sorting is mostly for test ergonomics for easier equality assertions when
-    // things stay in the same order in this array. The clean/dirty elements
+    // things stay in the same order in this array. The clean/dirty mod components
     // split/recombination logic causes things to get out of order in the result.
     draft.extensionPoints = sortBy(extensionPoints, (x) => x.id);
     draft.definitions = innerDefinitions;
@@ -472,21 +473,21 @@ type BuildExtensionPointsResult = {
 };
 
 function buildExtensionPoints(
-  extensions: ModComponentBase[],
+  modComponents: ModComponentBase[],
 ): BuildExtensionPointsResult {
   const innerDefinitions: InnerDefinitions = {};
   const extensionPoints: ModComponentDefinition[] = [];
 
-  for (const extension of extensions) {
+  for (const modComponent of modComponents) {
     // When an extensionPointId is an @inner/* style reference, or if the
-    // id has already been used in the recipe, we need to generate a new
+    // id has already been used in the mod, we need to generate a new
     // extensionPointId to use instead. If we are changing the extensionPointId
-    // of the current extension, then we need to keep track of this change
+    // of the current modComponent, then we need to keep track of this change
     // so that we can build the extensionPoint with the correct id.
     let newExtensionPointId: RegistryId | InnerDefinitionRef = null;
 
     for (const [extensionPointId, definition] of Object.entries(
-      extension.definitions ?? {},
+      modComponent.definitions ?? {},
     )) {
       const usedExtensionPointIds = Object.keys(innerDefinitions);
 
@@ -503,9 +504,9 @@ function buildExtensionPoints(
             // We found a match in the definitions we've already built
             isDefinitionAlreadyAdded = true;
 
-            // If this definition matches the extension's extensionPointId, track
+            // If this definition matches the modComponent's extensionPointId, track
             // the id change with our variable declared above.
-            if (extension.extensionPointId === extensionPointId) {
+            if (modComponent.extensionPointId === extensionPointId) {
               newExtensionPointId = id as InnerDefinitionRef;
             }
 
@@ -526,7 +527,7 @@ function buildExtensionPoints(
       }
 
       if (isDefinitionAlreadyAdded) {
-        // This definition has already been added to the recipe, so we can move on
+        // This definition has already been added to the mod, so we can move on
         continue;
       }
 
@@ -537,13 +538,13 @@ function buildExtensionPoints(
           )
         : extensionPointId;
 
-      // If the definition being added had the same extensionPointId as the extension,
+      // If the definition being added had the same extensionPointId as the modComponent,
       // and if we generated a new extensionPointId for the definition, then we also
       // need to update the id for the extensionPoint we're going to add that references
       // this definition.
       if (
         needsFreshExtensionPointId &&
-        extension.extensionPointId === extensionPointId
+        modComponent.extensionPointId === extensionPointId
       ) {
         newExtensionPointId = newInnerId as InnerDefinitionRef;
       }
@@ -552,8 +553,8 @@ function buildExtensionPoints(
       innerDefinitions[newInnerId] = definition;
     }
 
-    // Construct the extension point config from the extension
-    const extensionPoint = selectExtensionPointConfig(extension);
+    // Construct the modComponent point config from the modComponent
+    const extensionPoint = selectExtensionPointConfig(modComponent);
 
     // Add the extensionPoint, replacing the id with our updated
     // extensionPointId, if we've tracked a change in newExtensionPointId
