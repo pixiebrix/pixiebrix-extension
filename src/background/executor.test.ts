@@ -20,12 +20,13 @@ import {
   registryIdFactory,
   uuidSequence,
 } from "@/testUtils/factories/stringFactories";
-import { type MessengerMeta, type Sender } from "webext-messenger";
+import { type MessengerMeta } from "webext-messenger";
 import { runBrick } from "@/contentScript/messenger/api";
 import { type WebNavigation } from "webextension-polyfill";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { define, derive } from "cooky-cutter";
 import { type RemoteBrickOptions } from "@/contentScript/messenger/runBrickTypes";
+import { messengerMetaFactory } from "@/testUtils/factories/messengerFactories";
 
 type GetAllFramesCallbackDetailsItemType =
   WebNavigation.GetAllFramesCallbackDetailsItemType;
@@ -64,15 +65,7 @@ describe("requestRunInAllFrames", () => {
     // Not really possible because the top-level frame will always be there
     getAllFramesMock.mockResolvedValue([]);
 
-    const meta: MessengerMeta = {
-      trace: [
-        {
-          tab: {
-            id: 42,
-          },
-        } as Sender,
-      ],
-    };
+    const meta: MessengerMeta = messengerMetaFactory();
 
     const promise = requestRunInAllFrames.call(meta, {
       blockId: registryIdFactory(),
@@ -89,15 +82,7 @@ describe("requestRunInAllFrames", () => {
       } as GetAllFramesCallbackDetailsItemType,
     ]);
 
-    const meta: MessengerMeta = {
-      trace: [
-        {
-          tab: {
-            id: 42,
-          },
-        } as Sender,
-      ],
-    };
+    const meta: MessengerMeta = messengerMetaFactory();
 
     const promise = requestRunInAllFrames.call(meta, {
       blockId: registryIdFactory(),
@@ -117,15 +102,7 @@ describe("requestRunInAllFrames", () => {
 
     runBrickMock.mockResolvedValue({ foo: 42 });
 
-    const meta: MessengerMeta = {
-      trace: [
-        {
-          tab: {
-            id: 42,
-          },
-        } as Sender,
-      ],
-    };
+    const meta: MessengerMeta = messengerMetaFactory();
 
     const promise = requestRunInAllFrames.call(meta, {
       blockId: registryIdFactory(),

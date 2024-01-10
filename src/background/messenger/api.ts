@@ -36,6 +36,8 @@ export const setPartnerCopilotData = getNotifier(
   bg,
 );
 
+export const setToolbarBadge = getMethod("SET_TOOLBAR_BADGE", bg);
+
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
 export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
 export const removeExtensionForEveryTab = getNotifier(
