@@ -49,6 +49,7 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
       },
     });
   }
+  q;
 
   // Write as single promise vs. promise + cache to avoid race conditions in invalidation logic
   private typeCachePromise: Promise<TypedBrickMap> = null;
