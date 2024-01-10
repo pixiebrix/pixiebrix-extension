@@ -60,6 +60,19 @@ exports[`customizeManifest mv2 1`] = `
       ],
       "run_at": "document_end",
     },
+    {
+      "js": [
+        "setExtensionIdInApp.js",
+      ],
+      "matches": [
+        "https://*.pixiebrix.com/*",
+        "http://127.0.0.1:8000/*",
+        "http://127.0.0.1/*",
+        "http://localhost/*",
+        "http://localhost:8000/*",
+      ],
+      "run_at": "document_end",
+    },
   ],
   "content_security_policy": "script-src 'self' 'unsafe-eval' http://localhost:8097; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https: ws://localhost:8097/; object-src 'self'; img-src 'self' data: https: https://pixiebrix-marketplace-dev.s3.amazonaws.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; frame-src 'self' https:;",
   "description": "Customize, extend, and integrate your favorite SaaS apps without writing a line of code!",
@@ -183,6 +196,19 @@ exports[`customizeManifest mv3 1`] = `
       ],
       "matches": [
         "https://*/*",
+      ],
+      "run_at": "document_end",
+    },
+    {
+      "js": [
+        "setExtensionIdInApp.js",
+      ],
+      "matches": [
+        "https://*.pixiebrix.com/*",
+        "http://127.0.0.1:8000/*",
+        "http://127.0.0.1/*",
+        "http://localhost/*",
+        "http://localhost:8000/*",
       ],
       "run_at": "document_end",
     },

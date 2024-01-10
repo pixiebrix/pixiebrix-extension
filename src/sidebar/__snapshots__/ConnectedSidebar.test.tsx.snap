@@ -73,7 +73,7 @@ exports[`SidebarApp renders 1`] = `
         </button>
       </div>
       <div
-        class="p-0 border-0 full-height bg-white tabContainer tab-content"
+        class="p-0 border-0 full-height scrollable-area bg-white tabContainer tab-content"
       >
         <div
           aria-hidden="false"
