@@ -97,7 +97,7 @@ jobs:
       # https://github.com/pixiebrix/webext-messenger/issues/88
       # - contentScript.js can't have it because the file could be injected multiple times, guarding contentScriptCore
       # - loadActivationEnhancements.js can't have it because it's always loaded alongside contentScript.js
-      - run: "! grep '__getTabData' dist/loadActivationEnhancements.js dist/contentScript.js --files-with-matches"
+      - run: "! grep '__getTabData' dist/loadActivationEnhancements.js dist/contentScript.js dist/setExtensionIdInApp.js --files-with-matches"
         name: Detect webext-messenger unwanted bundles
 
       - uses: actions/upload-artifact@v4

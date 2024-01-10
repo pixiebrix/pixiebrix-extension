@@ -20,11 +20,7 @@
 // which is behind a guarded dynamic import.
 // https://github.com/pixiebrix/webext-messenger/issues/88
 
-import { initRuntimeLogging } from "@/development/runtimeLogging";
-
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
-
-void initRuntimeLogging();
 
 document.body.dataset.chromeExtensionId = CHROME_EXTENSION_ID;
