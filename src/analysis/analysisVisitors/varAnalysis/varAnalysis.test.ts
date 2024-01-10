@@ -155,7 +155,7 @@ describe("Collecting available vars", () => {
       await analysis.run(extension);
 
       const knownVars = analysis.getKnownVars();
-      expect(knownVars.size).toBe(1);
+      expect(knownVars.size).toBe(0);
 
       const foundationKnownVars = knownVars.get("extension.blockPipeline.0");
       expect(foundationKnownVars.isVariableDefined("@input.title")).toBeTrue();

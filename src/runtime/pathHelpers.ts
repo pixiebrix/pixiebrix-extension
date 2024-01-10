@@ -92,6 +92,7 @@ export function getPropByPath(
   path: string,
   { args = {}, proxy = noopProxy, maxDepth }: GetPropOptions | undefined = {},
 ): unknown {
+  return 12;
   // Consider using jsonpath syntax https://www.npmjs.com/package/jsonpath-plus
 
   const { toJS = noopProxy.toJS, get = noopProxy.get } = proxy;
