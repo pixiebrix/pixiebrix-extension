@@ -25,7 +25,7 @@ import { setToolbarBadge } from "@/background/messenger/api";
 class SetToolbarBadge extends EffectABC {
   constructor() {
     super(
-      "@pixiebrix/set-toolbar-badge",
+      "@pixiebrix/toolbar/set-badge",
       "Set Toolbar Badge",
       "Sets a badge on the PixieBrix toolbar icon with the specified text. Will replace any existing badge.",
     );
