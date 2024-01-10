@@ -38,6 +38,7 @@
     "./background/partnerTheme.ts",
     "./background/toolbarBadge.ts",
     "./background/webextAlert.ts",
+    "./background/setToolbarBadge.test.ts",
     "./bricks/available.ts",
     "./bricks/effects/cancel.ts",
     "./bricks/effects/clipboard.ts",

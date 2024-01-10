@@ -26,16 +26,17 @@ describe("setToolbarBadge", () => {
   it("calls browserAction.setBadgeText with given text", async () => {
     const expectedText = "test";
     const messengerMeta = messengerMetaFactory();
+    const expectedTabId = messengerMeta.trace?.[0]?.tab?.id;
     await setToolbarBadge.call(messengerMeta, expectedText);
 
     expect(browserAction.setBadgeText).toHaveBeenCalledWith({
       text: expectedText,
-      tabId: messengerMeta.trace?.[0].tab.id,
+      tabId: expectedTabId,
     });
 
     expect(browserAction.setBadgeBackgroundColor).toHaveBeenCalledWith({
       color: DEFAULT_BADGE_COLOR,
-      tabId: messengerMeta.trace?.[0].tab.id,
+      tabId: expectedTabId,
     });
   });
 });
