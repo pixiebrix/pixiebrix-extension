@@ -44,7 +44,7 @@ import {
   selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
-import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
+import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import useResetRecipe from "@/pageEditor/hooks/useResetRecipe";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import HomeButton from "./HomeButton";
@@ -105,7 +105,7 @@ const SidebarExpanded: React.FunctionComponent<{
     ],
   );
 
-  const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
+  const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveMod();
   const resetRecipe = useResetRecipe();
   const deactivateMod = useDeactivateMod();
 
