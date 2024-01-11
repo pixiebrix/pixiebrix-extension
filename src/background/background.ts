@@ -52,7 +52,7 @@ void initMessengerLogging();
 void initRuntimeLogging();
 registerMessenger();
 registerExternalMessenger();
-initBrowserAction();
+void initBrowserAction();
 initInstaller();
 void initNavigation();
 initExecutor();

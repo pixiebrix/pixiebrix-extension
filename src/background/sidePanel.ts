@@ -15,29 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browserAction } from "@/mv3/api";
 import {
-  getSidebarPath,
   openSidePanel,
+  hideSidePanel,
 } from "@/sidebar/sidePanel/messenger/api";
+import type { MessengerMeta } from "webext-messenger";
 
-export default async function initBrowserAction(): Promise<void> {
-  void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
+export async function showMySidePanel(this: MessengerMeta): Promise<void> {
+  await openSidePanel(this.trace[0].tab.id, this.trace[0].url);
+}
 
-  // Disable by default, so that it can be enabled on a per-tab basis
-  void chrome.sidePanel.setOptions({
-    enabled: false,
-  });
-  browserAction.onClicked.addListener(async (tab) => {
-    await openSidePanel(tab.id, tab.url);
-  });
-  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.url) {
-      // TODO: Drop this once the popover URL behavior is merged into sidebar.html
-      void chrome.sidePanel.setOptions({
-        tabId,
-        path: getSidebarPath(tabId, changeInfo.url),
-      });
-    }
-  });
+export async function hideMySidePanel(this: MessengerMeta): Promise<void> {
+  await hideSidePanel(this.trace[0].tab.id);
 }

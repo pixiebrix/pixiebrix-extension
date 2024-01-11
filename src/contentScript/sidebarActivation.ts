@@ -18,8 +18,7 @@
 import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import {
-  ensureSidebar,
-  HIDE_SIDEBAR_EVENT_NAME,
+  showSidebar,
   hideModActivationInSidebar,
   showModActivationInSidebar,
 } from "@/contentScript/sidebarController";
@@ -33,6 +32,7 @@ import { Events } from "@/telemetry/events";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getActivatedModIds } from "@/store/extensionsStorage";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import { onSidePanelClosure } from "@/sidebar/sidePanel/messenger/api";
 
 let listener: EventListener | null;
 
@@ -57,22 +57,16 @@ async function showSidebarActivationForMods(
 ): Promise<void> {
   const controller = new AbortController();
 
-  await ensureSidebar();
-  showModActivationInSidebar({
+  await showSidebar();
+  await showModActivationInSidebar({
     modIds,
     heading: "Activating",
   });
-  window.addEventListener(
-    HIDE_SIDEBAR_EVENT_NAME,
-    () => {
-      controller.abort();
-    },
-    {
-      signal: controller.signal,
-    },
-  );
+
+  onSidePanelClosure(controller);
+
   controller.signal.addEventListener("abort", () => {
-    hideModActivationInSidebar();
+    void hideModActivationInSidebar();
   });
 }
 

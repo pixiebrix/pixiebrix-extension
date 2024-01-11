@@ -23,8 +23,7 @@ import {
 } from "@/types/runtimeTypes";
 import { expectContext } from "@/utils/expectContext";
 import {
-  ensureSidebar,
-  HIDE_SIDEBAR_EVENT_NAME,
+  showSidebar,
   hideTemporarySidebarPanel,
   showTemporarySidebarPanel,
   updateTemporarySidebarPanel,
@@ -56,6 +55,7 @@ import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Location } from "@/types/starterBrickTypes";
 import { assumeNotNullish_UNSAFE } from "@/utils/nullishUtils";
+import { onSidePanelClosure } from "@/sidebar/sidePanel/messenger/api";
 
 // Match naming of the sidebar panel extension point triggers
 export type RefreshTrigger = "manual" | "statechange";
@@ -162,7 +162,7 @@ export async function displayTemporaryInfo({
     updatePanelDefinition(newEntry);
 
     if (location === "panel") {
-      updateTemporarySidebarPanel(newEntry);
+      void updateTemporarySidebarPanel(newEntry);
     } else {
       updateTemporaryOverlayPanel(newEntry);
     }
@@ -176,10 +176,10 @@ export async function displayTemporaryInfo({
       extensionId: panelEntryMetadata.extensionId,
     });
 
-    await ensureSidebar();
+    await showSidebar();
 
     // Show loading
-    showTemporarySidebarPanel({
+    await showTemporarySidebarPanel({
       ...panelEntryMetadata,
       nonce,
       payload: {
@@ -189,18 +189,10 @@ export async function displayTemporaryInfo({
       },
     });
 
-    window.addEventListener(
-      HIDE_SIDEBAR_EVENT_NAME,
-      () => {
-        controller.abort();
-      },
-      {
-        signal: controller.signal,
-      },
-    );
+    onSidePanelClosure(controller);
 
     controller.signal.addEventListener("abort", () => {
-      hideTemporarySidebarPanel(nonce);
+      void hideTemporarySidebarPanel(nonce);
       void stopWaitingForTemporaryPanels([nonce]);
     });
   } else {

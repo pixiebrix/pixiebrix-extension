@@ -52,7 +52,6 @@ import { mergeReaders } from "@/bricks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { NoRendererError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
-import { isSidebarFrameVisible } from "@/contentScript/sidebarDomControllerLite";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
@@ -63,6 +62,7 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import { isSidePanelOpen } from "@/sidebar/sidePanel/messenger/api";
 
 export type SidebarConfig = {
   heading: string;
@@ -416,7 +416,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       })),
     );
 
-    if (!isSidebarFrameVisible()) {
+    if (!(await isSidePanelOpen())) {
       console.debug(
         "SidebarStarterBrick:run Skipping run for %s because sidebar is not visible",
         this.id,

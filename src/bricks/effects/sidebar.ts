@@ -18,9 +18,9 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
-import { hideSidebar, showSidebar } from "@/contentScript/sidebarController";
+import { updateSidebar } from "@/contentScript/sidebarController";
+import { hideMySidePanel, showMySidePanel } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
-
 import { logPromiseDuration } from "@/utils/promiseUtils";
 
 export class ShowSidebar extends EffectABC {
@@ -64,9 +64,10 @@ export class ShowSidebar extends EffectABC {
   ): Promise<void> {
     // Don't pass extensionId here because the extensionId in showOptions refers to the extensionId of the panel,
     // not the extensionId of the extension toggling the sidebar
+    await showMySidePanel();
     void logPromiseDuration(
-      "ShowSidebar:showSidebar",
-      showSidebar({
+      "ShowSidebar:updateSidebar",
+      updateSidebar({
         force: forcePanel,
         panelHeading,
         blueprintId: logger.context.blueprintId,
@@ -87,6 +88,6 @@ export class HideSidebar extends EffectABC {
   inputSchema: Schema = SCHEMA_EMPTY_OBJECT;
 
   async effect(): Promise<void> {
-    hideSidebar();
+    await hideMySidePanel();
   }
 }

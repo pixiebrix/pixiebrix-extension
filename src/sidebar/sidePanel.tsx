@@ -15,29 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browserAction } from "@/mv3/api";
+/** @file This file defines the internal API for the sidePanel, only meant to be run in the sidePanel itself */
+
+import { expectContext } from "@/utils/expectContext";
 import {
-  getSidebarPath,
-  openSidePanel,
+  getAssociatedTabId,
+  getAssociatedTarget,
+  hideSidePanel,
+  respondToPings,
 } from "@/sidebar/sidePanel/messenger/api";
+import { updateSidebar } from "@/contentScript/messenger/api";
 
-export default async function initBrowserAction(): Promise<void> {
-  void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
+expectContext("sidebar");
 
-  // Disable by default, so that it can be enabled on a per-tab basis
-  void chrome.sidePanel.setOptions({
-    enabled: false,
-  });
-  browserAction.onClicked.addListener(async (tab) => {
-    await openSidePanel(tab.id, tab.url);
-  });
-  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.url) {
-      // TODO: Drop this once the popover URL behavior is merged into sidebar.html
-      void chrome.sidePanel.setOptions({
-        tabId,
-        path: getSidebarPath(tabId, changeInfo.url),
-      });
-    }
-  });
+export async function hideSelf() {
+  return hideSidePanel(getAssociatedTabId());
+}
+
+export function initSidePanel() {
+  respondToPings();
+
+  // The sidePanel can load independently of the content script, so it should
+  // automatically fetch the data from the content script when it loads.
+  updateSidebar(getAssociatedTarget());
 }

@@ -30,7 +30,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { runMapArgs } from "@/contentScript/messenger/api";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { getTopLevelFrame } from "webext-messenger";
+import { getAssociatedTarget } from "@/sidebar/sidePanel/messenger/api";
 import useAsyncState from "@/hooks/useAsyncState";
 import DelayedRender from "@/components/DelayedRender";
 import { isDeferExpression } from "@/utils/expressionUtils";
@@ -66,7 +66,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
     isLoading,
     error,
   } = useAsyncState(async () => {
-    const topLevelFrame = await getTopLevelFrame();
+    const topLevelFrame = getAssociatedTarget();
 
     const elementVariableReference = `@${elementKey}`;
 

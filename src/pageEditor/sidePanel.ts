@@ -15,7 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file This file MUST be lightweight and free of any logic and dependencies, it's meant to be instant */
-import { toggleSidebarFrame } from "@/contentScript/sidebarDomControllerLite";
+import { type ActivatePanelOptions } from "@/types/sidebarTypes";
+import { getCurrentURL } from "@/pageEditor/utils";
+import { openSidePanel } from "@/sidebar/sidePanel/messenger/api";
 
-toggleSidebarFrame();
+export async function showSidebarFromPageEditor(
+  activateOptions?: ActivatePanelOptions,
+) {
+  await openSidePanel(
+    chrome.devtools.inspectedWindow.tabId,
+    await getCurrentURL(),
+  );
+}
