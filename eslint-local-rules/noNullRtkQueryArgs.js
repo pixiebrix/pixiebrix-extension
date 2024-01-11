@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+const RTK_QUERY_SUFFIXES = ["Query", "QueryState", "QuerySubscription"];
+
 // eslint-disable-next-line unicorn/prefer-module
 module.exports = {
   meta: {
@@ -51,16 +53,19 @@ function isRtkQueryHook(node) {
   if (node && node.type === "CallExpression" && node.callee) {
     return (
       (node.callee.type === "Identifier" &&
-        isRtkQueryHookString(node.callee.name)) ||
+        isRtkQueryHookFormat(node.callee.name)) ||
       (node.callee.type === "MemberExpression" &&
         node.callee.property &&
-        isRtkQueryHookString(node.callee.property.name))
+        isRtkQueryHookFormat(node.callee.property.name))
     );
   }
 
   return false;
 }
 
-function isRtkQueryHookString(str) {
-  return str.startsWith("use") && str.endsWith("Query");
+function isRtkQueryHookFormat(str) {
+  return (
+    str.startsWith("use") &&
+    RTK_QUERY_SUFFIXES.some((suffix) => str.endsWith(suffix))
+  );
 }
