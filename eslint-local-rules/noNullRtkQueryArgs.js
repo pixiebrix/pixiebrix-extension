@@ -89,7 +89,7 @@ function isRtkQueryTriggerAssignment(node) {
   return (
     node.init &&
     node.init.type === "CallExpression" &&
-    isRtkMutationHook(node.init) &&
+    isRtkQueryHookWithTrigger(node.init) &&
     node.id &&
     node.id.type === "ArrayPattern" &&
     node.id.elements.length > 0 &&
@@ -97,8 +97,8 @@ function isRtkQueryTriggerAssignment(node) {
   );
 }
 
-function isFirstArgumentNull(arguments) {
-  return arguments?.length > 0 && arguments?.[0].value === null;
+function isFirstArgumentNull(args) {
+  return args?.length > 0 && args?.[0].value === null;
 }
 
 function isRtkQueryHookFormat(str) {
@@ -122,7 +122,7 @@ function isRtkQueryHook(node) {
   return false;
 }
 
-function isRtkMutationHookFormat(str) {
+function isRtkQueryHookWithTriggerFormat(str) {
   for (const [prefix, suffix] of RTK_TRIGGER_PREFIX_SUFFIXES) {
     if (str.startsWith(prefix) && str.endsWith(suffix)) {
       return true;
@@ -132,14 +132,14 @@ function isRtkMutationHookFormat(str) {
   return false;
 }
 
-function isRtkMutationHook(node) {
+function isRtkQueryHookWithTrigger(node) {
   if (node && node.type === "CallExpression" && node.callee) {
     return (
       (node.callee.type === "Identifier" &&
-        isRtkMutationHookFormat(node.callee.name)) ||
+        isRtkQueryHookWithTriggerFormat(node.callee.name)) ||
       (node.callee.type === "MemberExpression" &&
         node.callee.property &&
-        isRtkMutationHookFormat(node.callee.property.name))
+        isRtkQueryHookWithTriggerFormat(node.callee.property.name))
     );
   }
 
