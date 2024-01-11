@@ -32,11 +32,7 @@ module.exports = {
   create(context) {
     return {
       CallExpression(node) {
-        if (
-          isRtkQueryHook(node) &&
-          node.arguments?.length > 0 &&
-          node.arguments?.[0].value === null
-        ) {
+        if (isRtkQueryHook(node) && isFirstArgumentNull(node.arguments)) {
           context.report({
             node,
             message:
@@ -68,8 +64,7 @@ module.exports = {
               if (
                 reference.identifier.parent &&
                 reference.identifier.parent.type === "CallExpression" &&
-                reference.identifier.parent.arguments?.length > 0 &&
-                reference.identifier.parent.arguments?.[0].value === null
+                isFirstArgumentNull(reference.identifier.parent.arguments)
               ) {
                 context.report({
                   node: reference.identifier.parent,
@@ -85,6 +80,10 @@ module.exports = {
     };
   },
 };
+
+function isFirstArgumentNull(arguments) {
+  return arguments?.length > 0 && arguments?.[0].value === null;
+}
 
 function isRtkQueryHookFormat(str) {
   return (
