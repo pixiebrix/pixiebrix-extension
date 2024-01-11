@@ -44,7 +44,7 @@ import { getTemporaryPanelSidebarEntries } from "@/bricks/transformers/temporary
 import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
 import { logPromiseDuration } from "@/utils/promiseUtils";
 import { waitAnimationFrame } from "@/utils/domUtils";
-import { getDateNow } from "@/types/helpers";
+import { getTimedSequence } from "@/types/helpers";
 
 export const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
@@ -105,7 +105,7 @@ export async function showSidebar(
     // The sidebarSlice handles the race condition with the panels loading by keeping track of the latest pending
     // activatePanel request.
     void sidebarInThisTab
-      .activatePanel(getDateNow(), {
+      .activatePanel(getTimedSequence(), {
         ...activateOptions,
         // If the sidebar wasn't showing, force the behavior. (Otherwise, there's a race on the initial activation,
         // where depending on when the message is received, the sidebar might already be showing a panel)
@@ -131,7 +131,7 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
     console.warn("sidebar is not attached to the page");
   }
 
-  void sidebarInThisTab.activatePanel(getDateNow(), {
+  void sidebarInThisTab.activatePanel(getTimedSequence(), {
     extensionId,
     force: true,
   });
@@ -219,7 +219,7 @@ function renderPanelsIfVisible(): void {
   console.debug("sidebarController:renderPanelsIfVisible");
 
   if (isSidebarFrameVisible()) {
-    void sidebarInThisTab.renderPanels(getDateNow(), panels);
+    void sidebarInThisTab.renderPanels(getTimedSequence(), panels);
   } else {
     console.debug(
       "sidebarController:renderPanelsIfVisible: skipping renderPanels because the sidebar is not visible",
@@ -234,7 +234,10 @@ export function showSidebarForm(entry: Except<FormPanelEntry, "type">): void {
     throw new Error("Cannot add sidebar form if the sidebar is not visible");
   }
 
-  void sidebarInThisTab.showForm(getDateNow(), { type: "form", ...entry });
+  void sidebarInThisTab.showForm(getTimedSequence(), {
+    type: "form",
+    ...entry,
+  });
 }
 
 export function hideSidebarForm(nonce: UUID): void {
@@ -245,7 +248,7 @@ export function hideSidebarForm(nonce: UUID): void {
     return;
   }
 
-  void sidebarInThisTab.hideForm(getDateNow(), nonce);
+  void sidebarInThisTab.hideForm(getTimedSequence(), nonce);
 }
 
 export function showTemporarySidebarPanel(
@@ -259,7 +262,7 @@ export function showTemporarySidebarPanel(
     );
   }
 
-  void sidebarInThisTab.showTemporaryPanel(getDateNow(), {
+  void sidebarInThisTab.showTemporaryPanel(getTimedSequence(), {
     type: "temporaryPanel",
     ...entry,
   });
@@ -276,7 +279,7 @@ export function updateTemporarySidebarPanel(
     );
   }
 
-  sidebarInThisTab.updateTemporaryPanel(getDateNow(), {
+  sidebarInThisTab.updateTemporaryPanel(getTimedSequence(), {
     type: "temporaryPanel",
     ...entry,
   });
@@ -289,7 +292,7 @@ export function hideTemporarySidebarPanel(nonce: UUID): void {
     return;
   }
 
-  void sidebarInThisTab.hideTemporaryPanel(getDateNow(), nonce);
+  void sidebarInThisTab.hideTemporaryPanel(getTimedSequence(), nonce);
 }
 
 /**
@@ -462,7 +465,7 @@ export function showModActivationInSidebar(
   };
 
   void sidebarInThisTab.showModActivationPanel(
-    getDateNow(),
+    getTimedSequence(),
     modActivationPanelEntry,
   );
 }
@@ -481,7 +484,7 @@ export function hideModActivationInSidebar(): void {
     return;
   }
 
-  void sidebarInThisTab.hideModActivationPanel(getDateNow());
+  void sidebarInThisTab.hideModActivationPanel(getTimedSequence());
 }
 
 /**

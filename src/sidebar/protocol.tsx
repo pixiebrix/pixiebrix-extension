@@ -24,14 +24,14 @@ import {
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
 import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
-import { type UUID } from "@/types/stringTypes";
+import { type UUID, type TimedSequence } from "@/types/stringTypes";
 import { sortBy } from "lodash";
-import { type UtcTimestamp } from "@/types/numberTypes";
+import { getTimedSequence } from "@/types/helpers";
 
-let lastMessageSeen = -1 as UtcTimestamp;
+let lastMessageSeen = getTimedSequence();
 // Track activate messages separately. The Sidebar App Redux state has special handling for these messages to account
 // for race conditions in panel loading
-let lastActivateMessageSeen = -1 as UtcTimestamp;
+let lastActivateMessageSeen = getTimedSequence();
 
 export type SidebarListener = {
   onRenderPanels: (panels: PanelEntry[]) => void;
@@ -57,7 +57,7 @@ export type SidebarListener = {
 // keep track messages sent in the interim. This buffer is flushed once the listener is initialized.
 const messageBuffer: Array<{
   method: keyof SidebarListener;
-  timestamp: UtcTimestamp;
+  timestamp: TimedSequence;
   data: Parameters<SidebarListener[keyof SidebarListener]>[0];
 }> = [];
 
@@ -117,7 +117,7 @@ function flushMessageBuffer(): void {
 
 function runListeners<Method extends keyof SidebarListener>(
   method: Method,
-  timestamp: UtcTimestamp,
+  timestamp: TimedSequence,
   data?: Parameters<SidebarListener[Method]>[0],
   { force = false }: { force?: boolean } = {},
 ): void {
@@ -137,8 +137,8 @@ function runListeners<Method extends keyof SidebarListener>(
     return;
   }
 
-  // Use Math.max to account for unordered messages with force
-  lastMessageSeen = Math.max(timestamp, lastMessageSeen) as UtcTimestamp;
+  // Account for unordered messages with force
+  lastMessageSeen = timestamp > lastMessageSeen ? timestamp : lastMessageSeen;
 
   console.debug(`Running ${listeners.length} listener(s) for %s`, method, {
     data,
@@ -156,14 +156,14 @@ function runListeners<Method extends keyof SidebarListener>(
 }
 
 export async function renderPanels(
-  timestamp: UtcTimestamp,
+  timestamp: TimedSequence,
   panels: PanelEntry[],
 ): Promise<void> {
   runListeners("onRenderPanels", timestamp, panels);
 }
 
 export async function activatePanel(
-  timestamp: UtcTimestamp,
+  timestamp: TimedSequence,
   options: ActivatePanelOptions,
 ): Promise<void> {
   if (timestamp < lastActivateMessageSeen) {
@@ -181,39 +181,47 @@ export async function activatePanel(
   runListeners("onActivatePanel", timestamp, options, { force: true });
 }
 
-export async function showForm(timestamp: UtcTimestamp, entry: FormPanelEntry) {
+export async function showForm(
+  timestamp: TimedSequence,
+  entry: FormPanelEntry,
+) {
   runListeners("onShowForm", timestamp, entry);
 }
 
-export async function hideForm(timestamp: UtcTimestamp, nonce: UUID) {
+export async function hideForm(timestamp: TimedSequence, nonce: UUID) {
   runListeners("onHideForm", timestamp, { nonce });
 }
 
 export async function showTemporaryPanel(
-  timestamp: UtcTimestamp,
+  timestamp: TimedSequence,
   entry: TemporaryPanelEntry,
 ) {
   runListeners("onShowTemporaryPanel", timestamp, entry);
 }
 
 export async function updateTemporaryPanel(
-  timestamp: UtcTimestamp,
+  timestamp: TimedSequence,
   entry: TemporaryPanelEntry,
 ) {
   runListeners("onUpdateTemporaryPanel", timestamp, entry);
 }
 
-export async function hideTemporaryPanel(timestamp: UtcTimestamp, nonce: UUID) {
+export async function hideTemporaryPanel(
+  timestamp: TimedSequence,
+  nonce: UUID,
+) {
   runListeners("onHideTemporaryPanel", timestamp, { nonce });
 }
 
 export async function showActivateMods(
-  timestamp: UtcTimestamp,
+  timestamp: TimedSequence,
   entry: ModActivationPanelEntry,
 ): Promise<void> {
   runListeners("onShowActivateRecipe", timestamp, entry);
 }
 
-export async function hideActivateMods(timestamp: UtcTimestamp): Promise<void> {
+export async function hideActivateMods(
+  timestamp: TimedSequence,
+): Promise<void> {
   runListeners("onHideActivateRecipe", timestamp);
 }

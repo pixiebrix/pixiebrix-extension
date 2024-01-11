@@ -21,7 +21,7 @@ import {
   removeListener,
   updateTemporaryPanel,
 } from "@/bricks/transformers/temporaryInfo/receiverProtocol";
-import { UtcTimestamp } from "@/types/numberTypes";
+import { type TimedSequence } from "@/types/stringTypes";
 import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
 
 describe("receiverProtocol", () => {
@@ -34,7 +34,7 @@ describe("receiverProtocol", () => {
     addListener(listener);
 
     await updateTemporaryPanel(
-      0 as UtcTimestamp,
+      "188888:0" as TimedSequence,
       {
         title: "test",
       } as unknown as TemporaryPanelEntry,
@@ -47,7 +47,7 @@ describe("receiverProtocol", () => {
     removeListener(listener);
 
     await updateTemporaryPanel(
-      0 as UtcTimestamp,
+      "188888:0" as TimedSequence,
       {
         title: "test",
       } as unknown as TemporaryPanelEntry,
@@ -65,13 +65,13 @@ describe("receiverProtocol", () => {
     addListener(listener);
 
     await updateTemporaryPanel(
-      1 as UtcTimestamp,
+      "188888:1" as TimedSequence,
       {
         title: "test",
       } as unknown as TemporaryPanelEntry,
     );
     await updateTemporaryPanel(
-      0 as UtcTimestamp,
+      "188888:0" as TimedSequence,
       {
         title: "test",
       } as unknown as TemporaryPanelEntry,

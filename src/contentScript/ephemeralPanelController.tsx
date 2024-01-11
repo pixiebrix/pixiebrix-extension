@@ -20,7 +20,7 @@ import { expectContext } from "@/utils/expectContext";
 import panelInThisTab from "@/bricks/transformers/temporaryInfo/messenger/api";
 import { type UUID } from "@/types/stringTypes";
 import { type Except } from "type-fest";
-import { getDateNow } from "@/types/helpers";
+import { getTimedSequence } from "@/types/helpers";
 
 /**
  * Update a modal/popover panel.
@@ -35,7 +35,7 @@ export function updateTemporaryOverlayPanel(
 ): void {
   expectContext("contentScript");
 
-  panelInThisTab.updateTemporaryPanel(getDateNow(), {
+  panelInThisTab.updateTemporaryPanel(getTimedSequence(), {
     type: "temporaryPanel",
     ...entry,
   });
@@ -47,5 +47,5 @@ export function setTemporaryOverlayPanel(args: {
 }): void {
   expectContext("contentScript");
 
-  panelInThisTab.setTemporaryPanelNonce(getDateNow(), args);
+  panelInThisTab.setTemporaryPanelNonce(getTimedSequence(), args);
 }

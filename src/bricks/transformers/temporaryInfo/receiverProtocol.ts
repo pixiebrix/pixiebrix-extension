@@ -18,10 +18,10 @@
 import reportError from "@/telemetry/reportError";
 import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
 import { remove } from "lodash";
-import { type UUID } from "@/types/stringTypes";
-import { type UtcTimestamp } from "@/types/numberTypes";
+import { type UUID, type TimedSequence } from "@/types/stringTypes";
+import { getTimedSequence } from "@/types/helpers";
 
-let lastMessageSeen = -1;
+let lastMessageSeen = getTimedSequence();
 
 export type PanelListener = {
   /**
@@ -60,7 +60,7 @@ export function removeListener(fn: PanelListener): void {
 
 function runListeners<Method extends keyof PanelListener>(
   method: Method,
-  timestamp: UtcTimestamp,
+  timestamp: TimedSequence,
   data: Parameters<PanelListener[Method]>[0],
   { force = false }: { force?: boolean } = {},
 ): void {
@@ -74,8 +74,8 @@ function runListeners<Method extends keyof PanelListener>(
     return;
   }
 
-  // Use Match.max to account for unordered messages with force
-  lastMessageSeen = Math.max(timestamp, lastMessageSeen);
+  // Account for unordered messages with force
+  lastMessageSeen = timestamp > lastMessageSeen ? timestamp : lastMessageSeen;
 
   console.debug(`Running ${listeners.length} listener(s) for %s`, method, {
     data,
@@ -93,14 +93,14 @@ function runListeners<Method extends keyof PanelListener>(
 }
 
 export async function updateTemporaryPanel(
-  timestamp: UtcTimestamp,
+  timestamp: TimedSequence,
   entry: TemporaryPanelEntry,
 ) {
   runListeners("onUpdateTemporaryPanel", timestamp, entry);
 }
 
 export async function setTemporaryPanelNonce(
-  timestamp: UtcTimestamp,
+  timestamp: TimedSequence,
   payload: { frameNonce: UUID; panelNonce: UUID },
 ) {
   runListeners("onSetPanelNonce", timestamp, payload);
