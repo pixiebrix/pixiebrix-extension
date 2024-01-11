@@ -53,49 +53,49 @@ module.exports = {
         }
       },
       VariableDeclarator(node) {
-        if (
-          node.init &&
-          node.init.type === "CallExpression" &&
-          isRtkMutationHook(node.init)
-        ) {
-          if (
-            node.id &&
-            node.id.type === "ArrayPattern" &&
-            node.id.elements.length > 0 &&
-            node.id.elements[0].type === "Identifier"
-          ) {
-            const mutationTrigger = node.id.elements[0];
-            const references = context
-              .getScope()
-              .references.filter(
-                (reference) =>
-                  reference.identifier.name === mutationTrigger.name,
-              );
+        if (isRtkQueryTriggerAssignment(node)) {
+          const mutationTrigger = node.id.elements[0];
+          const references = context
+            .getScope()
+            .references.filter(
+              (reference) => reference.identifier.name === mutationTrigger.name,
+            );
 
-            references.forEach((reference) => {
-              if (
-                reference.identifier.parent &&
-                reference.identifier.parent.type === "CallExpression" &&
-                isFirstArgumentNull(reference.identifier.parent.arguments)
-              ) {
-                context.report({
-                  node: reference.identifier.parent,
-                  message: ERROR_MESSAGE,
-                  fix(fixer) {
-                    return fixer.replaceText(
-                      reference.identifier.parent.arguments[0],
-                      "undefined",
-                    );
-                  },
-                });
-              }
-            });
+          for (const reference of references) {
+            if (
+              reference.identifier.parent &&
+              reference.identifier.parent.type === "CallExpression" &&
+              isFirstArgumentNull(reference.identifier.parent.arguments)
+            ) {
+              context.report({
+                node: reference.identifier.parent,
+                message: ERROR_MESSAGE,
+                fix(fixer) {
+                  return fixer.replaceText(
+                    reference.identifier.parent.arguments[0],
+                    "undefined",
+                  );
+                },
+              });
+            }
           }
         }
       },
     };
   },
 };
+
+function isRtkQueryTriggerAssignment(node) {
+  return (
+    node.init &&
+    node.init.type === "CallExpression" &&
+    isRtkMutationHook(node.init) &&
+    node.id &&
+    node.id.type === "ArrayPattern" &&
+    node.id.elements.length > 0 &&
+    node.id.elements[0].type === "Identifier"
+  );
+}
 
 function isFirstArgumentNull(arguments) {
   return arguments?.length > 0 && arguments?.[0].value === null;
