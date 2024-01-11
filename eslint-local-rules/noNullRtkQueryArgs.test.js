@@ -39,6 +39,7 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
     { code: "api.endpoints.foo.useQuery(undefined)" },
     { code: "api.endpoints.foo.useQuery('foo')" },
     { code: "foo.useQuery()" },
+    { code: "api.useFooQuery()" },
   ],
   invalid: [
     {
@@ -87,7 +88,7 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
       ],
     },
     {
-      code: "foo.useQuery(null)",
+      code: "api.useFooQuery(null)",
       errors: [
         {
           message:

@@ -32,7 +32,7 @@ module.exports = {
       CallExpression(node) {
         console.log("*** node", node);
         if (
-          (isRtkQueryHookOnEndpointDefinition(node) || isRtkQueryHook(node)) &&
+          isRtkQueryHook(node) &&
           node.arguments?.length > 0 &&
           node.arguments?.[0].value === null
         ) {
@@ -48,21 +48,19 @@ module.exports = {
 };
 
 function isRtkQueryHook(node) {
-  return (
-    node &&
-    node.type === "CallExpression" &&
-    node.callee &&
-    node.callee.type === "Identifier" &&
-    node.callee.name.startsWith("use") &&
-    node.callee.name.endsWith("Query")
-  );
+  if (node && node.type === "CallExpression" && node.callee) {
+    return (
+      (node.callee.type === "Identifier" &&
+        isRtkQueryHookString(node.callee.name)) ||
+      (node.callee.type === "MemberExpression" &&
+        node.callee.property &&
+        isRtkQueryHookString(node.callee.property.name))
+    );
+  }
+
+  return false;
 }
 
-function isRtkQueryHookOnEndpointDefinition(node) {
-  return (
-    node.callee &&
-    node.callee.type === "MemberExpression" &&
-    node.callee.property &&
-    node.callee.property.name === "useQuery"
-  );
+function isRtkQueryHookString(str) {
+  return str.startsWith("use") && str.endsWith("Query");
 }
