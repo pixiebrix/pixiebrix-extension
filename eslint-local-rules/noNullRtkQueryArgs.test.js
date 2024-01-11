@@ -23,6 +23,7 @@ const ruleTester = new RuleTester({
     ecmaFeatures: {
       jsx: true,
     },
+    ecmaVersion: 2021,
   },
 });
 
@@ -42,6 +43,7 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
     { code: "api.useFooQuery()" },
     { code: "api.endpoints.foo.useQuerySubscription()" },
     { code: "api.endpoints.foo.useQueryState()" },
+    { code: "const [foo] = useFooMutation(); foo()" },
   ],
   invalid: [
     {
@@ -109,6 +111,24 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
     },
     {
       code: "api.endpoints.foo.useQueryState(null)",
+      errors: [
+        {
+          message:
+            "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+        },
+      ],
+    },
+    {
+      code: "const [foo] = useFooMutation(); foo(null)",
+      errors: [
+        {
+          message:
+            "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+        },
+      ],
+    },
+    {
+      code: "const [foo] = useFooMutation(); foo(null);",
       errors: [
         {
           message:

@@ -32,7 +32,6 @@ module.exports = {
   create(context) {
     return {
       CallExpression(node) {
-        console.log("*** node", node);
         if (
           isRtkQueryHook(node) &&
           node.arguments?.length > 0 &&
@@ -45,9 +44,54 @@ module.exports = {
           });
         }
       },
+      VariableDeclarator(node) {
+        if (
+          node.init &&
+          node.init.type === "CallExpression" &&
+          isRtkMutationHook(node.init)
+        ) {
+          if (
+            node.id &&
+            node.id.type === "ArrayPattern" &&
+            node.id.elements.length > 0 &&
+            node.id.elements[0].type === "Identifier"
+          ) {
+            const mutationTrigger = node.id.elements[0];
+            const references = context
+              .getScope()
+              .references.filter(
+                (reference) =>
+                  reference.identifier.name === mutationTrigger.name,
+              );
+
+            references.forEach((reference) => {
+              if (
+                reference.identifier.parent &&
+                reference.identifier.parent.type === "CallExpression" &&
+                reference.identifier.parent.arguments?.length > 0 &&
+                reference.identifier.parent.arguments?.[0].value === null
+              ) {
+                context.report({
+                  node: reference.identifier.parent,
+                  message:
+                    // TODO: make this message more specific to mutations
+                    "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+                });
+              }
+            });
+          }
+        }
+      },
     };
   },
 };
+
+function isRtkQueryHookFormat(str) {
+  return (
+    str.startsWith("use") &&
+    RTK_QUERY_SUFFIXES.some((suffix) => str.endsWith(suffix))
+  );
+}
 
 function isRtkQueryHook(node) {
   if (node && node.type === "CallExpression" && node.callee) {
@@ -63,9 +107,20 @@ function isRtkQueryHook(node) {
   return false;
 }
 
-function isRtkQueryHookFormat(str) {
-  return (
-    str.startsWith("use") &&
-    RTK_QUERY_SUFFIXES.some((suffix) => str.endsWith(suffix))
-  );
+function isRtkMutationHookFormat(str) {
+  return str.startsWith("use") && str.endsWith("Mutation");
+}
+
+function isRtkMutationHook(node) {
+  if (node && node.type === "CallExpression" && node.callee) {
+    return (
+      (node.callee.type === "Identifier" &&
+        isRtkMutationHookFormat(node.callee.name)) ||
+      (node.callee.type === "MemberExpression" &&
+        node.callee.property &&
+        isRtkMutationHookFormat(node.callee.property.name))
+    );
+  }
+
+  return false;
 }
