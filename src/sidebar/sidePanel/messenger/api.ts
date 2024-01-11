@@ -92,7 +92,7 @@ export function getSidebarPath(tabId: number, url: string): string {
   return getPopoverUrl(url) ?? "sidebar.html?tabId=" + tabId;
 }
 
-export async function openSidePanel(tabId: number, url: string) {
+export async function openSidePanel(tabId: number, url: string): Promise<void> {
   // Simultaneously define, enable, and open the side panel
   // If we wait too long before calling .open(), we will lose the "user gesture" permission
   void chrome.sidePanel.setOptions({
@@ -101,22 +101,20 @@ export async function openSidePanel(tabId: number, url: string) {
     enabled: true,
   });
 
-  // There is no way to know whether the side panel is open yet, so we call it anyway.
-  // In some cases, `openSidePanel` is called as a precaution and it might work if
-  // it's still part of a user gesture.
-  // If it's not, it will throw an error *even if the side panel is already open*.
-  // The following code silences that error iff the side panel is already open.
-  const openRequest = chrome.sidePanel.open({ tabId });
-  const isOpenRequest = isSidePanelOpen();
-
+  // There is no way to know whether the side panel is open yet, so we call it regardless.
   try {
-    await openRequest;
+    await chrome.sidePanel.open({ tabId });
   } catch (error) {
+    // In some cases, `openSidePanel` is called as a precaution and it might work if
+    // it's still part of a user gesture.
+    // If it's not, it will throw an error *even if the side panel is already open*.
+    // The following code silences that error iff the side panel is already open.
     if (
       getErrorMessage(error).includes("user gesture") &&
-      (await isOpenRequest)
+      (await isSidePanelOpen())
     ) {
       // The `openSidePanel` call was not required in the first place, the error can be silenced
+      // TODO: After switching to MV3, verify whether we drop that `openSidePanel` call
       return;
     }
 
@@ -124,14 +122,14 @@ export async function openSidePanel(tabId: number, url: string) {
   }
 }
 
-export async function hideSidePanel(tabId: number) {
-  void chrome.sidePanel.setOptions({
+export async function hideSidePanel(tabId: number): Promise<void> {
+  await chrome.sidePanel.setOptions({
     tabId,
     enabled: false,
   });
 }
 
-// Approximate sidebar width in pixels. Used to determine whether it's open
+/* Approximate sidebar width in pixels. Used to determine whether it's open */
 const MINIMUM_SIDEBAR_WIDTH = 300;
 
 /**
