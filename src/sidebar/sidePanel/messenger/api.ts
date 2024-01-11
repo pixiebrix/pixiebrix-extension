@@ -30,6 +30,7 @@ import { isScriptableUrl } from "webext-content-scripts";
 import { isObject } from "@/utils/objectUtils";
 import { expectContext } from "@/utils/expectContext";
 import { type Target } from "webext-messenger";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 export function getAssociatedTabId(): number {
   expectContext("sidebar");
@@ -63,11 +64,12 @@ export async function isSidePanelOpen(): Promise<boolean> {
     return false;
   }
 
-  const response = await chrome.runtime.sendMessage<
-    { type: string },
-    boolean | undefined
-  >({ type: PING_MESSAGE });
-  return Boolean(response); // TODO: Drop Boolean() after strictNullChecks migration
+  try {
+    await chrome.runtime.sendMessage({ type: PING_MESSAGE });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function getPopoverUrl(tabUrl: string | undefined): string | null {
@@ -92,12 +94,34 @@ export function getSidebarPath(tabId: number, url: string): string {
 
 export async function openSidePanel(tabId: number, url: string) {
   // Simultaneously define, enable, and open the side panel
+  // If we wait too long before calling .open(), we will lose the "user gesture" permission
   void chrome.sidePanel.setOptions({
     tabId,
     path: getSidebarPath(tabId, url),
     enabled: true,
   });
-  await chrome.sidePanel.open({ tabId });
+
+  // There is no way to know whether the side panel is open yet, so we call it anyway.
+  // In some cases, `openSidePanel` is called as a precaution and it might work if
+  // it's still part of a user gesture.
+  // If it's not, it will throw an error *even if the side panel is already open*.
+  // The following code silences that error iff the side panel is already open.
+  const openRequest = chrome.sidePanel.open({ tabId });
+  const isOpenRequest = isSidePanelOpen();
+
+  try {
+    await openRequest;
+  } catch (error) {
+    if (
+      getErrorMessage(error).includes("user gesture") &&
+      (await isOpenRequest)
+    ) {
+      // The `openSidePanel` call was not required in the first place, the error can be silenced
+      return;
+    }
+
+    throw error;
+  }
 }
 
 export async function hideSidePanel(tabId: number) {
