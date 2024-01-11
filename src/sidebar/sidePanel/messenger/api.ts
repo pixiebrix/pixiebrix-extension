@@ -70,7 +70,7 @@ export async function isSidePanelOpen(): Promise<boolean> {
   return Boolean(response); // TODO: Drop Boolean() after strictNullChecks migration
 }
 
-export function getPopoverUrl(tabUrl: string | undefined): string | null {
+function getPopoverUrl(tabUrl: string | undefined): string | null {
   const popoverUrl = browser.runtime.getURL("restrictedUrlPopup.html");
 
   if (tabUrl?.startsWith(getExtensionConsoleUrl())) {

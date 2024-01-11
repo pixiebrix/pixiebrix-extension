@@ -43,7 +43,7 @@ import { memoizeUntilSettled } from "@/utils/promiseUtils";
 // - Only start one ping at a time
 // - Limit to one request every second (if the user closes the sidebar that quickly, we likely see those errors anyway)
 // - Throw custom error if the sidebar doesn't respond in time
-export const pingSidebar = memoizeUntilSettled(
+const pingSidebar = memoizeUntilSettled(
   throttle(async () => {
     try {
       await sidebarInThisTab.pingSidebar();

@@ -48,7 +48,7 @@ registerContribBlocks();
 registerBuiltinBricks();
 initToaster();
 init();
-void initSidePanel();
+initSidePanel();
 
 // Handle an embedded AA business copilot frame
 void initCopilotMessenger();
