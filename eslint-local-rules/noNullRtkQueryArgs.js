@@ -27,6 +27,7 @@ module.exports = {
       category: "Possible Errors",
       recommended: true,
     },
+    fixable: "code",
   },
 
   create(context) {
@@ -37,6 +38,9 @@ module.exports = {
             node,
             message:
               "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+            fix(fixer) {
+              return fixer.replaceText(node.arguments[0], "undefined");
+            },
           });
         }
       },
@@ -71,6 +75,12 @@ module.exports = {
                   message:
                     // TODO: make this message more specific to mutations
                     "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+                  fix(fixer) {
+                    return fixer.replaceText(
+                      reference.identifier.parent.arguments[0],
+                      "undefined",
+                    );
+                  },
                 });
               }
             });
