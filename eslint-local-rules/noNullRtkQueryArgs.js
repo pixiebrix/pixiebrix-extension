@@ -16,6 +16,12 @@
  */
 
 const RTK_QUERY_SUFFIXES = ["Query", "QueryState", "QuerySubscription"];
+const RTK_TRIGGER_PREFIX_SUFFIXES = [
+  ["useLazy", "Query"],
+  ["use", "LazyQuerySubscription"],
+  ["use", "Mutation"],
+  ["use", "Prefetch"],
+];
 
 // eslint-disable-next-line unicorn/prefer-module
 module.exports = {
@@ -73,7 +79,6 @@ module.exports = {
                 context.report({
                   node: reference.identifier.parent,
                   message:
-                    // TODO: make this message more specific to mutations
                     "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
                   fix(fixer) {
                     return fixer.replaceText(
@@ -117,7 +122,13 @@ function isRtkQueryHook(node) {
 }
 
 function isRtkMutationHookFormat(str) {
-  return str.startsWith("use") && str.endsWith("Mutation");
+  for (const [prefix, suffix] of RTK_TRIGGER_PREFIX_SUFFIXES) {
+    if (str.startsWith(prefix) && str.endsWith(suffix)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 function isRtkMutationHook(node) {
