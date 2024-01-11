@@ -18,6 +18,9 @@
 const noNullRtkQueryArgs = require("./noNullRtkQueryArgs");
 const { RuleTester } = require("eslint");
 
+const ERROR_MESSAGE =
+  "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.";
+
 const ruleTester = new RuleTester({
   parserOptions: {
     ecmaFeatures: {
@@ -50,8 +53,7 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
       code: "useFooQuery(null)",
       errors: [
         {
-          message:
-            "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+          message: ERROR_MESSAGE,
         },
       ],
       output: "useFooQuery(undefined)",
@@ -60,8 +62,7 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
       code: "useFooQuery(null, {})",
       errors: [
         {
-          message:
-            "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+          message: ERROR_MESSAGE,
         },
       ],
       output: "useFooQuery(undefined, {})",
@@ -70,8 +71,7 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
       code: "useFooQuery(null)",
       errors: [
         {
-          message:
-            "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+          message: ERROR_MESSAGE,
         },
       ],
       output: "useFooQuery(undefined)",
@@ -80,8 +80,7 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
       code: "useFooQuery(null, {})",
       errors: [
         {
-          message:
-            "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+          message: ERROR_MESSAGE,
         },
       ],
       output: "useFooQuery(undefined, {})",
@@ -100,8 +99,7 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
       code: "api.useFooQuery(null)",
       errors: [
         {
-          message:
-            "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+          message: ERROR_MESSAGE,
         },
       ],
       output: "api.useFooQuery(undefined)",
@@ -110,8 +108,7 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
       code: "api.endpoints.foo.useQuerySubscription(null)",
       errors: [
         {
-          message:
-            "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+          message: ERROR_MESSAGE,
         },
       ],
       output: "api.endpoints.foo.useQuerySubscription(undefined)",
@@ -120,8 +117,7 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
       code: "api.endpoints.foo.useQueryState(null)",
       errors: [
         {
-          message:
-            "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+          message: ERROR_MESSAGE,
         },
       ],
       output: "api.endpoints.foo.useQueryState(undefined)",
@@ -130,8 +126,7 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
       code: "const [foo] = useFooMutation(); foo(null);",
       errors: [
         {
-          message:
-            "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+          message: ERROR_MESSAGE,
         },
       ],
       output: "const [foo] = useFooMutation(); foo(undefined);",

@@ -23,6 +23,9 @@ const RTK_TRIGGER_PREFIX_SUFFIXES = [
   ["use", "Prefetch"],
 ];
 
+const ERROR_MESSAGE =
+  "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.";
+
 // eslint-disable-next-line unicorn/prefer-module
 module.exports = {
   meta: {
@@ -42,8 +45,7 @@ module.exports = {
         if (isRtkQueryHook(node) && isFirstArgumentNull(node.arguments)) {
           context.report({
             node,
-            message:
-              "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+            message: ERROR_MESSAGE,
             fix(fixer) {
               return fixer.replaceText(node.arguments[0], "undefined");
             },
@@ -78,8 +80,7 @@ module.exports = {
               ) {
                 context.report({
                   node: reference.identifier.parent,
-                  message:
-                    "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+                  message: ERROR_MESSAGE,
                   fix(fixer) {
                     return fixer.replaceText(
                       reference.identifier.parent.arguments[0],
