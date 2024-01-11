@@ -18,8 +18,12 @@
 const noNullRtkQueryArgs = require("./noNullRtkQueryArgs");
 const { RuleTester } = require("eslint");
 
-const ERROR_MESSAGE =
-  "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.";
+const expectedErrors = [
+  {
+    message:
+      "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+  },
+];
 
 const ruleTester = new RuleTester({
   parserOptions: {
@@ -51,84 +55,47 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
   invalid: [
     {
       code: "useFooQuery(null)",
-      errors: [
-        {
-          message: ERROR_MESSAGE,
-        },
-      ],
+      errors: expectedErrors,
       output: "useFooQuery(undefined)",
     },
     {
       code: "useFooQuery(null, {})",
-      errors: [
-        {
-          message: ERROR_MESSAGE,
-        },
-      ],
+      errors: expectedErrors,
       output: "useFooQuery(undefined, {})",
     },
     {
       code: "useFooQuery(null)",
-      errors: [
-        {
-          message: ERROR_MESSAGE,
-        },
-      ],
+      errors: expectedErrors,
       output: "useFooQuery(undefined)",
     },
     {
       code: "useFooQuery(null, {})",
-      errors: [
-        {
-          message: ERROR_MESSAGE,
-        },
-      ],
+      errors: expectedErrors,
       output: "useFooQuery(undefined, {})",
     },
     {
       code: "api.endpoints.foo.useQuery(null)",
-      errors: [
-        {
-          message:
-            "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
-        },
-      ],
+      errors: expectedErrors,
       output: "api.endpoints.foo.useQuery(undefined)",
     },
     {
       code: "api.useFooQuery(null)",
-      errors: [
-        {
-          message: ERROR_MESSAGE,
-        },
-      ],
+      errors: expectedErrors,
       output: "api.useFooQuery(undefined)",
     },
     {
       code: "api.endpoints.foo.useQuerySubscription(null)",
-      errors: [
-        {
-          message: ERROR_MESSAGE,
-        },
-      ],
+      errors: expectedErrors,
       output: "api.endpoints.foo.useQuerySubscription(undefined)",
     },
     {
       code: "api.endpoints.foo.useQueryState(null)",
-      errors: [
-        {
-          message: ERROR_MESSAGE,
-        },
-      ],
+      errors: expectedErrors,
       output: "api.endpoints.foo.useQueryState(undefined)",
     },
     {
       code: "const [foo] = useFooMutation(); foo(null);",
-      errors: [
-        {
-          message: ERROR_MESSAGE,
-        },
-      ],
+      errors: expectedErrors,
       output: "const [foo] = useFooMutation(); foo(undefined);",
     },
   ],
