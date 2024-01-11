@@ -28,12 +28,17 @@ const ruleTester = new RuleTester({
 
 ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
   valid: [
+    { code: "useFooQuery()" },
     { code: "useFooQuery('foo')" },
     { code: "useFooQuery({})" },
     { code: "useFooQuery(undefined)" },
     { code: "useFooQuery('foo', {})" },
     { code: "useFooQuery({}, {})" },
     { code: "useFooQuery(undefined, {})" },
+    { code: "api.endpoints.foo.useQuery()" },
+    { code: "api.endpoints.foo.useQuery(undefined)" },
+    { code: "api.endpoints.foo.useQuery('foo')" },
+    { code: "foo.useQuery()" },
   ],
   invalid: [
     {
@@ -65,6 +70,24 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
     },
     {
       code: "useFooQuery(null, {})",
+      errors: [
+        {
+          message:
+            "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+        },
+      ],
+    },
+    {
+      code: "api.endpoints.foo.useQuery(null)",
+      errors: [
+        {
+          message:
+            "Do not pass null as the first argument to RTK query hooks. If you need to pass no arguments, use undefined instead.",
+        },
+      ],
+    },
+    {
+      code: "foo.useQuery(null)",
       errors: [
         {
           message:
