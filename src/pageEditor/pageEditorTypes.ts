@@ -180,11 +180,6 @@ export interface EditorState {
   deletedElementsByRecipeId: Record<RegistryId, ModComponentFormState[]>;
 
   /**
-   * Newly created recipes that have not been saved yet
-   */
-  newRecipeIds: RegistryId[];
-
-  /**
    * The available installed extensions for the current tab
    */
   availableInstalledIds: UUID[];

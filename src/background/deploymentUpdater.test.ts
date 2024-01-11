@@ -59,17 +59,12 @@ import { type RegistryPackage } from "@/types/contract";
 setContext("background");
 const axiosMock = new MockAdapter(axios);
 
-jest.mock("@/store/settings/settingsStorage", () => ({
-  getSettingsState: jest.fn(),
-  saveSettingsState: jest.fn(),
-}));
+jest.mock("@/store/settings/settingsStorage");
 
-jest.mock("@/hooks/useRefreshRegistries", () => ({
-  refreshRegistries: jest.fn(),
-}));
+jest.mock("@/hooks/useRefreshRegistries");
 
 jest.mock("@/utils/extensionUtils", () => ({
-  forEachTab: jest.fn().mockResolvedValue(undefined),
+  forEachTab: jest.fn(),
   getExtensionVersion: () => browser.runtime.getManifest().version,
 }));
 
@@ -77,9 +72,7 @@ jest.mock("@/utils/extensionUtils", () => ({
 jest.mock("@/telemetry/reportEvent");
 
 jest.mock("@/sidebar/messenger/api", () => {});
-jest.mock("@/contentScript/messenger/api", () => ({
-  insertButton: jest.fn(),
-}));
+jest.mock("@/contentScript/messenger/api");
 
 jest.mock("@/auth/token", () => ({
   getExtensionToken: async () => "TESTTOKEN",
@@ -95,19 +88,17 @@ jest.mock("@/background/installer", () => ({
   isUpdateAvailable: jest.fn().mockReturnValue(false),
 }));
 
-const registryFindMock = registry.find as jest.MockedFunction<
-  typeof registry.find
->;
+const registryFindMock = jest.mocked(registry.find);
 
-const isLinkedMock = isLinked as jest.Mock;
-const readAuthDataMock = readAuthData as jest.Mock;
-const getManifestMock = browser.runtime.getManifest as jest.Mock;
-const openOptionsPageMock = browser.runtime.openOptionsPage as jest.Mock;
-const browserManagedStorageMock = browser.storage.managed.get as jest.Mock;
-const refreshRegistriesMock = refreshRegistries as unknown as jest.Mock;
-const isUpdateAvailableMock = isUpdateAvailable as jest.Mock;
-const getSettingsStateMock = getSettingsState as jest.Mock;
-const saveSettingsStateMock = saveSettingsState as jest.Mock;
+const isLinkedMock = jest.mocked(isLinked);
+const readAuthDataMock = jest.mocked(readAuthData);
+const getManifestMock = jest.mocked(browser.runtime.getManifest);
+const openOptionsPageMock = jest.mocked(browser.runtime.openOptionsPage);
+const browserManagedStorageMock = jest.mocked(browser.storage.managed.get);
+const refreshRegistriesMock = jest.mocked(refreshRegistries);
+const isUpdateAvailableMock = jest.mocked(isUpdateAvailable);
+const getSettingsStateMock = jest.mocked(getSettingsState);
+const saveSettingsStateMock = jest.mocked(saveSettingsState);
 
 async function clearEditorReduxState() {
   await browser.storage.local.remove("persist:editor");
@@ -130,13 +121,13 @@ beforeEach(async () => {
 
   getSettingsStateMock.mockResolvedValue({
     nextUpdate: undefined,
-  });
+  } as any);
 
   browserManagedStorageMock.mockResolvedValue({});
 
   readAuthDataMock.mockResolvedValue({
     organizationId: "00000000-00000000-00000000-00000000",
-  });
+  } as any);
 
   getManifestMock.mockClear();
   refreshRegistriesMock.mockClear();
@@ -394,9 +385,7 @@ describe("updateDeployments", () => {
     isLinkedMock.mockResolvedValue(false);
     readAuthDataMock.mockResolvedValue({} as any);
 
-    jest.doMock("@/background/deploymentUpdater", () => ({
-      uninstallAllDeployments: jest.fn(),
-    }));
+    jest.doMock("@/background/deploymentUpdater");
 
     const { uninstallAllDeployments } = await import(
       "@/background/deploymentUpdater"
@@ -404,7 +393,7 @@ describe("updateDeployments", () => {
 
     await updateDeployments();
 
-    expect((uninstallAllDeployments as jest.Mock).mock.calls).toHaveLength(0);
+    expect(jest.mocked(uninstallAllDeployments).mock.calls).toHaveLength(0);
     expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(0);
   });
@@ -469,7 +458,7 @@ describe("updateDeployments", () => {
     getSettingsStateMock.mockResolvedValue({
       nextUpdate: Date.now() + 1_000_000,
       updatePromptTimestamp: null,
-    });
+    } as any);
 
     axiosMock.onGet().reply(200, {
       flags: [],
@@ -492,7 +481,7 @@ describe("updateDeployments", () => {
     getSettingsStateMock.mockResolvedValue({
       nextUpdate: Date.now() + 1_000_000,
       updatePromptTimestamp: null,
-    });
+    } as any);
 
     axiosMock.onGet().reply(200, {
       flags: [],
@@ -513,7 +502,7 @@ describe("updateDeployments", () => {
     isUpdateAvailableMock.mockReturnValue(true);
     getSettingsStateMock.mockResolvedValue({
       nextUpdate: Date.now() + 1_000_000,
-    });
+    } as any);
 
     axiosMock.onGet().reply(200, {
       flags: ["restricted-version"],

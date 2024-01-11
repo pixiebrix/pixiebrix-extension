@@ -140,6 +140,9 @@ export async function appendRows(
   { googleAccount, spreadsheetId, tabName }: SpreadsheetTarget,
   values: unknown[][],
 ): Promise<AppendValuesResponse> {
+  // Note: We currently don't support intermediate empty columns, which would
+  // require us to use the batchUpdate endpoint instead of append.
+  // See: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/batchUpdate
   const requestConfig: AxiosRequestConfig<ValueRange> = {
     url: `${SHEETS_BASE_URL}/${spreadsheetId}/values/${tabName}:append`,
     method: "post",

@@ -37,18 +37,13 @@ import { toExpression } from "@/utils/expressionUtils";
 
 setContext("devToolsPage");
 
-jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter");
 
 const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
   useSanitizedIntegrationConfigFormikAdapter,
 );
 
-jest.mock("@/hooks/auth", () => ({
-  useAuthOptions: jest.fn(),
-}));
+jest.mock("@/hooks/auth");
 jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
 jest.mock("@/contentScript/messenger/api");
@@ -111,7 +106,7 @@ function renderOptions(formState: ModComponentFormState = makeBaseState()) {
 
 beforeAll(() => {
   registerDefaultWidgets();
-  (useAuthOptions as jest.Mock).mockReturnValue(valueToAsyncState([]));
+  jest.mocked(useAuthOptions).mockReturnValue(valueToAsyncState([]));
 });
 
 beforeEach(() => {

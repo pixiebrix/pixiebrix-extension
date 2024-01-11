@@ -49,9 +49,7 @@ function newId(): UUID {
 
 const servicesLocateMock = jest.mocked(services.locate);
 
-jest.mock("@/hooks/auth", () => ({
-  useAuthOptions: jest.fn(),
-}));
+jest.mock("@/hooks/auth");
 
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
 

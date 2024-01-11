@@ -39,7 +39,7 @@ import { getAttributeSelectorRegex } from "@/utils/inference/selectorInferenceUt
 import { assertNotNullish } from "@/utils/nullishUtils";
 
 /** Valid selector that never returns any element (no `<selectnothing>` element exists) */
-export const NON_EXISTENT_TAG_NAME = "selectnothing";
+const NON_EXISTENT_TAG_NAME = "selectnothing";
 export const BUTTON_TAGS: string[] = [
   "li",
   "button",

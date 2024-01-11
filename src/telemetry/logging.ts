@@ -423,34 +423,6 @@ export async function recordError(
   }
 }
 
-export async function recordWarning(
-  this: MessengerMeta, // Enforce usage via Messenger only
-  context: MessageContext | null,
-  message: string,
-  data?: JsonObject,
-) {
-  // See https://github.com/pixiebrix/pixiebrix-extension/pull/4696#discussion_r1030668438
-  expectContext(
-    "background",
-    "Errors should be recorded via the background page to allow HTTP request batching",
-  );
-
-  void recordLog(context, "warn", message, data);
-
-  if (!(await allowsTrack())) {
-    warnAboutDisabledDNT();
-    return;
-  }
-
-  const { getRollbar } = await import(
-    /* webpackChunkName: "rollbar" */
-    "@/telemetry/initRollbar"
-  );
-
-  const rollbar = await getRollbar();
-  rollbar.warning(message, data);
-}
-
 export async function recordLog(
   context: MessageContext,
   level: MessageLevel,

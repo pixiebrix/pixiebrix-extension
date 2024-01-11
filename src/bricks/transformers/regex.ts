@@ -26,7 +26,7 @@ import { extractRegexLiteral } from "@/analysis/analysisVisitors/regexAnalysis";
 
 import { isNunjucksExpression } from "@/utils/expressionUtils";
 
-export function extractNamedCaptureGroups(pattern: string): string[] {
+function extractNamedCaptureGroups(pattern: string): string[] {
   // Create new regex on each analysis call to avoid state issues with test
   const namedCapturedGroupRegex = /\(\?<(\S+)>.*?\)/g;
 

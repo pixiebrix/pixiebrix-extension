@@ -20,13 +20,10 @@ import SidebarBody from "@/sidebar/SidebarBody";
 import { render } from "@/sidebar/testHelpers";
 import useContextInvalidated from "@/hooks/useContextInvalidated";
 
-jest.mock("@/hooks/useContextInvalidated", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+jest.mock("@/hooks/useContextInvalidated");
 
 jest.mock("@/contentScript/messenger/api", () => ({
-  ensureExtensionPointsInstalled: jest.fn().mockResolvedValue(undefined),
+  ensureExtensionPointsInstalled: jest.fn(),
   getReservedSidebarEntries: jest.fn().mockResolvedValue({
     panels: [],
     forms: [],
@@ -41,7 +38,7 @@ describe("SidebarBody", () => {
   });
 
   test("it renders error when context is invalidated", () => {
-    (useContextInvalidated as jest.Mock).mockReturnValue(true);
+    jest.mocked(useContextInvalidated).mockReturnValue(true);
     const { asFragment } = render(<SidebarBody />);
     expect(asFragment()).toMatchSnapshot();
   });

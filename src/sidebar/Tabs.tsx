@@ -291,7 +291,7 @@ const Tabs: React.FC = () => {
         </Nav>
         <Tab.Content
           className={cx(
-            "p-0 border-0 full-height bg-white",
+            "p-0 border-0 full-height scrollable-area bg-white",
             styles.tabContainer,
           )}
         >

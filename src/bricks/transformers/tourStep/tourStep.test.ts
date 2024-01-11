@@ -38,9 +38,7 @@ beforeEach(() => {
 
 Element.prototype.scrollIntoView = jest.fn();
 
-jest.mock("@/bricks/transformers/ephemeralForm/modalUtils", () => ({
-  showModal: jest.fn().mockResolvedValue(undefined),
-}));
+jest.mock("@/bricks/transformers/ephemeralForm/modalUtils");
 
 jest.mock("@/bricks/transformers/temporaryInfo/popoverUtils", () => ({
   showPopover: jest.fn().mockReturnValue({
@@ -55,8 +53,8 @@ const logger = new ConsoleLogger({
 
 const brick = new TourStepTransformer();
 
-const showModalMock = showModal as jest.MockedFn<typeof showModal>;
-const showPopoverMock = showPopover as jest.MockedFn<typeof showPopover>;
+const showModalMock = jest.mocked(showModal);
+const showPopoverMock = jest.mocked(showPopover);
 
 function startTour() {
   const nonce = uuidv4();
@@ -83,14 +81,14 @@ function makeOptions({
   return brickOptionsFactory({
     logger,
     root,
-    runRendererPipeline: (_i: number) => jest.fn().mockResolvedValue(undefined),
+    runRendererPipeline: (_i: number) => jest.fn(),
     abortSignal: signal,
   });
 }
 
 describe("tourStep", () => {
   beforeEach(() => {
-    (Element.prototype.scrollIntoView as jest.Mock).mockReset();
+    jest.mocked(Element.prototype.scrollIntoView).mockReset();
     showModalMock.mockReset();
     showPopoverMock.mockReset();
 

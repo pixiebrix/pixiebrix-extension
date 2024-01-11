@@ -1,5 +1,4 @@
 @import "@/themes/colors.scss";
-$logoSize: 31px;
 
 .root {
   flex-direction: column;
@@ -10,8 +9,7 @@ $logoSize: 31px;
   background: white;
 
   &.collapsed {
-    flex: 0 0 $logoSize;
-    align-items: center;
+    align-items: stretch;
   }
   &.expanded {
     flex: 0 0 270px;
@@ -55,18 +53,12 @@ $logoSize: 31px;
   }
 }
 
-.logo {
-  background-color: #6462aa; // Make logo icon look square
-  width: $logoSize;
-  height: $logoSize;
-
-  :hover > & {
-    filter: brightness(0.75);
-  }
-}
-
 .header {
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+
+  button {
+    border-radius: 0;
+  }
 }
 
 .actions {
@@ -86,12 +78,19 @@ $logoSize: 31px;
 
 .actionsLeft {
   display: flex;
+  :global(.btn) {
+    // Matches the height of the nav-tabs on its right
+    border: 0;
+  }
+  > :global(.dropdown) {
+    // Makes the Add button fit the height of the action bar
+    display: flex;
+  }
 }
 
 .toggle {
   border: none !important;
   border-radius: 0 !important;
-  width: $logoSize;
   padding: 0 !important;
   background: transparent !important;
 

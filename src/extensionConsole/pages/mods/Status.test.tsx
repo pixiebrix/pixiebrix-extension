@@ -27,9 +27,7 @@ jest.mock("@/extensionConsole/pages/mods/hooks/useModsPageActions", () => ({
   default: jest.fn().mockReturnValue({}),
 }));
 
-const useModPageActionsMock = useModsPageActions as jest.MockedFunction<
-  typeof useModsPageActions
->;
+const useModPageActionsMock = jest.mocked(useModsPageActions);
 
 describe("Status", () => {
   beforeEach(() => {

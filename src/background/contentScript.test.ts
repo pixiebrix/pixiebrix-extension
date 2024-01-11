@@ -51,7 +51,7 @@ jest.mock("webext-permissions", () => ({
 
 let messageListener: any;
 
-const addListenerMock = browser.runtime.onMessage.addListener as jest.Mock;
+const addListenerMock = jest.mocked(browser.runtime.onMessage.addListener);
 const queryAdditionalPermissionsMock = jest.mocked(queryAdditionalPermissions);
 const getTargetStateMock = jest.mocked(getTargetState);
 const injectContentScriptMock = jest.mocked(injectContentScript);

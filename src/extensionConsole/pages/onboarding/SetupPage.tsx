@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { useSetDocumentTitle } from "@/hooks/useSetDocumentTitle";
+import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import DefaultSetupCard from "@/extensionConsole/pages/onboarding/DefaultSetupCard";
 import { getBaseURL } from "@/services/baseService";
 import { useSelector } from "react-redux";

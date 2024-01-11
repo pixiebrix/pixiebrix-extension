@@ -28,10 +28,8 @@ import { renderHook } from "@/extensionConsole/testHelpers";
 
 import { organizationStateFactory } from "@/testUtils/factories/authFactories";
 
-jest.mock("@/hooks/useFlags", () => jest.fn());
-jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
-  useAllModDefinitions: jest.fn(),
-}));
+jest.mock("@/hooks/useFlags");
+jest.mock("@/modDefinitions/modDefinitionHooks");
 
 const mockOnboarding = ({
   hasOrganization = false,
@@ -48,21 +46,27 @@ const mockOnboarding = ({
 
   mockAllApiEndpoints();
 
-  (useAllModDefinitions as jest.Mock).mockImplementation(() => ({
-    data: hasTeamBlueprints
-      ? [
-          {
-            sharing: {
-              organizations: [{} as Organization],
-            },
-          },
-        ]
-      : [],
-  }));
+  jest.mocked(useAllModDefinitions).mockImplementation(
+    () =>
+      ({
+        data: hasTeamBlueprints
+          ? [
+              {
+                sharing: {
+                  organizations: [{} as Organization],
+                },
+              },
+            ]
+          : [],
+      }) as any,
+  );
 
-  (useFlags as jest.Mock).mockImplementation(() => ({
-    restrict: () => hasRestrictedFlag,
-  }));
+  jest.mocked(useFlags).mockImplementation(
+    () =>
+      ({
+        restrict: () => hasRestrictedFlag,
+      }) as any,
+  );
 };
 
 describe("useOnboarding", () => {

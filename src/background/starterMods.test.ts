@@ -49,13 +49,8 @@ jest.mock("@/auth/token", () => ({
   isLinked: jest.fn().mockResolvedValue(true),
 }));
 
-jest.mock("@/utils/extensionUtils", () => ({
-  forEachTab: jest.fn().mockResolvedValue(undefined),
-}));
-
-jest.mock("./refreshRegistries", () => ({
-  refreshRegistries: jest.fn().mockResolvedValue(undefined),
-}));
+jest.mock("@/utils/extensionUtils");
+jest.mock("./refreshRegistries");
 
 const isLinkedMock = jest.mocked(isLinked);
 const refreshRegistriesMock = jest.mocked(refreshRegistries);

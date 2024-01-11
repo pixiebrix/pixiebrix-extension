@@ -36,10 +36,7 @@ import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
 
 const axiosMock = new MockAdapter(axios);
 
-jest.mock("@/services/apiClient", () => ({
-  getLinkedApiClient: jest.fn(),
-  maybeGetLinkedApiClient: jest.fn(),
-}));
+jest.mock("@/services/apiClient");
 
 jest.mocked(getLinkedApiClient).mockResolvedValue(axios.create());
 jest.mocked(maybeGetLinkedApiClient).mockResolvedValue(axios.create());

@@ -95,6 +95,28 @@ function updateManifestToV3(manifestV2) {
 }
 
 /**
+ * Add internal URLs to the content scripts targeting the Admin Console so the Extension can talk to
+ * a locally running Admin Console during development.
+ *
+ * @param {chrome.runtime.Manifest} manifest
+ * @param {string[]} internal
+ */
+function addInternalUrlsToContentScripts(manifest, internal) {
+  const ADMIN_CONSOLE_MATCH_PATTERN = "https://*.pixiebrix.com/*";
+
+  for (const [index, contentScript] of Object.entries(
+    manifest.content_scripts,
+  )) {
+    if (contentScript.matches.includes(ADMIN_CONSOLE_MATCH_PATTERN)) {
+      manifest.content_scripts[index].matches = excludeDuplicatePatterns([
+        ...contentScript.matches,
+        ...internal,
+      ]);
+    }
+  }
+}
+
+/**
  * @param {chrome.runtime.ManifestV2} manifestV2
  * @returns chrome.runtime.Manifest
  */
@@ -133,13 +155,17 @@ function customizeManifest(manifestV2, options = {}) {
 
   manifest.content_security_policy = policy.toString();
 
-  if (env.EXTERNALLY_CONNECTABLE) {
-    manifest.externally_connectable.matches = excludeDuplicatePatterns([
-      ...manifest.externally_connectable.matches,
-      ...env.EXTERNALLY_CONNECTABLE.split(","),
-      ...internal,
-    ]);
-  }
+  const externallyConnectable = [
+    ...manifest.externally_connectable.matches,
+    ...(env.EXTERNALLY_CONNECTABLE?.split(",") ?? []),
+    ...internal,
+  ];
+
+  manifest.externally_connectable.matches = excludeDuplicatePatterns(
+    externallyConnectable,
+  );
+
+  addInternalUrlsToContentScripts(manifest, internal);
 
   if (manifestVersion === 3) {
     return updateManifestToV3(manifest);

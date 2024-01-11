@@ -36,11 +36,7 @@ import { isLinked } from "@/auth/token";
 import { array } from "cooky-cutter";
 import { MARKETPLACE_URL } from "@/urlConstants";
 
-jest.mock("@/contentScript/sidebarController", () => ({
-  showSidebar: jest.fn(),
-  showModActivationInSidebar: jest.fn(),
-  hideModActivationInSidebar: jest.fn(),
-}));
+jest.mock("@/contentScript/sidebarController");
 
 jest.mock("@/auth/token", () => ({
   isLinked: jest.fn().mockResolvedValue(true),
@@ -56,16 +52,8 @@ jest.mock("@/store/extensionsStorage", () => ({
   getActivatedModIds: jest.fn().mockResolvedValue([]),
 }));
 
-jest.mock("@/background/messenger/external/_implementation", () => ({
-  setActivatingMods: jest.fn(),
-  getActivatingModIds: jest.fn(),
-}));
-
-jest.mock("@/sidebar/store", () => ({
-  persistor: {
-    flush: jest.fn(),
-  },
-}));
+jest.mock("@/background/messenger/external/_implementation");
+jest.mock("@/sidebar/store");
 
 const showSidebarMock = jest.mocked(showModActivationInSidebar);
 const getActivatedModIdsMock = jest.mocked(getActivatedModIds);
@@ -89,7 +77,7 @@ describe("marketplace enhancements", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
     document.body.innerHTML = getDocument(activateButtonsHtml).body.innerHTML;
-    (isReadyInThisDocument as jest.Mock).mockImplementation(() => true);
+    jest.mocked(isReadyInThisDocument).mockImplementation(() => true);
     getActivatedModIdsMock.mockResolvedValue(new Set());
   });
 

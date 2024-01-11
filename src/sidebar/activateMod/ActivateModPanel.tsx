@@ -135,7 +135,7 @@ const ModName: React.FC<{ modDefinition: ModDefinition }> = ({
   modDefinition,
 }) => <div className={styles.modName}>{modDefinition.metadata.name}</div>;
 
-export const SuccessMessage: React.FC<{
+const SuccessMessage: React.FC<{
   includesQuickBar: boolean;
   numMods: number;
 }> = ({ numMods, includesQuickBar }) => {

@@ -196,7 +196,7 @@ interface Dimensions {
   paddingTop: number;
   paddingBottom: number;
 }
-export function getElementDimensions(domElement: Element): Dimensions {
+function getElementDimensions(domElement: Element): Dimensions {
   const calculatedStyle = window.getComputedStyle(domElement);
   return {
     borderLeft: Number.parseInt(calculatedStyle.borderLeftWidth, 10),

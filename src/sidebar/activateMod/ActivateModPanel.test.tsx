@@ -55,13 +55,9 @@ import useActivateRecipe, {
 } from "@/activation/useActivateRecipe";
 import brickRegistry from "@/bricks/registry";
 
-jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
-  useRequiredModDefinitions: jest.fn(),
-}));
+jest.mock("@/modDefinitions/modDefinitionHooks");
 
-jest.mock("@/sidebar/sidebarSelectors", () => ({
-  selectSidebarHasModPanels: jest.fn(),
-}));
+jest.mock("@/sidebar/sidebarSelectors");
 
 const useRequiredModDefinitionsMock = jest.mocked(useRequiredModDefinitions);
 const checkModDefinitionPermissionsMock = jest.mocked(
@@ -91,10 +87,7 @@ jest.mock("@/registry/internal", () => ({
   resolveRecipe: jest.fn().mockResolvedValue([]),
 }));
 
-jest.mock("@/hooks/useQuickbarShortcut", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+jest.mock("@/hooks/useQuickbarShortcut");
 
 const useQuickbarShortcutMock = jest.mocked(useQuickbarShortcut);
 

@@ -98,6 +98,22 @@ module.exports = {
         selector:
           "CallExpression[callee.object.property.name='runtime'][callee.property.name='getURL'][arguments.0.value='options.html']",
       },
+      {
+        message: "Use `jest.mocked(fn)` instead of `fn as jest.Mock`.",
+        selector: "TSAsExpression TSQualifiedName[right.name='Mock']",
+      },
+      {
+        message:
+          "Use `jest.mocked(fn)` instead of `fn as jest.MockedFunction`.",
+        selector: "TSAsExpression TSQualifiedName[right.name='MockedFunction']",
+      },
+      {
+        message:
+          "Unless the code is using .then(), calling `.mockResolvedValue(undefined)` is the same as leaving it out",
+        selector:
+          "CallExpression[callee.property.name='mockResolvedValue'][arguments.0.name='undefined'][arguments.0.type='Identifier']",
+      },
+      // NOTE: If you add more rules, add the tests to eslint-local-rules/noRestrictedSyntax.ts
     ],
 
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775

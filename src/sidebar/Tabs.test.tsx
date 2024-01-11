@@ -46,14 +46,15 @@ async function setupPanelsAndRender(options: {
     showModLauncher = true,
     reservedSidebarEntries = {},
   } = options;
-  (messengerApi.getReservedSidebarEntries as jest.Mock).mockImplementation(
-    () => ({
-      panels: [],
-      temporaryPanels: [],
-      forms: [],
-      modActivationPanel: null,
-      ...reservedSidebarEntries,
-    }),
+  jest.mocked(messengerApi.getReservedSidebarEntries).mockImplementation(
+    () =>
+      ({
+        panels: [],
+        temporaryPanels: [],
+        forms: [],
+        modActivationPanel: null,
+        ...reservedSidebarEntries,
+      }) as any,
   );
 
   const utils = render(<Tabs />, {
@@ -106,13 +107,14 @@ describe("Tabs", () => {
   });
 
   describe("Mod Launcher", () => {
-    (messengerApi.getReservedSidebarEntries as jest.Mock).mockImplementation(
-      () => ({
-        panels: [],
-        temporaryPanels: [],
-        forms: [],
-        modActivationPanel: null,
-      }),
+    jest.mocked(messengerApi.getReservedSidebarEntries).mockImplementation(
+      () =>
+        ({
+          panels: [],
+          temporaryPanels: [],
+          forms: [],
+          modActivationPanel: null,
+        }) as any,
     );
 
     test("renders with mod launcher visible if there are no other visible mods", async () => {
@@ -228,13 +230,14 @@ describe("Tabs", () => {
   });
 
   describe("Persistent Panels", () => {
-    (messengerApi.getReservedSidebarEntries as jest.Mock).mockImplementation(
-      () => ({
-        panels: [],
-        temporaryPanels: [],
-        forms: [],
-        modActivationPanel: null,
-      }),
+    jest.mocked(messengerApi.getReservedSidebarEntries).mockImplementation(
+      () =>
+        ({
+          panels: [],
+          temporaryPanels: [],
+          forms: [],
+          modActivationPanel: null,
+        }) as any,
     );
 
     test("can close a panel when mod launcher is available", async () => {

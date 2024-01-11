@@ -26,20 +26,14 @@ import { Provider } from "react-redux";
 import {
   type Action,
   type AnyAction,
-  type CombinedState,
-  configureStore,
   type EnhancedStore,
-  type PreloadedState,
-  type Reducer,
-  type ReducersMapObject,
-  type ThunkDispatch,
   type Middleware,
+  type ThunkDispatch,
 } from "@reduxjs/toolkit";
-
 import {
-  // eslint-disable-next-line no-restricted-imports -- test file for helpers
+  // eslint-disable-next-line no-restricted-imports -- need the originals
   Form,
-  // eslint-disable-next-line no-restricted-imports -- test file for helpers
+  // eslint-disable-next-line no-restricted-imports -- need the originals
   Formik,
   type FormikErrors,
   type FormikHelpers,
@@ -67,72 +61,6 @@ export const waitForEffect = async () =>
   act(async () => {
     // Awaiting the async state update
   });
-
-/**
- * Runs pending jest timers within the "act" wrapper
- */
-export const runPendingTimers = async () =>
-  act(async () => {
-    jest.runOnlyPendingTimers();
-  });
-
-// NoInfer is internal type of @reduxjs/toolkit tsHelpers
-declare type NoInfer<T> = [T][T extends any ? 0 : never];
-type CreateRenderFunctionOptions<TState, TAction extends Action, TProps> = {
-  reducer: Reducer<TState, TAction> | ReducersMapObject<TState, TAction>;
-  preloadedState?: PreloadedState<CombinedState<NoInfer<TState>>>;
-
-  ComponentUnderTest: React.ComponentType<TProps>;
-  defaultProps?: TProps;
-};
-
-export type RenderFunctionWithRedux<
-  S = any,
-  // eslint-disable-next-line @typescript-eslint/ban-types -- the type copied from Redux typings
-  P = {},
-> = (overrides?: {
-  propsOverride?: Partial<P>;
-  stateOverride?: Partial<S>;
-}) => RenderResult;
-
-/**
- * @deprecated Prefer using `createRenderWithWrappers` instead
- */
-export function createRenderFunctionWithRedux<
-  S = any,
-  A extends Action = AnyAction,
-  // eslint-disable-next-line @typescript-eslint/ban-types -- the type copied from Redux typings
-  P = {},
->({
-  reducer,
-  preloadedState,
-  ComponentUnderTest,
-  defaultProps,
-}: CreateRenderFunctionOptions<S, A, P>): RenderFunctionWithRedux<S, P> {
-  return (overrides?: {
-    propsOverride?: Partial<P>;
-    stateOverride?: Partial<S>;
-  }) => {
-    const store = configureStore({
-      reducer,
-      preloadedState: {
-        ...preloadedState,
-        ...overrides?.stateOverride,
-      },
-    });
-
-    const props = {
-      ...defaultProps,
-      ...overrides?.propsOverride,
-    };
-
-    return render(
-      <Provider store={store}>
-        <ComponentUnderTest {...props} />
-      </Provider>,
-    );
-  };
-}
 
 type SetupRedux = (
   dispatch: ThunkDispatch<unknown, unknown, AnyAction>,

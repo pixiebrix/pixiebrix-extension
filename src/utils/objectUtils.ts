@@ -20,10 +20,6 @@ import { type JsonObject } from "type-fest";
 import safeJsonStringify from "json-stringify-safe";
 import { isPlainObject, mapValues, partial, pickBy } from "lodash";
 
-export function isGetter(obj: Record<string, unknown>, prop: string): boolean {
-  return Boolean(Object.getOwnPropertyDescriptor(obj, prop)?.get);
-}
-
 /**
  * Return all property names (including non-enumerable) in the prototype hierarchy.
  */

@@ -46,13 +46,9 @@ import {
 } from "@/testUtils/factories/brickFactories";
 import { toExpression } from "@/utils/expressionUtils";
 
-jest.mock("@/components/form/FormErrorContext", () => ({
-  useFormErrorSettings: jest.fn(),
-}));
+jest.mock("@/components/form/FormErrorContext");
 
-const useFormErrorSettingsMock = useFormErrorSettings as jest.MockedFunction<
-  typeof useFormErrorSettings
->;
+const useFormErrorSettingsMock = jest.mocked(useFormErrorSettings);
 
 describe("useFieldAnnotations", () => {
   test("shows formik error annotation", () => {

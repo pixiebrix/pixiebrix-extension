@@ -15,10 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface Visitor {
-  visit: (node: Node | Element) => boolean;
-}
+import { define } from "cooky-cutter";
+import { type MessengerMeta, type Sender } from "webext-messenger";
 
-export interface RootInstanceVisitor<T> extends Visitor {
-  readonly rootInstances: T[];
-}
+export const messengerMetaFactory = define<MessengerMeta>({
+  trace: [
+    {
+      tab: {
+        id: 42,
+      },
+    } as Sender,
+  ],
+});

@@ -39,11 +39,9 @@ import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
-jest.mock("@/runtime/reducePipeline", () => ({
-  reduceExtensionPipeline: jest.fn().mockResolvedValue(undefined),
-}));
+jest.mock("@/runtime/reducePipeline");
 
-const reduceExtensionPipelineMock = reduceExtensionPipeline as jest.Mock;
+const reduceExtensionPipelineMock = jest.mocked(reduceExtensionPipeline);
 
 globalThis.requestIdleCallback = jest.fn((callback) => {
   (callback as any)();

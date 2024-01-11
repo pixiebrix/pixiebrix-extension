@@ -22,7 +22,7 @@ import { uniq } from "lodash";
 import { $safeFind } from "@/utils/domUtils";
 
 // Adapted from https://github.com/refined-github/refined-github/blob/main/source/helpers/get-text-nodes.ts
-export function getTextNodes(roots: Node[]): Text[] {
+function getTextNodes(roots: Node[]): Text[] {
   const textNodes: Text[] = [];
 
   for (const root of roots) {

@@ -29,7 +29,7 @@ import genericOptionsFactory, {
 import { buildYup } from "schema-to-yup";
 import * as Yup from "yup";
 import reportError from "@/telemetry/reportError";
-import { useSetDocumentTitle } from "@/hooks/useSetDocumentTitle";
+import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import FieldRuntimeContext, {
   type RuntimeContext,

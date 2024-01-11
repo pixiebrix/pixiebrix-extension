@@ -32,20 +32,16 @@ import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors
 import { produce } from "immer";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
-jest.mock("@/contentScript/messenger/api", () => ({
-  checkAvailable: jest.fn(),
-}));
+jest.mock("@/contentScript/messenger/api");
 
-jest.mock("@/pageEditor/utils", () => ({
-  getCurrentURL: jest.fn(),
-}));
+jest.mock("@/pageEditor/utils");
 
 const { reducer: extensionsReducer } = extensionsSlice;
 
 describe("checkActiveElementAvailability", () => {
   test("it checks the active element correctly", async () => {
     const testUrl = "https://www.myUrl.com/*";
-    (getCurrentURL as jest.Mock).mockResolvedValue(testUrl);
+    jest.mocked(getCurrentURL).mockResolvedValue(testUrl);
 
     const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {
@@ -93,13 +89,15 @@ describe("checkActiveElementAvailability", () => {
     store.dispatch(actions.addElement(unavailableDynamicExtension));
     store.dispatch(actions.selectInstalled(availableDynamicExtension));
 
-    (checkAvailable as jest.Mock).mockImplementation(
-      async (
-        target: Target | PageTarget,
-        availability: Availability,
-        url: string,
-      ) => backgroundCheckAvailable(availability, url),
-    );
+    jest
+      .mocked(checkAvailable)
+      .mockImplementation(
+        async (
+          target: Target | PageTarget,
+          availability: Availability,
+          url: string,
+        ) => backgroundCheckAvailable(availability, url),
+      );
 
     await store.dispatch(actions.checkAvailableDynamicElements());
     await store.dispatch(actions.checkAvailableInstalledExtensions());

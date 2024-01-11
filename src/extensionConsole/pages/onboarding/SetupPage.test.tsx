@@ -35,13 +35,7 @@ import notify from "@/utils/notify";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
 
 // Mock notify to assert success/failure because I was having issues writing assertions over the history.
-jest.mock("@/utils/notify", () => ({
-  __esModule: true,
-  default: {
-    success: jest.fn(),
-    error: jest.fn(),
-  },
-}));
+jest.mock("@/utils/notify");
 
 const notifySuccessMock = jest.mocked(notify.success);
 

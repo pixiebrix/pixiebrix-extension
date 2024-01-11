@@ -29,14 +29,12 @@ import { authSlice } from "@/auth/authSlice";
 import { useUpdateAvailable } from "@/extensionConsole/pages/UpdateBanner";
 import { type AuthState } from "@/auth/authTypes";
 
-jest.mock("@/extensionConsole/pages/UpdateBanner", () => ({
-  useUpdateAvailable: jest.fn(),
-}));
+jest.mock("@/extensionConsole/pages/UpdateBanner");
 
 browser.runtime.reload = jest.fn();
 
-const reloadMock = browser.runtime.reload as jest.Mock;
-const useUpdateAvailableMock = useUpdateAvailable as jest.Mock;
+const reloadMock = jest.mocked(browser.runtime.reload);
+const useUpdateAvailableMock = jest.mocked(useUpdateAvailable);
 
 beforeEach(() => {
   reloadMock.mockReset();
@@ -75,7 +73,7 @@ describe("DeploymentModal", () => {
     const date = new Date("12/31/1998");
     MockDate.set(date);
 
-    (useUpdateAvailable as jest.Mock).mockReturnValue(true);
+    jest.mocked(useUpdateAvailable).mockReturnValue(true);
 
     renderModal(
       {
@@ -96,7 +94,7 @@ describe("DeploymentModal", () => {
     const date = new Date("12/31/1998");
     MockDate.set(date);
 
-    (useUpdateAvailable as jest.Mock).mockReturnValue(true);
+    jest.mocked(useUpdateAvailable).mockReturnValue(true);
 
     renderModal(
       {
@@ -146,7 +144,7 @@ describe("DeploymentModal", () => {
     const time = new Date("12/31/1998").getTime();
     MockDate.set(time);
 
-    (useUpdateAvailable as jest.Mock).mockReturnValue(true);
+    jest.mocked(useUpdateAvailable).mockReturnValue(true);
 
     renderModal(
       {
@@ -172,7 +170,7 @@ describe("DeploymentModal", () => {
     const date = new Date("12/31/1998");
     MockDate.set(date);
 
-    (useUpdateAvailable as jest.Mock).mockReturnValue(false);
+    jest.mocked(useUpdateAvailable).mockReturnValue(false);
 
     renderModal(
       {
@@ -197,7 +195,7 @@ describe("DeploymentModal", () => {
     const date = new Date("12/31/1998");
     MockDate.set(date);
 
-    (useUpdateAvailable as jest.Mock).mockReturnValue(false);
+    jest.mocked(useUpdateAvailable).mockReturnValue(false);
 
     renderModal(
       {

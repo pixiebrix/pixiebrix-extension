@@ -29,35 +29,21 @@ import {
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import userEvent from "@testing-library/user-event";
 
-jest.mock(
-  "@/bricks/transformers/temporaryInfo/useTemporaryPanelDefinition",
-  () => ({
-    __esModule: true,
-    default: jest.fn(),
-  }),
-);
+jest.mock("@/bricks/transformers/temporaryInfo/useTemporaryPanelDefinition");
 
-jest.mock("@/contentScript/messenger/api", () => ({
-  cancelTemporaryPanel: jest.fn(),
-  resolveTemporaryPanel: jest.fn(),
-}));
+jest.mock("@/contentScript/messenger/api");
 
 jest.mock("@/sidebar/PanelBody", () => ({
   __esModule: true,
   default: jest.fn(() => <div data-testid="panel-body"></div>),
 }));
 
-const useTemporaryPanelDefinitionMock =
-  useTemporaryPanelDefinition as jest.MockedFunction<
-    typeof useTemporaryPanelDefinition
-  >;
+const useTemporaryPanelDefinitionMock = jest.mocked(
+  useTemporaryPanelDefinition,
+);
 
-const cancelTemporaryPanelMock = cancelTemporaryPanel as jest.MockedFunction<
-  typeof cancelTemporaryPanel
->;
-const resolveTemporaryPanelMock = resolveTemporaryPanel as jest.MockedFunction<
-  typeof resolveTemporaryPanel
->;
+const cancelTemporaryPanelMock = jest.mocked(cancelTemporaryPanel);
+const resolveTemporaryPanelMock = jest.mocked(resolveTemporaryPanel);
 
 describe("EphemeralPanel", () => {
   beforeEach(() => {

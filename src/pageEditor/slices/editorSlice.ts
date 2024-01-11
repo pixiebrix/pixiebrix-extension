@@ -113,7 +113,6 @@ export const initialState: EditorState = {
   visibleModalKey: null,
   keepLocalCopyOnCreateRecipe: false,
   deletedElementsByRecipeId: {},
-  newRecipeIds: [],
   availableInstalledIds: [],
   isPendingInstalledExtensions: false,
   availableDynamicIds: [],
@@ -709,38 +708,6 @@ export const editorSlice = createSlice({
     ) {
       state.visibleModalKey = ModalKey.CREATE_RECIPE;
       state.keepLocalCopyOnCreateRecipe = action.payload.keepLocalCopy;
-    },
-    finishSaveAsNewRecipe(
-      state,
-      action: PayloadAction<{
-        oldRecipeId: RegistryId;
-        newRecipeId: RegistryId;
-        metadata: ModMetadataFormState;
-        options: ModOptionsDefinition;
-      }>,
-    ) {
-      const { oldRecipeId, newRecipeId, metadata, options } = action.payload;
-
-      // Remove old recipe extension form states
-      for (const element of state.elements.filter(
-        (element) => element.recipe?.id === oldRecipeId,
-      )) {
-        removeElement(state, element.uuid);
-      }
-
-      // Clear deleted elements
-      delete state.deletedElementsByRecipeId[oldRecipeId];
-
-      // Select the new recipe
-      selectRecipeId(state, newRecipeId);
-
-      // Set the metadata and options
-      editRecipeMetadata(state, metadata);
-      editRecipeOptionsDefinitions(state, options);
-
-      // Clean up the old metadata and options
-      delete state.dirtyRecipeMetadataById[oldRecipeId];
-      delete state.dirtyRecipeOptionsById[oldRecipeId];
     },
     addNode(
       state,

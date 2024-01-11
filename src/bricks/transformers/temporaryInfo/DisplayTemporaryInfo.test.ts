@@ -61,28 +61,16 @@ import { toExpression } from "@/utils/expressionUtils";
   (path) => `chrome-extension://abc/${path}`,
 );
 
-jest.mock("@/bricks/transformers/ephemeralForm/modalUtils", () => ({
-  showModal: jest.fn(),
-}));
+jest.mock("@/bricks/transformers/ephemeralForm/modalUtils");
 const showModalMock = jest.mocked(showModal);
 
-jest.mock("@/contentScript/sidebarController", () => ({
-  showSidebar: jest.fn(),
-  showTemporarySidebarPanel: jest.fn(),
-  updateTemporarySidebarPanel: jest.fn(),
-}));
+jest.mock("@/contentScript/sidebarController");
 const showTemporarySidebarPanelMock = jest.mocked(showTemporarySidebarPanel);
 const updateTemporarySidebarPanelMock = jest.mocked(
   updateTemporarySidebarPanel,
 );
 
-jest.mock("@/bricks/transformers/temporaryInfo/temporaryPanelProtocol", () => ({
-  registerEmptyTemporaryPanel: jest.fn(),
-  waitForTemporaryPanel: jest.fn(),
-  stopWaitingForTemporaryPanels: jest.fn(),
-  cancelTemporaryPanelsForExtension: jest.fn(),
-  updatePanelDefinition: jest.fn(),
-}));
+jest.mock("@/bricks/transformers/temporaryInfo/temporaryPanelProtocol");
 const registerEmptyTemporaryPanelMock = jest.mocked(
   registerEmptyTemporaryPanel,
 );

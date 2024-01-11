@@ -48,22 +48,3 @@ export function onDeferredGet(
 
   return valuePromise;
 }
-
-/**
- * Helper method to provide a deferred response to a POST request.
- */
-export function onDeferredPost(
-  matcher?: string | RegExp,
-): DeferredPromise<unknown> {
-  const valuePromise = pDefer<unknown>();
-
-  // eslint-disable-next-line promise/prefer-await-to-then -- transform value
-  const responsePromise = valuePromise.promise.then((value) => [201, value]);
-
-  appApiMock.onPost(matcher).reply(async () => {
-    console.debug("onDeferredPost", matcher);
-    return responsePromise;
-  });
-
-  return valuePromise;
-}

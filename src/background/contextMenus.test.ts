@@ -51,7 +51,6 @@ const ensureContextMenuMock = jest.mocked(backgroundApi.ensureContextMenu);
 
 describe("contextMenus", () => {
   beforeEach(() => {
-    updateMenuMock.mockResolvedValue(undefined);
     ensureContextMenuMock.mockImplementation(ensureContextMenu);
   });
 

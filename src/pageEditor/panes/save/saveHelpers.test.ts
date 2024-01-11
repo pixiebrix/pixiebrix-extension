@@ -16,16 +16,14 @@
  */
 
 import {
-  buildRecipe,
+  buildNewMod,
   findMaxIntegrationDependencyApiVersion,
   generateScopeBrickId,
-  isRecipeEditable,
-  replaceRecipeExtension,
+  replaceModComponent,
   selectExtensionPointIntegrations,
 } from "@/pageEditor/panes/save/saveHelpers";
 import { validateRegistryId, validateSemVerString } from "@/types/helpers";
 import menuItemExtensionAdapter from "@/pageEditor/starterBricks/menuItem";
-import { type UnknownObject } from "@/types/objectTypes";
 import {
   internalStarterBrickMetaFactory,
   lookupExtensionPoint,
@@ -52,7 +50,6 @@ import {
   type ModComponentBase,
   type UnresolvedModComponent,
 } from "@/types/modComponentTypes";
-import { type EditablePackageMetadata } from "@/types/contract";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import {
   defaultModDefinitionFactory,
@@ -71,8 +68,7 @@ import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 jest.mock("@/background/contextMenus");
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Wrong
-  ...(jest.requireActual("@/pageEditor/starterBricks/base") as UnknownObject),
+  ...jest.requireActual("@/pageEditor/starterBricks/base"),
   lookupExtensionPoint: jest.fn(),
 }));
 
@@ -93,8 +89,8 @@ describe("generatePersonalBrickId", () => {
   });
 });
 
-describe("replaceRecipeExtension round trip", () => {
-  test("single extension with versioned extensionPoint", async () => {
+describe("replaceModComponent round trip", () => {
+  test("single mod component with versioned extensionPoint", async () => {
     const starterBrick = starterBrickConfigFactory();
     const modDefinition = modDefinitionWithVersionedStarterBrickFactory({
       extensionPointId: starterBrick.metadata.id,
@@ -109,22 +105,22 @@ describe("replaceRecipeExtension round trip", () => {
       }),
     );
 
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue(starterBrick);
+    jest.mocked(lookupExtensionPoint).mockResolvedValue(starterBrick);
 
-    const element = await menuItemExtensionAdapter.fromExtension(
+    const modComponentFormState = await menuItemExtensionAdapter.fromExtension(
       state.extensions[0],
     );
-    element.label = "New Label";
+    modComponentFormState.label = "New Label";
 
     const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
-    const newRecipe = replaceRecipeExtension(
+    const newMod = replaceModComponent(
       modDefinition,
       { ...modDefinition.metadata, id: newId },
       state.extensions,
-      element,
+      modComponentFormState,
     );
 
-    expect(newRecipe).toStrictEqual(
+    expect(newMod).toStrictEqual(
       produce(modDefinition, (draft) => {
         draft.metadata.id = newId;
         draft.extensionPoints[0].label = "New Label";
@@ -153,22 +149,22 @@ describe("replaceRecipeExtension round trip", () => {
       }),
     );
 
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue(starterBrick);
+    jest.mocked(lookupExtensionPoint).mockResolvedValue(starterBrick);
 
-    const element = await menuItemExtensionAdapter.fromExtension(
+    const modComponentFormState = await menuItemExtensionAdapter.fromExtension(
       state.extensions[0],
     );
-    element.label = "New Label";
+    modComponentFormState.label = "New Label";
 
     const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
-    const newRecipe = replaceRecipeExtension(
+    const newMod = replaceModComponent(
       modDefinition,
       { ...modDefinition.metadata, id: newId },
       state.extensions,
-      element,
+      modComponentFormState,
     );
 
-    expect(newRecipe).toStrictEqual(
+    expect(newMod).toStrictEqual(
       produce(modDefinition, (draft) => {
         draft.metadata.id = newId;
         draft.extensionPoints[0].label = "New Label";
@@ -189,31 +185,31 @@ describe("replaceRecipeExtension round trip", () => {
     );
 
     // Mimic what would come back via internal.ts:resolveRecipe
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue({
+    jest.mocked(lookupExtensionPoint).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
         id: makeInternalId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
         version: validateSemVerString("1.0.0"),
       },
-    });
+    } as any);
 
-    const element = await menuItemExtensionAdapter.fromExtension(
+    const modComponentFormState = await menuItemExtensionAdapter.fromExtension(
       state.extensions[0],
     );
 
-    element.label = "New Label";
+    modComponentFormState.label = "New Label";
 
     const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
 
-    const newRecipe = replaceRecipeExtension(
+    const newMod = replaceModComponent(
       modDefinition,
       { ...modDefinition.metadata, id: newId },
       state.extensions,
-      element,
+      modComponentFormState,
     );
 
-    expect(newRecipe).toStrictEqual(
+    expect(newMod).toStrictEqual(
       produce(modDefinition, (draft) => {
         draft.metadata.id = newId;
         draft.extensionPoints[0].label = "New Label";
@@ -226,7 +222,7 @@ describe("replaceRecipeExtension round trip", () => {
 
     modDefinition.extensionPoints.push({
       ...modDefinition.extensionPoints[0],
-      label: "Other Extension",
+      label: "Other Mod Component",
     });
 
     const state = extensionsSlice.reducer(
@@ -239,33 +235,33 @@ describe("replaceRecipeExtension round trip", () => {
     );
 
     // Mimic what would come back via internal.ts:resolveRecipe
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue({
+    jest.mocked(lookupExtensionPoint).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
         id: makeInternalId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
         version: validateSemVerString("1.0.0"),
       },
-    });
+    } as any);
 
-    const element = await menuItemExtensionAdapter.fromExtension(
+    const modComponentFormState = await menuItemExtensionAdapter.fromExtension(
       state.extensions[0],
     );
 
-    element.label = "New Label";
+    modComponentFormState.label = "New Label";
     const newTemplate = '<input value="Click Me!"/>';
-    element.extensionPoint.definition.template = newTemplate;
+    modComponentFormState.extensionPoint.definition.template = newTemplate;
 
     const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
 
-    const newRecipe = replaceRecipeExtension(
+    const newMod = replaceModComponent(
       modDefinition,
       { ...modDefinition.metadata, id: newId },
       state.extensions,
-      element,
+      modComponentFormState,
     );
 
-    expect(newRecipe).toStrictEqual(
+    expect(newMod).toStrictEqual(
       produce(modDefinition, (draft) => {
         draft.metadata.id = newId;
 
@@ -299,31 +295,31 @@ describe("replaceRecipeExtension round trip", () => {
     );
 
     // Mimic what would come back via internal.ts:resolveRecipe
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue({
+    jest.mocked(lookupExtensionPoint).mockResolvedValue({
       ...modDefinition.definitions.extensionPoint,
       metadata: {
         id: makeInternalId(modDefinition.definitions.extensionPoint),
         name: "Internal Starter Brick",
         version: validateSemVerString("1.0.0"),
       },
-    });
+    } as any);
 
-    const element = await menuItemExtensionAdapter.fromExtension(
+    const modComponentFormState = await menuItemExtensionAdapter.fromExtension(
       state.extensions[0],
     );
 
-    element.label = "New Label";
+    modComponentFormState.label = "New Label";
 
     const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
 
-    const newRecipe = replaceRecipeExtension(
+    const newMod = replaceModComponent(
       modDefinition,
       { ...modDefinition.metadata, id: newId },
       state.extensions,
-      element,
+      modComponentFormState,
     );
 
-    expect(newRecipe).toStrictEqual(
+    expect(newMod).toStrictEqual(
       produce(modDefinition, (draft) => {
         draft.metadata.id = newId;
         draft.extensionPoints[0].label = "New Label";
@@ -331,7 +327,7 @@ describe("replaceRecipeExtension round trip", () => {
     );
   });
 
-  test("updates Recipe API version with single mod component", async () => {
+  test("updates Mod API version with single mod component", async () => {
     const starterBrick = starterBrickConfigFactory({
       apiVersion: "v2",
     });
@@ -355,23 +351,23 @@ describe("replaceRecipeExtension round trip", () => {
       }),
     );
 
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue(starterBrick);
+    jest.mocked(lookupExtensionPoint).mockResolvedValue(starterBrick);
 
-    const element = await menuItemExtensionAdapter.fromExtension({
+    const modComponentFormState = await menuItemExtensionAdapter.fromExtension({
       ...state.extensions[0],
       apiVersion: "v3",
     });
-    element.label = "New Label";
+    modComponentFormState.label = "New Label";
 
     const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
-    const newRecipe = replaceRecipeExtension(
+    const newMod = replaceModComponent(
       modDefinition,
       { ...modDefinition.metadata, id: newId },
       state.extensions,
-      element,
+      modComponentFormState,
     );
 
-    expect(newRecipe).toStrictEqual(
+    expect(newMod).toStrictEqual(
       produce(modDefinition, (draft) => {
         draft.apiVersion = "v3";
         draft.metadata.id = newId;
@@ -381,7 +377,7 @@ describe("replaceRecipeExtension round trip", () => {
     );
   });
 
-  test("throws when API version mismatch and cannot update recipe", async () => {
+  test("throws when API version mismatch and cannot update mod", async () => {
     const starterBrick = starterBrickConfigFactory();
     const modDefinition = modDefinitionWithVersionedStarterBrickFactory({
       extensionPointId: starterBrick.metadata.id,
@@ -404,36 +400,36 @@ describe("replaceRecipeExtension round trip", () => {
       }),
     );
 
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue(starterBrick);
+    jest.mocked(lookupExtensionPoint).mockResolvedValue(starterBrick);
 
-    const element = await menuItemExtensionAdapter.fromExtension({
+    const modComponentFormState = await menuItemExtensionAdapter.fromExtension({
       ...state.extensions[0],
       apiVersion: "v3",
     });
-    element.label = "New Label";
+    modComponentFormState.label = "New Label";
 
     const newId = generateScopeBrickId("@test", modDefinition.metadata.id);
     expect(() =>
-      replaceRecipeExtension(
+      replaceModComponent(
         modDefinition,
         { ...modDefinition.metadata, id: newId },
         state.extensions,
-        element,
+        modComponentFormState,
       ),
     ).toThrow();
   });
 });
 
-describe("blueprint options", () => {
-  async function runReplaceRecipeExtensions(
-    recipeOptions: ModOptionsDefinition,
-    elementOptions: ModOptionsDefinition,
+describe("mod options", () => {
+  async function runReplaceModComponent(
+    modOptionsDefinition: ModOptionsDefinition,
+    modComponentModOptions: ModOptionsDefinition,
   ) {
     const modDefinition = defaultModDefinitionFactory({
-      options: recipeOptions,
+      options: modOptionsDefinition,
     });
 
-    const state = extensionsSlice.reducer(
+    const modComponentState = extensionsSlice.reducer(
       { extensions: [] },
       extensionsSlice.actions.installMod({
         modDefinition,
@@ -442,33 +438,33 @@ describe("blueprint options", () => {
       }),
     );
 
-    const element = await menuItemExtensionAdapter.fromExtension(
-      state.extensions[0],
+    const modComponentFormState = await menuItemExtensionAdapter.fromExtension(
+      modComponentState.extensions[0],
     );
 
-    element.optionsDefinition = elementOptions;
+    modComponentFormState.optionsDefinition = modComponentModOptions;
 
-    return replaceRecipeExtension(
+    return replaceModComponent(
       modDefinition,
       modDefinition.metadata,
-      state.extensions,
-      element,
+      modComponentState.extensions,
+      modComponentFormState,
     );
   }
 
-  test("doesn't add empty schema when blueprint options is empty", async () => {
+  test("doesn't add empty schema when mod options is empty", async () => {
     const emptyOptions = emptyModOptionsDefinitionFactory();
 
-    const updatedRecipe = await runReplaceRecipeExtensions(
+    const updatedModDefinition = await runReplaceModComponent(
       undefined,
       emptyOptions,
     );
 
-    expect(updatedRecipe.options).toBeUndefined();
+    expect(updatedModDefinition.options).toBeUndefined();
   });
 
-  test("creates blueprint options", async () => {
-    const elementOptions: ModOptionsDefinition = {
+  test("creates mod options", async () => {
+    const modOptionsDefinition: ModOptionsDefinition = {
       schema: {
         type: "object",
         properties: {
@@ -481,16 +477,16 @@ describe("blueprint options", () => {
       uiSchema: minimalUiSchemaFactory(),
     };
 
-    const updatedRecipe = await runReplaceRecipeExtensions(
+    const updatedModDefinition = await runReplaceModComponent(
       undefined,
-      elementOptions,
+      modOptionsDefinition,
     );
 
-    expect(updatedRecipe.options).toBe(elementOptions);
+    expect(updatedModDefinition.options).toBe(modOptionsDefinition);
   });
 
-  test("updates blueprint options", async () => {
-    const blueprintOptions: ModOptionsDefinition = {
+  test("updates mod options", async () => {
+    const modOptionsDefinition: ModOptionsDefinition = {
       schema: {
         type: "object",
         properties: {
@@ -503,7 +499,7 @@ describe("blueprint options", () => {
       uiSchema: minimalUiSchemaFactory(),
     };
 
-    const elementOptions: ModOptionsDefinition = {
+    const modComponentModOptions: ModOptionsDefinition = {
       schema: {
         type: "object",
         properties: {
@@ -515,16 +511,16 @@ describe("blueprint options", () => {
       uiSchema: minimalUiSchemaFactory(),
     };
 
-    const updatedRecipe = await runReplaceRecipeExtensions(
-      blueprintOptions,
-      elementOptions,
+    const updatedModDefinition = await runReplaceModComponent(
+      modOptionsDefinition,
+      modComponentModOptions,
     );
 
-    expect(updatedRecipe.options).toBe(elementOptions);
+    expect(updatedModDefinition.options).toBe(modComponentModOptions);
   });
 
-  test("removes blueprint options", async () => {
-    const blueprintOptions: ModOptionsDefinition = {
+  test("removes mod options", async () => {
+    const modOptionsDefinition: ModOptionsDefinition = {
       schema: {
         type: "object",
         properties: {
@@ -537,67 +533,26 @@ describe("blueprint options", () => {
       uiSchema: minimalUiSchemaFactory(),
     };
 
-    const elementOptions: ModOptionsDefinition =
+    const modComponentModOptions: ModOptionsDefinition =
       emptyModOptionsDefinitionFactory();
 
-    const updatedRecipe = await runReplaceRecipeExtensions(
-      blueprintOptions,
-      elementOptions,
+    const updatedMod = await runReplaceModComponent(
+      modOptionsDefinition,
+      modComponentModOptions,
     );
 
-    expect(updatedRecipe.options).toBeUndefined();
-  });
-});
-
-describe("isRecipeEditable", () => {
-  test("returns true if recipe is in editable packages", () => {
-    const recipe = defaultModDefinitionFactory();
-    const editablePackages: EditablePackageMetadata[] = [
-      {
-        id: null,
-        name: validateRegistryId("test/recipe"),
-      },
-      {
-        id: null,
-        name: recipe.metadata.id,
-      },
-    ] as EditablePackageMetadata[];
-
-    expect(isRecipeEditable(editablePackages, recipe)).toBe(true);
-  });
-
-  test("returns false if recipe is not in editable packages", () => {
-    const recipe = defaultModDefinitionFactory();
-    const editablePackages: EditablePackageMetadata[] = [
-      {
-        id: null,
-        name: validateRegistryId("test/recipe"),
-      },
-    ] as EditablePackageMetadata[];
-
-    expect(isRecipeEditable(editablePackages, recipe)).toBe(false);
-  });
-
-  test("returns false if recipe is null", () => {
-    const editablePackages: EditablePackageMetadata[] = [
-      {
-        id: null,
-        name: validateRegistryId("test/recipe"),
-      },
-    ] as EditablePackageMetadata[];
-
-    expect(isRecipeEditable(editablePackages, null)).toBe(false);
+    expect(updatedMod.options).toBeUndefined();
   });
 });
 
 function selectExtensionPoints(
-  recipe: UnsavedModDefinition,
+  modDefinition: UnsavedModDefinition,
 ): StarterBrickConfig[] {
-  return recipe.extensionPoints.map(({ id }) => {
-    const definition = recipe.definitions[id]
+  return modDefinition.extensionPoints.map(({ id }) => {
+    const definition = modDefinition.definitions[id]
       .definition as StarterBrickDefinition;
     return {
-      apiVersion: recipe.apiVersion,
+      apiVersion: modDefinition.apiVersion,
       metadata: internalStarterBrickMetaFactory(),
       definition,
       kind: "extensionPoint",
@@ -605,24 +560,24 @@ function selectExtensionPoints(
   });
 }
 
-describe("buildRecipe", () => {
-  test("Clean extension referencing extensionPoint registry package", async () => {
+describe("buildNewMod", () => {
+  test("Clean mod component referencing extensionPoint registry package", async () => {
     const modComponent = modComponentFactory({
       apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     }) as UnresolvedModComponent;
 
     // Call the function under test
-    const newRecipe = buildRecipe({
-      sourceRecipe: null,
-      cleanRecipeExtensions: [modComponent],
-      dirtyRecipeElements: [],
+    const newMod = buildNewMod({
+      sourceMod: null,
+      cleanModComponents: [modComponent],
+      dirtyModComponentFormStates: [],
     });
 
-    expect(newRecipe.extensionPoints).toHaveLength(1);
-    expect(newRecipe.extensionPoints[0].id).toBe(modComponent.extensionPointId);
+    expect(newMod.extensionPoints).toHaveLength(1);
+    expect(newMod.extensionPoints[0].id).toBe(modComponent.extensionPointId);
   });
 
-  test("Dirty extension with services", async () => {
+  test("Dirty mod component with services", async () => {
     const integrationId = validateRegistryId("@pixiebrix/api");
     const outputKey = validateOutputKey("pixiebrix");
 
@@ -640,23 +595,23 @@ describe("buildRecipe", () => {
     const adapter = ADAPTERS.get(starterBrick.definition.type);
 
     // Mock this lookup for the adapter call that follows
-    (lookupExtensionPoint as jest.Mock).mockResolvedValue(starterBrick);
+    jest.mocked(lookupExtensionPoint).mockResolvedValue(starterBrick);
 
-    // Use the adapter to convert to FormState
-    const element = (await adapter.fromExtension(
+    // Use the adapter to convert to ModComponentFormState
+    const modComponentFormState = (await adapter.fromExtension(
       modComponent,
     )) as ModComponentFormState;
 
     // Call the function under test
-    const newRecipe = buildRecipe({
-      sourceRecipe: null,
-      cleanRecipeExtensions: [],
-      dirtyRecipeElements: [element],
+    const newMod = buildNewMod({
+      sourceMod: null,
+      cleanModComponents: [],
+      dirtyModComponentFormStates: [modComponentFormState],
     });
 
-    expect(newRecipe.extensionPoints).toHaveLength(1);
-    expect(newRecipe.extensionPoints[0].id).toBe(modComponent.extensionPointId);
-    expect(newRecipe.extensionPoints[0].services).toStrictEqual({
+    expect(newMod.extensionPoints).toHaveLength(1);
+    expect(newMod.extensionPoints[0].id).toBe(modComponent.extensionPointId);
+    expect(newMod.extensionPoints[0].services).toStrictEqual({
       [outputKey]: integrationId,
     });
   });
@@ -686,19 +641,19 @@ describe("buildRecipe", () => {
     });
 
     // Call the function under test
-    const newRecipe = buildRecipe({
-      sourceRecipe: null,
-      cleanRecipeExtensions: modComponents,
-      dirtyRecipeElements: [],
+    const newMod = buildNewMod({
+      sourceMod: null,
+      cleanModComponents: modComponents,
+      dirtyModComponentFormStates: [],
     });
 
-    expect(Object.keys(newRecipe.definitions)).toStrictEqual([
+    expect(Object.keys(newMod.definitions)).toStrictEqual([
       "extensionPoint",
       "extensionPoint2",
     ]);
-    expect(newRecipe.extensionPoints).toHaveLength(2);
-    expect(newRecipe.extensionPoints[0].id).toBe("extensionPoint");
-    expect(newRecipe.extensionPoints[1].id).toBe("extensionPoint2");
+    expect(newMod.extensionPoints).toHaveLength(2);
+    expect(newMod.extensionPoints[0].id).toBe("extensionPoint");
+    expect(newMod.extensionPoints[1].id).toBe("extensionPoint2");
   });
 
   test("Coalesce duplicate starter brick definitions", async () => {
@@ -723,49 +678,49 @@ describe("buildRecipe", () => {
     });
 
     // Call the function under test
-    const newRecipe = buildRecipe({
-      sourceRecipe: null,
-      cleanRecipeExtensions: modComponents,
-      dirtyRecipeElements: [],
+    const newMod = buildNewMod({
+      sourceMod: null,
+      cleanModComponents: modComponents,
+      dirtyModComponentFormStates: [],
     });
 
-    expect(Object.keys(newRecipe.definitions)).toStrictEqual([
-      "extensionPoint",
-    ]);
-    expect(newRecipe.extensionPoints).toHaveLength(modComponents.length);
-    expect(uniq(newRecipe.extensionPoints.map((x) => x.id))).toStrictEqual([
+    expect(Object.keys(newMod.definitions)).toStrictEqual(["extensionPoint"]);
+    expect(newMod.extensionPoints).toHaveLength(modComponents.length);
+    expect(uniq(newMod.extensionPoints.map((x) => x.id))).toStrictEqual([
       "extensionPoint",
     ]);
   });
 
   test.each`
-    cleanExtensionCount | dirtyExtensionCount
-    ${1}                | ${0}
-    ${2}                | ${0}
-    ${3}                | ${0}
-    ${0}                | ${1}
-    ${0}                | ${2}
-    ${0}                | ${3}
-    ${1}                | ${1}
-    ${2}                | ${1}
-    ${1}                | ${2}
-    ${2}                | ${2}
+    cleanModComponentCount | dirtyModComponentCount
+    ${1}                   | ${0}
+    ${2}                   | ${0}
+    ${3}                   | ${0}
+    ${0}                   | ${1}
+    ${0}                   | ${2}
+    ${0}                   | ${3}
+    ${1}                   | ${1}
+    ${2}                   | ${1}
+    ${1}                   | ${2}
+    ${2}                   | ${2}
   `(
-    "recipe with $cleanExtensionCount clean, and $dirtyExtensionCount changed/dirty extensions",
+    "mod with $cleanModComponentCount clean, and $dirtyModComponentCount changed/dirty mod components",
     async ({
-      cleanExtensionCount,
-      dirtyExtensionCount,
+      cleanModComponentCount,
+      dirtyModComponentCount,
     }: {
-      cleanExtensionCount: number;
-      dirtyExtensionCount: number;
+      cleanModComponentCount: number;
+      dirtyModComponentCount: number;
     }) => {
-      const extensionCount = cleanExtensionCount + dirtyExtensionCount;
+      const totalModComponentCount =
+        cleanModComponentCount + dirtyModComponentCount;
 
-      // Create a recipe
-      const modDefinition =
-        versionedModDefinitionWithResolvedModComponents(extensionCount)();
+      // Create a mod
+      const modDefinition = versionedModDefinitionWithResolvedModComponents(
+        totalModComponentCount,
+      )();
 
-      // Install the recipe
+      // Install the mod
       const state = extensionsSlice.reducer(
         { extensions: [] },
         extensionsSlice.actions.installMod({
@@ -775,55 +730,55 @@ describe("buildRecipe", () => {
         }),
       );
 
-      // Collect the dirty form states for any changed extensions
-      const elements: ModComponentFormState[] = [];
+      // Collect the dirty form states for any changed mod components
+      const modComponentFormStates: ModComponentFormState[] = [];
 
-      if (dirtyExtensionCount > 0) {
+      if (dirtyModComponentCount > 0) {
         const extensionPoints = selectExtensionPoints(modDefinition);
 
-        for (let i = 0; i < dirtyExtensionCount; i++) {
+        for (let i = 0; i < dirtyModComponentCount; i++) {
           const extensionPoint = extensionPoints[i];
           // Mock this lookup for the adapter call that follows
-          (lookupExtensionPoint as jest.Mock).mockResolvedValue(extensionPoint);
+          jest.mocked(lookupExtensionPoint).mockResolvedValue(extensionPoint);
 
-          // Recipe was installed, so get the extension from state
-          const extension = state.extensions[i];
+          // Mod was installed, so get the mod component from state
+          const modComponent = state.extensions[i];
 
-          // Load the adapter for this extension
+          // Load the adapter for this mod component
           const adapter = ADAPTERS.get(extensionPoint.definition.type);
 
           // Use the adapter to convert to FormState
           // eslint-disable-next-line no-await-in-loop -- This is much easier to read than a large Promise.all() block
-          const element = (await adapter.fromExtension(
-            extension,
+          const modComponentFormState = (await adapter.fromExtension(
+            modComponent,
           )) as ModComponentFormState;
 
           // Edit the label
-          element.label = `New Label ${i}`;
+          modComponentFormState.label = `New Label ${i}`;
 
-          elements.push(element);
+          modComponentFormStates.push(modComponentFormState);
         }
       }
 
       // Call the function under test
-      const newRecipe = buildRecipe({
-        sourceRecipe: modDefinition,
-        // Only pass in the unchanged clean extensions
-        cleanRecipeExtensions: state.extensions.slice(dirtyExtensionCount),
-        dirtyRecipeElements: elements,
+      const newMod = buildNewMod({
+        sourceMod: modDefinition,
+        // Only pass in the unchanged clean mod components
+        cleanModComponents: state.extensions.slice(dirtyModComponentCount),
+        dirtyModComponentFormStates: modComponentFormStates,
       });
 
-      // Update the source recipe with the expected label changes
-      const updated = produce(modDefinition, (draft) => {
+      // Update the source mod with the expected label changes
+      const updatedMod = produce(modDefinition, (draft) => {
         for (const [index, extensionPoint] of draft.extensionPoints
-          .slice(0, dirtyExtensionCount)
+          .slice(0, dirtyModComponentCount)
           .entries()) {
           extensionPoint.label = `New Label ${index}`;
         }
       });
 
       // Compare results
-      expect(newRecipe).toStrictEqual(updated);
+      expect(newMod).toStrictEqual(updatedMod);
     },
   );
 });
@@ -881,9 +836,9 @@ describe("findMaxServicesDependencyApiVersion", () => {
   });
 });
 
-describe("selectExtensionPointServices", () => {
+describe("selectExtensionPointIntegrations", () => {
   it("works for v1 services", () => {
-    const extension: Pick<ModComponentBase, "integrationDependencies"> = {
+    const modComponent: Pick<ModComponentBase, "integrationDependencies"> = {
       integrationDependencies: [
         integrationDependencyFactory(),
         integrationDependencyFactory({
@@ -892,16 +847,16 @@ describe("selectExtensionPointServices", () => {
         }),
       ],
     };
-    expect(selectExtensionPointIntegrations(extension)).toStrictEqual({
-      [extension.integrationDependencies[0].outputKey]:
-        extension.integrationDependencies[0].integrationId,
-      [extension.integrationDependencies[1].outputKey]:
-        extension.integrationDependencies[1].integrationId,
+    expect(selectExtensionPointIntegrations(modComponent)).toStrictEqual({
+      [modComponent.integrationDependencies[0].outputKey]:
+        modComponent.integrationDependencies[0].integrationId,
+      [modComponent.integrationDependencies[1].outputKey]:
+        modComponent.integrationDependencies[1].integrationId,
     });
   });
 
   it("works for v2 services", () => {
-    const extension: Pick<ModComponentBase, "integrationDependencies"> = {
+    const modComponent: Pick<ModComponentBase, "integrationDependencies"> = {
       integrationDependencies: [
         integrationDependencyFactory({
           apiVersion: "v2",
@@ -917,19 +872,19 @@ describe("selectExtensionPointServices", () => {
         }),
       ],
     };
-    expect(selectExtensionPointIntegrations(extension)).toStrictEqual({
+    expect(selectExtensionPointIntegrations(modComponent)).toStrictEqual({
       properties: {
-        [extension.integrationDependencies[0].outputKey]: {
-          $ref: `${SERVICES_BASE_SCHEMA_URL}${extension.integrationDependencies[0].integrationId}`,
+        [modComponent.integrationDependencies[0].outputKey]: {
+          $ref: `${SERVICES_BASE_SCHEMA_URL}${modComponent.integrationDependencies[0].integrationId}`,
         },
-        [extension.integrationDependencies[1].outputKey]: {
-          $ref: `${SERVICES_BASE_SCHEMA_URL}${extension.integrationDependencies[1].integrationId}`,
+        [modComponent.integrationDependencies[1].outputKey]: {
+          $ref: `${SERVICES_BASE_SCHEMA_URL}${modComponent.integrationDependencies[1].integrationId}`,
         },
-        [extension.integrationDependencies[2].outputKey]: {
-          $ref: `${SERVICES_BASE_SCHEMA_URL}${extension.integrationDependencies[2].integrationId}`,
+        [modComponent.integrationDependencies[2].outputKey]: {
+          $ref: `${SERVICES_BASE_SCHEMA_URL}${modComponent.integrationDependencies[2].integrationId}`,
         },
       },
-      required: [extension.integrationDependencies[1].outputKey],
+      required: [modComponent.integrationDependencies[1].outputKey],
     });
   });
 });

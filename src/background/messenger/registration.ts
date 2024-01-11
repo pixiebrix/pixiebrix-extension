@@ -33,7 +33,6 @@ import {
   requestRunInOpener,
   requestRunInTarget,
   requestRunInTop,
-  waitForTargetByUrl,
 } from "@/background/executor";
 import * as registry from "@/registry/packageRegistry";
 import { ensureContentScript } from "@/background/contentScript";
@@ -53,7 +52,6 @@ import {
   clearLogs,
   recordError,
   recordLog,
-  recordWarning,
 } from "@/telemetry/logging";
 import {
   addTraceEntry,
@@ -81,6 +79,7 @@ import {
 } from "@/background/auth/authStorage";
 import { setCopilotProcessData } from "@/background/partnerHandlers";
 import { hideMySidePanel, showMySidePanel } from "@/background/sidePanel";
+import { setToolbarBadge } from "@/background/toolbarBadge";
 
 expectContext("background");
 
@@ -110,7 +109,6 @@ declare global {
     INSTALL_STARTER_BLUEPRINTS: typeof installStarterBlueprints;
 
     GET_UID: typeof uid;
-    WAIT_FOR_TARGET_BY_URL: typeof waitForTargetByUrl;
 
     PING: typeof pong;
     COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
@@ -118,6 +116,7 @@ declare global {
     SHOW_MY_SIDE_PANEL: typeof showMySidePanel;
     HIDE_MY_SIDE_PANEL: typeof hideMySidePanel;
 
+    SET_TOOLBAR_BADGE: typeof setToolbarBadge;
     ACTIVATE_TAB: typeof activateTab;
     REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
     REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
@@ -146,7 +145,6 @@ declare global {
     SET_DATA_STORE: typeof setRecord;
 
     RECORD_LOG: typeof recordLog;
-    RECORD_WARNING: typeof recordWarning;
     RECORD_ERROR: typeof recordError;
     RECORD_EVENT: typeof recordEvent;
     CLEAR_LOGS: typeof clearLogs;
@@ -194,7 +192,6 @@ export default function registerMessenger(): void {
     ENSURE_CONTEXT_MENU: ensureContextMenu,
 
     GET_UID: uid,
-    WAIT_FOR_TARGET_BY_URL: waitForTargetByUrl,
 
     PING: pong,
     COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
@@ -202,6 +199,7 @@ export default function registerMessenger(): void {
     SHOW_MY_SIDE_PANEL: showMySidePanel,
     HIDE_MY_SIDE_PANEL: hideMySidePanel,
 
+    SET_TOOLBAR_BADGE: setToolbarBadge,
     ACTIVATE_TAB: activateTab,
     REACTIVATE_EVERY_TAB: reactivateEveryTab,
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
@@ -231,7 +229,6 @@ export default function registerMessenger(): void {
     SET_DATA_STORE: setRecord,
 
     RECORD_LOG: recordLog,
-    RECORD_WARNING: recordWarning,
     RECORD_ERROR: recordError,
     RECORD_EVENT: recordEvent,
     CLEAR_LOGS: clearLogs,

@@ -34,13 +34,12 @@ import {
   selectEditorModalVisibilities,
   selectElements,
   selectKeepLocalCopyOnCreateRecipe,
-  selectNewRecipeIds,
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { Button, Modal } from "react-bootstrap";
 import { selectScope } from "@/auth/authSelectors";
 import {
-  buildRecipe,
+  buildNewMod,
   generateScopeBrickId,
 } from "@/pageEditor/panes/save/saveHelpers";
 import { RequireScope } from "@/auth/RequireScope";
@@ -87,66 +86,69 @@ import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 
-const { actions: optionsActions } = extensionsSlice;
+const { actions: modComponentActions } = extensionsSlice;
 
-function selectRecipeMetadata(
-  unsavedRecipe: UnsavedModDefinition,
+function selectModMetadata(
+  unsavedModDefinition: UnsavedModDefinition,
   response: PackageUpsertResponse,
 ): ModComponentBase["_recipe"] {
   return {
-    ...unsavedRecipe.metadata,
+    ...unsavedModDefinition.metadata,
     sharing: pick(response, ["public", "organizations"]),
     ...pick(response, ["updated_at"]),
   };
 }
 
 function useSaveCallbacks({
-  activeElement,
+  activeModComponent,
 }: {
-  activeElement: ModComponentFormState;
+  activeModComponent: ModComponentFormState;
 }) {
   const dispatch = useDispatch();
-  const [createRecipe] = useCreateRecipeMutation();
+  const [createMod] = useCreateRecipeMutation();
   const upsertModComponentFormState = useUpsertModComponentFormState();
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
   const deactivateMod = useDeactivateMod();
 
   const editorFormElements = useSelector(selectElements);
   const isDirtyByElementId = useSelector(selectDirty);
-  const installedExtensions = useSelector(selectExtensions);
-  const dirtyRecipeOptions = useSelector(selectDirtyRecipeOptionDefinitions);
-  const deletedElementsByRecipeId = useSelector(selectDeletedElements);
+  const activatedModComponents = useSelector(selectExtensions);
+  const dirtyModOptions = useSelector(selectDirtyRecipeOptionDefinitions);
+  const deletedComponentsByModId = useSelector(selectDeletedElements);
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
 
-  const createRecipeFromElement = useCallback(
-    // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
-    (element: ModComponentFormState, metadata: ModMetadataFormState) =>
+  const createModFromComponent = useCallback(
+    (
+      modComponentFormState: ModComponentFormState,
+      modMetadata: ModMetadataFormState,
+      // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
+    ) =>
       // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
-      ensureElementPermissionsFromUserGesture(element).then(
+      ensureElementPermissionsFromUserGesture(modComponentFormState).then(
         async (hasPermissions) => {
           if (!hasPermissions) {
             return;
           }
 
-          let recipeElement = produce(activeElement, (draft) => {
+          let modComponent = produce(activeModComponent, (draft) => {
             draft.uuid = uuidv4();
           });
-          const newRecipe = buildRecipe({
-            cleanRecipeExtensions: [],
-            dirtyRecipeElements: [recipeElement],
-            metadata,
+          const newModDefinition = buildNewMod({
+            cleanModComponents: [],
+            dirtyModComponentFormStates: [modComponent],
+            dirtyModMetadata: modMetadata,
           });
-          const response = await createRecipe({
-            recipe: newRecipe,
+          const upsertResponse = await createMod({
+            recipe: newModDefinition,
             organizations: [],
             public: false,
           }).unwrap();
-          recipeElement = produce(recipeElement, (draft) => {
-            draft.recipe = selectRecipeMetadata(newRecipe, response);
+          modComponent = produce(modComponent, (draft) => {
+            draft.recipe = selectModMetadata(newModDefinition, upsertResponse);
           });
-          dispatch(editorActions.addElement(recipeElement));
+          dispatch(editorActions.addElement(modComponent));
           await upsertModComponentFormState({
-            element: recipeElement,
+            element: modComponent,
             options: {
               // Don't push to cloud since we're saving it with the recipe
               pushToCloud: false,
@@ -156,115 +158,110 @@ function useSaveCallbacks({
               notifySuccess: true,
               reactivateEveryTab: true,
             },
-            modId: newRecipe.metadata.id,
+            modId: newModDefinition.metadata.id,
           });
           if (!keepLocalCopy) {
             await removeModComponentFromStorage({
-              extensionId: activeElement.uuid,
+              extensionId: activeModComponent.uuid,
             });
           }
 
           reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
-            modId: newRecipe.metadata.id,
+            modId: newModDefinition.metadata.id,
           });
         },
       ),
     [
-      activeElement,
+      activeModComponent,
       upsertModComponentFormState,
-      createRecipe,
+      createMod,
       dispatch,
       keepLocalCopy,
       removeModComponentFromStorage,
     ],
   );
 
-  const createRecipeFromRecipe = useCallback(
-    async (recipe: ModDefinition, metadata: ModMetadataFormState) => {
-      const recipeId = recipe.metadata.id;
+  const createModFromMod = useCallback(
+    async (modDefinition: ModDefinition, metadata: ModMetadataFormState) => {
+      const modId = modDefinition.metadata.id;
       // eslint-disable-next-line security/detect-object-injection -- recipeId
-      const deletedElements = deletedElementsByRecipeId[recipeId] ?? [];
+      const deletedModComponents = deletedComponentsByModId[modId] ?? [];
       const deletedElementIds = new Set(
-        deletedElements.map(({ uuid }) => uuid),
+        deletedModComponents.map(({ uuid }) => uuid),
       );
 
-      const dirtyRecipeElements = editorFormElements.filter(
-        (element) =>
-          element.recipe?.id === recipeId &&
-          isDirtyByElementId[element.uuid] &&
-          !deletedElementIds.has(element.uuid),
+      const dirtyModComponentFormStates = editorFormElements.filter(
+        (modComponentFormState) =>
+          modComponentFormState.recipe?.id === modId &&
+          isDirtyByElementId[modComponentFormState.uuid] &&
+          !deletedElementIds.has(modComponentFormState.uuid),
       );
-      const cleanRecipeExtensions = installedExtensions.filter(
-        (extension) =>
-          extension._recipe?.id === recipeId &&
-          !dirtyRecipeElements.some(
-            (element) => element.uuid === extension.id,
+      const cleanModComponents = activatedModComponents.filter(
+        (modComponent) =>
+          modComponent._recipe?.id === modId &&
+          !dirtyModComponentFormStates.some(
+            (element) => element.uuid === modComponent.id,
           ) &&
-          !deletedElementIds.has(extension.id),
+          !deletedElementIds.has(modComponent.id),
       );
       // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
-      const options = dirtyRecipeOptions[recipeId];
+      const modOptions = dirtyModOptions[modId];
 
-      const newRecipe = buildRecipe({
-        sourceRecipe: recipe,
-        cleanRecipeExtensions,
-        dirtyRecipeElements,
-        options,
-        metadata,
+      const newModDefinition = buildNewMod({
+        sourceMod: modDefinition,
+        cleanModComponents,
+        dirtyModComponentFormStates,
+        dirtyModOptions: modOptions,
+        dirtyModMetadata: metadata,
       });
 
-      const response = await createRecipe({
-        recipe: newRecipe,
+      const upsertResponse = await createMod({
+        recipe: newModDefinition,
         organizations: [],
         public: false,
       }).unwrap();
 
-      const savedRecipe: ModDefinition = {
-        ...newRecipe,
+      const savedModDefinition: ModDefinition = {
+        ...newModDefinition,
         sharing: {
-          public: response.public,
-          organizations: response.organizations,
+          public: upsertResponse.public,
+          organizations: upsertResponse.organizations,
         },
-        updated_at: response.updated_at,
+        updated_at: upsertResponse.updated_at,
       };
 
       if (!keepLocalCopy) {
-        await deactivateMod({ modId: recipeId, shouldShowConfirmation: false });
+        await deactivateMod({ modId, shouldShowConfirmation: false });
       }
 
-      const modComponents = [...dirtyRecipeElements, ...cleanRecipeExtensions];
+      const modComponents = [
+        ...dirtyModComponentFormStates,
+        ...cleanModComponents,
+      ];
 
       dispatch(
-        optionsActions.installMod({
-          modDefinition: savedRecipe,
+        modComponentActions.installMod({
+          modDefinition: savedModDefinition,
           configuredDependencies: inferConfiguredModIntegrations(modComponents),
           optionsArgs: inferRecipeOptions(modComponents),
           screen: "pageEditor",
           isReinstall: false,
         }),
       );
-
-      dispatch(
-        editorActions.finishSaveAsNewRecipe({
-          oldRecipeId: recipeId,
-          newRecipeId: savedRecipe.metadata.id,
-          metadata,
-          options,
-        }),
-      );
+      dispatch(editorActions.selectRecipeId(savedModDefinition.metadata.id));
 
       reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
-        copiedFrom: recipeId,
-        modId: savedRecipe.metadata.id,
+        copiedFrom: modId,
+        modId: savedModDefinition.metadata.id,
       });
     },
     [
-      createRecipe,
-      deletedElementsByRecipeId,
-      dirtyRecipeOptions,
+      createMod,
+      deletedComponentsByModId,
+      dirtyModOptions,
       dispatch,
       editorFormElements,
-      installedExtensions,
+      activatedModComponents,
       isDirtyByElementId,
       keepLocalCopy,
       deactivateMod,
@@ -272,44 +269,43 @@ function useSaveCallbacks({
   );
 
   return {
-    createRecipeFromElement,
-    createRecipeFromRecipe,
+    createModFromComponent,
+    createModFromMod,
   };
 }
 
 function useInitialFormState({
-  activeRecipe,
+  activeMod,
   activeElement,
 }: {
   activeElement: ModComponentFormState;
-  activeRecipe: ModDefinition | null;
+  activeMod: ModDefinition | null;
 }): ModMetadataFormState | null {
   const scope = useSelector(selectScope);
 
-  const activeRecipeId =
-    activeElement?.recipe?.id ?? activeRecipe?.metadata?.id;
-  const dirtyMetadata = useSelector(
-    selectDirtyMetadataForRecipeId(activeRecipeId),
+  const activeModId = activeElement?.recipe?.id ?? activeMod?.metadata?.id;
+  const dirtyModMetadata = useSelector(
+    selectDirtyMetadataForRecipeId(activeModId),
   );
-  const recipeMetadata = dirtyMetadata ?? activeRecipe?.metadata;
+  const modMetadata = dirtyModMetadata ?? activeMod?.metadata;
 
   // Handle the "Save As New" case, where an existing recipe, or an
   // extension within an existing recipe, is selected
-  if (recipeMetadata) {
-    let newId = generateScopeBrickId(scope, recipeMetadata.id);
-    if (newId === recipeMetadata.id) {
-      newId = validateRegistryId(newId + "-copy");
+  if (modMetadata) {
+    let newModId = generateScopeBrickId(scope, modMetadata.id);
+    if (newModId === modMetadata.id) {
+      newModId = validateRegistryId(newModId + "-copy");
     }
 
     return {
-      id: newId,
-      name: `${recipeMetadata.name} (Copy)`,
+      id: newModId,
+      name: `${modMetadata.name} (Copy)`,
       version: validateSemVerString("1.0.0"),
-      description: recipeMetadata.description,
+      description: modMetadata.description,
     };
   }
 
-  // Handle creating a new blueprint from a selected extension
+  // Handle creating a new mod from a selected mod component
   if (activeElement) {
     return {
       id: generatePackageId(scope, activeElement.label),
@@ -323,12 +319,10 @@ function useInitialFormState({
 }
 
 function useFormSchema() {
-  const newRecipeIds = useSelector(selectNewRecipeIds);
-  const { data: recipes } = useAllModDefinitions();
-  const savedRecipeIds: RegistryId[] = (recipes ?? []).map(
+  const { data: modDefinitions } = useAllModDefinitions();
+  const allModIds: RegistryId[] = (modDefinitions ?? []).map(
     (x) => x.metadata.id,
   );
-  const allRecipeIds = [...newRecipeIds, ...savedRecipeIds];
 
   // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
   // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -338,7 +332,7 @@ function useFormSchema() {
         PACKAGE_REGEX,
         "Mod ID is required, and may only include lowercase letters, numbers, and the symbols - _ ~",
       )
-      .notOneOf(allRecipeIds, "Mod ID is already in use")
+      .notOneOf(allModIds, "Mod ID is already in use")
       .required("Mod ID is required"),
     name: string().required("Name is required"),
     version: string()
@@ -352,17 +346,17 @@ function useFormSchema() {
   });
 }
 
-const CreateRecipeModalBody: React.FC = () => {
+const CreateModModalBody: React.FC = () => {
   const dispatch = useDispatch();
 
-  const activeElement = useSelector(selectActiveElement);
+  const activeModComponent = useSelector(selectActiveElement);
 
-  // `selectActiveRecipeId` returns the recipe id _if the recipe element is selected_. Assumption: if the CreateModal
-  // is open an extension element is active, then we're performing a "Save a New" on that recipe.
-  const directlyActiveRecipeId = useSelector(selectActiveRecipeId);
-  const activeRecipeId = directlyActiveRecipeId ?? activeElement?.recipe?.id;
-  const { data: activeRecipe, isFetching: isRecipeFetching } =
-    useOptionalModDefinition(activeRecipeId);
+  // `selectActiveRecipeId` returns the mod id if a mod is selected. Assumption: if the CreateModal
+  // is open, and a mod is active, then we're performing a "Save as New" on that mod.
+  const directlyActiveModId = useSelector(selectActiveRecipeId);
+  const activeModId = directlyActiveModId ?? activeModComponent?.recipe?.id;
+  const { data: activeMod, isFetching: isRecipeFetching } =
+    useOptionalModDefinition(activeModId);
 
   const formSchema = useFormSchema();
 
@@ -370,19 +364,22 @@ const CreateRecipeModalBody: React.FC = () => {
     dispatch(editorActions.hideModal());
   }, [dispatch]);
 
-  const initialFormState = useInitialFormState({ activeElement, activeRecipe });
-  const { createRecipeFromElement, createRecipeFromRecipe } = useSaveCallbacks({
-    activeElement,
+  const initialModMetadataFormState = useInitialFormState({
+    activeElement: activeModComponent,
+    activeMod,
+  });
+  const { createModFromComponent, createModFromMod } = useSaveCallbacks({
+    activeModComponent,
   });
 
   const onSubmit: OnSubmit<ModMetadataFormState> = async (values, helpers) => {
     try {
       // `activeRecipe` must come first. It's possible that both activeElement and activeRecipe are set because
       // activeRecipe will be the recipe of the active element if in a "Save as New" workflow for an existing recipe
-      if (activeRecipe) {
-        await createRecipeFromRecipe(activeRecipe, values);
-      } else if (activeElement) {
-        await createRecipeFromElement(activeElement, values);
+      if (activeMod) {
+        await createModFromMod(activeMod, values);
+      } else if (activeModComponent) {
+        await createModFromComponent(activeModComponent, values);
       } else {
         // Should not happen in practice
         // noinspection ExceptionCaughtLocallyJS
@@ -459,7 +456,7 @@ const CreateRecipeModalBody: React.FC = () => {
           validationSchema={formSchema}
           showUntouchedErrors
           validateOnMount
-          initialValues={initialFormState}
+          initialValues={initialModMetadataFormState}
           onSubmit={onSubmit}
           renderBody={renderBody}
           renderSubmit={renderSubmit}
@@ -469,7 +466,7 @@ const CreateRecipeModalBody: React.FC = () => {
   );
 };
 
-const CreateRecipeModal: React.FunctionComponent = () => {
+const CreateModModal: React.FunctionComponent = () => {
   const { isCreateRecipeModalVisible: show } = useSelector(
     selectEditorModalVisibilities,
   );
@@ -481,9 +478,9 @@ const CreateRecipeModal: React.FunctionComponent = () => {
 
   return (
     <ModalLayout title="Create new mod" show={show} onHide={hideModal}>
-      <CreateRecipeModalBody />
+      <CreateModModalBody />
     </ModalLayout>
   );
 };
 
-export default CreateRecipeModal;
+export default CreateModModal;

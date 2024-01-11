@@ -43,6 +43,7 @@ const config = {
     "<rootDir>/src/testUtils/injectRegistries.ts",
     "jest-extended/all",
   ],
+  reporters: ["default", "github-actions"],
   coverageReporters: ["json"],
   collectCoverageFrom: [
     "src/**/*.{ts,tsx}",
