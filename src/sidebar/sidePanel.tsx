@@ -24,7 +24,7 @@ import {
   hideSidePanel,
   respondToPings,
 } from "@/sidebar/sidePanel/messenger/api";
-import { updateSidebar } from "@/contentScript/messenger/api";
+import { sidebarWasLoaded } from "@/contentScript/messenger/api";
 
 expectContext("sidebar");
 
@@ -34,8 +34,5 @@ export async function hideSelf() {
 
 export function initSidePanel() {
   respondToPings();
-
-  // The sidePanel can load independently of the content script, so it should
-  // automatically fetch the data from the content script when it loads.
-  updateSidebar(getAssociatedTarget());
+  sidebarWasLoaded(getAssociatedTarget());
 }

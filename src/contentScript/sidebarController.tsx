@@ -22,7 +22,7 @@ import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isEmpty, throttle } from "lodash";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { type Except } from "type-fest";
-import { type RunArgs } from "@/types/runtimeTypes";
+import { RunReason, type RunArgs } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type ModComponentRef } from "@/types/modComponentTypes";
@@ -63,6 +63,10 @@ let renderSequenceNumber = 0;
  * Event listeners triggered when the sidebar shows and is ready to receive messages.
  */
 export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
+
+export function sidebarWasLoaded(): void {
+  sidebarShowEvents.emit({ reason: RunReason.MANUAL });
+}
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const panels: PanelEntry[] = [];

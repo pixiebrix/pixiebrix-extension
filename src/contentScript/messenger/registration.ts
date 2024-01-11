@@ -32,9 +32,9 @@ import {
   cancelForm,
 } from "@/contentScript/ephemeralFormProtocol";
 import {
-  updateSidebar,
   removeExtensions as removeSidebars,
   getReservedPanelEntries,
+  sidebarWasLoaded,
 } from "@/contentScript/sidebarController";
 import { insertPanel } from "@/contentScript/pageEditor/insertPanel";
 import { insertButton } from "@/contentScript/pageEditor/insertButton";
@@ -100,10 +100,10 @@ declare global {
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
-    UPDATE_SIDEBAR: typeof updateSidebar;
     GET_RESERVED_SIDEBAR_ENTRIES: typeof getReservedPanelEntries;
-    REMOVE_SIDEBARS: typeof removeSidebars;
 
+    SIDEBAR_WAS_LOADED: typeof sidebarWasLoaded;
+    REMOVE_SIDEBARS: typeof removeSidebars;
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
 
@@ -166,9 +166,9 @@ export default function registerMessenger(): void {
 
     TOGGLE_QUICK_BAR: toggleQuickBar,
     HANDLE_MENU_ACTION: handleMenuAction,
-    UPDATE_SIDEBAR: updateSidebar,
-    REMOVE_SIDEBARS: removeSidebars,
 
+    SIDEBAR_WAS_LOADED: sidebarWasLoaded,
+    REMOVE_SIDEBARS: removeSidebars,
     INSERT_PANEL: insertPanel,
     INSERT_BUTTON: insertButton,
 
