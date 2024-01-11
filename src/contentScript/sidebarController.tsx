@@ -44,13 +44,9 @@ import { getTemporaryPanelSidebarEntries } from "@/bricks/transformers/temporary
 import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
 import { logPromiseDuration } from "@/utils/promiseUtils";
 import { waitAnimationFrame } from "@/utils/domUtils";
+import { getDateNow } from "@/types/helpers";
 
 export const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
-
-/**
- * Sequence number for ensuring render requests are handled in order
- */
-let renderSequenceNumber = 0;
 
 /**
  * Event listeners triggered when the sidebar shows and is ready to receive messages.
@@ -106,13 +102,10 @@ export async function showSidebar(
   }
 
   if (!isEmpty(activateOptions)) {
-    const seqNum = renderSequenceNumber;
-    renderSequenceNumber++;
-
     // The sidebarSlice handles the race condition with the panels loading by keeping track of the latest pending
     // activatePanel request.
     void sidebarInThisTab
-      .activatePanel(seqNum, {
+      .activatePanel(getDateNow(), {
         ...activateOptions,
         // If the sidebar wasn't showing, force the behavior. (Otherwise, there's a race on the initial activation,
         // where depending on when the message is received, the sidebar might already be showing a panel)
@@ -138,10 +131,7 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
     console.warn("sidebar is not attached to the page");
   }
 
-  const seqNum = renderSequenceNumber;
-  renderSequenceNumber++;
-
-  void sidebarInThisTab.activatePanel(seqNum, {
+  void sidebarInThisTab.activatePanel(getDateNow(), {
     extensionId,
     force: true,
   });
@@ -229,9 +219,7 @@ function renderPanelsIfVisible(): void {
   console.debug("sidebarController:renderPanelsIfVisible");
 
   if (isSidebarFrameVisible()) {
-    const seqNum = renderSequenceNumber;
-    renderSequenceNumber++;
-    void sidebarInThisTab.renderPanels(seqNum, panels);
+    void sidebarInThisTab.renderPanels(getDateNow(), panels);
   } else {
     console.debug(
       "sidebarController:renderPanelsIfVisible: skipping renderPanels because the sidebar is not visible",
@@ -246,9 +234,7 @@ export function showSidebarForm(entry: Except<FormPanelEntry, "type">): void {
     throw new Error("Cannot add sidebar form if the sidebar is not visible");
   }
 
-  const seqNum = renderSequenceNumber;
-  renderSequenceNumber++;
-  void sidebarInThisTab.showForm(seqNum, { type: "form", ...entry });
+  void sidebarInThisTab.showForm(getDateNow(), { type: "form", ...entry });
 }
 
 export function hideSidebarForm(nonce: UUID): void {
@@ -259,9 +245,7 @@ export function hideSidebarForm(nonce: UUID): void {
     return;
   }
 
-  const seqNum = renderSequenceNumber;
-  renderSequenceNumber++;
-  void sidebarInThisTab.hideForm(seqNum, nonce);
+  void sidebarInThisTab.hideForm(getDateNow(), nonce);
 }
 
 export function showTemporarySidebarPanel(
@@ -275,8 +259,7 @@ export function showTemporarySidebarPanel(
     );
   }
 
-  const sequence = renderSequenceNumber++;
-  void sidebarInThisTab.showTemporaryPanel(sequence, {
+  void sidebarInThisTab.showTemporaryPanel(getDateNow(), {
     type: "temporaryPanel",
     ...entry,
   });
@@ -293,8 +276,7 @@ export function updateTemporarySidebarPanel(
     );
   }
 
-  const sequence = renderSequenceNumber++;
-  sidebarInThisTab.updateTemporaryPanel(sequence, {
+  sidebarInThisTab.updateTemporaryPanel(getDateNow(), {
     type: "temporaryPanel",
     ...entry,
   });
@@ -307,8 +289,7 @@ export function hideTemporarySidebarPanel(nonce: UUID): void {
     return;
   }
 
-  const sequence = renderSequenceNumber++;
-  void sidebarInThisTab.hideTemporaryPanel(sequence, nonce);
+  void sidebarInThisTab.hideTemporaryPanel(getDateNow(), nonce);
 }
 
 /**
@@ -480,9 +461,8 @@ export function showModActivationInSidebar(
     ...entry,
   };
 
-  const sequence = renderSequenceNumber++;
   void sidebarInThisTab.showModActivationPanel(
-    sequence,
+    getDateNow(),
     modActivationPanelEntry,
   );
 }
@@ -501,8 +481,7 @@ export function hideModActivationInSidebar(): void {
     return;
   }
 
-  const sequence = renderSequenceNumber++;
-  void sidebarInThisTab.hideModActivationPanel(sequence);
+  void sidebarInThisTab.hideModActivationPanel(getDateNow());
 }
 
 /**

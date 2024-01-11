@@ -19,6 +19,7 @@ import { valid as semVerValid } from "semver";
 import { startsWith } from "lodash";
 import validUuidRegex from "@/vendors/validateUuid";
 import { type Timestamp, type UUID } from "@/types/stringTypes";
+import { type UtcTimestamp } from "./numberTypes";
 import { v4 } from "uuid";
 import {
   INNER_SCOPE,
@@ -28,6 +29,10 @@ import {
 
 export const PACKAGE_REGEX =
   /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
+
+export function getDateNow(): UtcTimestamp {
+  return Date.now() as UtcTimestamp;
+}
 
 /**
  * Return a random v4 UUID.

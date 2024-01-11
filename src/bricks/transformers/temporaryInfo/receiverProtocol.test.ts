@@ -21,6 +21,7 @@ import {
   removeListener,
   updateTemporaryPanel,
 } from "@/bricks/transformers/temporaryInfo/receiverProtocol";
+import { UtcTimestamp } from "@/types/numberTypes";
 import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
 
 describe("receiverProtocol", () => {
@@ -32,9 +33,12 @@ describe("receiverProtocol", () => {
 
     addListener(listener);
 
-    await updateTemporaryPanel(0, {
-      title: "test",
-    } as unknown as TemporaryPanelEntry);
+    await updateTemporaryPanel(
+      0 as UtcTimestamp,
+      {
+        title: "test",
+      } as unknown as TemporaryPanelEntry,
+    );
 
     expect(listener.onUpdateTemporaryPanel).toHaveBeenCalledWith({
       title: "test",
@@ -42,9 +46,12 @@ describe("receiverProtocol", () => {
 
     removeListener(listener);
 
-    await updateTemporaryPanel(0, {
-      title: "test",
-    } as unknown as TemporaryPanelEntry);
+    await updateTemporaryPanel(
+      0 as UtcTimestamp,
+      {
+        title: "test",
+      } as unknown as TemporaryPanelEntry,
+    );
 
     expect(listener.onUpdateTemporaryPanel).toHaveBeenCalledTimes(1);
   });
@@ -57,12 +64,18 @@ describe("receiverProtocol", () => {
 
     addListener(listener);
 
-    await updateTemporaryPanel(1, {
-      title: "test",
-    } as unknown as TemporaryPanelEntry);
-    await updateTemporaryPanel(0, {
-      title: "test",
-    } as unknown as TemporaryPanelEntry);
+    await updateTemporaryPanel(
+      1 as UtcTimestamp,
+      {
+        title: "test",
+      } as unknown as TemporaryPanelEntry,
+    );
+    await updateTemporaryPanel(
+      0 as UtcTimestamp,
+      {
+        title: "test",
+      } as unknown as TemporaryPanelEntry,
+    );
 
     expect(listener.onUpdateTemporaryPanel).toHaveBeenCalledTimes(1);
   });
