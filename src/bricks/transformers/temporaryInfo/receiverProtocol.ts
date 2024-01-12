@@ -60,14 +60,14 @@ export function removeListener(fn: PanelListener): void {
 
 function runListeners<Method extends keyof PanelListener>(
   method: Method,
-  timestamp: TimedSequence,
+  sequence: TimedSequence,
   data: Parameters<PanelListener[Method]>[0],
   { force = false }: { force?: boolean } = {},
 ): void {
-  if (timestamp < lastMessageSeen && !force) {
+  if (sequence < lastMessageSeen && !force) {
     console.debug(
       "Skipping stale message (seq: %d, current: %d)",
-      timestamp,
+      sequence,
       lastMessageSeen,
       { data },
     );
@@ -75,7 +75,7 @@ function runListeners<Method extends keyof PanelListener>(
   }
 
   // Account for unordered messages with force
-  lastMessageSeen = timestamp > lastMessageSeen ? timestamp : lastMessageSeen;
+  lastMessageSeen = sequence > lastMessageSeen ? sequence : lastMessageSeen;
 
   console.debug(`Running ${listeners.length} listener(s) for %s`, method, {
     data,
@@ -93,15 +93,15 @@ function runListeners<Method extends keyof PanelListener>(
 }
 
 export async function updateTemporaryPanel(
-  timestamp: TimedSequence,
+  sequence: TimedSequence,
   entry: TemporaryPanelEntry,
 ) {
-  runListeners("onUpdateTemporaryPanel", timestamp, entry);
+  runListeners("onUpdateTemporaryPanel", sequence, entry);
 }
 
 export async function setTemporaryPanelNonce(
-  timestamp: TimedSequence,
+  sequence: TimedSequence,
   payload: { frameNonce: UUID; panelNonce: UUID },
 ) {
-  runListeners("onSetPanelNonce", timestamp, payload);
+  runListeners("onSetPanelNonce", sequence, payload);
 }

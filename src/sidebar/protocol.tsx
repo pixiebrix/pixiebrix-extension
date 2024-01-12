@@ -57,7 +57,7 @@ export type SidebarListener = {
 // keep track messages sent in the interim. This buffer is flushed once the listener is initialized.
 const messageBuffer: Array<{
   method: keyof SidebarListener;
-  timestamp: TimedSequence;
+  sequence: TimedSequence;
   data: Parameters<SidebarListener[keyof SidebarListener]>[0];
 }> = [];
 
@@ -102,35 +102,35 @@ function flushMessageBuffer(): void {
   }
 
   // `sortBy` to handle case where messages were received out of order
-  const orderedMessageBuffer = sortBy(messageBuffer, "timestamp");
+  const orderedMessageBuffer = sortBy(messageBuffer, "sequence");
   messageBuffer.length = 0;
 
-  for (const { method, timestamp, data } of orderedMessageBuffer) {
+  for (const { method, sequence, data } of orderedMessageBuffer) {
     console.debug("flushMessageBuffer: %s", method, {
-      timestamp,
+      sequence,
       data,
     });
 
-    runListeners(method, timestamp, data);
+    runListeners(method, sequence, data);
   }
 }
 
 function runListeners<Method extends keyof SidebarListener>(
   method: Method,
-  timestamp: TimedSequence,
+  sequence: TimedSequence,
   data?: Parameters<SidebarListener[Method]>[0],
   { force = false }: { force?: boolean } = {},
 ): void {
   // Buffer messages until the listener is initialized
   if (listeners.length === 0) {
-    messageBuffer.push({ method, timestamp, data });
+    messageBuffer.push({ method, sequence, data });
     return;
   }
 
-  if (timestamp < lastMessageSeen && !force) {
+  if (sequence < lastMessageSeen && !force) {
     console.debug(
       "Skipping stale message (seq: %d, current: %d)",
-      timestamp,
+      sequence,
       lastMessageSeen,
       { data },
     );
@@ -138,7 +138,7 @@ function runListeners<Method extends keyof SidebarListener>(
   }
 
   // Account for unordered messages with force
-  lastMessageSeen = timestamp > lastMessageSeen ? timestamp : lastMessageSeen;
+  lastMessageSeen = sequence > lastMessageSeen ? sequence : lastMessageSeen;
 
   console.debug(`Running ${listeners.length} listener(s) for %s`, method, {
     data,
@@ -156,72 +156,64 @@ function runListeners<Method extends keyof SidebarListener>(
 }
 
 export async function renderPanels(
-  timestamp: TimedSequence,
+  sequence: TimedSequence,
   panels: PanelEntry[],
 ): Promise<void> {
-  runListeners("onRenderPanels", timestamp, panels);
+  runListeners("onRenderPanels", sequence, panels);
 }
 
 export async function activatePanel(
-  timestamp: TimedSequence,
+  sequence: TimedSequence,
   options: ActivatePanelOptions,
 ): Promise<void> {
-  if (timestamp < lastActivateMessageSeen) {
+  if (sequence < lastActivateMessageSeen) {
     console.debug(
       "Skipping stale message (seq: %d, current: %d)",
-      timestamp,
+      sequence,
       lastActivateMessageSeen,
       { data: options },
     );
     return;
   }
 
-  lastActivateMessageSeen = timestamp;
+  lastActivateMessageSeen = sequence;
 
-  runListeners("onActivatePanel", timestamp, options, { force: true });
+  runListeners("onActivatePanel", sequence, options, { force: true });
 }
 
-export async function showForm(
-  timestamp: TimedSequence,
-  entry: FormPanelEntry,
-) {
-  runListeners("onShowForm", timestamp, entry);
+export async function showForm(sequence: TimedSequence, entry: FormPanelEntry) {
+  runListeners("onShowForm", sequence, entry);
 }
 
-export async function hideForm(timestamp: TimedSequence, nonce: UUID) {
-  runListeners("onHideForm", timestamp, { nonce });
+export async function hideForm(sequence: TimedSequence, nonce: UUID) {
+  runListeners("onHideForm", sequence, { nonce });
 }
 
 export async function showTemporaryPanel(
-  timestamp: TimedSequence,
+  sequence: TimedSequence,
   entry: TemporaryPanelEntry,
 ) {
-  runListeners("onShowTemporaryPanel", timestamp, entry);
+  runListeners("onShowTemporaryPanel", sequence, entry);
 }
 
 export async function updateTemporaryPanel(
-  timestamp: TimedSequence,
+  sequence: TimedSequence,
   entry: TemporaryPanelEntry,
 ) {
-  runListeners("onUpdateTemporaryPanel", timestamp, entry);
+  runListeners("onUpdateTemporaryPanel", sequence, entry);
 }
 
-export async function hideTemporaryPanel(
-  timestamp: TimedSequence,
-  nonce: UUID,
-) {
-  runListeners("onHideTemporaryPanel", timestamp, { nonce });
+export async function hideTemporaryPanel(sequence: TimedSequence, nonce: UUID) {
+  runListeners("onHideTemporaryPanel", sequence, { nonce });
 }
 
 export async function showActivateMods(
-  timestamp: TimedSequence,
+  sequence: TimedSequence,
   entry: ModActivationPanelEntry,
 ): Promise<void> {
-  runListeners("onShowActivateRecipe", timestamp, entry);
+  runListeners("onShowActivateRecipe", sequence, entry);
 }
 
-export async function hideActivateMods(
-  timestamp: TimedSequence,
-): Promise<void> {
-  runListeners("onHideActivateRecipe", timestamp);
+export async function hideActivateMods(sequence: TimedSequence): Promise<void> {
+  runListeners("onHideActivateRecipe", sequence);
 }
