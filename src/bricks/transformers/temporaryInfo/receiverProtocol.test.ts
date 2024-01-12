@@ -21,8 +21,8 @@ import {
   removeListener,
   updateTemporaryPanel,
 } from "@/bricks/transformers/temporaryInfo/receiverProtocol";
-import { type TimedSequence } from "@/types/stringTypes";
 import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
+import { validateTimedSequence } from "@/types/helpers";
 
 describe("receiverProtocol", () => {
   test("add/remove listener", async () => {
@@ -33,12 +33,9 @@ describe("receiverProtocol", () => {
 
     addListener(listener);
 
-    await updateTemporaryPanel(
-      "188888:0" as TimedSequence,
-      {
-        title: "test",
-      } as unknown as TemporaryPanelEntry,
-    );
+    await updateTemporaryPanel(validateTimedSequence("1234567890123:0"), {
+      title: "test",
+    } as unknown as TemporaryPanelEntry);
 
     expect(listener.onUpdateTemporaryPanel).toHaveBeenCalledWith({
       title: "test",
@@ -46,12 +43,9 @@ describe("receiverProtocol", () => {
 
     removeListener(listener);
 
-    await updateTemporaryPanel(
-      "188888:0" as TimedSequence,
-      {
-        title: "test",
-      } as unknown as TemporaryPanelEntry,
-    );
+    await updateTemporaryPanel(validateTimedSequence("1234567890123:0"), {
+      title: "test",
+    } as unknown as TemporaryPanelEntry);
 
     expect(listener.onUpdateTemporaryPanel).toHaveBeenCalledTimes(1);
   });
@@ -64,18 +58,12 @@ describe("receiverProtocol", () => {
 
     addListener(listener);
 
-    await updateTemporaryPanel(
-      "188888:1" as TimedSequence,
-      {
-        title: "test",
-      } as unknown as TemporaryPanelEntry,
-    );
-    await updateTemporaryPanel(
-      "188888:0" as TimedSequence,
-      {
-        title: "test",
-      } as unknown as TemporaryPanelEntry,
-    );
+    await updateTemporaryPanel(validateTimedSequence("1234567890123:1"), {
+      title: "test",
+    } as unknown as TemporaryPanelEntry);
+    await updateTemporaryPanel(validateTimedSequence("1234567890123:0"), {
+      title: "test",
+    } as unknown as TemporaryPanelEntry);
 
     expect(listener.onUpdateTemporaryPanel).toHaveBeenCalledTimes(1);
   });

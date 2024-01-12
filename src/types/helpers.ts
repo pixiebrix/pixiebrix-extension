@@ -39,6 +39,15 @@ export function getTimedSequence(): TimedSequence {
   return `${Date.now()}:${sequence}` as TimedSequence;
 }
 
+export function validateTimedSequence(string: string): TimedSequence {
+  // Timestamps between 2001 and 2287 have 13 digits. We're covered.
+  if (/^\d{13}:\d+$/.test(string)) {
+    throw new TypeError("Invalid timed sequence");
+  }
+
+  return string as TimedSequence;
+}
+
 /**
  * Return a random v4 UUID.
  */
