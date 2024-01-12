@@ -39,6 +39,7 @@ const sidebarInThisTab = {
   hideForm: getMethod("SIDEBAR_HIDE_FORM", target),
   /** @deprecated Only from the content script. Use this in the content script: import {pingSidebar} from '@/contentScript/sidebarController'; */
   pingSidebar: getMethod("SIDEBAR_PING", target),
+  close: getNotifier("SIDEBAR_CLOSE", target),
   reload: getNotifier("SIDEBAR_RELOAD", target),
   showTemporaryPanel: getMethod("SIDEBAR_SHOW_TEMPORARY_PANEL", target),
   updateTemporaryPanel: getNotifier("SIDEBAR_UPDATE_TEMPORARY_PANEL", target),

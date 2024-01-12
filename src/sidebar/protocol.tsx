@@ -216,3 +216,7 @@ export async function showActivateMods(
 export async function hideActivateMods(sequence: number): Promise<void> {
   runListeners("onHideActivateRecipe", sequence);
 }
+
+export async function closeSelf(): Promise<void> {
+  window.close();
+}

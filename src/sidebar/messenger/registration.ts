@@ -20,6 +20,7 @@ import { registerMethods } from "webext-messenger";
 import {
   activatePanel,
   hideActivateMods,
+  closeSelf,
   hideForm,
   hideTemporaryPanel,
   renderPanels,
@@ -44,6 +45,7 @@ declare global {
     SIDEBAR_SHOW_FORM: typeof showForm;
     SIDEBAR_HIDE_FORM: typeof hideForm;
     SIDEBAR_PING: typeof noop;
+    SIDEBAR_CLOSE: typeof closeSelf;
     SIDEBAR_RELOAD: typeof location.reload;
     SIDEBAR_SHOW_TEMPORARY_PANEL: typeof showTemporaryPanel;
     SIDEBAR_UPDATE_TEMPORARY_PANEL: typeof updateTemporaryPanel;
@@ -59,6 +61,7 @@ export default function registerMessenger(): void {
     SIDEBAR_RENDER_PANELS: renderPanels,
     SIDEBAR_SHOW_FORM: showForm,
     SIDEBAR_HIDE_FORM: hideForm,
+    SIDEBAR_CLOSE: closeSelf,
     SIDEBAR_PING: noop,
     SIDEBAR_RELOAD: location.reload.bind(location),
     SIDEBAR_SHOW_TEMPORARY_PANEL: showTemporaryPanel,

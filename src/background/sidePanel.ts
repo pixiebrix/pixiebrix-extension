@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  openSidePanel,
-  hideSidePanel,
-} from "@/sidebar/sidePanel/messenger/api";
+import { openSidePanel } from "@/sidebar/sidePanel/messenger/api";
 import type { MessengerMeta } from "webext-messenger";
 import {
   getExtensionConsoleUrl,
@@ -53,10 +50,6 @@ function getSidebarPath(tabId: number, url: string | undefined): string {
 
 export async function showMySidePanel(this: MessengerMeta): Promise<void> {
   await openSidePanel(this.trace[0].tab.id);
-}
-
-export async function hideMySidePanel(this: MessengerMeta): Promise<void> {
-  await hideSidePanel(this.trace[0].tab.id);
 }
 
 // TODO: Drop if this is ever implemented: https://github.com/w3c/webextensions/issues/515

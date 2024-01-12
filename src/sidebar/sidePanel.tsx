@@ -19,17 +19,15 @@
 
 import { expectContext } from "@/utils/expectContext";
 import {
-  getAssociatedTabId,
   getAssociatedTarget,
-  hideSidePanel,
   respondToPings,
 } from "@/sidebar/sidePanel/messenger/api";
 import { sidebarWasLoaded } from "@/contentScript/messenger/api";
 
 expectContext("sidebar");
 
-export async function hideSelf() {
-  return hideSidePanel(getAssociatedTabId());
+export async function closeSelf() {
+  window.close();
 }
 
 export function initSidePanel() {

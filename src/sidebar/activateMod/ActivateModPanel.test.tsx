@@ -66,7 +66,7 @@ const checkModDefinitionPermissionsMock = jest.mocked(
 
 jest.mock("@/sidebar/sidePanel");
 
-const hideSidebarSpy = jest.spyOn(sidePanel, "hideSelf");
+const hideSidebarSpy = jest.spyOn(sidePanel, "closeSelf");
 
 jest.mock("@/starterBricks/starterBrickModUtils", () => {
   const actualUtils = jest.requireActual(

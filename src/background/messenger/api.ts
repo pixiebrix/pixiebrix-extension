@@ -46,7 +46,6 @@ export const removeExtensionForEveryTab = getNotifier(
 );
 
 export const showMySidePanel = getMethod("SHOW_MY_SIDE_PANEL", bg);
-export const hideMySidePanel = getMethod("HIDE_MY_SIDE_PANEL", bg);
 
 export const closeTab = getMethod("CLOSE_TAB", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);

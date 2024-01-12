@@ -34,7 +34,7 @@ mockAllApiEndpoints();
 jest.mock("@/sidebar/sidePanel");
 
 const cancelFormSpy = jest.spyOn(messengerApi, "cancelForm");
-const hideSidebarSpy = jest.spyOn(sidePanel, "hideSelf");
+const hideSidebarSpy = jest.spyOn(sidePanel, "closeSelf");
 
 async function setupPanelsAndRender(options: {
   sidebarEntries?: Partial<SidebarEntries>;

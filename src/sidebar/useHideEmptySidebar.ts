@@ -24,7 +24,7 @@ import {
   selectVisiblePanelCount,
 } from "@/sidebar/sidebarSelectors";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
-import { hideSelf } from "@/sidebar/sidePanel";
+import { closeSelf } from "@/sidebar/sidePanel";
 
 /**
  * Hide the sidebar if there are no visible panels. We use this to close the sidebar if the user closes all panels.
@@ -53,7 +53,7 @@ export const useHideEmptySidebar = () => {
         visiblePanelCount === 0 &&
         openReservedPanels.length === 0
       ) {
-        await hideSelf();
+        await closeSelf();
       }
     },
     [visiblePanelCount],

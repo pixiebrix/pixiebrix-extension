@@ -19,9 +19,10 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
 import { updateSidebar } from "@/contentScript/sidebarController";
-import { hideMySidePanel, showMySidePanel } from "@/background/messenger/api";
+import { showMySidePanel } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { logPromiseDuration } from "@/utils/promiseUtils";
+import sidebarInThisTab from "@/sidebar/messenger/api";
 
 export class ShowSidebar extends EffectABC {
   constructor() {
@@ -88,6 +89,6 @@ export class HideSidebar extends EffectABC {
   inputSchema: Schema = SCHEMA_EMPTY_OBJECT;
 
   async effect(): Promise<void> {
-    await hideMySidePanel();
+    await sidebarInThisTab.close();
   }
 }
