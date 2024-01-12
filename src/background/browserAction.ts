@@ -16,7 +16,11 @@
  */
 
 import { browserAction } from "@/mv3/api";
-import { openSidePanel } from "@/sidebar/sidePanel/messenger/api";
+import {
+  isSidePanelOpen,
+  openSidePanel,
+} from "@/sidebar/sidePanel/messenger/api";
+import { getNotifier } from "webext-messenger";
 
 export default async function initBrowserAction(): Promise<void> {
   void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
@@ -28,6 +32,10 @@ export default async function initBrowserAction(): Promise<void> {
   });
 
   browserAction.onClicked.addListener(async (tab) => {
-    await openSidePanel(tab.id);
+    if (await isSidePanelOpen()) {
+      getNotifier("SIDEBAR_CLOSE", { page: "sidebar.html?tabId=" + tab.id })();
+    } else {
+      await openSidePanel(tab.id);
+    }
   });
 }
