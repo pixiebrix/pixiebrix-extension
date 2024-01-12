@@ -21,12 +21,6 @@
  * to match that expectation and avoid lint issues.
  */
 
-import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
-import {
-  DISPLAY_REASON_EXTENSION_CONSOLE,
-  DISPLAY_REASON_RESTRICTED_URL,
-} from "@/tinyPages/restrictedUrlPopupConstants";
-import { isScriptableUrl } from "webext-content-scripts";
 import { isObject } from "@/utils/objectUtils";
 import { expectContext } from "@/utils/expectContext";
 import { type Target } from "webext-messenger";
@@ -72,32 +66,11 @@ export async function isSidePanelOpen(): Promise<boolean> {
   }
 }
 
-function getPopoverUrl(tabUrl: string | undefined): string | null {
-  const popoverUrl = browser.runtime.getURL("restrictedUrlPopup.html");
-
-  if (tabUrl?.startsWith(getExtensionConsoleUrl())) {
-    return `${popoverUrl}?reason=${DISPLAY_REASON_EXTENSION_CONSOLE}`;
-  }
-
-  if (!isScriptableUrl(tabUrl)) {
-    return `${popoverUrl}?reason=${DISPLAY_REASON_RESTRICTED_URL}`;
-  }
-
-  // The popup is disabled, and the extension will receive browserAction.onClicked events.
-  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setPopup#popup
-  return null;
-}
-
-export function getSidebarPath(tabId: number, url: string): string {
-  return getPopoverUrl(url) ?? "sidebar.html?tabId=" + tabId;
-}
-
-export async function openSidePanel(tabId: number, url: string): Promise<void> {
+export async function openSidePanel(tabId: number): Promise<void> {
   // Simultaneously define, enable, and open the side panel
   // If we wait too long before calling .open(), we will lose the "user gesture" permission
   void chrome.sidePanel.setOptions({
     tabId,
-    path: getSidebarPath(tabId, url),
     enabled: true,
   });
 

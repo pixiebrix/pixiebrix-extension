@@ -16,28 +16,12 @@
  */
 
 import { browserAction } from "@/mv3/api";
-import {
-  getSidebarPath,
-  openSidePanel,
-} from "@/sidebar/sidePanel/messenger/api";
+import { openSidePanel } from "@/sidebar/sidePanel/messenger/api";
 
 export default async function initBrowserAction(): Promise<void> {
   void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
 
-  // Disable by default, so that it can be enabled on a per-tab basis
-  void chrome.sidePanel.setOptions({
-    enabled: false,
-  });
   browserAction.onClicked.addListener(async (tab) => {
-    await openSidePanel(tab.id, tab.url);
-  });
-  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.url) {
-      // TODO: Drop this once the popover URL behavior is merged into sidebar.html
-      void chrome.sidePanel.setOptions({
-        tabId,
-        path: getSidebarPath(tabId, changeInfo.url),
-      });
-    }
+    await openSidePanel(tab.id);
   });
 }

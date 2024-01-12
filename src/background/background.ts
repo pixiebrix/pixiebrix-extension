@@ -46,6 +46,7 @@ import { initLogSweep } from "@/telemetry/logging";
 import { initModUpdater } from "@/background/modUpdater";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import initWalkthroughModalTrigger from "@/background/walkthroughModalTrigger";
+import { initSidePanel } from "./sidePanel";
 
 void initLocator();
 void initMessengerLogging();
@@ -53,6 +54,7 @@ void initRuntimeLogging();
 registerMessenger();
 registerExternalMessenger();
 void initBrowserAction();
+void initSidePanel();
 initInstaller();
 void initNavigation();
 initExecutor();

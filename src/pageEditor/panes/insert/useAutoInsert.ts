@@ -6,7 +6,7 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import { getExampleBrickPipeline } from "@/pageEditor/exampleStarterBrickConfigs";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
-import { showSidebarFromPageEditor } from "@/pageEditor/sidePanel";
+import { openSidePanel } from "@/sidebar/sidePanel/messenger/api";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
@@ -58,7 +58,7 @@ function useAutoInsert(type: StarterBrickType): void {
       if (config.elementType === "actionPanel") {
         // For convenience, open the side panel if it's not already open so that the user doesn't
         // have to manually toggle it
-        void showSidebarFromPageEditor();
+        void openSidePanel(chrome.devtools.inspectedWindow.tabId);
       }
 
       reportEvent(Events.MOD_COMPONENT_ADD_NEW, {
