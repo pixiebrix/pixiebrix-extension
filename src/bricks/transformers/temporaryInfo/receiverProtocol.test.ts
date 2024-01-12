@@ -33,7 +33,7 @@ describe("receiverProtocol", () => {
 
     addListener(listener);
 
-    await updateTemporaryPanel(validateTimedSequence("1234567890123:0"), {
+    await updateTemporaryPanel(validateTimedSequence("1234567890123:00000"), {
       title: "test",
     } as unknown as TemporaryPanelEntry);
 
@@ -43,7 +43,7 @@ describe("receiverProtocol", () => {
 
     removeListener(listener);
 
-    await updateTemporaryPanel(validateTimedSequence("1234567890123:0"), {
+    await updateTemporaryPanel(validateTimedSequence("1234567890123:00000"), {
       title: "test",
     } as unknown as TemporaryPanelEntry);
 
@@ -58,10 +58,10 @@ describe("receiverProtocol", () => {
 
     addListener(listener);
 
-    await updateTemporaryPanel(validateTimedSequence("1234567890123:1"), {
+    await updateTemporaryPanel(validateTimedSequence("1234567890123:00001"), {
       title: "test",
     } as unknown as TemporaryPanelEntry);
-    await updateTemporaryPanel(validateTimedSequence("1234567890123:0"), {
+    await updateTemporaryPanel(validateTimedSequence("1234567890123:00000"), {
       title: "test",
     } as unknown as TemporaryPanelEntry);
 
