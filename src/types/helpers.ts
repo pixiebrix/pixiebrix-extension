@@ -34,6 +34,11 @@ export const PACKAGE_REGEX =
   /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
 
 let sequence = 0;
+/**
+ * Returns a string that can be used to determine the order of two calls.
+ * It guarantees the order of two calls from the same process, but it only helps
+ * disambiguate calls from different processes if they are more than 1ms apart.
+ */
 export function getTimedSequence(): TimedSequence {
   sequence++;
   return `${Date.now()}:${sequence}` as TimedSequence;
