@@ -193,9 +193,11 @@ export async function dereference(schema: Schema): Promise<Schema> {
       },
     }) as Promise<Schema>);
   } catch (rawError) {
-    const errorMessage = "Failed to dereference schema";
+    const errorMessage = `Failed to dereference schema: ${JSON.stringify(
+      schema,
+    )}`;
     throw new Error(errorMessage, {
-      cause: { rawError, schema: JSON.stringify(schema) },
+      cause: rawError,
     });
   }
 }
