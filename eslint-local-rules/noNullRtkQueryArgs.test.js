@@ -50,7 +50,36 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
     { code: "api.useFooQuery()" },
     { code: "api.endpoints.foo.useQuerySubscription()" },
     { code: "api.endpoints.foo.useQueryState()" },
-    { code: "const [foo] = useFooMutation(); foo()" },
+    {
+      code: `
+        const [trigger, { data }] = useUpdateFooMutation();
+        trigger(undefined);
+      `,
+    },
+    {
+      code: `
+        const [trigger, { data }] = useUpdateFooMutation();
+        trigger("arg");
+      `,
+    },
+    {
+      code: `
+        const [trigger, { data }] = useUpdateFooMutation();
+        trigger(123);
+      `,
+    },
+    {
+      code: `
+        const [trigger, { data }] = useUpdateFooMutation();
+        trigger(true);
+      `,
+    },
+    {
+      code: `
+        const [trigger, { data }] = useUpdateFooMutation();
+        trigger({});
+      `,
+    },
   ],
   invalid: [
     {
@@ -97,6 +126,18 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
       code: "const [foo] = useFooMutation(); foo(null);",
       errors: expectedErrors,
       output: "const [foo] = useFooMutation(); foo(undefined);",
+    },
+    {
+      name: "calling the trigger function with null",
+      code: `
+        const [trigger, { data }] = useUpdateFooMutation();
+        trigger(null);
+      `,
+      errors: expectedErrors,
+      output: `
+        const [trigger, { data }] = useUpdateFooMutation();
+        trigger(undefined);
+      `,
     },
   ],
 });

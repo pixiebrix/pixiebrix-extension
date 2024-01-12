@@ -55,8 +55,8 @@ module.exports = {
       VariableDeclarator(node) {
         if (isRtkQueryTriggerAssignment(node)) {
           const mutationTrigger = node.id.elements[0];
-          const references = context
-            .getScope()
+          const references = context.sourceCode
+            .getScope(node)
             .references.filter(
               (reference) => reference.identifier.name === mutationTrigger.name,
             );
@@ -103,7 +103,7 @@ function isFirstArgumentNull(args) {
 
 function isRtkQueryHookFormat(str) {
   return (
-    str.startsWith("use") &&
+    str?.startsWith("use") &&
     RTK_QUERY_SUFFIXES.some((suffix) => str.endsWith(suffix))
   );
 }
@@ -124,7 +124,7 @@ function isRtkQueryHook(node) {
 
 function isRtkQueryHookWithTriggerFormat(str) {
   for (const [prefix, suffix] of RTK_TRIGGER_PREFIX_SUFFIXES) {
-    if (str.startsWith(prefix) && str.endsWith(suffix)) {
+    if (str?.startsWith(prefix) && str.endsWith(suffix)) {
       return true;
     }
   }
