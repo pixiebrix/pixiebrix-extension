@@ -21,6 +21,7 @@ import { getMethod, getNotifier, getThisFrame } from "webext-messenger";
 
 const target = { page: "/sidebar.html" };
 
+// TODO: move to contentScrpt/sidePanel/messenger/api.ts
 // This should be an expectContext, but it's the usual "everyone imports the registry" problem
 if (isContentScript()) {
   // Unavoidable race condition: we can't message the sidebar until we know the tabId.

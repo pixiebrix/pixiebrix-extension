@@ -89,6 +89,6 @@ export class HideSidebar extends EffectABC {
   inputSchema: Schema = SCHEMA_EMPTY_OBJECT;
 
   async effect(): Promise<void> {
-    await sidebarInThisTab.close();
+    sidebarInThisTab.close();
   }
 }

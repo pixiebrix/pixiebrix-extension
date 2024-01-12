@@ -17,10 +17,7 @@
 
 import { openSidePanel } from "@/sidebar/sidePanel/messenger/api";
 import type { MessengerMeta } from "webext-messenger";
-import {
-  getExtensionConsoleUrl,
-  getTabsWithAccess,
-} from "@/utils/extensionUtils";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import {
   DISPLAY_REASON_EXTENSION_CONSOLE,
   DISPLAY_REASON_RESTRICTED_URL,
@@ -43,7 +40,6 @@ function getRestrictedPageMessage(tabUrl: string | undefined): string | null {
   return null;
 }
 
-// TODO: Drop this once the popover URL behavior is merged into sidebar.html
 function getSidebarPath(tabId: number, url: string | undefined): string {
   return getRestrictedPageMessage(url) ?? "sidebar.html?tabId=" + tabId;
 }
@@ -54,6 +50,7 @@ export async function showMySidePanel(this: MessengerMeta): Promise<void> {
 
 // TODO: Drop if this is ever implemented: https://github.com/w3c/webextensions/issues/515
 export async function initSidePanel(): Promise<void> {
+  // TODO: Drop this once the popover URL behavior is merged into sidebar.html
   chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
     if (changeInfo.url) {
       void chrome.sidePanel.setOptions({
@@ -63,12 +60,14 @@ export async function initSidePanel(): Promise<void> {
     }
   });
 
-  const existingTabs = await getTabsWithAccess();
+  // We need to target _all_ tabs, not just those we have access to
+  const existingTabs = await chrome.tabs.query({});
   await Promise.all(
-    existingTabs.map(async ({ tabId, url }) =>
+    existingTabs.map(async ({ id, url }) =>
       chrome.sidePanel.setOptions({
-        tabId,
-        path: getSidebarPath(tabId, url),
+        tabId: id,
+        path: getSidebarPath(id, url),
+        enabled: true,
       }),
     ),
   );

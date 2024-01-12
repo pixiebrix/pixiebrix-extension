@@ -26,10 +26,6 @@ import { sidebarWasLoaded } from "@/contentScript/messenger/api";
 
 expectContext("sidebar");
 
-export async function closeSelf() {
-  window.close();
-}
-
 export function initSidePanel() {
   respondToPings();
   sidebarWasLoaded(getAssociatedTarget());

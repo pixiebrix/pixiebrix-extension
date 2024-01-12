@@ -21,6 +21,12 @@ import { openSidePanel } from "@/sidebar/sidePanel/messenger/api";
 export default async function initBrowserAction(): Promise<void> {
   void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
 
+  // Disable by default, so that it can be enabled on a per-tab basis.
+  // Without this, the sidePanel remains open as the user changes tabs
+  void chrome.sidePanel.setOptions({
+    enabled: false,
+  });
+
   browserAction.onClicked.addListener(async (tab) => {
     await openSidePanel(tab.id);
   });
