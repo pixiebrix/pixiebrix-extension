@@ -104,7 +104,7 @@ const MINIMUM_SIDEBAR_WIDTH = 300;
  * @returns 'unknown' when it cannot be determined
  */
 // The type cannot be `undefined` due to strictNullChecks
-function isSidePanelOpenSync(): false | "unknown" {
+export function isSidePanelOpenSync(): false | "unknown" {
   if (!globalThis.window) {
     return "unknown";
   }
@@ -112,19 +112,4 @@ function isSidePanelOpenSync(): false | "unknown" {
   return window.outerWidth - window.innerWidth > MINIMUM_SIDEBAR_WIDTH
     ? "unknown"
     : false;
-}
-
-// TODO: It doesn't work when the dev tools are open on the side
-// Official event requested in https://github.com/w3c/webextensions/issues/517
-export function onSidePanelClosure(controller: AbortController): void {
-  expectContext("contentScript");
-  window.addEventListener(
-    "resize",
-    () => {
-      if (isSidePanelOpenSync() === false) {
-        controller.abort();
-      }
-    },
-    { signal: controller.signal },
-  );
 }

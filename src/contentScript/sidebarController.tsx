@@ -36,7 +36,10 @@ import type {
 } from "@/types/sidebarTypes";
 import { getTemporaryPanelSidebarEntries } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
-import { isSidePanelOpen } from "@/sidebar/sidePanel/messenger/api";
+import {
+  isSidePanelOpen,
+  isSidePanelOpenSync,
+} from "@/sidebar/sidePanel/messenger/api";
 import { backgroundTarget, getMethod } from "webext-messenger";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
@@ -429,4 +432,19 @@ export function getReservedPanelEntries(): {
     forms: getFormPanelSidebarEntries(),
     modActivationPanel: modActivationPanelEntry,
   };
+}
+
+// TODO: It doesn't work when the dev tools are open on the side
+// Official event requested in https://github.com/w3c/webextensions/issues/517
+export function onSidePanelClosure(controller: AbortController): void {
+  expectContext("contentScript");
+  window.addEventListener(
+    "resize",
+    () => {
+      if (isSidePanelOpenSync() === false) {
+        controller.abort();
+      }
+    },
+    { signal: controller.signal },
+  );
 }

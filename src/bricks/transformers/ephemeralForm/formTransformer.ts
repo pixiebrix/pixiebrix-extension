@@ -28,13 +28,13 @@ import {
   showSidebar,
   hideSidebarForm,
   showSidebarForm,
+  onSidePanelClosure,
 } from "@/contentScript/sidebarController";
 import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
 import { getThisFrame } from "webext-messenger";
 import { type BrickConfig } from "@/bricks/types";
 import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
 import { isExpression } from "@/utils/expressionUtils";
-import { onSidePanelClosure } from "@/sidebar/sidePanel/messenger/api";
 
 // The modes for createFrameSrc are different than the location argument for FormTransformer. The mode for the frame
 // just determines the layout container of the form

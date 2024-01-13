@@ -21,6 +21,7 @@ import {
   showSidebar,
   hideModActivationInSidebar,
   showModActivationInSidebar,
+  onSidePanelClosure,
 } from "@/contentScript/sidebarController";
 import { isLinked } from "@/auth/token";
 import {
@@ -32,7 +33,6 @@ import { Events } from "@/telemetry/events";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getActivatedModIds } from "@/store/extensionsStorage";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
-import { onSidePanelClosure } from "@/sidebar/sidePanel/messenger/api";
 
 let listener: EventListener | null;
 
