@@ -35,6 +35,7 @@ import {
   removeExtensions as removeSidebars,
   getReservedPanelEntries,
   sidebarWasLoaded,
+  updateSidebar,
 } from "@/contentScript/sidebarController";
 import { insertPanel } from "@/contentScript/pageEditor/insertPanel";
 import { insertButton } from "@/contentScript/pageEditor/insertButton";
@@ -102,6 +103,7 @@ declare global {
     HANDLE_MENU_ACTION: typeof handleMenuAction;
     GET_RESERVED_SIDEBAR_ENTRIES: typeof getReservedPanelEntries;
 
+    UPDATE_SIDEBAR: typeof updateSidebar;
     SIDEBAR_WAS_LOADED: typeof sidebarWasLoaded;
     REMOVE_SIDEBARS: typeof removeSidebars;
     INSERT_PANEL: typeof insertPanel;
@@ -167,6 +169,7 @@ export default function registerMessenger(): void {
     TOGGLE_QUICK_BAR: toggleQuickBar,
     HANDLE_MENU_ACTION: handleMenuAction,
 
+    UPDATE_SIDEBAR: updateSidebar,
     SIDEBAR_WAS_LOADED: sidebarWasLoaded,
     REMOVE_SIDEBARS: removeSidebars,
     INSERT_PANEL: insertPanel,

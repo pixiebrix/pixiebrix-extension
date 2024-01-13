@@ -45,6 +45,7 @@ export const handleMenuAction = getMethod("HANDLE_MENU_ACTION");
 export const getReservedSidebarEntries = getMethod(
   "GET_RESERVED_SIDEBAR_ENTRIES",
 );
+export const updateSidebar = getNotifier("UPDATE_SIDEBAR");
 export const sidebarWasLoaded = getNotifier("SIDEBAR_WAS_LOADED");
 export const removeSidebars = getMethod("REMOVE_SIDEBARS");
 export const insertPanel = getMethod("INSERT_PANEL");

@@ -75,7 +75,6 @@ let modActivationPanelEntry: ModActivationPanelEntry | null = null;
 
 /**
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
- * @param activateOptions options controlling the visible panel in the sidebar
  */
 export async function showSidebar(): Promise<void> {
   console.debug("sidebarController:showSidebar");
@@ -105,6 +104,9 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
   });
 }
 
+/**
+ * @param activateOptions options controlling the visible panel in the sidebar
+ */
 export async function updateSidebar(
   activateOptions: ActivatePanelOptions = {},
 ): Promise<void> {

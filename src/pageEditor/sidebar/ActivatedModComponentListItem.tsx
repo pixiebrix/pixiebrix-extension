@@ -30,7 +30,11 @@ import {
   ExtensionIcon,
   NotAvailableIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
-import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
+import {
+  disableOverlay,
+  enableOverlay,
+  updateSidebar,
+} from "@/contentScript/messenger/api";
 import { openSidePanel } from "@/sidebar/sidePanel/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
@@ -114,12 +118,11 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
           // frequently between extensions within the same blueprint.
           await openSidePanel(chrome.devtools.inspectedWindow.tabId);
-          // TODO: Set activateOptions
-          // void showSidebarFromPageEditor({
-          //   extensionId: modComponent.id,
-          //   force: true,
-          //   refresh: false,
-          // });
+          updateSidebar(thisTab, {
+            extensionId: modComponent.id,
+            force: true,
+            refresh: false,
+          });
         }
       } catch (error) {
         reportError(error);

@@ -26,7 +26,7 @@ import { expectContext } from "@/utils/expectContext";
 import { type Target } from "webext-messenger";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
-export function getAssociatedTabId(): number {
+function getAssociatedTabId(): number {
   expectContext("sidebar");
   const tabId = new URLSearchParams(window.location.search).get("tabId");
   return Number(tabId);
