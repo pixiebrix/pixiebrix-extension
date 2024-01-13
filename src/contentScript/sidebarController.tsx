@@ -123,7 +123,7 @@ export async function updateSidebar(
   }
 }
 
-async function renderPanelsIfVisible(): Promise<void> {
+export async function renderPanelsIfVisible(): Promise<void> {
   expectContext("contentScript");
 
   console.debug("sidebarController:renderPanelsIfVisible");
