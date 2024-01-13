@@ -33,9 +33,12 @@ describe("receiverProtocol", () => {
 
     addListener(listener);
 
-    await updateTemporaryPanel(validateTimedSequence("2244668800223:00000"), {
-      title: "test",
-    } as unknown as TemporaryPanelEntry);
+    await updateTemporaryPanel(
+      validateTimedSequence("2244668800223:00000000"),
+      {
+        title: "test",
+      } as unknown as TemporaryPanelEntry,
+    );
 
     expect(listener.onUpdateTemporaryPanel).toHaveBeenCalledWith({
       title: "test",
@@ -43,9 +46,12 @@ describe("receiverProtocol", () => {
 
     removeListener(listener);
 
-    await updateTemporaryPanel(validateTimedSequence("2244668800223:00000"), {
-      title: "test",
-    } as unknown as TemporaryPanelEntry);
+    await updateTemporaryPanel(
+      validateTimedSequence("2244668800223:00000000"),
+      {
+        title: "test",
+      } as unknown as TemporaryPanelEntry,
+    );
 
     expect(listener.onUpdateTemporaryPanel).toHaveBeenCalledTimes(1);
   });
@@ -58,12 +64,18 @@ describe("receiverProtocol", () => {
 
     addListener(listener);
 
-    await updateTemporaryPanel(validateTimedSequence("2244668800223:00001"), {
-      title: "test",
-    } as unknown as TemporaryPanelEntry);
-    await updateTemporaryPanel(validateTimedSequence("2244668800223:00000"), {
-      title: "test",
-    } as unknown as TemporaryPanelEntry);
+    await updateTemporaryPanel(
+      validateTimedSequence("2244668800223:00000001"),
+      {
+        title: "test",
+      } as unknown as TemporaryPanelEntry,
+    );
+    await updateTemporaryPanel(
+      validateTimedSequence("2244668800223:00000000"),
+      {
+        title: "test",
+      } as unknown as TemporaryPanelEntry,
+    );
 
     expect(listener.onUpdateTemporaryPanel).toHaveBeenCalledTimes(1);
   });

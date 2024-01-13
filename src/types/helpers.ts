@@ -41,12 +41,14 @@ let sequence = 0;
  */
 export function getTimedSequence(): TimedSequence {
   sequence++;
-  return `${Date.now()}:${String(sequence).padStart(5, "0")}` as TimedSequence;
+  return validateTimedSequence(
+    `${Date.now()}:${String(sequence).padStart(8, "0")}`,
+  );
 }
 
 export function validateTimedSequence(string: string): TimedSequence {
   // Timestamps between 2001 and 2287 have 13 digits. We're covered.
-  if (!/^\d{13}:\d{5}$/.test(string)) {
+  if (!/^\d{13}:\d{8}$/.test(string)) {
     throw new TypeError("Invalid timed sequence: " + string);
   }
 
