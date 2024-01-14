@@ -23,9 +23,7 @@ RELEASE_VERSION=$(jq '.version_name' dist/manifest.json)
 # Upload to Datadog for viewing unminified sources in Datadog. Datadog does not appear to support import from an S3 URL
 # Because this command runs from a Git repo context, Datadog should also automatically link to our project from the UI.
 # https://docs.datadoghq.com/real_user_monitoring/guide/upload-javascript-source-maps/?tab=webpackjs
-npm install -G @datadog/datadog-ci
-
-datadog-ci sourcemaps upload dist \
+npx --yes @datadog/datadog-ci sourcemaps upload dist \
   --service=pixiebrix-browser-extension \
   --release-version="$RELEASE_VERSION" \
   --minified-path-prefix="$SOURCE_MAP_PUBLIC_PATH"
