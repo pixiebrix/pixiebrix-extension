@@ -322,9 +322,11 @@ const THROTTLE_RATE_MS = 60_000; // 1 minute
 let lastAxiosServerErrorTimestamp: number = null;
 
 /**
- * Create a fake stacktrace for error telemetry services that don't natively support Error.cause.
+ * Create a fake stacktrace for Datadog that don't natively support Error.cause.
  */
 export function flattenStackForDatadog(stack: string, cause?: unknown): string {
+  // TODO: remove once Datadog supports natively: https://github.com/DataDog/browser-sdk/issues/2569
+
   // The logic was originally written for Rollbar, which later introduced native support for Error.cause:
   // https://github.com/pixiebrix/pixiebrix-extension/pull/3011/files
 
@@ -333,7 +335,7 @@ export function flattenStackForDatadog(stack: string, cause?: unknown): string {
     return stack;
   }
 
-  // Drop spaces from cause’s title or else Rollbar will clip the title
+  // Drop spaces from cause’s title or else Datadog will clip the title
   const [errorTitle] = cause.stack.split("\n", 1);
   const causeStack = cause.stack.replace(
     errorTitle,
@@ -342,6 +344,8 @@ export function flattenStackForDatadog(stack: string, cause?: unknown): string {
 
   // Add a fake stacktrace line in order to preserve the cause’s title. Datadog does not support
   // the standard `caused by: Error: Some message\n` line and would misinterpret the stacktrace.
+  // XXX: this isn't quite right for Datadog. In the Datadog UI, the fake line ends up as
+  // "BY.js:0:0) Error:-Error-Message" That's OK for now because it's by and large a cosmetic limitation.
   return flattenStackForDatadog(
     stack + `\n    at CAUSED (BY.js:0:0) ${causeStack}`,
     cause.cause,
