@@ -6,7 +6,7 @@ set -e
 # Ensure ENVs are set https://stackoverflow.com/a/307735/288906
 : "${SOURCE_MAP_PATH?Need to set SOURCE_MAP_PATH}"
 : "${SOURCE_MAP_URL_BASE?Need to set SOURCE_MAP_URL_BASE}"
-: "${ROLLBAR_POST_SERVER_ITEM_TOKEN?Need to set ROLLBAR_POST_SERVER_ITEM_TOKEN}"
+: "${DATADOG_API_KEY?Need to set DATADOG_API_KEY}"
 
 : "${AWS_ACCESS_KEY_ID?Need to set AWS_ACCESS_KEY_ID}"
 : "${AWS_SECRET_ACCESS_KEY?Need to set AWS_SECRET_ACCESS_KEY}"
