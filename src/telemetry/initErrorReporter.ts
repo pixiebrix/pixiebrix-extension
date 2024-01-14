@@ -16,7 +16,7 @@
  */
 
 import { isContentScript } from "webext-detect-page";
-import { addListener as addAuthListener } from "@/auth/token";
+import { addListener as addAuthListener, readAuthData } from "@/auth/token";
 import type { UserData } from "@/auth/authTypes";
 import { getUID } from "@/background/messenger/api";
 import pMemoize from "p-memoize";
@@ -104,8 +104,9 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
           return false;
         }
 
-        // Patch to match the host in the public source maps
-        event.error.stack.replaceAll(
+        // Patch to match the host in the public source maps. Used to handle different
+        // protocols for extension pages across browsers (e.g. chrome-extension://)
+        event.error.stack = event.error.stack.replaceAll(
           // Include the slash because location.origin does not have a trailing slash but the ENV does
           location.origin + "/",
           process.env.SOURCE_MAP_PUBLIC_PATH,
@@ -117,6 +118,9 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
         return true;
       },
     });
+
+    // https://docs.datadoghq.com/real_user_monitoring/browser/modifying_data_and_context/?tab=npm#user-session
+    datadogLogs.setUser(await personFactory(await readAuthData()));
 
     return {
       error({ message, error, messageContext }) {
