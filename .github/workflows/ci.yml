@@ -110,7 +110,7 @@ jobs:
 
       # FIXME: slow: remove before merging PR
       - run: bash scripts/upload-sourcemaps.sh
-        if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
+        # if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
