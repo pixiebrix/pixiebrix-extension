@@ -40,10 +40,6 @@ console.log("SOURCE_VERSION:", process.env.SOURCE_VERSION);
 console.log("SERVICE_URL:", process.env.SERVICE_URL);
 console.log("MARKETPLACE_URL:", process.env.MARKETPLACE_URL);
 console.log("CHROME_EXTENSION_ID:", process.env.CHROME_EXTENSION_ID);
-console.log(
-  "ROLLBAR_BROWSER_ACCESS_TOKEN:",
-  process.env.ROLLBAR_BROWSER_ACCESS_TOKEN,
-);
 
 if (!process.env.SOURCE_VERSION) {
   process.env.SOURCE_VERSION = execSync("git rev-parse --short HEAD")
@@ -234,11 +230,7 @@ const createConfig = (env, options) =>
         CHROME_EXTENSION_ID: undefined,
 
         // If not found, "null" will leave the ENV unset in the bundle
-        ROLLBAR_BROWSER_ACCESS_TOKEN: null,
-        GOOGLE_API_KEY: null,
-        GOOGLE_APP_ID: null,
-
-        // DataDog RUM
+        // DataDog RUM/Logging
         DATADOG_APPLICATION_ID: null,
         DATADOG_CLIENT_TOKEN: null,
       }),

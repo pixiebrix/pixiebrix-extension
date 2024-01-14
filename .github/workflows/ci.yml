@@ -112,6 +112,8 @@ jobs:
       - run: bash scripts/upload-sourcemaps.sh
         # if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
         env:
+          # PUBLIC_RELEASE must be set for sourcemaps to be generated
+          PUBLIC_RELEASE: true
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
           AWS_DEFAULT_REGION: "us-east-2"
