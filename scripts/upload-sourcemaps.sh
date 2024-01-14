@@ -20,6 +20,9 @@ aws s3 cp ./dist "$S3_UPLOAD_BASE_URL" --exclude '*' --include '*.js.map' --incl
 # Clean-up the name because it's not clear if the cli normalized the name like the JS library does
 RELEASE_VERSION=$(jq '.version_name | gsub("\\+"; "_") | ascii_downcase' dist/manifest.json)
 
+# Should match the path that appears in the stack trace.
+MINIFIED_PATH_PREFIX="https://pixiebrix-extension-source-maps.s3.amazonaws.com/$SOURCE_MAP_PATH"
+
 # Upload to Datadog for viewing unminified sources in Datadog. Datadog does not appear to support import from an S3 URL
 # Because this command runs from a Git repo context, Datadog should also automatically link to our project from the UI.
 # https://docs.datadoghq.com/real_user_monitoring/guide/upload-javascript-source-maps/?tab=webpackjs
@@ -27,4 +30,4 @@ RELEASE_VERSION=$(jq '.version_name | gsub("\\+"; "_") | ascii_downcase' dist/ma
 npx --yes @datadog/datadog-ci sourcemaps upload ./dist \
   --service=pixiebrix-browser-extension \
   --release-version="$RELEASE_VERSION" \
-  --minified-path-prefix="$S3_UPLOAD_BASE_URL"
+  --minified-path-prefix="$MINIFIED_PATH_PREFIX"

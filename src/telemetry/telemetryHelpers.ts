@@ -46,8 +46,15 @@ type TelemetryUser = {
  * @param versionName the Chrome browser extension version name
  */
 export function cleanDatadogVersionName(versionName: string): string {
-  // Remove + and anything trailing it
-  return versionName.replace(/local+\.*$/, "local");
+  return (
+    versionName
+      // Remove timestamps from local builds
+      .replace(/local+\.*$/, "local")
+      // Replace invalid characters with underscores
+      .replaceAll("\\+", "_")
+      // Convert to lowercase
+      .toLowerCase()
+  );
 }
 
 /**
