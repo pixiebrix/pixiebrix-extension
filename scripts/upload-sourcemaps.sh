@@ -17,8 +17,8 @@ S3_UPLOAD_BASE_URL="s3://pixiebrix-extension-source-maps/$SOURCE_MAP_PATH"
 aws s3 cp ./dist "$S3_UPLOAD_BASE_URL" --exclude '*' --include '*.js.map' --include '*.js' --recursive --no-progress
 
 # Datadog uses release-version, not the code commit version. So get from produced manifest
-# TODO: verify that the `+<commit_hash>` is working if enabled for CI builds
-RELEASE_VERSION=$(jq '.version_name' dist/manifest.json)
+# Clean-up the name because it's not clear if the cli normalized the name like the JS library does
+RELEASE_VERSION=$(jq '.version_name | gsub("\\+"; "_") | ascii_downcase' dist/manifest.json)
 
 # Upload to Datadog for viewing unminified sources in Datadog. Datadog does not appear to support import from an S3 URL
 # Because this command runs from a Git repo context, Datadog should also automatically link to our project from the UI.
@@ -27,4 +27,4 @@ RELEASE_VERSION=$(jq '.version_name' dist/manifest.json)
 npx --yes @datadog/datadog-ci sourcemaps upload ./dist \
   --service=pixiebrix-browser-extension \
   --release-version="$RELEASE_VERSION" \
-  --minified-path-prefix="/"
+  --minified-path-prefix="$S3_UPLOAD_BASE_URL"
