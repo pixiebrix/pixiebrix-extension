@@ -79,6 +79,8 @@ jobs:
           MARKETPLACE_URL: ${{ secrets.STAGING_MARKETPLACE_URL }}
           CHROME_EXTENSION_ID: kkomancachnjkdalpcokenmjlimmbaog
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_STAGING_PUBLIC_KEY }}
+          DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
+          DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
       - name: Save extension
         uses: actions/upload-artifact@v4
         if: ${{ fromJSON(env.PUBLIC_RELEASE)}}

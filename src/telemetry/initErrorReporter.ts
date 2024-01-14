@@ -52,10 +52,11 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
   if (isContentScript()) {
     // The contentScript cannot not make requests directly to Rollbar because the site's CSP might not support it
     console.warn("Unsupported call to initErrorReporter in the contentScript");
+    return;
   }
 
   if (!CLIENT_TOKEN || !APPLICATION_ID) {
-    console.debug(
+    console.warn(
       "Error telemetry client token missing, errors won't be reported",
     );
     return undefined;

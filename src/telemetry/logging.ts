@@ -408,6 +408,12 @@ export async function reportToApplicationErrorTelemetry(
   );
 
   const reporter = await getErrorReporter();
+
+  if (!reporter) {
+    // Error reported not initialized
+    return;
+  }
+
   const details = await selectExtraContext(error);
 
   error.stack = flattenStackForDatadog(error.stack, error.cause);

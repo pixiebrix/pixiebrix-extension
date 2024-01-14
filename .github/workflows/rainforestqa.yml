@@ -30,6 +30,7 @@ jobs:
       - run: npm run build
         env:
           DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
+          DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
 
       # https://stackoverflow.com/a/58142637
