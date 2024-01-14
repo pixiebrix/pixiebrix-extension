@@ -19,8 +19,13 @@ import { datadogRum } from "@datadog/browser-rum";
 import { getDNT } from "@/telemetry/dnt";
 import { getBaseURL } from "@/services/baseService";
 import { expectContext, forbidContext } from "@/utils/expectContext";
-import { getUserData } from "@/auth/token";
+import { addListener as addAuthListener, readAuthData } from "@/auth/token";
 import { flagOn } from "@/auth/authUtils";
+import {
+  cleanDatadogVersionName,
+  mapAppUserToTelemetryUser,
+} from "@/telemetry/telemetryHelpers";
+import type { UserData } from "@/auth/authTypes";
 
 const environment = process.env.ENVIRONMENT;
 const applicationId = process.env.DATADOG_APPLICATION_ID;
@@ -56,7 +61,6 @@ export async function initPerformanceMonitoring(): Promise<void> {
   }
 
   const { version_name } = browser.runtime.getManifest();
-  const { user: userId } = await getUserData();
 
   // https://docs.datadoghq.com/real_user_monitoring/browser/
   datadogRum.init({
@@ -65,7 +69,7 @@ export async function initPerformanceMonitoring(): Promise<void> {
     site: "datadoghq.com",
     service: "pixiebrix-browser-extension",
     env: environment,
-    version: version_name,
+    version: cleanDatadogVersionName(version_name),
     sessionSampleRate: 100,
     sessionReplaySampleRate: 20,
     trackUserInteractions: true,
@@ -85,10 +89,24 @@ export async function initPerformanceMonitoring(): Promise<void> {
     allowFallbackToLocalStorage: true,
   });
 
-  datadogRum.startSessionReplayRecording();
+  datadogRum.setGlobalContextProperty(
+    "code_version",
+    process.env.SOURCE_VERSION,
+  );
 
   // https://docs.datadoghq.com/real_user_monitoring/browser/modifying_data_and_context/?tab=npm#user-session
-  datadogRum.setUser({
-    id: userId,
-  });
+  datadogRum.setUser(await mapAppUserToTelemetryUser(await readAuthData()));
+
+  datadogRum.startSessionReplayRecording();
+
+  addAuthListener(updatePerson);
+}
+
+async function updatePerson(data: Partial<UserData>): Promise<void> {
+  const person = await mapAppUserToTelemetryUser(data);
+
+  console.debug("Setting error telemetry user", person);
+
+  // https://docs.datadoghq.com/real_user_monitoring/browser/modifying_data_and_context/?tab=npm#user-session
+  datadogRum.setUser(person);
 }

@@ -12,40 +12,20 @@ set -e
 : "${AWS_SECRET_ACCESS_KEY?Need to set AWS_SECRET_ACCESS_KEY}"
 : "${AWS_DEFAULT_REGION?Need to set AWS_DEFAULT_REGION}"
 
-SOURCE_VERSION=$(git rev-parse --short HEAD)
+# Upload to S3 for debugging in Chrome
 S3_UPLOAD_BASE_URL="s3://pixiebrix-extension-source-maps/$SOURCE_MAP_PATH"
-
 aws s3 cp ./dist "$S3_UPLOAD_BASE_URL" --exclude '*' --include '*.map' --include '*.js' --recursive --no-progress
 
-# Notify Rollbar to trigger a download for each of the minified files.
-# https://docs.rollbar.com/docs/source-maps#3-upload-your-source-map-files
+# Datadog uses release-version, not the code commit version. So get from produced manifest
+sudo apk add jq
+RELEASE_VERSION=$(jq '.version_name' dist/manifest.json)
 
-# NOTE: What follows is a single pipe
+# Upload to Datadog for viewing unminified sources in Datadog. Datadog does not appear to support import from an S3 URL
+# Because this command runs from a Git repo context, Datadog should also automatically link to our project from the UI.
+# https://docs.datadoghq.com/real_user_monitoring/guide/upload-javascript-source-maps/?tab=webpackjs
+npm install -G @datadog/datadog-ci
 
-# `find` outputs:
-# dist/background.js
-# dist/bundles/icons.js
-# etc
-find dist -name '*.js' | \
-
-# `sed` outputs:
-# background.js
-# bundles/icons.js
-# etc
-sed s/dist\\/// | \
-
-# `parallel` executes `curl` once per line with limited concurrency, replacing {} with each input line:
-# curl https://etc.etc -F minified_url=etc/etc/background.js
-# curl https://etc.etc -F minified_url=etc/etc/bundles/icons.js
-# etc
-#
-# `curl` automatically retries if the server is busy. --fail throws on HTTP errors
-# https://github.com/pixiebrix/pixiebrix-extension/issues/3828 -- ignore errors since they appear to be transient
-parallel curl https://api.rollbar.com/api/1/sourcemap/download \
-	--fail-with-body \
-	--no-progress-meter \
-  --max-time 10 \
-	-F version="$SOURCE_VERSION" \
-	-F access_token="$ROLLBAR_POST_SERVER_ITEM_TOKEN" \
-	-F minified_url="$SOURCE_MAP_URL_BASE/$SOURCE_MAP_PATH/{}" \
-	|| true
+datadog-ci sourcemaps upload dist \
+  --service=pixiebrix-browser-extension \
+  --release-version="$RELEASE_VERSION" \
+  --minified-path-prefix="$SOURCE_MAP_PUBLIC_PATH"

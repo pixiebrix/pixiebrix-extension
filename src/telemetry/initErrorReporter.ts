@@ -18,12 +18,15 @@
 import { isContentScript } from "webext-detect-page";
 import { addListener as addAuthListener, readAuthData } from "@/auth/token";
 import type { UserData } from "@/auth/authTypes";
-import { getUID } from "@/background/messenger/api";
 import pMemoize from "p-memoize";
 import { datadogLogs } from "@datadog/browser-logs";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { UnknownObject } from "@/types/objectTypes";
 import type { LogsEvent } from "@datadog/browser-logs/src/logsEvent.types";
+import {
+  cleanDatadogVersionName,
+  mapAppUserToTelemetryUser,
+} from "@/telemetry/telemetryHelpers";
 
 // eslint-disable-next-line prefer-destructuring -- process.env
 const ENVIRONMENT = process.env.ENVIRONMENT;
@@ -32,38 +35,12 @@ const CLIENT_TOKEN = process.env.DATADOG_CLIENT_TOKEN;
 
 const IGNORED_MESSAGES = [/ResizeObserver loop/];
 
-/**
- * The PixieBrix Person model for application error telemetry.
- */
-type Person = {
-  id: string;
-  organizationId: string;
-  email?: string;
-};
-
 interface ErrorReporter {
   error(args: {
     message: string;
     error: Error;
     messageContext: UnknownObject;
   }): void;
-}
-
-/**
- * Returns a version tag value that's compatible with Datadog's tag value requirements.
- * See https://docs.datadoghq.com/getting_started/tagging/#overview
- *
- * - Strip timestamp from local builds
- *
- * @example
- *   Input: "1.8.8-alpha.1-local+2024-01-14T18:13:07.744Z"
- *   Output: "1.8.8-alpha.1-local"
- *
- * @param version the Chrome browser extension version name
- */
-function cleanVersionTag(version: string): string {
-  // Remove + and anything trailing it
-  return version.replace(/\+.*/, "");
 }
 
 /**
@@ -101,7 +78,7 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
       clientToken: CLIENT_TOKEN,
       service: "pixiebrix-browser-extension",
       env: ENVIRONMENT,
-      version: cleanVersionTag(version_name),
+      version: cleanDatadogVersionName(version_name),
       site: "datadoghq.com",
       // NOTE: we are excluding captureUncaught and captureUnhandledRejections because we set our own handlers for that in
       // reportUncaughtErrors. The default for Datadog is true
@@ -136,8 +113,13 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
       },
     });
 
+    datadogLogs.setGlobalContextProperty(
+      "code_version",
+      process.env.SOURCE_VERSION,
+    );
+
     // https://docs.datadoghq.com/real_user_monitoring/browser/modifying_data_and_context/?tab=npm#user-session
-    datadogLogs.setUser(await personFactory(await readAuthData()));
+    datadogLogs.setUser(await mapAppUserToTelemetryUser(await readAuthData()));
 
     return {
       error({ message, error, messageContext }) {
@@ -150,32 +132,13 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
   }
 }
 
-async function personFactory(data: Partial<UserData>): Promise<Person> {
-  const browserId = await getUID();
-
-  const { user, email, telemetryOrganizationId, organizationId } = data;
-
-  const errorOrganizationId = telemetryOrganizationId ?? organizationId;
-
-  return errorOrganizationId
-    ? {
-        id: user,
-        email,
-        organizationId: errorOrganizationId,
-      }
-    : {
-        id: browserId,
-        organizationId: null,
-      };
-}
-
 // OK to memoize. The addAuthListener will modify the Rollbar instance in place
 // As of pMemoize 7.0.0, pMemoize does not cache rejections by default
 // https://github-redirect.dependabot.com/sindresorhus/p-memoize/pull/48
 export const getErrorReporter = pMemoize(initErrorReporter);
 
 async function updatePerson(data: Partial<UserData>): Promise<void> {
-  const person = await personFactory(data);
+  const person = await mapAppUserToTelemetryUser(data);
 
   console.debug("Setting error telemetry user", person);
 
