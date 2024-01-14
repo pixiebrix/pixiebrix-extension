@@ -262,7 +262,7 @@
 ./src/telemetry/deployments.ts
 ./src/telemetry/dnt.ts
 ./src/telemetry/events.ts
-./src/telemetry/initRollbar.ts
+./src/telemetry/initErrorReporter.ts
 ./src/telemetry/logging.ts
 ./src/telemetry/reportError.ts
 ./src/telemetry/reportEvent.ts

@@ -24,6 +24,7 @@ import { allowsTrack } from "@/telemetry/dnt";
 import {
   getErrorMessage,
   hasSpecificErrorCause,
+  isErrorObject,
   isSpecificError,
 } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
@@ -313,7 +314,7 @@ function flattenContext(
 }
 
 const warnAboutDisabledDNT = once(() => {
-  console.warn("Rollbar telemetry is disabled because DNT is turned on");
+  console.warn("Error telemetry is disabled because DNT is turned on");
 });
 
 const THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES = new Set([502, 503, 504]);
@@ -321,10 +322,37 @@ const THROTTLE_RATE_MS = 60_000; // 1 minute
 let lastAxiosServerErrorTimestamp: number = null;
 
 /**
+ * Create a fake stacktrace for error telemetry services that don't natively support Error.cause.
+ */
+export function flattenStackForDatadog(stack: string, cause?: unknown): string {
+  // The logic was originally written for Rollbar, which later introduced native support for Error.cause:
+  // https://github.com/pixiebrix/pixiebrix-extension/pull/3011/files
+
+  // Some stack validation to avoid runtime errors while submitting errors
+  if (!isErrorObject(cause) || !cause.stack?.includes("\n")) {
+    return stack;
+  }
+
+  // Drop spaces from cause’s title or else Rollbar will clip the title
+  const [errorTitle] = cause.stack.split("\n", 1);
+  const causeStack = cause.stack.replace(
+    errorTitle,
+    errorTitle.replaceAll(" ", "-"),
+  );
+
+  // Add a fake stacktrace line in order to preserve the cause’s title. Datadog does not support
+  // the standard `caused by: Error: Some message\n` line and would misinterpret the stacktrace.
+  return flattenStackForDatadog(
+    stack + `\n    at CAUSED (BY.js:0:0) ${causeStack}`,
+    cause.cause,
+  );
+}
+
+/**
  * Do not use this function directly. Use `reportError` instead: `import reportError from "@/telemetry/reportError"`
  * It's only exported for testing.
  */
-export async function reportToRollbar(
+export async function reportToApplicationErrorTelemetry(
   // Ensure it's an Error instance before passing it to Rollbar so rollbar treats it as the error.
   // (It treats POJO as the custom data)
   // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
@@ -335,6 +363,7 @@ export async function reportToRollbar(
   // Business errors are now sent to the PixieBrix error service instead of Rollbar - see reportToErrorService
   if (
     hasSpecificErrorCause(error, BusinessError) ||
+    // `rollbar-disable-report` is a kill switch for error telemetry
     (await flagOn("rollbar-disable-report"))
   ) {
     return;
@@ -353,7 +382,7 @@ export async function reportToRollbar(
       lastAxiosServerErrorTimestamp &&
       now - lastAxiosServerErrorTimestamp < THROTTLE_RATE_MS
     ) {
-      console.debug("Skipping Rollbar report due to throttling");
+      console.debug("Skipping remote error telemetry report due to throttling");
       return;
     }
 
@@ -369,15 +398,21 @@ export async function reportToRollbar(
   // to determine log level also handle serialized/deserialized errors.
   // See https://github.com/sindresorhus/serialize-error/issues/48
 
-  const { getRollbar } = await import(
-    /* webpackChunkName: "rollbar" */
-    "@/telemetry/initRollbar"
+  const { getErrorReporter } = await import(
+    /* webpackChunkName: "errorReporter" */
+    "@/telemetry/initErrorReporter"
   );
 
-  const rollbar = await getRollbar();
+  const reporter = await getErrorReporter();
   const details = await selectExtraContext(error);
 
-  rollbar.error(message, error, { ...flatContext, ...details });
+  error.stack = flattenStackForDatadog(error.stack, error.cause);
+
+  reporter.error({
+    message,
+    error,
+    messageContext: { ...flatContext, ...details },
+  });
 }
 
 /** @deprecated Use instead: `import reportError from "@/telemetry/reportError"` */
@@ -401,7 +436,7 @@ export async function recordError(
     const flatContext = flattenContext(error, context);
 
     await Promise.all([
-      reportToRollbar(error, flatContext, message),
+      reportToApplicationErrorTelemetry(error, flatContext, message),
       reportToErrorService(error, flatContext, message),
       appendEntry({
         uuid: uuidv4(),

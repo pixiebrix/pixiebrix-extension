@@ -30,7 +30,6 @@ const RUM_FLAG = "telemetry-performance";
 
 /**
  * Initialize Datadog Real User Monitoring (RUM) for performance monitoring.
- * WARNING: can only be used in the Extension Console, due to cookie limitations in frames.
  */
 export async function initPerformanceMonitoring(): Promise<void> {
   // Require the extension context because we don't want to track performance of the host sites

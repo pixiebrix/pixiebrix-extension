@@ -220,7 +220,8 @@ const createConfig = (env, options) =>
         REDUX_DEV_TOOLS: !isProd(options),
         NPM_PACKAGE_VERSION: process.env.npm_package_version,
         ENVIRONMENT: options.mode,
-        ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost/",
+        SOURCE_MAP_PUBLIC_PATH:
+          sourceMapPublicUrl ?? "extension://dynamichost/",
         // Record telemetry events in development?
         DEV_EVENT_TELEMETRY: false,
         SANDBOX_LOGGING: false,
