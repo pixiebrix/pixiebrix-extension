@@ -17,7 +17,7 @@ S3_UPLOAD_BASE_URL="s3://pixiebrix-extension-source-maps/$SOURCE_MAP_PATH"
 aws s3 cp ./dist "$S3_UPLOAD_BASE_URL" --exclude '*' --include '*.map' --include '*.js' --recursive --no-progress
 
 # Datadog uses release-version, not the code commit version. So get from produced manifest
-sudo apk add jq
+# TODO: verify that the `+<commit_hash>` is working if enabled for CI builds
 RELEASE_VERSION=$(jq '.version_name' dist/manifest.json)
 
 # Upload to Datadog for viewing unminified sources in Datadog. Datadog does not appear to support import from an S3 URL
