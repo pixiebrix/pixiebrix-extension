@@ -179,7 +179,8 @@ const createConfig = (env, options) =>
 
           // The sourcemap will be inlined if `undefined`. Only inlined sourcemaps work locally
           // https://bugs.chromium.org/p/chromium/issues/detail?id=974543
-          filename: sourceMapPublicUrl && "[file].map[query]",
+          // Datadog requires .js.map as the extension: https://github.com/DataDog/datadog-ci/issues/870
+          filename: sourceMapPublicUrl && "[file].js.map[query]",
         }),
 
       // Only notifies when watching. `zsh-notify` is suggested for the `build` script
