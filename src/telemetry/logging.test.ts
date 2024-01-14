@@ -140,8 +140,8 @@ describe("logging", () => {
 });
 
 function errorFromStack(stack: string, cause?: ErrorObject): ErrorObject {
-  const [type, message] = stack.split(/[\n:]/);
-  return { type, message, stack, cause };
+  const [name, message] = stack.split(/[\n:]/);
+  return { name, message, stack, cause };
 }
 
 const stacks = [

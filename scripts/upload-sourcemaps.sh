@@ -13,8 +13,8 @@ set -e
 : "${AWS_DEFAULT_REGION?Need to set AWS_DEFAULT_REGION}"
 
 # Upload to S3 for debugging in Chrome
-# S3_UPLOAD_BASE_URL="s3://pixiebrix-extension-source-maps/$SOURCE_MAP_PATH"
-# aws s3 cp ./dist "$S3_UPLOAD_BASE_URL" --exclude '*' --include '*.map' --include '*.js' --recursive --no-progress
+S3_UPLOAD_BASE_URL="s3://pixiebrix-extension-source-maps/$SOURCE_MAP_PATH"
+aws s3 cp ./dist "$S3_UPLOAD_BASE_URL" --exclude '*' --include '*.js.map' --include '*.js' --recursive --no-progress
 
 # Datadog uses release-version, not the code commit version. So get from produced manifest
 # TODO: verify that the `+<commit_hash>` is working if enabled for CI builds

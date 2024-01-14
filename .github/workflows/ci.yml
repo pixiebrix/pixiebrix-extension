@@ -52,6 +52,9 @@ jobs:
     env:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
       SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}/mv${{ matrix.MV }}
+      # PUBLIC_RELEASE must be set for sourcemaps to be generated
+      # FIXME: disable before merging PR
+      PUBLIC_RELEASE: true
 
     strategy:
       matrix:
@@ -112,8 +115,6 @@ jobs:
       - run: bash scripts/upload-sourcemaps.sh
         # if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
         env:
-          # PUBLIC_RELEASE must be set for sourcemaps to be generated
-          PUBLIC_RELEASE: true
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
           AWS_DEFAULT_REGION: "us-east-2"
