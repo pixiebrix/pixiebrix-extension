@@ -50,6 +50,23 @@ interface ErrorReporter {
 }
 
 /**
+ * Returns a version tag value that's compatible with Datadog's tag value requirements.
+ * See https://docs.datadoghq.com/getting_started/tagging/#overview
+ *
+ * - Strip timestamp from local builds
+ *
+ * @example
+ *   Input: "1.8.8-alpha.1-local+2024-01-14T18:13:07.744Z"
+ *   Output: "1.8.8-alpha.1-local"
+ *
+ * @param version the Chrome browser extension version name
+ */
+function cleanVersionTag(version: string): string {
+  // Remove + and anything trailing it
+  return version.replace(/\+.*/, "");
+}
+
+/**
  * https://docs.datadoghq.com/real_user_monitoring/browser/collecting_browser_errors/?tab=npm
  */
 async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
@@ -84,7 +101,7 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
       clientToken: CLIENT_TOKEN,
       service: "pixiebrix-browser-extension",
       env: ENVIRONMENT,
-      version: version_name,
+      version: cleanVersionTag(version_name),
       site: "datadoghq.com",
       // NOTE: we are excluding captureUncaught and captureUnhandledRejections because we set our own handlers for that in
       // reportUncaughtErrors. The default for Datadog is true
