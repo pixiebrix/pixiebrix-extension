@@ -4,10 +4,7 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/artifacts" />
-      <excludeFolder url="file://$MODULE_DIR$/browsers/chrome/bundles" />
-      <excludeFolder url="file://$MODULE_DIR$/scripts/bin" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
-      <excludeFolder url="file://$MODULE_DIR$/browsers/dist" />
       <excludeFolder url="file://$MODULE_DIR$/coverage" />
       <excludeFolder url="file://$MODULE_DIR$/storybook-static" />
     </content>
