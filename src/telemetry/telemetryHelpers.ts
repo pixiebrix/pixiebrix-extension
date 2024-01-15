@@ -49,9 +49,9 @@ export function cleanDatadogVersionName(versionName: string): string {
   return (
     versionName
       // Remove timestamps from local builds
-      .replace(/local+\.*$/, "local")
+      .replace(/local\+.*$/, "local")
       // Replace invalid characters with underscores
-      .replaceAll("\\+", "_")
+      .replaceAll("+", "_")
       // Convert to lowercase
       .toLowerCase()
   );
