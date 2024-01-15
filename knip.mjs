@@ -6,11 +6,7 @@ const config = configFactory(process.env, {});
 const knipConfig = {
   $schema: "https://unpkg.com/knip@3/schema.json",
   webpack: {
-    config: [
-      "webpack.config.mjs",
-      "scripts/webpack.scripts.js",
-      ".storybook/main.js",
-    ],
+    config: ["webpack.config.mjs", ".storybook/main.js"],
   },
   entry: [
     ...Object.values(config.entry).map((x) =>
