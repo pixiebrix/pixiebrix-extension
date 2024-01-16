@@ -47,7 +47,7 @@
     "@reduxjs/toolkit": "^1.9.7",
     "@rjsf/bootstrap-4": "^5.14.1",
     "@rjsf/core": "^5.14.1",
-    "@rjsf/utils": "^5.15.1",
+    "@rjsf/utils": "^5.16.1",
     "@types/dom-navigation": "^1.0.3",
     "@types/gapi.client.sheets-v4": "^0.0.4",
     "@types/use-sync-external-store": "^0.0.6",
