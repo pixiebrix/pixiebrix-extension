@@ -180,15 +180,14 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
       `,
     },
     {
-      only: true,
       code: `
-        const prefetch = usePrefetch();
-        prefetch(null);
+        const [foo] = usePrefetch();
+        foo(null);
       `,
       errors: expectedErrors,
       output: `
-        const prefetch = usePrefetch();
-        prefetch(undefined);
+        const [foo] = usePrefetch();
+        foo(undefined);
       `,
     },
   ],
