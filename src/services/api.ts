@@ -440,7 +440,6 @@ export const {
   useUpdatePackageMutation,
   useDeletePackageMutation,
   useListPackageVersionsQuery,
-  useUpdateScopeMutation,
   useGetStarterBlueprintsQuery,
   useCreateMilestoneMutation,
   util,

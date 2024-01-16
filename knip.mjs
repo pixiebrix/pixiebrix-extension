@@ -47,6 +47,8 @@ const knipConfig = {
     "src/vendors/page-metadata-parser/**",
     // False positive - dynamically imported in initRobot
     "src/contrib/uipath/UiPathRobot.ts",
+    // False positive - dynamically imported in src/contentScript/contentScript.ts
+    "src/contentScript/contentScriptCore.ts",
   ],
   ignoreDependencies: [
     // Browser environment types
