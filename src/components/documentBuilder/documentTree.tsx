@@ -37,6 +37,8 @@ import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTy
 import { isPipelineExpression } from "@/utils/expressionUtils";
 import { boolean } from "@/utils/typeUtils";
 import { joinPathParts } from "@/utils/formUtils";
+import getSvgIcon from "@/icons/getSvgIcon";
+import Icon from "@/icons/Icon";
 
 // Legacy header components, where each header type was a separate element
 const HEADER_COMPONENTS = {
@@ -193,8 +195,17 @@ export function getComponentDefinition(
     }
 
     case "button": {
-      const { title, onClick, variant, size, fullWidth, className, disabled } =
-        config as ButtonDocumentConfig;
+      const {
+        title,
+        tooltip,
+        icon,
+        onClick,
+        variant,
+        size,
+        fullWidth,
+        className,
+        disabled,
+      } = config as ButtonDocumentConfig;
       if (onClick !== undefined && !isPipelineExpression(onClick)) {
         console.debug("Expected pipeline expression for onClick", {
           componentType: "button",
@@ -203,10 +214,20 @@ export function getComponentDefinition(
         throw new BusinessError("Expected pipeline expression for onClick");
       }
 
+      const buttonContent = (
+        <>
+          <Icon icon={icon.id} library={icon.library} />
+          {title}
+        </>
+      );
+
+      console.log("*** button content", buttonContent);
+
       return {
         Component: ButtonElement,
         props: {
-          children: title,
+          children: buttonContent,
+          title: tooltip,
           onClick: onClick.__value__,
           fullWidth,
           tracePath,
