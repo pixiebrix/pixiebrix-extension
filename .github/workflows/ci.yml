@@ -176,7 +176,7 @@ jobs:
           cache: npm
       - run: npm ci
       # https://knip.dev/overview/getting-started#without-installation
-      - run: npm install -D knip
+      - run: npm install -D knip@4
       # Do a run without an exit code. Knip's "warn" setting is not working for files and devDependencies.
       - run: npm run dead-code -- --config knip.mjs --no-exit-code
       - run: npm run dead-code -- --config knip.mjs --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports
