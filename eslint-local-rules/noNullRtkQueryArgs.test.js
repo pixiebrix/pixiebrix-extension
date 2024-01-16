@@ -94,8 +94,8 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
     },
     {
       code: `
-        const prefetch = usePrefetch();
-        prefetch(undefined);
+        const [foo] = usePrefetch();
+        foo(undefined);
       `,
     },
   ],
