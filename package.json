@@ -17,8 +17,7 @@
     "build:webpack": "NODE_OPTIONS=--max_old_space_size=8192 webpack --mode production",
     "build:typescript": "tsc --noEmit",
     "build:strictNullChecks": "tsc --noEmit --project src/tsconfig.strictNullChecks.json",
-    "build:scripts": "webpack --config scripts/webpack.scripts.js",
-    "generate:headers": "NODE_OPTIONS=--stack-trace-limit=100 node scripts/bin/headers.js",
+    "generate:headers": "npm run test -- src/development/headers.test.ts --no-silent",
     "storybook": "storybook dev -p 6006 -s public",
     "build-storybook": "storybook build",
     "dead-code": "knip"
@@ -260,7 +259,6 @@
     "jest-webextension-mock": "^3.8.9",
     "jsdom": "^23.2.0",
     "jsdom-testing-mocks": "^1.11.0",
-    "min-document": "^2.19.0",
     "mini-css-extract-plugin": "^2.6.1",
     "mockdate": "^3.0.5",
     "msw": "^1.3.2",

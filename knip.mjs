@@ -6,11 +6,7 @@ const config = configFactory(process.env, {});
 const knipConfig = {
   $schema: "https://unpkg.com/knip@3/schema.json",
   webpack: {
-    config: [
-      "webpack.config.mjs",
-      "scripts/webpack.scripts.js",
-      ".storybook/main.js",
-    ],
+    config: ["webpack.config.mjs", ".storybook/main.js"],
   },
   entry: [
     ...Object.values(config.entry).map((x) =>
@@ -65,8 +61,6 @@ const knipConfig = {
     // Referenced in scss files
     "webext-base-css",
     "compass-mixins",
-    // Polyfills via ProvidePlugin aren't detected by webpack plugin
-    "min-document",
     // Not getting detected by webpack plugin for .storybook/main.js
     "style-loader",
     "@storybook/react-webpack5",
