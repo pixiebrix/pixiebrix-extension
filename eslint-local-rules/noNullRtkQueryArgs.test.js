@@ -80,6 +80,24 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
         trigger({});
       `,
     },
+    {
+      code: `
+        const [trigger, { data }] = useLazyFooQuery();
+        trigger(undefined);
+      `,
+    },
+    {
+      code: `
+        const [trigger, { data }] = useLazyFooQuerySubscription();
+        trigger(undefined);
+      `,
+    },
+    {
+      code: `
+        const prefetch = usePrefetch();
+        prefetch(undefined);
+      `,
+    },
   ],
   invalid: [
     {
@@ -137,6 +155,40 @@ ruleTester.run("noNullRtkQueryArgs", noNullRtkQueryArgs, {
       output: `
         const [trigger, { data }] = useUpdateFooMutation();
         trigger(undefined);
+      `,
+    },
+    {
+      code: `
+        const [trigger, { data }] = useLazyFooQuery();
+        trigger(null);
+      `,
+      errors: expectedErrors,
+      output: `
+        const [trigger, { data }] = useLazyFooQuery();
+        trigger(undefined);
+      `,
+    },
+    {
+      code: `
+        const [trigger, { data }] = useLazyFooQuerySubscription();
+        trigger(null);
+      `,
+      errors: expectedErrors,
+      output: `
+        const [trigger, { data }] = useLazyFooQuerySubscription();
+        trigger(undefined);
+      `,
+    },
+    {
+      only: true,
+      code: `
+        const prefetch = usePrefetch();
+        prefetch(null);
+      `,
+      errors: expectedErrors,
+      output: `
+        const prefetch = usePrefetch();
+        prefetch(undefined);
       `,
     },
   ],

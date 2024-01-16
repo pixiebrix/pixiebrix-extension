@@ -18,7 +18,7 @@
 const RTK_QUERY_SUFFIXES = ["Query", "QueryState", "QuerySubscription"];
 const RTK_TRIGGER_PREFIX_SUFFIXES = [
   ["useLazy", "Query"],
-  ["use", "LazyQuerySubscription"],
+  ["useLazy", "QuerySubscription"],
   ["use", "Mutation"],
   ["use", "Prefetch"],
 ];
@@ -62,6 +62,7 @@ module.exports = {
             );
 
           for (const reference of references) {
+            console.log(mutationTrigger, reference.identifier.parent.type);
             if (
               reference.identifier.parent &&
               reference.identifier.parent.type === "CallExpression" &&
@@ -86,6 +87,7 @@ module.exports = {
 };
 
 function isRtkQueryTriggerAssignment(node) {
+  console.log(node.init.type);
   return (
     node.init &&
     node.init.type === "CallExpression" &&
