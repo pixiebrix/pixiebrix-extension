@@ -129,11 +129,15 @@ function makeRowCells(headerRow: string[], rowEntries: Entry[]): CellValue[] {
     const rowValue = rowEntries.find(
       (x) => normalizeHeader(x.header) === normalizedHeader,
     );
+    // The Sheets API is flexible enough to handle preceding empty columns, so
+    // we don't need to manually add empty/blank cells to our appending row data.
+    //
+    // Note: We currently don't support intermediate empty columns, which would
+    // require us to use the batchUpdate endpoint instead of append.
+    // See: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/batchUpdate
     if (rowValue) {
       matched.add(rowValue.header);
       row.push(rowValue.value);
-    } else {
-      row.push(null);
     }
   }
 
@@ -177,7 +181,7 @@ export function detectShape(rowValues: RowValues): KnownShape {
 
 // Validate the shape wrt the provided rowValues. Could refactor the JSON Schema to perform the validation. There would
 // be 4 oneOf clauses, one for each shape.
-export function validateShape(shape: KnownShape, rowValues: RowValues) {
+function validateShape(shape: KnownShape, rowValues: RowValues) {
   switch (shape) {
     case "entries": {
       const entryKeys = new Set(["header", "value"]);

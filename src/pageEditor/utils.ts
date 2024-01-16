@@ -31,7 +31,6 @@ import { castArray, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 import { expectContext } from "@/utils/expectContext";
-import { type ModDefinition } from "@/types/modDefinitionTypes";
 import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
 import { type Target } from "@/types/messengerTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
@@ -77,13 +76,6 @@ export function getModIdForElement(
   element: ModComponentBase | ModComponentFormState,
 ): RegistryId {
   return isModComponentBase(element) ? element._recipe?.id : element.recipe?.id;
-}
-
-export function getRecipeById(
-  recipes: ModDefinition[],
-  id: RegistryId,
-): ModDefinition | undefined {
-  return recipes.find((recipe) => recipe.metadata.id === id);
 }
 
 /**

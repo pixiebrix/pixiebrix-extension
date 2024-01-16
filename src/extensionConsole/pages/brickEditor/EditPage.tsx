@@ -29,7 +29,7 @@ import Loader from "@/components/Loader";
 import useSubmitBrick from "./useSubmitBrick";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { useSetDocumentTitle } from "@/hooks/useSetDocumentTitle";
+import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import { HotKeys } from "react-hotkeys";
 import workshopSlice from "@/store/workshopSlice";
 import useLogContext from "@/extensionConsole/pages/brickEditor/useLogContext";

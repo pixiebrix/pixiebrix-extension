@@ -50,7 +50,7 @@ type RequestConfig = SetRequired<AxiosRequestConfig, "url">;
  * An integration hydrated from a user-defined definition. Has the ability to authenticate requests because it has
  * access to authenticate secrets.
  */
-export class UserDefinedIntegration<
+class UserDefinedIntegration<
   TDefinition extends IntegrationDefinition = IntegrationDefinition,
 > extends IntegrationABC {
   private readonly _definition: TDefinition;

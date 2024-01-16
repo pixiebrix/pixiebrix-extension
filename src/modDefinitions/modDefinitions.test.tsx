@@ -17,7 +17,7 @@
 
 import React, { useEffect } from "react";
 import { useAllModDefinitions } from "./modDefinitionHooks";
-import useSaveRecipe from "@/pageEditor/hooks/useSaveRecipe";
+import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import { act, render } from "@/pageEditor/testHelpers";
 import { validateSchema } from "@/extensionConsole/pages/brickEditor/validate";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
@@ -83,7 +83,7 @@ test("load mod definitions and save one", async () => {
   const fetchingSavingPromise = pDefer<void>();
 
   const TestComponent: React.FunctionComponent = () => {
-    // Internally useSaveRecipe calls useAllModDefinitions.
+    // Internally useSaveMod calls useAllModDefinitions.
     // To make it more transparent and realistic we use useAllModDefinitions here
     // The hook will:
     // - load the mod definitions from server
@@ -94,7 +94,7 @@ test("load mod definitions and save one", async () => {
       [],
     );
 
-    const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveRecipe();
+    const { save: saveRecipe, isSaving: isSavingRecipe } = useSaveMod();
 
     // Track if saveRecipe has been called
     const calledSave = React.useRef(false);

@@ -20,9 +20,7 @@ import { userSelectElement } from "@/contentScript/pageEditor/elementPicker";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { CancelError } from "@/errors/businessErrors";
 
-jest.mock("@/contentScript/pageEditor/elementPicker", () => ({
-  userSelectElement: jest.fn(),
-}));
+jest.mock("@/contentScript/pageEditor/elementPicker");
 
 const userSelectElementMock = jest.mocked(userSelectElement);
 

@@ -24,7 +24,6 @@ import {
 } from "webext-messenger";
 import { runBrick } from "@/contentScript/messenger/api";
 import { type Target } from "@/types/messengerTypes";
-import pDefer from "p-defer";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import type { RunBrickRequest } from "@/contentScript/messenger/runBrickTypes";
 import { BusinessError } from "@/errors/businessErrors";
@@ -75,22 +74,6 @@ async function safelyRunBrick(
 
     throw error;
   }
-}
-
-export async function waitForTargetByUrl(url: string): Promise<Target> {
-  const { promise, resolve } = pDefer<Target>();
-
-  // This uses RE2, which is a regex-like syntax
-  const urlMatches = url.replaceAll("?", "\\?");
-  function wait({ tabId, frameId }: Target): void {
-    resolve({ tabId, frameId });
-    browser.webNavigation.onCommitted.removeListener(wait);
-  }
-
-  browser.webNavigation.onCommitted.addListener(wait, {
-    url: [{ urlMatches }],
-  });
-  return promise;
 }
 
 /**

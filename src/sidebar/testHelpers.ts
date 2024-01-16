@@ -31,7 +31,7 @@ import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 
-export const configureStoreForTests = () =>
+const configureStoreForTests = () =>
   configureStore({
     reducer: {
       auth: authSlice.reducer,

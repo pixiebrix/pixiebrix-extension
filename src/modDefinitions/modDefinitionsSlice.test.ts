@@ -26,12 +26,7 @@ import modDefinitionsRegistry from "./registry";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 
-jest.mock("./registry", () => ({
-  __esModule: true,
-  default: {
-    all: jest.fn(),
-  },
-}));
+jest.mock("./registry");
 
 jest.mock("@/registry/memoryRegistry", () => ({
   __esModule: true,

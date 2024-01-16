@@ -20,7 +20,7 @@ import styles from "./ActivateModCard.module.scss";
 import React, { useState } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { truncate } from "lodash";
-import { useSetDocumentTitle } from "@/hooks/useSetDocumentTitle";
+import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import useActivateRecipeWizard from "@/activation/useActivateRecipeWizard";
 import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmissionViaEnterIfFirstChild";
 import { useDispatch, useSelector } from "react-redux";

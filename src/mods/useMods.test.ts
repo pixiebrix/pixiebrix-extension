@@ -31,9 +31,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type UseCachedQueryResult } from "@/types/sliceTypes";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 
-jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
-  useAllModDefinitions: jest.fn(),
-}));
+jest.mock("@/modDefinitions/modDefinitionHooks");
 
 const useAllModDefinitionsMock = jest.mocked(useAllModDefinitions);
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isEmpty, negate, type ObjectIterator, unary } from "lodash";
+import { isEmpty, negate, type ObjectIterator } from "lodash";
 import pMemoize from "p-memoize";
 import { TimeoutError } from "p-timeout";
 import { sleep } from "@/utils/timeUtils";
@@ -89,14 +89,6 @@ export const memoizeUntilSettled: typeof pMemoize = (
     ...options,
     cache: false,
   });
-
-/** Loop an iterable with the ability to place `await` in the loop itself */
-export async function asyncForEach<Item>(
-  iterable: Iterable<Item>,
-  iteratee: (item: Item) => Promise<void>,
-): Promise<void> {
-  await Promise.all([...iterable].map(unary(iteratee)));
-}
 
 export async function awaitValue<T>(
   valueFactory: () => T,

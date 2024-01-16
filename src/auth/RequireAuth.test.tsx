@@ -43,16 +43,7 @@ function optionsStore(initialState?: any) {
   });
 }
 
-jest.mock("@/services/api", () => ({
-  useGetMeQuery: jest.fn(),
-  appApi: {
-    endpoints: {
-      getMe: {
-        useQueryState: jest.fn(),
-      },
-    },
-  },
-}));
+jest.mock("@/services/api");
 
 function mockMeQuery(state: { isLoading: boolean; data?: Me; error?: any }) {
   jest.mocked(appApi.endpoints.getMe.useQueryState).mockReturnValue(state);

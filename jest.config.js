@@ -21,6 +21,7 @@ const config = {
   modulePaths: ["/src"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "yaml", "yml", "json"],
   testPathIgnorePatterns: ["<rootDir>/selenium/"],
+  modulePathIgnorePatterns: ["<rootDir>/headers.json"],
   transform: {
     "^.+\\.[jt]sx?$": "@swc/jest",
     "^.+\\.mjs$": "@swc/jest",
@@ -43,6 +44,7 @@ const config = {
     "<rootDir>/src/testUtils/injectRegistries.ts",
     "jest-extended/all",
   ],
+  reporters: ["default", "github-actions"],
   coverageReporters: ["json"],
   collectCoverageFrom: [
     "src/**/*.{ts,tsx}",

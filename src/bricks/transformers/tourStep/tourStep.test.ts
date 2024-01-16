@@ -38,9 +38,7 @@ beforeEach(() => {
 
 Element.prototype.scrollIntoView = jest.fn();
 
-jest.mock("@/bricks/transformers/ephemeralForm/modalUtils", () => ({
-  showModal: jest.fn().mockResolvedValue(undefined),
-}));
+jest.mock("@/bricks/transformers/ephemeralForm/modalUtils");
 
 jest.mock("@/bricks/transformers/temporaryInfo/popoverUtils", () => ({
   showPopover: jest.fn().mockReturnValue({
@@ -83,7 +81,7 @@ function makeOptions({
   return brickOptionsFactory({
     logger,
     root,
-    runRendererPipeline: (_i: number) => jest.fn().mockResolvedValue(undefined),
+    runRendererPipeline: (_i: number) => jest.fn(),
     abortSignal: signal,
   });
 }

@@ -25,14 +25,14 @@ import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 
 // Maintaining this number is a simple way to ensure bricks don't accidentally get dropped
-const EXPECTED_HEADER_COUNT = 129;
+const EXPECTED_HEADER_COUNT = 130;
 
 registerBuiltinBricks();
 registerContribBlocks();
 
 Error.stackTraceLimit = Number.POSITIVE_INFINITY;
 
-console.log(`version: ${process.env.NPM_PACKAGE_VERSION}`);
+console.log(`version: ${process.env.npm_package_version}`);
 
 const brickDefinitions = brickRegistry.builtins.map((brick) => ({
   apiVersion: "v1",
@@ -40,7 +40,7 @@ const brickDefinitions = brickRegistry.builtins.map((brick) => ({
   kind: "read" in brick ? "reader" : "component",
   metadata: {
     id: brick.id,
-    version: process.env.NPM_PACKAGE_VERSION,
+    version: process.env.npm_package_version,
     name: brick.name,
     description: brick.description,
   },
@@ -50,22 +50,12 @@ const brickDefinitions = brickRegistry.builtins.map((brick) => ({
 
 console.log(`Number of brick headers: ${brickDefinitions.length}`);
 
-if (brickDefinitions.length === 0) {
-  throw new Error("No brick definitions generated");
-}
+// Convert the following code to use test expectations
+test("brick headers", () => {
+  // If greater, did you forget to bump EXPECTED_HEADER_COUNT constant?
+  // If lower, did you forget to register a brick definition?
+  expect(brickDefinitions).toHaveLength(EXPECTED_HEADER_COUNT);
 
-if (brickDefinitions.length > EXPECTED_HEADER_COUNT) {
-  throw new Error(
-    `Expected ${EXPECTED_HEADER_COUNT} brick definitions. Actual: ${brickDefinitions.length}. Did you forget to bump the EXPECTED_HEADER_COUNT constant?`,
-  );
-}
-
-if (brickDefinitions.length < EXPECTED_HEADER_COUNT) {
-  throw new Error(
-    `Expected ${EXPECTED_HEADER_COUNT} brick definitions. Actual: ${brickDefinitions.length}. Did you forget to register a brick definition?`,
-  );
-}
-
-fs.writeFileSync("headers.json", JSON.stringify(brickDefinitions));
-
-console.log("headers.json written to disk");
+  fs.writeFileSync("headers.json", JSON.stringify(brickDefinitions));
+  console.log("headers.json written to disk");
+});

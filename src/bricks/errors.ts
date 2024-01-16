@@ -15,9 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { castArray } from "lodash";
 import { type OutputUnit } from "@cfworker/json-schema";
-import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { type JsonObject } from "type-fest";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type MessageContext } from "@/types/loggerTypes";
@@ -25,16 +23,6 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs, type BrickArgsContext } from "@/types/runtimeTypes";
 import { isObject } from "@/utils/objectUtils";
-
-export class PipelineConfigurationError extends BusinessError {
-  override name = "PipelineConfigurationError";
-  readonly config: BrickPipeline;
-
-  constructor(message: string, config: BrickConfig | BrickPipeline) {
-    super(message);
-    this.config = castArray(config);
-  }
-}
 
 /**
  * Error bailing if a renderer component is encountered while running in "headless mode"
@@ -109,17 +97,6 @@ export function isSchemaValidationError(
   error: unknown,
 ): error is SchemaValidationError {
   return isObject(error) && "schema" in error && "errors" in error;
-}
-
-export class RemoteExecutionError extends BusinessError {
-  override name = "RemoteExecutionError";
-
-  constructor(
-    message: string,
-    readonly error: JsonObject,
-  ) {
-    super(message);
-  }
 }
 
 /**

@@ -182,21 +182,22 @@ const pixieResolver: ResolverOptions = {
   },
 } as const;
 
-export async function bundle(schema: Schema): Promise<Schema> {
-  return $RefParser.bundle(schema, {
-    // Disable built-in resolvers
-    // https://apitools.dev/json-schema-ref-parser/docs/options.html
-    resolve: { pixieResolver, http: false, file: false },
-  }) as Promise<Schema>;
-}
-
 export async function dereference(schema: Schema): Promise<Schema> {
-  return $RefParser.dereference(schema, {
-    // Disable built-in resolvers
-    // https://apitools.dev/json-schema-ref-parser/docs/options.html
-    resolve: { pixieResolver, http: false, file: false },
-    dereference: {
-      circular: "ignore",
-    },
-  }) as Promise<Schema>;
+  try {
+    return await ($RefParser.dereference(schema, {
+      // Disable built-in resolvers
+      // https://apitools.dev/json-schema-ref-parser/docs/options.html
+      resolve: { pixieResolver, http: false, file: false },
+      dereference: {
+        circular: "ignore",
+      },
+    }) as Promise<Schema>);
+  } catch (rawError) {
+    const errorMessage = `Failed to dereference schema: ${JSON.stringify(
+      schema,
+    )}`;
+    throw new Error(errorMessage, {
+      cause: rawError,
+    });
+  }
 }

@@ -62,7 +62,7 @@ const expressionTags = [
   "FloorDiv",
 ];
 
-export class Variable {
+class Variable {
   value: string;
   [VARIABLE_PARENT_SYMBOL]: Variable | undefined;
   [VARIABLE_CHILDREN_SYMBOL]: Variable[];

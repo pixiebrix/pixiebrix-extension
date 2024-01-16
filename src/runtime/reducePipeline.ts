@@ -278,7 +278,7 @@ function getPipelineLexicalEnvironment({
   };
 }
 
-export async function resolveBlockConfig(
+async function resolveBlockConfig(
   config: BrickConfig,
 ): Promise<ResolvedBrickConfig> {
   const block = await brickRegistry.lookup(config.id);
@@ -542,7 +542,7 @@ function selectTraceEnabled({
   return Boolean(runId) && Boolean(blockInstanceId);
 }
 
-export async function runBlock(
+async function runBlock(
   resolvedConfig: ResolvedBrickConfig,
   props: BlockProps,
   options: RunBlockOptions,
@@ -994,7 +994,7 @@ export async function reducePipeline(
  *
  * Returns the output of the last brick, even if that brick has an output key.
  */
-export async function reducePipelineExpression(
+async function reducePipelineExpression(
   pipeline: BrickPipeline,
   context: UnknownObject,
   root: SelectorRoot,

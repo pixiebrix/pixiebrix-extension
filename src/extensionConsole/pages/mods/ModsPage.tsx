@@ -18,7 +18,7 @@
 import React, { useEffect } from "react";
 import ModsPageLayout from "@/extensionConsole/pages/mods/ModsPageLayout";
 import useMods from "@/mods/useMods";
-import { useSetDocumentTitle } from "@/hooks/useSetDocumentTitle";
+import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import { ErrorDisplay } from "@/layout/ErrorDisplay";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";

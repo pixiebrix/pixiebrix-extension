@@ -103,10 +103,6 @@ browser.permissions = {
     }),
 };
 
-export function resetMock(): void {
-  setPermissions(initialPermissions);
-}
-
 export function setPermissions(
   newPermissions: Permissions.AnyPermissions,
 ): void {

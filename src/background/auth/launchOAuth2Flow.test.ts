@@ -27,18 +27,10 @@ import { Events } from "@/telemetry/events";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import codeGrantFlow from "@/background/auth/codeGrantFlow";
 
-jest.mock("@/background/auth/codeGrantFlow", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+jest.mock("@/background/auth/codeGrantFlow");
+jest.mock("@/background/auth/implicitGrantFlow");
 
 const codeGrantFlowMock = jest.mocked(codeGrantFlow);
-
-jest.mock("@/background/auth/implicitGrantFlow", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-
 const reportEventMock = jest.mocked(reportEvent);
 
 describe("oauth2 event reporting", () => {

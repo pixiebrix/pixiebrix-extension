@@ -32,13 +32,9 @@ import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors
 import { produce } from "immer";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
-jest.mock("@/contentScript/messenger/api", () => ({
-  checkAvailable: jest.fn(),
-}));
+jest.mock("@/contentScript/messenger/api");
 
-jest.mock("@/pageEditor/utils", () => ({
-  getCurrentURL: jest.fn(),
-}));
+jest.mock("@/pageEditor/utils");
 
 const { reducer: extensionsReducer } = extensionsSlice;
 

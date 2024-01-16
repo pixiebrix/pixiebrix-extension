@@ -76,7 +76,7 @@ function onContentScriptReadyMessage(
   // Don't return anything to indicate this didn't handle the message
 }
 
-export async function onReadyNotification(
+async function onReadyNotification(
   target: Target,
   signal: AbortSignal,
 ): Promise<void> {

@@ -19,10 +19,7 @@ import { renderHook } from "@/extensionConsole/testHelpers";
 import useDiagnostics from "@/extensionConsole/pages/settings/useDiagnostics";
 import download from "downloadjs";
 
-jest.mock("downloadjs", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+jest.mock("downloadjs");
 
 Object.defineProperty(navigator, "storage", {
   value: {
