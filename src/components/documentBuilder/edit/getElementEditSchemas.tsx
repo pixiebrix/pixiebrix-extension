@@ -175,6 +175,15 @@ function getElementEditSchemas(
         description:
           "Additional text to display over the button on hover, usually used to provide additional context about the button",
       };
+      const iconEdit: SchemaFieldProps = {
+        name: joinName(elementName, "config", "icon"),
+        schema: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
+        label: "Button Icon",
+        description: "The icon to display on the button before the label",
+        uiSchema: {
+          "ui:widget": "IconWidget",
+        },
+      };
       const variantEdit: SchemaFieldProps = {
         name: joinName(elementName, "config", "variant"),
         schema: {
@@ -252,6 +261,7 @@ function getElementEditSchemas(
       };
       return [
         titleEdit,
+        iconEdit,
         tooltipEdit,
         variantEdit,
         sizeEdit,
