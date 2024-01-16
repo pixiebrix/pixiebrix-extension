@@ -24,25 +24,25 @@ import {
   getInputProps,
   type StrictRJSFSchema,
   type InputPropsType,
+  type RJSFSchema,
 } from "@rjsf/utils";
 import React from "react";
 import { FormControl } from "react-bootstrap";
-import { type JSONSchema7 } from "json-schema";
 
 // RJSF's BaseInputTemplateProps is overly permissive. Tightening it up here.
-interface StrictBaseInputTemplateProps<
+export interface StrictBaseInputTemplateProps<
   T = HTMLInputElement,
-  S extends StrictRJSFSchema = JSONSchema7,
+  S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = unknown,
 > extends BaseInputTemplateProps<T, S, F> {
-  extraProps: InputPropsType;
-  type: string;
+  extraProps?: InputPropsType;
+  type?: string;
   value: string | number;
 }
 
 export default function BaseInputTemplate<
   T = HTMLInputElement,
-  S extends StrictRJSFSchema = JSONSchema7,
+  S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = unknown,
 >({
   id,
@@ -62,6 +62,7 @@ export default function BaseInputTemplate<
   rawErrors = [],
   children,
   extraProps,
+  ...rest
 }: StrictBaseInputTemplateProps<T, S, F>) {
   const inputProps: InputPropsType = {
     ...extraProps,
@@ -79,6 +80,16 @@ export default function BaseInputTemplate<
   const _onFocus = ({ target: { value } }: FocusEvent<HTMLInputElement>) => {
     onFocus(id, value);
   };
+
+  console.log("BaseInputTemplate", {
+    id,
+    schema,
+    type,
+    options,
+    extraProps,
+    inputProps,
+    rest,
+  });
 
   // Const classNames = [rawErrors.length > 0 ? "is-invalid" : "", type === 'file' ? 'custom-file-label': ""]
   return (
