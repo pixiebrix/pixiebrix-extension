@@ -27,7 +27,7 @@ import {
   type RJSFSchema,
 } from "@rjsf/utils";
 import React from "react";
-import { FormControl } from "react-bootstrap";
+import { FormControl, type FormControlProps } from "react-bootstrap";
 
 // RJSF's BaseInputTemplateProps is overly permissive. Tightening it up here.
 export interface StrictBaseInputTemplateProps<
@@ -39,6 +39,9 @@ export interface StrictBaseInputTemplateProps<
   type?: string;
   value: string | number;
 }
+
+export const DEFAULT_NUMBER_REGEX_STRING =
+  "-?\\d+(?:\\.\\d+)?(?:[Ee][+-]?\\d+)?";
 
 export default function BaseInputTemplate<
   T = HTMLInputElement,
@@ -64,10 +67,21 @@ export default function BaseInputTemplate<
   extraProps,
   ...rest
 }: StrictBaseInputTemplateProps<T, S, F>) {
-  const inputProps: InputPropsType = {
+  const inputProps: FormControlProps & {
+    step?: number | "any";
+    inputMode?: "numeric";
+    pattern?: string;
+  } = {
     ...extraProps,
     ...getInputProps<T, S, F>(schema, type, options),
   };
+
+  if (inputProps.type === "number") {
+    inputProps.step = undefined;
+    inputProps.type = "text";
+    inputProps.inputMode = "numeric";
+    inputProps.pattern = DEFAULT_NUMBER_REGEX_STRING;
+  }
 
   const _onChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     onChange(value === "" ? options.emptyValue : value);
@@ -80,16 +94,6 @@ export default function BaseInputTemplate<
   const _onFocus = ({ target: { value } }: FocusEvent<HTMLInputElement>) => {
     onFocus(id, value);
   };
-
-  console.log("BaseInputTemplate", {
-    id,
-    schema,
-    type,
-    options,
-    extraProps,
-    inputProps,
-    rest,
-  });
 
   // Const classNames = [rawErrors.length > 0 ? "is-invalid" : "", type === 'file' ? 'custom-file-label': ""]
   return (

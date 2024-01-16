@@ -16,6 +16,7 @@
  */
 
 import BaseInputTemplate, {
+  DEFAULT_NUMBER_REGEX_STRING,
   type StrictBaseInputTemplateProps,
 } from "@/components/formBuilder/BaseInputTemplate";
 import { render, screen } from "@testing-library/react";
@@ -76,23 +77,70 @@ describe("RJSF BaseInputTemplate Override", () => {
 
   it("renders a file input when the format is data-url", () => {
     const schema = {
-      title: "Data URL",
+      title: "File",
       type: "string",
       format: "data-url",
     } as JSONSchema7;
 
-    render(<BaseInputTemplate {...getProps("url", schema, "data-url")} />);
+    const { container } = render(
+      <BaseInputTemplate {...getProps("url", schema, "file")} />,
+    );
 
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
-    expect(screen.getByRole("textbox")).toHaveAttribute("type", "file");
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const input = container.querySelector("#url");
+
+    expect(input).toBeInTheDocument();
+    expect(input).toHaveAttribute("type", "file");
   });
 
-  it.skip("renders a standard text input with inputMode numeric and a regex pattern when the type is number", () => {
+  it("renders a date picker when the format is date", () => {
+    const schema = {
+      title: "Date",
+      type: "string",
+      format: "date",
+    } as JSONSchema7;
+
+    const { container } = render(
+      <BaseInputTemplate {...getProps("date", schema, "date")} />,
+    );
+
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const input = container.querySelector("#date");
+
+    expect(input).toBeInTheDocument();
+    expect(input).toHaveAttribute("type", "date");
+  });
+
+  it("renders a date-time picker when the format is date-time", () => {
+    const schema = {
+      title: "Date-Time",
+      type: "string",
+      format: "date-time",
+    } as JSONSchema7;
+
+    const { container } = render(
+      <BaseInputTemplate {...getProps("dateTime", schema, "datetime-local")} />,
+    );
+
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    const input = container.querySelector("#dateTime");
+
+    expect(input).toBeInTheDocument();
+    expect(input).toHaveAttribute("type", "datetime-local");
+  });
+
+  it("renders a standard text input with inputMode numeric and a regex pattern when the type is number", () => {
     const schema = { title: "Number", type: "number" } as JSONSchema7;
 
     render(<BaseInputTemplate {...getProps("number", schema)} />);
 
     expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument();
     expect(screen.getByRole("textbox")).toBeInTheDocument();
+    expect(screen.getByRole("textbox")).toHaveAttribute("type", "text");
+    expect(screen.getByRole("textbox")).toHaveAttribute("inputMode", "numeric");
+    expect(screen.getByRole("textbox")).toHaveAttribute(
+      "pattern",
+      DEFAULT_NUMBER_REGEX_STRING,
+    );
   });
 });
