@@ -168,6 +168,13 @@ function getElementEditSchemas(
         label: "Button Label",
         description: "The text to display on the button",
       };
+      const tooltipEdit: SchemaFieldProps = {
+        name: joinName(elementName, "config", "tooltip"),
+        schema: { type: "string" },
+        label: "Button Tooltip",
+        description:
+          "Additional text to display over the button on hover, usually used to provide additional context about the button",
+      };
       const variantEdit: SchemaFieldProps = {
         name: joinName(elementName, "config", "variant"),
         schema: {
@@ -245,6 +252,7 @@ function getElementEditSchemas(
       };
       return [
         titleEdit,
+        tooltipEdit,
         variantEdit,
         sizeEdit,
         fullWidthEdit,
