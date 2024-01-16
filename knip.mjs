@@ -61,8 +61,6 @@ const knipConfig = {
     // Referenced in scss files
     "webext-base-css",
     "compass-mixins",
-    // Polyfills via ProvidePlugin aren't detected by webpack plugin
-    "min-document",
     // Not getting detected by webpack plugin for .storybook/main.js
     "style-loader",
     "@storybook/react-webpack5",
