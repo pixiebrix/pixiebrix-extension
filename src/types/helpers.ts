@@ -18,7 +18,11 @@
 import { valid as semVerValid } from "semver";
 import { startsWith } from "lodash";
 import validUuidRegex from "@/vendors/validateUuid";
-import { type Timestamp, type UUID } from "@/types/stringTypes";
+import {
+  type Timestamp,
+  type TimedSequence,
+  type UUID,
+} from "@/types/stringTypes";
 import { v4 } from "uuid";
 import {
   INNER_SCOPE,
@@ -28,6 +32,28 @@ import {
 
 export const PACKAGE_REGEX =
   /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
+
+let sequence = 0;
+/**
+ * Returns a string that can be used to determine the order of two calls.
+ * It guarantees the order of two calls from the same process, but it only helps
+ * disambiguate calls from different processes if they are more than 1ms apart.
+ */
+export function getTimedSequence(): TimedSequence {
+  sequence++;
+  return validateTimedSequence(
+    `${Date.now()}:${String(sequence).padStart(8, "0")}`,
+  );
+}
+
+export function validateTimedSequence(string: string): TimedSequence {
+  // Timestamps between 2001 and 2287 have 13 digits. We're covered.
+  if (!/^\d{13}:\d{8}$/.test(string)) {
+    throw new TypeError("Invalid timed sequence: " + string);
+  }
+
+  return string as TimedSequence;
+}
 
 /**
  * Return a random v4 UUID.
