@@ -16,6 +16,7 @@
  */
 
 import {
+  checkAllValueHeadersExist,
   checkForBlankIntermediateColumns,
   checkForMissingValueHeaders,
   detectShape,
@@ -139,6 +140,36 @@ describe("checkForMissingValueHeaders", () => {
       checkForMissingValueHeaders(
         ["header1", "header2", "header3"],
         ["header1", "header2"],
+      );
+    }).toThrow(
+      expect.objectContaining({
+        message: expect.stringContaining("header3"),
+      }),
+    );
+  });
+});
+
+describe("checkAllValueHeadersExist", () => {
+  it("passes for matching headers", () => {
+    expect(() => {
+      checkAllValueHeadersExist(["header1", "header2"], ["header1", "header2"]);
+    }).not.toThrow();
+  });
+
+  it("passes with extra current sheet headers", () => {
+    expect(() => {
+      checkAllValueHeadersExist(
+        ["header1", "header2", "header3"],
+        ["header1", "header2"],
+      );
+    }).not.toThrow();
+  });
+
+  it("throws error when there are extra value headers missing from sheet", () => {
+    expect(() => {
+      checkAllValueHeadersExist(
+        ["header1", "header2"],
+        ["header1", "header2", "header3"],
       );
     }).toThrow(
       expect.objectContaining({
