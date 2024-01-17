@@ -34,6 +34,6 @@ echo "Uploading sourcemaps to Datadog for version [[$RELEASE_VERSION]] with mini
 # project-path is the prefix before src in the map: webpack:///./src/bricks/registry.ts
 npx --yes @datadog/datadog-ci sourcemaps upload ./dist \
   --service="pixiebrix-browser-extension" \
-  --release-version=$RELEASE_VERSION \
+  --release-version="$RELEASE_VERSION" \
   --minified-path-prefix="$MINIFIED_PATH_PREFIX" \
   --project-path="/./"
