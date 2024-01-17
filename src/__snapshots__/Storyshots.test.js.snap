@@ -6564,15 +6564,16 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                     className="form-control"
                     disabled={false}
                     id="root_age"
+                    inputMode="numeric"
                     name="root_age"
                     onBlur={[Function]}
                     onChange={[Function]}
                     onFocus={[Function]}
+                    pattern="-?\\d+(?:\\.\\d+)?(?:[Ee][+-]?\\d+)?"
                     placeholder=""
                     readOnly={false}
                     required={false}
-                    step={1}
-                    type="number"
+                    type="text"
                     value=""
                   />
                   <div

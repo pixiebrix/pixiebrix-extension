@@ -184,10 +184,11 @@ exports[`FormPreview it renders simple schema 1`] = `
                 aria-describedby="root_age__error root_age__description root_age__help"
                 class="form-control"
                 id="root_age"
+                inputmode="numeric"
                 name="root_age"
+                pattern="-?\\d+(?:\\.\\d+)?(?:[Ee][+-]?\\d+)?"
                 placeholder=""
-                step="any"
-                type="number"
+                type="text"
                 value=""
               />
             </div>

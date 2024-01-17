@@ -127,4 +127,29 @@ describe("FormPreview", () => {
     expect(screen.getByText("A note")).toBeInTheDocument();
     expect(screen.queryByText("notes")).not.toBeInTheDocument();
   });
+
+  test("renders a text input with inputmode numeric in place of a number input", async () => {
+    const schema: Schema = {
+      title: "Form",
+      type: "object",
+      properties: {
+        rating: { type: "number", title: "Rating" },
+      },
+    };
+    const uiSchema: UiSchema = {};
+
+    const props: FormPreviewProps = {
+      rjsfSchema: { schema, uiSchema },
+      activeField: "notes",
+      setActiveField: defaultProps.setActiveField,
+    };
+
+    render(<FormPreview {...props} />);
+
+    await expect(
+      screen.findByRole("textbox", { name: "Rating", hidden: true }),
+    ).resolves.toHaveAttribute("inputmode", "numeric");
+
+    expect(screen.queryByRole("spinButton")).not.toBeInTheDocument();
+  });
 });
