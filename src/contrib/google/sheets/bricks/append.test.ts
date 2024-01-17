@@ -18,18 +18,18 @@
 import {
   checkForBlankIntermediateColumns,
   detectShape,
-  Entry,
+  type Entry,
   GoogleSheetsAppend,
   normalizeShape,
-  RowValues,
-  Shape,
+  type RowValues,
+  type Shape,
 } from "@/contrib/google/sheets/bricks/append";
 import { sheets } from "@/background/messenger/api";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { Spreadsheet } from "@/contrib/google/sheets/core/types";
 import { produce } from "immer";
