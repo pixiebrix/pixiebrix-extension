@@ -16,6 +16,7 @@
  */
 
 import { propertiesToSchema } from "@/validators/generic";
+import { showNotification } from "@/utils/notify";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
@@ -69,21 +70,18 @@ export class AlertEffect extends EffectABC {
     type: "window" | "info" | "success" | "warning" | "error";
     duration?: number;
   }>): Promise<void> {
-    // FIXME: revert error code before merge
-    // const messageString = String(message);
-    //
-    // if (type === "window") {
-    //   // eslint-disable-next-line no-alert
-    //   window.alert(messageString);
-    // } else {
-    //   showNotification({
-    //     message: messageString,
-    //     type,
-    //     duration,
-    //     reportError: false,
-    //   });
-    // }
+    const messageString = String(message);
 
-    throw new Error("Outer Error", { cause: new Error("Inner Error") });
+    if (type === "window") {
+      // eslint-disable-next-line no-alert
+      window.alert(messageString);
+    } else {
+      showNotification({
+        message: messageString,
+        type,
+        duration,
+        reportError: false,
+      });
+    }
   }
 }
