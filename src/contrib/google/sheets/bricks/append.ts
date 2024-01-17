@@ -408,8 +408,6 @@ export class GoogleSheetsAppend extends EffectABC {
       checkAllValueHeadersExist(currentSheetHeaders, valueHeaders);
     }
 
-    checkForBlankIntermediateColumns(currentHeaders);
-
     await sheets.appendRows(
       target,
       rows.map((row) => makeRowCells(currentSheetHeaders, row)),
