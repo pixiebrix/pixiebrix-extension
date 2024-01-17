@@ -18,7 +18,7 @@ aws s3 cp ./dist "$S3_UPLOAD_BASE_URL" --exclude '*' --include '*.js.map' --incl
 
 # Datadog uses release-version, not the code commit version. So get from produced manifest
 # Clean-up the name because it's not clear if the cli normalized the name like the JS library does
-RELEASE_VERSION=$(jq '.version_name | gsub("\\+"; "_") | ascii_downcase' dist/manifest.json)
+RELEASE_VERSION=$(jq -r '.version_name | gsub("\\+"; "_") | ascii_downcase' dist/manifest.json)
 
 # Should match the path that appears in minified stack trace
 # See sourceMapPublicUrl in webpack.config.mjs
