@@ -114,7 +114,14 @@ export const APPEND_SCHEMA: Schema = propertiesToSchema(
     requireAllHeaders: {
       type: "boolean",
       title: "Require All Headers",
-      description: "Validate that data includes all headers in the sheet",
+      description:
+        "Validate that submitted data includes all headers in the sheet",
+      default: true,
+    },
+    requireOnlyKnownHeaders: {
+      type: "boolean",
+      title: "Require Only Known Headers",
+      description: "Validate that all submitted headers exist in the sheet",
       default: true,
     },
   },
@@ -289,6 +296,23 @@ export function checkForMissingValueHeaders(
   }
 }
 
+// Exported for testing
+export function checkAllValueHeadersExist(
+  currentSheetHeaders: string[],
+  valueHeaders: string[],
+) {
+  const extraValueHeaders = valueHeaders.filter(
+    (header) => !currentSheetHeaders.includes(header),
+  );
+  if (extraValueHeaders.length > 0) {
+    throw new BusinessError(
+      `One or more headers provided in brick inputs do not exist in the sheet: ${extraValueHeaders.join(
+        ", ",
+      )}`,
+    );
+  }
+}
+
 export class GoogleSheetsAppend extends EffectABC {
   constructor() {
     super(
@@ -308,6 +332,7 @@ export class GoogleSheetsAppend extends EffectABC {
       shape = "infer",
       rowValues: rawValues = {},
       requireAllHeaders = false,
+      requireOnlyKnownHeaders = false,
     }: BrickArgs<{
       googleAccount?: SanitizedIntegrationConfig | undefined;
       spreadsheetId: string | SanitizedIntegrationConfig;
@@ -315,6 +340,7 @@ export class GoogleSheetsAppend extends EffectABC {
       shape: Shape;
       rowValues: RowValues;
       requireAllHeaders: boolean;
+      requireOnlyKnownHeaders: boolean;
     }>,
     { logger }: BrickOptions,
   ): Promise<void> {
@@ -376,6 +402,10 @@ export class GoogleSheetsAppend extends EffectABC {
 
     if (requireAllHeaders) {
       checkForMissingValueHeaders(currentSheetHeaders, valueHeaders);
+    }
+
+    if (requireOnlyKnownHeaders) {
+      checkAllValueHeadersExist(currentSheetHeaders, valueHeaders);
     }
 
     await sheets.appendRows(
