@@ -3,7 +3,7 @@ name: CI
 on: push
 
 env:
-  # Creates and uploads sourcemaps to Datadog, and save the built extension as an artifact
+  # Creates and uploads sourcemaps to Application error telemetry, and save the built extension as an artifact
   PUBLIC_RELEASE: ${{ github.ref == 'refs/heads/main' }}
   # Staging URL, also directly used by webpack
   SERVICE_URL: https://app-stg.pixiebrix.com/
