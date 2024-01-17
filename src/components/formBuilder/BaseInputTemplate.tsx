@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useRef, type ChangeEvent, type FocusEvent, useState } from "react";
+import { type ChangeEvent, type FocusEvent, useState } from "react";
 import {
   ariaDescribedByIds,
   type BaseInputTemplateProps,
@@ -42,6 +42,47 @@ export interface StrictBaseInputTemplateProps<
 
 export const DEFAULT_NUMBER_REGEX_STRING =
   "-?\\d+(?:\\.\\d+)?(?:[Ee][+-]?\\d+)?";
+
+/* @since 1.8.7
+ * Used for number inputs to store the value as a string
+ * to avoid losing decimals during the conversion to number
+ */
+function useNumericInput<T, S, F>({
+  value,
+  extraProps,
+  schema,
+  type,
+  options,
+}: {
+  value: string | number;
+  extraProps: InputPropsType;
+  schema: S;
+  type: string;
+  options: StrictBaseInputTemplateProps<T, S, F>["options"];
+}) {
+  const [storedValue, setStoredValue] = useState(value?.toString() ?? "");
+
+  const inputProps: FormControlProps & {
+    step?: number | "any";
+    inputMode?: "numeric";
+    pattern?: string;
+  } = {
+    ...extraProps,
+    ...getInputProps<T, S, F>(schema, type, options),
+  };
+
+  // Converting number inputs to text inputs with numeric inputMode
+  // Removes the spinner to improve UX
+  // See https://github.com/pixiebrix/pixiebrix-extension/issues/7343
+  if (inputProps.type === "number") {
+    inputProps.step = undefined;
+    inputProps.type = "text";
+    inputProps.inputMode = "numeric";
+    inputProps.pattern = DEFAULT_NUMBER_REGEX_STRING;
+  }
+
+  return { storedValue, setStoredValue, inputProps };
+}
 
 function getValue(
   value: string | number,
@@ -78,30 +119,13 @@ export default function BaseInputTemplate<
   children,
   extraProps,
 }: StrictBaseInputTemplateProps<T, S, F>) {
-  /* @since 1.8.7
-   * Used for number inputs to store the value as a string
-   * to avoid losing decimals during the conversion to number
-   */
-  const [storedValue, setStoredValue] = useState(value?.toString() ?? "");
-
-  const inputProps: FormControlProps & {
-    step?: number | "any";
-    inputMode?: "numeric";
-    pattern?: string;
-  } = {
-    ...extraProps,
-    ...getInputProps<T, S, F>(schema, type, options),
-  };
-
-  // Converting number inputs to text inputs with numeric inputMode
-  // Removes the spinner to improve UX
-  // See https://github.com/pixiebrix/pixiebrix-extension/issues/7343
-  if (inputProps.type === "number") {
-    inputProps.step = undefined;
-    inputProps.type = "text";
-    inputProps.inputMode = "numeric";
-    inputProps.pattern = DEFAULT_NUMBER_REGEX_STRING;
-  }
+  const { storedValue, setStoredValue, inputProps } = useNumericInput<T, S, F>({
+    value,
+    extraProps,
+    schema,
+    type,
+    options,
+  });
 
   const _onChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     let _value: string | number = value;
