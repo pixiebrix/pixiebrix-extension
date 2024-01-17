@@ -16,11 +16,10 @@
  */
 
 import { propertiesToSchema } from "@/validators/generic";
-import { isEqual, unary, uniq } from "lodash";
+import { isEmpty, isEqual, unary, uniq } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import { normalizeHeader } from "@/contrib/google/sheets/core/sheetsHelpers";
 import { sheets } from "@/background/messenger/api";
-import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
   GOOGLE_OAUTH2_PKCE_INTEGRATION_ID,
@@ -37,17 +36,17 @@ import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContext
 
 type CellValue = string | number | null;
 
-type Entry = {
+export type Entry = {
   header: string;
   value: CellValue;
 };
 
-type RowValues =
+export type RowValues =
   | Record<string, CellValue>
   | Array<Record<string, CellValue>>
   | Entry[];
 type KnownShape = "entries" | "multi" | "single";
-type Shape = KnownShape | "infer";
+export type Shape = KnownShape | "infer";
 
 export const APPEND_SCHEMA: Schema = propertiesToSchema(
   {
@@ -156,10 +155,6 @@ function makeRowCells(headerRow: string[], rowEntries: Entry[]): CellValue[] {
 export const GOOGLE_SHEETS_APPEND_ID = validateRegistryId(
   "@pixiebrix/google/sheets-append",
 );
-
-function isAuthError(error: unknown): boolean {
-  return isObject(error) && [404, 401, 403].includes(error.code as number);
-}
 
 export function detectShape(rowValues: RowValues): KnownShape {
   if (Array.isArray(rowValues)) {
@@ -321,31 +316,38 @@ export class GoogleSheetsAppend extends EffectABC {
       rows.flatMap((row) => row.map((x: Entry) => x.header)),
     );
 
-    let currentHeaders: string[];
-    try {
-      currentHeaders = await sheets.getHeaders(target);
-      console.debug(
-        `Found headers for ${tabName}: ${currentHeaders.join(", ")}`,
-      );
-    } catch (error) {
-      logger.warn(`Error retrieving headers: ${getErrorMessage(error)}`, {
-        error,
-      });
-      if (isAuthError(error)) {
-        throw error;
-      }
-
+    const spreadsheet = await sheets.getSpreadsheet(target);
+    if (
+      !spreadsheet.sheets.some((sheet) => sheet.properties.title === tabName)
+    ) {
       logger.info(`Creating tab ${tabName}`);
       await sheets.createTab(target);
     }
 
-    checkForBlankIntermediateColumns(currentHeaders);
+    const allRows = await sheets.getAllRows(target);
+    let currentHeaders: string[];
+    if (allRows.values) {
+      currentHeaders = allRows.values[0]?.map(String) ?? [];
 
-    if (!currentHeaders || currentHeaders.every((x) => isNullOrBlank(x))) {
-      logger.info(`Writing header row for ${tabName}`);
+      if (
+        isEmpty(currentHeaders) ||
+        currentHeaders.every((header) => isNullOrBlank(header))
+      ) {
+        throw new BusinessError(
+          "Header row not found. The first row of the sheet must contain header(s).",
+        );
+      }
+
+      console.debug(
+        `Found headers for ${tabName}: ${currentHeaders.join(", ")}`,
+      );
+    } else {
+      logger.info(`Sheet is empty, writing header row for ${tabName}`);
       await sheets.appendRows(target, [valueHeaders]);
       currentHeaders = valueHeaders;
     }
+
+    checkForBlankIntermediateColumns(currentHeaders);
 
     await sheets.appendRows(
       target,
