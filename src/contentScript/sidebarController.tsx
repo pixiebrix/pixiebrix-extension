@@ -15,14 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import reportError from "@/telemetry/reportError";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isEmpty, throttle } from "lodash";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
+import * as sidebarMv2 from "./sidebarDomControllerLite";
 import { type Except } from "type-fest";
-import { RunReason, type RunArgs } from "@/types/runtimeTypes";
+import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type ModComponentRef } from "@/types/modComponentTypes";
@@ -36,13 +38,21 @@ import type {
 } from "@/types/sidebarTypes";
 import { getTemporaryPanelSidebarEntries } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
-import {
-  isSidePanelOpen,
-  isSidePanelOpenSync,
-} from "@/sidebar/sidePanel/messenger/api";
+import * as sidePanel from "@/sidebar/sidePanel/messenger/api";
+import { memoizeUntilSettled, logPromiseDuration } from "@/utils/promiseUtils";
+import { waitAnimationFrame } from "@/utils/domUtils";
 import { getTimedSequence } from "@/types/helpers";
 import { backgroundTarget, getMethod } from "webext-messenger";
-import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { isMV3 } from "@/mv3/api";
+
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
+export const isSidePanelOpen = isMV3()
+  ? sidePanel.isSidePanelOpen
+  : sidebarMv2.isSidebarFrameVisible;
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
+export const isSidePanelOpenSync = isMV3()
+  ? sidePanel.isSidePanelOpenSync
+  : sidebarMv2.isSidebarFrameVisible;
 
 // - Only start one ping at a time
 // - Limit to one request every second (if the user closes the sidebar that quickly, we likely see those errors anyway)
@@ -78,9 +88,18 @@ let modActivationPanelEntry: ModActivationPanelEntry | null = null;
 export async function showSidebar(): Promise<void> {
   console.debug("sidebarController:showSidebar");
   reportEvent(Events.SIDEBAR_SHOW);
-  // TODO: Import from background/messenger/api.ts after the strictNullChecks migration, drop "SIDEBAR_PING" string
-  await getMethod("SHOW_MY_SIDE_PANEL" as "SIDEBAR_PING", backgroundTarget)();
-  await pingSidebar();
+  if (isMV3()) {
+    // TODO: Import from background/messenger/api.ts after the strictNullChecks migration, drop "SIDEBAR_PING" string
+    await getMethod("SHOW_MY_SIDE_PANEL" as "SIDEBAR_PING", backgroundTarget)();
+  } else if (!sidebarMv2.isSidebarFrameVisible()) {
+    sidebarMv2.insertSidebarFrame();
+  }
+
+  try {
+    await pingSidebar();
+  } catch (error) {
+    throw new Error("The sidebar did not respond in time", { cause: error });
+  }
 }
 
 /**
@@ -98,6 +117,38 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
     extensionId,
     force: true,
   });
+}
+
+/**
+ * Hide the sidebar. Dispatches HIDE_SIDEBAR_EVENT_NAME event even if the sidebar is not currently visible.
+ * @see HIDE_SIDEBAR_EVENT_NAME
+ */
+export function hideSidebar(): void {
+  console.debug("sidebarController:hideSidebar", {
+    isSidebarFrameVisible: sidebarMv2.isSidebarFrameVisible(),
+  });
+
+  reportEvent(Events.SIDEBAR_HIDE);
+  sidebarMv2.removeSidebarFrame();
+  window.dispatchEvent(new CustomEvent(HIDE_SIDEBAR_EVENT_NAME));
+}
+
+/**
+ * Reload the sidebar and its content.
+ *
+ * Known limitations:
+ * - Does not reload ephemeral forms
+ */
+export async function reloadSidebar(): Promise<void> {
+  console.debug("sidebarController:reloadSidebar");
+
+  // Hide and reshow to force a full-refresh of the sidebar
+
+  if (isSidebarFrameVisible()) {
+    hideSidebar();
+  }
+
+  await showSidebar();
 }
 
 /**
@@ -418,7 +469,8 @@ export function getReservedPanelEntries(): {
 
 // TODO: It doesn't work when the dev tools are open on the side
 // Official event requested in https://github.com/w3c/webextensions/issues/517
-export function onSidePanelClosure(controller: AbortController): void {
+export function sidePanelClosureSignal(): AbortSignal {
+  const controller = new AbortController();
   expectContext("contentScript");
   window.addEventListener(
     "resize",
@@ -429,4 +481,5 @@ export function onSidePanelClosure(controller: AbortController): void {
     },
     { signal: controller.signal },
   );
+  return controller.signal;
 }

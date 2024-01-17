@@ -21,12 +21,9 @@ import { getMethod, getNotifier, getThisFrame } from "webext-messenger";
 
 const target = { page: "/sidebar.html" };
 
-// TODO: move to contentScrpt/sidePanel/messenger/api.ts
-// This should be an expectContext, but it's the usual "everyone imports the registry" problem
 if (isContentScript()) {
   // Unavoidable race condition: we can't message the sidebar until we know the tabId.
-  // If this causes issues (unlikely), we can make `getMethod` accept an async function
-  // that generates the target, like `getMethod('FOO', getThisFramesSideBarUrl())`.
+  // TODO: Drop if this is ever implemented https://github.com/pixiebrix/webext-messenger/issues/193
   // eslint-disable-next-line promise/prefer-await-to-then
   void getThisFrame().then((frame) => {
     target.page += "?tabId=" + frame.tabId;
@@ -38,7 +35,7 @@ const sidebarInThisTab = {
   activatePanel: getMethod("SIDEBAR_ACTIVATE_PANEL", target),
   showForm: getMethod("SIDEBAR_SHOW_FORM", target),
   hideForm: getMethod("SIDEBAR_HIDE_FORM", target),
-  /** @deprecated Only from the content script. Use this in the content script: import {pingSidebar} from '@/contentScript/sidebarController'; */
+  /** @deprecated Deprecated only from the content script. Use this in the content script: import {pingSidebar} from '@/contentScript/sidebarController'; */
   pingSidebar: getMethod("SIDEBAR_PING", target),
   close: getNotifier("SIDEBAR_CLOSE", target),
   reload: getNotifier("SIDEBAR_RELOAD", target),

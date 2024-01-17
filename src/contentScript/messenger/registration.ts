@@ -32,7 +32,11 @@ import {
   cancelForm,
 } from "@/contentScript/ephemeralFormProtocol";
 import {
+  hideSidebar,
+  showSidebar,
+  rehydrateSidebar,
   removeExtensions as removeSidebars,
+  reloadSidebar,
   getReservedPanelEntries,
   sidebarWasLoaded,
   updateSidebar,
@@ -105,6 +109,10 @@ declare global {
 
     UPDATE_SIDEBAR: typeof updateSidebar;
     SIDEBAR_WAS_LOADED: typeof sidebarWasLoaded;
+    REHYDRATE_SIDEBAR: typeof rehydrateSidebar;
+    SHOW_SIDEBAR: typeof showSidebar;
+    HIDE_SIDEBAR: typeof hideSidebar;
+    RELOAD_SIDEBAR: typeof reloadSidebar;
     REMOVE_SIDEBARS: typeof removeSidebars;
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
@@ -171,6 +179,10 @@ export default function registerMessenger(): void {
 
     UPDATE_SIDEBAR: updateSidebar,
     SIDEBAR_WAS_LOADED: sidebarWasLoaded,
+    REHYDRATE_SIDEBAR: rehydrateSidebar,
+    SHOW_SIDEBAR: showSidebar,
+    HIDE_SIDEBAR: hideSidebar,
+    RELOAD_SIDEBAR: reloadSidebar,
     REMOVE_SIDEBARS: removeSidebars,
     INSERT_PANEL: insertPanel,
     INSERT_BUTTON: insertButton,

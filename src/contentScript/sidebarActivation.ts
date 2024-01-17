@@ -21,7 +21,7 @@ import {
   showSidebar,
   hideModActivationInSidebar,
   showModActivationInSidebar,
-  onSidePanelClosure,
+  sidePanelClosureSignal,
 } from "@/contentScript/sidebarController";
 import { isLinked } from "@/auth/token";
 import {
@@ -55,17 +55,13 @@ async function getInProgressModActivation(): Promise<RegistryId[] | null> {
 async function showSidebarActivationForMods(
   modIds: RegistryId[],
 ): Promise<void> {
-  const controller = new AbortController();
-
   await showSidebar();
   await showModActivationInSidebar({
     modIds,
     heading: "Activating",
   });
 
-  onSidePanelClosure(controller);
-
-  controller.signal.addEventListener("abort", () => {
+  sidePanelClosureSignal().addEventListener("abort", () => {
     void hideModActivationInSidebar();
   });
 }

@@ -41,12 +41,14 @@ export const removeInstalledExtension = getNotifier(
 export const resetTab = getNotifier("RESET_TAB");
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
 export const handleMenuAction = getMethod("HANDLE_MENU_ACTION");
-
+export const showSidebar = getMethod("SHOW_SIDEBAR");
+export const hideSidebar = getMethod("HIDE_SIDEBAR");
 export const getReservedSidebarEntries = getMethod(
   "GET_RESERVED_SIDEBAR_ENTRIES",
 );
 export const updateSidebar = getNotifier("UPDATE_SIDEBAR");
 export const sidebarWasLoaded = getNotifier("SIDEBAR_WAS_LOADED");
+export const reloadSidebar = getMethod("RELOAD_SIDEBAR");
 export const removeSidebars = getMethod("REMOVE_SIDEBARS");
 export const insertPanel = getMethod("INSERT_PANEL");
 export const insertButton = getMethod("INSERT_BUTTON");

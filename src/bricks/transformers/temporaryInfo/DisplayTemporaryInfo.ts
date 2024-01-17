@@ -27,7 +27,7 @@ import {
   hideTemporarySidebarPanel,
   showTemporarySidebarPanel,
   updateTemporarySidebarPanel,
-  onSidePanelClosure,
+  sidePanelClosureSignal,
 } from "@/contentScript/sidebarController";
 import {
   type PanelPayload,
@@ -56,6 +56,7 @@ import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Location } from "@/types/starterBrickTypes";
 import { assumeNotNullish_UNSAFE } from "@/utils/nullishUtils";
+import { mergeSignals, onAbort } from "abort-utils";
 
 // Match naming of the sidebar panel extension point triggers
 export type RefreshTrigger = "manual" | "statechange";
@@ -189,8 +190,7 @@ export async function displayTemporaryInfo({
       },
     });
 
-    onSidePanelClosure(controller);
-
+    onAbort(sidePanelClosureSignal(), controller);
     controller.signal.addEventListener("abort", () => {
       void hideTemporarySidebarPanel(nonce);
       void stopWaitingForTemporaryPanels([nonce]);

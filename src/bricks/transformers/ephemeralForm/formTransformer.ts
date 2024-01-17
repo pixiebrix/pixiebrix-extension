@@ -28,7 +28,7 @@ import {
   showSidebar,
   hideSidebarForm,
   showSidebarForm,
-  onSidePanelClosure,
+  sidePanelClosureSignal,
 } from "@/contentScript/sidebarController";
 import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
 import { getThisFrame } from "webext-messenger";
@@ -167,7 +167,7 @@ export class FormTransformer extends TransformerABC {
       });
 
       // Two-way binding between sidebar and form. Listen for the user (or an action) closing the sidebar
-      onSidePanelClosure(controller);
+      sidePanelClosureSignal();
 
       controller.signal.addEventListener("abort", () => {
         // NOTE: we're not hiding the side panel here to avoid closing the sidebar if the user already had it open.

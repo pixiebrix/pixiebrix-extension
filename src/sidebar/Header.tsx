@@ -19,16 +19,39 @@ import React from "react";
 import styles from "./ConnectedSidebar.module.scss";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCog } from "@fortawesome/free-solid-svg-icons";
+import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
+import { hideSidebar } from "@/contentScript/messenger/api";
 import useTheme, { useGetTheme } from "@/hooks/useTheme";
 import cx from "classnames";
+import useContextInvalidated from "@/hooks/useContextInvalidated";
+import { getTopLevelFrame } from "webext-messenger";
+import { isMV3 } from "@/mv3/api";
 
 const Header: React.FunctionComponent = () => {
   const { logo, showSidebarLogo, customSidebarLogo } = useTheme();
   const theme = useGetTheme();
+  /* The button doesn't work after invalidation #2359 */
+  /* In MV3, Chrome offers a native Close button */
+  const showCloseButton = !useContextInvalidated() && !isMV3();
 
   return (
     <div className="d-flex py-2 pl-2 pr-0 justify-content-between align-content-center">
+      {showCloseButton && (
+        <Button
+          className={cx(
+            styles.button,
+            theme === "default" ? styles.themeColorOverride : styles.themeColor,
+          )}
+          onClick={async () => {
+            const topLevelFrame = await getTopLevelFrame();
+            await hideSidebar(topLevelFrame);
+          }}
+          size="sm"
+          variant="link"
+        >
+          <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
+        </Button>
+      )}
       {showSidebarLogo && (
         <div className="align-self-center">
           <img

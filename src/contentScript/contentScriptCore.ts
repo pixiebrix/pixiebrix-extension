@@ -74,6 +74,7 @@ export async function init(): Promise<void> {
   void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
 
   // Update `sidePanel`
+  // TODO: VERIFY: This replaces the old "sidebarController:showSidebar emitting sidebarShowEvents" in `showSidebar` right?
   void renderPanelsIfVisible();
 
   // Let the partner page know

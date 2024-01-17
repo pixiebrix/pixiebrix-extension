@@ -18,7 +18,7 @@
 import { type UnknownObject } from "@/types/objectTypes";
 import { expectContext } from "@/utils/expectContext";
 import { getCopilotHostData } from "@/contentScript/messenger/api";
-import { getAssociatedTarget } from "@/sidebar/sidePanel/messenger/api";
+import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 
 /**
  * Runtime event type for setting Co-Pilot data
@@ -126,7 +126,8 @@ export async function initCopilotMessenger(): Promise<void> {
   });
 
   // Fetch the current data from the content script when the frame loads
-  const data = await getCopilotHostData(getAssociatedTarget());
+  const frame = await getTopFrameFromSidebar();
+  const data = await getCopilotHostData(frame);
   console.debug("Setting initial Co-Pilot data", {
     location: window.location.href,
     data,

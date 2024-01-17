@@ -20,9 +20,21 @@ import { isEmpty } from "lodash";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Button } from "react-bootstrap";
+import { reloadSidebar } from "@/contentScript/messenger/api";
+import { getTopLevelFrame } from "webext-messenger";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { isMV3 } from "@/mv3/api";
 
 class SidebarErrorBoundary extends ErrorBoundary {
+  async reloadSidebar() {
+    if (isMV3()) {
+      location.reload();
+    } else {
+      const topLevelFrame = await getTopLevelFrame();
+      await reloadSidebar(topLevelFrame);
+    }
+  }
+
   override render(): React.ReactNode {
     if (this.state.hasError) {
       return (
@@ -38,12 +50,7 @@ class SidebarErrorBoundary extends ErrorBoundary {
             <p>Please close and re-open the sidebar panel.</p>
 
             <div>
-              <Button
-                variant="light"
-                onClick={() => {
-                  location.reload();
-                }}
-              >
+              <Button variant="light" onClick={this.reloadSidebar}>
                 <FontAwesomeIcon icon={faRedo} /> Reload Sidebar
               </Button>
             </div>

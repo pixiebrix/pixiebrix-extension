@@ -46,7 +46,6 @@ const ModLauncher: React.FunctionComponent = () => {
               });
 
               const frame = await getTopFrameFromSidebar();
-
               showWalkthroughModal(frame);
             }}
           >
