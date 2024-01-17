@@ -257,6 +257,20 @@ export function normalizeShape(shape: Shape, rowValues: RowValues): Entry[][] {
   }
 }
 
+// Exported for testing
+export function checkForBlankIntermediateColumns(currentHeaders: string[]) {
+  let foundNonBlankHeader = false;
+  for (const header of currentHeaders) {
+    if (!isNullOrBlank(header)) {
+      foundNonBlankHeader = true;
+    } else if (foundNonBlankHeader) {
+      throw new BusinessError(
+        "Invalid header row. Must not contain any blank columns between headers in the sheet",
+      );
+    }
+  }
+}
+
 export class GoogleSheetsAppend extends EffectABC {
   constructor() {
     super(
@@ -324,6 +338,8 @@ export class GoogleSheetsAppend extends EffectABC {
       logger.info(`Creating tab ${tabName}`);
       await sheets.createTab(target);
     }
+
+    checkForBlankIntermediateColumns(currentHeaders);
 
     if (!currentHeaders || currentHeaders.every((x) => isNullOrBlank(x))) {
       logger.info(`Writing header row for ${tabName}`);
