@@ -24,6 +24,8 @@ RELEASE_VERSION=$(jq '.version_name | gsub("\\+"; "_") | ascii_downcase' dist/ma
 # See sourceMapPublicUrl in webpack.config.mjs
 MINIFIED_PATH_PREFIX="$SOURCE_MAP_URL_BASE/$SOURCE_MAP_PATH/"
 
+echo "Uploading sourcemaps to Datadog for version [[$RELEASE_VERSION]] with minified path prefix [[$MINIFIED_PATH_PREFIX]]"
+
 # Upload to Datadog for viewing unminified sources in Datadog. Datadog does not appear to support import from an S3 URL
 # Because this command runs from a Git repo context, Datadog should also automatically link to our project from the UI.
 # Reference: https://docs.datadoghq.com/real_user_monitoring/guide/upload-javascript-source-maps/?tab=webpackjs
@@ -32,6 +34,6 @@ MINIFIED_PATH_PREFIX="$SOURCE_MAP_URL_BASE/$SOURCE_MAP_PATH/"
 # project-path is the prefix before src in the map: webpack:///./src/bricks/registry.ts
 npx --yes @datadog/datadog-ci sourcemaps upload ./dist \
   --service="pixiebrix-browser-extension" \
-  --release-version="$RELEASE_VERSION" \
+  --release-version=$RELEASE_VERSION \
   --minified-path-prefix="$MINIFIED_PATH_PREFIX" \
   --project-path="/./"
