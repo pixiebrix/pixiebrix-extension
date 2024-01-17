@@ -16,7 +16,7 @@
  */
 
 import { propertiesToSchema } from "@/validators/generic";
-import { isEqual, unary, uniq } from "lodash";
+import { isEmpty, isEqual, unary, uniq } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import { normalizeHeader } from "@/contrib/google/sheets/core/sheetsHelpers";
 import { sheets } from "@/background/messenger/api";
@@ -340,6 +340,16 @@ export class GoogleSheetsAppend extends EffectABC {
     let currentHeaders: string[];
     if (allRows.values) {
       currentHeaders = allRows.values[0]?.map(String) ?? [];
+
+      if (
+        isEmpty(currentHeaders) ||
+        currentHeaders.every((header) => isNullOrBlank(header))
+      ) {
+        throw new BusinessError(
+          "Header row not found. The first row of the sheet must contain header(s).",
+        );
+      }
+
       console.debug(
         `Found headers for ${tabName}: ${currentHeaders.join(", ")}`,
       );
