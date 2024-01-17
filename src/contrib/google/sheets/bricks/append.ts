@@ -272,7 +272,8 @@ export function checkForBlankIntermediateColumns(currentHeaders: string[]) {
   }
 }
 
-function checkForMissingValueHeaders(
+// Exported for testing
+export function checkForMissingValueHeaders(
   currentSheetHeaders: string[],
   valueHeaders: string[],
 ) {
