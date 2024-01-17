@@ -6,11 +6,7 @@ const config = configFactory(process.env, {});
 const knipConfig = {
   $schema: "https://unpkg.com/knip@3/schema.json",
   webpack: {
-    config: [
-      "webpack.config.mjs",
-      "scripts/webpack.scripts.js",
-      ".storybook/main.js",
-    ],
+    config: ["webpack.config.mjs", ".storybook/main.js"],
   },
   entry: [
     ...Object.values(config.entry).map((x) =>
@@ -28,6 +24,8 @@ const knipConfig = {
     "src/testUtils/FixJsdomEnvironment.js",
     // Script helpers
     "scripts/manifest.mjs",
+    // Content script entry point, init() is dynamically imported in src/contentScript/contentScript.ts
+    "src/contentScript/contentScriptCore.ts",
   ],
   project: ["src/**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"],
   // https://knip.dev/guides/handling-issues#mocks-and-other-implicit-imports
@@ -65,8 +63,6 @@ const knipConfig = {
     // Referenced in scss files
     "webext-base-css",
     "compass-mixins",
-    // Polyfills via ProvidePlugin aren't detected by webpack plugin
-    "min-document",
     // Not getting detected by webpack plugin for .storybook/main.js
     "style-loader",
     "@storybook/react-webpack5",
