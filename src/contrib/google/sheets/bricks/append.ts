@@ -34,6 +34,7 @@ import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
+import { type ValueRange } from "@/contrib/google/sheets/core/types";
 
 type CellValue = string | number | null;
 
@@ -321,14 +322,11 @@ export class GoogleSheetsAppend extends EffectABC {
       rows.flatMap((row) => row.map((x: Entry) => x.header)),
     );
 
-    let currentHeaders: string[];
+    let allRows: ValueRange;
     try {
-      currentHeaders = await sheets.getHeaders(target);
-      console.debug(
-        `Found headers for ${tabName}: ${currentHeaders.join(", ")}`,
-      );
+      allRows = await sheets.getAllRows(target);
     } catch (error) {
-      logger.warn(`Error retrieving headers: ${getErrorMessage(error)}`, {
+      logger.warn(`Error retrieving sheet rows: ${getErrorMessage(error)}`, {
         error,
       });
       if (isAuthError(error)) {
@@ -339,13 +337,19 @@ export class GoogleSheetsAppend extends EffectABC {
       await sheets.createTab(target);
     }
 
-    checkForBlankIntermediateColumns(currentHeaders);
-
-    if (!currentHeaders || currentHeaders.every((x) => isNullOrBlank(x))) {
-      logger.info(`Writing header row for ${tabName}`);
+    let currentHeaders: string[];
+    if (allRows.values) {
+      currentHeaders = allRows.values[0]?.map(String) ?? [];
+      console.debug(
+        `Found headers for ${tabName}: ${currentHeaders.join(", ")}`,
+      );
+    } else {
+      logger.info(`Sheet is empty, writing header row for ${tabName}`);
       await sheets.appendRows(target, [valueHeaders]);
       currentHeaders = valueHeaders;
     }
+
+    checkForBlankIntermediateColumns(currentHeaders);
 
     await sheets.appendRows(
       target,
