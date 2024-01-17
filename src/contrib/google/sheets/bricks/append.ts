@@ -33,6 +33,7 @@ import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
+import { type ValueRange } from "@/contrib/google/sheets/core/types";
 
 type CellValue = string | number | null;
 
@@ -377,6 +378,8 @@ export class GoogleSheetsAppend extends EffectABC {
     if (requireAllHeaders) {
       checkForMissingValueHeaders(currentSheetHeaders, valueHeaders);
     }
+
+    checkForBlankIntermediateColumns(currentHeaders);
 
     await sheets.appendRows(
       target,
