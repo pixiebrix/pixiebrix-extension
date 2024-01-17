@@ -169,6 +169,10 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
           </>
         )}
       </RequireGoogleSheet>
+      <SchemaField
+        name={joinName(blockConfigPath, "requireAllHeaders")}
+        schema={APPEND_SCHEMA.properties.requireAllHeaders as Schema}
+      />
     </div>
   );
 };
