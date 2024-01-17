@@ -153,12 +153,16 @@ function getPreviewComponentDefinition(
     case "button": {
       const buttonProps = { ...(config as ButtonDocumentConfig) };
       filterCssClassesForPreview(buttonProps);
+      const {
+        props: { children },
+      } = getComponentDefinition(previewElement, DUMMY_TRACE_PATH);
 
       return {
         Component: Button,
         props: {
           element: previewElement,
           buttonProps,
+          children,
         },
       };
     }

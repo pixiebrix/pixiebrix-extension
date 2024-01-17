@@ -37,7 +37,6 @@ import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTy
 import { isPipelineExpression } from "@/utils/expressionUtils";
 import { boolean } from "@/utils/typeUtils";
 import { joinPathParts } from "@/utils/formUtils";
-import getSvgIcon from "@/icons/getSvgIcon";
 import Icon from "@/icons/Icon";
 
 // Legacy header components, where each header type was a separate element
@@ -207,16 +206,14 @@ export function getComponentDefinition(
         disabled,
       } = config as ButtonDocumentConfig;
       if (onClick !== undefined && !isPipelineExpression(onClick)) {
-        console.debug("Expected pipeline expression for onClick", {
-          componentType: "button",
-          config,
-        });
         throw new BusinessError("Expected pipeline expression for onClick");
       }
 
       const buttonContent = (
         <>
-          <Icon icon={icon.id} library={icon.library} />
+          {icon && (
+            <Icon icon={icon.id} library={icon.library} className="mr-2" />
+          )}
           {title}
         </>
       );

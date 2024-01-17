@@ -27,6 +27,8 @@ const Icon: React.FunctionComponent<{
   library?: IconLibrary;
   size?: number;
   className?: string;
+  // TODO
+  // color?: string;
 }> = ({ icon, library, size = 16, className }) => {
   const { data: svg = "" } = useAsyncState(
     async () => getSvgIcon({ id: icon, library, size }),
