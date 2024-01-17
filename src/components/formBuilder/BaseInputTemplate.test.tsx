@@ -20,6 +20,7 @@ import BaseInputTemplate, {
   type StrictBaseInputTemplateProps,
 } from "@/components/formBuilder/BaseInputTemplate";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { type JSONSchema7 } from "json-schema";
 import React from "react";
 
@@ -142,5 +143,58 @@ describe("RJSF BaseInputTemplate Override", () => {
       "pattern",
       DEFAULT_NUMBER_REGEX_STRING,
     );
+  });
+
+  it.each([
+    [0, "0", "2", 2],
+    [1, "1", "2", 12],
+    [1.5, "1.5", "2", 1.52],
+    [1, "1", ".05", 1.05],
+    [-1, "-1", "2", -12],
+    [1.045e25, "1.045e+25", "2", 1.045e252],
+  ])(
+    "when number %d is passed as the value, it is converted to string %s; when the onChange is called with string %s, it is converted to number %d",
+    async (value, inputValue, typedValue, calledWith) => {
+      const schema = { title: "Number", type: "number" } as JSONSchema7;
+      const onChange = jest.fn();
+
+      render(
+        <BaseInputTemplate
+          {...getProps("number", schema)}
+          onChange={onChange}
+          value={value}
+        />,
+      );
+
+      expect(screen.getByRole("textbox")).toHaveValue(inputValue);
+
+      await userEvent.type(screen.getByRole("textbox"), typedValue);
+
+      expect(screen.getByRole("textbox")).toHaveValue(inputValue + typedValue);
+      expect(onChange).toHaveBeenCalledWith(calledWith);
+    },
+  );
+
+  it("numeric input does not lose decimal when the value is changed", async () => {
+    const schema = { title: "Number", type: "number" } as JSONSchema7;
+    const onChange = jest.fn();
+
+    render(
+      <BaseInputTemplate
+        {...getProps("number", schema)}
+        onChange={onChange}
+        value={1}
+      />,
+    );
+
+    expect(screen.getByRole("textbox")).toHaveValue("1");
+
+    await userEvent.type(screen.getByRole("textbox"), ".");
+    await userEvent.type(screen.getByRole("textbox"), "0");
+    await userEvent.type(screen.getByRole("textbox"), "5");
+
+    expect(screen.getByRole("textbox")).toHaveValue("1.05");
+
+    expect(onChange).toHaveBeenCalledWith(1.05);
   });
 });
