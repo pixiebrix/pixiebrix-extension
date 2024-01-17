@@ -30,7 +30,6 @@ import AsyncButton from "@/components/AsyncButton";
 import { useDispatch } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { reloadMarketplaceEnhancements as reloadMarketplaceEnhancementsInContentScript } from "@/contentScript/messenger/api";
-import { getAssociatedTarget } from "@/sidebar/sidePanel/messenger/api";
 import cx from "classnames";
 import { isEmpty } from "lodash";
 import ActivateModInputs from "@/sidebar/activateMod/ActivateModInputs";
@@ -53,6 +52,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
 import Markdown from "@/components/Markdown";
 import { getModActivationInstructions } from "@/utils/modUtils";
+import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 
 const { actions } = sidebarSlice;
 
@@ -109,7 +109,7 @@ const { setNeedsPermissions, activateStart, activateSuccess, activateError } =
   activationSlice.actions;
 
 async function reloadMarketplaceEnhancements() {
-  const topFrame = getAssociatedTarget();
+  const topFrame = await getTopFrameFromSidebar();
   // Make sure the content script has the most recent state of the store before reloading.
   // Prevents race condition where the content script reloads before the store is persisted.
   await persistor.flush();

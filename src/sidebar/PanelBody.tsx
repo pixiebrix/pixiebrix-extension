@@ -46,9 +46,9 @@ import DelayedRender from "@/components/DelayedRender";
 import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { getAssociatedTarget } from "@/sidebar/sidePanel/messenger/api";
 import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
+import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 
 // Used for the loading message
 // import cx from "classnames";
@@ -205,7 +205,7 @@ const PanelBody: React.FunctionComponent<{
               );
             }
 
-            const topLevelFrame = getAssociatedTarget();
+            const topLevelFrame = await getTopFrameFromSidebar();
 
             await runHeadlessPipeline(topLevelFrame, {
               nonce: uuidv4(),

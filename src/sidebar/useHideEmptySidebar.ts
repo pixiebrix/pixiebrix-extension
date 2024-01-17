@@ -16,7 +16,6 @@
  */
 
 import useAsyncEffect from "use-async-effect";
-import { getAssociatedTarget } from "@/sidebar/sidePanel/messenger/api";
 import { getReservedSidebarEntries } from "@/contentScript/messenger/api";
 import { useSelector } from "react-redux";
 import {
@@ -25,6 +24,7 @@ import {
 } from "@/sidebar/sidebarSelectors";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { closeSelf } from "@/sidebar/protocol";
+import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 
 /**
  * Hide the sidebar if there are no visible panels. We use this to close the sidebar if the user closes all panels.
@@ -35,9 +35,8 @@ export const useHideEmptySidebar = () => {
 
   useAsyncEffect(
     async (isMounted) => {
-      const reservedPanelEntries = await getReservedSidebarEntries(
-        getAssociatedTarget(),
-      );
+      const topFrame = await getTopFrameFromSidebar();
+      const reservedPanelEntries = await getReservedSidebarEntries(topFrame);
 
       // We don't want to hide the Sidebar if there are any open reserved panels.
       // Otherwise, we would hide the Sidebar when a user re-renders a panel, e.g. when using
@@ -49,7 +48,7 @@ export const useHideEmptySidebar = () => {
       ].filter((panel) => panel && !closedTabs[eventKeyForEntry(panel)]);
 
       if (
-        isMounted &&
+        isMounted() &&
         visiblePanelCount === 0 &&
         openReservedPanels.length === 0
       ) {

@@ -24,7 +24,9 @@ import {
 } from "@/tinyPages/restrictedUrlPopupConstants";
 import { isScriptableUrl } from "webext-content-scripts";
 
-function getRestrictedPageMessage(tabUrl: string | undefined): string | null {
+export function getRestrictedPageMessage(
+  tabUrl: string | undefined,
+): string | null {
   const popoverUrl = browser.runtime.getURL("restrictedUrlPopup.html");
 
   if (tabUrl?.startsWith(getExtensionConsoleUrl())) {

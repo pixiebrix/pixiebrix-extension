@@ -50,7 +50,7 @@ import {
 import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineExpression } from "@/utils/expressionUtils";
 import { isContentScript } from "webext-detect-page";
-import { getAssociatedTarget } from "@/sidebar/sidePanel/messenger/api";
+import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 import { getTopLevelFrame } from "webext-messenger";
 import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
@@ -346,7 +346,7 @@ class UserDefinedBrick extends BrickABC {
 
     // TODO: call top-level contentScript directly after https://github.com/pixiebrix/webext-messenger/issues/72
     const topLevelFrame = isBrowserSidebar()
-      ? getAssociatedTarget()
+      ? await getTopFrameFromSidebar()
       : await getTopLevelFrame();
 
     try {

@@ -30,12 +30,12 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { runMapArgs } from "@/contentScript/messenger/api";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { getAssociatedTarget } from "@/sidebar/sidePanel/messenger/api";
 import useAsyncState from "@/hooks/useAsyncState";
 import DelayedRender from "@/components/DelayedRender";
 import { isDeferExpression } from "@/utils/expressionUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinPathParts } from "@/utils/formUtils";
+import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 
 type DocumentListProps = {
   array: UnknownObject[];
@@ -66,7 +66,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
     isLoading,
     error,
   } = useAsyncState(async () => {
-    const topLevelFrame = getAssociatedTarget();
+    const topLevelFrame = await getTopFrameFromSidebar();
 
     const elementVariableReference = `@${elementKey}`;
 

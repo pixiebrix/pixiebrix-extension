@@ -18,11 +18,16 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
-import { updateSidebar } from "@/contentScript/sidebarController";
+import {
+  updateSidebar,
+  hideSidebar,
+  showSidebar,
+} from "@/contentScript/sidebarController";
 import { showMySidePanel } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { logPromiseDuration } from "@/utils/promiseUtils";
 import sidebarInThisTab from "@/sidebar/messenger/api";
+import { isMV3 } from "@/mv3/api";
 
 export class ShowSidebar extends EffectABC {
   constructor() {
@@ -65,7 +70,12 @@ export class ShowSidebar extends EffectABC {
   ): Promise<void> {
     // Don't pass extensionId here because the extensionId in showOptions refers to the extensionId of the panel,
     // not the extensionId of the extension toggling the sidebar
-    await showMySidePanel();
+    if (isMV3()) {
+      await showMySidePanel();
+    } else {
+      await showSidebar();
+    }
+
     void logPromiseDuration(
       "ShowSidebar:updateSidebar",
       updateSidebar({
@@ -89,6 +99,10 @@ export class HideSidebar extends EffectABC {
   inputSchema: Schema = SCHEMA_EMPTY_OBJECT;
 
   async effect(): Promise<void> {
-    sidebarInThisTab.close();
+    if (isMV3()) {
+      sidebarInThisTab.close();
+    } else {
+      hideSidebar();
+    }
   }
 }
