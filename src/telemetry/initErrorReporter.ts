@@ -50,7 +50,7 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
   // `async` to fetch person information from localStorage
 
   if (isContentScript()) {
-    // The contentScript cannot not make requests directly to Rollbar because the site's CSP might not support it
+    // The contentScript cannot not make requests directly to Application error telemetry because the site's CSP might not support it
     console.warn("Unsupported call to initErrorReporter in the contentScript");
     return;
   }
@@ -67,11 +67,7 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
   try {
     addAuthListener(updatePerson);
 
-    // NOTE: we aren't passing ignoredMessages, because we are applying our own filtering in reportUncaughtErrors and
-    // reportError
-    // https://docs.rollbar.com/docs/reduce-noisy-javascript-errors#ignore-certain-types-of-messages
-    //
-    // @since 1.7.40 - We need to hard-filter out the ResizeObserver loop errors because they are flooding Rollbar
+    // @since 1.7.40 - We need to hard-filter out the ResizeObserver loop errors because they are flooding Application error telemetry
 
     const { version_name } = browser.runtime.getManifest();
 
@@ -81,9 +77,6 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
       env: ENVIRONMENT,
       version: cleanDatadogVersionName(version_name),
       site: "datadoghq.com",
-      // NOTE: we are excluding captureUncaught and captureUnhandledRejections because we set our own handlers for that in
-      // reportUncaughtErrors. The default for Datadog is true
-      // https://docs.rollbar.com/docs/rollbarjs-configuration-reference#:~:text=captureEmail-,captureUncaught,-This%20determines%20whether
       forwardErrorsToLogs: false,
       // Record all sessions because it's error telemetry
       sessionSampleRate: 100,
@@ -91,6 +84,7 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
       telemetrySampleRate: 0,
       // https://docs.datadoghq.com/logs/log_collection/javascript/#scrub-sensitive-data-from-your-browser-logs
       beforeSend(event: LogsEvent): Nullishable<boolean> {
+        // NOTE: we are also applying filtering in reportUncaughtErrors and reportError
         if (
           IGNORED_MESSAGES.some((ignoredMessage) =>
             ignoredMessage.test(event.message),
@@ -133,7 +127,7 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
   }
 }
 
-// OK to memoize. The addAuthListener will modify the Rollbar instance in place
+// OK to memoize. The addAuthListener will modify the error reporter instance in place
 // As of pMemoize 7.0.0, pMemoize does not cache rejections by default
 // https://github-redirect.dependabot.com/sindresorhus/p-memoize/pull/48
 export const getErrorReporter = pMemoize(initErrorReporter);

@@ -116,24 +116,24 @@ describe("logging", () => {
     ]);
   });
 
-  test("allow rollbar reporting", async () => {
+  test("allow Application error telemetry reporting", async () => {
     flagOnMock.mockResolvedValue(false);
 
     await reportToApplicationErrorTelemetry(new Error("test"), null, null);
 
     expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
-      "rollbar-disable-report",
+      "application-error-telemetry-disable-report",
     );
     expect(reportErrorMock).toHaveBeenCalledOnce();
   });
 
-  test("disable rollbar reporting", async () => {
+  test("disable Application error telemetry reporting", async () => {
     flagOnMock.mockResolvedValue(true);
 
     await reportToApplicationErrorTelemetry(new Error("test"), null, null);
 
     expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
-      "rollbar-disable-report",
+      "application-error-telemetry-disable-report",
     );
     expect(reportErrorMock).not.toHaveBeenCalled();
   });
@@ -150,7 +150,7 @@ const stacks = [
   "TypeError: Low level error\n    at atob (charmander.js:1:1)",
 ];
 
-describe("flattenStackForRollbar", () => {
+describe("flattenStackForDatadog", () => {
   test("preserves the stack unchanged if there's no cause", () => {
     expect(flattenStackForDatadog(stacks[0])).toMatchInlineSnapshot(`
       "ContextError: High level error

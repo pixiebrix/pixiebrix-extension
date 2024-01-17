@@ -357,18 +357,17 @@ export function flattenStackForDatadog(stack: string, cause?: unknown): string {
  * It's only exported for testing.
  */
 export async function reportToApplicationErrorTelemetry(
-  // Ensure it's an Error instance before passing it to Rollbar so rollbar treats it as the error.
-  // (It treats POJO as the custom data)
-  // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
+  // Ensure it's an Error instance before passing it to Application error telemetry so Application error telemetry
+  // treats it as the error. Note, Rollbar, treats POJO as the custom data.
   error: Error,
   flatContext: MessageContext,
   message: string,
 ): Promise<void> {
-  // Business errors are now sent to the PixieBrix error service instead of Rollbar - see reportToErrorService
+  // Business errors are now sent to the PixieBrix error service instead of the Application error service - see reportToErrorService
   if (
     hasSpecificErrorCause(error, BusinessError) ||
-    // `rollbar-disable-report` is a kill switch for error telemetry
-    (await flagOn("rollbar-disable-report"))
+    // `application-error-telemetry-disable-report` is a kill switch for Application error telemetry
+    (await flagOn("application-error-telemetry-disable-report"))
   ) {
     return;
   }
