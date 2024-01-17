@@ -19,7 +19,6 @@ import React from "react";
 import { render, screen } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -34,6 +33,7 @@ import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactor
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
+import { UIPATH_ID } from "@/contrib/uipath/process";
 
 setContext("devToolsPage");
 

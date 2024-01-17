@@ -41,14 +41,10 @@ const knipConfig = {
     "src/testUtils/renderWithCommonStore.ts",
     // Polyfills
     "src/vendors/process.js",
-    // Aliases defined in tsconfig.json
-    "src/contrib/uipath/quietLogger.ts",
     // Development/debugging helpers
     "src/development/hooks/**",
     // Vendor files, to keep parity with upstream
     "src/vendors/page-metadata-parser/**",
-    // False positive - dynamically imported in initRobot
-    "src/contrib/uipath/UiPathRobot.ts",
   ],
   ignoreDependencies: [
     // Browser environment types
