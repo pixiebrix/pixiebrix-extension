@@ -212,13 +212,16 @@ export function getComponentDefinition(
       const buttonContent = (
         <>
           {icon && (
-            <Icon icon={icon.id} library={icon.library} className="mr-2" />
+            <Icon
+              icon={icon.id}
+              library={icon.library}
+              className="mr-2"
+              color="currentColor"
+            />
           )}
           {title}
         </>
       );
-
-      console.log("*** button content", buttonContent);
 
       return {
         Component: ButtonElement,
