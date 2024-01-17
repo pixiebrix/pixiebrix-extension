@@ -65,7 +65,6 @@ function useNumericInput<T, S, F>({
   const inputProps: FormControlProps & {
     step?: number | "any";
     inputMode?: "numeric";
-    pattern?: string;
   } = {
     ...extraProps,
     ...getInputProps<T, S, F>(schema, type, options),
@@ -131,6 +130,7 @@ export default function BaseInputTemplate<
 
     if (
       inputProps.inputMode === "numeric" &&
+      // Tried to pass regex as a pattern, but it didn't prevent invalid keystrokes
       DEFAULT_NUMBER_REGEX.test(value)
     ) {
       setStoredValue(value);
