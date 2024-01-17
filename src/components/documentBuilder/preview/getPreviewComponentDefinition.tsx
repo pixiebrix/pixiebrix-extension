@@ -154,7 +154,7 @@ function getPreviewComponentDefinition(
       const buttonProps = { ...(config as ButtonDocumentConfig) };
       filterCssClassesForPreview(buttonProps);
       const {
-        props: { children },
+        props: { children, tooltip },
       } = getComponentDefinition(previewElement, DUMMY_TRACE_PATH);
 
       return {
@@ -163,6 +163,7 @@ function getPreviewComponentDefinition(
           element: previewElement,
           buttonProps,
           children,
+          title: tooltip,
         },
       };
     }
