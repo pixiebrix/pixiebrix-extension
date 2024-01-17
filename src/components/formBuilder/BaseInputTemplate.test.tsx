@@ -210,4 +210,25 @@ describe("RJSF BaseInputTemplate Override", () => {
 
     expect(onChange).toHaveBeenCalledWith(1.05);
   });
+
+  it("numeric input can be cleared", async () => {
+    const schema = { title: "Number", type: "number" } as JSONSchema7;
+    const onChange = jest.fn();
+
+    render(
+      <BaseInputTemplate
+        {...getProps("number", schema)}
+        onChange={onChange}
+        value={1}
+      />,
+    );
+
+    expect(screen.getByRole("textbox")).toHaveValue("1");
+
+    await userEvent.type(screen.getByRole("textbox"), "{backspace}");
+
+    expect(screen.getByRole("textbox")).toHaveValue("");
+
+    expect(onChange).toHaveBeenCalledWith(Number.NaN);
+  });
 });

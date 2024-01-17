@@ -41,7 +41,7 @@ export interface StrictBaseInputTemplateProps<
 }
 
 // eslint-disable-next-line security/detect-unsafe-regex
-export const DEFAULT_NUMBER_REGEX = /^-?\d+(?:\.\d*)?(?:[Ee][+-]?\d*)?$/;
+export const DEFAULT_NUMBER_REGEX = /^-?\d*(?:\.\d*)?(?:[Ee][+-]?\d*)?$/;
 
 /* @since 1.8.7
  * Used for number inputs to store the value as a string
