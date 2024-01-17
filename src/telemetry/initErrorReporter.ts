@@ -33,7 +33,7 @@ const ENVIRONMENT = process.env.ENVIRONMENT;
 const APPLICATION_ID = process.env.DATADOG_APPLICATION_ID;
 const CLIENT_TOKEN = process.env.DATADOG_CLIENT_TOKEN;
 
-const IGNORED_MESSAGES = [/ResizeObserver loop/];
+const ALWAYS_IGNORED_ERROR_PATTERNS = [/ResizeObserver loop/];
 
 interface ErrorReporter {
   error(args: {
@@ -85,9 +85,12 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
       // https://docs.datadoghq.com/logs/log_collection/javascript/#scrub-sensitive-data-from-your-browser-logs
       beforeSend(event: LogsEvent): Nullishable<boolean> {
         // NOTE: we are also applying filtering in reportUncaughtErrors and reportError
+
+        // Need to filter out here, instead of using IGNORED_ERROR_PATTERNS, because these patterns have context and
+        // patterns with context are not ignored, see shouldErrorBeIgnored.
         if (
-          IGNORED_MESSAGES.some((ignoredMessage) =>
-            ignoredMessage.test(event.message),
+          ALWAYS_IGNORED_ERROR_PATTERNS.some((pattern) =>
+            pattern.test(event.message),
           )
         ) {
           return false;
