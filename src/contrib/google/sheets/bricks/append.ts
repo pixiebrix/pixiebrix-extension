@@ -20,7 +20,6 @@ import { isEmpty, isEqual, unary, uniq } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import { normalizeHeader } from "@/contrib/google/sheets/core/sheetsHelpers";
 import { sheets } from "@/background/messenger/api";
-import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
   GOOGLE_OAUTH2_PKCE_INTEGRATION_ID,
@@ -34,21 +33,20 @@ import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
-import { type ValueRange } from "@/contrib/google/sheets/core/types";
 
 type CellValue = string | number | null;
 
-type Entry = {
+export type Entry = {
   header: string;
   value: CellValue;
 };
 
-type RowValues =
+export type RowValues =
   | Record<string, CellValue>
   | Array<Record<string, CellValue>>
   | Entry[];
 type KnownShape = "entries" | "multi" | "single";
-type Shape = KnownShape | "infer";
+export type Shape = KnownShape | "infer";
 
 export const APPEND_SCHEMA: Schema = propertiesToSchema(
   {
@@ -157,10 +155,6 @@ function makeRowCells(headerRow: string[], rowEntries: Entry[]): CellValue[] {
 export const GOOGLE_SHEETS_APPEND_ID = validateRegistryId(
   "@pixiebrix/google/sheets-append",
 );
-
-function isAuthError(error: unknown): boolean {
-  return isObject(error) && [404, 401, 403].includes(error.code as number);
-}
 
 export function detectShape(rowValues: RowValues): KnownShape {
   if (Array.isArray(rowValues)) {
@@ -322,21 +316,15 @@ export class GoogleSheetsAppend extends EffectABC {
       rows.flatMap((row) => row.map((x: Entry) => x.header)),
     );
 
-    let allRows: ValueRange;
-    try {
-      allRows = await sheets.getAllRows(target);
-    } catch (error) {
-      logger.warn(`Error retrieving sheet rows: ${getErrorMessage(error)}`, {
-        error,
-      });
-      if (isAuthError(error)) {
-        throw error;
-      }
-
+    const spreadsheet = await sheets.getSpreadsheet(target);
+    if (
+      !spreadsheet.sheets.some((sheet) => sheet.properties.title === tabName)
+    ) {
       logger.info(`Creating tab ${tabName}`);
       await sheets.createTab(target);
     }
 
+    const allRows = await sheets.getAllRows(target);
     let currentHeaders: string[];
     if (allRows.values) {
       currentHeaders = allRows.values[0]?.map(String) ?? [];
