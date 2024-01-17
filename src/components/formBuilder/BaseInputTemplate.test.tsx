@@ -152,6 +152,7 @@ describe("RJSF BaseInputTemplate Override", () => {
     [1, "1", ".05", 1.05],
     [-1, "-1", "2", -12],
     [1.045e25, "1.045e+25", "2", 1.045e252],
+    [undefined, "", "2", 2],
   ])(
     "when number %d is passed as the value, it is converted to string %s; when the onChange is called with string %s, it is converted to number %d",
     async (value, inputValue, typedValue, calledWith) => {
