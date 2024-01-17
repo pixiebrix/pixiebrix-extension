@@ -38,6 +38,7 @@ import { isPipelineExpression } from "@/utils/expressionUtils";
 import { boolean } from "@/utils/typeUtils";
 import { joinPathParts } from "@/utils/formUtils";
 import Icon from "@/icons/Icon";
+import cx from "classnames";
 
 // Legacy header components, where each header type was a separate element
 const HEADER_COMPONENTS = {
@@ -215,7 +216,7 @@ export function getComponentDefinition(
             <Icon
               icon={icon.id}
               library={icon.library}
-              className="mr-2"
+              className={cx({ "mr-2": Boolean(title) })}
               color="currentColor"
               size="1em"
             />
