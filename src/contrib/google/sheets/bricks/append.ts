@@ -124,6 +124,12 @@ export const APPEND_SCHEMA: Schema = propertiesToSchema(
       description: "Validate that all submitted headers exist in the sheet",
       default: true,
     },
+    requireSheetIsVisible: {
+      type: "boolean",
+      title: "Require Visible Sheet",
+      description: "Validate that the target sheet is not hidden",
+      default: true,
+    },
   },
   // For backwards compatibility, googleAccount is not required
   ["spreadsheetId", "tabName", "rowValues"],
@@ -333,6 +339,7 @@ export class GoogleSheetsAppend extends EffectABC {
       rowValues: rawValues = {},
       requireAllHeaders = false,
       requireOnlyKnownHeaders = false,
+      requireSheetIsVisible = false,
     }: BrickArgs<{
       googleAccount?: SanitizedIntegrationConfig | undefined;
       spreadsheetId: string | SanitizedIntegrationConfig;
@@ -341,6 +348,7 @@ export class GoogleSheetsAppend extends EffectABC {
       rowValues: RowValues;
       requireAllHeaders: boolean;
       requireOnlyKnownHeaders: boolean;
+      requireSheetIsVisible: boolean;
     }>,
     { logger }: BrickOptions,
   ): Promise<void> {
@@ -368,11 +376,17 @@ export class GoogleSheetsAppend extends EffectABC {
     );
 
     const spreadsheet = await sheets.getSpreadsheet(target);
-    if (
-      !spreadsheet.sheets.some((sheet) => sheet.properties.title === tabName)
-    ) {
+    const sheet = spreadsheet.sheets.find(
+      (sheet) => sheet.properties.title === tabName,
+    );
+
+    if (!sheet) {
       logger.info(`Creating tab ${tabName}`);
       await sheets.createTab(target);
+    } else if (requireSheetIsVisible && sheet.properties.hidden) {
+      throw new BusinessError(
+        `Sheet ${tabName} is hidden. Please unhide the sheet or disable the "Require Visible Sheet" brick config option.`,
+      );
     }
 
     const allRows = await sheets.getAllRows(target);
