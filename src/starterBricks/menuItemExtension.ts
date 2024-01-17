@@ -730,6 +730,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
             extensionLogger.error(error);
             showNotification({
               ...DEFAULT_ACTION_RESULTS.error,
+              error, // Include more details in the notification
               ...pick(onError, "message", "type"),
             });
           }

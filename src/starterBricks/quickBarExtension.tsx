@@ -255,7 +255,10 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
             showNotification(DEFAULT_ACTION_RESULTS.cancel);
           } else {
             extensionLogger.error(error);
-            showNotification(DEFAULT_ACTION_RESULTS.error);
+            showNotification({
+              ...DEFAULT_ACTION_RESULTS.error,
+              error, // Include more details in the notification
+            });
           }
         }
       },
