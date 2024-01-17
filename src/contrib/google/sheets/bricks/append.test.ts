@@ -17,6 +17,7 @@
 
 import {
   checkForBlankIntermediateColumns,
+  checkForMissingValueHeaders,
   detectShape,
   type Entry,
   GoogleSheetsAppend,
@@ -111,6 +112,39 @@ describe("checkForBlankIntermediateColumns", () => {
     expect(() => {
       checkForBlankIntermediateColumns(["foo", "", "bar"]);
     }).toThrow();
+  });
+});
+
+describe("checkForMissingValueHeaders", () => {
+  it("passes for matching headers", () => {
+    expect(() => {
+      checkForMissingValueHeaders(
+        ["header1", "header2"],
+        ["header1", "header2"],
+      );
+    }).not.toThrow();
+  });
+
+  it("passes with extra value headers", () => {
+    expect(() => {
+      checkForMissingValueHeaders(
+        ["header1", "header2"],
+        ["header1", "header2", "header3"],
+      );
+    }).not.toThrow();
+  });
+
+  it("throws error when there is a missing value header", () => {
+    expect(() => {
+      checkForMissingValueHeaders(
+        ["header1", "header2", "header3"],
+        ["header1", "header2"],
+      );
+    }).toThrow(
+      expect.objectContaining({
+        message: expect.stringContaining("header3"),
+      }),
+    );
   });
 });
 
