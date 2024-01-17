@@ -16,6 +16,7 @@
  */
 
 import {
+  checkForBlankIntermediateColumns,
   detectShape,
   normalizeShape,
 } from "@/contrib/google/sheets/bricks/append";
@@ -71,5 +72,31 @@ describe("Normalize shape", () => {
         { header: "column B", value: "Bar" },
       ],
     ]);
+  });
+});
+
+describe("checkForBlankIntermediateColumns", () => {
+  it("passes for empty headers", () => {
+    expect(() => {
+      checkForBlankIntermediateColumns([]);
+    }).not.toThrow();
+  });
+
+  it("passes for valid headers", () => {
+    expect(() => {
+      checkForBlankIntermediateColumns(["foo", "bar"]);
+    }).not.toThrow();
+  });
+
+  it("passes with blank starting columns", () => {
+    expect(() => {
+      checkForBlankIntermediateColumns(["", "foo", "bar"]);
+    }).not.toThrow();
+  });
+
+  it("throws error when there is a blank header", () => {
+    expect(() => {
+      checkForBlankIntermediateColumns(["foo", "", "bar"]);
+    }).toThrow();
   });
 });
