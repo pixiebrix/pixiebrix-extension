@@ -7,7 +7,7 @@ on:
       - "release/**"
 
 env:
-  # Creates and uploads sourcemaps to Rollbar, and save the built extension as an artifact
+  # Creates and uploads sourcemaps to Application error telemetry, and save the built extension as an artifact
   PUBLIC_RELEASE: true
 
 jobs:
@@ -45,11 +45,10 @@ jobs:
           DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
       - run: bash scripts/upload-sourcemaps.sh
         env:
-          # TODO: need to figure out how to ping Datadog with the sourcemaps
-          # https://docs.datadoghq.com/real_user_monitoring/guide/upload-javascript-source-maps/?tab=webpackjs
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
           AWS_DEFAULT_REGION: "us-east-2"
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
       - name: Delete local sourcemaps
         run: find dist -name '*.map' -delete
       - name: Save store extension
