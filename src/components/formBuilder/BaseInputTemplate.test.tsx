@@ -16,7 +16,6 @@
  */
 
 import BaseInputTemplate, {
-  DEFAULT_NUMBER_REGEX_STRING,
   type StrictBaseInputTemplateProps,
 } from "@/components/formBuilder/BaseInputTemplate";
 import { render, screen } from "@testing-library/react";
@@ -139,10 +138,6 @@ describe("RJSF BaseInputTemplate Override", () => {
     expect(screen.getByRole("textbox")).toBeInTheDocument();
     expect(screen.getByRole("textbox")).toHaveAttribute("type", "text");
     expect(screen.getByRole("textbox")).toHaveAttribute("inputMode", "numeric");
-    expect(screen.getByRole("textbox")).toHaveAttribute(
-      "pattern",
-      DEFAULT_NUMBER_REGEX_STRING,
-    );
   });
 
   it.each([
@@ -153,6 +148,7 @@ describe("RJSF BaseInputTemplate Override", () => {
     [-1, "-1", "2", -12],
     [1.045e25, "1.045e+25", "2", 1.045e252],
     [undefined, "", "2", 2],
+    [1.045, "1.045", "e25", 1.045e25],
   ])(
     "when number %d is passed as the value, it is converted to string %s; when the onChange is called with string %s, it is converted to number %d",
     async (value, inputValue, typedValue, calledWith) => {
@@ -175,6 +171,22 @@ describe("RJSF BaseInputTemplate Override", () => {
       expect(onChange).toHaveBeenCalledWith(calledWith);
     },
   );
+
+  it("numeric input ignores keystrokes that are not valid numbers", async () => {
+    const schema = { title: "Number", type: "number" } as JSONSchema7;
+    const onChange = jest.fn();
+
+    render(
+      <BaseInputTemplate {...getProps("number", schema)} onChange={onChange} />,
+    );
+
+    expect(screen.getByRole("textbox")).toHaveValue("");
+
+    await userEvent.type(screen.getByRole("textbox"), "abc123");
+
+    expect(screen.getByRole("textbox")).toHaveValue("123");
+    expect(onChange).toHaveBeenCalledWith(123);
+  });
 
   it("numeric input does not lose decimal when the value is changed", async () => {
     const schema = { title: "Number", type: "number" } as JSONSchema7;

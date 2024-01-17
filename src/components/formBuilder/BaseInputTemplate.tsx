@@ -40,8 +40,8 @@ export interface StrictBaseInputTemplateProps<
   value: string | number;
 }
 
-export const DEFAULT_NUMBER_REGEX_STRING =
-  "-?\\d+(?:\\.\\d+)?(?:[Ee][+-]?\\d+)?";
+// eslint-disable-next-line security/detect-unsafe-regex
+export const DEFAULT_NUMBER_REGEX = /^-?\d+(?:\.\d*)?(?:[Ee][+-]?\d*)?$/;
 
 /* @since 1.8.7
  * Used for number inputs to store the value as a string
@@ -78,7 +78,6 @@ function useNumericInput<T, S, F>({
     inputProps.step = undefined;
     inputProps.type = "text";
     inputProps.inputMode = "numeric";
-    inputProps.pattern = DEFAULT_NUMBER_REGEX_STRING;
   }
 
   return { storedValue, setStoredValue, inputProps };
@@ -130,7 +129,10 @@ export default function BaseInputTemplate<
   const _onChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     let _value: string | number = value;
 
-    if (inputProps.inputMode === "numeric") {
+    if (
+      inputProps.inputMode === "numeric" &&
+      DEFAULT_NUMBER_REGEX.test(value)
+    ) {
       setStoredValue(value);
       _value = Number.parseFloat(value);
     }
