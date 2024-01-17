@@ -28,12 +28,13 @@ import {
 } from "@rjsf/utils";
 import React from "react";
 import { FormControl, type FormControlProps } from "react-bootstrap";
+import { type UnknownObject } from "@/types/objectTypes";
 
 // RJSF's BaseInputTemplateProps is overly permissive. Tightening it up here.
 export interface StrictBaseInputTemplateProps<
   T = HTMLInputElement,
   S extends StrictRJSFSchema = RJSFSchema,
-  F extends FormContextType = unknown,
+  F extends FormContextType = UnknownObject,
 > extends BaseInputTemplateProps<T, S, F> {
   extraProps?: InputPropsType;
   type?: string;
@@ -47,7 +48,11 @@ export const DEFAULT_NUMBER_REGEX = /^-?\d*(?:\.\d*)?(?:[Ee][+-]?\d*)?$/;
  * Used for number inputs to store the value as a string
  * to avoid losing decimals during the conversion to number
  */
-function useNumericInput<T, S, F>({
+function useNumericInput<
+  T = HTMLInputElement,
+  S extends StrictRJSFSchema = RJSFSchema,
+  F extends FormContextType = UnknownObject,
+>({
   value,
   extraProps,
   schema,
@@ -55,9 +60,9 @@ function useNumericInput<T, S, F>({
   options,
 }: {
   value: string | number;
-  extraProps: InputPropsType;
+  extraProps?: InputPropsType;
   schema: S;
-  type: string;
+  type?: string;
   options: StrictBaseInputTemplateProps<T, S, F>["options"];
 }) {
   const [storedValue, setStoredValue] = useState(value?.toString() ?? "");
@@ -97,7 +102,7 @@ function getValue(
 export default function BaseInputTemplate<
   T = HTMLInputElement,
   S extends StrictRJSFSchema = RJSFSchema,
-  F extends FormContextType = unknown,
+  F extends FormContextType = UnknownObject,
 >({
   id,
   placeholder,

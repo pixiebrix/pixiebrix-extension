@@ -531,6 +531,7 @@
     "./vendors/reactPerformanceTesting/utils/pushTask.ts",
     "./vendors/reactPerformanceTesting/utils/shouldTrack.ts",
     "./vendors/reactPerformanceTesting/utils/symbols.ts",
-    "./vendors/validateUuid.ts"
+    "./vendors/validateUuid.ts",
+    "./components/formBuilder/BaseInputTemplate.tsx"
   ]
 }
