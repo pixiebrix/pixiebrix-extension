@@ -39,7 +39,7 @@ import {
   marketplaceListingFactory,
   modDefinitionToMarketplacePackage,
 } from "@/testUtils/factories/marketplaceFactories";
-import * as messengerApi from "@/contentScript/messenger/api";
+import sidebarInThisTab from "@/sidebar/messenger/api";
 import ActivateMultipleModsPanel from "@/sidebar/activateMod/ActivateMultipleModsPanel";
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
@@ -63,7 +63,8 @@ const useRequiredModDefinitionsMock = jest.mocked(useRequiredModDefinitions);
 const checkModDefinitionPermissionsMock = jest.mocked(
   checkModDefinitionPermissions,
 );
-const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
+
+const hideSidebarSpy = jest.spyOn(sidebarInThisTab, "close");
 
 jest.mock("@/starterBricks/starterBrickModUtils", () => {
   const actualUtils = jest.requireActual(

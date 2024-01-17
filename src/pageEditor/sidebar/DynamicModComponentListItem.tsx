@@ -30,8 +30,9 @@ import { type UUID } from "@/types/stringTypes";
 import {
   disableOverlay,
   enableOverlay,
-  showSidebar,
+  updateSidebar,
 } from "@/contentScript/messenger/api";
+import { openSidePanel } from "@/sidebar/sidePanel/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import reportEvent from "@/telemetry/reportEvent";
@@ -154,7 +155,7 @@ const DynamicModComponentListItem: React.FunctionComponent<
           : undefined
       }
       onMouseLeave={isButton ? async () => hideOverlay() : undefined}
-      onClick={() => {
+      onClick={async () => {
         reportEvent(Events.PAGE_EDITOR_OPEN, {
           sessionId,
           extensionId: modComponentFormState.uuid,
@@ -165,7 +166,8 @@ const DynamicModComponentListItem: React.FunctionComponent<
         if (modComponentFormState.type === "actionPanel") {
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
           // frequently between extensions within the same blueprint.
-          void showSidebar(thisTab, {
+          await openSidePanel(chrome.devtools.inspectedWindow.tabId);
+          updateSidebar(thisTab, {
             extensionId: modComponentFormState.uuid,
             force: true,
             refresh: false,

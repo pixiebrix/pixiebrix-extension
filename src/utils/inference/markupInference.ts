@@ -18,7 +18,6 @@
 import {
   CONTENT_SCRIPT_READY_ATTRIBUTE,
   EXTENSION_POINT_DATA_ATTR,
-  PANEL_FRAME_ID,
   PIXIEBRIX_DATA_ATTR,
 } from "@/domConstants";
 import { BUTTON_TAGS, UNIQUE_ATTRIBUTES } from "./selectorInference";
@@ -74,8 +73,6 @@ const TEMPLATE_ATTR_EXCLUDE_PATTERNS = [
 ];
 const TEMPLATE_VALUE_EXCLUDE_PATTERNS = new Map<string, RegExp[]>([
   ["class", [/^ember-view$/]],
-  // eslint-disable-next-line security/detect-non-literal-regexp -- Our variables
-  ["id", [new RegExp(`^${PANEL_FRAME_ID}$`)]],
 ]);
 
 class SkipElement extends Error {

@@ -16,17 +16,15 @@
  */
 
 import useAsyncEffect from "use-async-effect";
-import { getTopLevelFrame } from "webext-messenger";
-import {
-  getReservedSidebarEntries,
-  hideSidebar,
-} from "@/contentScript/messenger/api";
+import { getAssociatedTarget } from "@/sidebar/sidePanel/messenger/api";
+import { getReservedSidebarEntries } from "@/contentScript/messenger/api";
 import { useSelector } from "react-redux";
 import {
   selectClosedTabs,
   selectVisiblePanelCount,
 } from "@/sidebar/sidebarSelectors";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import { closeSelf } from "@/sidebar/protocol";
 
 /**
  * Hide the sidebar if there are no visible panels. We use this to close the sidebar if the user closes all panels.
@@ -37,8 +35,9 @@ export const useHideEmptySidebar = () => {
 
   useAsyncEffect(
     async (isMounted) => {
-      const topFrame = await getTopLevelFrame();
-      const reservedPanelEntries = await getReservedSidebarEntries(topFrame);
+      const reservedPanelEntries = await getReservedSidebarEntries(
+        getAssociatedTarget(),
+      );
 
       // We don't want to hide the Sidebar if there are any open reserved panels.
       // Otherwise, we would hide the Sidebar when a user re-renders a panel, e.g. when using
@@ -54,8 +53,7 @@ export const useHideEmptySidebar = () => {
         visiblePanelCount === 0 &&
         openReservedPanels.length === 0
       ) {
-        const topLevelFrame = await getTopLevelFrame();
-        void hideSidebar(topLevelFrame);
+        await closeSelf();
       }
     },
     [visiblePanelCount],

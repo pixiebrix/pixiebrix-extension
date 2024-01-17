@@ -199,7 +199,7 @@ export async function runRendererBlock({
     }
 
     if (location === "panel") {
-      showTemporarySidebarPanel({
+      await showTemporarySidebarPanel({
         // Pass extension id so previous run is cancelled
         extensionId,
         blueprintId,

@@ -18,10 +18,10 @@
 import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import {
-  ensureSidebar,
-  HIDE_SIDEBAR_EVENT_NAME,
+  showSidebar,
   hideModActivationInSidebar,
   showModActivationInSidebar,
+  onSidePanelClosure,
 } from "@/contentScript/sidebarController";
 import { isLinked } from "@/auth/token";
 import {
@@ -57,22 +57,16 @@ async function showSidebarActivationForMods(
 ): Promise<void> {
   const controller = new AbortController();
 
-  await ensureSidebar();
-  showModActivationInSidebar({
+  await showSidebar();
+  await showModActivationInSidebar({
     modIds,
     heading: "Activating",
   });
-  window.addEventListener(
-    HIDE_SIDEBAR_EVENT_NAME,
-    () => {
-      controller.abort();
-    },
-    {
-      signal: controller.signal,
-    },
-  );
+
+  onSidePanelClosure(controller);
+
   controller.signal.addEventListener("abort", () => {
-    hideModActivationInSidebar();
+    void hideModActivationInSidebar();
   });
 }
 

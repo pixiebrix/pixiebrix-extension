@@ -40,6 +40,7 @@ import initFloatingActions from "@/components/floatingActions/initFloatingAction
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
 import { initRuntime } from "@/runtime/reducePipeline";
+import { renderPanelsIfVisible } from "./sidebarController";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -69,8 +70,11 @@ export async function init(): Promise<void> {
 
   void initSidebarActivation();
 
-  // Inform `ensureContentScript`
+  // Notify `ensureContentScript`
   void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
+
+  // Update `sidePanel`
+  void renderPanelsIfVisible();
 
   // Let the partner page know
   initPartnerIntegrations();

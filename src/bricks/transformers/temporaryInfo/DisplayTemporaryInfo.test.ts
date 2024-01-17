@@ -165,7 +165,7 @@ describe("DisplayTemporaryInfo", () => {
 
     let payload: PanelPayload;
     showTemporarySidebarPanelMock.mockImplementation(
-      (entry: TemporaryPanelEntry) => {
+      async (entry: TemporaryPanelEntry) => {
         payload = entry.payload;
       },
     );

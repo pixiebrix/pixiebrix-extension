@@ -16,16 +16,32 @@
  */
 
 /* Do not use `registerMethod` in this file */
-import { getMethod, getNotifier } from "webext-messenger";
+import { isContentScript } from "webext-detect-page";
+import { getMethod, getNotifier, getThisFrame } from "webext-messenger";
 
-const target = { tabId: "this", page: "/sidebar.html" } as const;
+const target = { page: "/sidebar.html" };
+
+// TODO: move to contentScrpt/sidePanel/messenger/api.ts
+// This should be an expectContext, but it's the usual "everyone imports the registry" problem
+if (isContentScript()) {
+  // Unavoidable race condition: we can't message the sidebar until we know the tabId.
+  // If this causes issues (unlikely), we can make `getMethod` accept an async function
+  // that generates the target, like `getMethod('FOO', getThisFramesSideBarUrl())`.
+  // eslint-disable-next-line promise/prefer-await-to-then
+  void getThisFrame().then((frame) => {
+    target.page += "?tabId=" + frame.tabId;
+  });
+}
 
 const sidebarInThisTab = {
   renderPanels: getMethod("SIDEBAR_RENDER_PANELS", target),
   activatePanel: getMethod("SIDEBAR_ACTIVATE_PANEL", target),
   showForm: getMethod("SIDEBAR_SHOW_FORM", target),
   hideForm: getMethod("SIDEBAR_HIDE_FORM", target),
+  /** @deprecated Only from the content script. Use this in the content script: import {pingSidebar} from '@/contentScript/sidebarController'; */
   pingSidebar: getMethod("SIDEBAR_PING", target),
+  close: getNotifier("SIDEBAR_CLOSE", target),
+  reload: getNotifier("SIDEBAR_RELOAD", target),
   showTemporaryPanel: getMethod("SIDEBAR_SHOW_TEMPORARY_PANEL", target),
   updateTemporaryPanel: getNotifier("SIDEBAR_UPDATE_TEMPORARY_PANEL", target),
   hideTemporaryPanel: getMethod("SIDEBAR_HIDE_TEMPORARY_PANEL", target),

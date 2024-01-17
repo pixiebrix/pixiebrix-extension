@@ -15,7 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file This file MUST be lightweight and free of any logic and dependencies, it's meant to be instant */
-import { toggleSidebarFrame } from "@/contentScript/sidebarDomControllerLite";
+/** @file This file defines the internal API for the sidePanel, only meant to be run in the sidePanel itself */
 
-toggleSidebarFrame();
+import { expectContext } from "@/utils/expectContext";
+import {
+  getAssociatedTarget,
+  respondToPings,
+} from "@/sidebar/sidePanel/messenger/api";
+import { sidebarWasLoaded } from "@/contentScript/messenger/api";
+
+expectContext("sidebar");
+
+export function initSidePanel() {
+  respondToPings();
+  sidebarWasLoaded(getAssociatedTarget());
+}

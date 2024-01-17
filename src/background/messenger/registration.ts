@@ -78,6 +78,7 @@ import {
   getCachedAuthData,
 } from "@/background/auth/authStorage";
 import { setCopilotProcessData } from "@/background/partnerHandlers";
+import { showMySidePanel } from "@/background/sidePanel";
 import { setToolbarBadge } from "@/background/toolbarBadge";
 
 expectContext("background");
@@ -111,6 +112,8 @@ declare global {
 
     PING: typeof pong;
     COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
+
+    SHOW_MY_SIDE_PANEL: typeof showMySidePanel;
 
     SET_TOOLBAR_BADGE: typeof setToolbarBadge;
     ACTIVATE_TAB: typeof activateTab;
@@ -191,6 +194,8 @@ export default function registerMessenger(): void {
 
     PING: pong,
     COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
+
+    SHOW_MY_SIDE_PANEL: showMySidePanel,
 
     SET_TOOLBAR_BADGE: setToolbarBadge,
     ACTIVATE_TAB: activateTab,
