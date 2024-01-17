@@ -40,6 +40,7 @@ import {
   isSidePanelOpen,
   isSidePanelOpenSync,
 } from "@/sidebar/sidePanel/messenger/api";
+import { getTimedSequence } from "@/types/helpers";
 import { backgroundTarget, getMethod } from "webext-messenger";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
@@ -56,11 +57,6 @@ const pingSidebar = memoizeUntilSettled(
     }
   }, 1000) as () => Promise<void>,
 );
-
-/**
- * Sequence number for ensuring render requests are handled in order
- */
-let renderSequenceNumber = 0;
 
 /**
  * Event listeners triggered when the sidebar shows and is ready to receive messages.
@@ -98,10 +94,7 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
     console.warn("sidebar is not attached to the page");
   }
 
-  const seqNum = renderSequenceNumber;
-  renderSequenceNumber++;
-
-  void sidebarInThisTab.activatePanel(seqNum, {
+  void sidebarInThisTab.activatePanel(getTimedSequence(), {
     extensionId,
     force: true,
   });
@@ -116,12 +109,9 @@ export async function updateSidebar(
   await pingSidebar();
 
   if (!isEmpty(activateOptions)) {
-    const seqNum = renderSequenceNumber;
-    renderSequenceNumber++;
-
     // The sidebarSlice handles the race condition with the panels loading by keeping track of the latest pending
     // activatePanel request.
-    await sidebarInThisTab.activatePanel(seqNum, {
+    await sidebarInThisTab.activatePanel(getTimedSequence(), {
       ...activateOptions,
       force: activateOptions.force,
     });
@@ -134,9 +124,7 @@ export async function renderPanelsIfVisible(): Promise<void> {
   console.debug("sidebarController:renderPanelsIfVisible");
 
   if (await isSidePanelOpen()) {
-    const seqNum = renderSequenceNumber;
-    renderSequenceNumber++;
-    void sidebarInThisTab.renderPanels(seqNum, panels);
+    void sidebarInThisTab.renderPanels(getTimedSequence(), panels);
   } else {
     console.debug(
       "sidebarController:renderPanelsIfVisible: skipping renderPanels because the sidebar is not visible",
@@ -153,9 +141,10 @@ export async function showSidebarForm(
     throw new Error("Cannot add sidebar form if the sidebar is not visible");
   }
 
-  const seqNum = renderSequenceNumber;
-  renderSequenceNumber++;
-  void sidebarInThisTab.showForm(seqNum, { type: "form", ...entry });
+  void sidebarInThisTab.showForm(getTimedSequence(), {
+    type: "form",
+    ...entry,
+  });
 }
 
 export async function hideSidebarForm(nonce: UUID): Promise<void> {
@@ -166,9 +155,7 @@ export async function hideSidebarForm(nonce: UUID): Promise<void> {
     return;
   }
 
-  const seqNum = renderSequenceNumber;
-  renderSequenceNumber++;
-  void sidebarInThisTab.hideForm(seqNum, nonce);
+  void sidebarInThisTab.hideForm(getTimedSequence(), nonce);
 }
 
 export async function showTemporarySidebarPanel(
@@ -182,8 +169,7 @@ export async function showTemporarySidebarPanel(
     );
   }
 
-  const sequence = renderSequenceNumber++;
-  void sidebarInThisTab.showTemporaryPanel(sequence, {
+  void sidebarInThisTab.showTemporaryPanel(getTimedSequence(), {
     type: "temporaryPanel",
     ...entry,
   });
@@ -200,8 +186,7 @@ export async function updateTemporarySidebarPanel(
     );
   }
 
-  const sequence = renderSequenceNumber++;
-  sidebarInThisTab.updateTemporaryPanel(sequence, {
+  sidebarInThisTab.updateTemporaryPanel(getTimedSequence(), {
     type: "temporaryPanel",
     ...entry,
   });
@@ -214,8 +199,7 @@ export async function hideTemporarySidebarPanel(nonce: UUID): Promise<void> {
     return;
   }
 
-  const sequence = renderSequenceNumber++;
-  void sidebarInThisTab.hideTemporaryPanel(sequence, nonce);
+  void sidebarInThisTab.hideTemporaryPanel(getTimedSequence(), nonce);
 }
 
 /**
@@ -387,9 +371,8 @@ export async function showModActivationInSidebar(
     ...entry,
   };
 
-  const sequence = renderSequenceNumber++;
   void sidebarInThisTab.showModActivationPanel(
-    sequence,
+    getTimedSequence(),
     modActivationPanelEntry,
   );
 }
@@ -408,8 +391,7 @@ export async function hideModActivationInSidebar(): Promise<void> {
     return;
   }
 
-  const sequence = renderSequenceNumber++;
-  void sidebarInThisTab.hideModActivationPanel(sequence);
+  void sidebarInThisTab.hideModActivationPanel(getTimedSequence());
 }
 
 /**

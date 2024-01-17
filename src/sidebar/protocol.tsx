@@ -24,13 +24,14 @@ import {
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
 import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
-import { type UUID } from "@/types/stringTypes";
+import { type UUID, type TimedSequence } from "@/types/stringTypes";
 import { sortBy } from "lodash";
+import { getTimedSequence } from "@/types/helpers";
 
-let lastMessageSeen = -1;
+let lastMessageSeen = getTimedSequence();
 // Track activate messages separately. The Sidebar App Redux state has special handling for these messages to account
 // for race conditions in panel loading
-let lastActivateMessageSeen = -1;
+let lastActivateMessageSeen = getTimedSequence();
 
 export type SidebarListener = {
   onRenderPanels: (panels: PanelEntry[]) => void;
@@ -56,7 +57,7 @@ export type SidebarListener = {
 // keep track messages sent in the interim. This buffer is flushed once the listener is initialized.
 const messageBuffer: Array<{
   method: keyof SidebarListener;
-  sequence: number;
+  sequence: TimedSequence;
   data: Parameters<SidebarListener[keyof SidebarListener]>[0];
 }> = [];
 
@@ -116,7 +117,7 @@ function flushMessageBuffer(): void {
 
 function runListeners<Method extends keyof SidebarListener>(
   method: Method,
-  sequence: number,
+  sequence: TimedSequence,
   data?: Parameters<SidebarListener[Method]>[0],
   { force = false }: { force?: boolean } = {},
 ): void {
@@ -136,8 +137,8 @@ function runListeners<Method extends keyof SidebarListener>(
     return;
   }
 
-  // Use Math.max to account for unordered messages with force
-  lastMessageSeen = Math.max(sequence, lastMessageSeen);
+  // Account for unordered messages with force
+  lastMessageSeen = sequence > lastMessageSeen ? sequence : lastMessageSeen;
 
   console.debug(`Running ${listeners.length} listener(s) for %s`, method, {
     data,
@@ -155,14 +156,14 @@ function runListeners<Method extends keyof SidebarListener>(
 }
 
 export async function renderPanels(
-  sequence: number,
+  sequence: TimedSequence,
   panels: PanelEntry[],
 ): Promise<void> {
   runListeners("onRenderPanels", sequence, panels);
 }
 
 export async function activatePanel(
-  sequence: number,
+  sequence: TimedSequence,
   options: ActivatePanelOptions,
 ): Promise<void> {
   if (sequence < lastActivateMessageSeen) {
@@ -180,40 +181,40 @@ export async function activatePanel(
   runListeners("onActivatePanel", sequence, options, { force: true });
 }
 
-export async function showForm(sequence: number, entry: FormPanelEntry) {
+export async function showForm(sequence: TimedSequence, entry: FormPanelEntry) {
   runListeners("onShowForm", sequence, entry);
 }
 
-export async function hideForm(sequence: number, nonce: UUID) {
+export async function hideForm(sequence: TimedSequence, nonce: UUID) {
   runListeners("onHideForm", sequence, { nonce });
 }
 
 export async function showTemporaryPanel(
-  sequence: number,
+  sequence: TimedSequence,
   entry: TemporaryPanelEntry,
 ) {
   runListeners("onShowTemporaryPanel", sequence, entry);
 }
 
 export async function updateTemporaryPanel(
-  sequence: number,
+  sequence: TimedSequence,
   entry: TemporaryPanelEntry,
 ) {
   runListeners("onUpdateTemporaryPanel", sequence, entry);
 }
 
-export async function hideTemporaryPanel(sequence: number, nonce: UUID) {
+export async function hideTemporaryPanel(sequence: TimedSequence, nonce: UUID) {
   runListeners("onHideTemporaryPanel", sequence, { nonce });
 }
 
 export async function showActivateMods(
-  sequence: number,
+  sequence: TimedSequence,
   entry: ModActivationPanelEntry,
 ): Promise<void> {
   runListeners("onShowActivateRecipe", sequence, entry);
 }
 
-export async function hideActivateMods(sequence: number): Promise<void> {
+export async function hideActivateMods(sequence: TimedSequence): Promise<void> {
   runListeners("onHideActivateRecipe", sequence);
 }
 

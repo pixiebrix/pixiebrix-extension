@@ -34,6 +34,15 @@ export type Timestamp = string & {
 };
 
 /**
+ * An UTC timestamp followed by a sequence number valid in the current context.
+ * Useful to determine order of two calls to getTimedSequence.
+ */
+export type TimedSequence = string & {
+  // Nominal subtyping
+  _timedSequence: never;
+};
+
+/**
  * A string known not to be tainted with user-generated input.
  */
 export type SafeString = string & {
