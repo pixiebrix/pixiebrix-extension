@@ -385,6 +385,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
           showNotification({
             ...DEFAULT_ACTION_RESULTS.error,
             error, // Include more details in the notification
+            reportError: false,
           });
         }
       }
