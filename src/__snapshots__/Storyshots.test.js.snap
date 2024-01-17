@@ -6569,7 +6569,6 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                     onBlur={[Function]}
                     onChange={[Function]}
                     onFocus={[Function]}
-                    pattern="-?\\d+(?:\\.\\d+)?(?:[Ee][+-]?\\d+)?"
                     placeholder=""
                     readOnly={false}
                     required={false}

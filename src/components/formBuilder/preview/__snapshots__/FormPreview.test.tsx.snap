@@ -186,7 +186,6 @@ exports[`FormPreview it renders simple schema 1`] = `
                 id="root_age"
                 inputmode="numeric"
                 name="root_age"
-                pattern="-?\\d+(?:\\.\\d+)?(?:[Ee][+-]?\\d+)?"
                 placeholder=""
                 type="text"
                 value=""
