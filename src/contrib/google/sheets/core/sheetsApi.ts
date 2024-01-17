@@ -197,7 +197,7 @@ export async function getSpreadsheet({
   // hydrating the actual grid data for the sheet
   // Note: This only works if spreadsheetId is at the end of the list for some reason ¯\_(ツ)_/¯
   const fileMask =
-    "properties(title),sheets.properties(sheetId,title),spreadsheetId";
+    "properties(title),sheets.properties(sheetId,title,hidden),spreadsheetId";
 
   return executeRequest<Spreadsheet>(
     {
