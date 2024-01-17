@@ -25,7 +25,7 @@ import { type IconLibrary } from "@/types/iconTypes";
 const Icon: React.FunctionComponent<{
   icon?: string;
   library?: IconLibrary;
-  size?: number;
+  size?: number | string;
   className?: string;
   color?: string;
 }> = ({ icon, library, size = 16, className, color }) => {

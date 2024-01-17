@@ -217,6 +217,7 @@ export function getComponentDefinition(
               library={icon.library}
               className="mr-2"
               color="currentColor"
+              size="1em"
             />
           )}
           {title}

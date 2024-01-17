@@ -26,6 +26,6 @@ export type IconLibrary = "bootstrap" | "simple-icons" | "custom";
 export type IconConfig = {
   id: string;
   library?: IconLibrary;
-  size?: number;
+  size?: number | string;
   color?: string;
 };
