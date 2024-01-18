@@ -18,9 +18,11 @@
 import optionsRegistry from "@/components/fields/optionsRegistry";
 import PushOptions from "@/contrib/zapier/PushOptions";
 import ProcessOptions from "@/contrib/uipath/ProcessOptions";
+import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
 import AppendSpreadsheetOptions from "@/contrib/google/sheets/ui/AppendSpreadsheetOptions";
 import { ZAPIER_ID } from "@/contrib/zapier/push";
 import { UIPATH_ID } from "@/contrib/uipath/process";
+import { UIPATH_ID as LOCAL_UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { GOOGLE_SHEETS_APPEND_ID } from "@/contrib/google/sheets/bricks/append";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
 import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/RunBot";
@@ -63,9 +65,10 @@ import CommentOptions from "@/bricks/effects/CommentOptions";
  * @see BlockOptionProps
  * @see BlockConfiguration
  */
-export default function registerEditors(): void {
+export default function registerEditors() {
   optionsRegistry.set(ZAPIER_ID, PushOptions);
   optionsRegistry.set(UIPATH_ID, ProcessOptions);
+  optionsRegistry.set(LOCAL_UIPATH_ID, LocalProcessOptions);
   optionsRegistry.set(GOOGLE_SHEETS_APPEND_ID, AppendSpreadsheetOptions);
   optionsRegistry.set(GOOGLE_SHEETS_LOOKUP_ID, LookupSpreadsheetOptions);
   optionsRegistry.set(AUTOMATION_ANYWHERE_RUN_BOT_ID, BotOptions);

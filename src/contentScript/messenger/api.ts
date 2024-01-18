@@ -53,6 +53,9 @@ export const removeSidebars = getMethod("REMOVE_SIDEBARS");
 export const insertPanel = getMethod("INSERT_PANEL");
 export const insertButton = getMethod("INSERT_BUTTON");
 
+export const initRobot = getMethod("UIPATH_INIT");
+export const getProcesses = getMethod("UIPATH_GET_PROCESSES");
+
 export const getAttributeExamples = getMethod("GET_ATTRIBUTE_EXAMPLES");
 
 export const runBlock = getMethod("RUN_SINGLE_BLOCK");

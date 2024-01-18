@@ -72,9 +72,12 @@ const isProd = (options) => options.mode === "production";
 
 function mockHeavyDependencies() {
   if (process.env.DEV_SLIM.toLowerCase() === "true") {
-    console.warn("Mocking dependencies for development build: @/icons/list");
+    console.warn(
+      "Mocking dependencies for development build: @/icons/list, uipath/robot",
+    );
     return {
       "@/icons/list": path.resolve("src/__mocks__/@/icons/list"),
+      "@uipath/robot": path.resolve("src/__mocks__/@uipath/robot"),
     };
   }
 }
