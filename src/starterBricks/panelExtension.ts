@@ -62,6 +62,7 @@ import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { boolean } from "@/utils/typeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import pluralize from "@/utils/pluralize";
 
 export type PanelConfig = {
   heading?: string;
@@ -470,7 +471,9 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     }
 
     if (errors.length > 0) {
-      notify.error(`An error occurred adding ${errors.length} panels(s)`);
+      notify.error(
+        `An error occurred adding ${pluralize(errors.length, "$$ panel")}`,
+      );
     }
   }
 }

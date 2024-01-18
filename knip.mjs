@@ -24,6 +24,8 @@ const knipConfig = {
     "src/testUtils/FixJsdomEnvironment.js",
     // Script helpers
     "scripts/manifest.mjs",
+    // Content script entry point, init() is dynamically imported in src/contentScript/contentScript.ts
+    "src/contentScript/contentScriptCore.ts",
   ],
   project: ["src/**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"],
   // https://knip.dev/guides/handling-issues#mocks-and-other-implicit-imports
@@ -39,14 +41,10 @@ const knipConfig = {
     "src/testUtils/renderWithCommonStore.ts",
     // Polyfills
     "src/vendors/process.js",
-    // Aliases defined in tsconfig.json
-    "src/contrib/uipath/quietLogger.ts",
     // Development/debugging helpers
     "src/development/hooks/**",
     // Vendor files, to keep parity with upstream
     "src/vendors/page-metadata-parser/**",
-    // False positive - dynamically imported in initRobot
-    "src/contrib/uipath/UiPathRobot.ts",
   ],
   ignoreDependencies: [
     // Browser environment types

@@ -3,7 +3,7 @@ name: CI
 on: push
 
 env:
-  # Creates and uploads sourcemaps to Rollbar, and save the built extension as an artifact
+  # Creates and uploads sourcemaps to Application error telemetry, and save the built extension as an artifact
   PUBLIC_RELEASE: ${{ github.ref == 'refs/heads/main' }}
   # Staging URL, also directly used by webpack
   SERVICE_URL: https://app-stg.pixiebrix.com/
@@ -74,10 +74,10 @@ jobs:
           ENVIRONMENT: staging
           EXTERNALLY_CONNECTABLE: "${{ env.SERVICE_URL }}*"
           MARKETPLACE_URL: ${{ secrets.STAGING_MARKETPLACE_URL }}
-          ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
-          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
           CHROME_EXTENSION_ID: kkomancachnjkdalpcokenmjlimmbaog
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_STAGING_PUBLIC_KEY }}
+          DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
+          DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
       - name: Save extension
         uses: actions/upload-artifact@v4
         if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
@@ -109,15 +109,6 @@ jobs:
           path: report.html
           retention-days: 5
           if-no-files-found: error
-
-  # Slow, and we don't use currently
-  #      - run: bash scripts/upload-sourcemaps.sh
-  #        if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
-  #        env:
-  #          AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
-  #          AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
-  #          AWS_DEFAULT_REGION: "us-east-2"
-  #          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
 
   generate-headers:
     runs-on: ubuntu-latest
@@ -176,7 +167,7 @@ jobs:
           cache: npm
       - run: npm ci
       # https://knip.dev/overview/getting-started#without-installation
-      - run: npm install -D knip
+      - run: npm install -D knip@4
       # Do a run without an exit code. Knip's "warn" setting is not working for files and devDependencies.
       - run: npm run dead-code -- --config knip.mjs --no-exit-code
       - run: npm run dead-code -- --config knip.mjs --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports
