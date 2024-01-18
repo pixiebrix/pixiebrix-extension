@@ -15,25 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Init error reporter early so we get error reporting on the other initialization
-import "@/telemetry/reportUncaughtErrors";
+import { cleanDatadogVersionName } from "@/telemetry/telemetryHelpers";
 
-// We don't use native, full-page-reload form submissions
-// eslint-disable-next-line import/no-unassigned-import -- Auto-initialization
-import "@/utils/preventNativeFormSubmission";
+describe("cleanDatadogVersionName", () => {
+  it("cleans local build version name", () => {
+    expect(
+      cleanDatadogVersionName("1.8.8-alpha.1-local+2024-01-14T18:13:07.744Z"),
+    ).toBe("1.8.8-alpha.1-local");
+  });
 
-// Handles common HTTP errors
-import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
-
-enrichAxiosErrors();
-
-// https://webpack.js.org/guides/public-path/#on-the-fly
-__webpack_public_path__ = chrome.runtime.getURL("/");
-
-// @ts-expect-error For debugging only
-globalThis.$ = $;
-
-if (!("browser" in globalThis)) {
-  // @ts-expect-error For debugging only
-  globalThis.browser = browser;
-}
+  it("cleans CI build name", () => {
+    expect(cleanDatadogVersionName("1.8.8-alpha+293128")).toBe(
+      "1.8.8-alpha_293128",
+    );
+  });
+});

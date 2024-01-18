@@ -7,7 +7,7 @@ on:
       - "release/**"
 
 env:
-  # Creates and uploads sourcemaps to Rollbar, and save the built extension as an artifact
+  # Creates and uploads sourcemaps to Application error telemetry, and save the built extension as an artifact
   PUBLIC_RELEASE: true
 
 jobs:
@@ -41,8 +41,6 @@ jobs:
       - run: npm run build
         env:
           MV: ${{ matrix.MV }}
-          ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
-          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
           DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
           DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
       - run: bash scripts/upload-sourcemaps.sh
@@ -50,7 +48,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
           AWS_DEFAULT_REGION: "us-east-2"
-          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
       - name: Delete local sourcemaps
         run: find dist -name '*.map' -delete
       - name: Save store extension

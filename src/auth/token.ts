@@ -43,7 +43,7 @@ type AuthListener = (auth: Partial<TokenAuthData>) => void;
 // eslint-disable-next-line local-rules/persistBackgroundData -- Functions
 const listeners = new Set<AuthListener>();
 
-// Use listeners to allow inversion of control and avoid circular dependency with rollbar.
+// Use listeners to allow inversion of control and avoid circular dependency with error reporter.
 export function addListener(handler: AuthListener): void {
   listeners.add(handler);
 }
@@ -185,7 +185,7 @@ export async function clearCachedAuthSecrets(): Promise<void> {
 }
 
 /**
- * Update user data (for use in Rollbar, etc.), but not the auth token
+ * Update user data (for use in error reporter, etc.), but not the auth token
  *
  * This method is currently used to ensure the most up-to-date organization and flags for the user. It's called in:
  * - The background heartbeat
