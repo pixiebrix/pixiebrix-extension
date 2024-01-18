@@ -93,7 +93,7 @@ function getValue(
   type?: "numeric",
 ): string | number {
   if (type === "numeric") {
-    return storedValue;
+    return storedValue ?? "";
   }
 
   return value || value === 0 ? value : "";
