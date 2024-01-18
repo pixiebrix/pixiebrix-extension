@@ -91,7 +91,7 @@ function getValue(
   value: string | number,
   storedValue?: string | number,
   type?: "numeric",
-) {
+): string | number {
   if (type === "numeric") {
     return storedValue;
   }
@@ -153,7 +153,6 @@ export default function BaseInputTemplate<
     onFocus(id, value);
   };
 
-  // Const classNames = [rawErrors.length > 0 ? "is-invalid" : "", type === 'file' ? 'custom-file-label': ""]
   return (
     <>
       <FormControl
