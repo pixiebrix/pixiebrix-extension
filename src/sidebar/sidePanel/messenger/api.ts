@@ -21,47 +21,30 @@
  * to match that expectation and avoid lint issues.
  */
 
-import { isObject } from "@/utils/objectUtils";
-import { expectContext } from "@/utils/expectContext";
-import { type Target } from "webext-messenger";
+import { expectContext, forbidContext } from "@/utils/expectContext";
+import { getMethod, type Target } from "webext-messenger";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { showSidebar } from "@/contentScript/messenger/api";
 import { isMV3 } from "@/mv3/api";
 
-function getAssociatedTabId(): number {
+export function getAssociatedTarget(): Target {
   expectContext("sidebar");
   const tabId = new URLSearchParams(window.location.search).get("tabId");
-  return Number(tabId);
+  return { tabId: Number(tabId), frameId: 0 };
 }
 
-export function getAssociatedTarget(): Target {
-  return { tabId: getAssociatedTabId(), frameId: 0 };
-}
-
-const PING_MESSAGE = "PING_SIDE_PANEL";
-// Do not use the messenger because it doesn't support retry-less messaging
-// TODO: Drop after https://github.com/pixiebrix/webext-messenger/issues/59
-export function respondToPings() {
-  expectContext("sidebar");
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (
-      isObject(message) &&
-      message.type === PING_MESSAGE &&
-      sender.tab?.id === getAssociatedTabId()
-    ) {
-      sendResponse(true);
-    }
-  });
-}
+export const PING_SIDE_PANEL = "PING_SIDE_PANEL";
 
 export async function isSidePanelOpen(): Promise<boolean> {
-  // Sync check where possible
+  forbidContext("sidebar", "The sidebar shouldn't check whether it's open");
+
+  // Sync check where possible, which is the content script
   if (isSidePanelOpenSync() === false) {
     return false;
   }
 
   try {
-    await chrome.runtime.sendMessage({ type: PING_MESSAGE });
+    // Available from any page
+    await chrome.runtime.sendMessage({ type: PING_SIDE_PANEL });
     return true;
   } catch {
     return false;
@@ -70,7 +53,9 @@ export async function isSidePanelOpen(): Promise<boolean> {
 
 export async function openSidePanel(tabId: number): Promise<void> {
   if (!isMV3()) {
-    return showSidebar({ tabId });
+    // Called via `getMethod` until we complete the strictNullChecks transition
+    await getMethod("SHOW_SIDEBAR")({ tabId });
+    return;
   }
 
   // Simultaneously enable and open the side panel.

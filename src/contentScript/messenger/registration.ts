@@ -34,7 +34,6 @@ import {
 import {
   hideSidebar,
   showSidebar,
-  rehydrateSidebar,
   removeExtensions as removeSidebars,
   reloadSidebar,
   getReservedPanelEntries,
@@ -108,7 +107,6 @@ declare global {
 
     UPDATE_SIDEBAR: typeof updateSidebar;
     SIDEBAR_WAS_LOADED: typeof sidebarWasLoaded;
-    REHYDRATE_SIDEBAR: typeof rehydrateSidebar;
     SHOW_SIDEBAR: typeof showSidebar;
     HIDE_SIDEBAR: typeof hideSidebar;
     RELOAD_SIDEBAR: typeof reloadSidebar;
@@ -175,7 +173,6 @@ export default function registerMessenger(): void {
 
     UPDATE_SIDEBAR: updateSidebar,
     SIDEBAR_WAS_LOADED: sidebarWasLoaded,
-    REHYDRATE_SIDEBAR: rehydrateSidebar,
     SHOW_SIDEBAR: showSidebar,
     HIDE_SIDEBAR: hideSidebar,
     RELOAD_SIDEBAR: reloadSidebar,

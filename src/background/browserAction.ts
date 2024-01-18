@@ -16,14 +16,14 @@
  */
 
 import { ensureContentScript } from "@/background/contentScript";
-import { rehydrateSidebar } from "@/contentScript/messenger/api";
+import { updateSidebar } from "@/contentScript/messenger/api";
 import webextAlert from "./webextAlert";
 import { browserAction, isMV3, type Tab } from "@/mv3/api";
 import { executeScript } from "webext-content-scripts";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { openSidePanel } from "@/sidebar/sidePanel/messenger/api";
 import { setActionPopup } from "webext-tools";
-import { getRestrictedPageMessage } from "./sidePanel.js";
+import { getRestrictedPageMessage } from "./sidePanel";
 
 export default async function initBrowserAction(): Promise<void> {
   if (!isMV3()) {
@@ -69,11 +69,13 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
     runAt: "document_end",
   });
 
-  // Chrome adds automatically at document_idle, so it might not be ready yet when the user click the browser action
-  const contentScriptPromise = ensureContentScript({
+  const contentScriptTarget = {
     tabId,
     frameId: TOP_LEVEL_FRAME_ID,
-  });
+  } as const;
+
+  // Chrome adds automatically at document_idle, so it might not be ready yet when the user click the browser action
+  const contentScriptPromise = ensureContentScript(contentScriptTarget);
 
   try {
     await sidebarTogglePromise;
@@ -86,9 +88,7 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
   // Avoid showing any alerts or notifications: further messaging can appear in the sidebar itself.
   // Any errors are automatically reported by the global error handler.
   await contentScriptPromise;
-  await rehydrateSidebar({
-    tabId,
-  });
+  updateSidebar(contentScriptTarget);
 }
 
 async function handleBrowserAction(tab: Tab): Promise<void> {

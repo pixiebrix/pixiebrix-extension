@@ -56,7 +56,7 @@ import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Location } from "@/types/starterBrickTypes";
 import { assumeNotNullish_UNSAFE } from "@/utils/nullishUtils";
-import { mergeSignals, onAbort } from "abort-utils";
+import { onAbort } from "abort-utils";
 
 // Match naming of the sidebar panel extension point triggers
 export type RefreshTrigger = "manual" | "statechange";

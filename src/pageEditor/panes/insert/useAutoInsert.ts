@@ -5,17 +5,13 @@ import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { getExampleBrickPipeline } from "@/pageEditor/exampleStarterBrickConfigs";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import {
-  showSidebar,
-  updateDynamicElement,
-} from "@/contentScript/messenger/api";
+import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { openSidePanel } from "@/sidebar/sidePanel/messenger/api";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import notify from "@/utils/notify";
-import { isMV3 } from "@/mv3/api";
 
 const { addElement, toggleInsert } = actions;
 

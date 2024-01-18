@@ -19,12 +19,27 @@
 
 import { expectContext } from "@/utils/expectContext";
 import {
+  PING_SIDE_PANEL,
   getAssociatedTarget,
-  respondToPings,
 } from "@/sidebar/sidePanel/messenger/api";
 import { sidebarWasLoaded } from "@/contentScript/messenger/api";
+import { isObject } from "@/utils/objectUtils";
 
 expectContext("sidebar");
+
+// Do not use the messenger because it doesn't support retry-less messaging
+// TODO: Drop after https://github.com/pixiebrix/webext-messenger/issues/59
+function respondToPings() {
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (
+      isObject(message) &&
+      message.type === PING_SIDE_PANEL &&
+      sender.tab?.id === getAssociatedTarget().tabId
+    ) {
+      sendResponse(true);
+    }
+  });
+}
 
 export function initSidePanel() {
   respondToPings();

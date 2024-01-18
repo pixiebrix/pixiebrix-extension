@@ -40,6 +40,10 @@ console.log("SOURCE_VERSION:", process.env.SOURCE_VERSION);
 console.log("SERVICE_URL:", process.env.SERVICE_URL);
 console.log("MARKETPLACE_URL:", process.env.MARKETPLACE_URL);
 console.log("CHROME_EXTENSION_ID:", process.env.CHROME_EXTENSION_ID);
+console.log(
+  "ROLLBAR_BROWSER_ACCESS_TOKEN:",
+  process.env.ROLLBAR_BROWSER_ACCESS_TOKEN,
+);
 
 if (!process.env.SOURCE_VERSION) {
   process.env.SOURCE_VERSION = execSync("git rev-parse --short HEAD")
@@ -72,9 +76,12 @@ const isProd = (options) => options.mode === "production";
 
 function mockHeavyDependencies() {
   if (process.env.DEV_SLIM.toLowerCase() === "true") {
-    console.warn("Mocking dependencies for development build: @/icons/list");
+    console.warn(
+      "Mocking dependencies for development build: @/icons/list, uipath/robot",
+    );
     return {
       "@/icons/list": path.resolve("src/__mocks__/@/icons/list"),
+      "@uipath/robot": path.resolve("src/__mocks__/@uipath/robot"),
     };
   }
 }
@@ -102,6 +109,7 @@ const createConfig = (env, options) =>
         "background/background",
         "contentScript/contentScript",
         "contentScript/loadActivationEnhancements",
+        "contentScript/browserActionInstantHandler",
         "contentScript/setExtensionIdInApp",
         "pageEditor/pageEditor",
         "extensionConsole/options",
@@ -171,8 +179,6 @@ const createConfig = (env, options) =>
 
           // The sourcemap will be inlined if `undefined`. Only inlined sourcemaps work locally
           // https://bugs.chromium.org/p/chromium/issues/detail?id=974543
-          // NOTE: Datadog requires .js.map as the extension: https://github.com/DataDog/datadog-ci/issues/870
-          // The [file] already includes the js file extension
           filename: sourceMapPublicUrl && "[file].map[query]",
         }),
 
@@ -214,8 +220,7 @@ const createConfig = (env, options) =>
         REDUX_DEV_TOOLS: !isProd(options),
         NPM_PACKAGE_VERSION: process.env.npm_package_version,
         ENVIRONMENT: options.mode,
-        SOURCE_MAP_PUBLIC_PATH:
-          sourceMapPublicUrl ?? "extension://dynamichost/",
+        ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost/",
         // Record telemetry events in development?
         DEV_EVENT_TELEMETRY: false,
         SANDBOX_LOGGING: false,
@@ -227,7 +232,11 @@ const createConfig = (env, options) =>
         CHROME_EXTENSION_ID: undefined,
 
         // If not found, "null" will leave the ENV unset in the bundle
-        // DataDog RUM/Logging
+        ROLLBAR_BROWSER_ACCESS_TOKEN: null,
+        GOOGLE_API_KEY: null,
+        GOOGLE_APP_ID: null,
+
+        // DataDog RUM
         DATADOG_APPLICATION_ID: null,
         DATADOG_CLIENT_TOKEN: null,
       }),

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import reportError from "@/telemetry/reportError";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
@@ -39,17 +38,16 @@ import type {
 import { getTemporaryPanelSidebarEntries } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
 import * as sidePanel from "@/sidebar/sidePanel/messenger/api";
-import { memoizeUntilSettled, logPromiseDuration } from "@/utils/promiseUtils";
-import { waitAnimationFrame } from "@/utils/domUtils";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
 import { backgroundTarget, getMethod } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- Function
+export const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
+
 export const isSidePanelOpen = isMV3()
   ? sidePanel.isSidePanelOpen
   : sidebarMv2.isSidebarFrameVisible;
-// eslint-disable-next-line local-rules/persistBackgroundData -- Function
 export const isSidePanelOpenSync = isMV3()
   ? sidePanel.isSidePanelOpenSync
   : sidebarMv2.isSidebarFrameVisible;
@@ -144,7 +142,7 @@ export async function reloadSidebar(): Promise<void> {
 
   // Hide and reshow to force a full-refresh of the sidebar
 
-  if (isSidebarFrameVisible()) {
+  if (sidebarMv2.isSidebarFrameVisible()) {
     hideSidebar();
   }
 
@@ -472,14 +470,27 @@ export function getReservedPanelEntries(): {
 export function sidePanelClosureSignal(): AbortSignal {
   const controller = new AbortController();
   expectContext("contentScript");
-  window.addEventListener(
-    "resize",
-    () => {
-      if (isSidePanelOpenSync() === false) {
+  if (isMV3()) {
+    window.addEventListener(
+      "resize",
+      () => {
+        if (isSidePanelOpenSync() === false) {
+          controller.abort();
+        }
+      },
+      { signal: controller.signal },
+    );
+  } else {
+    window.addEventListener(
+      HIDE_SIDEBAR_EVENT_NAME,
+      () => {
         controller.abort();
-      }
-    },
-    { signal: controller.signal },
-  );
+      },
+      {
+        signal: controller.signal,
+      },
+    );
+  }
+
   return controller.signal;
 }
