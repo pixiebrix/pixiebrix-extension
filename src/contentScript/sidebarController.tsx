@@ -465,12 +465,12 @@ export function getReservedPanelEntries(): {
   };
 }
 
-// TODO: It doesn't work when the dev tools are open on the side
-// Official event requested in https://github.com/w3c/webextensions/issues/517
 export function sidePanelClosureSignal(): AbortSignal {
   const controller = new AbortController();
   expectContext("contentScript");
   if (isMV3()) {
+    // TODO: It doesn't work when the dev tools are open on the side
+    // Official event requested in https://github.com/w3c/webextensions/issues/517
     window.addEventListener(
       "resize",
       () => {

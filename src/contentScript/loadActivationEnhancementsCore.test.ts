@@ -36,7 +36,11 @@ import { isLinked } from "@/auth/token";
 import { array } from "cooky-cutter";
 import { MARKETPLACE_URL } from "@/urlConstants";
 
-jest.mock("@/contentScript/sidebarController");
+jest.mock("@/contentScript/sidebarController", () => ({
+  ...jest.requireActual("@/contentScript/sidebarController"),
+  showSidebar: jest.fn(),
+  showModActivationInSidebar: jest.fn(),
+}));
 
 jest.mock("@/auth/token", () => ({
   isLinked: jest.fn().mockResolvedValue(true),
