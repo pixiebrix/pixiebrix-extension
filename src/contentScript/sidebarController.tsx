@@ -43,12 +43,14 @@ import { getTimedSequence } from "@/types/helpers";
 import { backgroundTarget, getMethod } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
 
-export const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
+const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
 export const isSidePanelOpen = isMV3()
   ? sidePanel.isSidePanelOpen
   : sidebarMv2.isSidebarFrameVisible;
-export const isSidePanelOpenSync = isMV3()
+
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
+const isSidePanelOpenSync = isMV3()
   ? sidePanel.isSidePanelOpenSync
   : sidebarMv2.isSidebarFrameVisible;
 

@@ -53,6 +53,7 @@ export async function showMySidePanel(this: MessengerMeta): Promise<void> {
 // TODO: Drop if this is ever implemented: https://github.com/w3c/webextensions/issues/515
 export async function initSidePanel(): Promise<void> {
   // TODO: Drop this once the popover URL behavior is merged into sidebar.html
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/7364
   chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
     if (changeInfo.url) {
       void chrome.sidePanel.setOptions({

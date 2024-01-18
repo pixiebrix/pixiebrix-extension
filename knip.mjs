@@ -26,6 +26,8 @@ const knipConfig = {
     "scripts/manifest.mjs",
     // Content script entry point, init() is dynamically imported in src/contentScript/contentScript.ts
     "src/contentScript/contentScriptCore.ts",
+    // Type-only strictNullChecks helper
+    "src/types/typeOnlyMessengerRegistration.ts",
   ],
   project: ["src/**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"],
   // https://knip.dev/guides/handling-issues#mocks-and-other-implicit-imports
