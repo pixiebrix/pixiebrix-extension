@@ -68,6 +68,7 @@ import { type Brick } from "@/types/brickTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import pluralize from "@/utils/pluralize";
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
@@ -274,7 +275,10 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     const numErrors = results.filter((x) => x.status === "rejected").length;
     if (numErrors > 0) {
       notify.error(
-        `An error occurred adding ${numErrors} context menu item(s)`,
+        `An error occurred adding ${pluralize(
+          numErrors,
+          "$$ context menu item",
+        )}`,
       );
     }
   }
@@ -382,7 +386,11 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
           showNotification(DEFAULT_ACTION_RESULTS.cancel);
         } else {
           extensionLogger.error(error);
-          showNotification(DEFAULT_ACTION_RESULTS.error);
+          showNotification({
+            ...DEFAULT_ACTION_RESULTS.error,
+            error, // Include more details in the notification
+            reportError: false,
+          });
         }
       }
     });

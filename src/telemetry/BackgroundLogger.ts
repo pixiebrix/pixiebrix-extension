@@ -27,7 +27,7 @@ import { expectContext } from "@/utils/expectContext";
 import reportError from "@/telemetry/reportError";
 
 /**
- * A Logger that logs messages through the background page (which can make calls to Rollbar)
+ * A Logger that logs messages through the background page (which can make calls to Application error telemetry)
  * @see recordLog
  * @see recordError
  */

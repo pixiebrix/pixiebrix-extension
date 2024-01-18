@@ -48,7 +48,7 @@ module.exports = {
     "@shopify/react-hooks-strict-return": "error",
     "@shopify/prefer-module-scope-constants": "error",
     "@shopify/jest/no-snapshots": "warn",
-
+    "local-rules/noNullRtkQueryArgs": "error",
     "local-rules/noInvalidDataTestId": "error",
     "local-rules/noExpressionLiterals": "error",
     "local-rules/notBothLabelAndLockableProps": "error",

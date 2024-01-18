@@ -50,7 +50,6 @@ import {
   runExtensionPointReader,
   updateDynamicElement,
 } from "@/contentScript/pageEditor/dynamic";
-import { getProcesses, initRobot } from "@/contentScript/uipath";
 import {
   runBlockPreview,
   resetTab,
@@ -116,9 +115,6 @@ declare global {
     REMOVE_SIDEBARS: typeof removeSidebars;
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
-
-    UIPATH_INIT: typeof initRobot;
-    UIPATH_GET_PROCESSES: typeof getProcesses;
 
     GET_ATTRIBUTE_EXAMPLES: typeof getAttributeExamples;
     RUN_SINGLE_BLOCK: typeof runBlockPreview;
@@ -186,9 +182,6 @@ export default function registerMessenger(): void {
     REMOVE_SIDEBARS: removeSidebars,
     INSERT_PANEL: insertPanel,
     INSERT_BUTTON: insertButton,
-
-    UIPATH_INIT: initRobot,
-    UIPATH_GET_PROCESSES: getProcesses,
 
     GET_ATTRIBUTE_EXAMPLES: getAttributeExamples,
     RUN_SINGLE_BLOCK: runBlockPreview,

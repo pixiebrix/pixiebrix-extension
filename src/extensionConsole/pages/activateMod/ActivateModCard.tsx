@@ -63,6 +63,7 @@ const ActivateModCard: React.FC = () => {
   const activateMod = useActivateRecipe("extensionConsole");
   const [activationError, setActivationError] = useState<unknown>();
   const [createMilestone] = useCreateMilestoneMutation();
+
   const { hasMilestone } = useMilestones();
 
   useSetDocumentTitle(
