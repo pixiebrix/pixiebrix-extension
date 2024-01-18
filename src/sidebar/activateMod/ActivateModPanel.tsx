@@ -30,6 +30,7 @@ import AsyncButton from "@/components/AsyncButton";
 import { useDispatch } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { reloadMarketplaceEnhancements as reloadMarketplaceEnhancementsInContentScript } from "@/contentScript/messenger/api";
+import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 import cx from "classnames";
 import { isEmpty } from "lodash";
 import ActivateModInputs from "@/sidebar/activateMod/ActivateModInputs";
@@ -52,7 +53,6 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
 import Markdown from "@/components/Markdown";
 import { getModActivationInstructions } from "@/utils/modUtils";
-import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 
 const { actions } = sidebarSlice;
 

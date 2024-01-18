@@ -35,13 +35,13 @@ import {
   resolveTemporaryPanel,
 } from "@/contentScript/messenger/api";
 import { partition, remove, sortBy } from "lodash";
+import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { castDraft, type Draft } from "immer";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { getVisiblePanelCount } from "@/sidebar/utils";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
-import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 
 const emptySidebarState: SidebarState = {
   panels: [],

@@ -19,9 +19,9 @@ import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import {
   showSidebar,
+  sidePanelClosureSignal,
   hideModActivationInSidebar,
   showModActivationInSidebar,
-  sidePanelClosureSignal,
 } from "@/contentScript/sidebarController";
 import { isLinked } from "@/auth/token";
 import {

@@ -24,10 +24,10 @@ import {
 import { expectContext } from "@/utils/expectContext";
 import {
   showSidebar,
+  sidePanelClosureSignal,
   hideTemporarySidebarPanel,
   showTemporarySidebarPanel,
   updateTemporarySidebarPanel,
-  sidePanelClosureSignal,
 } from "@/contentScript/sidebarController";
 import {
   type PanelPayload,

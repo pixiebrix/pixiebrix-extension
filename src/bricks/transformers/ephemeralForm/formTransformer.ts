@@ -35,6 +35,7 @@ import { getThisFrame } from "webext-messenger";
 import { type BrickConfig } from "@/bricks/types";
 import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
 import { isExpression } from "@/utils/expressionUtils";
+import { onAbort } from "abort-utils";
 
 // The modes for createFrameSrc are different than the location argument for FormTransformer. The mode for the frame
 // just determines the layout container of the form
@@ -167,7 +168,7 @@ export class FormTransformer extends TransformerABC {
       });
 
       // Two-way binding between sidebar and form. Listen for the user (or an action) closing the sidebar
-      sidePanelClosureSignal();
+      onAbort(sidePanelClosureSignal(), controller);
 
       controller.signal.addEventListener("abort", () => {
         // NOTE: we're not hiding the side panel here to avoid closing the sidebar if the user already had it open.

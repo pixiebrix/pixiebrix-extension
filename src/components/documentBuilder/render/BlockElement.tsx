@@ -26,10 +26,10 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { serializeError } from "serialize-error";
 import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
+import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 import { type PanelContext } from "@/types/sidebarTypes";
 import { type RendererRunPayload } from "@/types/rendererTypes";
 import useAsyncState from "@/hooks/useAsyncState";
-import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 
 type BlockElementProps = {
   pipeline: BrickPipeline;

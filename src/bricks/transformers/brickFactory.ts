@@ -344,7 +344,9 @@ class UserDefinedBrick extends BrickABC {
     // renderer. The caller can't run the whole brick in the contentScript because renderers can return React
     // Components which can't be serialized across messenger boundaries.
 
-    // TODO: call top-level contentScript directly after https://github.com/pixiebrix/webext-messenger/issues/72
+    // This code can be run either in the sidebar or in a modal.
+    // The modal is always an iframe in the same tab,
+    // but the sidebar varies. This code handles the 3 cases.
     const topLevelFrame = isBrowserSidebar()
       ? await getTopFrameFromSidebar()
       : await getTopLevelFrame();

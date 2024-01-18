@@ -24,10 +24,10 @@ import {
   showSidebar,
 } from "@/contentScript/sidebarController";
 import { showMySidePanel } from "@/background/messenger/api";
-import { propertiesToSchema } from "@/validators/generic";
-import { logPromiseDuration } from "@/utils/promiseUtils";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isMV3 } from "@/mv3/api";
+import { propertiesToSchema } from "@/validators/generic";
+import { logPromiseDuration } from "@/utils/promiseUtils";
 
 export class ShowSidebar extends EffectABC {
   constructor() {

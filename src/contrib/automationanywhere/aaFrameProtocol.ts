@@ -17,8 +17,8 @@
 
 import { type UnknownObject } from "@/types/objectTypes";
 import { expectContext } from "@/utils/expectContext";
-import { getCopilotHostData } from "@/contentScript/messenger/api";
 import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
+import { getCopilotHostData } from "@/contentScript/messenger/api";
 
 /**
  * Runtime event type for setting Co-Pilot data

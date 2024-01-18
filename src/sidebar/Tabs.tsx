@@ -57,9 +57,9 @@ import { selectEventData } from "@/telemetry/deployments";
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
+import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 import { cancelForm } from "@/contentScript/messenger/api";
 import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
-import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 
 const ActivateModPanel = lazy(
   async () =>

@@ -34,11 +34,11 @@ import {
 import {
   hideSidebar,
   showSidebar,
+  sidebarWasLoaded,
+  updateSidebar,
   removeExtensions as removeSidebars,
   reloadSidebar,
   getReservedPanelEntries,
-  sidebarWasLoaded,
-  updateSidebar,
 } from "@/contentScript/sidebarController";
 import { insertPanel } from "@/contentScript/pageEditor/insertPanel";
 import { insertButton } from "@/contentScript/pageEditor/insertButton";
@@ -103,14 +103,15 @@ declare global {
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
-    GET_RESERVED_SIDEBAR_ENTRIES: typeof getReservedPanelEntries;
 
     UPDATE_SIDEBAR: typeof updateSidebar;
     SIDEBAR_WAS_LOADED: typeof sidebarWasLoaded;
     SHOW_SIDEBAR: typeof showSidebar;
     HIDE_SIDEBAR: typeof hideSidebar;
     RELOAD_SIDEBAR: typeof reloadSidebar;
+    GET_RESERVED_SIDEBAR_ENTRIES: typeof getReservedPanelEntries;
     REMOVE_SIDEBARS: typeof removeSidebars;
+
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
 
@@ -177,6 +178,7 @@ export default function registerMessenger(): void {
     HIDE_SIDEBAR: hideSidebar,
     RELOAD_SIDEBAR: reloadSidebar,
     REMOVE_SIDEBARS: removeSidebars,
+
     INSERT_PANEL: insertPanel,
     INSERT_BUTTON: insertButton,
 

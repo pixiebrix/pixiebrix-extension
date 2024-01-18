@@ -46,9 +46,9 @@ import DelayedRender from "@/components/DelayedRender";
 import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
+import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
-import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 
 // Used for the loading message
 // import cx from "classnames";

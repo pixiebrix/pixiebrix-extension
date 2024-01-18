@@ -24,12 +24,12 @@ import DocumentContext from "@/components/documentBuilder/render/DocumentContext
 import { type Except } from "type-fest";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
+import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 import { getRootCause, hasSpecificErrorCause } from "@/errors/errorHelpers";
 import { SubmitPanelAction } from "@/bricks/errors";
 import cx from "classnames";
 import { boolean } from "@/utils/typeUtils";
 import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
-import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 
 type ButtonElementProps = Except<AsyncButtonProps, "onClick"> & {
   onClick: BrickPipeline;

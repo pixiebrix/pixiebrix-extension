@@ -24,3 +24,5 @@ import { isMV3 } from "./api";
 export const getTopFrameFromSidebar = isMV3()
   ? getAssociatedTarget
   : getTopLevelFrame;
+
+// TODO: Add openSidePanel?

@@ -67,6 +67,8 @@ export async function openSidePanel(tabId: number): Promise<void> {
   });
 
   try {
+    // TODO: Implement toggle, but I don't think it's possible:
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/7327
     await chrome.sidePanel.open({ tabId });
   } catch (error) {
     // In some cases, `openSidePanel` is called as a precaution and it might work if

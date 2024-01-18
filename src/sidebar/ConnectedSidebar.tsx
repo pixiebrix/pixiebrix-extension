@@ -42,9 +42,9 @@ import {
   ensureExtensionPointsInstalled,
   getReservedSidebarEntries,
 } from "@/contentScript/messenger/api";
+import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 import useAsyncEffect from "use-async-effect";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
-import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
