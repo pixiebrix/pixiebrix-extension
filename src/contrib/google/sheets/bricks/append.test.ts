@@ -205,12 +205,14 @@ const brickArgs = {
       value: "value2",
     } as Entry,
   ],
+  requireSheetIsVisible: false,
 } as unknown as BrickArgs<{
   googleAccount?: SanitizedIntegrationConfig | undefined;
   spreadsheetId: string | SanitizedIntegrationConfig;
   tabName: string;
   shape: Shape;
   rowValues: RowValues;
+  requireSheetIsVisible: boolean;
 }>;
 const brickOptions = { logger } as unknown as BrickOptions;
 const testSpreadsheet: Spreadsheet = {
@@ -323,5 +325,104 @@ describe("append logic", () => {
       },
       [["value1", "value2"]],
     );
+  });
+
+  it("throws error if sheet is hidden and requireSheetIsVisible is true", async () => {
+    const brick = new GoogleSheetsAppend();
+    jest.mocked(sheets.getAllRows).mockResolvedValue({
+      values: [
+        ["header1", "header2"],
+        ["foo", "bar"],
+      ],
+    });
+    jest.mocked(sheets.getSpreadsheet).mockResolvedValue({
+      spreadsheetId: TEST_SPREADSHEET_ID,
+      properties: {
+        title: TEST_SPREADSHEET_NAME,
+      },
+      sheets: [
+        {
+          properties: {
+            sheetId: 123,
+            title: "Sheet1",
+            hidden: true,
+          },
+        },
+      ],
+    });
+
+    await expect(
+      brick.run(
+        produce(brickArgs, (draft) => {
+          draft.requireSheetIsVisible = true;
+        }),
+        brickOptions,
+      ),
+    ).rejects.toThrow(
+      expect.objectContaining({
+        message: expect.stringContaining("Sheet Sheet1 is hidden"),
+      }),
+    );
+  });
+
+  it("does not throw error if sheet is hidden and requireSheetIsVisible is false", async () => {
+    const brick = new GoogleSheetsAppend();
+    jest.mocked(sheets.getAllRows).mockResolvedValue({
+      values: [
+        ["header1", "header2"],
+        ["foo", "bar"],
+      ],
+    });
+    jest.mocked(sheets.getSpreadsheet).mockResolvedValue({
+      spreadsheetId: TEST_SPREADSHEET_ID,
+      properties: {
+        title: TEST_SPREADSHEET_NAME,
+      },
+      sheets: [
+        {
+          properties: {
+            sheetId: 123,
+            title: "Sheet1",
+            hidden: true,
+          },
+        },
+      ],
+    });
+
+    await expect(brick.run(brickArgs, brickOptions)).resolves.not.toThrow();
+  });
+
+  it("does not throw error if sheet is not hidden and requireSheetIsVisible is true", async () => {
+    const brick = new GoogleSheetsAppend();
+    jest.mocked(sheets.getAllRows).mockResolvedValue({
+      values: [
+        ["header1", "header2"],
+        ["foo", "bar"],
+      ],
+    });
+    jest.mocked(sheets.getSpreadsheet).mockResolvedValue({
+      spreadsheetId: TEST_SPREADSHEET_ID,
+      properties: {
+        title: TEST_SPREADSHEET_NAME,
+      },
+      sheets: [
+        {
+          properties: {
+            sheetId: 123,
+            title: "Sheet1",
+            hidden: false,
+          },
+        },
+      ],
+    });
+
+    await expect(
+      brick.run(
+        produce(brickArgs, (draft) => {
+          draft.requireSheetIsVisible = true;
+        }),
+        brickOptions,
+      ),
+    ).resolves.not.toThrow();
   });
 });

@@ -44,8 +44,8 @@ const DEFAULT_ERROR_MESSAGE = "Unknown error";
  *
  * Can be provided as an exact string, or regex.
  *
- * Similar to Rollbar: https://docs.rollbar.com/docs/javascript/#section-ignoring-specific-exception-messages, but
- * more strict on string matching.
+ * Originally designed to be similar to Rollbar (https://docs.rollbar.com/docs/javascript/#section-ignoring-specific-exception-messages)
+ * but more strict on string matching.
  *
  * @see matchesAnyPattern
  */
@@ -370,7 +370,7 @@ function selectErrorFromEvent(
 /**
  * Finds or creates an Error starting from strings or real Errors.
  *
- * The result is suitable for passing to Rollbar (which treats Errors and objects differently.)
+ * The result is suitable for passing to Application error telemetry. Note, Rollbar treats Errors and objects differently.
  */
 export function selectError(originalError: unknown): Error {
   // Be defensive here for ErrorEvent. In practice, this method will only be called with errors (as opposed to events,

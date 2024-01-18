@@ -177,6 +177,10 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
         name={joinName(blockConfigPath, "requireOnlyKnownHeaders")}
         schema={APPEND_SCHEMA.properties.requireOnlyKnownHeaders as Schema}
       />
+      <SchemaField
+        name={joinName(blockConfigPath, "requireSheetIsVisible")}
+        schema={APPEND_SCHEMA.properties.requireSheetIsVisible as Schema}
+      />
     </div>
   );
 };
