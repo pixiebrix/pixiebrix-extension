@@ -39,6 +39,7 @@ type ButtonElementProps = Except<AsyncButtonProps, "onClick"> & {
    * True to expand the button to the full width of the container.
    */
   fullWidth?: boolean;
+  tooltip?: string;
 };
 
 const ButtonElement: React.FC<ButtonElementProps> = ({
@@ -46,6 +47,7 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
   tracePath,
   disabled: rawDisabled,
   fullWidth = false,
+  tooltip,
   className,
   ...restProps
 }) => {
@@ -102,6 +104,7 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
       // `btn-block` is the classname in Bootstrap 4
       // Discussion: https://stackoverflow.com/questions/23183343/bootstrap-btn-block-not-working
       className={cx(className, { "btn-block": fullWidth })}
+      title={tooltip}
       {...restProps}
     />
   );
