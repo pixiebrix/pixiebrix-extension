@@ -38,7 +38,7 @@ describe("inferRecipeOptions", () => {
   });
 });
 
-describe("inferConfiguredModIntegrations", () => {
+describe("gatherConfiguredIntegrationDependencies", () => {
   it("handles undefined integrationDependencies", () => {
     expect(
       gatherConfiguredIntegrationDependencies([
@@ -64,51 +64,13 @@ describe("inferConfiguredModIntegrations", () => {
     ).toStrictEqual([integrationDependency]);
   });
 
-  it("throw on mismatched configId", () => {
-    const integrationId = validateRegistryId("foo/bar");
-    const configId = uuidv4();
-    const integrationDependency = integrationDependencyFactory({
-      integrationId,
-      outputKey: validateOutputKey("foo"),
-      configId,
-    });
-
-    expect(() =>
-      gatherConfiguredIntegrationDependencies([
-        { integrationDependencies: [integrationDependency] },
-        {
-          integrationDependencies: [
-            { ...integrationDependency, configId: uuidv4() },
-          ],
-        },
-      ]),
-    ).toThrow(/has multiple configurations/);
-  });
-
-  it("throw on missing configId", () => {
-    const integrationId = validateRegistryId("foo/bar");
-    const unconfiguredDependency: IntegrationDependency = {
-      integrationId,
-      outputKey: validateOutputKey("foo"),
-    };
-
-    expect(() =>
-      gatherConfiguredIntegrationDependencies([
-        { integrationDependencies: [unconfiguredDependency] },
-      ]),
-    ).toThrow(/is not configured/);
-  });
-
   it("handles unconfigured (optional) integrations", () => {
     // Factory does not add a configId by default
     const unconfigured = integrationDependencyFactory();
     expect(
-      gatherConfiguredIntegrationDependencies(
-        [{ integrationDependencies: [unconfigured] }],
-        {
-          optional: true,
-        },
-      ),
+      gatherConfiguredIntegrationDependencies([
+        { integrationDependencies: [unconfigured] },
+      ]),
     ).toBeEmpty();
   });
 
