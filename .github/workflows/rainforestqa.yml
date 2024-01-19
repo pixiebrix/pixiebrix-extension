@@ -23,7 +23,7 @@ jobs:
       PUBLIC_RELEASE: true
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
       # Use mv2 because that's currently what the Rainforest build uses, see "npm run build" step below
-      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}/mv2
+      SOURCE_MAP_PATH: sourcemaps/build/${{ github.sha }}/mv2
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
