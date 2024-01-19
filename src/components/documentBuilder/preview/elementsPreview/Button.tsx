@@ -79,7 +79,7 @@ const Button: React.FunctionComponent<ButtonProps> = ({
           )}
           variant={isExpression(variant) ? undefined : variant}
           size={isExpression(size) ? undefined : size}
-          title={tooltip}
+          title={isExpression(tooltip) ? undefined : tooltip}
         >
           {children}
         </BsButton>

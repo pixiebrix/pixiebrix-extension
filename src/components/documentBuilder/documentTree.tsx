@@ -34,7 +34,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import Markdown from "@/components/Markdown";
 import CardElement from "./render/CardElement";
 import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
-import { isPipelineExpression } from "@/utils/expressionUtils";
+import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
 import { boolean } from "@/utils/typeUtils";
 import { joinPathParts } from "@/utils/formUtils";
 import Icon from "@/icons/Icon";
@@ -213,7 +213,7 @@ export function getComponentDefinition(
 
       const buttonContent = (
         <>
-          {icon && (
+          {icon && !isExpression(icon) && (
             <Icon
               icon={icon.id}
               library={icon.library}

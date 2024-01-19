@@ -83,8 +83,8 @@ export function isPipelineElement(
 
 export type ButtonDocumentConfig = {
   title: string | Expression;
-  tooltip?: string;
-  icon?: IconConfig;
+  tooltip?: string | Expression;
+  icon?: IconConfig | Expression;
   variant?: string | Expression;
   /**
    * Default size type coming from React Bootstrap Button
