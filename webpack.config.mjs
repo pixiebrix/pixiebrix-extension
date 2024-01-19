@@ -111,6 +111,7 @@ const createConfig = (env, options) =>
         "contentScript/loadActivationEnhancements",
         "contentScript/browserActionInstantHandler",
         "contentScript/setExtensionIdInApp",
+        "components/documentBuilder/documentTree",
         "pageEditor/pageEditor",
         "extensionConsole/options",
         "sidebar/sidebar",

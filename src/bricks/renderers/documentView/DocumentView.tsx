@@ -46,7 +46,9 @@ const DocumentView: React.FC<DocumentViewProps> = ({
     // Wrap in a React context provider that passes BrickOptions down to any embedded bricks
     <DocumentContext.Provider value={{ options, onAction }}>
       <EmotionShadowRoot.div className="h-100">
-        <Stylesheets href={[bootstrap, bootstrapOverrides]}>
+        <Stylesheets
+          href={[bootstrap, "/documentTree.css", bootstrapOverrides]}
+        >
           {body.map((documentElement, index) => {
             const documentBranch = buildDocumentBranch(documentElement, {
               staticId: joinPathParts("body", "children"),
