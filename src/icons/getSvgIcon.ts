@@ -43,7 +43,7 @@ export default async function getSvgIcon({
   const svgText = await response.text();
 
   const svgTextElement = $(svgText);
-  // TODO: comment me
+  // Mod developers can optionally add a title property to elements wrapping the icon
   svgTextElement.find("title").remove();
 
   // We just created an element, it can't be "undefined". `!` is fine

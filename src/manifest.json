@@ -74,6 +74,7 @@
     "walkthroughModal.html",
     "ephemeralPanel.html",
     "ephemeralModal.css",
+    "DocumentView.css",
     "audio/*",
     "user-icons/*",
     "img/*"

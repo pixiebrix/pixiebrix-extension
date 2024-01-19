@@ -107,11 +107,11 @@ const createConfig = (env, options) =>
     entry: Object.fromEntries(
       [
         "background/background",
+        "bricks/renderers/documentView/DocumentView",
         "contentScript/contentScript",
         "contentScript/loadActivationEnhancements",
         "contentScript/browserActionInstantHandler",
         "contentScript/setExtensionIdInApp",
-        "components/documentBuilder/documentTree",
         "pageEditor/pageEditor",
         "extensionConsole/options",
         "sidebar/sidebar",

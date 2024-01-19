@@ -47,7 +47,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({
     <DocumentContext.Provider value={{ options, onAction }}>
       <EmotionShadowRoot.div className="h-100">
         <Stylesheets
-          href={[bootstrap, "/documentTree.css", bootstrapOverrides]}
+          href={["/DocumentView.css", bootstrap, bootstrapOverrides]}
         >
           {body.map((documentElement, index) => {
             const documentBranch = buildDocumentBranch(documentElement, {
