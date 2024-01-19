@@ -25,11 +25,12 @@ import { type IconLibrary } from "@/types/iconTypes";
 const Icon: React.FunctionComponent<{
   icon?: string;
   library?: IconLibrary;
-  size?: number;
+  size?: number | string;
   className?: string;
-}> = ({ icon, library, size = 16, className }) => {
+  color?: string;
+}> = ({ icon, library, size = 16, className, color }) => {
   const { data: svg = "" } = useAsyncState(
-    async () => getSvgIcon({ id: icon, library, size }),
+    async () => getSvgIcon({ id: icon, library, size, color }),
     [icon, library],
   );
 

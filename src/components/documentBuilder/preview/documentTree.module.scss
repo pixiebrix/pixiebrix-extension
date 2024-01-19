@@ -63,3 +63,15 @@
   // 3px - width of the container border
   transform: translate3d(-3px, calc(-100% - 2px), 0px);
 }
+
+.iconMargin {
+  margin-right: 12px;
+
+  &.iconMarginSm {
+    margin-right: 8px;
+  }
+
+  &.iconMarginLg {
+    margin-right: 16px;
+  }
+}
