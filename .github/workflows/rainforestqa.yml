@@ -19,6 +19,11 @@ jobs:
       RAINFOREST_RUN_GROUP_MAIN: 14129
       RAINFOREST_RUN_GROUP_RELEASE: 14130
       RAINFOREST_RUN_GROUP_CWS: 14131
+      # The following environment variables are set so sourceMapPublicUrl, and there SOURCE_MAP_PUBLIC_PATH, is defined in the build
+      PUBLIC_RELEASE: true
+      SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
+      # Use mv2 because that's currently what the Rainforest build uses, see "npm run build" step below
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}/mv2
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,6 +34,7 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
+          MV: 2
           DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
           DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
