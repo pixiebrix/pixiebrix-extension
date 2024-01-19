@@ -36,12 +36,10 @@ import type {
   ActivatedModComponent,
   UnresolvedModComponent,
 } from "@/types/modComponentTypes";
-import {
-  inferConfiguredModIntegrations,
-  inferRecipeOptions,
-} from "@/store/extensionsUtils";
+import { inferRecipeOptions } from "@/store/extensionsUtils";
 import type { ModComponentState } from "@/store/extensionsTypes";
 import { uninstallContextMenu } from "@/background/contextMenus";
+import gatherExistingConfiguredDependenciesForMod from "@/integrations/util/gatherExistingConfiguredDependenciesForMod";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -203,7 +201,7 @@ export function deactivateMod(
   reduxState: ActivatedModState,
 ): {
   reduxState: ActivatedModState;
-  deactivatedModComponents: UnresolvedModComponent[];
+  deactivatedModComponents: ActivatedModComponent[];
 } {
   let { options: newOptionsState, editor: newEditorState } = reduxState;
 
@@ -212,7 +210,7 @@ export function deactivateMod(
     options: newOptionsState,
   });
 
-  const deactivatedModComponents: UnresolvedModComponent[] = [];
+  const deactivatedModComponents: ActivatedModComponent[] = [];
   for (const activatedModComponent of activatedModComponents) {
     const { options: nextOptionsState, editor: nextEditorState } =
       deactivateModComponent(activatedModComponent, {
@@ -264,10 +262,9 @@ function updateMod(
   newOptionsState = nextOptionsState;
   newEditorState = nextEditorState;
 
-  const configuredDependencies = inferConfiguredModIntegrations(
-    deactivatedModComponents.filter(
-      ({ integrationDependencies }) => integrationDependencies,
-    ),
+  const configuredDependencies = gatherExistingConfiguredDependenciesForMod(
+    modDefinition,
+    deactivatedModComponents,
   );
 
   const optionsArgs = inferRecipeOptions(

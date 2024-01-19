@@ -57,10 +57,7 @@ import { produce } from "immer";
 import { object, string } from "yup";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import {
-  inferConfiguredModIntegrations,
-  inferRecipeOptions,
-} from "@/store/extensionsUtils";
+import { inferRecipeOptions } from "@/store/extensionsUtils";
 import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
@@ -85,6 +82,7 @@ import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
+import gatherExistingConfiguredDependenciesForMod from "@/integrations/util/gatherExistingConfiguredDependenciesForMod";
 
 const { actions: modComponentActions } = extensionsSlice;
 
@@ -242,7 +240,10 @@ function useSaveCallbacks({
       dispatch(
         modComponentActions.installMod({
           modDefinition: savedModDefinition,
-          configuredDependencies: inferConfiguredModIntegrations(modComponents),
+          configuredDependencies: gatherExistingConfiguredDependenciesForMod(
+            savedModDefinition,
+            modComponents,
+          ),
           optionsArgs: inferRecipeOptions(modComponents),
           screen: "pageEditor",
           isReinstall: false,

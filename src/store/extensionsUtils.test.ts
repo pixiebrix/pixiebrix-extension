@@ -16,7 +16,7 @@
  */
 
 import {
-  inferConfiguredModIntegrations,
+  gatherConfiguredIntegrationDependencies,
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
@@ -41,7 +41,9 @@ describe("inferRecipeOptions", () => {
 describe("inferConfiguredModIntegrations", () => {
   it("handles undefined integrationDependencies", () => {
     expect(
-      inferConfiguredModIntegrations([{ integrationDependencies: undefined }]),
+      gatherConfiguredIntegrationDependencies([
+        { integrationDependencies: undefined },
+      ]),
     ).toStrictEqual([]);
   });
 
@@ -55,7 +57,7 @@ describe("inferConfiguredModIntegrations", () => {
     });
 
     expect(
-      inferConfiguredModIntegrations([
+      gatherConfiguredIntegrationDependencies([
         { integrationDependencies: [integrationDependency] },
         { integrationDependencies: [integrationDependency] },
       ]),
@@ -72,7 +74,7 @@ describe("inferConfiguredModIntegrations", () => {
     });
 
     expect(() =>
-      inferConfiguredModIntegrations([
+      gatherConfiguredIntegrationDependencies([
         { integrationDependencies: [integrationDependency] },
         {
           integrationDependencies: [
@@ -91,7 +93,7 @@ describe("inferConfiguredModIntegrations", () => {
     };
 
     expect(() =>
-      inferConfiguredModIntegrations([
+      gatherConfiguredIntegrationDependencies([
         { integrationDependencies: [unconfiguredDependency] },
       ]),
     ).toThrow(/is not configured/);
@@ -101,7 +103,7 @@ describe("inferConfiguredModIntegrations", () => {
     // Factory does not add a configId by default
     const unconfigured = integrationDependencyFactory();
     expect(
-      inferConfiguredModIntegrations(
+      gatherConfiguredIntegrationDependencies(
         [{ integrationDependencies: [unconfigured] }],
         {
           optional: true,
@@ -115,7 +117,7 @@ describe("inferConfiguredModIntegrations", () => {
       integrationId: PIXIEBRIX_INTEGRATION_ID,
     });
     expect(
-      inferConfiguredModIntegrations([
+      gatherConfiguredIntegrationDependencies([
         { integrationDependencies: [pixiebrix] },
       ]),
     ).toStrictEqual([pixiebrix]);
@@ -132,7 +134,7 @@ describe("inferConfiguredModIntegrations", () => {
       configId: uuidv4(),
     });
     expect(
-      inferConfiguredModIntegrations(
+      gatherConfiguredIntegrationDependencies(
         [
           { integrationDependencies: [pixiebrix, pixiebrix] },
           { integrationDependencies: [pixiebrix, optional] },

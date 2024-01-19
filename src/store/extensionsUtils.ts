@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { flatten, groupBy, uniqBy } from "lodash";
+import { flatten, uniqBy } from "lodash";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -35,66 +35,25 @@ export function inferRecipeOptions(
 }
 
 /**
- * Infer configured integration dependencies from existing mod-component-like
+ * Gather configured integration dependencies from existing mod-component-like
  * instances for reinstalling a mod. Filters out any optional integrations that
  * don't have a config set.
  * @param modComponents mod components from which to extract integration dependencies
- * @param optional don't check integration dependencies for valid configs
  * @returns IntegrationDependency[] the configured integration dependencies for the mod components
  * @see installMod
  */
-export function inferConfiguredModIntegrations(
+export function gatherConfiguredIntegrationDependencies(
   modComponents: Array<Pick<ModComponentBase, "integrationDependencies">>,
-  { optional = false }: { optional?: boolean } = {},
 ): IntegrationDependency[] {
-  // The mod components will only have the integration dependencies that are
-  // declared on each extension. So we have to take the union of the integration
-  // configs. There's currently no way in the UX that the integration configurations
-  // could become inconsistent for a given integration key, but guard against
-  // that case anyway.
-
-  const dependenciesByIntegrationId = groupBy(
-    modComponents.flatMap(
-      ({ integrationDependencies }) => integrationDependencies ?? [],
-    ),
-    ({ integrationId }) => integrationId,
-  );
-  const result: IntegrationDependency[] = [];
-  for (const [id, dependencies] of Object.entries(
-    dependenciesByIntegrationId,
-  )) {
-    const configuredDependencies = uniqBy(
-      dependencies.filter(
+  return uniqBy(
+    modComponents
+      .flatMap(({ integrationDependencies }) => integrationDependencies ?? [])
+      .filter(
         ({ integrationId, configId }) =>
           configId != null || integrationId === PIXIEBRIX_INTEGRATION_ID,
       ),
-      ({ configId }) => configId,
-    );
-
-    // PIXIEBRIX_INTEGRATION_ID will never have empty dependencies here, they aren't filtered out above
-    if (configuredDependencies.length === 0) {
-      if (optional) {
-        continue;
-      } else {
-        throw new Error(`Integration ${id} is not configured`);
-      }
-    }
-
-    // If optional is passed in, we know that the user is being given an
-    // opportunity to switch which configuration is applied, so the user can
-    // always switch to a different config if they want.
-    if (
-      id !== PIXIEBRIX_INTEGRATION_ID &&
-      configuredDependencies.length > 1 &&
-      !optional
-    ) {
-      throw new Error(`Integration ${id} has multiple configurations`);
-    }
-
-    result.push(configuredDependencies[0]);
-  }
-
-  return result;
+    ({ integrationId }) => integrationId,
+  );
 }
 
 /**
@@ -107,7 +66,7 @@ export function inferRecipeDependencies(
   const withIntegrations: Array<{
     integrationDependencies?: IntegrationDependency[];
   }> = [...installedRecipeExtensions, ...dirtyRecipeElements];
-  return uniqBy(
+  return uniqBy<IntegrationDependency>(
     flatten(
       withIntegrations.map(
         ({ integrationDependencies }) => integrationDependencies ?? [],

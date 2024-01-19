@@ -20,11 +20,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useCallback } from "react";
 import { actions as extensionActions } from "@/store/extensionsSlice";
-import {
-  inferConfiguredModIntegrations,
-  inferRecipeOptions,
-} from "@/store/extensionsUtils";
+import { inferRecipeOptions } from "@/store/extensionsUtils";
 import { uninstallRecipe } from "@/store/uninstallUtils";
+import gatherExistingConfiguredDependenciesForMod from "@/integrations/util/gatherExistingConfiguredDependenciesForMod";
 
 type Reinstall = (modDefinition: ModDefinition) => Promise<void>;
 
@@ -35,20 +33,22 @@ function useReinstall(): Reinstall {
   return useCallback(
     async (modDefinition: ModDefinition) => {
       const modId = modDefinition.metadata.id;
-      const modComponents = allComponents.filter(
+      const activatedModComponents = allComponents.filter(
         (x) => x._recipe?.id === modId,
       );
 
-      if (modComponents.length === 0) {
+      if (activatedModComponents.length === 0) {
         throw new Error(`No bricks to re-activate for ${modId}`);
       }
 
-      const currentOptions = inferRecipeOptions(modComponents);
+      const currentOptions = inferRecipeOptions(activatedModComponents);
 
-      const configuredDependencies =
-        inferConfiguredModIntegrations(modComponents);
+      const configuredDependencies = gatherExistingConfiguredDependenciesForMod(
+        modDefinition,
+        activatedModComponents,
+      );
 
-      await uninstallRecipe(modId, modComponents, dispatch);
+      await uninstallRecipe(modId, activatedModComponents, dispatch);
 
       dispatch(
         extensionActions.installMod({
