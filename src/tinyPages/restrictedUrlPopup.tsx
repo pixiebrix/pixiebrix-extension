@@ -15,14 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import "bootstrap/dist/css/bootstrap.min.css";
 import "@/extensionContext";
-
 import RestrictedUrlPopupApp from "@/tinyPages/RestrictedUrlPopupApp";
-
 import ReactDOM from "react-dom";
 import React from "react";
-
-import "bootstrap/dist/css/bootstrap.min.css";
 
 ReactDOM.render(
   <RestrictedUrlPopupApp />,
