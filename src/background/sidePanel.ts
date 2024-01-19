@@ -23,6 +23,7 @@ import {
   DISPLAY_REASON_RESTRICTED_URL,
 } from "@/tinyPages/restrictedUrlPopupConstants";
 import { isScriptableUrl } from "webext-content-scripts";
+import { isMV3 } from "@/mv3/api";
 
 export function getRestrictedPageMessage(
   tabUrl: string | undefined,
@@ -52,6 +53,10 @@ export async function showMySidePanel(this: MessengerMeta): Promise<void> {
 
 // TODO: Drop if this is ever implemented: https://github.com/w3c/webextensions/issues/515
 export async function initSidePanel(): Promise<void> {
+  if (!isMV3()) {
+    return;
+  }
+
   // TODO: Drop this once the popover URL behavior is merged into sidebar.html
   // https://github.com/pixiebrix/pixiebrix-extension/issues/7364
   chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {

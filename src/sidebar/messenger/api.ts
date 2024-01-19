@@ -16,12 +16,21 @@
  */
 
 /* Do not use `registerMethod` in this file */
+import { isMV3 } from "@/mv3/api";
 import { isContentScript } from "webext-detect-page";
-import { getMethod, getNotifier, getThisFrame } from "webext-messenger";
+import {
+  type Target,
+  type PageTarget,
+  getMethod,
+  getNotifier,
+  getThisFrame,
+} from "webext-messenger";
 
-const target = { page: "/sidebar.html" };
+const target: Target | PageTarget = isMV3()
+  ? { page: "/sidebar.html" }
+  : { tabId: "this", page: "/sidebar.html" };
 
-if (isContentScript()) {
+if (isContentScript() && isMV3()) {
   // Unavoidable race condition: we can't message the sidebar until we know the tabId.
   // TODO: Drop if this is ever implemented https://github.com/pixiebrix/webext-messenger/issues/193
   // eslint-disable-next-line promise/prefer-await-to-then

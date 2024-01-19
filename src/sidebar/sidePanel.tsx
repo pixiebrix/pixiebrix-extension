@@ -22,8 +22,8 @@ import {
   PING_SIDE_PANEL,
   getAssociatedTarget,
 } from "@/sidebar/sidePanel/messenger/api";
-import { sidebarWasLoaded } from "@/contentScript/messenger/api";
 import { isObject } from "@/utils/objectUtils";
+import { isMV3 } from "@/mv3/api";
 
 expectContext("sidebar");
 
@@ -42,6 +42,7 @@ function respondToPings() {
 }
 
 export function initSidePanel() {
-  respondToPings();
-  sidebarWasLoaded(getAssociatedTarget());
+  if (isMV3()) {
+    respondToPings();
+  }
 }
