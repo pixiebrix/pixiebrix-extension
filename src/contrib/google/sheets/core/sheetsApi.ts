@@ -186,7 +186,7 @@ export async function getAllRows(
 export async function getHeaders(target: SpreadsheetTarget): Promise<string[]> {
   // Lookup the headers in the first row
   const { values } = await getRows(target, `A1:${columnToLetter(256)}1`);
-  return values[0]?.map(String) ?? [];
+  return values?.[0]?.map(String) ?? [];
 }
 
 export async function getSpreadsheet({
@@ -197,7 +197,7 @@ export async function getSpreadsheet({
   // hydrating the actual grid data for the sheet
   // Note: This only works if spreadsheetId is at the end of the list for some reason ¯\_(ツ)_/¯
   const fileMask =
-    "properties(title),sheets.properties(sheetId,title),spreadsheetId";
+    "properties(title),sheets.properties(sheetId,title,hidden),spreadsheetId";
 
   return executeRequest<Spreadsheet>(
     {

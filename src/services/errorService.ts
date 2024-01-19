@@ -102,8 +102,8 @@ export async function selectExtraContext(
 }
 
 /**
- * Report to the PixieBrix error telemetry service/
- * @see reportToRollbar
+ * Report to the PixieBrix error telemetry service
+ * @see reportToApplicationErrorTelemetry
  */
 export async function reportToErrorService(
   error: Error,
@@ -117,7 +117,7 @@ export async function reportToErrorService(
   );
 
   if (flatContext.extensionId == null) {
-    // Only report errors that occurred within a user-defined extension/blueprint. Other errors only go to Rollbar.
+    // Only report errors that occurred within a user-defined extension/blueprint. Other errors only go to Application error telemetry.
     // (They're problems with our software.)
     return;
   }
@@ -127,7 +127,7 @@ export async function reportToErrorService(
   }
 
   if (!(await allowsTrack())) {
-    // We warn that tracking is disabled in the analogous call to report to Rollbar. See reportToRollbar
+    // We warn that tracking is disabled in the analogous call to report Application error telemetry. See reportToApplicationErrorTelemetry
     return;
   }
 

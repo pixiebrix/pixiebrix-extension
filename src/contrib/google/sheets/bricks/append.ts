@@ -16,11 +16,10 @@
  */
 
 import { propertiesToSchema } from "@/validators/generic";
-import { isEqual, unary, uniq } from "lodash";
+import { isEmpty, isEqual, unary, uniq } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import { normalizeHeader } from "@/contrib/google/sheets/core/sheetsHelpers";
 import { sheets } from "@/background/messenger/api";
-import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
   GOOGLE_OAUTH2_PKCE_INTEGRATION_ID,
@@ -37,17 +36,17 @@ import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContext
 
 type CellValue = string | number | null;
 
-type Entry = {
+export type Entry = {
   header: string;
   value: CellValue;
 };
 
-type RowValues =
+export type RowValues =
   | Record<string, CellValue>
   | Array<Record<string, CellValue>>
   | Entry[];
 type KnownShape = "entries" | "multi" | "single";
-type Shape = KnownShape | "infer";
+export type Shape = KnownShape | "infer";
 
 export const APPEND_SCHEMA: Schema = propertiesToSchema(
   {
@@ -112,6 +111,25 @@ export const APPEND_SCHEMA: Schema = propertiesToSchema(
         },
       ],
     },
+    requireAllHeaders: {
+      type: "boolean",
+      title: "Require All Headers",
+      description:
+        "Validate that submitted data includes all headers in the sheet",
+      default: true,
+    },
+    requireOnlyKnownHeaders: {
+      type: "boolean",
+      title: "Require Only Known Headers",
+      description: "Validate that all submitted headers exist in the sheet",
+      default: true,
+    },
+    requireSheetIsVisible: {
+      type: "boolean",
+      title: "Require Visible Sheet",
+      description: "Validate that the target sheet is not hidden",
+      default: true,
+    },
   },
   // For backwards compatibility, googleAccount is not required
   ["spreadsheetId", "tabName", "rowValues"],
@@ -156,10 +174,6 @@ function makeRowCells(headerRow: string[], rowEntries: Entry[]): CellValue[] {
 export const GOOGLE_SHEETS_APPEND_ID = validateRegistryId(
   "@pixiebrix/google/sheets-append",
 );
-
-function isAuthError(error: unknown): boolean {
-  return isObject(error) && [404, 401, 403].includes(error.code as number);
-}
 
 export function detectShape(rowValues: RowValues): KnownShape {
   if (Array.isArray(rowValues)) {
@@ -257,6 +271,54 @@ export function normalizeShape(shape: Shape, rowValues: RowValues): Entry[][] {
   }
 }
 
+// Exported for testing
+export function checkForBlankIntermediateColumns(currentHeaders: string[]) {
+  let foundNonBlankHeader = false;
+  for (const header of currentHeaders) {
+    if (!isNullOrBlank(header)) {
+      foundNonBlankHeader = true;
+    } else if (foundNonBlankHeader) {
+      throw new BusinessError(
+        "Invalid header row. Must not contain any blank columns between headers in the sheet",
+      );
+    }
+  }
+}
+
+// Exported for testing
+export function checkForMissingValueHeaders(
+  currentSheetHeaders: string[],
+  valueHeaders: string[],
+) {
+  const missingHeaders = currentSheetHeaders.filter(
+    (header) => !valueHeaders.includes(header),
+  );
+  if (missingHeaders.length > 0) {
+    throw new BusinessError(
+      `One or more headers in the sheet were not provided in brick inputs: ${missingHeaders.join(
+        ", ",
+      )}`,
+    );
+  }
+}
+
+// Exported for testing
+export function checkAllValueHeadersExist(
+  currentSheetHeaders: string[],
+  valueHeaders: string[],
+) {
+  const extraValueHeaders = valueHeaders.filter(
+    (header) => !currentSheetHeaders.includes(header),
+  );
+  if (extraValueHeaders.length > 0) {
+    throw new BusinessError(
+      `One or more headers provided in brick inputs do not exist in the sheet: ${extraValueHeaders.join(
+        ", ",
+      )}`,
+    );
+  }
+}
+
 export class GoogleSheetsAppend extends EffectABC {
   constructor() {
     super(
@@ -275,12 +337,18 @@ export class GoogleSheetsAppend extends EffectABC {
       tabName,
       shape = "infer",
       rowValues: rawValues = {},
+      requireAllHeaders = false,
+      requireOnlyKnownHeaders = false,
+      requireSheetIsVisible = false,
     }: BrickArgs<{
       googleAccount?: SanitizedIntegrationConfig | undefined;
       spreadsheetId: string | SanitizedIntegrationConfig;
       tabName: string;
       shape: Shape;
       rowValues: RowValues;
+      requireAllHeaders: boolean;
+      requireOnlyKnownHeaders: boolean;
+      requireSheetIsVisible: boolean;
     }>,
     { logger }: BrickOptions,
   ): Promise<void> {
@@ -307,33 +375,56 @@ export class GoogleSheetsAppend extends EffectABC {
       rows.flatMap((row) => row.map((x: Entry) => x.header)),
     );
 
-    let currentHeaders: string[];
-    try {
-      currentHeaders = await sheets.getHeaders(target);
-      console.debug(
-        `Found headers for ${tabName}: ${currentHeaders.join(", ")}`,
-      );
-    } catch (error) {
-      logger.warn(`Error retrieving headers: ${getErrorMessage(error)}`, {
-        error,
-      });
-      if (isAuthError(error)) {
-        throw error;
-      }
+    const spreadsheet = await sheets.getSpreadsheet(target);
+    const sheet = spreadsheet.sheets.find(
+      (sheet) => sheet.properties.title === tabName,
+    );
 
+    if (!sheet) {
       logger.info(`Creating tab ${tabName}`);
       await sheets.createTab(target);
+    } else if (requireSheetIsVisible && sheet.properties.hidden) {
+      throw new BusinessError(
+        `Sheet ${tabName} is hidden. Please unhide the sheet or disable the "Require Visible Sheet" brick config option.`,
+      );
     }
 
-    if (!currentHeaders || currentHeaders.every((x) => isNullOrBlank(x))) {
-      logger.info(`Writing header row for ${tabName}`);
+    const allRows = await sheets.getAllRows(target);
+    let currentSheetHeaders: string[];
+    if (allRows.values) {
+      currentSheetHeaders = allRows.values[0]?.map(String) ?? [];
+
+      if (
+        isEmpty(currentSheetHeaders) ||
+        currentSheetHeaders.every((header) => isNullOrBlank(header))
+      ) {
+        throw new BusinessError(
+          "Header row not found. The first row of the sheet must contain header(s).",
+        );
+      }
+
+      console.debug(
+        `Found headers for ${tabName}: ${currentSheetHeaders.join(", ")}`,
+      );
+    } else {
+      logger.info(`Sheet is empty, writing header row for ${tabName}`);
       await sheets.appendRows(target, [valueHeaders]);
-      currentHeaders = valueHeaders;
+      currentSheetHeaders = valueHeaders;
+    }
+
+    checkForBlankIntermediateColumns(currentSheetHeaders);
+
+    if (requireAllHeaders) {
+      checkForMissingValueHeaders(currentSheetHeaders, valueHeaders);
+    }
+
+    if (requireOnlyKnownHeaders) {
+      checkAllValueHeadersExist(currentSheetHeaders, valueHeaders);
     }
 
     await sheets.appendRows(
       target,
-      rows.map((row) => makeRowCells(currentHeaders, row)),
+      rows.map((row) => makeRowCells(currentSheetHeaders, row)),
     );
   }
 }

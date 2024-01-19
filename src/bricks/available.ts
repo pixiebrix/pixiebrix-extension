@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { patternToRegex } from "webext-patterns";
+import { doesUrlMatchPatterns, isValidPattern } from "webext-patterns";
 import { castArray } from "lodash";
 import { type Availability } from "@/bricks/types";
 import { type Entries } from "type-fest";
@@ -26,19 +26,19 @@ export function testMatchPatterns(
   patterns: string[],
   url: string = document.location.href,
 ): boolean {
-  for (const pattern of patterns) {
-    try {
-      if (patternToRegex(pattern).test(url)) {
-        return true;
-      }
-    } catch {
-      throw new BusinessError(
-        `Pattern not recognized as valid match pattern: ${pattern}`,
-      );
-    }
+  if (url === "about:srcdoc") {
+    // <all_urls> doesn't officially include about:srcdoc, but it works in some cases
+    return patterns.includes("<all_urls>");
   }
 
-  return false;
+  try {
+    return doesUrlMatchPatterns(url, ...patterns);
+  } catch {
+    const invalidPattern = patterns.find((pattern) => !isValidPattern(pattern));
+    throw new BusinessError(
+      `Pattern not recognized as valid match pattern: ${invalidPattern}`,
+    );
+  }
 }
 
 function testUrlPattern(
