@@ -95,7 +95,7 @@ async function fetchPages<TData>(
   >(config, paginatedRequestConfig);
 
   if (initialResponse.data.list == null) {
-    // Use TypeError instead of BusinessError to ensure we get the telemetry in Rollbar if we're calling API incorrectly
+    // Use TypeError instead of BusinessError to ensure we send it to Application error telemetry if we're calling API incorrectly
     throw new TypeError("Expected list response from Control Room");
   }
 

@@ -42,9 +42,15 @@ export default async function getSvgIcon({
   const response = await fetch(iconUrl);
   const svgText = await response.text();
 
+  const svgTextElement = $(svgText);
+  // XXX: Some (not all) icons include a title element for accessibility, but this conflicts with the title attribute
+  // on parent elements wrapping the SVG that can be configured by Mod Developers. Remove the title element in
+  // favor of the title attribute on a parent element.
+  svgTextElement.find("title").remove();
+
   // We just created an element, it can't be "undefined". `!` is fine
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return $(svgText)
+  return svgTextElement
     .filter("svg") // There might also be comment nodes, so they need to be filtered out
     .attr({
       width: size,

@@ -15,13 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import BaseInputTemplate from "@/components/formBuilder/BaseInputTemplate";
-import DescriptionFieldTemplate from "@/components/formBuilder/DescriptionFieldTemplate";
-import FieldTemplate from "@/components/formBuilder/FieldTemplate";
-import { type FormProps } from "@rjsf/core";
+import { UiPathRobot } from "@uipath/robot";
 
-export const templates = {
-  FieldTemplate,
-  DescriptionFieldTemplate,
-  BaseInputTemplate,
-} satisfies FormProps["templates"];
+UiPathRobot.settings.disableTelemetry = true;
+
+export { UiPathRobot };

@@ -48,7 +48,7 @@ const Button: React.FunctionComponent<ButtonProps> = ({
   // NOTE: not passing through "disabled" prop because that prevents the user from clicking the button in the preview
   // to select the element in the Document Builder.
   const {
-    title,
+    tooltip,
     variant,
     size,
     fullWidth,
@@ -79,8 +79,9 @@ const Button: React.FunctionComponent<ButtonProps> = ({
           )}
           variant={isExpression(variant) ? undefined : variant}
           size={isExpression(size) ? undefined : size}
+          title={isExpression(tooltip) ? undefined : tooltip}
         >
-          {title}
+          {children}
         </BsButton>
       </div>
     </div>

@@ -24,6 +24,7 @@ import { allowsTrack } from "@/telemetry/dnt";
 import {
   getErrorMessage,
   hasSpecificErrorCause,
+  isErrorObject,
   isSpecificError,
 } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
@@ -313,7 +314,7 @@ function flattenContext(
 }
 
 const warnAboutDisabledDNT = once(() => {
-  console.warn("Rollbar telemetry is disabled because DNT is turned on");
+  console.warn("Error telemetry is disabled because DNT is turned on");
 });
 
 const THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES = new Set([502, 503, 504]);
@@ -321,21 +322,52 @@ const THROTTLE_RATE_MS = 60_000; // 1 minute
 let lastAxiosServerErrorTimestamp: number = null;
 
 /**
+ * Create a fake stacktrace for Datadog that don't natively support Error.cause.
+ */
+export function flattenStackForDatadog(stack: string, cause?: unknown): string {
+  // TODO: remove once Datadog supports natively: https://github.com/DataDog/browser-sdk/issues/2569
+
+  // The logic was originally written for Rollbar, which later introduced native support for Error.cause:
+  // https://github.com/pixiebrix/pixiebrix-extension/pull/3011/files
+
+  // Some stack validation to avoid runtime errors while submitting errors
+  if (!isErrorObject(cause) || !cause.stack?.includes("\n")) {
+    return stack;
+  }
+
+  // Drop spaces from cause’s title or else Datadog will clip the title
+  const [errorTitle] = cause.stack.split("\n", 1);
+  const causeStack = cause.stack.replace(
+    errorTitle,
+    errorTitle.replaceAll(" ", "-"),
+  );
+
+  // Add a fake stacktrace line in order to preserve the cause’s title. Datadog does not support
+  // the standard `caused by: Error: Some message\n` line and would misinterpret the stacktrace.
+  // XXX: this isn't quite right for Datadog. In the Datadog UI, the fake line ends up as
+  // "BY.js:0:0) Error:-Error-Message" That's OK for now because it's by and large a cosmetic limitation.
+  return flattenStackForDatadog(
+    stack + `\n    at CAUSED (BY.js:0:0) ${causeStack}`,
+    cause.cause,
+  );
+}
+
+/**
  * Do not use this function directly. Use `reportError` instead: `import reportError from "@/telemetry/reportError"`
  * It's only exported for testing.
  */
-export async function reportToRollbar(
-  // Ensure it's an Error instance before passing it to Rollbar so rollbar treats it as the error.
-  // (It treats POJO as the custom data)
-  // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
+export async function reportToApplicationErrorTelemetry(
+  // Ensure it's an Error instance before passing it to Application error telemetry so Application error telemetry
+  // treats it as the error. Note, Rollbar, treats POJO as the custom data.
   error: Error,
   flatContext: MessageContext,
   message: string,
 ): Promise<void> {
-  // Business errors are now sent to the PixieBrix error service instead of Rollbar - see reportToErrorService
+  // Business errors are now sent to the PixieBrix error service instead of the Application error service - see reportToErrorService
   if (
     hasSpecificErrorCause(error, BusinessError) ||
-    (await flagOn("rollbar-disable-report"))
+    // `application-error-telemetry-disable-report` is a kill switch for Application error telemetry
+    (await flagOn("application-error-telemetry-disable-report"))
   ) {
     return;
   }
@@ -353,7 +385,7 @@ export async function reportToRollbar(
       lastAxiosServerErrorTimestamp &&
       now - lastAxiosServerErrorTimestamp < THROTTLE_RATE_MS
     ) {
-      console.debug("Skipping Rollbar report due to throttling");
+      console.debug("Skipping remote error telemetry report due to throttling");
       return;
     }
 
@@ -369,15 +401,27 @@ export async function reportToRollbar(
   // to determine log level also handle serialized/deserialized errors.
   // See https://github.com/sindresorhus/serialize-error/issues/48
 
-  const { getRollbar } = await import(
-    /* webpackChunkName: "rollbar" */
-    "@/telemetry/initRollbar"
+  const { getErrorReporter } = await import(
+    /* webpackChunkName: "errorReporter" */
+    "@/telemetry/initErrorReporter"
   );
 
-  const rollbar = await getRollbar();
+  const reporter = await getErrorReporter();
+
+  if (!reporter) {
+    // Error reported not initialized
+    return;
+  }
+
   const details = await selectExtraContext(error);
 
-  rollbar.error(message, error, { ...flatContext, ...details });
+  error.stack = flattenStackForDatadog(error.stack, error.cause);
+
+  reporter.error({
+    message,
+    error,
+    messageContext: { ...flatContext, ...details },
+  });
 }
 
 /** @deprecated Use instead: `import reportError from "@/telemetry/reportError"` */
@@ -401,7 +445,7 @@ export async function recordError(
     const flatContext = flattenContext(error, context);
 
     await Promise.all([
-      reportToRollbar(error, flatContext, message),
+      reportToApplicationErrorTelemetry(error, flatContext, message),
       reportToErrorService(error, flatContext, message),
       appendEntry({
         uuid: uuidv4(),

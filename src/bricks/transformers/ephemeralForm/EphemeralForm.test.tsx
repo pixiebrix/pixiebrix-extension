@@ -104,4 +104,28 @@ describe("EphemeralForm", () => {
     ).toBeInTheDocument();
     expect(screen.getByRole("strong")).toHaveTextContent("bold");
   });
+
+  it("renders a text input with inputmode numeric in place of a number input", async () => {
+    getFormDefinitionMock.mockResolvedValue({
+      schema: {
+        title: "Test Form",
+        type: "object",
+        properties: {
+          rating: { type: "number", title: "Rating" },
+        },
+      },
+      uiSchema: {},
+      cancelable: false,
+      submitCaption: "Submit",
+      location: "modal",
+    });
+
+    render(<EphemeralForm />);
+
+    await expect(
+      screen.findByRole("textbox", { name: "Rating", hidden: true }),
+    ).resolves.toHaveAttribute("inputmode", "numeric");
+
+    expect(screen.queryByRole("spinButton")).not.toBeInTheDocument();
+  });
 });

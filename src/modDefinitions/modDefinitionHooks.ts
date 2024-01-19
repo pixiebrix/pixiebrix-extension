@@ -30,6 +30,7 @@ import useMemoCompare from "@/hooks/useMemoCompare";
 import deepEquals from "fast-deep-equal";
 import { loadingAsyncStateFactory } from "@/utils/asyncStateUtils";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
+import pluralize from "@/utils/pluralize";
 
 /**
  * Lookup a mod definition from the registry by ID, or null if it doesn't exist.
@@ -98,7 +99,10 @@ export function useRequiredModDefinitions(
           (x) => !matches.some((mod) => mod.metadata.id === x),
         );
         throw new Error(
-          `Mod definition(s) not found: ${missingIds.join(", ")}`,
+          `Mod ${pluralize(
+            missingIds.length,
+            "definition",
+          )} not found: ${missingIds.join(", ")}`,
         );
       }
 

@@ -22,6 +22,7 @@ import {
   type PipelineExpression,
 } from "@/types/runtimeTypes";
 import { type ElementType, type MouseEventHandler, type Ref } from "react";
+import type { IconConfig } from "@/types/iconTypes";
 
 export const DOCUMENT_ELEMENT_TYPES = [
   "header",
@@ -81,8 +82,9 @@ export function isPipelineElement(
 }
 
 export type ButtonDocumentConfig = {
-  label: string;
   title: string | Expression;
+  tooltip?: string | Expression;
+  icon?: IconConfig | Expression;
   variant?: string | Expression;
   /**
    * Default size type coming from React Bootstrap Button

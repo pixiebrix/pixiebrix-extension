@@ -34,9 +34,12 @@ import { BusinessError } from "@/errors/businessErrors";
 import Markdown from "@/components/Markdown";
 import CardElement from "./render/CardElement";
 import { VALID_HEADER_TAGS } from "@/components/documentBuilder/allowedElementTypes";
-import { isPipelineExpression } from "@/utils/expressionUtils";
+import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
 import { boolean } from "@/utils/typeUtils";
 import { joinPathParts } from "@/utils/formUtils";
+import Icon from "@/icons/Icon";
+import cx from "classnames";
+import styles from "@/components/documentBuilder/preview/documentTree.module.scss";
 
 // Legacy header components, where each header type was a separate element
 const HEADER_COMPONENTS = {
@@ -193,20 +196,45 @@ export function getComponentDefinition(
     }
 
     case "button": {
-      const { title, onClick, variant, size, fullWidth, className, disabled } =
-        config as ButtonDocumentConfig;
+      const {
+        title,
+        tooltip,
+        icon,
+        onClick,
+        variant,
+        size,
+        fullWidth,
+        className,
+        disabled,
+      } = config as ButtonDocumentConfig;
       if (onClick !== undefined && !isPipelineExpression(onClick)) {
-        console.debug("Expected pipeline expression for onClick", {
-          componentType: "button",
-          config,
-        });
         throw new BusinessError("Expected pipeline expression for onClick");
       }
+
+      const buttonContent = (
+        <>
+          {icon && !isExpression(icon) && (
+            <Icon
+              icon={icon.id}
+              library={icon.library}
+              className={cx({
+                [styles.iconMargin ?? ""]: Boolean(title),
+                [styles.iconMarginSm ?? ""]: Boolean(title) && size === "sm",
+                [styles.iconMarginLg ?? ""]: Boolean(title) && size === "lg",
+              })}
+              color="currentColor"
+              size="1em"
+            />
+          )}
+          {title}
+        </>
+      );
 
       return {
         Component: ButtonElement,
         props: {
-          children: title,
+          children: buttonContent,
+          tooltip,
           onClick: onClick.__value__,
           fullWidth,
           tracePath,

@@ -62,6 +62,7 @@ import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import pluralize from "@/utils/pluralize";
 
 export type QuickBarProviderConfig = {
   /**
@@ -228,7 +229,9 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
 
     const numErrors = results.filter((x) => x.status === "rejected").length;
     if (numErrors > 0) {
-      notify.error(`An error occurred adding ${numErrors} quick bar items(s)`);
+      notify.error(
+        `An error occurred adding ${pluralize(numErrors, "$$ quick bar item")}`,
+      );
     }
   }
 

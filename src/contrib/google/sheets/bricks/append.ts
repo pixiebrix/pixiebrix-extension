@@ -393,11 +393,19 @@ export class GoogleSheetsAppend extends EffectABC {
     let currentSheetHeaders: string[];
     if (allRows.values) {
       currentSheetHeaders = allRows.values[0]?.map(String) ?? [];
-
-      if (
-        isEmpty(currentSheetHeaders) ||
-        currentSheetHeaders.every((header) => isNullOrBlank(header))
+      // Trim leading blank columns from current sheet headers
+      let firstHeaderIndex = 0;
+      while (
+        firstHeaderIndex < currentSheetHeaders.length &&
+        // eslint-disable-next-line security/detect-object-injection
+        isNullOrBlank(currentSheetHeaders[firstHeaderIndex])
       ) {
+        firstHeaderIndex++;
+      }
+
+      currentSheetHeaders = currentSheetHeaders.slice(firstHeaderIndex);
+
+      if (isEmpty(currentSheetHeaders)) {
         throw new BusinessError(
           "Header row not found. The first row of the sheet must contain header(s).",
         );

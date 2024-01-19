@@ -64,18 +64,22 @@ describe("testMatchPatterns", () => {
       "https://www.example.com/*",
       "https://*.pixiebrix.com/update/*",
     ];
-    expect(testMatchPatterns(patterns, "https://www.example.com")).toBeTrue();
-    expect(
-      testMatchPatterns(patterns, "https://pixiebrix.com/update/"),
-    ).toBeTrue();
+    const test = testMatchPatterns;
+    expect(test(patterns, "https://www.example.com")).toBeTrue();
+    expect(test(patterns, "https://pixiebrix.com/update/")).toBeTrue();
 
-    expect(testMatchPatterns(patterns, "https://example.com")).toBeFalse();
-    expect(
-      testMatchPatterns(patterns, "https://www.example.comunication"),
-    ).toBeFalse();
-    expect(
-      testMatchPatterns(patterns, "https://www.pixiebrix.com/"),
-    ).toBeFalse();
+    expect(test(patterns, "https://example.com")).toBeFalse();
+    expect(test(patterns, "https://www.example.comunication")).toBeFalse();
+    expect(test(patterns, "https://www.pixiebrix.com/")).toBeFalse();
+    expect(test(patterns, "about:srcdoc")).toBeFalse();
+  });
+
+  test("can match <all_urls>", async () => {
+    const test = testMatchPatterns;
+
+    expect(test(["<all_urls>"], "https://www.example.com")).toBeTrue();
+    expect(test(["<all_urls>"], "about:srcdoc")).toBeTrue();
+    expect(test(["<all_urls>"], "chrome://extensions")).toBeFalse();
   });
 
   test("will throw BusinessError or invalid patterns", async () => {

@@ -74,7 +74,6 @@ export async function fetch<TData = unknown>(
     if (
       isAxiosError(error) &&
       // There are some cases where `response` is undefined (because the browser blocked the request, e.g., b/c CORS)
-      // https://rollbar.com/pixiebrix/pixiebrix/items/832/
       error.response?.status === HTTP_401_UNAUTHENTICATED
     ) {
       throw new EndpointAuthError(relativeOrAbsoluteUrl);
