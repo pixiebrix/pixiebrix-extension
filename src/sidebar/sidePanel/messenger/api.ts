@@ -21,9 +21,10 @@
  * to match that expectation and avoid lint issues.
  */
 
-import { expectContext, forbidContext } from "@/utils/expectContext";
-import { type Target } from "webext-messenger";
+import { expectContext } from "@/utils/expectContext";
+import { messenger, type Target } from "webext-messenger";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { getSidebarInThisTab } from "@/sidebar/messenger/api";
 
 export function getAssociatedTarget(): Target {
   expectContext("sidebar");
@@ -34,7 +35,10 @@ export function getAssociatedTarget(): Target {
 export const PING_SIDE_PANEL = "PING_SIDE_PANEL";
 
 export async function isSidePanelOpen(): Promise<boolean> {
-  forbidContext("sidebar", "The sidebar shouldn't check whether it's open");
+  expectContext(
+    "contentScript",
+    "isSidePanelOpen only works from the same content script for now",
+  );
 
   // Sync check where possible, which is the content script
   if (isSidePanelOpenSync() === false) {
@@ -42,8 +46,13 @@ export async function isSidePanelOpen(): Promise<boolean> {
   }
 
   try {
-    // Available from any page
-    await chrome.runtime.sendMessage({ type: PING_SIDE_PANEL });
+    // If ever needed, `isSidePanelOpen` could be called from any context, as long as
+    // `getSidebarInThisTab` is replaced/complemented by a tabid-specific `{page: "/sidebar.html?tabId=123"}` target
+    await messenger(
+      "SIDEBAR_PING",
+      { retry: false },
+      await getSidebarInThisTab(),
+    );
     return true;
   } catch {
     return false;

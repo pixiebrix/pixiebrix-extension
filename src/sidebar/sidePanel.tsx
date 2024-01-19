@@ -18,31 +18,12 @@
 /** @file This file defines the internal API for the sidePanel, only meant to be run in the sidePanel itself */
 
 import { expectContext } from "@/utils/expectContext";
-import {
-  PING_SIDE_PANEL,
-  getAssociatedTarget,
-} from "@/sidebar/sidePanel/messenger/api";
-import { isObject } from "@/utils/objectUtils";
 import { isMV3 } from "@/mv3/api";
 
 expectContext("sidebar");
 
-// Do not use the messenger because it doesn't support retry-less messaging
-// TODO: Drop after https://github.com/pixiebrix/webext-messenger/issues/59
-function respondToPings() {
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (
-      isObject(message) &&
-      message.type === PING_SIDE_PANEL &&
-      sender.tab?.id === getAssociatedTarget().tabId
-    ) {
-      sendResponse(true);
-    }
-  });
-}
-
 export function initSidePanel() {
   if (isMV3()) {
-    respondToPings();
+    // Just a placeholder for now
   }
 }
