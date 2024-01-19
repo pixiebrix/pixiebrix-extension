@@ -19,7 +19,6 @@ import {
   gatherConfiguredIntegrationDependencies,
   inferRecipeOptions,
 } from "@/store/extensionsUtils";
-import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
@@ -96,15 +95,12 @@ describe("gatherConfiguredIntegrationDependencies", () => {
       configId: uuidv4(),
     });
     expect(
-      gatherConfiguredIntegrationDependencies(
-        [
-          { integrationDependencies: [pixiebrix, pixiebrix] },
-          { integrationDependencies: [pixiebrix, optional] },
-          { integrationDependencies: [configured, pixiebrix, optional] },
-          { integrationDependencies: [configured, optional] },
-        ],
-        { optional: true },
-      ),
+      gatherConfiguredIntegrationDependencies([
+        { integrationDependencies: [pixiebrix, pixiebrix] },
+        { integrationDependencies: [pixiebrix, optional] },
+        { integrationDependencies: [configured, pixiebrix, optional] },
+        { integrationDependencies: [configured, optional] },
+      ]),
     ).toStrictEqual([pixiebrix, configured]);
   });
 });
