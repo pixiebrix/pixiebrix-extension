@@ -96,6 +96,7 @@ const createConfig = (env, options) =>
       path: path.resolve("dist"),
       chunkFilename: "bundles/[name].bundle.js",
       environment: {
+        // https://github.com/awesome-webextension/webpack-target-webextension#code-splitting
         dynamicImport: true,
       },
     },
@@ -206,6 +207,10 @@ const createConfig = (env, options) =>
       }),
       new WebExtensionTarget({
         weakRuntimeCheck: true,
+        background: {
+          pageEntry: "background",
+          serviceWorkerEntry: "background",
+        },
       }),
       new webpack.ProvidePlugin({
         $: "jquery",
