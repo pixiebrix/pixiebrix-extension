@@ -43,7 +43,9 @@ export default async function getSvgIcon({
   const svgText = await response.text();
 
   const svgTextElement = $(svgText);
-  // Mod developers can optionally add a title property to elements wrapping the icon
+  // XXX: Some (not all) icons include a title element for accessibility, but this conflicts with the title attribute
+  // on parent elements wrapping the SVG that can be configured by Mod Developers. Remove the title element in
+  // favor of the title attribute on a parent element.
   svgTextElement.find("title").remove();
 
   // We just created an element, it can't be "undefined". `!` is fine
