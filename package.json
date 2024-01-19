@@ -149,6 +149,7 @@
     "redux-persist-webextension-storage": "^1.0.2",
     "redux-state-sync": "^3.1.4",
     "regenerator-runtime": "^0.14.1",
+    "remove-files-webpack-plugin": "^1.5.0",
     "schema-to-yup": "1.12.14",
     "semver": "^7.5.4",
     "serialize-error": "^11.0.3",
