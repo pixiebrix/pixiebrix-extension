@@ -257,17 +257,20 @@ describe("When rendered in panel", () => {
         type: "button",
         config: {
           title: "Button under test",
+          tooltip: "Button tooltip",
           variant: "primary",
           className: "test-class",
           onClick: toExpression("pipeline", []),
         },
       };
+
       renderDocument(config);
       const element = screen.getByRole("button");
 
       expect(element).not.toBeNull();
-      expect(element).toHaveClass("test-class");
-      expect(element).toHaveTextContent("Button under test");
+      expect(element).toHaveClass(config.config.className as string);
+      expect(element).toHaveTextContent(config.config.title as string);
+      expect(element).toHaveProperty("title", config.config.tooltip);
       expect(element).not.toBeDisabled();
     });
 

@@ -22,7 +22,7 @@ import {
   type PipelineExpression,
 } from "@/types/runtimeTypes";
 import { type ElementType, type MouseEventHandler, type Ref } from "react";
-import { IconConfig } from "@/types/iconTypes";
+import type { IconConfig } from "@/types/iconTypes";
 
 export const DOCUMENT_ELEMENT_TYPES = [
   "header",
