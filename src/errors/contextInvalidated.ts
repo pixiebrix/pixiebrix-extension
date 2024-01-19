@@ -30,13 +30,13 @@ const CONNECT_LOST_NOTIFICATION_ID = "connection-lost";
  * all communication becomes impossible.
  */
 export async function notifyContextInvalidated(): Promise<void> {
-  // `import()` is needed to avoid execution of its dependencies (telemetry)
-  // Also, lazily import to avoid importing React unnecessarily
+  // Lazily import React component. Also avoids a `webext-messenger` transitive dependency.
+  // https://github.com/pixiebrix/pixiebrix-extension/pull/6234
   // https://github.com/pixiebrix/pixiebrix-extension/issues/4058#issuecomment-1217391772
-  // eslint-disable-next-line import/dynamic-import-chunkname
   const { default: notify } = await import(
-    /* webpackMode: "lazy" */ "@/utils/notify"
+    /* webpackChunkName: "notify" */ "@/utils/notify"
   );
+
   notify.error({
     id: CONNECT_LOST_NOTIFICATION_ID,
     message: "PixieBrix was updated or restarted. Reload the page to continue",
