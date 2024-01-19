@@ -47,6 +47,9 @@ const DocumentView: React.FC<DocumentViewProps> = ({
     <DocumentContext.Provider value={{ options, onAction }}>
       <EmotionShadowRoot.div className="h-100">
         <Stylesheets
+          // DocumentView.css is an artifact compiled by webpack, see webpack.config.mjs
+          // We build styles needed to render documents separately from the rest of the sidebar
+          // in order to isolate the document from the custom Bootstrap theme included in the Sidebar app
           href={["/DocumentView.css", bootstrap, bootstrapOverrides]}
         >
           {body.map((documentElement, index) => {

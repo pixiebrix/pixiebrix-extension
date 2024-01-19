@@ -107,6 +107,10 @@ const createConfig = (env, options) =>
     entry: Object.fromEntries(
       [
         "background/background",
+        // Components rendered by the Document Renderer brick in the sidebar are placed in a shadow dom. This is how we
+        // isolate our custom Bootstrap theme to just the sidebar. However, this also prevents access to CSS module
+        // classes used by components in the rendered document. Build styles for DocumentView to add only the styles
+        // that are needed to render the document without also including our custom theme in sidebar.css.
         "bricks/renderers/documentView/DocumentView",
         "contentScript/contentScript",
         "contentScript/loadActivationEnhancements",
