@@ -22,9 +22,8 @@
  */
 
 import { expectContext, forbidContext } from "@/utils/expectContext";
-import { getMethod, type Target } from "webext-messenger";
+import { type Target } from "webext-messenger";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { isMV3 } from "@/mv3/api";
 
 export function getAssociatedTarget(): Target {
   expectContext("sidebar");
@@ -51,13 +50,8 @@ export async function isSidePanelOpen(): Promise<boolean> {
   }
 }
 
-export async function openSidePanel(tabId: number): Promise<void> {
-  if (!isMV3()) {
-    // Called via `getMethod` until we complete the strictNullChecks transition
-    await getMethod("SHOW_SIDEBAR")({ tabId });
-    return;
-  }
-
+/** @deprecated Use this instead: import { openSidePanel } from "@/mv3/sidePanelMigration"; */
+export async function _openSidePanel(tabId: number): Promise<void> {
   // Simultaneously enable and open the side panel.
   // If we wait too long before calling .open(), we will lose the "user gesture" permission
   // There is no way to know whether the side panel is open yet, so we call it regardless.

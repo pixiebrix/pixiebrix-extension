@@ -17,12 +17,18 @@
 
 /** @file Temporary helpers useful for the MV3 sidePanel transition */
 
-import { getTopLevelFrame } from "webext-messenger";
-import { getAssociatedTarget } from "@/sidebar/sidePanel/messenger/api";
+import { getMethod, getTopLevelFrame } from "webext-messenger";
+import {
+  _openSidePanel,
+  getAssociatedTarget,
+} from "@/sidebar/sidePanel/messenger/api";
 import { isMV3 } from "./api";
 
 export const getTopFrameFromSidebar = isMV3()
   ? getAssociatedTarget
   : getTopLevelFrame;
 
-// TODO: Add openSidePanel?
+export const openSidePanel = isMV3()
+  ? _openSidePanel
+  : // Called via `getMethod` until we complete the strictNullChecks transition
+    async (tabId: number) => getMethod("SHOW_SIDEBAR")({ tabId });

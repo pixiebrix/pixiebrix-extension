@@ -21,7 +21,7 @@ import webextAlert from "./webextAlert";
 import { browserAction, isMV3, type Tab } from "@/mv3/api";
 import { executeScript } from "webext-content-scripts";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
-import { openSidePanel } from "@/sidebar/sidePanel/messenger/api";
+import { openSidePanel } from "@/mv3/sidePanelMigration";
 import { setActionPopup } from "webext-tools";
 import { getRestrictedPageMessage } from "./sidePanel";
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { openSidePanel } from "@/sidebar/sidePanel/messenger/api";
+import { openSidePanel } from "@/mv3/sidePanelMigration";
 import type { MessengerMeta } from "webext-messenger";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import {

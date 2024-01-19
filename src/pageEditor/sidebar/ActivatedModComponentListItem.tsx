@@ -35,7 +35,7 @@ import {
   enableOverlay,
   updateSidebar,
 } from "@/contentScript/messenger/api";
-import { openSidePanel } from "@/sidebar/sidePanel/messenger/api";
+import { openSidePanel } from "@/mv3/sidePanelMigration";
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
