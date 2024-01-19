@@ -280,7 +280,7 @@
     "webpack-bundle-analyzer": "^4.10.1",
     "webpack-cli": "^5.1.4",
     "webpack-merge": "^5.10.0",
-    "webpack-target-webextension": "^1.1.0",
+    "webpack-target-webextension": "github:awesome-webextension/webpack-target-webextension#i41",
     "yaml-jest-transform": "^2.0.2",
     "yaml-loader": "^0.7.0"
   },
