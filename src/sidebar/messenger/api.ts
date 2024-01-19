@@ -19,25 +19,31 @@
 import { isMV3 } from "@/mv3/api";
 import { isContentScript } from "webext-detect-page";
 import {
-  type Target,
   type PageTarget,
   getMethod,
   getNotifier,
   getThisFrame,
 } from "webext-messenger";
 
-const target: Target | PageTarget = isMV3()
-  ? { page: "/sidebar.html" }
-  : { tabId: "this", page: "/sidebar.html" };
+export async function getSidebarInThisTab(): Promise<PageTarget> {
+  if (!isMV3()) {
+    return { tabId: "this", page: "/sidebar.html" };
+  }
 
-if (isContentScript() && isMV3()) {
-  // Unavoidable race condition: we can't message the sidebar until we know the tabId.
-  // TODO: Drop if this is ever implemented https://github.com/pixiebrix/webext-messenger/issues/193
-  // eslint-disable-next-line promise/prefer-await-to-then
-  void getThisFrame().then((frame) => {
-    target.page += "?tabId=" + frame.tabId;
-  });
+  if (!isContentScript()) {
+    // Probably just other pages importing this file transitively, this is dead code
+    return {
+      page: "the sidebar API is only available from the content script",
+    };
+  }
+
+  const frame = await getThisFrame();
+  return {
+    page: "/sidebar.html?tabId=" + frame.tabId,
+  };
 }
+
+const target = getSidebarInThisTab();
 
 const sidebarInThisTab = {
   renderPanels: getMethod("SIDEBAR_RENDER_PANELS", target),

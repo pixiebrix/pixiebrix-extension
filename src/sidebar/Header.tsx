@@ -43,6 +43,7 @@ const Header: React.FunctionComponent = () => {
             theme === "default" ? styles.themeColorOverride : styles.themeColor,
           )}
           onClick={async () => {
+            // This piece of code is MV2-only, it only needs to handle being run in an iframe
             const topLevelFrame = await getTopLevelFrame();
             await hideSidebar(topLevelFrame);
           }}
