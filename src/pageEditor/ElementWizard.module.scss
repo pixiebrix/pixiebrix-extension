@@ -18,7 +18,8 @@
 .nav {
   flex-wrap: nowrap !important;
   align-items: stretch;
-  box-shadow: 0 2px 2px gray;
+  min-height: 30px; // To match the height of the actions of the Sidebar
+  box-shadow: 1px 2px 8px #00000030;
   position: relative;
   z-index: 1; // Paint the shadow above the content below
   padding-bottom: 0;
