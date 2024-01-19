@@ -41,7 +41,7 @@ export async function notifyContextInvalidated(): Promise<void> {
     id: CONNECT_LOST_NOTIFICATION_ID,
     message: "PixieBrix was updated or restarted. Reload the page to continue",
     reportError: false, // It cannot report it because its background page no longer exists
-    duration: Number.POSITIVE_INFINITY,
+    autoDismissTimeMs: 20_000,
   });
 }
 
