@@ -27,53 +27,41 @@ import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 // TODO: Fix `no-restricted-paths`: Look into a standardized way to mark this whole as pageEditor-only
 import { thisTab } from "@/pageEditor/utils";
 import { getProcesses, initRobot } from "@/contentScript/messenger/api";
-import { useField } from "formik";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
 import { expectContext } from "@/utils/expectContext";
-import { type Expression } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
 import useAsyncState from "@/hooks/useAsyncState";
-import type { AsyncState } from "@/types/sliceTypes";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import type { Option } from "@/components/form/widgets/SelectWidget";
-
-type LocalRobot = {
-  consentCode: string | null;
-  robotAvailable: boolean;
-};
-
-function useLocalRobot(): AsyncState<LocalRobot> {
-  // Crash the React tree, because it's a programming error to use this hook outside the dev tools
-  expectContext(
-    "devTools",
-    "useLocalRobot only works in the Page Editor due to its `thisTab` usage",
-  );
-
-  return useAsyncState(async () => {
-    const { available, consentCode } = await initRobot(thisTab);
-    return { robotAvailable: available, consentCode };
-  }, []);
-}
 
 const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
 }) => {
+  // Crash the React tree, because it's a programming error to use this configuration outside the dev tools
+  expectContext(
+    "devTools",
+    "useLocalRobot only works in the Page Editor due to its `thisTab` usage",
+  );
+
   const configName = partial(joinName, name, configKey);
 
-  const [{ value: releaseKey }] = useField<string | Expression>(
+  // Fetch the release from the server, because inputSchema is not available locally via the robot SDK
+  const { releaseKey, selectedRelease } = useSelectedRelease(
     configName("releaseKey"),
   );
 
-  const robotState = useLocalRobot();
+  const robotState = useAsyncState(async () => {
+    const { available, consentCode } = await initRobot(thisTab);
+    return { robotAvailable: available, consentCode };
+  }, []);
+
   const { consentCode, robotAvailable = false } = fallbackValue(
     robotState,
     {},
   ).data;
-
-  const { selectedRelease } = useSelectedRelease(configName("releaseKey"));
 
   const processOptionsPromise: Promise<Option[]> = useMemo(async () => {
     if (robotAvailable) {
@@ -114,8 +102,8 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         </span>
       )}
       <RequireIntegrationConfig
-        // FIXME: this service use is options-only. As-is this will create an integration entry in the background. We
-        //  need to support 1) making RemoteServiceConfig optional, and 2) not storing the state in Formik
+        // FIXME: this integration use is options-only. As-is this will create an integration entry in the background.
+        //  We  need to support 1) making RemoteServiceConfig optional, and 2) not storing the state in Formik
         integrationsSchema={REMOTE_UIPATH_PROPERTIES.uipath as Schema}
         integrationsFieldName={configName("service")}
       >
