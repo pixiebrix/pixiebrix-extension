@@ -30,10 +30,6 @@ import {
 } from "@/sidebar/protocol";
 import { expectContext } from "@/utils/expectContext";
 import { noop } from "lodash";
-import { type SerializedError } from "@/types/messengerTypes";
-import { type MessageContext } from "@/types/loggerTypes";
-import { type JsonObject } from "type-fest";
-import { type Event } from "@/telemetry/events";
 
 expectContext("sidebar");
 

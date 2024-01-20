@@ -29,7 +29,7 @@ import {
 } from "@/utils/inference/siteSelectorHints";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { renderString } from "nunjucks";
-import { type Nullishable } from "../nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 function getMatchingRequiredSelectors(
   element: HTMLElement,
