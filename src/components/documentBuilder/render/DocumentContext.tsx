@@ -19,7 +19,11 @@ import React from "react";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { BusinessError } from "@/errors/businessErrors";
 import { type JsonObject } from "type-fest";
-import { type BrickArgsContext, type BrickOptions } from "@/types/runtimeTypes";
+import {
+  type BrickArgsContext,
+  type BrickOptions,
+  type SelectorRoot,
+} from "@/types/runtimeTypes";
 import { UNSET_UUID } from "@/types/helpers";
 
 type DocumentState = {
@@ -46,8 +50,7 @@ export const initialValue: DocumentState = {
     // The root should correspond to the host page's content script. If we passed document here, it would end up being
     // the document what's rendering the document (e.g., the sidebar panel's iframe document)
     // XXX: BrickOptions.root is not nullable, so we'll need to adjust the type or behavior when introducing null checks
-    // @ts-expect-error -- BrickOptions needs to be refactored
-    root: null,
+    root: null as unknown as SelectorRoot,
     logger: new ConsoleLogger(),
     headless: true,
     async runPipeline() {
