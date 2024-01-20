@@ -32,8 +32,6 @@ export function getAssociatedTarget(): Target {
   return { tabId: Number(tabId), frameId: 0 };
 }
 
-export const PING_SIDE_PANEL = "PING_SIDE_PANEL";
-
 export async function isSidePanelOpen(): Promise<boolean> {
   expectContext(
     "contentScript",
