@@ -16,7 +16,7 @@
  */
 
 import { RendererABC } from "@/types/bricks/rendererTypes";
-import DocumentViewLazy from "./documentView/DocumentViewLazy";
+import DocumentView from "./documentView/DocumentView";
 import { validateRegistryId } from "@/types/helpers";
 import {
   type BrickArgs,
@@ -51,7 +51,7 @@ export class DocumentRenderer extends RendererABC {
     options: BrickOptions,
   ): Promise<ComponentRef> {
     return {
-      Component: DocumentViewLazy,
+      Component: DocumentView,
       props: {
         body,
         options,
