@@ -24,6 +24,7 @@ import NodePolyfillPlugin from "node-polyfill-webpack-plugin";
 import WebpackBuildNotifierPlugin from "webpack-build-notifier";
 import TerserPlugin from "terser-webpack-plugin";
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
+import RemovePlugin from "remove-files-webpack-plugin";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import CopyPlugin from "copy-webpack-plugin";
 import { compact } from "lodash-es";
@@ -72,9 +73,12 @@ const isProd = (options) => options.mode === "production";
 
 function mockHeavyDependencies() {
   if (process.env.DEV_SLIM.toLowerCase() === "true") {
-    console.warn("Mocking dependencies for development build: @/icons/list");
+    console.warn(
+      "Mocking dependencies for development build: @/icons/list, uipath/robot",
+    );
     return {
       "@/icons/list": path.resolve("src/__mocks__/@/icons/list"),
+      "@uipath/robot": path.resolve("src/__mocks__/@uipath/robot"),
     };
   }
 }
@@ -100,6 +104,11 @@ const createConfig = (env, options) =>
     entry: Object.fromEntries(
       [
         "background/background",
+        // Components rendered by the Document Renderer brick in the sidebar are placed in a shadow dom. This is how we
+        // isolate our custom Bootstrap theme to just the sidebar. However, this also prevents access to CSS module
+        // classes used by components in the rendered document. Build styles for DocumentView to add only the styles
+        // that are needed to render the document without also including our custom theme in sidebar.css.
+        "bricks/renderers/documentView/DocumentView",
         "contentScript/contentScript",
         "contentScript/loadActivationEnhancements",
         "contentScript/browserActionInstantHandler",
@@ -257,6 +266,11 @@ const createConfig = (env, options) =>
           },
           "static",
         ],
+      }),
+      new RemovePlugin({
+        after: {
+          include: ["dist/DocumentView.js"],
+        },
       }),
     ]),
     module: {

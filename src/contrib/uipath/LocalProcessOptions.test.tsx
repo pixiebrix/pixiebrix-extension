@@ -16,24 +16,23 @@
  */
 
 import React from "react";
-import { render, screen } from "@/extensionConsole/testHelpers";
+import { render, screen } from "@testing-library/react";
+import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
+import * as contentScriptApi from "@/contentScript/messenger/api";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import { UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { validateRegistryId } from "@/types/helpers";
-import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import ProcessOptions from "@/contrib/uipath/ProcessOptions";
-import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
-import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
+import * as auth from "@/hooks/auth";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { useAuthOptions } from "@/hooks/auth";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { setContext } from "@/testUtils/detectPageMock";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
-import { toExpression } from "@/utils/expressionUtils";
+import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 
 setContext("devToolsPage");
 
@@ -47,7 +46,6 @@ jest.mock("@/hooks/auth");
 jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
 jest.mock("@/contentScript/messenger/api");
-
 jest.mock("@/contrib/uipath/uipathHooks", () => {
   const mock = jest.requireActual("@/contrib/uipath/uipathHooks");
   return {
@@ -59,7 +57,6 @@ jest.mock("@/contrib/uipath/uipathHooks", () => {
     }),
   };
 });
-
 jest.mock("@/components/form/widgets/RemoteSelectWidget", () => {
   const mock = jest.requireActual(
     "@/components/form/widgets/RemoteSelectWidget",
@@ -87,7 +84,7 @@ function makeBaseState() {
       {
         id: UIPATH_ID,
         config: {
-          uipath: null,
+          service: null,
           releaseKey: null,
           inputArguments: {},
         },
@@ -99,15 +96,13 @@ function makeBaseState() {
 function renderOptions(formState: ModComponentFormState = makeBaseState()) {
   return render(
     <Formik onSubmit={jest.fn()} initialValues={formState}>
-      <ProcessOptions name="extension.blockPipeline.0" configKey="config" />
+      <LocalProcessOptions
+        name="extension.blockPipeline.0"
+        configKey="config"
+      />
     </Formik>,
   );
 }
-
-beforeAll(() => {
-  registerDefaultWidgets();
-  jest.mocked(useAuthOptions).mockReturnValue(valueToAsyncState([]));
-});
 
 beforeEach(() => {
   useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
@@ -115,59 +110,85 @@ beforeEach(() => {
   );
 });
 
-describe("UiPath Options", () => {
-  test("Render integration selector", async () => {
+describe("UiPath LocalProcess Options", () => {
+  test("Can render options", async () => {
+    jest.mocked(contentScriptApi.getProcesses).mockResolvedValue([]);
+    jest.mocked(contentScriptApi.initRobot).mockResolvedValue({
+      available: false,
+      consentCode: null,
+      missingComponents: false,
+    });
+
     const { asFragment } = renderOptions();
 
     await waitForEffect();
 
-    expect(screen.getByText("Integration")).toBeInTheDocument();
+    expect(screen.queryByText("UiPath Assistant not found")).toBeNull();
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("Render with selected dependency", async () => {
-    useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
-      // Values not needed here, just need to return something non-null
-      valueToAsyncState({} as unknown as SanitizedIntegrationConfig),
-    );
+  test("Can render consent code and service selector", async () => {
+    jest.mocked(auth.useAuthOptions).mockReturnValue(valueToAsyncState([]));
+    jest.mocked(contentScriptApi.getProcesses).mockResolvedValue([]);
+    jest.mocked(contentScriptApi.initRobot).mockResolvedValue({
+      available: true,
+      consentCode: "abc123",
+      missingComponents: false,
+    });
 
-    const base = makeBaseState();
-    base.extension.blockPipeline[0].config.uipath = toExpression(
-      "var",
-      "@uipath",
-    );
-
-    const { asFragment } = renderOptions(base);
-
-    await waitForEffect();
-
-    expect(screen.getByText("Integration")).toBeInTheDocument();
-    expect(screen.getByText("Release")).toBeInTheDocument();
-    expect(screen.getByText("Strategy")).toBeInTheDocument();
-    expect(screen.getByText("Await Result")).toBeInTheDocument();
-    expect(screen.queryByText("Result Timeout (Milliseconds)")).toBeNull();
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  test("Render timeout field if await result", async () => {
-    useSanitizedIntegrationConfigFormikAdapterMock.mockReturnValue(
-      // Values not needed here, just need to return something non-null
-      valueToAsyncState({} as unknown as SanitizedIntegrationConfig),
-    );
-
-    const base = makeBaseState();
-    base.extension.blockPipeline[0].config.uipath = toExpression(
-      "var",
-      "@uipath",
-    );
-    base.extension.blockPipeline[0].config.awaitResult = true;
-
-    renderOptions(base);
+    renderOptions();
 
     await waitForEffect();
 
     expect(
-      screen.getByText("Result Timeout (Milliseconds)"),
+      screen.getByText("UiPath Assistant consent code: abc123"),
     ).toBeInTheDocument();
+    expect(screen.getByLabelText("Integration")).toBeInTheDocument();
+  });
+
+  test("Can render arguments", async () => {
+    const configId = uuidv4();
+    useSanitizedIntegrationConfigFormikAdapterMock
+      // Pass minimal arguments
+      .mockReturnValue(
+        valueToAsyncState({
+          id: configId,
+          serviceId: integrationId,
+        } as unknown as SanitizedIntegrationConfig),
+      );
+
+    jest.mocked(auth.useAuthOptions).mockReturnValue(
+      valueToAsyncState([
+        {
+          label: "Test Auth",
+          value: configId,
+          serviceId: integrationId,
+          local: true,
+          sharingType: "private",
+        },
+      ]),
+    );
+    jest.mocked(contentScriptApi.getProcesses).mockResolvedValue([]);
+    jest.mocked(contentScriptApi.initRobot).mockResolvedValue({
+      available: true,
+      consentCode: null,
+      missingComponents: false,
+    });
+
+    const formState = makeBaseState();
+    formState.integrationDependencies[0].configId = configId;
+    formState.extension.blockPipeline[0].config.service = "@uipath";
+
+    renderOptions();
+
+    await waitForEffect();
+
+    expect(
+      screen.queryByText("UiPath Assistant consent code"),
+    ).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Integration")).toBeInTheDocument();
+    expect(screen.getByLabelText("Process")).toBeInTheDocument();
+    expect(screen.getByText("Input Arguments")).toBeInTheDocument();
+    expect(screen.getByText("Add Property")).toBeInTheDocument();
   });
 });

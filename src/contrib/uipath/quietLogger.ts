@@ -15,46 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.nav {
-  min-height: 30px; // To match the height of the actions of the Sidebar
-  box-shadow: 1px 2px 8px #00000030;
-  z-index: 1; // Paint the shadow above the content below
-  font-size: 0.875rem;
-  padding-bottom: 0;
-
-  a,
-  button {
-    border-radius: 0 !important;
-    padding-top: 0.3em;
-    padding-bottom: 0.3em;
-  }
-}
-
-.navItem {
-  display: flex;
-  align-items: stretch;
-}
-
-.navLink {
-  display: flex;
-  align-items: center;
-}
-
-.badge {
-  margin-left: 0.3rem;
-}
-
-.actionButtonIcon {
-  margin-right: 0.25rem;
-}
-
-.content {
-  flex-grow: 1;
-  overflow-y: auto;
+/**
+ * Replicate surface area used by UiPath appinsightsLogger so we can noop them
+ */
+export class ApplicationInsights {
+  trackEvent(): void {}
+  trackException(): void {}
+  trackPageView(): void {}
+  loadAppInsights(): void {}
 }

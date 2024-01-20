@@ -19,7 +19,10 @@
       "@/*": ["src/*"],
       "@img/*": ["img/*"],
       "@contrib/*": ["contrib/*"],
-      "@schemas/*": ["schemas/*"]
+      "@schemas/*": ["schemas/*"],
+      "@microsoft/applicationinsights-web/*": [
+        "src/contrib/uipath/quietLogger/*"
+      ]
     },
     "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },

@@ -6564,6 +6564,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                     className="form-control"
                     disabled={false}
                     id="root_age"
+                    inputMode="numeric"
                     name="root_age"
                     onBlur={[Function]}
                     onChange={[Function]}
@@ -6571,8 +6572,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                     placeholder=""
                     readOnly={false}
                     required={false}
-                    step={1}
-                    type="number"
+                    type="text"
                     value=""
                   />
                   <div
