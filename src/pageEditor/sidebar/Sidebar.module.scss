@@ -5,11 +5,12 @@
   display: flex;
   justify-content: flex-start;
   height: 100%;
-  border-right: 2px solid lightgrey;
   background: white;
+  box-shadow: 1px 2px 8px #00000030;
 
   &.collapsed {
     align-items: stretch;
+    z-index: 999; // Always on top of the content, but below expanded one
   }
   &.expanded {
     flex: 0 0 270px;
@@ -55,10 +56,6 @@
 
 .header {
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-
-  button {
-    border-radius: 0;
-  }
 }
 
 .actions {
