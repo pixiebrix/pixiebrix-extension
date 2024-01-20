@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { mapValues, uniq } from "lodash";
+import { uniq } from "lodash";
 import { $safeFind } from "@/utils/domUtils";
 import {
   doesSelectOneElement,
@@ -29,11 +29,12 @@ import {
 } from "@/utils/inference/siteSelectorHints";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { renderString } from "nunjucks";
+import { type Nullishable } from "../nullishUtils";
 
 function getMatchingRequiredSelectors(
   element: HTMLElement,
   requiredSelectors: string[],
-): string {
+): string | undefined {
   return requiredSelectors.find((selector) => element.matches(selector));
 }
 
@@ -92,7 +93,7 @@ function getAncestorSelectorTemplate({
   ancestorElement: HTMLElement;
   templates: SelectorTemplate[];
   root?: HTMLElement | Document | JQuery<HTMLElement | Document>;
-}): string | null {
+}): Nullishable<string> {
   // Find first template that matches and uniquely selects the ancestor
   return templates
     .map((template) =>
@@ -121,22 +122,19 @@ function maybeInstantiateSelectorTemplate(
     return null;
   }
 
-  const extractedValues = mapValues(template.extract, (extractRule: string) => {
-    const element = $safeFind(extractRule, ancestorElement);
+  const extractedValues: Record<string, Record<string, string>> = {};
+  for (const [key, extractRule] of Object.entries(template.extract)) {
+    const [element] = $safeFind(extractRule, ancestorElement);
 
+    // All extraction rules must match, otherwise return no match
     if (!element) {
       return null;
     }
 
-    return {
-      ...getElementAttributes(element[0]),
-      text: element.text(),
+    extractedValues[key] = {
+      ...getElementAttributes(element),
+      text: element.textContent ?? "",
     };
-  });
-
-  // All extraction rules must match, otherwise return no match
-  if (Object.values(extractedValues).some((value) => value == null)) {
-    return null;
   }
 
   return renderString(template.template, extractedValues);
@@ -169,7 +167,7 @@ async function inferSingleElementSelector({
   const rootOverride =
     // Scope the element generation to the innermost ancestor with a selector override
     ancestorSelectorOverrides.length > 0
-      ? ancestorSelectorOverrides.at(-1).element
+      ? ancestorSelectorOverrides.at(-1)?.element
       : root;
 
   const selectorWithRootOverride = safeCssSelector([element], {

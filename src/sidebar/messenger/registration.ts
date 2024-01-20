@@ -66,21 +66,3 @@ export default function registerMessenger(): void {
     SIDEBAR_HIDE_ACTIVATE_RECIPE: hideActivateMods,
   });
 }
-
-declare global {
-  // TODO: Remove once background/registration.ts and telemetry/logging.ts are in strictNullChecks
-  interface MessengerMethods {
-    // Temporary duplicate type for a background method used by the sidebar.
-    // NOTE: Changes to those functions must be reflected here.
-    RECORD_ERROR: (
-      serializedError: SerializedError,
-      context: MessageContext,
-      data?: JsonObject,
-    ) => Promise<void>;
-
-    RECORD_EVENT: (event: {
-      event: Event;
-      data: JsonObject | undefined;
-    }) => Promise<void>;
-  }
-}

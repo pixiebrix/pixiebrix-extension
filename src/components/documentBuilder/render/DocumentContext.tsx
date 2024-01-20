@@ -46,6 +46,7 @@ export const initialValue: DocumentState = {
     // The root should correspond to the host page's content script. If we passed document here, it would end up being
     // the document what's rendering the document (e.g., the sidebar panel's iframe document)
     // XXX: BrickOptions.root is not nullable, so we'll need to adjust the type or behavior when introducing null checks
+    // @ts-expect-error -- BrickOptions needs to be refactored
     root: null,
     logger: new ConsoleLogger(),
     headless: true,
