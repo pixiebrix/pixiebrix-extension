@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useCallback } from "react";
 import { actions as extensionActions } from "@/store/extensionsSlice";
-import { inferRecipeOptions } from "@/store/extensionsUtils";
+import { collectRecipeOptions } from "@/store/extensionsUtils";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import gatherExistingConfiguredDependenciesForMod from "@/integrations/util/gatherExistingConfiguredDependenciesForMod";
 
@@ -41,7 +41,7 @@ function useReinstall(): Reinstall {
         throw new Error(`No bricks to re-activate for ${modId}`);
       }
 
-      const currentOptions = inferRecipeOptions(activatedModComponents);
+      const currentOptions = collectRecipeOptions(activatedModComponents);
 
       const configuredDependencies = gatherExistingConfiguredDependenciesForMod(
         modDefinition,

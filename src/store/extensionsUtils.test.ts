@@ -16,8 +16,8 @@
  */
 
 import {
-  gatherConfiguredIntegrationDependencies,
-  inferRecipeOptions,
+  collectConfiguredIntegrationDependencies,
+  collectRecipeOptions,
 } from "@/store/extensionsUtils";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -27,20 +27,22 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 describe("inferRecipeOptions", () => {
   it("returns first option", () => {
-    expect(inferRecipeOptions([{ optionsArgs: { foo: 42 } }])).toStrictEqual({
+    expect(collectRecipeOptions([{ optionsArgs: { foo: 42 } }])).toStrictEqual({
       foo: 42,
     });
   });
 
   it("return blank object if not set", () => {
-    expect(inferRecipeOptions([{ optionsArgs: undefined }])).toStrictEqual({});
+    expect(collectRecipeOptions([{ optionsArgs: undefined }])).toStrictEqual(
+      {},
+    );
   });
 });
 
 describe("gatherConfiguredIntegrationDependencies", () => {
   it("handles undefined integrationDependencies", () => {
     expect(
-      gatherConfiguredIntegrationDependencies([
+      collectConfiguredIntegrationDependencies([
         { integrationDependencies: undefined },
       ]),
     ).toStrictEqual([]);
@@ -56,7 +58,7 @@ describe("gatherConfiguredIntegrationDependencies", () => {
     });
 
     expect(
-      gatherConfiguredIntegrationDependencies([
+      collectConfiguredIntegrationDependencies([
         { integrationDependencies: [integrationDependency] },
         { integrationDependencies: [integrationDependency] },
       ]),
@@ -67,7 +69,7 @@ describe("gatherConfiguredIntegrationDependencies", () => {
     // Factory does not add a configId by default
     const unconfigured = integrationDependencyFactory();
     expect(
-      gatherConfiguredIntegrationDependencies([
+      collectConfiguredIntegrationDependencies([
         { integrationDependencies: [unconfigured] },
       ]),
     ).toBeEmpty();
@@ -78,7 +80,7 @@ describe("gatherConfiguredIntegrationDependencies", () => {
       integrationId: PIXIEBRIX_INTEGRATION_ID,
     });
     expect(
-      gatherConfiguredIntegrationDependencies([
+      collectConfiguredIntegrationDependencies([
         { integrationDependencies: [pixiebrix] },
       ]),
     ).toStrictEqual([pixiebrix]);
@@ -95,7 +97,7 @@ describe("gatherConfiguredIntegrationDependencies", () => {
       configId: uuidv4(),
     });
     expect(
-      gatherConfiguredIntegrationDependencies([
+      collectConfiguredIntegrationDependencies([
         { integrationDependencies: [pixiebrix, pixiebrix] },
         { integrationDependencies: [pixiebrix, optional] },
         { integrationDependencies: [configured, pixiebrix, optional] },

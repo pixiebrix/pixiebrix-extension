@@ -36,7 +36,7 @@ import type {
   ActivatedModComponent,
   UnresolvedModComponent,
 } from "@/types/modComponentTypes";
-import { inferRecipeOptions } from "@/store/extensionsUtils";
+import { collectRecipeOptions } from "@/store/extensionsUtils";
 import type { ModComponentState } from "@/store/extensionsTypes";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import gatherExistingConfiguredDependenciesForMod from "@/integrations/util/gatherExistingConfiguredDependenciesForMod";
@@ -267,7 +267,7 @@ function updateMod(
     deactivatedModComponents,
   );
 
-  const optionsArgs = inferRecipeOptions(
+  const optionsArgs = collectRecipeOptions(
     deactivatedModComponents.filter((modComponent) => modComponent.optionsArgs),
   );
 

@@ -31,8 +31,8 @@ import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type AuthOption } from "@/auth/authTypes";
 import {
-  gatherConfiguredIntegrationDependencies,
-  inferRecipeOptions,
+  collectConfiguredIntegrationDependencies,
+  collectRecipeOptions,
 } from "@/store/extensionsUtils";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { type Primitive } from "type-fest";
@@ -97,9 +97,9 @@ export function wizardStateFactory({
     (extension) => extension._recipe?.id === modDefinition.metadata.id,
   );
 
-  const installedOptions = inferRecipeOptions(installedBlueprintExtensions);
+  const installedOptions = collectRecipeOptions(installedBlueprintExtensions);
   const installedIntegrationConfigs = Object.fromEntries(
-    gatherConfiguredIntegrationDependencies(installedBlueprintExtensions).map(
+    collectConfiguredIntegrationDependencies(installedBlueprintExtensions).map(
       ({ integrationId, configId }) => [integrationId, configId],
     ),
   );

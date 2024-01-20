@@ -18,7 +18,7 @@
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import { gatherConfiguredIntegrationDependencies } from "@/store/extensionsUtils";
+import { collectConfiguredIntegrationDependencies } from "@/store/extensionsUtils";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 
 /**
@@ -31,7 +31,7 @@ function gatherExistingConfiguredDependenciesForMod(
   modComponents: Array<Pick<ModComponentBase, "integrationDependencies">>,
 ): IntegrationDependency[] {
   const existingConfiguredDependencies =
-    gatherConfiguredIntegrationDependencies(modComponents);
+    collectConfiguredIntegrationDependencies(modComponents);
   const modIntegrationIds = new Set(
     getUnconfiguredComponentIntegrations(modDefinition).map(
       ({ integrationId }) => integrationId,

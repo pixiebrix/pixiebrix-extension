@@ -57,7 +57,7 @@ import { produce } from "immer";
 import { object, string } from "yup";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { inferRecipeOptions } from "@/store/extensionsUtils";
+import { collectRecipeOptions } from "@/store/extensionsUtils";
 import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
@@ -244,7 +244,7 @@ function useSaveCallbacks({
             savedModDefinition,
             modComponents,
           ),
-          optionsArgs: inferRecipeOptions(modComponents),
+          optionsArgs: collectRecipeOptions(modComponents),
           screen: "pageEditor",
           isReinstall: false,
         }),

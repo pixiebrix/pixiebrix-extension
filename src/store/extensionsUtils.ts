@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { flatten, uniqBy } from "lodash";
+import { uniqBy } from "lodash";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
-import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
@@ -26,7 +25,7 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
  * Infer options from existing extension-like instances for reinstalling a recipe
  * @see installRecipe
  */
-export function inferRecipeOptions(
+export function collectRecipeOptions(
   extensions: Array<Pick<ModComponentBase, "optionsArgs">>,
 ): OptionsArgs {
   // For a given recipe, all the extensions receive the same options during the install process (even if they don't
@@ -42,7 +41,7 @@ export function inferRecipeOptions(
  * @returns IntegrationDependency[] the configured integration dependencies for the mod components
  * @see installMod
  */
-export function gatherConfiguredIntegrationDependencies(
+export function collectConfiguredIntegrationDependencies(
   modComponents: Array<Pick<ModComponentBase, "integrationDependencies">>,
 ): IntegrationDependency[] {
   return uniqBy(
@@ -53,25 +52,5 @@ export function gatherConfiguredIntegrationDependencies(
           configId != null || integrationId === PIXIEBRIX_INTEGRATION_ID,
       ),
     ({ integrationId }) => integrationId,
-  );
-}
-
-/**
- * Infer all unique integration dependencies for a recipe
- */
-export function inferRecipeDependencies(
-  installedRecipeExtensions: ModComponentBase[],
-  dirtyRecipeElements: ModComponentFormState[],
-): IntegrationDependency[] {
-  const withIntegrations: Array<{
-    integrationDependencies?: IntegrationDependency[];
-  }> = [...installedRecipeExtensions, ...dirtyRecipeElements];
-  return uniqBy<IntegrationDependency>(
-    flatten(
-      withIntegrations.map(
-        ({ integrationDependencies }) => integrationDependencies ?? [],
-      ),
-    ),
-    JSON.stringify,
   );
 }
