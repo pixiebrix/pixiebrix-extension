@@ -17,7 +17,7 @@
 
 import { mapValues, pickBy } from "lodash";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import pipelineSchema from "@schemas/pipeline.json";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -27,12 +27,22 @@ import BlockIdVisitor from "@/analysis/analysisVisitors/blockIdVisitor";
 import { removeUndefined } from "@/utils/objectUtils";
 import { toExpression } from "@/utils/expressionUtils";
 
+/**
+ * Return true if the given registry id corresponds to a built-in package.
+ *
+ * Note that user-defined packages use the `@pixies` namespace.
+ *
+ * @param id the registry id
+ */
 export function isOfficial(id: RegistryId): boolean {
   return id.startsWith("@pixiebrix/");
 }
 
 /**
- * Returns the initial state for a blockConfig.
+ * Returns the initial state for a brickConfig.
+ *
+ * Applies the default values from the schema, if any.
+ *
  * @param schema the JSON Schema
  */
 export function defaultBrickConfig(schema: Schema): BrickConfig["config"] {
@@ -62,10 +72,14 @@ export function defaultBrickConfig(schema: Schema): BrickConfig["config"] {
   return {};
 }
 
-/** Return IBlocks for all blocks referenced in a pipeline, including any sub-pipelines. */
-export async function selectAllBlocks(
+/**
+ * Return Brick for all bricks referenced in a pipeline, including any sub-pipelines.
+ *
+ * Does not de-duplicate bricks.
+ */
+export async function collectAllBricks(
   config: BrickConfig | BrickPipeline,
 ): Promise<Brick[]> {
   const ids = BlockIdVisitor.collectBlockIds(config);
-  return Promise.all([...ids].map(async (id) => blockRegistry.lookup(id)));
+  return Promise.all([...ids].map(async (id) => brickRegistry.lookup(id)));
 }

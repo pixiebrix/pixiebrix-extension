@@ -30,6 +30,7 @@ import {
 import blockRegistry from "@/bricks/registry";
 import {
   fromJS,
+  getDefaultAllowBackgroundForTrigger,
   type TriggerConfig,
   type TriggerDefinition,
 } from "@/starterBricks/triggerExtension";
@@ -48,6 +49,7 @@ import notify from "@/utils/notify";
 import { notifyContextInvalidated } from "@/errors/contextInvalidated";
 import reportError from "@/telemetry/reportError";
 import { screen } from "@testing-library/react";
+import type { Trigger } from "@/starterBricks/triggerExtensionTypes";
 
 // Avoid errors being interpreted as context invalidated error
 browser.runtime.id = "abcxyz";
@@ -544,5 +546,20 @@ describe("triggerExtension", () => {
 
     expect(reportErrorMock).toHaveBeenCalledTimes(2);
     expect(notifyErrorMock).toHaveBeenCalledTimes(0);
+  });
+});
+
+describe("defaults", () => {
+  describe("getDefaultAllowBackgroundForTrigger", () => {
+    it("return false for interval", () => {
+      expect(getDefaultAllowBackgroundForTrigger("interval")).toBe(false);
+    });
+
+    it.each(["load", "click"])(
+      "returns true for trigger: %s",
+      (trigger: Trigger) => {
+        expect(getDefaultAllowBackgroundForTrigger(trigger)).toBe(true);
+      },
+    );
   });
 });
