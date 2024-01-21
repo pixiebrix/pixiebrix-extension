@@ -192,6 +192,32 @@ describe("triggerExtension", () => {
     extensionPoint.uninstall();
   });
 
+  it("runs non-background page load runs immediately if page visible", async () => {
+    hidden = false;
+
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "load",
+        background: false,
+      })(),
+    );
+
+    extensionPoint.registerModComponent(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      }),
+    );
+
+    await extensionPoint.install();
+    await extensionPoint.runModComponents({
+      reason: RunReason.MANUAL,
+    });
+
+    expect(rootReader.readCount).toBe(1);
+
+    extensionPoint.uninstall();
+  });
+
   it.each([[undefined], ["once"], ["watch"]])(
     "attachMode: %s",
     async (attachMode) => {
