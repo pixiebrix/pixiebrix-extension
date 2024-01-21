@@ -30,7 +30,7 @@ import {
 import blockRegistry from "@/bricks/registry";
 import {
   fromJS,
-  getDefaultAllowBackgroundForTrigger,
+  getDefaultAllowInactiveFramesForTrigger,
   type TriggerConfig,
   type TriggerDefinition,
 } from "@/starterBricks/triggerExtension";
@@ -90,7 +90,7 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
     definition: define<TriggerDefinition>({
       type: "trigger",
       background: derive<TriggerDefinition, boolean>((x) =>
-        getDefaultAllowBackgroundForTrigger(x.trigger),
+        getDefaultAllowInactiveFramesForTrigger(x.trigger),
       ),
       isAvailable: () => ({
         matchPatterns: ["*://*/*"],
@@ -623,15 +623,15 @@ describe("triggerExtension", () => {
 });
 
 describe("defaults", () => {
-  describe("getDefaultAllowBackgroundForTrigger", () => {
+  describe("getDefaultAllowInactiveFramesForTrigger", () => {
     it("return false for interval", () => {
-      expect(getDefaultAllowBackgroundForTrigger("interval")).toBe(false);
+      expect(getDefaultAllowInactiveFramesForTrigger("interval")).toBe(false);
     });
 
     it.each(["load", "click"])(
       "returns true for trigger: %s",
       (trigger: Trigger) => {
-        expect(getDefaultAllowBackgroundForTrigger(trigger)).toBe(true);
+        expect(getDefaultAllowInactiveFramesForTrigger(trigger)).toBe(true);
       },
     );
   });

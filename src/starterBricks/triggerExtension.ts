@@ -101,10 +101,14 @@ export function getDefaultReportModeForTrigger(trigger: Trigger): ReportMode {
 }
 
 /**
- * Return the default allowBackground value for the trigger type.
+ * Return the default allowInactiveFrame value for the trigger type.
  * @param trigger the trigger type
+ *
+ * @see TriggerStarterBrickABC.allowInactiveFrames
  */
-export function getDefaultAllowBackgroundForTrigger(trigger: Trigger): boolean {
+export function getDefaultAllowInactiveFramesForTrigger(
+  trigger: Trigger,
+): boolean {
   // Prior to 1.8.7, the `background` flag was ignored for non-interval triggers. Therefore, the effective
   // default was `true` for non-interval triggers.
   return trigger !== "interval";
@@ -162,7 +166,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
    *
    * @see TriggerDefinition.background
    */
-  abstract get allowBackground(): boolean;
+  abstract get allowInactiveFrames(): boolean;
 
   abstract get targetMode(): TargetMode;
 
@@ -281,7 +285,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         waitMillis,
         options,
       );
-    } else if (this.trigger !== "interval" && !this.allowBackground) {
+    } else if (this.trigger !== "interval" && !this.allowInactiveFrames) {
       // Since 1.8.7, respect the `background` flag for non-interval triggers.
       // @ts-expect-error -- Promise<Promise<void>> is same as Promise<void> when awaited b/c await is recursive
       this.debouncedRunTriggersAndNotify = runOnDocumentVisible(
@@ -630,7 +634,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         intervalMillis: this.intervalMillis,
         effectGenerator: intervalEffect,
         signal: this.abortController.signal,
-        requestAnimationFrame: !this.allowBackground,
+        requestAnimationFrame: !this.allowInactiveFrames,
       });
 
       console.debug("TriggerExtensionPoint:attachInterval", {
@@ -887,7 +891,7 @@ export interface TriggerDefinition extends StarterBrickDefinition {
   attachMode?: AttachMode;
 
   /**
-   * Allow trigger to even when the tab is not active.
+   * Allow trigger to even when the tab/frame is not active.
    *
    * NOTE: this property does not refer to running the trigger in the extension's background page. PixieBrix currently
    * only supports running mods in the context of a frame's content script.
@@ -899,7 +903,7 @@ export interface TriggerDefinition extends StarterBrickDefinition {
    *  the default value if not provided is `true`.
    *
    * @since 1.5.3
-   * @see getDefaultAllowBackgroundForTrigger
+   * @see getDefaultAllowInactiveFramesForTrigger
    */
   background?: boolean;
 
@@ -1021,10 +1025,10 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
     return this._definition.rootSelector;
   }
 
-  get allowBackground(): boolean {
+  get allowInactiveFrames(): boolean {
     return (
       this._definition.background ??
-      getDefaultAllowBackgroundForTrigger(this.trigger)
+      getDefaultAllowInactiveFramesForTrigger(this.trigger)
     );
   }
 
