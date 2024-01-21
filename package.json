@@ -63,7 +63,7 @@
     "bootstrap-icons": "^1.11.3",
     "bootstrap-switch-button-react": "^1.2.0",
     "canvas-confetti": "^1.9.2",
-    "chrono-node": "^2.7.4",
+    "chrono-node": "^2.7.5",
     "classnames": "^2.5.1",
     "code-tag": "^1.2.0",
     "connected-react-router": "^6.9.1",
