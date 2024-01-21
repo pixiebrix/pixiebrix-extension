@@ -27,6 +27,10 @@ function isBrowserSidebar(): boolean {
   return isExtensionContext() && location.pathname === "/sidebar.html";
 }
 
+export function isPageEditor(): boolean {
+  return location.pathname === "/pageEditor.html";
+}
+
 /**
  * Accepts 'This is my error' | new Error('This is my error') | Error;
  * The constructor would be used to create a custom error with the default message
@@ -49,16 +53,16 @@ function createError(
 }
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const contexts = [...contextNames, "sidebar"] as const;
+const contexts = [...contextNames, "sidebar", "pageEditor"] as const;
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Functions
 const contextMap = new Map<(typeof contexts)[number], () => boolean>([
   ["web", isWebPage],
   ["extension", isExtensionContext],
   ["background", isBackground],
+  ["pageEditor", isPageEditor],
   ["contentScript", isContentScript],
   ["sidebar", isBrowserSidebar],
-  ["devTools", () => "devtools" in chrome],
 ]);
 
 /**

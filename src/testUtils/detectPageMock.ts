@@ -35,10 +35,6 @@ export function isOptionsPage() {
   return _context === "options";
 }
 
-export function isDevToolsPage() {
-  return _context === "devToolsPage";
-}
-
 export function isBackground() {
   return _context === "background";
 }
