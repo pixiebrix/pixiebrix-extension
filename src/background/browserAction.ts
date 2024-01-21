@@ -61,6 +61,7 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
   try {
     await sidebarTogglePromise;
   } catch (error) {
+    // eslint-disable-next-line no-alert -- No alternative from the background page
     alert(ERR_UNABLE_TO_OPEN);
     throw error;
   }
