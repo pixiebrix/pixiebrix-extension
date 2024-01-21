@@ -176,10 +176,11 @@ export function runOnDocumentVisible<Args extends unknown[], TReturn = unknown>(
           });
 
           if (
-            // Defensive check that the listener is only called when the document becomes visible
+            // Defensive check that the listener is only called when the document becomes visible. Should always be
+            // true because the listener is added when the document is hidden.
             document.visibilityState === "visible" &&
             // Defensive check for NPEs. In practice, these should always be defined because they're only unset
-            // when the lister runs. Using "!" was causing spurious TS errors.
+            // when the listener runs. Using "!" was causing spurious TS errors.
             deferredPromise &&
             trailingArgs
           ) {
