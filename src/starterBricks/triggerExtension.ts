@@ -153,6 +153,14 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
   abstract get intervalMillis(): number;
 
+  /**
+   * Allow trigger to run even when the tab is not active.
+   *
+   * NOTE: this property does not refer to running the trigger in the extension's background page. PixieBrix currently
+   * only supports running mods in the context of a frame's content script.
+   *
+   * @see TriggerDefinition.background
+   */
   abstract get allowBackground(): boolean;
 
   abstract get targetMode(): TargetMode;
@@ -541,8 +549,9 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     const results = await Promise.allSettled(promises);
 
     const errors = compact(
-      // :shrug: reason is `any` vs. `unknown` in the es2020 type definitions
       results.map((x) =>
+        // :shrug: reason is `any` vs. `unknown` in the es2020 type definitions:
+        // https://github.com/pixiebrix/pixiebrix-extension/pull/7405#discussion_r1460997028
         x.status === "rejected" ? (x.reason as unknown) : null,
       ),
     );
@@ -883,7 +892,10 @@ export interface TriggerDefinition extends StarterBrickDefinition {
   attachMode?: AttachMode;
 
   /**
-   * Allow triggers to run in the background, even when the tab is not active.
+   * Allow trigger to even when the tab is not active.
+   *
+   * NOTE: this property does not refer to running the trigger in the extension's background page. PixieBrix currently
+   * only supports running mods in the context of a frame's content script.
    *
    * - Introduced in 1.5.3 and checked for interval triggers. The effective value was `true` for other triggers
    *  because this value was not checked. (However, certain triggers, e.g., 'click' can only be triggered by the user
