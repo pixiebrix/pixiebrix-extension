@@ -170,7 +170,11 @@ export function runOnDocumentVisible<Args extends unknown[], TReturn = unknown>(
         "visibilitychange",
         async () => {
           // Defensive check that the listener is only called when the document becomes visible
-          if (document.visibilityState === "visible") {
+          if (
+            document.visibilityState === "visible" &&
+            deferredPromise &&
+            trailingArgs
+          ) {
             try {
               deferredPromise.resolve(fn(...trailingArgs));
             } catch (error) {
