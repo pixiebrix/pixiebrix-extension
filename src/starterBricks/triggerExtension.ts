@@ -84,6 +84,7 @@ import {
   waitAnimationFrame,
 } from "@/utils/domUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import { groupPromisesByStatus } from "@/utils/promiseUtils";
 
 type TriggerTarget = Document | HTMLElement;
 
@@ -548,13 +549,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
     const results = await Promise.allSettled(promises);
 
-    const errors = compact(
-      results.map((x) =>
-        // :shrug: reason is `any` vs. `unknown` in the es2020 type definitions:
-        // https://github.com/pixiebrix/pixiebrix-extension/pull/7405#discussion_r1460997028
-        x.status === "rejected" ? (x.reason as unknown) : null,
-      ),
-    );
+    const errors = groupPromisesByStatus(results).rejected;
 
     await this.notifyErrors(errors);
   };

@@ -48,7 +48,7 @@ test("groupPromisesByStatus", async () => {
   expect(fulfilled).toStrictEqual([1, 2]);
   expect(rejected).toHaveLength(1);
   expect(rejected[0]).toBeInstanceOf(Error);
-  expect(rejected[0].message).toBe("something happened");
+  expect((rejected[0] as Error).message).toBe("something happened");
 });
 
 describe("retryWithJitter", () => {

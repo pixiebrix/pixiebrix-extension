@@ -166,9 +166,15 @@ export function runOnDocumentVisible<Args extends unknown[], TReturn = unknown>(
       deferredPromise = pDefer();
       trailingArgs = args;
 
+      console.debug("runOnDocumentVisible: waiting for visibilitychange");
+
       document.addEventListener(
         "visibilitychange",
         async () => {
+          console.debug("runOnDocumentVisible: visibilitychange", {
+            visibilityState: document.visibilityState,
+          });
+
           if (
             // Defensive check that the listener is only called when the document becomes visible
             document.visibilityState === "visible" &&
