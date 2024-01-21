@@ -17,7 +17,7 @@
 
 import { validateRegistryId } from "@/types/helpers";
 import { type UnknownObject } from "@/types/objectTypes";
-import { define } from "cooky-cutter";
+import { define, derive } from "cooky-cutter";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
 import { type BrickPipeline } from "@/bricks/types";
@@ -54,6 +54,16 @@ import type { Trigger } from "@/starterBricks/triggerExtensionTypes";
 // Avoid errors being interpreted as context invalidated error
 browser.runtime.id = "abcxyz";
 
+let hidden = false;
+
+// https://github.com/jsdom/jsdom/issues/2391#issuecomment-429085358
+Object.defineProperty(document, "hidden", {
+  configurable: true,
+  get() {
+    return hidden;
+  },
+});
+
 jest.mock("@/errors/contextInvalidated", () => {
   const actual = jest.requireActual("@/errors/contextInvalidated");
   return {
@@ -68,10 +78,6 @@ const reportErrorMock = jest.mocked(reportError);
 const notifyErrorMock = jest.mocked(notify.error);
 const notifyContextInvalidatedMock = jest.mocked(notifyContextInvalidated);
 
-beforeAll(() => {
-  requestIdleCallback.mock();
-});
-
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
   define<StarterBrickConfig<TriggerDefinition>>({
     apiVersion: "v3",
@@ -83,7 +89,9 @@ const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
       }) as Metadata,
     definition: define<TriggerDefinition>({
       type: "trigger",
-      background: false,
+      background: derive<TriggerDefinition, boolean>((x) =>
+        getDefaultAllowBackgroundForTrigger(x.trigger),
+      ),
       isAvailable: () => ({
         matchPatterns: ["*://*/*"],
       }),
@@ -107,8 +115,13 @@ const extensionFactory = define<ResolvedModComponent<TriggerConfig>>({
 
 const rootReader = new RootReader();
 
+beforeAll(() => {
+  requestIdleCallback.mock();
+});
+
 beforeEach(() => {
   ensureMocksReset();
+  hidden = false;
   window.document.body.innerHTML = "";
   document.body.innerHTML = "";
   reportErrorMock.mockReset();
@@ -144,6 +157,40 @@ describe("triggerExtension", () => {
       extensionPoint.uninstall();
     },
   );
+
+  it("runs non-background page load trigger on visibilitychange", async () => {
+    hidden = true;
+
+    const extensionPoint = fromJS(
+      extensionPointFactory({
+        trigger: "load",
+        background: false,
+      })(),
+    );
+
+    extensionPoint.registerModComponent(
+      extensionFactory({
+        extensionPointId: extensionPoint.id,
+      }),
+    );
+
+    await extensionPoint.install();
+    const runPromise = extensionPoint.runModComponents({
+      reason: RunReason.MANUAL,
+    });
+
+    expect(rootReader.readCount).toBe(0);
+
+    // Runs when the document becomes visible
+    hidden = false;
+    document.dispatchEvent(new Event("visibilitychange"));
+
+    await runPromise;
+
+    expect(rootReader.readCount).toBe(1);
+
+    extensionPoint.uninstall();
+  });
 
   it.each([[undefined], ["once"], ["watch"]])(
     "attachMode: %s",

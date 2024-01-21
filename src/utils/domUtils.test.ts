@@ -17,7 +17,7 @@
 
 import { runOnDocumentVisible } from "@/utils/domUtils";
 
-let hidden = true;
+let hidden = false;
 
 // https://github.com/jsdom/jsdom/issues/2391#issuecomment-429085358
 Object.defineProperty(document, "hidden", {

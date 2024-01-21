@@ -274,6 +274,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       );
     } else if (this.trigger !== "interval" && !this.allowBackground) {
       // Since 1.8.7, respect the `background` flag for non-interval triggers.
+      // @ts-expect-error -- Promise<Promise<void>> is same as Promise<void> when awaited b/c await is recursive
       this.debouncedRunTriggersAndNotify = runOnDocumentVisible(
         this._runTriggersAndNotify,
       );

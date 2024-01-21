@@ -149,13 +149,13 @@ export function isVisible(element: HTMLElement): boolean {
  * - If the document hidden, runs the trailing invocation when the document becomes visible
  * @param fn the function to run
  */
-export function runOnDocumentVisible<Args extends unknown[]>(
-  fn: (...args: Args) => void,
-): (...args: Args) => Promise<void> {
-  let deferredPromise: Nullishable<DeferredPromise<void>>;
+export function runOnDocumentVisible<Args extends unknown[], TReturn = unknown>(
+  fn: (...args: Args) => TReturn,
+): (...args: Args) => Promise<TReturn> {
+  let deferredPromise: Nullishable<DeferredPromise<TReturn>>;
   let trailingArgs: Nullishable<Args>;
 
-  async function runOnce(...args: Args): Promise<void> {
+  async function runOnce(...args: Args): Promise<TReturn> {
     if (document.hidden) {
       if (deferredPromise) {
         // Coalesce multiple and prefer the trailing invocation arguments
@@ -168,13 +168,14 @@ export function runOnDocumentVisible<Args extends unknown[]>(
 
       document.addEventListener(
         "visibilitychange",
-        () => {
+        async () => {
           // Defensive check that the listener is only called when the document becomes visible
           if (document.visibilityState === "visible") {
             try {
-              fn(...trailingArgs);
+              deferredPromise.resolve(fn(...trailingArgs));
+            } catch (error) {
+              deferredPromise.reject(error);
             } finally {
-              deferredPromise.resolve();
               deferredPromise = undefined;
               trailingArgs = undefined;
             }
@@ -189,7 +190,7 @@ export function runOnDocumentVisible<Args extends unknown[]>(
     }
 
     // Run immediately if the document is visible
-    fn(...args);
+    return fn(...args);
   }
 
   return runOnce;
