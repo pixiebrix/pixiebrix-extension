@@ -94,11 +94,9 @@ const ExtensionConsoleContent: React.FC = () => (
   </div>
 );
 
-const RestrictedUrlPopupApp: React.FC = () => {
-  const reason =
-    new URLSearchParams(location.search).get("reason") ??
-    DISPLAY_REASON_UNKNOWN;
-
+const RestrictedUrlPopupApp: React.FC<{ reason: string | null }> = ({
+  reason = DISPLAY_REASON_UNKNOWN,
+}) => {
   useEffect(() => {
     reportEvent(Events.BROWSER_ACTION_RESTRICTED_URL, {
       reason,

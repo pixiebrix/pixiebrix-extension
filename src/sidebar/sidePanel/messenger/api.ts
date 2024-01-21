@@ -22,14 +22,20 @@
  */
 
 import { expectContext } from "@/utils/expectContext";
-import { messenger, type Target } from "webext-messenger";
+import { messenger } from "webext-messenger";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { getSidebarInThisTab } from "@/sidebar/messenger/api";
+import { getTabUrl, type Target } from "webext-tools";
+import { once } from "lodash";
 
-export function getAssociatedTarget(): Target {
+export const getAssociatedTarget = once((): Target => {
   expectContext("sidebar");
   const tabId = new URLSearchParams(window.location.search).get("tabId");
   return { tabId: Number(tabId), frameId: 0 };
+});
+
+export async function getAssociatedTargetUrl(): Promise<string | undefined> {
+  return getTabUrl(getAssociatedTarget());
 }
 
 export async function isSidePanelOpen(): Promise<boolean> {

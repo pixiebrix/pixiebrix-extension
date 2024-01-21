@@ -19,15 +19,26 @@ import React from "react";
 import ConnectedSidebar from "./ConnectedSidebar";
 import Header from "./Header";
 import ErrorBanner from "./ErrorBanner";
+import RestrictedUrlPopupApp from "@/tinyPages/RestrictedUrlPopupApp";
+import useCurrentUrl from "./hooks/useCurrentUrl";
+import { getReasonByUrl } from "@/tinyPages/restrictedUrlPopupUtils";
 
 // Include MemoryRouter because some of our authentication-gate hooks use useLocation. However, there's currently no
 // navigation in the SidebarApp
-const SidebarBody: React.FunctionComponent = () => (
-  <>
-    <ErrorBanner />
-    <Header />
-    <ConnectedSidebar />
-  </>
-);
+function SidebarBody() {
+  const url = useCurrentUrl();
+  const reason = getReasonByUrl(url);
+  return (
+    <>
+      <ErrorBanner />
+      <Header />
+      {reason ? (
+        <RestrictedUrlPopupApp reason={reason} />
+      ) : (
+        <ConnectedSidebar />
+      )}
+    </>
+  );
+}
 
 export default SidebarBody;

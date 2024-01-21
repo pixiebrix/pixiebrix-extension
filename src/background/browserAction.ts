@@ -23,7 +23,26 @@ import { executeScript } from "webext-content-scripts";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { openSidePanel } from "@/mv3/sidePanelMigration";
 import { setActionPopup } from "webext-tools";
-import { getRestrictedPageMessage } from "./sidePanel";
+import { getReasonByUrl } from "@/tinyPages/restrictedUrlPopupUtils";
+
+/**
+ * Show a popover on restricted URLs because we're unable to inject content into the page. Previously we'd open
+ * the Extension Console, but that was confusing because the action was inconsistent with how the button behaves
+ * other pages.
+ * @param tabUrl the url of the tab, or undefined if not accessible
+ */
+function getPopoverUrl(tabUrl: string | undefined): string | null {
+  const popoverUrl = browser.runtime.getURL("restrictedUrlPopup.html");
+  const reason = getReasonByUrl(tabUrl ?? "");
+
+  if (reason) {
+    return `${popoverUrl}?reason=${reason}`;
+  }
+
+  // The popup is disabled, and the extension will receive browserAction.onClicked events.
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setPopup#popup
+  return null;
+}
 
 export default async function initBrowserAction(): Promise<void> {
   if (!isMV3()) {
@@ -103,5 +122,5 @@ function initBrowserActionMv2(): void {
 
   // Track the active tab URL. We need to update the popover every time status the active tab/active URL changes.
   // https://github.com/facebook/react/blob/bbb9cb116dbf7b6247721aa0c4bcb6ec249aa8af/packages/react-devtools-extensions/src/background/tabsManager.js#L29
-  setActionPopup(getRestrictedPageMessage);
+  setActionPopup(getPopoverUrl);
 }

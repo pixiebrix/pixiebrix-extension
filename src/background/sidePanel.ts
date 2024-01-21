@@ -17,35 +17,7 @@
 
 import { openSidePanel } from "@/mv3/sidePanelMigration";
 import type { MessengerMeta } from "webext-messenger";
-import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
-import {
-  DISPLAY_REASON_EXTENSION_CONSOLE,
-  DISPLAY_REASON_RESTRICTED_URL,
-} from "@/tinyPages/restrictedUrlPopupConstants";
-import { isScriptableUrl } from "webext-content-scripts";
 import { isMV3 } from "@/mv3/api";
-
-export function getRestrictedPageMessage(
-  tabUrl: string | undefined,
-): string | null {
-  const popoverUrl = browser.runtime.getURL("restrictedUrlPopup.html");
-
-  if (tabUrl?.startsWith(getExtensionConsoleUrl())) {
-    return `${popoverUrl}?reason=${DISPLAY_REASON_EXTENSION_CONSOLE}`;
-  }
-
-  if (!isScriptableUrl(tabUrl)) {
-    return `${popoverUrl}?reason=${DISPLAY_REASON_RESTRICTED_URL}`;
-  }
-
-  // The popup is disabled, and the extension will receive browserAction.onClicked events.
-  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/browserAction/setPopup#popup
-  return null;
-}
-
-function getSidebarPath(tabId: number, url: string | undefined): string {
-  return getRestrictedPageMessage(url) ?? "sidebar.html?tabId=" + tabId;
-}
 
 export async function showMySidePanel(this: MessengerMeta): Promise<void> {
   await openSidePanel(this.trace[0].tab.id);
@@ -59,11 +31,11 @@ export async function initSidePanel(): Promise<void> {
 
   // TODO: Drop this once the popover URL behavior is merged into sidebar.html
   // https://github.com/pixiebrix/pixiebrix-extension/issues/7364
-  chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
-    if (changeInfo.url) {
+  chrome.tabs.onCreated.addListener(({ id: tabId }) => {
+    if (tabId) {
       void chrome.sidePanel.setOptions({
         tabId,
-        path: getSidebarPath(tabId, changeInfo.url),
+        path: "sidebar.html?tabId=" + tabId,
       });
     }
   });
@@ -71,10 +43,10 @@ export async function initSidePanel(): Promise<void> {
   // We need to target _all_ tabs, not just those we have access to
   const existingTabs = await chrome.tabs.query({});
   await Promise.all(
-    existingTabs.map(async ({ id, url }) =>
+    existingTabs.map(async ({ id: tabId, url }) =>
       chrome.sidePanel.setOptions({
-        tabId: id,
-        path: getSidebarPath(id, url),
+        tabId,
+        path: "sidebar.html?tabId=" + tabId,
         enabled: true,
       }),
     ),
