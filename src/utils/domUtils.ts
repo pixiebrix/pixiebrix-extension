@@ -25,6 +25,7 @@ import {
 import { sleep } from "@/utils/timeUtils";
 import { JQUERY_INVALID_SELECTOR_ERROR } from "@/errors/knownErrorMessages";
 import pDefer, { type DeferredPromise } from "p-defer";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Find an element(s) by its jQuery selector. A safe alternative to $(selector), which constructs an element if it's
@@ -151,8 +152,8 @@ export function isVisible(element: HTMLElement): boolean {
 export function runOnDocumentVisible<Args extends unknown[]>(
   fn: (...args: Args) => void,
 ): (...args: Args) => Promise<void> {
-  let deferredPromise: DeferredPromise<void>;
-  let trailingArgs: Args;
+  let deferredPromise: Nullishable<DeferredPromise<void>>;
+  let trailingArgs: Nullishable<Args>;
 
   async function runOnce(...args: Args): Promise<void> {
     if (document.hidden) {
@@ -174,6 +175,7 @@ export function runOnDocumentVisible<Args extends unknown[]>(
               fn(...trailingArgs);
             } finally {
               deferredPromise.resolve();
+              deferredPromise = undefined;
               trailingArgs = undefined;
             }
           }

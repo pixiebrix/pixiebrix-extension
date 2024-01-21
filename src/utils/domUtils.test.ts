@@ -39,10 +39,6 @@ describe("runOnDocumentVisible", () => {
     expect(mock).toHaveBeenCalledTimes(1);
   });
 
-  /**
-   * @jest-environment jsdom
-   * @jest-environment-options {"hidden": true}
-   */
   it("prefer trailing invocation", async () => {
     hidden = true;
 
@@ -61,5 +57,26 @@ describe("runOnDocumentVisible", () => {
     expect(mock).toHaveBeenCalledTimes(1);
     // Prefers the last invocation
     expect(mock).toHaveBeenCalledWith(2);
+  });
+
+  it("handle multiple invocations", async () => {
+    const mock = jest.fn();
+    const fn = runOnDocumentVisible(mock);
+
+    const numCalls = 3;
+
+    for (let i = 0; i < numCalls; i++) {
+      hidden = true;
+      document.dispatchEvent(new Event("visibilitychange"));
+
+      void fn(i);
+
+      hidden = false;
+      document.dispatchEvent(new Event("visibilitychange"));
+
+      expect(mock).toHaveBeenCalledWith(i);
+    }
+
+    expect(mock).toHaveBeenCalledTimes(numCalls);
   });
 });
