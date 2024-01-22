@@ -24,6 +24,7 @@ import NodePolyfillPlugin from "node-polyfill-webpack-plugin";
 import WebpackBuildNotifierPlugin from "webpack-build-notifier";
 import TerserPlugin from "terser-webpack-plugin";
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
+import RemovePlugin from "remove-files-webpack-plugin";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import CopyPlugin from "copy-webpack-plugin";
 import { compact } from "lodash-es";
@@ -265,6 +266,11 @@ const createConfig = (env, options) =>
           },
           "static",
         ],
+      }),
+      new RemovePlugin({
+        after: {
+          include: ["dist/DocumentView.js"],
+        },
       }),
     ]),
     module: {
