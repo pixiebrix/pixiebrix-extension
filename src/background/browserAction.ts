@@ -16,9 +16,10 @@
  */
 
 import { ensureContentScript } from "@/background/contentScript";
+import { updateSidebar } from "@/contentScript/messenger/api";
 import webextAlert from "./webextAlert";
 import { browserAction, isMV3, type Tab } from "@/mv3/api";
-import { executeFunction, executeScript } from "webext-content-scripts";
+import { executeScript } from "webext-content-scripts";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { openSidePanel } from "@/mv3/sidePanelMigration";
 import { setActionPopup } from "webext-tools";
@@ -77,15 +78,6 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
   // Load the raw toggle script first, then the content script. The browser executes them
   // in order, but we don't need to use `Promise.all` to await them at the same time as we
   // want to catch each error separately.
-  const preparationPromise = executeFunction(
-    tabId,
-    (tabId: number) => {
-      // Temporary. No need to namespace it because it's in the isolated world
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).tabId = tabId;
-    },
-    tabId,
-  );
   const sidebarTogglePromise = executeScript({
     tabId,
     frameId: TOP_LEVEL_FRAME_ID,
@@ -105,7 +97,6 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
   const contentScriptPromise = ensureContentScript(contentScriptTarget);
 
   try {
-    await preparationPromise;
     await sidebarTogglePromise;
   } catch (error) {
     webextAlert(ERR_UNABLE_TO_OPEN);
@@ -116,6 +107,7 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
   // Avoid showing any alerts or notifications: further messaging can appear in the sidebar itself.
   // Any errors are automatically reported by the global error handler.
   await contentScriptPromise;
+  updateSidebar(contentScriptTarget);
 }
 
 async function handleBrowserAction(tab: Tab): Promise<void> {
