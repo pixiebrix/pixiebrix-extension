@@ -17,3 +17,5 @@
 
 export function expectContext() {}
 export function forbidContext() {}
+
+export { isPageEditor } from "../../../utils/expectContext";

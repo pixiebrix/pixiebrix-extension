@@ -20,11 +20,14 @@ import {
   isContentScript,
   isExtensionContext,
   isWebPage,
-  contextNames,
 } from "webext-detect-page";
 
 function isBrowserSidebar(): boolean {
   return isExtensionContext() && location.pathname === "/sidebar.html";
+}
+
+export function isPageEditor(): boolean {
+  return location.pathname === "/pageEditor.html";
 }
 
 /**
@@ -48,18 +51,15 @@ function createError(
   return new errorOrCtor(defaultMessage);
 }
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const contexts = [...contextNames, "sidebar"] as const;
-
 // eslint-disable-next-line local-rules/persistBackgroundData -- Functions
-const contextMap = new Map<(typeof contexts)[number], () => boolean>([
-  ["web", isWebPage],
-  ["extension", isExtensionContext],
-  ["background", isBackground],
-  ["contentScript", isContentScript],
-  ["sidebar", isBrowserSidebar],
-  ["devTools", () => "devtools" in chrome],
-]);
+const contextMap = {
+  web: isWebPage,
+  extension: isExtensionContext,
+  background: isBackground,
+  pageEditor: isPageEditor,
+  contentScript: isContentScript,
+  sidebar: isBrowserSidebar,
+} as const;
 
 /**
  * @example expectContext('extension')
@@ -68,10 +68,10 @@ const contextMap = new Map<(typeof contexts)[number], () => boolean>([
  * @example expectContext('extension', new Error('Wrong context and this is my custom error'))
  */
 export function expectContext(
-  context: (typeof contexts)[number],
+  context: keyof typeof contextMap,
   error?: ErrorBaseType,
 ): void {
-  const isContext = contextMap.get(context);
+  const isContext = contextMap[context];
   if (!isContext) {
     throw new TypeError(`Context "${context}" not found`);
   }
@@ -91,10 +91,10 @@ export function expectContext(
  * @example forbidContext('extension', new Error('Wrong context and this is my custom error'))
  */
 export function forbidContext(
-  context: (typeof contexts)[number],
+  context: keyof typeof contextMap,
   error?: ErrorBaseType,
 ): void {
-  const isContext = contextMap.get(context);
+  const isContext = contextMap[context];
   if (!isContext) {
     throw new TypeError(`Context "${context}" not found`);
   }
