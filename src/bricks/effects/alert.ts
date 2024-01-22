@@ -73,13 +73,13 @@ export class AlertEffect extends EffectABC {
     const messageString = String(message);
 
     if (type === "window") {
-      // eslint-disable-next-line no-alert
+      // eslint-disable-next-line no-alert -- User requested
       window.alert(messageString);
     } else {
       showNotification({
         message: messageString,
         type,
-        duration,
+        autoDismissTimeMs: duration,
         reportError: false,
       });
     }
