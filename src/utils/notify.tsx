@@ -38,7 +38,7 @@ import { SIDEBAR_WIDTH_CSS_PROPERTY } from "@/contentScript/sidebarDomController
 import ErrorIcon from "@/icons/error.svg?loadAsComponent";
 import WarningIcon from "@/icons/warning.svg?loadAsComponent";
 
-const MINIMUM_NOTIFICATION_DURATION = 2000;
+const MINIMUM_NOTIFICATION_DURATION_MS = 2000;
 
 export type NotificationType =
   | "info"
@@ -51,7 +51,7 @@ type Notification = RequireAtLeastOne<
     message: string;
     type?: NotificationType;
     id?: string;
-    duration?: number;
+    autoDismissTimeMs?: number;
     error: unknown;
     dismissable?: boolean;
     reportError?: boolean;
@@ -114,10 +114,10 @@ const toastStyle: ToastStyle = {
   },
 };
 
-function getMessageDisplayTime(message: string): number {
+function getMessageDisplayTimeMs(message: string): number {
   const wpm = 100; // 180 is the average words read per minute, make it slower
   return Math.max(
-    MINIMUM_NOTIFICATION_DURATION,
+    MINIMUM_NOTIFICATION_DURATION_MS,
     (message.split(" ").length / wpm) * 60_000,
   );
 }
@@ -149,7 +149,7 @@ export function showNotification({
   message,
   type = error ? "error" : undefined,
   id = uuidv4(),
-  duration,
+  autoDismissTimeMs: duration,
   dismissable = true,
 
   /** Only errors are reported by default */
@@ -166,7 +166,7 @@ export function showNotification({
   // Avoid excessively-long notification messages
   message = truncate(message, { length: 400 });
 
-  duration ??= getMessageDisplayTime(message);
+  duration ??= getMessageDisplayTimeMs(message);
 
   const options: ToastOptions = {
     id,
