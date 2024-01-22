@@ -9,11 +9,9 @@ export default class DiscardFilePlugin {
           stage: webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_SIZE,
         },
         async (assets) => {
-          if (assets["DocumentView.js"]) {
-            assets["DocumentView.js"] = new webpack.sources.RawSource(
-              '"Dropped by DiscardFilePlugin"',
-            );
-          }
+          delete assets["DocumentView.js"];
+          // If this causes issues in the future, try replacing the content instead:
+          // assets["DocumentView.js"] = new webpack.sources.RawSource('"Dropped"');
         },
       );
     });
