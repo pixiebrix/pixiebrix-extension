@@ -24,8 +24,6 @@ import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/domConstants";
 import shadowWrap from "@/utils/shadowWrap";
 import { expectContext } from "@/utils/expectContext";
 import { uuidv4 } from "@/types/helpers";
-import { getSidebarPath } from "@/sidebar/messenger/api";
-import { getThisFrame } from "webext-messenger";
 
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
@@ -90,7 +88,7 @@ export function removeSidebarFrame(): boolean {
 }
 
 /** Inserts the element; Returns false if it already existed */
-export async function insertSidebarFrame(): Promise<boolean> {
+export function insertSidebarFrame(): boolean {
   console.debug("sidebarDomControllerLite:insertSidebarFrame", {
     isSidebarFrameVisible: isSidebarFrameVisible(),
   });
@@ -102,14 +100,12 @@ export async function insertSidebarFrame(): Promise<boolean> {
 
   storeOriginalCSSOnce();
   const nonce = uuidv4();
-  const { tabId } = await getThisFrame();
-  const actionUrl = new URL(browser.runtime.getURL(getSidebarPath(tabId)));
-  actionUrl.searchParams.set("nonce", nonce);
+  const actionURL = browser.runtime.getURL("sidebar.html");
 
   setSidebarWidth(SIDEBAR_WIDTH_PX);
 
   const iframe = document.createElement("iframe");
-  iframe.src = actionUrl.href;
+  iframe.src = `${actionURL}?nonce=${nonce}`;
 
   Object.assign(iframe.style, {
     position: "fixed",
@@ -149,7 +145,7 @@ export async function insertSidebarFrame(): Promise<boolean> {
 /**
  * Toggle the sidebar frame. Returns true if the sidebar is now visible, false otherwise.
  */
-export async function toggleSidebarFrame(): Promise<boolean> {
+export function toggleSidebarFrame(): boolean {
   console.debug("sidebarDomControllerLite:toggleSidebarFrame", {
     isSidebarFrameVisible: isSidebarFrameVisible(),
   });
@@ -159,6 +155,6 @@ export async function toggleSidebarFrame(): Promise<boolean> {
     return false;
   }
 
-  await insertSidebarFrame();
+  insertSidebarFrame();
   return true;
 }

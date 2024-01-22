@@ -25,10 +25,6 @@ import {
   getThisFrame,
 } from "webext-messenger";
 
-export function getSidebarPath(tabId: number): string {
-  return "/sidebar.html?tabId=" + tabId;
-}
-
 export async function getSidebarInThisTab(): Promise<PageTarget> {
   if (!isMV3()) {
     return { tabId: "this", page: "/sidebar.html" };
@@ -43,7 +39,7 @@ export async function getSidebarInThisTab(): Promise<PageTarget> {
 
   const frame = await getThisFrame();
   return {
-    page: getSidebarPath(frame.tabId),
+    page: "/sidebar.html?tabId=" + frame.tabId,
   };
 }
 

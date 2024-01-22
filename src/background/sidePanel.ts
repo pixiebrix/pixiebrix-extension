@@ -18,7 +18,6 @@
 import { openSidePanel } from "@/mv3/sidePanelMigration";
 import type { MessengerMeta } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
-import { getSidebarPath } from "@/sidebar/messenger/api";
 
 export async function showMySidePanel(this: MessengerMeta): Promise<void> {
   await openSidePanel(this.trace[0].tab.id);
@@ -36,7 +35,7 @@ export async function initSidePanel(): Promise<void> {
     if (tabId) {
       void chrome.sidePanel.setOptions({
         tabId,
-        path: getSidebarPath(tabId),
+        path: "sidebar.html?tabId=" + tabId,
       });
     }
   });
@@ -47,7 +46,7 @@ export async function initSidePanel(): Promise<void> {
     existingTabs.map(async ({ id: tabId, url }) =>
       chrome.sidePanel.setOptions({
         tabId,
-        path: getSidebarPath(tabId),
+        path: "sidebar.html?tabId=" + tabId,
         enabled: true,
       }),
     ),

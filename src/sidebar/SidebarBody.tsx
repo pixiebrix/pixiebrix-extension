@@ -27,22 +27,18 @@ import { getReasonByUrl as getRestrictedReasonByUrl } from "@/tinyPages/restrict
 // navigation in the SidebarApp
 function SidebarBody() {
   const url = useCurrentUrl();
-  console.log("SidebarBody url", url);
-
   const restricted = getRestrictedReasonByUrl(url);
   return (
     <>
       <ErrorBanner />
       <Header />
-      <div className="full-height">
-        {url ? (
-          restricted ? (
-            <RestrictedUrlPopupApp reason={restricted} />
-          ) : (
-            <ConnectedSidebar />
-          )
-        ) : null}
-      </div>
+      {url ? (
+        restricted ? (
+          <RestrictedUrlPopupApp reason={restricted} />
+        ) : (
+          <ConnectedSidebar />
+        )
+      ) : null}
     </>
   );
 }
