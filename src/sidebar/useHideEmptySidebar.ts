@@ -18,7 +18,7 @@
 import useAsyncEffect from "use-async-effect";
 import { getReservedSidebarEntries } from "@/contentScript/messenger/api";
 import { closeSelf } from "@/sidebar/protocol";
-import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { useSelector } from "react-redux";
 import {
   selectClosedTabs,
@@ -35,7 +35,7 @@ export const useHideEmptySidebar = () => {
 
   useAsyncEffect(
     async (isMounted) => {
-      const topFrame = await getTopFrameFromSidebar();
+      const topFrame = getConnectedTarget();
       const reservedPanelEntries = await getReservedSidebarEntries(topFrame);
 
       // We don't want to hide the Sidebar if there are any open reserved panels.

@@ -15,13 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file Temporary helpers useful for the MV3 sidePanel transition */
+import { expectContext } from "@/utils/expectContext";
+import { assertNotNullish } from "@/utils/nullishUtils";
+import { once } from "lodash";
+import { type Target, getTabUrl } from "webext-tools";
 
-import { getMethod } from "webext-messenger";
-import { _openSidePanel } from "@/sidebar/sidePanel/messenger/api";
-import { isMV3 } from "./api";
+export const getConnectedTabId = once((): number => {
+  expectContext("sidebar");
+  const tabId = new URLSearchParams(window.location.search).get("tabId");
+  assertNotNullish(
+    tabId,
+    `No tabId argument was found on this page: ${window.location.href}`,
+  );
+  return Number(tabId);
+});
 
-export const openSidePanel = isMV3()
-  ? _openSidePanel
-  : // Called via `getMethod` until we complete the strictNullChecks transition
-    async (tabId: number) => getMethod("SHOW_SIDEBAR")({ tabId });
+export function getConnectedTarget(): Target {
+  return { tabId: getConnectedTabId(), frameId: 0 };
+}
+
+export async function getAssociatedTargetUrl(): Promise<string | undefined> {
+  return getTabUrl(getConnectedTabId());
+}

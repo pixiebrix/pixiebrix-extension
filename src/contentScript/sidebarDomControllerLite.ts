@@ -24,6 +24,8 @@ import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/domConstants";
 import shadowWrap from "@/utils/shadowWrap";
 import { expectContext } from "@/utils/expectContext";
 import { uuidv4 } from "@/types/helpers";
+import { getSidebarPath } from "@/sidebar/messenger/api";
+import { getThisFrame } from "webext-messenger";
 
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
@@ -88,7 +90,7 @@ export function removeSidebarFrame(): boolean {
 }
 
 /** Inserts the element; Returns false if it already existed */
-export function insertSidebarFrame(): boolean {
+export async function insertSidebarFrame(): Promise<boolean> {
   console.debug("sidebarDomControllerLite:insertSidebarFrame", {
     isSidebarFrameVisible: isSidebarFrameVisible(),
   });
@@ -100,12 +102,14 @@ export function insertSidebarFrame(): boolean {
 
   storeOriginalCSSOnce();
   const nonce = uuidv4();
-  const actionURL = browser.runtime.getURL("sidebar.html");
+  const { tabId } = await getThisFrame();
+  const actionUrl = new URL(browser.runtime.getURL(getSidebarPath(tabId)));
+  actionUrl.searchParams.set("nonce", nonce);
 
   setSidebarWidth(SIDEBAR_WIDTH_PX);
 
   const iframe = document.createElement("iframe");
-  iframe.src = `${actionURL}?nonce=${nonce}`;
+  iframe.src = actionUrl.href;
 
   Object.assign(iframe.style, {
     position: "fixed",
@@ -145,7 +149,7 @@ export function insertSidebarFrame(): boolean {
 /**
  * Toggle the sidebar frame. Returns true if the sidebar is now visible, false otherwise.
  */
-export function toggleSidebarFrame(): boolean {
+export async function toggleSidebarFrame(): Promise<boolean> {
   console.debug("sidebarDomControllerLite:toggleSidebarFrame", {
     isSidebarFrameVisible: isSidebarFrameVisible(),
   });
@@ -155,6 +159,6 @@ export function toggleSidebarFrame(): boolean {
     return false;
   }
 
-  insertSidebarFrame();
+  await insertSidebarFrame();
   return true;
 }

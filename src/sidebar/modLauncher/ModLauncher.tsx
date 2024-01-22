@@ -23,7 +23,7 @@ import useFlags from "@/hooks/useFlags";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { showWalkthroughModal } from "@/contentScript/messenger/api";
-import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 
 const ModLauncher: React.FunctionComponent = () => {
   const { permit } = useFlags();
@@ -45,7 +45,7 @@ const ModLauncher: React.FunctionComponent = () => {
                 source: "ModLauncher",
               });
 
-              const frame = await getTopFrameFromSidebar();
+              const frame = getConnectedTarget();
               showWalkthroughModal(frame);
             }}
           >

@@ -35,7 +35,7 @@ import {
   resolveTemporaryPanel,
 } from "@/contentScript/messenger/api";
 import { partition, remove, sortBy } from "lodash";
-import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { castDraft, type Draft } from "immer";
 import { localStorage } from "redux-persist-webextension-storage";
@@ -126,12 +126,12 @@ function findNextActiveKey(
 }
 
 async function cancelPreexistingForms(forms: UUID[]): Promise<void> {
-  const topLevelFrame = await getTopFrameFromSidebar();
+  const topLevelFrame = getConnectedTarget();
   cancelForm(topLevelFrame, ...forms);
 }
 
 async function cancelPanels(nonces: UUID[]): Promise<void> {
-  const topLevelFrame = await getTopFrameFromSidebar();
+  const topLevelFrame = getConnectedTarget();
   cancelTemporaryPanel(topLevelFrame, nonces);
 }
 
@@ -140,7 +140,7 @@ async function cancelPanels(nonces: UUID[]): Promise<void> {
  * @param nonces panel nonces
  */
 async function closePanels(nonces: UUID[]): Promise<void> {
-  const topLevelFrame = await getTopFrameFromSidebar();
+  const topLevelFrame = getConnectedTarget();
   closeTemporaryPanel(topLevelFrame, nonces);
 }
 
@@ -153,7 +153,7 @@ async function resolvePanel(
   nonce: UUID,
   action: Pick<SubmitPanelAction, "type" | "detail">,
 ): Promise<void> {
-  const topLevelFrame = await getTopFrameFromSidebar();
+  const topLevelFrame = getConnectedTarget();
   resolveTemporaryPanel(topLevelFrame, nonce, action);
 }
 

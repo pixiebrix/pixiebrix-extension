@@ -35,7 +35,7 @@ import DelayedRender from "@/components/DelayedRender";
 import { isDeferExpression } from "@/utils/expressionUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinPathParts } from "@/utils/formUtils";
-import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 
 type DocumentListProps = {
   array: UnknownObject[];
@@ -66,7 +66,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
     isLoading,
     error,
   } = useAsyncState(async () => {
-    const topLevelFrame = await getTopFrameFromSidebar();
+    const topLevelFrame = getConnectedTarget();
 
     const elementVariableReference = `@${elementKey}`;
 
