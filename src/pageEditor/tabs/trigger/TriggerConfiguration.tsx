@@ -112,7 +112,7 @@ const TriggerConfiguration: React.FC<{
         onChange={onTriggerChange}
         {...makeLockableFieldProps("Trigger Event", isLocked)}
       >
-        <option value="load">Page Load</option>
+        <option value="load">Page Load / Navigation</option>
         <option value="interval">Interval</option>
         <option value="initialize">Initialize</option>
         <option value="appear">Appear</option>
@@ -145,23 +145,22 @@ const TriggerConfiguration: React.FC<{
       )}
 
       {trigger === "interval" && (
-        <>
-          <ConnectedFieldTemplate
-            name={fieldName("intervalMillis")}
-            title="Interval (ms)"
-            type="number"
-            description="Interval to run the trigger in milliseconds"
-            {...makeLockableFieldProps("Interval", isLocked)}
-          />
-          <ConnectedFieldTemplate
-            name={fieldName("background")}
-            title="Run in Background"
-            as={BooleanWidget}
-            description="Run the interval in inactive tabs"
-            {...makeLockableFieldProps("Run in Background", isLocked)}
-          />
-        </>
+        <ConnectedFieldTemplate
+          name={fieldName("intervalMillis")}
+          title="Interval (ms)"
+          type="number"
+          description="Interval to run the trigger in milliseconds"
+          {...makeLockableFieldProps("Interval", isLocked)}
+        />
       )}
+
+      <ConnectedFieldTemplate
+        name={fieldName("background")}
+        title="Run in Background"
+        as={BooleanWidget}
+        description="Run the trigger in inactive tabs."
+        {...makeLockableFieldProps("Run in Background", isLocked)}
+      />
 
       {supportsSelector(trigger) && (
         <>

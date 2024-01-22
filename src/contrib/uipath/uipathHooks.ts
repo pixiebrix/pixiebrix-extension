@@ -81,5 +81,6 @@ export function useSelectedRelease(releaseKeyFieldName: string) {
   return {
     selectedRelease,
     releasesPromise,
+    releaseKey,
   };
 }

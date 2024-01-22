@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isDevToolsPage, isOptionsPage } from "webext-detect-page";
+import { isOptionsPage } from "webext-detect-page";
 import { useEffect } from "react";
 import notify from "@/utils/notify";
 import useAsyncState from "@/hooks/useAsyncState";
+import { isPageEditor } from "@/utils/expectContext";
 
 /**
  * Get the current origin for where code is running. Used to set the origin on the
@@ -40,14 +41,7 @@ function useCurrentOrigin(): string | null {
       return browser.runtime.getURL("");
     }
 
-    if (
-      // Checks location.pathname against the 'devtools_page' value in manifest.json
-      // This won't match for dev tools panels created by the devtool
-      // page (i.e. the Page Editor)
-      isDevToolsPage() ||
-      // Check for the page editor pagePath in the location pathname
-      location.pathname === "/pageEditor.html"
-    ) {
+    if (isPageEditor()) {
       return "devtools://devtools";
     }
 
