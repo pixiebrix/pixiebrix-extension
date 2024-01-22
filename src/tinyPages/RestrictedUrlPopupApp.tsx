@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid -- options page behaves like a link */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
@@ -23,69 +22,35 @@ import {
   DISPLAY_REASON_EXTENSION_CONSOLE,
   DISPLAY_REASON_UNKNOWN,
 } from "@/tinyPages/restrictedUrlPopupConstants";
+import { isBrowserSidebar } from "@/utils/expectContext";
 
-const RestrictedUrlContent: React.FC = () => (
+const RestrictedUrlContent: React.FC = ({ children }) => (
   <div className="p-3">
-    <div className="font-weight-bold">This is a restricted browser page.</div>
-    <div className="mt-2">PixieBrix cannot access this page.</div>
-
+    {children}
     <div className="mt-2">
       To open the PixieBrix Sidebar, navigate to a website and then click the
       PixieBrix toolbar icon again.
     </div>
-
-    <hr />
-
-    <div className="mt-2">
-      Looking for the Extension Console?{" "}
-      <a
-        href="#"
-        onClick={async () => {
-          await browser.runtime.openOptionsPage();
-        }}
-      >
-        Open the Extension Console
-      </a>
-    </div>
-
-    <div className="mt-2">
-      Looking for the Page Editor?{" "}
-      <a
-        href="#"
-        onClick={async () => {
-          await browser.tabs.update({
-            url: "https://www.pixiebrix.com/developers-welcome",
-          });
-          window.close();
-        }}
-      >
-        View the Developer Welcome Page
-      </a>
-    </div>
-  </div>
-);
-
-const ExtensionConsoleContent: React.FC = () => (
-  <div className="p-3">
-    <div className="font-weight-bold">This is the Extension Console.</div>
-    <div className="mt-2">PixieBrix mods cannot run on this page.</div>
-
-    <div className="mt-2">
-      To open the PixieBrix Sidebar, navigate to a website and then click the
-      PixieBrix toolbar icon again.
-    </div>
-
     <hr />
 
     <div className="mt-2">
       Looking for the Page Editor?{" "}
       <a
-        href="#"
-        onClick={async () => {
+        href="https://www.pixiebrix.com/developers-welcome"
+        onClick={async (event) => {
+          if (event.shiftKey || event.ctrlKey || event.metaKey) {
+            return;
+          }
+
+          event.preventDefault();
           await browser.tabs.update({
-            url: "https://www.pixiebrix.com/developers-welcome",
+            url: event.currentTarget.href,
           });
-          window.close();
+
+          // TODO: Drop after restrictedUrlPopup.html is removed
+          if (!isBrowserSidebar()) {
+            window.close();
+          }
         }}
       >
         View the Developer Welcome Page
@@ -104,10 +69,22 @@ const RestrictedUrlPopupApp: React.FC<{ reason: string | null }> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run once on mount
   }, []);
 
-  return reason === DISPLAY_REASON_EXTENSION_CONSOLE ? (
-    <ExtensionConsoleContent />
-  ) : (
-    <RestrictedUrlContent />
+  return (
+    <RestrictedUrlContent>
+      {reason === DISPLAY_REASON_EXTENSION_CONSOLE ? (
+        <>
+          <div className="font-weight-bold">This is the Extension Console.</div>
+          <div className="mt-2">PixieBrix mods cannot run on this page.</div>
+        </>
+      ) : (
+        <>
+          <div className="font-weight-bold">
+            This is a restricted browser page.
+          </div>
+          <div className="mt-2">PixieBrix cannot access this page.</div>
+        </>
+      )}
+    </RestrictedUrlContent>
   );
 };
 

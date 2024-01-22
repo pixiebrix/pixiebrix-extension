@@ -21,22 +21,24 @@ import Header from "./Header";
 import ErrorBanner from "./ErrorBanner";
 import RestrictedUrlPopupApp from "@/tinyPages/RestrictedUrlPopupApp";
 import useCurrentUrl from "./hooks/useCurrentUrl";
-import { getReasonByUrl } from "@/tinyPages/restrictedUrlPopupUtils";
+import { getReasonByUrl as getRestrictedReasonByUrl } from "@/tinyPages/restrictedUrlPopupUtils";
 
 // Include MemoryRouter because some of our authentication-gate hooks use useLocation. However, there's currently no
 // navigation in the SidebarApp
 function SidebarBody() {
   const url = useCurrentUrl();
-  const reason = getReasonByUrl(url);
+  const restricted = getRestrictedReasonByUrl(url);
   return (
     <>
       <ErrorBanner />
       <Header />
-      {reason ? (
-        <RestrictedUrlPopupApp reason={reason} />
-      ) : (
-        <ConnectedSidebar />
-      )}
+      {url ? (
+        restricted ? (
+          <RestrictedUrlPopupApp reason={restricted} />
+        ) : (
+          <ConnectedSidebar />
+        )
+      ) : null}
     </>
   );
 }
