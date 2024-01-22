@@ -137,7 +137,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
         id: SAVING_URL_NOTIFICATION_ID,
         message: "Service URL updated. The extension must be reloaded",
         dismissable: false,
-        duration: Number.POSITIVE_INFINITY,
+        autoDismissTimeMs: Number.POSITIVE_INFINITY,
       });
     },
     [serviceURL, setServiceURL],
