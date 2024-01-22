@@ -156,7 +156,8 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
   const renderSuggestionWithCreateNew = useCallback(
     (suggestion: SuggestionType | CreateNew) =>
       isNew(suggestion)
-        ? renderCreateNew(`Create "${suggestion.value}"`)
+        ? // TODO: Fix or drop https://github.com/pixiebrix/pixiebrix-extension/issues/6686
+          renderCreateNew(`Create "${suggestion.value}"`)
         : renderSuggestion(suggestion),
     [renderCreateNew, renderSuggestion],
   );

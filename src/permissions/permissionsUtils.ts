@@ -40,7 +40,7 @@ export function emptyPermissionsFactory(): Required<Permissions.Permissions> {
 export function selectOptionalPermissions(
   permissions: string[] = [],
 ): Manifest.OptionalPermission[] {
-  const { optional_permissions } = browser.runtime.getManifest();
+  const { optional_permissions = [] } = browser.runtime.getManifest();
   return permissions.filter((requestedPermission) =>
     optional_permissions.includes(requestedPermission),
   ) as Manifest.OptionalPermission[];
