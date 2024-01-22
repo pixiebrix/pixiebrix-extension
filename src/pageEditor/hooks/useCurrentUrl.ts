@@ -17,39 +17,44 @@
 
 import { once } from "lodash";
 import { useEffect, useState } from "react";
+import { type Target } from "@/types/messengerTypes";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
-import { type Tabs } from "webextension-polyfill";
+import { type WebNavigation } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import { getCurrentURL } from "@/pageEditor/utils";
 
-let lastKnownUrl: string;
+let tabUrl: string;
+const TOP_LEVEL_FRAME_ID = 0;
+
 const urlChanges = new SimpleEventTarget<string>();
 
-async function onUpdated(
-  tabId: number,
-  { url }: Tabs.OnUpdatedChangeInfoType,
+// The pageEditor only cares for the top frame
+function isCurrentTopFrame({ tabId, frameId }: Target) {
+  return (
+    frameId === TOP_LEVEL_FRAME_ID &&
+    tabId === browser.devtools.inspectedWindow.tabId
+  );
+}
+
+async function onNavigation(
+  target: WebNavigation.OnCommittedDetailsType,
 ): Promise<void> {
-  if (
-    tabId === browser.devtools.inspectedWindow.tabId &&
-    lastKnownUrl !== url
-  ) {
-    lastKnownUrl = url;
-    urlChanges.emit(url);
+  if (isCurrentTopFrame(target)) {
+    tabUrl = target.url;
+    urlChanges.emit(target.url);
   }
 }
 
 const startWatching = once(async () => {
-  browser.tabs.onUpdated.addListener(onUpdated);
-
-  // Get initial URL
-  lastKnownUrl = await getCurrentURL();
-  urlChanges.emit(lastKnownUrl);
+  browser.webNavigation.onCommitted.addListener(onNavigation);
+  tabUrl = await getCurrentURL();
+  urlChanges.emit(tabUrl);
 });
 
 export default function useCurrentUrl(): string {
   expectContext("pageEditor");
 
-  const [url, setUrl] = useState(lastKnownUrl);
+  const [url, setUrl] = useState(tabUrl);
 
   useEffect(() => {
     urlChanges.add(setUrl);

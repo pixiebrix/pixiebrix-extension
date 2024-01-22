@@ -40,10 +40,11 @@ async function getConnectedTabIdMv2() {
 export const getConnectedTabId = once(
   isMV3() ? getConnectedTabIdMv3 : getConnectedTabIdMv2,
 );
+
 export const getConnectedTarget = isMV3()
   ? (): TopLevelFrame => ({ tabId: getConnectedTabIdMv3(), frameId: 0 })
   : getTopLevelFrame;
 
-export async function getAssociatedTargetUrl(): Promise<string | undefined> {
+export async function getConnectedTargetUrl(): Promise<string | undefined> {
   return getTabUrl(await getConnectedTarget());
 }

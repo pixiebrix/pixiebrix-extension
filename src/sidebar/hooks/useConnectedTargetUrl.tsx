@@ -22,7 +22,7 @@ import { type Tabs } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import {
   getConnectedTabId,
-  getAssociatedTargetUrl,
+  getConnectedTargetUrl,
 } from "@/sidebar/connectedTarget";
 
 let lastKnownUrl: string;
@@ -32,7 +32,14 @@ async function onUpdated(
   tabId: number,
   { url }: Tabs.OnUpdatedChangeInfoType,
 ): Promise<void> {
-  if (tabId === getConnectedTabId() && lastKnownUrl !== url) {
+  if (
+    // Exclude non-URL updates
+    url &&
+    // Exclude other tabs
+    tabId === (await getConnectedTabId()) &&
+    // No URL updates
+    lastKnownUrl !== url
+  ) {
     lastKnownUrl = url;
     urlChanges.emit(url);
   }
@@ -42,18 +49,16 @@ const startWatching = once(async () => {
   browser.tabs.onUpdated.addListener(onUpdated);
 
   // Get initial URL
-  lastKnownUrl = await getAssociatedTargetUrl();
+  lastKnownUrl = await getConnectedTargetUrl();
   console.log("Initial URL", lastKnownUrl);
 
   urlChanges.emit(lastKnownUrl);
 });
 
-export default function useCurrentUrl(): string {
+export default function useConnectedTargetUrl(): string {
   expectContext("sidebar");
 
   const [url, setUrl] = useState(lastKnownUrl);
-  console.log("useCurrentUrl", url);
-
   useEffect(() => {
     urlChanges.add(setUrl);
     void startWatching();
