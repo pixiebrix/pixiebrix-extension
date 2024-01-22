@@ -36,12 +36,10 @@ import type {
   ActivatedModComponent,
   UnresolvedModComponent,
 } from "@/types/modComponentTypes";
-import {
-  inferConfiguredModIntegrations,
-  inferRecipeOptions,
-} from "@/store/extensionsUtils";
+import { collectRecipeOptions } from "@/store/extensionsUtils";
 import type { ModComponentState } from "@/store/extensionsTypes";
 import { uninstallContextMenu } from "@/background/contextMenus";
+import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -203,7 +201,7 @@ export function deactivateMod(
   reduxState: ActivatedModState,
 ): {
   reduxState: ActivatedModState;
-  deactivatedModComponents: UnresolvedModComponent[];
+  deactivatedModComponents: ActivatedModComponent[];
 } {
   let { options: newOptionsState, editor: newEditorState } = reduxState;
 
@@ -212,7 +210,7 @@ export function deactivateMod(
     options: newOptionsState,
   });
 
-  const deactivatedModComponents: UnresolvedModComponent[] = [];
+  const deactivatedModComponents: ActivatedModComponent[] = [];
   for (const activatedModComponent of activatedModComponents) {
     const { options: nextOptionsState, editor: nextEditorState } =
       deactivateModComponent(activatedModComponent, {
@@ -256,6 +254,11 @@ function updateMod(
 
   const {
     reduxState: { options: nextOptionsState, editor: nextEditorState },
+    // This type is weird, please ignore it for now, we need to clean up a lot of stuff with these
+    // mod component types. These "deactivated" components are not passed anywhere else or put into
+    // redux or anything like that. They are only used to collect the configured dependencies and the
+    // mod options in order to re-install the mod (see the calls to collectExistingConfiguredDependenciesForMod
+    // and collectRecipeOptions immediately following this code).
     deactivatedModComponents,
   } = deactivateMod(modDefinition.metadata.id, {
     options: newOptionsState,
@@ -264,13 +267,12 @@ function updateMod(
   newOptionsState = nextOptionsState;
   newEditorState = nextEditorState;
 
-  const configuredDependencies = inferConfiguredModIntegrations(
-    deactivatedModComponents.filter(
-      ({ integrationDependencies }) => integrationDependencies,
-    ),
+  const configuredDependencies = collectExistingConfiguredDependenciesForMod(
+    modDefinition,
+    deactivatedModComponents,
   );
 
-  const optionsArgs = inferRecipeOptions(
+  const optionsArgs = collectRecipeOptions(
     deactivatedModComponents.filter((modComponent) => modComponent.optionsArgs),
   );
 
