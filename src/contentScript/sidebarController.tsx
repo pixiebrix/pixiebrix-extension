@@ -92,7 +92,7 @@ export async function showSidebar(): Promise<void> {
     // TODO: Import from background/messenger/api.ts after the strictNullChecks migration, drop "SIDEBAR_PING" string
     await getMethod("SHOW_MY_SIDE_PANEL" as "SIDEBAR_PING", backgroundTarget)();
   } else if (!sidebarMv2.isSidebarFrameVisible()) {
-    sidebarMv2.insertSidebarFrame();
+    await sidebarMv2.insertSidebarFrame();
   }
 
   try {

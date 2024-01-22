@@ -90,7 +90,7 @@ export function removeSidebarFrame(): boolean {
 }
 
 /** Inserts the element; Returns false if it already existed */
-export async function insertSidebarFrame(): Promise<boolean> {
+export function insertSidebarFrame(): boolean {
   console.debug("sidebarDomControllerLite:insertSidebarFrame", {
     isSidebarFrameVisible: isSidebarFrameVisible(),
   });
@@ -102,8 +102,9 @@ export async function insertSidebarFrame(): Promise<boolean> {
 
   storeOriginalCSSOnce();
   const nonce = uuidv4();
-  const { tabId } = await getThisFrame();
-  const actionUrl = new URL(browser.runtime.getURL(getSidebarPath(tabId)));
+  const actionUrl = new URL(
+    browser.runtime.getURL(getSidebarPath(window.sidebarControllerTabId)),
+  );
   actionUrl.searchParams.set("nonce", nonce);
 
   setSidebarWidth(SIDEBAR_WIDTH_PX);
@@ -147,18 +148,16 @@ export async function insertSidebarFrame(): Promise<boolean> {
 }
 
 /**
- * Toggle the sidebar frame. Returns true if the sidebar is now visible, false otherwise.
+ * Toggle the sidebar frame
  */
-export async function toggleSidebarFrame(): Promise<boolean> {
+export function toggleSidebarFrame(): void {
   console.debug("sidebarDomControllerLite:toggleSidebarFrame", {
     isSidebarFrameVisible: isSidebarFrameVisible(),
   });
 
   if (isSidebarFrameVisible()) {
     removeSidebarFrame();
-    return false;
   }
 
-  await insertSidebarFrame();
-  return true;
+  insertSidebarFrame();
 }
