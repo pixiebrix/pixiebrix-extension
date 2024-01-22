@@ -51,7 +51,6 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineExpression } from "@/utils/expressionUtils";
 import { isContentScript } from "webext-detect-page";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { getTopLevelFrame } from "webext-messenger";
 import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { HeadlessModeError } from "@/bricks/errors";
@@ -62,7 +61,6 @@ import {
   unionSchemaDefinitionTypes,
 } from "@/utils/schemaUtils";
 import type BaseRegistry from "@/registry/memoryRegistry";
-import { isBrowserSidebar } from "@/utils/expectContext";
 
 // Interface to avoid circular dependency with the implementation
 type BrickRegistryProtocol = BaseRegistry<RegistryId, Brick>;
@@ -344,12 +342,8 @@ class UserDefinedBrick extends BrickABC {
     // renderer. The caller can't run the whole brick in the contentScript because renderers can return React
     // Components which can't be serialized across messenger boundaries.
 
-    // This code can be run either in the sidebar or in a modal.
-    // The modal is always an iframe in the same tab,
-    // but the sidebar varies. This code handles the 3 cases.
-    const topLevelFrame = isBrowserSidebar()
-      ? await getConnectedTarget()
-      : await getTopLevelFrame();
+    // Note: This code can be run either in the sidebar or in a modal
+    const topLevelFrame = await getConnectedTarget();
 
     try {
       return await runHeadlessPipeline(topLevelFrame, {

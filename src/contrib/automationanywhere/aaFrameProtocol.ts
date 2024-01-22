@@ -125,8 +125,10 @@ export async function initCopilotMessenger(): Promise<void> {
     // necessary to pass to the Co-Pilot frame.
   });
 
-  // Fetch the current data from the content script when the frame loads
+  // Note: This code can be run either in the sidebar or in a modal
   const frame = await getConnectedTarget();
+
+  // Fetch the current data from the content script when the frame loads
   const data = await getCopilotHostData(frame);
   console.debug("Setting initial Co-Pilot data", {
     location: window.location.href,
