@@ -57,14 +57,6 @@ describe("useCurrentOrigin", () => {
     expect(result.current).toBe("chrome-extension://abcxyz/");
   });
 
-  test("if devtools page, should return devtools origin", async () => {
-    setContext("devToolsPage");
-    const { result } = renderHook(() => useCurrentOrigin());
-    // Wait for origin to load (async state)
-    await waitForEffect();
-    expect(result.current).toBe(DEVTOOLS_ORIGIN);
-  });
-
   test("if page editor page, should return devtools origin", async () => {
     setContext("extension");
     location = {

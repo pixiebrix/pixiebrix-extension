@@ -34,7 +34,7 @@ import notify from "@/utils/notify";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/starterBricks/helpers";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
-import { selectAllBlocks } from "@/bricks/util";
+import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
@@ -135,7 +135,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
   async getBricks(
     extension: ResolvedModComponent<QuickBarProviderConfig>,
   ): Promise<Brick[]> {
-    return selectAllBlocks(extension.config.generator);
+    return collectAllBricks(extension.config.generator);
   }
 
   public get kind(): "quickBarProvider" {

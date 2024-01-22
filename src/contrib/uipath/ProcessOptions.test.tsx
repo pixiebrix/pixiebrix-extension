@@ -19,7 +19,7 @@ import React from "react";
 import { render, screen } from "@/extensionConsole/testHelpers";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { UIPATH_ID } from "@/contrib/uipath/localProcess";
+import { UIPATH_ID } from "@/contrib/uipath/process";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
