@@ -58,11 +58,11 @@ type AsyncStateGateProps<Data> = PropsWithoutRef<{
    * Children to render once the state is loaded
    * @param args
    */
-  children: (args: { data: Data }) => React.ReactElement;
+  children: (args: { data: Data }) => React.ReactElement | null;
   /**
    * If provided, the loader will be rendered instead of the default loader
    */
-  renderLoader?: () => React.ReactElement;
+  renderLoader?: () => React.ReactElement | null;
   /**
    * If provided, the error will be rendered instead of throwing it
    * @see StandardError
@@ -70,7 +70,7 @@ type AsyncStateGateProps<Data> = PropsWithoutRef<{
   renderError?: (args: {
     error: unknown;
     refetch?: () => void;
-  }) => React.ReactElement;
+  }) => React.ReactElement | null;
 }>;
 
 /**
@@ -79,7 +79,7 @@ type AsyncStateGateProps<Data> = PropsWithoutRef<{
  */
 function AsyncStateGate<Data>(
   props: AsyncStateGateProps<Data>,
-): React.ReactElement {
+): JSX.Element | null {
   const { children, state, renderError, renderLoader } = props;
   const { data, isLoading, isUninitialized, isFetching, isError, error } =
     state;

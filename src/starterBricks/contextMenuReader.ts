@@ -20,6 +20,13 @@ import selection from "@/utils/selectionController";
 import { type JsonObject } from "type-fest";
 import { type Schema } from "@/types/schemaTypes";
 
+// XXX: do we need to support SVG here too?
+const MEDIA_TYPE: Record<string, string> = {
+  IMG: "image",
+  VIDEO: "video",
+  AUDIO: "audio",
+};
+
 /**
  * A reader "stub" for the context menu reader.
  *
@@ -90,7 +97,7 @@ export const contextMenuReaderShim = {
 
   async read() {
     const { activeElement } = document;
-
+    const tagName = activeElement?.tagName;
     const linkProps =
       activeElement?.tagName === "A"
         ? {
@@ -99,15 +106,8 @@ export const contextMenuReaderShim = {
           }
         : { linkText: null, linkUrl: null };
 
-    // XXX: do we need to support SVG here too?
-    const mediaType = {
-      IMG: "image",
-      VIDEO: "video",
-      AUDIO: "audio",
-    }[activeElement?.tagName];
-
     return {
-      mediaType,
+      mediaType: (tagName && MEDIA_TYPE[tagName]) || undefined,
       selectionText: selection.get(),
       srcUrl: activeElement?.getAttribute("src"),
       documentUrl: document.location.href,
