@@ -32,7 +32,7 @@ import {
 } from "./slack/message";
 import { AddLead } from "./salesforce/lead";
 import { RunProcess } from "./uipath/process";
-import { RunLocalProcess } from "./uipath/localProcess";
+import RunLocalProcess from "./uipath/localProcess";
 import { PushZap } from "./zapier/push";
 import { RunBot } from "./automationanywhere/RunBot";
 import { GoogleSheetsLookup } from "@/contrib/google/sheets/bricks/lookup";
