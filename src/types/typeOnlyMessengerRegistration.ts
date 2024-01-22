@@ -23,16 +23,33 @@
  * @see https://github.com/pixiebrix/pixiebrix-extension/issues/6526
  */
 
-/* eslint-disable import/no-restricted-paths -- Type-only file */
+/* eslint-disable import/no-restricted-paths -- Type-only file. Remove each import once they end up in th strictNullChecks list */
 
 import {
   type hideSidebar,
   type showSidebar,
 } from "@/contentScript/sidebarController";
+import { type SerializedError } from "@/types/messengerTypes";
+import { type MessageContext } from "@/types/loggerTypes";
+import { type JsonObject } from "type-fest";
+import { type Event } from "@/telemetry/events";
 
 declare global {
   interface MessengerMethods {
     SHOW_SIDEBAR: typeof showSidebar;
     HIDE_SIDEBAR: typeof hideSidebar;
+
+    // Temporary duplicate type for a background method used by the sidebar.
+    // NOTE: Changes to those functions must be reflected here.
+    RECORD_ERROR: (
+      serializedError: SerializedError,
+      context: MessageContext,
+      data?: JsonObject,
+    ) => Promise<void>;
+
+    RECORD_EVENT: (event: {
+      event: Event;
+      data: JsonObject | undefined;
+    }) => Promise<void>;
   }
 }

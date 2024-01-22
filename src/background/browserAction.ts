@@ -17,7 +17,6 @@
 
 import { ensureContentScript } from "@/background/contentScript";
 import { updateSidebar } from "@/contentScript/messenger/api";
-import webextAlert from "./webextAlert";
 import { browserAction, isMV3, type Tab } from "@/mv3/api";
 import { executeScript } from "webext-content-scripts";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
@@ -99,7 +98,8 @@ async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
   try {
     await sidebarTogglePromise;
   } catch (error) {
-    webextAlert(ERR_UNABLE_TO_OPEN);
+    // eslint-disable-next-line no-alert -- Intentional usage, no alternative UI
+    alert(ERR_UNABLE_TO_OPEN);
     throw error;
   }
 

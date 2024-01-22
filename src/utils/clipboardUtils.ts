@@ -61,7 +61,7 @@ async function interactiveWriteToClipboard(
 
       const notificationId = notify.info({
         message: `Click anywhere to copy ${type} to clipboard`,
-        duration: Number.POSITIVE_INFINITY,
+        autoDismissTimeMs: Number.POSITIVE_INFINITY,
         dismissable: false,
       });
 
