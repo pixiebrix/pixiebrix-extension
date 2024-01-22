@@ -33,7 +33,7 @@ import {
 } from "lodash";
 import { checkAvailable } from "@/bricks/available";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
-import { selectAllBlocks } from "@/bricks/util";
+import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import "@/vendors/hoverintent";
@@ -141,7 +141,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
   async getBricks(
     extension: ResolvedModComponent<TourConfig>,
   ): Promise<Brick[]> {
-    return selectAllBlocks(extension.config.tour);
+    return collectAllBricks(extension.config.tour);
   }
 
   private async runExtensionTour(

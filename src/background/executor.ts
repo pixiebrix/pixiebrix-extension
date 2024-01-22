@@ -68,8 +68,8 @@ async function safelyRunBrick(
     }
 
     // This must follow the tab existence checks or else it returns false even if the tab simply doesn't exist
-    if (!(await canAccessTab(tabId))) {
-      throw new BusinessError("PixieBrix doesn't have access to the tab");
+    if (!(await canAccessTab({ tabId, frameId }))) {
+      throw new BusinessError("PixieBrix doesn't have access to the page");
     }
 
     throw error;

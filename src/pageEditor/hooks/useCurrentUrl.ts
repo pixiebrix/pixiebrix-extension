@@ -47,7 +47,7 @@ const startWatching = once(async () => {
 });
 
 export default function useCurrentUrl(): string {
-  expectContext("devTools");
+  expectContext("pageEditor");
 
   const [url, setUrl] = useState(lastKnownUrl);
 

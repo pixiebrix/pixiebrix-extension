@@ -48,7 +48,7 @@ import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import MapValues from "@/bricks/transformers/controlFlow/MapValues";
 
 export async function getCurrentURL(): Promise<string> {
-  expectContext("devTools");
+  expectContext("pageEditor");
 
   const tab = await browser.tabs.get(chrome.devtools.inspectedWindow.tabId);
   return tab.url;
