@@ -44,7 +44,7 @@ export default function activateLinkClickHandler(
     return;
   }
 
-  const href = link.getAttribute("href");
+  const { href } = link;
   if (!isActivationUrl(href)) {
     return;
   }

@@ -57,10 +57,10 @@ exports[`form data normalization renders normalized data 1`] = `
                 aria-describedby="root_age__error root_age__description root_age__help"
                 class="form-control"
                 id="root_age"
+                inputmode="numeric"
                 name="root_age"
                 placeholder=""
-                step="1"
-                type="number"
+                type="text"
                 value=""
               />
             </div>
@@ -121,10 +121,10 @@ exports[`form data normalization renders normalized data 1`] = `
                 aria-describedby="root_rating__error root_rating__description root_rating__help"
                 class="form-control"
                 id="root_rating"
+                inputmode="numeric"
                 name="root_rating"
                 placeholder=""
-                step="any"
-                type="number"
+                type="text"
                 value=""
               />
             </div>

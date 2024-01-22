@@ -45,7 +45,7 @@ import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/starterBricks/helpers";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { selectAllBlocks } from "@/bricks/util";
+import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
@@ -61,6 +61,7 @@ import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import pluralize from "@/utils/pluralize";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
 
@@ -119,7 +120,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
   async getBricks(
     extension: ResolvedModComponent<QuickBarConfig>,
   ): Promise<Brick[]> {
-    return selectAllBlocks(extension.config.action);
+    return collectAllBricks(extension.config.action);
   }
 
   public get kind(): "quickBar" {
@@ -190,7 +191,9 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
 
     const numErrors = results.filter((x) => x.status === "rejected").length;
     if (numErrors > 0) {
-      notify.error(`An error occurred adding ${numErrors} quick bar items(s)`);
+      notify.error(
+        `An error occurred adding ${pluralize(numErrors, "$$ quick bar item")}`,
+      );
     }
   }
 
@@ -255,7 +258,11 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
             showNotification(DEFAULT_ACTION_RESULTS.cancel);
           } else {
             extensionLogger.error(error);
-            showNotification(DEFAULT_ACTION_RESULTS.error);
+            showNotification({
+              ...DEFAULT_ACTION_RESULTS.error,
+              error, // Include more details in the notification
+              reportError: false,
+            });
           }
         }
       },

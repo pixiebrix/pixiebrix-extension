@@ -5,8 +5,6 @@
   },
   "files": [
     "./__mocks__/@/components/DelayedRender.tsx",
-    "./__mocks__/@/components/MarkdownInlineLazy.tsx",
-    "./__mocks__/@/components/MarkdownLazy.tsx",
     "./__mocks__/@/hooks/useContextInvalidated.ts",
     "./__mocks__/@/icons/getSvgIcon.ts",
     "./__mocks__/@/icons/list.ts",
@@ -20,6 +18,8 @@
     "./__mocks__/@/utils/injectStylesheet.ts",
     "./__mocks__/@uipath/robot.ts",
     "./activation/ActivationLink.tsx",
+    "./activation/activateLinkClickHandler.ts",
+    "./contentScript/setExtensionIdInApp.ts",
     "./activation/WizardValuesModIntegrationsContextAdapter.tsx",
     "./activation/wizardTypes.ts",
     "./analysis/analysisVisitors/varAnalysis/parseTemplateVariables.ts",
@@ -37,7 +37,6 @@
     "./background/externalProtocol.ts",
     "./background/partnerTheme.ts",
     "./background/toolbarBadge.ts",
-    "./background/webextAlert.ts",
     "./background/setToolbarBadge.test.ts",
     "./bricks/available.ts",
     "./bricks/effects/cancel.ts",
@@ -74,7 +73,14 @@
     "./bricks/renderers/dataTable.ts",
     "./bricks/renderers/documentView/DocumentViewProps.tsx",
     "./bricks/renderers/iframe.ts",
+    "./permissions/permissionsUtils.ts",
+    "./starterBricks/contextMenuReader.ts",
     "./bricks/rootModeHelpers.ts",
+    "./icons/constants.ts",
+    "./components/documentBuilder/render/DocumentContext.tsx",
+    "./utils/inference/inferSingleElementSelector.ts",
+    "./components/errors/NetworkErrorDetail.tsx",
+    "./types/typeOnlyMessengerRegistration.ts",
     "./bricks/transformers/component/TableReader.ts",
     "./bricks/transformers/ephemeralForm/formTypes.ts",
     "./bricks/transformers/ephemeralForm/modalUtils.tsx",
@@ -106,8 +112,6 @@
     "./components/Loader.tsx",
     "./components/Markdown.tsx",
     "./components/MarkdownInline.tsx",
-    "./components/MarkdownInlineLazy.tsx",
-    "./components/MarkdownLazy.tsx",
     "./components/ModalLayout.tsx",
     "./components/Stylesheets.tsx",
     "./components/TooltipIconButton.tsx",
@@ -531,6 +535,7 @@
     "./vendors/reactPerformanceTesting/utils/pushTask.ts",
     "./vendors/reactPerformanceTesting/utils/shouldTrack.ts",
     "./vendors/reactPerformanceTesting/utils/symbols.ts",
-    "./vendors/validateUuid.ts"
+    "./vendors/validateUuid.ts",
+    "./components/formBuilder/BaseInputTemplate.tsx"
   ]
 }

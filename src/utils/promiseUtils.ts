@@ -182,14 +182,22 @@ export async function resolveObj<T>(
   );
 }
 
+/**
+ * Partition an array of promise results into fulfilled values and rejected errors.
+ * @param results
+ */
 export function groupPromisesByStatus<T>(
   results: Array<PromiseSettledResult<T>>,
-) {
+): {
+  fulfilled: T[];
+  rejected: unknown[];
+} {
   const rejected = results
     .filter(
       (result): result is PromiseRejectedResult => result.status === "rejected",
     )
-    .map(({ reason }) => reason);
+    // `reason` has type `any` in es2020 typings: https://github.com/microsoft/TypeScript/issues/39680
+    .map(({ reason }) => reason as unknown);
   const fulfilled = results
     .filter(
       (result): result is PromiseFulfilledResult<T> =>

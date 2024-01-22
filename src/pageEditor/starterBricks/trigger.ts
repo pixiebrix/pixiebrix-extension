@@ -63,12 +63,14 @@ function fromNativeElement(
         rootSelector: null,
         attachMode: null,
         targetMode: null,
-        // Use "once" for reportMode, since the default is "load"
+        // Use "once" for reportMode, because the default is "load"
         reportMode: "once",
         // Show error notifications by default, to assist with development
         showErrors: true,
         intervalMillis: null,
-        background: null,
+        // Use `background: true` for the default for "load" trigger to 1) match the pre-1.8.7 behavior, and 2)
+        // cause the trigger to run by default when the mod component is installed
+        background: true,
         debounce: null,
         customEvent: null,
         reader: getImplicitReader("trigger"),

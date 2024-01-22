@@ -17,17 +17,17 @@
 
 import { type Logger, type MessageContext } from "@/types/loggerTypes";
 import { type JsonObject } from "type-fest";
-import { isBackground, isDevToolsPage } from "webext-detect-page";
+import { isBackground } from "webext-detect-page";
 import {
   notifyContextInvalidated,
   wasContextInvalidated,
 } from "@/errors/contextInvalidated";
 import { recordLog } from "@/background/messenger/api";
-import { expectContext } from "@/utils/expectContext";
+import { expectContext, isPageEditor } from "@/utils/expectContext";
 import reportError from "@/telemetry/reportError";
 
 /**
- * A Logger that logs messages through the background page (which can make calls to Rollbar)
+ * A Logger that logs messages through the background page (which can make calls to Application error telemetry)
  * @see recordLog
  * @see recordError
  */
@@ -73,7 +73,7 @@ class BackgroundLogger implements Logger {
   }
 
   async error(error: unknown, data: JsonObject): Promise<void> {
-    if (wasContextInvalidated() && !isBackground() && !isDevToolsPage()) {
+    if (wasContextInvalidated() && !isBackground() && !isPageEditor()) {
       void notifyContextInvalidated();
     }
 

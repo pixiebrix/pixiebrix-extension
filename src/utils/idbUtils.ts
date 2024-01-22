@@ -2,13 +2,10 @@ import pDefer from "p-defer";
 import { deleteDB } from "idb";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
-// IDB Connection Error message strings:
-// https://app.rollbar.com/a/pixiebrix/fix/item/pixiebrix/6675
+// IDB Connection Error message strings
 const CONNECTION_ERRORS = ["Error Opening IndexedDB"] as const;
 
-// IDB Quota Error message strings:
-// https://app.rollbar.com/a/pixiebrix/fix/item/pixiebrix/7979
-// https://app.rollbar.com/a/pixiebrix/fix/item/pixiebrix/6681
+// IDB Quota Error message strings
 const QUOTA_ERRORS = [
   "Encountered full disk while opening backing store for indexedDB.open",
   "IndexedDB Full",

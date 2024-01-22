@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+import { userSelectElement } from "@/contentScript/pageEditor/elementPicker";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
@@ -53,11 +53,6 @@ export class SelectElement extends TransformerABC {
   );
 
   async transform(): Promise<unknown> {
-    // Include here to avoid error during header generation (which runs in node environment)
-    const { userSelectElement } = await import(
-      /* webpackChunkName: "editorContentScript" */ "@/contentScript/pageEditor/elementPicker"
-    );
-
     const { elements } = await userSelectElement();
 
     const elementRefs = elements.map((element) =>
