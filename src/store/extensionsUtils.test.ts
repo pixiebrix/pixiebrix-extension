@@ -39,7 +39,7 @@ describe("inferRecipeOptions", () => {
   });
 });
 
-describe("gatherConfiguredIntegrationDependencies", () => {
+describe("collectConfiguredIntegrationDependencies", () => {
   it("handles undefined integrationDependencies", () => {
     expect(
       collectConfiguredIntegrationDependencies([

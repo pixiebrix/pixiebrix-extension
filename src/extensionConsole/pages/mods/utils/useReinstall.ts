@@ -22,7 +22,7 @@ import { useCallback } from "react";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { collectRecipeOptions } from "@/store/extensionsUtils";
 import { uninstallRecipe } from "@/store/uninstallUtils";
-import gatherExistingConfiguredDependenciesForMod from "@/integrations/util/gatherExistingConfiguredDependenciesForMod";
+import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 
 type Reinstall = (modDefinition: ModDefinition) => Promise<void>;
 
@@ -43,10 +43,11 @@ function useReinstall(): Reinstall {
 
       const currentOptions = collectRecipeOptions(activatedModComponents);
 
-      const configuredDependencies = gatherExistingConfiguredDependenciesForMod(
-        modDefinition,
-        activatedModComponents,
-      );
+      const configuredDependencies =
+        collectExistingConfiguredDependenciesForMod(
+          modDefinition,
+          activatedModComponents,
+        );
 
       await uninstallRecipe(modId, activatedModComponents, dispatch);
 

@@ -22,11 +22,11 @@ import { collectConfiguredIntegrationDependencies } from "@/store/extensionsUtil
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 
 /**
- * Gather the existing configured dependencies for a given mod definition
- * @param modDefinition the mod definition for which to gather configured dependencies
- * @param modComponents the mod components from which to gather the configured dependencies
+ * Collect the existing configured dependencies for a given mod definition
+ * @param modDefinition the mod definition for which to collect configured dependencies
+ * @param modComponents the mod components from which to collect the configured dependencies
  */
-function gatherExistingConfiguredDependenciesForMod(
+function collectExistingConfiguredDependenciesForMod(
   modDefinition: ModDefinition,
   modComponents: Array<Pick<ModComponentBase, "integrationDependencies">>,
 ): IntegrationDependency[] {
@@ -42,4 +42,4 @@ function gatherExistingConfiguredDependenciesForMod(
   );
 }
 
-export default gatherExistingConfiguredDependenciesForMod;
+export default collectExistingConfiguredDependenciesForMod;

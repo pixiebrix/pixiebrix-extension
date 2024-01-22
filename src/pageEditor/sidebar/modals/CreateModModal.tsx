@@ -82,7 +82,7 @@ import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import gatherExistingConfiguredDependenciesForMod from "@/integrations/util/gatherExistingConfiguredDependenciesForMod";
+import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 
 const { actions: modComponentActions } = extensionsSlice;
 
@@ -240,7 +240,7 @@ function useSaveCallbacks({
       dispatch(
         modComponentActions.installMod({
           modDefinition: savedModDefinition,
-          configuredDependencies: gatherExistingConfiguredDependenciesForMod(
+          configuredDependencies: collectExistingConfiguredDependenciesForMod(
             savedModDefinition,
             modComponents,
           ),

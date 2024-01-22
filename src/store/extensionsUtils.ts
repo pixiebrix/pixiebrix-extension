@@ -34,7 +34,7 @@ export function collectRecipeOptions(
 }
 
 /**
- * Gather configured integration dependencies from existing mod-component-like
+ * Collect configured integration dependencies from existing mod-component-like
  * instances for reinstalling a mod. Filters out any optional integrations that
  * don't have a config set.
  * @param modComponents mod components from which to extract integration dependencies

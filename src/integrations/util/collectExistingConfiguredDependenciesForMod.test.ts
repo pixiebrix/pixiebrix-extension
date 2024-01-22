@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import gatherExistingConfiguredDependenciesForMod from "@/integrations/util/gatherExistingConfiguredDependenciesForMod";
+import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
@@ -31,7 +31,7 @@ import {
 } from "@/testUtils/factories/modComponentFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 
-describe("gatherExistingConfiguredDependenciesForMod", () => {
+describe("collectExistingConfiguredDependenciesForMod", () => {
   it("returns all integration dependencies when mod definition matches activated components", () => {
     const integrationId1 = registryIdFactory();
     const integrationOutputKey1 = validateOutputKey("integration1");
@@ -78,7 +78,7 @@ describe("gatherExistingConfiguredDependenciesForMod", () => {
     ];
 
     expect(
-      gatherExistingConfiguredDependenciesForMod(
+      collectExistingConfiguredDependenciesForMod(
         modDefinition,
         activatedModComponents,
       ),
@@ -126,7 +126,7 @@ describe("gatherExistingConfiguredDependenciesForMod", () => {
     ];
 
     expect(
-      gatherExistingConfiguredDependenciesForMod(
+      collectExistingConfiguredDependenciesForMod(
         modDefinition,
         activatedModComponents,
       ),
@@ -178,7 +178,7 @@ describe("gatherExistingConfiguredDependenciesForMod", () => {
     ];
 
     expect(
-      gatherExistingConfiguredDependenciesForMod(
+      collectExistingConfiguredDependenciesForMod(
         modDefinition,
         activatedModComponents,
       ),

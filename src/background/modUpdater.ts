@@ -39,7 +39,7 @@ import type {
 import { collectRecipeOptions } from "@/store/extensionsUtils";
 import type { ModComponentState } from "@/store/extensionsTypes";
 import { uninstallContextMenu } from "@/background/contextMenus";
-import gatherExistingConfiguredDependenciesForMod from "@/integrations/util/gatherExistingConfiguredDependenciesForMod";
+import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -262,7 +262,7 @@ function updateMod(
   newOptionsState = nextOptionsState;
   newEditorState = nextEditorState;
 
-  const configuredDependencies = gatherExistingConfiguredDependenciesForMod(
+  const configuredDependencies = collectExistingConfiguredDependenciesForMod(
     modDefinition,
     deactivatedModComponents,
   );
