@@ -73,9 +73,9 @@ export function defaultBrickConfig(schema: Schema): BrickConfig["config"] {
 }
 
 /**
- * Return Brick for all bricks referenced in a pipeline, including any sub-pipelines.
+ * Return bricks for all bricks referenced in a pipeline, including any sub-pipelines.
  *
- * Does not de-duplicate bricks.
+ * NOTE: Does not de-duplicate bricks.
  */
 export async function collectAllBricks(
   config: BrickConfig | BrickPipeline,

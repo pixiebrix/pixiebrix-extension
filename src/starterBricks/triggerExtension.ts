@@ -444,7 +444,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   };
 
   /**
-   * Mark a run as in-progress for an extension. Used to enforce synchronous execution of an
+   * Mark a run as in-progress for an extension. Used to enforce synchronous execution of a
    * trigger on a particular element.
    * @param modComponentId the UUID of the mod component
    * @param element the element the trigger is running against
@@ -662,7 +662,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
     const observer = initialize(
       this.triggerSelector,
-      (index, element: HTMLElement) => {
+      (_index, element: HTMLElement) => {
         void this.debouncedRunTriggersAndNotify([element], {
           nativeEvent: null,
         });
@@ -704,7 +704,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       console.debug("Watching selector: %s", selector);
       const mutationObserver = initialize(
         selector,
-        (index, element) => {
+        (_index, element) => {
           console.debug("initialize: %s", selector);
           appearObserver.observe(element);
         },
@@ -891,7 +891,7 @@ export interface TriggerDefinition extends StarterBrickDefinition {
   attachMode?: AttachMode;
 
   /**
-   * Allow trigger to even when the tab/frame is not active.
+   * Allow the trigger to run even when the tab/frame is not active.
    *
    * NOTE: this property does not refer to running the trigger in the extension's background page. PixieBrix currently
    * only supports running mods in the context of a frame's content script.
