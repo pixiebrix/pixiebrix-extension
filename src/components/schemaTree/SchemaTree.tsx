@@ -30,7 +30,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import { isServiceField } from "@/components/fields/schemaFields/fieldTypeCheckers";
-import MarkdownInlineLazy from "@/components/MarkdownInlineLazy";
+import MarkdownInline from "@/components/MarkdownInline";
 
 type SchemaTreeRow = {
   name: string;
@@ -76,7 +76,7 @@ const DescriptionCell: React.FunctionComponent<{
   row: Row & { values: SchemaTreeRow };
 }> = ({ row }) =>
   row.values.description ? (
-    <MarkdownInlineLazy
+    <MarkdownInline
       markdown={row.values.description}
       sanitizeConfig={DESCRIPTION_ALLOWED_TAGS}
       as="span"
