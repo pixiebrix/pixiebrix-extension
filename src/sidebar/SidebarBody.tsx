@@ -27,8 +27,6 @@ import { getReasonByUrl as getRestrictedReasonByUrl } from "@/tinyPages/restrict
 // navigation in the SidebarApp
 function SidebarBody() {
   const url = useConnectedTargetUrl();
-  console.log("SidebarBody url", url);
-
   const restricted = getRestrictedReasonByUrl(url);
   return (
     <>

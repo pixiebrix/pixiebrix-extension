@@ -22,7 +22,7 @@ import useContextInvalidated from "@/hooks/useContextInvalidated";
 import useConnectedTargetUrl from "@/sidebar/hooks/useConnectedTargetUrl";
 
 jest.mock("@/hooks/useContextInvalidated");
-jest.mock("@/sidebar/hooks/useCurrentUrl");
+jest.mock("@/sidebar/hooks/useConnectedTargetUrl");
 jest.mock("@/contentScript/messenger/api", () => ({
   ensureExtensionPointsInstalled: jest.fn(),
   getReservedSidebarEntries: jest.fn().mockResolvedValue({
