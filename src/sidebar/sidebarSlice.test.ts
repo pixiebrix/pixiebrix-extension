@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import sidebarSlice, { fixActiveTabOnRemove } from "@/sidebar/sidebarSlice";
+import sidebarSlice, {
+  addFormPanel,
+  fixActiveTabOnRemove,
+} from "@/sidebar/sidebarSlice";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import {
   cancelForm,
@@ -29,6 +32,7 @@ import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { type Draft } from "immer";
+import { waitFor } from "@testing-library/react";
 
 jest.mock("@/sidebar/messenger/api");
 jest.mock("@/contentScript/messenger/api");
@@ -210,7 +214,7 @@ describe("sidebarSlice.removeTemporaryPanel", () => {
   });
 });
 
-describe("sidebarSlice.addForm", () => {
+describe("sidebar thunk addFormPanel", () => {
   it("adds form to empty state", async () => {
     const state = sidebarSlice.getInitialState();
 
@@ -218,7 +222,8 @@ describe("sidebarSlice.addForm", () => {
 
     const newState = sidebarSlice.reducer(
       state,
-      sidebarSlice.actions.addForm({
+      // @ts-expect-error -- typings for thunk actions are not in a good place right now
+      addFormPanel({
         form: {
           type: "form",
           extensionId,
@@ -239,7 +244,9 @@ describe("sidebarSlice.addForm", () => {
 
     await tick();
 
-    expect(newState.forms).toHaveLength(1);
+    await waitFor(() => {
+      expect(newState.forms).toHaveLength(1);
+    });
     expect(cancelFormMock).toHaveBeenCalledExactlyOnceWith({
       frameId: 0,
       tabId: 1,

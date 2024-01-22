@@ -25,7 +25,11 @@ import type {
   SidebarState,
   StaticPanelEntry,
 } from "@/types/sidebarTypes";
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import { type UUID } from "@/types/stringTypes";
 import { defaultEventKey, eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import {
@@ -34,10 +38,10 @@ import {
   closeTemporaryPanel,
   resolveTemporaryPanel,
 } from "@/contentScript/messenger/api";
-import { partition, remove, sortBy } from "lodash";
+import { last, partition, remove, sortBy } from "lodash";
 import { getTopLevelFrame } from "webext-messenger";
 import { type SubmitPanelAction } from "@/bricks/errors";
-import { castDraft, type Draft } from "immer";
+import { castDraft } from "immer";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { getVisiblePanelCount } from "@/sidebar/utils";
@@ -191,6 +195,33 @@ export function fixActiveTabOnRemove(
   }
 }
 
+export const addFormPanel = createAsyncThunk<
+  FormPanelEntry[],
+  { form: FormPanelEntry },
+  { state: SidebarState }
+>("sidebar/addFormPanel", async ({ form }, { getState }) => {
+  const state = getState();
+
+  // If the form is already in the sidebar, do nothing
+  if (state.forms.some(({ nonce }) => nonce === form.nonce)) {
+    return;
+  }
+
+  const [thisExtensionForms, otherForms] = partition(
+    state.forms,
+    ({ extensionId }) => extensionId === form.extensionId,
+  );
+
+  // The UUID must be fetched synchronously to ensure the `form` Proxy element doesn't expire
+  await cancelPreexistingForms(thisExtensionForms.map((form) => form.nonce));
+
+  return [
+    ...otherForms,
+    // Unlike panels which are sorted, forms are like a "stack", will show the latest form available
+    form,
+  ];
+});
+
 const sidebarSlice = createSlice({
   initialState: emptySidebarState,
   name: "sidebar",
@@ -244,31 +275,6 @@ const sidebarSlice = createSlice({
 
       // User manually selected a panel, so cancel any pending automatic panel activation
       state.pendingActivePanel = null;
-    },
-    addForm(state, action: PayloadAction<{ form: FormPanelEntry }>) {
-      const { form } = action.payload as Draft<typeof action.payload>;
-
-      if (state.forms.some((x) => x.nonce === form.nonce)) {
-        // Panel is already in the sidebar, do nothing as form definitions can't be updated. (There's no placeholder
-        // loading state for forms.)
-        return;
-      }
-
-      const [thisExtensionForms, otherForms] = partition(
-        state.forms,
-        (x) => x.extensionId === form.extensionId,
-      );
-
-      // The UUID must be fetched synchronously to ensure the `form` Proxy element doesn't expire
-      void cancelPreexistingForms(thisExtensionForms.map((form) => form.nonce));
-
-      state.forms = [
-        ...otherForms,
-        // Unlike panels which are sorted, forms are like a "stack", will show the latest form available
-        form,
-      ];
-
-      state.activeKey = eventKeyForEntry(form);
     },
     removeForm(state, action: PayloadAction<UUID>) {
       const nonce = action.payload;
@@ -433,6 +439,15 @@ const sidebarSlice = createSlice({
     openTab(state, action: PayloadAction<string>) {
       state.closedTabs[action.payload] = false;
     },
+  },
+  extraReducers(builder) {
+    builder.addCase(addFormPanel.fulfilled, (state, action) => {
+      const forms = action.payload;
+      const newForm = last(forms);
+      if (newForm) {
+        state.activeKey = eventKeyForEntry(newForm);
+      }
+    });
   },
 });
 

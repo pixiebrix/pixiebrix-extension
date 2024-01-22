@@ -30,7 +30,7 @@ import {
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
 import Tabs from "@/sidebar/Tabs";
-import sidebarSlice from "./sidebarSlice";
+import sidebarSlice, { addFormPanel } from "./sidebarSlice";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./SidebarErrorBoundary";
@@ -57,7 +57,7 @@ function useConnectedListener(): SidebarListener {
         dispatch(sidebarSlice.actions.setPanels({ panels }));
       },
       onShowForm(form: FormPanelEntry) {
-        dispatch(sidebarSlice.actions.addForm({ form }));
+        dispatch(addFormPanel({ form }));
       },
       onHideForm({ nonce }: Partial<FormPanelEntry>) {
         dispatch(sidebarSlice.actions.removeForm(nonce));
