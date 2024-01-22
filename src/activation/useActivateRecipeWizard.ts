@@ -31,8 +31,8 @@ import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type AuthOption } from "@/auth/authTypes";
 import {
-  inferConfiguredModIntegrations,
-  inferRecipeOptions,
+  collectConfiguredIntegrationDependencies,
+  collectRecipeOptions,
 } from "@/store/extensionsUtils";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { type Primitive } from "type-fest";
@@ -40,7 +40,7 @@ import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
-import { type UnresolvedModComponent } from "@/types/modComponentTypes";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { isPrimitive } from "@/utils/typeUtils";
 import { inputProperties } from "@/utils/schemaUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
@@ -88,7 +88,7 @@ export function wizardStateFactory({
   modDefinition: ModDefinition;
   defaultAuthOptions: Record<RegistryId, AuthOption>;
   databaseOptions: Option[];
-  installedExtensions: UnresolvedModComponent[];
+  installedExtensions: ActivatedModComponent[];
   optionsValidationSchema: AnyObjectSchema;
 }): UseActivateRecipeWizardResult {
   const extensionPoints = modDefinition.extensionPoints ?? [];
@@ -97,11 +97,11 @@ export function wizardStateFactory({
     (extension) => extension._recipe?.id === modDefinition.metadata.id,
   );
 
-  const installedOptions = inferRecipeOptions(installedBlueprintExtensions);
+  const installedOptions = collectRecipeOptions(installedBlueprintExtensions);
   const installedIntegrationConfigs = Object.fromEntries(
-    inferConfiguredModIntegrations(installedBlueprintExtensions, {
-      optional: true,
-    }).map(({ integrationId, configId }) => [integrationId, configId]),
+    collectConfiguredIntegrationDependencies(installedBlueprintExtensions).map(
+      ({ integrationId, configId }) => [integrationId, configId],
+    ),
   );
   const unconfiguredIntegrationDependencies =
     getUnconfiguredComponentIntegrations(modDefinition);

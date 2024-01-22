@@ -56,7 +56,7 @@
 ./src/components/logViewer/logViewerTypes.ts
 ./src/components/Markdown.tsx
 ./src/components/MarkdownInline.tsx
-./src/components/MarkdownLazy.tsx
+./src/components/Markdown.tsx
 ./src/components/quickBar/defaultActions.tsx
 ./src/components/quickBar/QuickBarApp.tsx
 ./src/components/quickBar/quickBarRegistry.ts

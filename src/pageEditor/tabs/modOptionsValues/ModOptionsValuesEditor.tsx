@@ -35,10 +35,7 @@ import Loader from "@/components/Loader";
 import Alert from "@/components/Alert";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import {
-  inferRecipeDependencies,
-  inferRecipeOptions,
-} from "@/store/extensionsUtils";
+import { collectRecipeOptions } from "@/store/extensionsUtils";
 import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
 import Effect from "@/components/Effect";
 import { actions } from "@/pageEditor/slices/editorSlice";
@@ -46,6 +43,7 @@ import { type OptionsArgs } from "@/types/runtimeTypes";
 import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
+import { uniqBy } from "lodash";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: DEFAULT_RUNTIME_API_VERSION,
@@ -106,7 +104,7 @@ const ModOptionsValuesContent: React.FC = () => {
   );
 
   const initialValues = useMemo(
-    () => modifiedOptionValues ?? inferRecipeOptions(recipeExtensions),
+    () => modifiedOptionValues ?? collectRecipeOptions(recipeExtensions),
     [modifiedOptionValues, recipeExtensions],
   );
 
@@ -116,7 +114,13 @@ const ModOptionsValuesContent: React.FC = () => {
   );
 
   const integrationDependencies = useMemo(
-    () => inferRecipeDependencies(recipeExtensions, recipeElements),
+    () =>
+      uniqBy(
+        [...recipeExtensions, ...recipeElements].flatMap(
+          ({ integrationDependencies }) => integrationDependencies ?? [],
+        ),
+        ({ integrationId }) => integrationId,
+      ),
     [recipeExtensions, recipeElements],
   );
 
