@@ -42,7 +42,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
 }) => {
   // Crash the React tree, because it's a programming error to use this configuration outside the dev tools
   expectContext(
-    "devTools",
+    "pageEditor",
     "useLocalRobot only works in the Page Editor due to its `thisTab` usage",
   );
 
