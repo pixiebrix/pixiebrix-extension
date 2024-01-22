@@ -67,10 +67,6 @@ const knipConfig = {
     // Not getting detected by webpack plugin for .storybook/main.js
     "style-loader",
     "@storybook/react-webpack5",
-    // Used by src/contrib/google/sheets/core/types.ts
-    "@types/gapi.client",
-    "@types/gapi.client.drive-v3",
-    "@types/gapi.client.oauth2-v2",
   ],
   rules: {
     // Issue Type reference: https://knip.dev/reference/issue-types/

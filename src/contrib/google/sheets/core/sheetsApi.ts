@@ -22,8 +22,6 @@ import {
   getCachedAuthData,
   performConfiguredRequestInBackground,
 } from "@/background/messenger/api";
-import { isEmpty } from "lodash";
-import { handleGoogleRequestRejection } from "@/contrib/google/sheets/core/handleGoogleRequestRejection";
 import {
   type AppendValuesResponse,
   type BatchUpdateSpreadsheetRequest,
@@ -33,6 +31,8 @@ import {
   type UserInfo,
   type ValueRange,
 } from "@/contrib/google/sheets/core/types";
+import { isEmpty } from "lodash";
+import { handleGoogleRequestRejection } from "@/contrib/google/sheets/core/handleGoogleRequestRejection";
 
 const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
 export const DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3/files";
