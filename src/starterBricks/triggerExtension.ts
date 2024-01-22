@@ -41,7 +41,7 @@ import notify from "@/utils/notify";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { selectAllBlocks } from "@/bricks/util";
+import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import initialize from "@/vendors/initialize";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
@@ -78,8 +78,15 @@ import {
   notifyContextInvalidated,
 } from "@/errors/contextInvalidated";
 import { sleep } from "@/utils/timeUtils";
-import { $safeFind, waitAnimationFrame } from "@/utils/domUtils";
+import {
+  $safeFind,
+  runOnDocumentVisible,
+  waitAnimationFrame,
+} from "@/utils/domUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import { groupPromisesByStatus } from "@/utils/promiseUtils";
+
+type TriggerTarget = Document | HTMLElement;
 
 export type TriggerConfig = {
   action: BrickPipeline | BrickConfig;
@@ -91,6 +98,20 @@ export type TriggerConfig = {
  */
 export function getDefaultReportModeForTrigger(trigger: Trigger): ReportMode {
   return USER_ACTION_TRIGGERS.includes(trigger) ? "all" : "once";
+}
+
+/**
+ * Return the default allowInactiveFrame value for the trigger type.
+ * @param trigger the trigger type
+ *
+ * @see TriggerStarterBrickABC.allowInactiveFrames
+ */
+export function getDefaultAllowInactiveFramesForTrigger(
+  trigger: Trigger,
+): boolean {
+  // Prior to 1.8.7, the `background` flag was ignored for non-interval triggers. Therefore, the effective
+  // default was `true` for non-interval triggers.
+  return trigger !== "interval";
 }
 
 async function interval({
@@ -137,7 +158,15 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
   abstract get intervalMillis(): number;
 
-  abstract get allowBackground(): boolean;
+  /**
+   * Allow trigger to run even when the tab is not active.
+   *
+   * NOTE: this property does not refer to running the trigger in the extension's background page. PixieBrix currently
+   * only supports running mods in the context of a frame's content script.
+   *
+   * @see TriggerDefinition.background
+   */
+  abstract get allowInactiveFrames(): boolean;
 
   abstract get targetMode(): TargetMode;
 
@@ -154,12 +183,12 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   abstract getBaseReader(): Promise<Reader>;
 
   /**
-   * Map from extension ID to elements a trigger is currently running on.
+   * Map from mod component ID to elements a trigger is currently running on.
    * @private
    */
-  private readonly runningExtensionElements = new Map<
+  private readonly runningModComponentElements = new Map<
     UUID,
-    WeakSet<Document | HTMLElement>
+    WeakSet<TriggerTarget>
   >();
 
   /**
@@ -242,9 +271,9 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
    * Return true if an event should be reported for the given extension id.
    * @private
    */
-  private shouldReportEvent(extensionId: UUID): boolean {
-    const alreadyReported = this.reportedEvents.has(extensionId);
-    this.reportedEvents.add(extensionId);
+  private shouldReportEvent(componentId: UUID): boolean {
+    const alreadyReported = this.reportedEvents.has(componentId);
+    this.reportedEvents.add(componentId);
     return this.shouldReport(alreadyReported);
   }
 
@@ -255,6 +284,12 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         this._runTriggersAndNotify,
         waitMillis,
         options,
+      );
+    } else if (this.trigger !== "interval" && !this.allowInactiveFrames) {
+      // Since 1.8.7, respect the `background` flag for non-interval triggers.
+      // @ts-expect-error -- Promise<Promise<void>> is same as Promise<void> when awaited b/c await is recursive
+      this.debouncedRunTriggersAndNotify = runOnDocumentVisible(
+        this._runTriggersAndNotify,
       );
     }
 
@@ -286,7 +321,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     // NOTE: you might think we could use a WeakSet of HTMLElement to track which elements we've actually attached
     // DOM events too. However, we can't because WeakSet is not an enumerable collection
     // https://esdiscuss.org/topic/removal-of-weakmap-weakset-clear
-    const $currentElements: JQuery<HTMLElement | Document> = isEmpty(
+    const $currentElements: JQuery<TriggerTarget> = isEmpty(
       this.triggerSelector,
     )
       ? $(document)
@@ -320,9 +355,9 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   );
 
   async getBricks(
-    extension: ResolvedModComponent<TriggerConfig>,
+    modComponent: ResolvedModComponent<TriggerConfig>,
   ): Promise<Brick[]> {
-    return selectAllBlocks(extension.config.action);
+    return collectAllBricks(modComponent.config.action);
   }
 
   override async defaultReader(): Promise<Reader> {
@@ -349,29 +384,29 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     );
   }
 
-  private async runExtension(
+  private async runModComponent(
     ctxt: JsonObject,
-    extension: ResolvedModComponent<TriggerConfig>,
+    modComponent: ResolvedModComponent<TriggerConfig>,
     root: SelectorRoot,
   ) {
-    const extensionLogger = this.logger.childLogger(
-      selectExtensionContext(extension),
+    const componentLogger = this.logger.childLogger(
+      selectExtensionContext(modComponent),
     );
 
-    const { action: actionConfig } = extension.config;
+    const { action: actionConfig } = modComponent.config;
 
     const initialValues: InitialValues = {
       input: ctxt,
       root,
       serviceContext: await makeServiceContextFromDependencies(
-        extension.integrationDependencies,
+        modComponent.integrationDependencies,
       ),
-      optionsArgs: extension.optionsArgs,
+      optionsArgs: modComponent.optionsArgs,
     };
 
     await reduceExtensionPipeline(actionConfig, initialValues, {
-      logger: extensionLogger,
-      ...apiVersionOptions(extension.apiVersion),
+      logger: componentLogger,
+      ...apiVersionOptions(modComponent.apiVersion),
     });
   }
 
@@ -381,21 +416,22 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   private readonly eventHandler: JQuery.EventHandler<unknown> = async (
     event,
   ) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- based on available trigger types
+    let element: TriggerTarget = event.target;
+
     console.debug("TriggerExtensionPoint:eventHandler", {
       id: this.id,
       instanceNonce: this.instanceNonce,
-      target: event.target,
+      target: element,
       event,
     });
-
-    let element: HTMLElement | Document = event.target;
 
     if (this.trigger === "selectionchange") {
       element = guessSelectedElement() ?? document;
     }
 
     if (this.targetMode === "root") {
-      element = $(event.target).closest(this.triggerSelector).get(0);
+      element = $(element).closest(this.triggerSelector).get(0);
       console.debug(
         "Locating closest element for target: %s",
         this.triggerSelector,
@@ -408,22 +444,22 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   };
 
   /**
-   * Mark a run as in-progress for an extension. Used to enforce synchronous execution of an
-   * extension on a particular element.
-   * @param extensionId the UUID of the extension
-   * @param element the element the extension is running against
+   * Mark a run as in-progress for an extension. Used to enforce synchronous execution of a
+   * trigger on a particular element.
+   * @param modComponentId the UUID of the mod component
+   * @param element the element the trigger is running against
    * @private
    */
-  private markRun(extensionId: UUID, element: Document | HTMLElement): void {
-    if (this.runningExtensionElements.has(extensionId)) {
-      this.runningExtensionElements.get(extensionId).add(element);
+  private markRun(modComponentId: UUID, element: TriggerTarget): void {
+    if (this.runningModComponentElements.has(modComponentId)) {
+      this.runningModComponentElements.get(modComponentId).add(element);
     } else {
-      this.runningExtensionElements.set(extensionId, new Set([element]));
+      this.runningModComponentElements.set(modComponentId, new Set([element]));
     }
   }
 
   /**
-   * Run all extensions for a given root (i.e., handle the trigger firing).
+   * Run all mod components for a given root (i.e., handle the trigger firing).
    *
    * DO NOT CALL DIRECTLY: should only be called from runTriggersAndNotify
    */
@@ -442,7 +478,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       // Enforce synchronous behavior for `hover` event
       extensionsToRun = extensionsToRun.filter(
         (extension) =>
-          !this.runningExtensionElements.get(extension.id)?.has(root),
+          !this.runningModComponentElements.get(extension.id)?.has(root),
       );
     }
 
@@ -476,7 +512,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         );
         try {
           this.markRun(extension.id, root);
-          await this.runExtension(readerContext, extension, root);
+          await this.runModComponent(readerContext, extension, root);
         } catch (error) {
           if (this.shouldReportError({ extensionId: extension.id, error })) {
             // Don't need to call `reportError` because it's already reported by extensionLogger
@@ -489,7 +525,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         } finally {
           // NOTE: if the extension is not running with synchronous behavior, there's a race condition where
           // the `delete` could be called while another extension run is still in progress
-          this.runningExtensionElements.get(extension.id).delete(root);
+          this.runningModComponentElements.get(extension.id).delete(root);
         }
 
         if (this.shouldReportEvent(extension.id)) {
@@ -517,9 +553,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
     const results = await Promise.allSettled(promises);
 
-    const errors = compact(
-      results.map((x) => (x.status === "rejected" ? x.reason : null)),
-    );
+    const errors = groupPromisesByStatus(results).rejected;
 
     await this.notifyErrors(errors);
   };
@@ -555,7 +589,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     });
   }
 
-  private async getRoot(): Promise<JQuery<HTMLElement | Document>> {
+  private async getRoot(): Promise<JQuery<TriggerTarget>> {
     const rootSelector = this.triggerSelector;
 
     // Await for the element(s) to appear on the page so that we can
@@ -600,7 +634,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
         intervalMillis: this.intervalMillis,
         effectGenerator: intervalEffect,
         signal: this.abortController.signal,
-        requestAnimationFrame: !this.allowBackground,
+        requestAnimationFrame: !this.allowInactiveFrames,
       });
 
       console.debug("TriggerExtensionPoint:attachInterval", {
@@ -615,9 +649,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
   }
 
-  private attachInitializeTrigger(
-    $elements: JQuery<Document | HTMLElement>,
-  ): void {
+  private attachInitializeTrigger($elements: JQuery<TriggerTarget>): void {
     this.cancelObservers();
 
     // The caller will have already waited for the element. So $element will contain at least one element
@@ -630,7 +662,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
     const observer = initialize(
       this.triggerSelector,
-      (index, element: HTMLElement) => {
+      (_index, element: HTMLElement) => {
         void this.debouncedRunTriggersAndNotify([element], {
           nativeEvent: null,
         });
@@ -672,7 +704,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       console.debug("Watching selector: %s", selector);
       const mutationObserver = initialize(
         selector,
-        (index, element) => {
+        (_index, element) => {
           console.debug("initialize: %s", selector);
           appearObserver.observe(element);
         },
@@ -705,7 +737,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   }
 
   private attachDOMTrigger(
-    $elements: JQuery<HTMLElement | Document>,
+    $elements: JQuery<TriggerTarget>,
     { watch = false }: { watch?: boolean },
   ): void {
     const domEventName =
@@ -762,7 +794,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       // Watch for new elements on the page
       const mutationObserver = initialize(
         this.triggerSelector,
-        (index, element) => {
+        (_index, element) => {
           // Already watching, so don't re-watch on the recursive call
           this.attachDOMTrigger($(element as HTMLElement), { watch: false });
         },
@@ -775,9 +807,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
   }
 
-  private assertElement(
-    $root: JQuery<HTMLElement | Document>,
-  ): asserts $root is JQuery {
+  private assertElement($root: JQuery<TriggerTarget>): asserts $root is JQuery {
     if ($root.get(0) === document) {
       throw new Error(`Trigger ${this.trigger} requires a selector`);
     }
@@ -861,10 +891,21 @@ export interface TriggerDefinition extends StarterBrickDefinition {
   attachMode?: AttachMode;
 
   /**
-   * Allow triggers to run in the background, even when the tab is not active. Currently, only checked for intervals.
+   * Allow the trigger to run even when the tab/frame is not active.
+   *
+   * NOTE: this property does not refer to running the trigger in the extension's background page. PixieBrix currently
+   * only supports running mods in the context of a frame's content script.
+   *
+   * - Introduced in 1.5.3 and checked for interval triggers. The effective value was `true` for other triggers
+   *  because this value was not checked. (However, certain triggers, e.g., 'click' can only be triggered by the user
+   *  when the tab is active.)
+   * - As of 1.8.7, this value is checked for all triggers. For backward compatability, for non-interval triggers,
+   *  the default value if not provided is `true`.
+   *
    * @since 1.5.3
+   * @see getDefaultAllowInactiveFramesForTrigger
    */
-  background: boolean;
+  background?: boolean;
 
   /**
    * Flag to control if all trigger fires/errors for an extension are reported.
@@ -984,8 +1025,11 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
     return this._definition.rootSelector;
   }
 
-  get allowBackground(): boolean {
-    return this._definition.background ?? false;
+  get allowInactiveFrames(): boolean {
+    return (
+      this._definition.background ??
+      getDefaultAllowInactiveFramesForTrigger(this.trigger)
+    );
   }
 
   override async getBaseReader(): Promise<Reader> {
