@@ -50,7 +50,7 @@ import {
 import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineExpression } from "@/utils/expressionUtils";
 import { isContentScript } from "webext-detect-page";
-import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { getTopLevelFrame } from "webext-messenger";
 import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
@@ -348,7 +348,7 @@ class UserDefinedBrick extends BrickABC {
     // The modal is always an iframe in the same tab,
     // but the sidebar varies. This code handles the 3 cases.
     const topLevelFrame = isBrowserSidebar()
-      ? await getTopFrameFromSidebar()
+      ? await getConnectedTarget()
       : await getTopLevelFrame();
 
     try {

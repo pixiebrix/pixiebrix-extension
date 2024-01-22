@@ -177,33 +177,37 @@ exports[`SidebarBody it renders error when URL is restricted 1`] = `
     </a>
   </div>
   <div
-    class="p-3"
+    class="full-height"
   >
     <div
-      class="font-weight-bold"
+      class="p-3"
     >
-      This is a restricted browser page.
-    </div>
-    <div
-      class="mt-2"
-    >
-      PixieBrix cannot access this page.
-    </div>
-    <div
-      class="mt-2"
-    >
-      To open the PixieBrix Sidebar, navigate to a website and then click the PixieBrix toolbar icon again.
-    </div>
-    <hr />
-    <div
-      class="mt-2"
-    >
-      Looking for the Page Editor? 
-      <a
-        href="https://www.pixiebrix.com/developers-welcome"
+      <div
+        class="font-weight-bold"
       >
-        View the Developer Welcome Page
-      </a>
+        This is a restricted browser page.
+      </div>
+      <div
+        class="mt-2"
+      >
+        PixieBrix cannot access this page.
+      </div>
+      <div
+        class="mt-2"
+      >
+        To open the PixieBrix Sidebar, navigate to a website and then click the PixieBrix toolbar icon again.
+      </div>
+      <hr />
+      <div
+        class="mt-2"
+      >
+        Looking for the Page Editor? 
+        <a
+          href="https://www.pixiebrix.com/developers-welcome"
+        >
+          View the Developer Welcome Page
+        </a>
+      </div>
     </div>
   </div>
 </DocumentFragment>

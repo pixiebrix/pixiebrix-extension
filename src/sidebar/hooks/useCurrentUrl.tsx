@@ -21,9 +21,9 @@ import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { type Tabs } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
 import {
-  getAssociatedTarget,
+  getConnectedTabId,
   getAssociatedTargetUrl,
-} from "@/sidebar/sidePanel/messenger/api";
+} from "@/sidebar/connectedTarget";
 
 let lastKnownUrl: string;
 const urlChanges = new SimpleEventTarget<string>();
@@ -32,7 +32,7 @@ async function onUpdated(
   tabId: number,
   { url }: Tabs.OnUpdatedChangeInfoType,
 ): Promise<void> {
-  if (tabId === getAssociatedTarget().tabId && lastKnownUrl !== url) {
+  if (tabId === getConnectedTabId() && lastKnownUrl !== url) {
     lastKnownUrl = url;
     urlChanges.emit(url);
   }

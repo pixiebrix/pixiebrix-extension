@@ -35,12 +35,12 @@ import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { initCopilotMessenger } from "@/contrib/automationanywhere/aaFrameProtocol";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
 import { initSidePanel } from "./sidePanel";
-import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { sidebarWasLoaded } from "@/contentScript/messenger/api";
 
 async function init(): Promise<void> {
   ReactDOM.render(<App />, document.querySelector("#container"));
-  sidebarWasLoaded(await getTopFrameFromSidebar());
+  sidebarWasLoaded(await getConnectedTarget());
 }
 
 void initMessengerLogging();

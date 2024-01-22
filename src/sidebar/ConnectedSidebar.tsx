@@ -42,7 +42,7 @@ import {
   ensureExtensionPointsInstalled,
   getReservedSidebarEntries,
 } from "@/contentScript/messenger/api";
-import { getTopFrameFromSidebar } from "@/mv3/sidePanelMigration";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import useAsyncEffect from "use-async-effect";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
 
@@ -98,7 +98,7 @@ const ConnectedSidebar: React.VFC = () => {
   // We could instead consider moving the initial panel logic to SidebarApp.tsx and pass the entries as the
   // initial state to the sidebarSlice reducer.
   useAsyncEffect(async () => {
-    const topFrame = await getTopFrameFromSidebar();
+    const topFrame = await getConnectedTarget();
 
     // Ensure persistent sidebar extension points have been installed to have reserve their panels for the sidebar
     await ensureExtensionPointsInstalled(topFrame);
@@ -153,23 +153,21 @@ const ConnectedSidebar: React.VFC = () => {
   }, []);
 
   return (
-    <div className="full-height">
-      <ErrorBoundary>
-        <RequireAuth
-          LoginPage={LoginPanel}
-          // Use ignoreApiError to avoid showing error on intermittent network issues or PixieBrix API degradation
-          ignoreApiError
-        >
-          {sidebarIsEmpty ? (
-            <DelayedRender millis={300}>
-              <DefaultPanel />
-            </DelayedRender>
-          ) : (
-            <Tabs />
-          )}
-        </RequireAuth>
-      </ErrorBoundary>
-    </div>
+    <ErrorBoundary>
+      <RequireAuth
+        LoginPage={LoginPanel}
+        // Use ignoreApiError to avoid showing error on intermittent network issues or PixieBrix API degradation
+        ignoreApiError
+      >
+        {sidebarIsEmpty ? (
+          <DelayedRender millis={300}>
+            <DefaultPanel />
+          </DelayedRender>
+        ) : (
+          <Tabs />
+        )}
+      </RequireAuth>
+    </ErrorBoundary>
   );
 };
 

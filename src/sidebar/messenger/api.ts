@@ -16,32 +16,8 @@
  */
 
 /* Do not use `registerMethod` in this file */
-import { isMV3 } from "@/mv3/api";
-import { isContentScript } from "webext-detect-page";
-import {
-  type PageTarget,
-  getMethod,
-  getNotifier,
-  getThisFrame,
-} from "webext-messenger";
-
-export async function getSidebarInThisTab(): Promise<PageTarget> {
-  if (!isMV3()) {
-    return { tabId: "this", page: "/sidebar.html" };
-  }
-
-  if (!isContentScript()) {
-    // Probably just other pages importing this file transitively, this is dead code
-    return {
-      page: "the sidebar API is only available from the content script",
-    };
-  }
-
-  const frame = await getThisFrame();
-  return {
-    page: "/sidebar.html?tabId=" + frame.tabId,
-  };
-}
+import { getMethod, getNotifier } from "webext-messenger";
+import { getSidebarInThisTab } from "@/sidebar/sidePanel/messenger/api";
 
 const target = getSidebarInThisTab();
 
