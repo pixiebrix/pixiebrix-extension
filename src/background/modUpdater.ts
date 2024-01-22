@@ -254,6 +254,11 @@ function updateMod(
 
   const {
     reduxState: { options: nextOptionsState, editor: nextEditorState },
+    // This type is weird, please ignore it for now, we need to clean up a lot of stuff with these
+    // mod component types. These "deactivated" components are not passed anywhere else or put into
+    // redux or anything like that. They are only used to collect the configured dependencies and the
+    // mod options in order to re-install the mod (see the calls to collectExistingConfiguredDependenciesForMod
+    // and collectRecipeOptions immediately following this code).
     deactivatedModComponents,
   } = deactivateMod(modDefinition.metadata.id, {
     options: newOptionsState,
