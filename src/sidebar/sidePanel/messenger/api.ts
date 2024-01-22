@@ -32,7 +32,7 @@ export function getSidebarPath(tabId: number): string {
   return "/sidebar.html?tabId=" + tabId;
 }
 
-export async function getSidebarInThisTab(): Promise<PageTarget> {
+export async function getSidebarTargetForCurrentTab(): Promise<PageTarget> {
   if (!isMV3()) {
     return { tabId: "this", page: "/sidebar.html" };
   }
@@ -63,11 +63,11 @@ export async function isSidePanelOpen(): Promise<boolean> {
 
   try {
     // If ever needed, `isSidePanelOpen` could be called from any context, as long as
-    // `getSidebarInThisTab` is replaced/complemented by a tabid-specific `{page: "/sidebar.html?tabId=123"}` target
+    // `getSidebarTargetForCurrentTab` is replaced/complemented by a tabid-specific `{page: "/sidebar.html?tabId=123"}` target
     await messenger(
       "SIDEBAR_PING",
       { retry: false },
-      await getSidebarInThisTab(),
+      await getSidebarTargetForCurrentTab(),
     );
     return true;
   } catch {

@@ -69,21 +69,15 @@ const RestrictedUrlPopupApp: React.FC<{ reason: string | null }> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only run once on mount
   }, []);
 
-  return (
+  return reason === DISPLAY_REASON_EXTENSION_CONSOLE ? (
     <RestrictedUrlContent>
-      {reason === DISPLAY_REASON_EXTENSION_CONSOLE ? (
-        <>
-          <div className="font-weight-bold">This is the Extension Console.</div>
-          <div className="mt-2">PixieBrix mods cannot run on this page.</div>
-        </>
-      ) : (
-        <>
-          <div className="font-weight-bold">
-            This is a restricted browser page.
-          </div>
-          <div className="mt-2">PixieBrix cannot access this page.</div>
-        </>
-      )}
+      <div className="font-weight-bold">This is the Extension Console.</div>
+      <div className="mt-2">PixieBrix mods cannot run on this page.</div>
+    </RestrictedUrlContent>
+  ) : (
+    <RestrictedUrlContent>
+      <div className="font-weight-bold">This is a restricted browser page.</div>
+      <div className="mt-2">PixieBrix cannot access this page.</div>
     </RestrictedUrlContent>
   );
 };

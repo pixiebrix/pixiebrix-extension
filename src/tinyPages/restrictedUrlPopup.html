@@ -21,13 +21,10 @@
     <meta charset="utf-8" />
     <title>PixieBrix</title>
     <style>
-      /* Media query: Limit sizing to popup, don't apply to sidePanel. */
-      /* Not perfect detection, but the sidePanel is rarely shorter than 400px. It's temporary code. */
-      /* TODO: Drop after https://github.com/pixiebrix/pixiebrix-extension/issues/7364 */
-      @media screen and (max-height: 400px) {
-        html {
-          min-width: 420px;
-        }
+      html,
+      body {
+        min-width: 420px;
+        min-height: 33px;
       }
     </style>
     <link rel="stylesheet" href="restrictedUrlPopup.css" />
