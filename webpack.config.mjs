@@ -24,7 +24,6 @@ import NodePolyfillPlugin from "node-polyfill-webpack-plugin";
 import WebpackBuildNotifierPlugin from "webpack-build-notifier";
 import TerserPlugin from "terser-webpack-plugin";
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
-import RemovePlugin from "remove-files-webpack-plugin";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import CopyPlugin from "copy-webpack-plugin";
 import { compact } from "lodash-es";
@@ -32,6 +31,7 @@ import mergeWithShared from "./webpack.sharedConfig.js";
 import { parseEnv, loadEnv } from "./scripts/env.mjs";
 import customizeManifest from "./scripts/manifest.mjs";
 import { createRequire } from "node:module";
+import DiscardFilePlugin from "./scripts/DiscardFilePlugin.mjs";
 
 const require = createRequire(import.meta.url);
 
@@ -267,11 +267,7 @@ const createConfig = (env, options) =>
           "static",
         ],
       }),
-      new RemovePlugin({
-        after: {
-          include: ["dist/DocumentView.js"],
-        },
-      }),
+      new DiscardFilePlugin(),
     ]),
     module: {
       rules: [
