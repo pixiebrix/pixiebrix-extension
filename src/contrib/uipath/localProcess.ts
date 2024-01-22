@@ -21,8 +21,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
-
-export const UIPATH_ID = validateRegistryId("@pixiebrix/uipath/local-process");
+import type { UnknownObject } from "@/types/objectTypes";
 
 const UIPATH_PROPERTIES: SchemaProperties = {
   releaseKey: {
@@ -35,10 +34,12 @@ const UIPATH_PROPERTIES: SchemaProperties = {
   },
 };
 
-export class RunLocalProcess extends TransformerABC {
+class RunLocalProcess extends TransformerABC {
+  static BRICK_ID = validateRegistryId("@pixiebrix/uipath/local-process");
+
   constructor() {
     super(
-      UIPATH_ID,
+      RunLocalProcess.BRICK_ID,
       "Run local UiPath process",
       "Run a UiPath process using your local UiPath assistant",
     );
@@ -52,7 +53,13 @@ export class RunLocalProcess extends TransformerABC {
   };
 
   async transform(
-    { releaseKey, inputArguments = {} }: BrickArgs,
+    {
+      releaseKey,
+      inputArguments = {},
+    }: BrickArgs<{
+      releaseKey: string;
+      inputArguments: UnknownObject;
+    }>,
     { logger }: BrickOptions,
   ): Promise<JobResult> {
     const { UiPathRobot } = await import(
@@ -74,7 +81,7 @@ export class RunLocalProcess extends TransformerABC {
         const process = processes.find((x) => x.id === releaseKey);
         if (!process) {
           // `releaseKey`'s type is checked in the inputSchema
-          logger.error(`Cannot find UiPath release: ${releaseKey as string}`);
+          logger.error(`Cannot find UiPath release: ${releaseKey}`);
           throw new BusinessError("Cannot find UiPath release");
         }
 
@@ -89,3 +96,5 @@ export class RunLocalProcess extends TransformerABC {
     ]);
   }
 }
+
+export default RunLocalProcess;
