@@ -119,5 +119,7 @@ export async function forEachTab<
   const promises = tabs
     .filter((tabId) => tabId !== options?.exclude)
     .map((tabId) => callback({ tabId }));
+
+  // eslint-disable-next-line no-restricted-syntax -- Allowed for now
   return Promise.allSettled(promises);
 }

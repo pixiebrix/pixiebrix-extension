@@ -33,6 +33,7 @@ import { Events } from "@/telemetry/events";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getActivatedModIds } from "@/store/extensionsStorage";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import { allSettled } from "@/utils/promiseUtils";
 
 let listener: EventListener | null;
 
@@ -135,10 +136,13 @@ export async function initSidebarActivation(): Promise<void> {
     !isLoadedInIframe() &&
     !document.location.href.includes(DEFAULT_SERVICE_URL)
   ) {
-    await Promise.allSettled([
-      // Clear out local storage
-      setActivatingMods({ blueprintId: null }),
-      showSidebarActivationForMods(modIds),
-    ]);
+    await allSettled(
+      [
+        // Clear out local storage
+        setActivatingMods({ blueprintId: null }),
+        showSidebarActivationForMods(modIds),
+      ],
+      { allRejections: "ignore" },
+    );
   }
 }

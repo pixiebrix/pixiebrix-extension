@@ -66,6 +66,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { Events } from "@/telemetry/events";
+import { allSettled } from "@/utils/promiseUtils";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
@@ -119,8 +120,9 @@ async function uninstallExtensionsAndSaveState(
     editorState = result.editor;
   }
 
-  await Promise.allSettled(
+  await allSettled(
     toUninstall.map(async ({ id }) => removeExtensionForEveryTab(id)),
+    { allRejections: "ignore" },
   );
 
   await setExtensionsState(optionsState);

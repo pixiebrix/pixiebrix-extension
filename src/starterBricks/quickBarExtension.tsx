@@ -62,6 +62,7 @@ import { type UUID } from "@/types/stringTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import pluralize from "@/utils/pluralize";
+import { allSettled } from "@/utils/promiseUtils";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
 
@@ -178,23 +179,25 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
       return;
     }
 
-    const results = await Promise.allSettled(
-      this.modComponents.map(async (extension) => {
-        try {
-          await this.registerExtensionAction(extension);
-        } catch (error) {
-          reportError(error, selectEventData(extension));
-          throw error;
-        }
-      }),
-    );
+    const promises = this.modComponents.map(async (extension) => {
+      try {
+        await this.registerExtensionAction(extension);
+      } catch (error) {
+        reportError(error, selectEventData(extension));
+        throw error;
+      }
+    });
 
-    const numErrors = results.filter((x) => x.status === "rejected").length;
-    if (numErrors > 0) {
-      notify.error(
-        `An error occurred adding ${pluralize(numErrors, "$$ quick bar item")}`,
-      );
-    }
+    await allSettled(promises, {
+      allRejections(rejections) {
+        notify.error(
+          `An error occurred adding ${pluralize(
+            rejections.length,
+            "$$ quick bar item",
+          )}`,
+        );
+      },
+    });
   }
 
   /**

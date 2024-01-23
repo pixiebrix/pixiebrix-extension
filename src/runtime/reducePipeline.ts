@@ -79,6 +79,7 @@ import { type RegistryProtocol } from "@/registry/memoryRegistry";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
+import { allSettled } from "@/utils/promiseUtils";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
@@ -906,10 +907,13 @@ export async function reduceExtensionPipeline(
   const pipelineLogger = partialOptions.logger ?? new ConsoleLogger();
 
   // `await` promises to avoid race condition where the calls here delete debug entries from this call to reducePipeline
-  await Promise.allSettled([
-    traces.clear(pipelineLogger.context.extensionId),
-    clearExtensionDebugLogs(pipelineLogger.context.extensionId),
-  ]);
+  await allSettled(
+    [
+      traces.clear(pipelineLogger.context.extensionId),
+      clearExtensionDebugLogs(pipelineLogger.context.extensionId),
+    ],
+    { allRejections: "ignore" },
+  );
 
   return reducePipeline(pipeline, initialValues, {
     ...partialOptions,

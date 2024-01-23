@@ -84,7 +84,7 @@ import {
   waitAnimationFrame,
 } from "@/utils/domUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
-import { groupPromisesByStatus } from "@/utils/promiseUtils";
+import { allSettled } from "@/utils/promiseUtils";
 
 type TriggerTarget = Document | HTMLElement;
 
@@ -551,11 +551,11 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       this._runTrigger(root, { nativeEvent }),
     );
 
-    const results = await Promise.allSettled(promises);
-
-    const errors = groupPromisesByStatus(results).rejected;
-
-    await this.notifyErrors(errors);
+    await allSettled(promises, {
+      allRejections: (rejections) => {
+        void this.notifyErrors(rejections);
+      },
+    });
   };
 
   /**

@@ -16,6 +16,7 @@
  */
 
 import {
+  allSettled,
   groupPromisesByStatus,
   memoizeUntilSettled,
   retryWithJitter,
@@ -42,6 +43,7 @@ test("groupPromisesByStatus", async () => {
   ];
 
   const { fulfilled, rejected } = groupPromisesByStatus(
+    // eslint-disable-next-line no-restricted-syntax -- Testing
     await Promise.allSettled(promises),
   );
 
@@ -49,6 +51,50 @@ test("groupPromisesByStatus", async () => {
   expect(rejected).toHaveLength(1);
   expect(rejected[0]).toBeInstanceOf(Error);
   expect((rejected[0] as Error).message).toBe("something happened");
+});
+
+describe("allSettled", () => {
+  test("it returns the values of fulfilled promises", async () => {
+    const promises = [Promise.resolve(1), Promise.resolve(2)];
+    // @ts-expect-error TS must error here because the callbacks are missing.
+    // This expectation is part of the test. DO NOT REMOVE
+    const result = await allSettled(promises, {});
+    expect(result).toStrictEqual({ fulfilled: [1, 2], rejected: [] });
+  });
+
+  test("it returns the errors of rejected promises", async () => {
+    const promises = [
+      Promise.reject(new Error("error 1")),
+      Promise.reject(new Error("error 2")),
+    ];
+    const result = await allSettled(promises, {
+      allRejections: "ignore",
+    });
+    expect(result).toStrictEqual({
+      fulfilled: [],
+      rejected: [new Error("error 1"), new Error("error 2")],
+    });
+  });
+
+  test("it calls the eachRejection callback for each rejected promise", async () => {
+    const promises = [
+      Promise.reject(new Error("error 1")),
+      Promise.reject(new Error("error 2")),
+    ];
+    const eachRejection = jest.fn();
+    const allRejections = jest.fn();
+    await allSettled(promises, {
+      eachRejection,
+      allRejections,
+    });
+    expect(eachRejection).toHaveBeenCalledTimes(2);
+    expect(eachRejection).toHaveBeenCalledWith(new Error("error 1"));
+    expect(allRejections).toHaveBeenCalledTimes(1);
+    expect(allRejections).toHaveBeenCalledWith([
+      new Error("error 1"),
+      new Error("error 2"),
+    ]);
+  });
 });
 
 describe("retryWithJitter", () => {

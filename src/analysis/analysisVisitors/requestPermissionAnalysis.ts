@@ -31,6 +31,7 @@ import {
   isVarExpression,
 } from "@/utils/expressionUtils";
 import { isAbsoluteUrl } from "@/utils/urlUtils";
+import { allSettled } from "@/utils/promiseUtils";
 
 /**
  * Checks permission for RemoteMethod and GetAPITransformer bricks to make a remote call
@@ -143,7 +144,7 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
     super.run(extension);
 
     // Use allSettled because `browser.permissions.contains` errors out for certain cases, e.g., malformed URLs
-    await Promise.allSettled(this.permissionCheckPromises);
+    await allSettled(this.permissionCheckPromises, { allRejections: "ignore" });
   }
 }
 

@@ -23,6 +23,7 @@ import getType from "@/runtime/getType";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { partial } from "lodash";
+import { allSettled } from "@/utils/promiseUtils";
 
 /**
  * A brick along with inferred/calculated information
@@ -64,7 +65,7 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
 
     console.debug("Computing block types for %d block(s)", items.length);
 
-    const typePromises = await Promise.allSettled(
+    await allSettled(
       items.map(async (item) => {
         // XXX: will we run into problems with circular dependency between getType and the registry exported from
         //  this module? getType references the brickRegistry in order to calculate the type for composite bricks
@@ -74,14 +75,14 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
           type: await getType(item),
         });
       }),
+      {
+        allRejections(reasons) {
+          console.warn(`Failed to compute type for ${reasons.length} blocks`, {
+            reasons,
+          });
+        },
+      },
     );
-
-    const failureCount = typePromises.filter(
-      (x) => x.status === "rejected",
-    ).length;
-    if (failureCount > 0) {
-      console.warn("Failed to compute type for %d block(s)", failureCount);
-    }
 
     return typeCache;
   }

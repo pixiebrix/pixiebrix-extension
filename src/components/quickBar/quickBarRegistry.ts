@@ -24,6 +24,7 @@ import {
   type CustomAction,
   type GeneratorArgs,
 } from "@/components/quickBar/quickbarTypes";
+import { allSettled } from "@/utils/promiseUtils";
 
 class QuickBarRegistry {
   /**
@@ -197,8 +198,9 @@ class QuickBarRegistry {
     // Run all generators in parallel
     this.generatorAbortController = new AbortController();
     const abortSignal = this.generatorAbortController.signal;
-    await Promise.allSettled(
+    await allSettled(
       this.actionGenerators.map(async (x) => x({ ...args, abortSignal })),
+      { allRejections: "ignore" },
     );
   }
 }
