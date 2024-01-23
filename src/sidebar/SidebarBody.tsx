@@ -23,24 +23,25 @@ import RestrictedUrlPopupApp from "@/tinyPages/RestrictedUrlPopupApp";
 import useConnectedTargetUrl from "./hooks/useConnectedTargetUrl";
 import { getReasonByUrl as getRestrictedReasonByUrl } from "@/tinyPages/restrictedUrlPopupUtils";
 
+const SidebarReady: React.FC<{ url: string }> = ({ url }) => {
+  const restricted = getRestrictedReasonByUrl(url);
+
+  return restricted ? (
+    <RestrictedUrlPopupApp reason={restricted} />
+  ) : (
+    <ConnectedSidebar />
+  );
+};
+
 // Include MemoryRouter because some of our authentication-gate hooks use useLocation. However, there's currently no
 // navigation in the SidebarApp
 function SidebarBody() {
   const url = useConnectedTargetUrl();
-  const restricted = getRestrictedReasonByUrl(url);
   return (
     <>
       <ErrorBanner />
       <Header />
-      <div className="full-height">
-        {url ? (
-          restricted ? (
-            <RestrictedUrlPopupApp reason={restricted} />
-          ) : (
-            <ConnectedSidebar />
-          )
-        ) : null}
-      </div>
+      <div className="full-height">{url && <SidebarReady url={url} />}</div>
     </>
   );
 }
