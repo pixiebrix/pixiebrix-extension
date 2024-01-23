@@ -467,7 +467,7 @@ export function getReservedPanelEntries(): {
   };
 }
 
-export function sidePanelClosureSignal(): AbortSignal {
+export function sidePanelOnCloseSignal(): AbortSignal {
   const controller = new AbortController();
   expectContext("contentScript");
   if (isMV3()) {
@@ -495,4 +495,9 @@ export function sidePanelClosureSignal(): AbortSignal {
   }
 
   return controller.signal;
+}
+
+export function sidePanelOnClose(callback: () => void): void {
+  const signal = sidePanelOnCloseSignal();
+  signal.addEventListener("abort", callback, { once: true });
 }

@@ -19,7 +19,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import {
   showSidebar,
-  sidePanelClosureSignal,
+  sidePanelOnClose,
   hideModActivationInSidebar,
   showModActivationInSidebar,
 } from "@/contentScript/sidebarController";
@@ -61,9 +61,7 @@ async function showSidebarActivationForMods(
     heading: "Activating",
   });
 
-  sidePanelClosureSignal().addEventListener("abort", () => {
-    void hideModActivationInSidebar();
-  });
+  sidePanelOnClose(hideModActivationInSidebar);
 }
 
 function getNextUrlFromActivateUrl(activateUrl: string): string | null {

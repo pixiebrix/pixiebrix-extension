@@ -24,7 +24,7 @@ import {
 import { expectContext } from "@/utils/expectContext";
 import {
   showSidebar,
-  sidePanelClosureSignal,
+  sidePanelOnClose,
   hideTemporarySidebarPanel,
   showTemporarySidebarPanel,
   updateTemporarySidebarPanel,
@@ -56,7 +56,6 @@ import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Location } from "@/types/starterBrickTypes";
 import { assumeNotNullish_UNSAFE } from "@/utils/nullishUtils";
-import { onAbort } from "abort-utils";
 
 // Match naming of the sidebar panel extension point triggers
 export type RefreshTrigger = "manual" | "statechange";
@@ -190,7 +189,9 @@ export async function displayTemporaryInfo({
       },
     });
 
-    onAbort(sidePanelClosureSignal(), controller);
+    // Abort on sidebar close
+    sidePanelOnClose(controller.abort.bind(controller));
+
     controller.signal.addEventListener("abort", () => {
       void hideTemporarySidebarPanel(nonce);
       void stopWaitingForTemporaryPanels([nonce]);
