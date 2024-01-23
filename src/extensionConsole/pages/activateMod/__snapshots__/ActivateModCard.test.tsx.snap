@@ -162,7 +162,6 @@ exports[`ActivateModCard activate mod definition permissions 1`] = `
                       </p>
                     </div>
                   </div>
-                  0
                 </div>
               </div>
             </div>
@@ -476,7 +475,6 @@ exports[`ActivateModCard activate mod definition with missing required mod defin
                       </p>
                     </div>
                   </div>
-                  0
                 </div>
               </div>
             </div>
@@ -650,7 +648,6 @@ exports[`ActivateModCard renders 1`] = `
                       </p>
                     </div>
                   </div>
-                  0
                 </div>
               </div>
             </div>
@@ -836,7 +833,6 @@ exports[`ActivateModCard renders instructions 1`] = `
                       </p>
                     </div>
                   </div>
-                  0
                 </div>
               </div>
             </div>
@@ -1010,7 +1006,6 @@ exports[`ActivateModCard renders successfully with null services property 1`] = 
                       </p>
                     </div>
                   </div>
-                  0
                 </div>
               </div>
             </div>

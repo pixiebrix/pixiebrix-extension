@@ -89,7 +89,7 @@ const UrlPermissionsList: React.FunctionComponent<
       <Row>
         <Col>{helpText}</Col>
       </Row>
-      {permissionsList?.length && (
+      {permissionsList?.length ? (
         // Use Table single column table instead of ListGroup to more closely match style on other wizard tabs
         <Row>
           <Col>
@@ -101,7 +101,7 @@ const UrlPermissionsList: React.FunctionComponent<
             </ul>
           </Col>
         </Row>
-      )}
+      ) : null}
     </>
   );
 };
