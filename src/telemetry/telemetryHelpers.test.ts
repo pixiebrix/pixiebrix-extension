@@ -15,6 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import MarkdownInline from "@/components/MarkdownInline";
+import { cleanDatadogVersionName } from "@/telemetry/telemetryHelpers";
 
-export default MarkdownInline;
+describe("cleanDatadogVersionName", () => {
+  it("cleans local build version name", () => {
+    expect(
+      cleanDatadogVersionName("1.8.8-alpha.1-local+2024-01-14T18:13:07.744Z"),
+    ).toBe("1.8.8-alpha.1-local");
+  });
+
+  it("cleans CI build name", () => {
+    expect(cleanDatadogVersionName("1.8.8-alpha+293128")).toBe(
+      "1.8.8-alpha_293128",
+    );
+  });
+});

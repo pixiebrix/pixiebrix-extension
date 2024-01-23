@@ -55,7 +55,7 @@ import apiVersionOptions, {
 } from "@/runtime/apiVersionOptions";
 import { engineRenderer } from "@/runtime/renderers";
 import { mapArgs } from "@/runtime/mapArgs";
-import { selectAllBlocks } from "@/bricks/util";
+import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import sanitize from "@/utils/sanitize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/domConstants";
@@ -392,7 +392,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   async getBricks(
     extension: ResolvedModComponent<MenuItemStarterBrickConfig>,
   ): Promise<Brick[]> {
-    return selectAllBlocks(extension.config.action);
+    return collectAllBricks(extension.config.action);
   }
 
   /**
@@ -730,6 +730,8 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
             extensionLogger.error(error);
             showNotification({
               ...DEFAULT_ACTION_RESULTS.error,
+              error, // Include more details in the notification
+              reportError: false,
               ...pick(onError, "message", "type"),
             });
           }

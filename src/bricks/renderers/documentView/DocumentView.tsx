@@ -46,7 +46,12 @@ const DocumentView: React.FC<DocumentViewProps> = ({
     // Wrap in a React context provider that passes BrickOptions down to any embedded bricks
     <DocumentContext.Provider value={{ options, onAction }}>
       <EmotionShadowRoot.div className="h-100">
-        <Stylesheets href={[bootstrap, bootstrapOverrides]}>
+        <Stylesheets
+          // DocumentView.css is an artifact produced by webpack, see the DocumentView entrypoint included in
+          // `webpack.config.mjs`. We build styles needed to render documents separately from the rest of the sidebar
+          // in order to isolate the rendered document from the custom Bootstrap theme included in the Sidebar app
+          href={["/DocumentView.css", bootstrap, bootstrapOverrides]}
+        >
           {body.map((documentElement, index) => {
             const documentBranch = buildDocumentBranch(documentElement, {
               staticId: joinPathParts("body", "children"),

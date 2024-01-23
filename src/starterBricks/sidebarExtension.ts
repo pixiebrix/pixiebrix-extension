@@ -47,7 +47,7 @@ import {
 import { cloneDeep, debounce, remove } from "lodash";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { selectAllBlocks } from "@/bricks/util";
+import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { NoRendererError } from "@/errors/businessErrors";
@@ -150,7 +150,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   async getBricks(
     extension: ResolvedModComponent<SidebarConfig>,
   ): Promise<Brick[]> {
-    return selectAllBlocks(extension.config.body);
+    return collectAllBricks(extension.config.body);
   }
 
   clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {

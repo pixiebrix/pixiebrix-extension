@@ -31,6 +31,7 @@ import mergeWithShared from "./webpack.sharedConfig.js";
 import { parseEnv, loadEnv } from "./scripts/env.mjs";
 import customizeManifest from "./scripts/manifest.mjs";
 import { createRequire } from "node:module";
+import DiscardFilePlugin from "./scripts/DiscardFilePlugin.mjs";
 
 const require = createRequire(import.meta.url);
 
@@ -40,10 +41,6 @@ console.log("SOURCE_VERSION:", process.env.SOURCE_VERSION);
 console.log("SERVICE_URL:", process.env.SERVICE_URL);
 console.log("MARKETPLACE_URL:", process.env.MARKETPLACE_URL);
 console.log("CHROME_EXTENSION_ID:", process.env.CHROME_EXTENSION_ID);
-console.log(
-  "ROLLBAR_BROWSER_ACCESS_TOKEN:",
-  process.env.ROLLBAR_BROWSER_ACCESS_TOKEN,
-);
 
 if (!process.env.SOURCE_VERSION) {
   process.env.SOURCE_VERSION = execSync("git rev-parse --short HEAD")
@@ -107,6 +104,11 @@ const createConfig = (env, options) =>
     entry: Object.fromEntries(
       [
         "background/background",
+        // Components rendered by the Document Renderer brick in the sidebar are placed in a shadow dom. This is how we
+        // isolate our custom Bootstrap theme to just the sidebar. However, this also prevents access to CSS module
+        // classes used by components in the rendered document. Build styles for DocumentView to add only the styles
+        // that are needed to render the document without also including our custom theme in sidebar.css.
+        "bricks/renderers/documentView/DocumentView",
         "contentScript/contentScript",
         "contentScript/loadActivationEnhancements",
         "contentScript/browserActionInstantHandler",
@@ -123,7 +125,6 @@ const createConfig = (env, options) =>
 
         // Tiny files without imports
         "tinyPages/frame",
-        "tinyPages/alert",
         "tinyPages/devtools",
 
         // The script that gets injected into the host page
@@ -179,6 +180,8 @@ const createConfig = (env, options) =>
 
           // The sourcemap will be inlined if `undefined`. Only inlined sourcemaps work locally
           // https://bugs.chromium.org/p/chromium/issues/detail?id=974543
+          // NOTE: Datadog requires .js.map as the extension: https://github.com/DataDog/datadog-ci/issues/870
+          // The [file] already includes the js file extension
           filename: sourceMapPublicUrl && "[file].map[query]",
         }),
 
@@ -220,7 +223,8 @@ const createConfig = (env, options) =>
         REDUX_DEV_TOOLS: !isProd(options),
         NPM_PACKAGE_VERSION: process.env.npm_package_version,
         ENVIRONMENT: options.mode,
-        ROLLBAR_PUBLIC_PATH: sourceMapPublicUrl ?? "extension://dynamichost/",
+        SOURCE_MAP_PUBLIC_PATH:
+          sourceMapPublicUrl ?? "extension://dynamichost/",
         // Record telemetry events in development?
         DEV_EVENT_TELEMETRY: false,
         SANDBOX_LOGGING: false,
@@ -232,11 +236,7 @@ const createConfig = (env, options) =>
         CHROME_EXTENSION_ID: undefined,
 
         // If not found, "null" will leave the ENV unset in the bundle
-        ROLLBAR_BROWSER_ACCESS_TOKEN: null,
-        GOOGLE_API_KEY: null,
-        GOOGLE_APP_ID: null,
-
-        // DataDog RUM
+        // DataDog RUM/Logging
         DATADOG_APPLICATION_ID: null,
         DATADOG_CLIENT_TOKEN: null,
       }),
@@ -266,6 +266,7 @@ const createConfig = (env, options) =>
           "static",
         ],
       }),
+      new DiscardFilePlugin(),
     ]),
     module: {
       rules: [

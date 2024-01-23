@@ -37,7 +37,7 @@ export type LoadedFrame = HTMLIFrameElement & {
 /** Injects an iframe into the host page via ShadowDom */
 async function _injectIframe(
   url: string,
-  /** The style is required because you never want an unstyled iframe */
+  /** The style is required because you never want an un-styled iframe */
   style: Partial<CSSStyleDeclaration>,
 ): Promise<LoadedFrame> {
   const iframe = document.createElement("iframe");

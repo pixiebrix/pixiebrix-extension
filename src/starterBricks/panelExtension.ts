@@ -47,7 +47,7 @@ import getSvgIcon from "@/icons/getSvgIcon";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { selectAllBlocks } from "@/bricks/util";
+import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { PIXIEBRIX_DATA_ATTR } from "@/domConstants";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
@@ -62,6 +62,7 @@ import { type RendererOutput, type RunArgs } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { boolean } from "@/utils/typeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import pluralize from "@/utils/pluralize";
 
 export type PanelConfig = {
   heading?: string;
@@ -163,7 +164,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
   async getBricks(
     extension: ResolvedModComponent<PanelConfig>,
   ): Promise<Brick[]> {
-    return selectAllBlocks(extension.config.body);
+    return collectAllBricks(extension.config.body);
   }
 
   clearModComponentInterfaceAndEvents(): void {
@@ -470,7 +471,9 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     }
 
     if (errors.length > 0) {
-      notify.error(`An error occurred adding ${errors.length} panels(s)`);
+      notify.error(
+        `An error occurred adding ${pluralize(errors.length, "$$ panel")}`,
+      );
     }
   }
 }

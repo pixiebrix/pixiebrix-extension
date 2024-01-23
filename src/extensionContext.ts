@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Init rollbar early so we get error reporting on the other initialization
+// Init error reporter early so we get error reporting on the other initialization
 import "@/telemetry/reportUncaughtErrors";
 
 // We don't use native, full-page-reload form submissions
