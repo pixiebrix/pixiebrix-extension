@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { isEmpty, uniq } from "lodash";
+import { uniq } from "lodash";
 import { selectOptionalPermissions } from "@/permissions/permissionsUtils";
 import { Col, Row } from "react-bootstrap";
 import useReportError from "@/hooks/useReportError";
@@ -44,7 +44,7 @@ const UrlPermissionsList: React.FunctionComponent<
         // `selectOptionalPermissions` never returns any origins because we request *://*
         permissionsList: uniq([
           ...selectOptionalPermissions(permissions.permissions),
-          ...permissions.origins,
+          ...(permissions.origins ?? []),
         ]),
       }),
     ),
@@ -63,13 +63,11 @@ const UrlPermissionsList: React.FunctionComponent<
       );
     }
 
-    if (permissionsList.length === 0) {
+    if (!permissionsList?.length) {
       return <p>No special permissions required</p>;
     }
 
-    const { hasPermissions } = data;
-
-    if (hasPermissions) {
+    if (data?.hasPermissions) {
       return (
         <p>
           PixieBrix already has the permissions required for the bricks
@@ -91,7 +89,7 @@ const UrlPermissionsList: React.FunctionComponent<
       <Row>
         <Col>{helpText}</Col>
       </Row>
-      {!isEmpty(permissionsList) && (
+      {permissionsList?.length ? (
         // Use Table single column table instead of ListGroup to more closely match style on other wizard tabs
         <Row>
           <Col>
@@ -103,7 +101,7 @@ const UrlPermissionsList: React.FunctionComponent<
             </ul>
           </Col>
         </Row>
-      )}
+      ) : null}
     </>
   );
 };
