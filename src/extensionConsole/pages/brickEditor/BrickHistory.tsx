@@ -30,7 +30,7 @@ import {
 export interface PackageVersionOption {
   value: string;
   label: string;
-  created_at: string;
+  updated_at: string;
 }
 
 const { Option, SingleValue } = components;
@@ -40,7 +40,7 @@ const Content: React.FunctionComponent<{
 }> = ({ data }) => (
   <div className="d-flex align-items-center">
     <span>{data.label}&nbsp;</span>{" "}
-    <span className="small text-muted">{data.created_at}</span>
+    <span className="small text-muted">{data.updated_at}</span>
   </div>
 );
 
@@ -67,23 +67,21 @@ const BrickHistory: React.FunctionComponent<{
   const { data: packageVersions } = useListPackageVersionsQuery({
     id: brickId,
   });
-  const [versionA, setVersionA] = useState(null);
-  const [versionB, setVersionB] = useState(null);
 
   const versionOptions = useMemo(
     () =>
       (packageVersions ?? []).map((packageVersion) => {
-        const date = new Date(packageVersion.created_at);
+        const date = new Date(packageVersion.updated_at);
         const formatted_date = `${
           date.getMonth() + 1
         }/${date.getDate()}/${date.getFullYear()}`;
         return {
-          value: packageVersion.raw_config,
+          value: packageVersion.version,
           label:
             packageVersion.version === brick?.version
               ? `${packageVersion.version} (current)`
               : `${packageVersion.version}`,
-          created_at: formatted_date,
+          updated_at: formatted_date,
         };
       }),
     [packageVersions, brick],
@@ -94,9 +92,28 @@ const BrickHistory: React.FunctionComponent<{
     [versionOptions],
   );
 
+  const [versionA, setVersionA] = useState<PackageVersionOption>(null);
+  const [versionB, setVersionB] = useState<PackageVersionOption>(null);
+
   useEffect(() => {
     setVersionA(currentVersion);
   }, [currentVersion]);
+
+  // We look up the large rawConfig up separately instead of including it in the versionOptions array because
+  // it's a large string, and it causes the UI to hang.
+  // TODO: use a specific endpoint for fetching just version metadata without the entire mod config
+  const versionARawConfig = useMemo(
+    () =>
+      packageVersions?.find((version) => version.version === versionA?.value)
+        ?.raw_config,
+    [packageVersions, versionA?.value],
+  );
+  const versionBRawConfig = useMemo(
+    () =>
+      packageVersions?.find((version) => version.version === versionB?.value)
+        ?.raw_config,
+    [packageVersions, versionB?.value],
+  );
 
   return (
     <div>
@@ -108,9 +125,10 @@ const BrickHistory: React.FunctionComponent<{
           <Select
             className={styles.versionSelector}
             placeholder="Select a version"
+            data-testid="versionASelect"
             options={versionOptions}
             value={versionA}
-            onChange={(option) => {
+            onChange={(option: PackageVersionOption) => {
               setVersionA(option);
             }}
             components={{
@@ -122,7 +140,7 @@ const BrickHistory: React.FunctionComponent<{
             className={styles.versionSelector}
             placeholder="Select a version"
             options={versionOptions}
-            onChange={(option) => {
+            onChange={(option: PackageVersionOption) => {
               setVersionB(option);
             }}
             components={{
@@ -132,10 +150,10 @@ const BrickHistory: React.FunctionComponent<{
           />
         </div>
       </div>
-      {versionA && versionB && (
+      {versionARawConfig && versionBRawConfig && (
         <Suspense fallback={<div>Loading history...</div>}>
           <DiffEditor
-            value={[versionA?.value ?? "", versionB?.value ?? ""]}
+            value={[versionARawConfig, versionBRawConfig]}
             key={objectHash({ a: versionA, b: versionB })}
             width="100%"
             theme="chrome"
