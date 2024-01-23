@@ -48,6 +48,7 @@ declare module "react-table" {
     extends UseExpandedOptions<D>,
       UseFiltersOptions<D>,
       UseGlobalFiltersOptions<D>,
+      UsePaginationOptions<D>,
       UseGroupByOptions<D>,
       UseSortByOptions<D>,
       ActionOptions<D> {}
