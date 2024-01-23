@@ -474,6 +474,7 @@ export const editorSlice = createSlice({
     setBetaUIEnabled(state, action: PayloadAction<boolean>) {
       state.isBetaUI = action.payload;
     },
+    // TODO: this action seems to be unused; remove?
     removeElementNodeUIState(
       state,
       action: PayloadAction<{
