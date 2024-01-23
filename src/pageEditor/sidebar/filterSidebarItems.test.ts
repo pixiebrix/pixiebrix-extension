@@ -74,7 +74,24 @@ describe("filterSidebarItems", () => {
     expect(
       filterSidebarItems({
         sidebarItems,
-        filterText: "foo",
+        filterText: "fOo",
+        activeModId: null,
+        activeModComponentId: null,
+      }),
+    ).toEqual([sidebarItems[0]]);
+  });
+
+  it("returns sidebar items when filter text matches mod label", () => {
+    const sidebarItems = [
+      modComponentFactory({ label: "fOo" }),
+      modSidebarItemFactory({
+        modMetadata: modMetadataFactory({ name: "Bar" }),
+      }),
+    ];
+    expect(
+      filterSidebarItems({
+        sidebarItems,
+        filterText: "fOo",
         activeModId: null,
         activeModComponentId: null,
       }),
@@ -94,7 +111,7 @@ describe("filterSidebarItems", () => {
     expect(
       filterSidebarItems({
         sidebarItems,
-        filterText: "foo",
+        filterText: "fOo",
         activeModId: null,
         activeModComponentId: null,
       }),
