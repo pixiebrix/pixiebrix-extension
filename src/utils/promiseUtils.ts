@@ -202,11 +202,19 @@ type RejectionCallback = RequireAtLeastOne<{
   allRejections: "ignore" | ((reasons: unknown[]) => void);
 }>;
 
+function isPromiseSettledResult<T>(
+  value: Promise<unknown> | PromiseSettledResult<T>,
+): value is PromiseSettledResult<T> {
+  return Boolean(
+    "status" in value && ["fulfilled", "rejected"].includes(value.status),
+  );
+}
+
 function isPromiseSettledResults<T>(
   promises: Array<Promise<unknown>> | Array<PromiseSettledResult<T>>,
 ): promises is Array<PromiseSettledResult<T>> {
-  // Handles empty arrays. The outcome is the same either way.
-  return Boolean(promises[0] && "status" in promises[0]);
+  // Handles empty arrays. Either true or false the outcome is the same.
+  return Boolean(promises[0] && isPromiseSettledResult(promises[0]));
 }
 
 /**
