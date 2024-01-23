@@ -10,7 +10,7 @@
     "baseUrl": ".",
 
     // TODO: Drop these lines to make TS stricter https://github.com/pixiebrix/pixiebrix-extension/issues/775
-    "strictNullChecks": false,
+    // "strictNullChecks": false,
     "strictFunctionTypes": false,
     "noPropertyAccessFromIndexSignature": false,
     "noImplicitReturns": false,

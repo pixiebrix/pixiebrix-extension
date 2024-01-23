@@ -91,7 +91,7 @@ type WrapperResult<
   /**
    * Get the current form values
    */
-  getFormState(): FormikValues;
+  getFormState(): FormikValues | null;
 
   /**
    * Update the formik state without interacting with the UI
@@ -125,7 +125,7 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
 
     setupRedux(store.dispatch, { store });
 
-    let formValues: FormikValues = null;
+    let formValues: FormikValues | null = null;
 
     let updateFormState: (
       newValues: React.SetStateAction<FormikValues>,
@@ -207,7 +207,7 @@ type HookWrapperResult<
   /**
    * Get the current form values
    */
-  getFormState(): FormikValues;
+  getFormState(): FormikValues | null;
 };
 
 export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
@@ -224,7 +224,7 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
 
     setupRedux(store.dispatch, { store });
 
-    let formValues: FormikValues = null;
+    let formValues: FormikValues | null = null;
 
     const ExtraWrapper: WrapperComponent<TProps> =
       wrapper ?? (({ children }) => <>{children}</>);
