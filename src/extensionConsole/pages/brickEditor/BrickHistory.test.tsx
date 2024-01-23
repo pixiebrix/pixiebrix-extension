@@ -17,32 +17,7 @@
 
 import React from "react";
 import BrickHistory from "@/extensionConsole/pages/brickEditor/BrickHistory";
-<<<<<<< HEAD
-import { act, render, screen, waitFor } from "@testing-library/react";
-import MockAdapter from "axios-mock-adapter";
-import axios from "axios";
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { configureStore } from "@reduxjs/toolkit";
-import { appApi } from "@/services/api";
-import { Provider } from "react-redux";
-import selectEvent from "react-select-event";
-import { waitForEffect } from "@/testUtils/testHelpers";
 
-const axiosMock = new MockAdapter(axios);
-
-function testStore() {
-  return configureStore({
-    reducer: {
-      [appApi.reducerPath]: appApi.reducer,
-    },
-    middleware(getDefaultMiddleware) {
-      return getDefaultMiddleware().concat(appApi.middleware);
-    },
-    preloadedState: {},
-  });
-}
-
-=======
 import { act, screen, waitFor } from "@testing-library/react";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
@@ -54,34 +29,22 @@ import { type Package, type PackageVersion } from "@/types/contract";
 
 const axiosMock = new MockAdapter(axios);
 
->>>>>>> 433b25713 ( #6455 Show correct date in Workshop History tab version dropdown)
 const findDiffEditor = (container: HTMLElement) =>
   // eslint-disable-next-line testing-library/no-node-access -- ace editor is not loaded/rendered in a normal way
   container.querySelector("#DIFF_EDITOR_DIV");
 
 describe("BrickHistory", () => {
   const testBrickId = uuidSequence(1);
-<<<<<<< HEAD
-  const store = testStore();
-  const renderBrickHistory = async () => {
-    const utils = render(<BrickHistory brickId={testBrickId} />, {
-      wrapper: ({ children }) => <Provider store={store}>{children}</Provider>,
-    });
-=======
+
   const renderBrickHistory = async () => {
     const utils = render(<BrickHistory brickId={testBrickId} />);
->>>>>>> 433b25713 ( #6455 Show correct date in Workshop History tab version dropdown)
     // Wait for the currentVersion effect to resolve
     await waitForEffect();
     return utils;
   };
 
   it("renders select components for choosing versions and displays the diff", async () => {
-<<<<<<< HEAD
-    const testVersions = [
-=======
     const testVersions: PackageVersion[] = [
->>>>>>> 433b25713 ( #6455 Show correct date in Workshop History tab version dropdown)
       {
         id: testBrickId,
         version: "1.0.1",
@@ -99,22 +62,15 @@ describe("BrickHistory", () => {
         updated_at: "2024-01-22T18:58:12.270168Z",
       },
     ];
-<<<<<<< HEAD
-    const testPackage = {
-=======
+
     const testPackage: Package = {
->>>>>>> 433b25713 ( #6455 Show correct date in Workshop History tab version dropdown)
       id: testBrickId,
       name: "@pixies/ai/chatgpt-sidebar",
       kind: "Blueprint",
       version: "1.0.1",
       config: "some config yaml",
       public: true,
-<<<<<<< HEAD
-      organizations: ["0557cdab-7246-4a73-a644-12a2249f02b9"],
-=======
       organizations: [],
->>>>>>> 433b25713 ( #6455 Show correct date in Workshop History tab version dropdown)
       updated_at: "2024-01-26T23:58:12.270168Z",
       verbose_name: "AI Copilot",
     };
