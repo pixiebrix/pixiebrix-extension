@@ -120,6 +120,8 @@ export async function forEachTab<
     .filter((tabId) => tabId !== options?.exclude)
     .map((tabId) => callback({ tabId }));
 
+  // TODO: Probably integrate `allSettled` error handling into
+  // `forEachTab` to preserve its ease of use and the warning.
   // eslint-disable-next-line no-restricted-syntax -- Allowed for now
   return Promise.allSettled(promises);
 }
