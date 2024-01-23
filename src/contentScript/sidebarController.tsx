@@ -467,7 +467,7 @@ export function getReservedPanelEntries(): {
   };
 }
 
-export function sidePanelOnCloseSignal(): AbortSignal {
+function sidePanelOnCloseSignal(): AbortSignal {
   const controller = new AbortController();
   expectContext("contentScript");
   if (isMV3()) {
