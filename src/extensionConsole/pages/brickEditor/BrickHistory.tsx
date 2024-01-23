@@ -102,6 +102,7 @@ const BrickHistory: React.FunctionComponent<{
   // We look up the large rawConfig up separately instead of including it in the versionOptions array because
   // it's a large string, and it causes the UI to hang.
   // TODO: use a specific endpoint for fetching just version metadata without the entire mod config
+  //   https://github.com/pixiebrix/pixiebrix-app/issues/4627
   const versionARawConfig = useMemo(
     () =>
       packageVersions?.find((version) => version.version === versionA?.value)
