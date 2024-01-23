@@ -15,7 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// GSheets API Proxy types
+// OAuth
+export type UserInfo = gapi.client.oauth2.Userinfo;
+
+// Drive
+export type File = gapi.client.drive.File;
+export type FileList = gapi.client.drive.FileList;
+
+// Sheets
 export type ValueRange = gapi.client.sheets.ValueRange;
 export type AppendValuesResponse = gapi.client.sheets.AppendValuesResponse;
 export type BatchUpdateSpreadsheetRequest =
@@ -23,24 +30,3 @@ export type BatchUpdateSpreadsheetRequest =
 export type BatchUpdateSpreadsheetResponse =
   gapi.client.sheets.BatchUpdateSpreadsheetResponse;
 export type Spreadsheet = gapi.client.sheets.Spreadsheet;
-
-export type File = {
-  kind: "drive#file";
-  mimeType: string;
-  id: string;
-  name: string;
-};
-export type FileList = {
-  kind: "drive#fileList";
-  incompleteSearch: boolean;
-  files: File[];
-  nextPageToken?: string;
-};
-
-export type UserInfo = {
-  id: number;
-  email: string;
-  verified_email: boolean;
-  picture: string;
-  hd: string;
-};
