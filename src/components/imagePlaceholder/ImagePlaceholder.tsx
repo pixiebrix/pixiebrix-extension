@@ -23,7 +23,7 @@ const ImagePlaceholder: React.VoidFunctionComponent<{
   height: number | string;
   width: number | string;
 }> = ({ height, width }) => {
-  const imageRef = useRef();
+  const imageRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     runHolder({
