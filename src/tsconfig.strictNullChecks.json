@@ -5,7 +5,6 @@
   },
   "files": [
     "./__mocks__/@/components/DelayedRender.tsx",
-    "./__mocks__/@/hooks/useContextInvalidated.ts",
     "./__mocks__/@/icons/getSvgIcon.ts",
     "./__mocks__/@/icons/list.ts",
     "./__mocks__/@/sandbox/messenger/api.ts",
@@ -281,7 +280,6 @@
     "./hooks/useAsyncState.ts",
     "./hooks/useAuthorizationGrantFlow.ts",
     "./hooks/useAutoFocusConfiguration.ts",
-    "./hooks/useContextInvalidated.ts",
     "./hooks/useDebouncedEffect.ts",
     "./hooks/useDeriveAsyncState.ts",
     "./hooks/useEventListener.ts",
