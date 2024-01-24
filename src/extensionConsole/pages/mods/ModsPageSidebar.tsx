@@ -140,7 +140,7 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
       return;
     }
 
-    if (activeTab.key === null) {
+    if (activeTab.key == null) {
       if (showGetStartedTab) {
         setActiveTab(MODS_PAGE_TABS.getStarted);
         return;

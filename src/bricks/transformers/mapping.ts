@@ -80,7 +80,7 @@ export class MappingTransformer extends TransformerABC {
       return mapping[key];
     }
 
-    if (missing === "null" || missing === null) {
+    if (missing === "null" || missing == null) {
       return null;
     }
 

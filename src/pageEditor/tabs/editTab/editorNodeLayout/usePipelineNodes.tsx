@@ -420,7 +420,7 @@ const usePipelineNodes = (): {
     }
 
     const isSubPipelineHeaderActive =
-      activeNodePreviewElementId === null
+      activeNodePreviewElementId == null
         ? false
         : subPipelines.some(
             ({ path }) =>
