@@ -196,14 +196,14 @@ export async function preloadContextMenus(
       );
     }
   });
-  await allSettled(promises, { allRejections: "ignore" });
+  await allSettled(promises, { catch: "ignore" });
 }
 
 async function preloadAllContextMenus(): Promise<void> {
   const { extensions } = await getModComponentState();
   const { fulfilled } = await allSettled(
     extensions.map(async (x) => resolveExtensionInnerDefinitions(x)),
-    { allRejections: "ignore" },
+    { catch: "ignore" },
   );
   await preloadContextMenus(fulfilled);
 }

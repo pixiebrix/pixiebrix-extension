@@ -912,7 +912,7 @@ export async function reduceExtensionPipeline(
       traces.clear(pipelineLogger.context.extensionId),
       clearExtensionDebugLogs(pipelineLogger.context.extensionId),
     ],
-    { allRejections: "ignore" },
+    { catch: "ignore" },
   );
 
   return reducePipeline(pipeline, initialValues, {

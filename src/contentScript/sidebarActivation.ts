@@ -142,7 +142,7 @@ export async function initSidebarActivation(): Promise<void> {
         setActivatingMods({ blueprintId: null }),
         showSidebarActivationForMods(modIds),
       ],
-      { allRejections: "ignore" },
+      { catch: "ignore" },
     );
   }
 }

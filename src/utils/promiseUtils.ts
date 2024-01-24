@@ -19,7 +19,6 @@ import { isEmpty, negate, type ObjectIterator } from "lodash";
 import pMemoize from "p-memoize";
 import { TimeoutError } from "p-timeout";
 import { sleep } from "@/utils/timeUtils";
-import { type RequireAtLeastOne } from "type-fest";
 
 /**
  * A promise that never resolves.
@@ -198,7 +197,7 @@ export function groupPromisesByStatus<T>(
 }
 
 type AllSettledOptions = {
-  onError: "ignore" | ((reasons: unknown[]) => void);
+  catch: "ignore" | ((errors: unknown[]) => void);
 };
 
 function isPromiseSettledResult<T>(
@@ -225,7 +224,7 @@ function isPromiseSettledResults<T>(
  */
 export async function allSettled<T>(
   promises: Array<Promise<T>> | Array<PromiseSettledResult<T>>,
-  { onError }: AllSettledOptions,
+  options: AllSettledOptions,
 ): Promise<{ fulfilled: T[]; rejected: unknown[] }> {
   const results = isPromiseSettledResults(promises)
     ? promises
@@ -234,8 +233,8 @@ export async function allSettled<T>(
 
   const { fulfilled, rejected } = groupPromisesByStatus(results);
 
-  if (rejected.length > 0 && typeof onError === "function") {
-    onError(rejected);
+  if (rejected.length > 0 && typeof options.catch === "function") {
+    options.catch(rejected);
   }
 
   return { fulfilled, rejected };

@@ -68,7 +68,7 @@ describe("allSettled", () => {
       Promise.reject(new Error("error 2")),
     ];
     const result = await allSettled(promises, {
-      onError: "ignore",
+      catch: "ignore",
     });
     expect(result).toStrictEqual({
       fulfilled: [],
@@ -83,7 +83,7 @@ describe("allSettled", () => {
     ];
     const onError = jest.fn();
     await allSettled(promises, {
-      onError,
+      catch: onError,
     });
     expect(onError).toHaveBeenCalledTimes(1);
     expect(onError).toHaveBeenCalledWith([
@@ -96,7 +96,7 @@ describe("allSettled", () => {
     const promises = [Promise.resolve(1), Promise.resolve(2)];
     const onError = jest.fn();
     await allSettled(promises, {
-      onError,
+      catch: onError,
     });
     expect(onError).not.toHaveBeenCalled();
   });

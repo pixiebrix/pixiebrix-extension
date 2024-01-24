@@ -144,7 +144,7 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
     super.run(extension);
 
     // Use allSettled because `browser.permissions.contains` errors out for certain cases, e.g., malformed URLs
-    await allSettled(this.permissionCheckPromises, { allRejections: "ignore" });
+    await allSettled(this.permissionCheckPromises, { catch: "ignore" });
   }
 }
 

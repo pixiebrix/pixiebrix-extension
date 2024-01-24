@@ -200,7 +200,7 @@ class QuickBarRegistry {
     const abortSignal = this.generatorAbortController.signal;
     await allSettled(
       this.actionGenerators.map(async (x) => x({ ...args, abortSignal })),
-      { allRejections: "ignore" },
+      { catch: "ignore" },
     );
   }
 }

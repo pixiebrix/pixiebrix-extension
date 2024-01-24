@@ -227,10 +227,10 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     });
 
     await allSettled(promises, {
-      allRejections(reasons) {
+      catch(errors) {
         notify.error(
           `An error occurred adding ${pluralize(
-            reasons.length,
+            errors.length,
             "$$ quick bar item",
           )}`,
         );

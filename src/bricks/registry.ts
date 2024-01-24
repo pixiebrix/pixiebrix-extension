@@ -76,9 +76,9 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
         });
       }),
       {
-        allRejections(reasons) {
-          console.warn(`Failed to compute type for ${reasons.length} blocks`, {
-            reasons,
+        catch(errors) {
+          console.warn(`Failed to compute type for ${errors.length} blocks`, {
+            errors,
           });
         },
       },

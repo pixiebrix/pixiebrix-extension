@@ -272,10 +272,10 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     });
 
     await allSettled(promises, {
-      allRejections(reasons) {
+      catch(errors) {
         notify.error(
           `An error occurred adding ${pluralize(
-            reasons.length,
+            errors.length,
             "$$ context menu item",
           )}`,
         );

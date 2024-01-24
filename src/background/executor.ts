@@ -165,9 +165,9 @@ export async function requestRunInOtherTabs(
   }
 
   const { fulfilled } = await allSettled(results, {
-    allRejections(reasons) {
-      console.warn(`Broadcast rejected for ${reasons.length} tabs`, {
-        reasons,
+    catch(errors) {
+      console.warn(`Broadcast rejected for ${errors.length} tabs`, {
+        errors,
       });
     },
   });
@@ -191,9 +191,9 @@ export async function requestRunInAllFrames(
   );
 
   const { fulfilled } = await allSettled(promises, {
-    allRejections(reasons) {
-      console.warn(`Broadcast rejected for ${reasons.length} tabs`, {
-        reasons,
+    catch(errors) {
+      console.warn(`Broadcast rejected for ${errors.length} tabs`, {
+        errors,
       });
     },
   });

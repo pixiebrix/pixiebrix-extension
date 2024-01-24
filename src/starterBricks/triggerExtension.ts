@@ -552,8 +552,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     );
 
     await allSettled(promises, {
-      allRejections: (reasons) => {
-        void this.notifyErrors(reasons);
+      catch: (errors) => {
+        void this.notifyErrors(errors);
       },
     });
   };

@@ -122,7 +122,7 @@ async function uninstallExtensionsAndSaveState(
 
   await allSettled(
     toUninstall.map(async ({ id }) => removeExtensionForEveryTab(id)),
-    { allRejections: "ignore" },
+    { catch: "ignore" },
   );
 
   await setExtensionsState(optionsState);

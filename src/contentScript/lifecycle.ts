@@ -203,7 +203,7 @@ export async function ensureInstalled(): Promise<void> {
   });
   await allSettled(
     sidebarExtensionPoints.map(async (x) => x.install()),
-    { allRejections: "ignore" },
+    { catch: "ignore" },
   );
 }
 

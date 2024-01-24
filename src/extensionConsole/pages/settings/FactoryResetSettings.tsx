@@ -94,7 +94,7 @@ const FactoryResetSettings: React.FunctionComponent = () => {
                   browser.contextMenus.removeAll(),
                   clearPackages(),
                 ],
-                { allRejections: "ignore" },
+                { catch: "ignore" },
               );
 
               reactivateEveryTab();
