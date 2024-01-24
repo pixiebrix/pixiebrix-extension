@@ -100,12 +100,13 @@ export function insertSidebarFrame(): boolean {
 
   storeOriginalCSSOnce();
   const nonce = uuidv4();
-  const actionURL = browser.runtime.getURL("sidebar.html");
+  const actionUrl = new URL(browser.runtime.getURL("sidebar.html"));
+  actionUrl.searchParams.set("nonce", nonce);
 
   setSidebarWidth(SIDEBAR_WIDTH_PX);
 
   const iframe = document.createElement("iframe");
-  iframe.src = `${actionURL}?nonce=${nonce}`;
+  iframe.src = actionUrl.href;
 
   Object.assign(iframe.style, {
     position: "fixed",

@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expectContext } from "@/utils/expectContext";
-import { once } from "lodash";
 import { getErrorMessage, getRootCause } from "./errorHelpers";
 import { CONTEXT_INVALIDATED_ERROR } from "@/errors/knownErrorMessages";
 
@@ -55,30 +53,3 @@ export function isContextInvalidatedError(possibleError: unknown): boolean {
     getErrorMessage(getRootCause(possibleError)) === CONTEXT_INVALIDATED_ERROR
   );
 }
-
-/**
- * Return true if the browser extension context has been invalidated, e.g., due to a restart/update/crash.
- */
-export const wasContextInvalidated = () => !chrome.runtime?.id;
-
-// eslint-disable-next-line local-rules/persistBackgroundData -- Unused in background
-const invalidatedContextController = new AbortController();
-export const invalidatedContextSignal = invalidatedContextController.signal;
-
-/**
- * Returns a promise that resolves when the background script is unloaded,
- * which can only happens once per script lifetime.
- */
-export const onContextInvalidated = once(async (): Promise<void> => {
-  expectContext("extension");
-
-  return new Promise((resolve) => {
-    const interval = setInterval(() => {
-      if (wasContextInvalidated()) {
-        resolve();
-        invalidatedContextController.abort();
-        clearInterval(interval);
-      }
-    }, 200);
-  });
-});

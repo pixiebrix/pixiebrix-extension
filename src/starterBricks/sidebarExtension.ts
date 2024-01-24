@@ -36,6 +36,7 @@ import {
   sidebarShowEvents,
   updateHeading,
   upsertPanel,
+  isSidePanelOpen,
 } from "@/contentScript/sidebarController";
 import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
@@ -52,7 +53,6 @@ import { mergeReaders } from "@/bricks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { NoRendererError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
-import { isSidebarFrameVisible } from "@/contentScript/sidebarDomControllerLite";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
@@ -416,7 +416,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       })),
     );
 
-    if (!isSidebarFrameVisible()) {
+    if (!(await isSidePanelOpen())) {
       console.debug(
         "SidebarStarterBrick:run Skipping run for %s because sidebar is not visible",
         this.id,

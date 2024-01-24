@@ -15,15 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSyncExternalStore } from "use-sync-external-store";
-import { onContextInvalidated, wasContextInvalidated } from "webext-events";
+/** @file Temporary helpers useful for the MV3 sidePanel transition */
 
-function subscribe(callback: () => void) {
-  const unsubscribe = new AbortController();
-  onContextInvalidated.addListener(callback, { signal: unsubscribe.signal });
-  return unsubscribe.abort.bind(unsubscribe);
-}
+import { getMethod } from "webext-messenger";
+import { _openSidePanel } from "@/sidebar/sidePanel/messenger/api";
+import { isMV3 } from "./api";
 
-export default function useContextInvalidated(): boolean {
-  return useSyncExternalStore(subscribe, wasContextInvalidated);
-}
+export const openSidePanel = isMV3()
+  ? _openSidePanel
+  : // Called via `getMethod` until we complete the strictNullChecks transition
+    async (tabId: number) => getMethod("SHOW_SIDEBAR")({ tabId });

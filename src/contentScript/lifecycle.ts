@@ -41,7 +41,7 @@ import {
 } from "@/contentScript/ready";
 import { logPromiseDuration, pollUntilTruthy } from "@/utils/promiseUtils";
 import { $safeFind } from "@/utils/domUtils";
-import { invalidatedContextSignal } from "@/errors/contextInvalidated";
+import { onContextInvalidated } from "webext-events";
 
 /**
  * True if handling the initial page load.
@@ -669,6 +669,6 @@ export async function initNavigation() {
       trailing: true,
       maxWait: 1000,
     }),
-    { signal: invalidatedContextSignal },
+    { signal: onContextInvalidated.signal },
   );
 }

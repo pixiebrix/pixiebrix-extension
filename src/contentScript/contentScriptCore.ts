@@ -40,6 +40,10 @@ import initFloatingActions from "@/components/floatingActions/initFloatingAction
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
 import { initRuntime } from "@/runtime/reducePipeline";
+import { renderPanelsIfVisible } from "./sidebarController";
+import { removeSidebarFrame } from "./sidebarDomControllerLite";
+import { isMV3 } from "@/mv3/api";
+import { onContextInvalidated } from "webext-events";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -69,12 +73,24 @@ export async function init(): Promise<void> {
 
   void initSidebarActivation();
 
-  // Inform `ensureContentScript`
+  // Notify `ensureContentScript`
   void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
+
+  // Update `sidePanel`
+  // TODO: VERIFY: This replaces the old "sidebarController:showSidebar emitting sidebarShowEvents" in `showSidebar` right?
+  void renderPanelsIfVisible();
 
   // Let the partner page know
   initPartnerIntegrations();
   void initFloatingActions();
 
   void initPerformanceMonitoring();
+
+  onContextInvalidated.addListener(() => {
+    // The sidebar breaks when the context is invalidated, so it's best to close it
+    // In MV3, this happens automatically
+    if (!isMV3()) {
+      removeSidebarFrame();
+    }
+  });
 }

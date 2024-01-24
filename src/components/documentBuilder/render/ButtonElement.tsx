@@ -24,7 +24,7 @@ import DocumentContext from "@/components/documentBuilder/render/DocumentContext
 import { type Except } from "type-fest";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
-import { getTopLevelFrame } from "webext-messenger";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { getRootCause, hasSpecificErrorCause } from "@/errors/errorHelpers";
 import { SubmitPanelAction } from "@/bricks/errors";
 import cx from "classnames";
@@ -67,7 +67,7 @@ const ButtonElement: React.FC<ButtonElementProps> = ({
     setCounter((previous) => previous + 1);
 
     // We currently only support associating the sidebar with the content script in the top-level frame (frameId: 0)
-    const topLevelFrame = await getTopLevelFrame();
+    const topLevelFrame = await getConnectedTarget();
 
     try {
       await runHeadlessPipeline(topLevelFrame, {

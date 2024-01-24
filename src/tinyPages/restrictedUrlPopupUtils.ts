@@ -15,15 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSyncExternalStore } from "use-sync-external-store";
-import { onContextInvalidated, wasContextInvalidated } from "webext-events";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import {
+  DISPLAY_REASON_EXTENSION_CONSOLE,
+  DISPLAY_REASON_RESTRICTED_URL,
+} from "./restrictedUrlPopupConstants";
+import { isScriptableUrl } from "webext-content-scripts";
 
-function subscribe(callback: () => void) {
-  const unsubscribe = new AbortController();
-  onContextInvalidated.addListener(callback, { signal: unsubscribe.signal });
-  return unsubscribe.abort.bind(unsubscribe);
-}
+export function getReasonByUrl(url: string | undefined): string | null {
+  if (url?.startsWith(getExtensionConsoleUrl())) {
+    return DISPLAY_REASON_EXTENSION_CONSOLE;
+  }
 
-export default function useContextInvalidated(): boolean {
-  return useSyncExternalStore(subscribe, wasContextInvalidated);
+  if (!isScriptableUrl(url)) {
+    return DISPLAY_REASON_RESTRICTED_URL;
+  }
+
+  return null;
 }

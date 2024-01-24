@@ -34,9 +34,13 @@ import { initToaster } from "@/utils/notify";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { initCopilotMessenger } from "@/contrib/automationanywhere/aaFrameProtocol";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
+import { initSidePanel } from "./sidePanel";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
+import { sidebarWasLoaded } from "@/contentScript/messenger/api";
 
-function init(): void {
+async function init(): Promise<void> {
   ReactDOM.render(<App />, document.querySelector("#container"));
+  sidebarWasLoaded(await getConnectedTarget());
 }
 
 void initMessengerLogging();
@@ -46,7 +50,8 @@ registerMessenger();
 registerContribBlocks();
 registerBuiltinBricks();
 initToaster();
-init();
+void init();
+initSidePanel();
 
 // Handle an embedded AA business copilot frame
 void initCopilotMessenger();

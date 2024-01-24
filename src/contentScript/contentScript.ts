@@ -28,7 +28,7 @@ import {
   setReadyInThisDocument,
   unsetReadyInThisDocument,
 } from "@/contentScript/ready";
-import { onContextInvalidated } from "@/errors/contextInvalidated";
+import { onContextInvalidated } from "webext-events";
 import { logPromiseDuration } from "@/utils/promiseUtils";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 
@@ -83,8 +83,7 @@ async function initContentScript() {
   await logPromiseDuration("contentScript: ready", init());
   setReadyInThisDocument(uuid);
 
-  // eslint-disable-next-line promise/prefer-await-to-then -- It's an unrelated event listener
-  void onContextInvalidated().then(() => {
+  onContextInvalidated.addListener(() => {
     unsetReadyInThisDocument(uuid);
     console.debug("contentScript: invalidated", uuid);
   });

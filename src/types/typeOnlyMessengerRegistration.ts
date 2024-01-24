@@ -38,6 +38,7 @@ declare global {
   interface MessengerMethods {
     SHOW_SIDEBAR: typeof showSidebar;
     HIDE_SIDEBAR: typeof hideSidebar;
+
     // Temporary duplicate type for a background method used by the sidebar.
     // NOTE: Changes to those functions must be reflected here.
     RECORD_ERROR: (

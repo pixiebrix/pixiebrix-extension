@@ -15,24 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import useContextInvalidated from "@/hooks/useContextInvalidated";
+/** @file This file defines the internal API for the sidePanel, only meant to be run in the sidePanel itself */
 
-// Note, it's currently impossible to have a "Reload sidebar" button because it can
-// only be done from the content script + contact to the outside world is lost after
-// context invalidation (chrome.runtime and chrome.tabs become undefined)
-const ErrorBanner: React.VFC = () => {
-  const wasContextInvalidated = useContextInvalidated();
-  if (!wasContextInvalidated) {
-    return null;
+import { expectContext } from "@/utils/expectContext";
+import { isMV3 } from "@/mv3/api";
+
+expectContext("sidebar");
+
+export function initSidePanel() {
+  if (isMV3()) {
+    // Just a placeholder for now
   }
-
-  return (
-    <div className="p-3 alert-danger">
-      PixieBrix was updated or restarted. <br />
-      Close and reopen the sidebar to continue.
-    </div>
-  );
-};
-
-export default ErrorBanner;
+}

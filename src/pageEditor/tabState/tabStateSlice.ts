@@ -18,7 +18,7 @@
 import { uuidv4 } from "@/types/helpers";
 import { thisTab } from "@/pageEditor/utils";
 import { ensureContentScript } from "@/background/messenger/api";
-import { onContextInvalidated } from "@/errors/contextInvalidated";
+import { onContextInvalidated } from "webext-events";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   type FrameConnectionState,
@@ -57,7 +57,7 @@ const awaitContextInvalidated = createAsyncThunk<
   void,
   { state: TabStateRootState }
 >("tabState/awaitContextInvalidated", async () => {
-  await onContextInvalidated();
+  await onContextInvalidated.promise;
 });
 
 const connectToContentScript = createAsyncThunk<

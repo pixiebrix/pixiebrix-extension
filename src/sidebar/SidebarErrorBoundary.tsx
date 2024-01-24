@@ -23,11 +23,16 @@ import { Alert, Button } from "react-bootstrap";
 import { reloadSidebar } from "@/contentScript/messenger/api";
 import { getTopLevelFrame } from "webext-messenger";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { isMV3 } from "@/mv3/api";
 
 class SidebarErrorBoundary extends ErrorBoundary {
   async reloadSidebar() {
-    const topLevelFrame = await getTopLevelFrame();
-    await reloadSidebar(topLevelFrame);
+    if (isMV3()) {
+      location.reload();
+    } else {
+      const topLevelFrame = await getTopLevelFrame();
+      await reloadSidebar(topLevelFrame);
+    }
   }
 
   override render(): React.ReactNode {
