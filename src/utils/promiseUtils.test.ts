@@ -68,7 +68,7 @@ describe("allSettled", () => {
       Promise.reject(new Error("error 2")),
     ];
     const result = await allSettled(promises, {
-      allRejections: "ignore",
+      onError: "ignore",
     });
     expect(result).toStrictEqual({
       fulfilled: [],
@@ -76,24 +76,29 @@ describe("allSettled", () => {
     });
   });
 
-  test("it calls the eachRejection callback for each rejected promise", async () => {
+  test("it calls the onError callback for all rejected promises", async () => {
     const promises = [
       Promise.reject(new Error("error 1")),
       Promise.reject(new Error("error 2")),
     ];
-    const eachRejection = jest.fn();
-    const allRejections = jest.fn();
+    const onError = jest.fn();
     await allSettled(promises, {
-      eachRejection,
-      allRejections,
+      onError,
     });
-    expect(eachRejection).toHaveBeenCalledTimes(2);
-    expect(eachRejection).toHaveBeenCalledWith(new Error("error 1"));
-    expect(allRejections).toHaveBeenCalledTimes(1);
-    expect(allRejections).toHaveBeenCalledWith([
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledWith([
       new Error("error 1"),
       new Error("error 2"),
     ]);
+  });
+
+  test("it doesn't call onError if there are no rejections", async () => {
+    const promises = [Promise.resolve(1), Promise.resolve(2)];
+    const onError = jest.fn();
+    await allSettled(promises, {
+      onError,
+    });
+    expect(onError).not.toHaveBeenCalled();
   });
 });
 

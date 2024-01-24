@@ -197,10 +197,9 @@ export function groupPromisesByStatus<T>(
   return { fulfilled, rejected };
 }
 
-type RejectionCallback = RequireAtLeastOne<{
-  eachRejection: (reason: unknown) => void;
-  allRejections: "ignore" | ((reasons: unknown[]) => void);
-}>;
+type AllSettledOptions = {
+  onError: "ignore" | ((reasons: unknown[]) => void);
+};
 
 function isPromiseSettledResult<T>(
   value: Promise<unknown> | PromiseSettledResult<T>,
@@ -226,7 +225,7 @@ function isPromiseSettledResults<T>(
  */
 export async function allSettled<T>(
   promises: Array<Promise<T>> | Array<PromiseSettledResult<T>>,
-  { eachRejection, allRejections }: RejectionCallback,
+  { onError }: AllSettledOptions,
 ): Promise<{ fulfilled: T[]; rejected: unknown[] }> {
   const results = isPromiseSettledResults(promises)
     ? promises
@@ -234,14 +233,9 @@ export async function allSettled<T>(
       await Promise.allSettled(promises);
 
   const { fulfilled, rejected } = groupPromisesByStatus(results);
-  if (typeof eachRejection === "function") {
-    for (const reason of rejected) {
-      eachRejection(reason);
-    }
-  }
 
-  if (typeof allRejections === "function") {
-    allRejections(rejected);
+  if (rejected.length > 0 && typeof onError === "function") {
+    onError(rejected);
   }
 
   return { fulfilled, rejected };
