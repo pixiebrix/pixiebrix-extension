@@ -234,6 +234,7 @@ export async function allSettled<T>(
   const { fulfilled, rejected } = groupPromisesByStatus(results);
 
   if (rejected.length > 0 && typeof options.catch === "function") {
+    // eslint-disable-next-line promise/prefer-await-to-then -- Not Promise#catch
     options.catch(rejected);
   }
 
