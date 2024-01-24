@@ -28,7 +28,6 @@ import {
   parseDefinitionList,
   getAllDefinitionLists,
 } from "@/utils/parseDefinitionList";
-import { lowerCase } from "lodash";
 import { findSingleElement } from "@/utils/domUtils";
 
 const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
@@ -105,9 +104,7 @@ export class TableReader extends TransformerABC {
     }
 
     throw new TypeError(
-      `Selector does not match a table or definition list (dl) element, found: <${lowerCase(
-        table.nodeName,
-      )}>`,
+      `Selector does not match a table or definition list (dl) element, found: <${table.nodeName.toLowerCase()}>`,
     );
   }
 }

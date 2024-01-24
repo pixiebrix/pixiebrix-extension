@@ -53,7 +53,6 @@ import AddStarterBrickButton from "./AddStarterBrickButton";
 import ModComponentListItem from "./ModComponentListItem";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useDebounce } from "use-debounce";
-import { lowerCase } from "lodash";
 import filterSidebarItems from "@/pageEditor/sidebar/filterSidebarItems";
 
 const SidebarExpanded: React.FunctionComponent<{
@@ -75,7 +74,7 @@ const SidebarExpanded: React.FunctionComponent<{
     flagOn("page-editor-developer");
 
   const [filterQuery, setFilterQuery] = useState("");
-  const [debouncedFilterQuery] = useDebounce(lowerCase(filterQuery), 250, {
+  const [debouncedFilterQuery] = useDebounce(filterQuery.toLowerCase(), 250, {
     trailing: true,
     leading: false,
   });
