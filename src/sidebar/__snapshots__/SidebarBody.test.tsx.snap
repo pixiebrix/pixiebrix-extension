@@ -201,6 +201,16 @@ exports[`SidebarBody it renders error when URL is restricted 1`] = `
       <div
         class="mt-2"
       >
+        Looking for the Extension Console? 
+        <a
+          href="chrome-extension://abcxyz/options.html"
+        >
+          Open the Extension Console
+        </a>
+      </div>
+      <div
+        class="mt-2"
+      >
         Looking for the Page Editor? 
         <a
           href="https://www.pixiebrix.com/developers-welcome"

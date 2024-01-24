@@ -61,9 +61,7 @@ const RestrictedUrlContent: React.FC = ({ children }) => (
     <div className="mt-2">
       Looking for the Page Editor?{" "}
       <a
-        href="https://www.pixi
-
-        // TODO: Move to utils folder after ebrix.com/developers-welcome"
+        href="https://www.pixiebrix.com/developers-welcome"
         onClick={openInActiveTab}
       >
         View the Developer Welcome Page
