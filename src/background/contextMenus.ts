@@ -68,7 +68,7 @@ async function dispatchMenu(
 ): Promise<void> {
   expectContext("background");
 
-  const target = { frameId: info.frameId, tabId: tab.id };
+  const target = { frameId: info.frameId ?? 0, tabId: tab.id };
 
   if (typeof info.menuItemId !== "string") {
     throw new TypeError(`Not a PixieBrix menu item: ${info.menuItemId}`);

@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@/extensionContext";
-import RestrictedUrlPopupApp from "@/tinyPages/RestrictedUrlPopupApp";
-import ReactDOM from "react-dom";
-import React from "react";
+/** @file This file defines the internal API for the sidePanel, only meant to be run in the sidePanel itself */
 
-ReactDOM.render(
-  <RestrictedUrlPopupApp
-    reason={new URLSearchParams(location.search).get("reason")}
-  />,
-  document.querySelector("#container"),
-);
+import { expectContext } from "@/utils/expectContext";
+import { isMV3 } from "@/mv3/api";
+
+expectContext("sidebar");
+
+export function initSidePanel() {
+  if (isMV3()) {
+    // Just a placeholder for now
+  }
+}

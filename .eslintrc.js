@@ -21,6 +21,7 @@ const restrictedZones = [
   // These can be imported from anywhere
   except: [
     `../${exporter}/messenger`,
+    `../${exporter}/sidePanel/messenger`,
     `../${exporter}/types.ts`,
     // `../${exporter}/**/*Types.ts`, // TODO: Globs don't seem to work
     `../${exporter}/pageEditor/types.ts`,

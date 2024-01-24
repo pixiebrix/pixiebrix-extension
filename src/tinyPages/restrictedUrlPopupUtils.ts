@@ -15,15 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@/extensionContext";
-import RestrictedUrlPopupApp from "@/tinyPages/RestrictedUrlPopupApp";
-import ReactDOM from "react-dom";
-import React from "react";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import {
+  DISPLAY_REASON_EXTENSION_CONSOLE,
+  DISPLAY_REASON_RESTRICTED_URL,
+} from "./restrictedUrlPopupConstants";
+import { isScriptableUrl } from "webext-content-scripts";
 
-ReactDOM.render(
-  <RestrictedUrlPopupApp
-    reason={new URLSearchParams(location.search).get("reason")}
-  />,
-  document.querySelector("#container"),
-);
+export function getReasonByUrl(url: string | undefined): string | null {
+  if (url?.startsWith(getExtensionConsoleUrl())) {
+    return DISPLAY_REASON_EXTENSION_CONSOLE;
+  }
+
+  if (!isScriptableUrl(url)) {
+    return DISPLAY_REASON_RESTRICTED_URL;
+  }
+
+  return null;
+}
