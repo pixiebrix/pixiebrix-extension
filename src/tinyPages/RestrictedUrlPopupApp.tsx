@@ -23,6 +23,24 @@ import {
   DISPLAY_REASON_UNKNOWN,
 } from "@/tinyPages/restrictedUrlPopupConstants";
 import { isBrowserSidebar } from "@/utils/expectContext";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+
+// TODO: Move to utils folder after the isBrowserSidebar condition is dropped
+async function openInActiveTab(event: React.MouseEvent<HTMLAnchorElement>) {
+  if (event.shiftKey || event.ctrlKey || event.metaKey) {
+    return;
+  }
+
+  event.preventDefault();
+  await browser.tabs.update({
+    url: event.currentTarget.href,
+  });
+
+  // TODO: Drop after restrictedUrlPopup.html is removed
+  if (!isBrowserSidebar()) {
+    window.close();
+  }
+}
 
 const RestrictedUrlContent: React.FC = ({ children }) => (
   <div className="p-3">
@@ -34,24 +52,19 @@ const RestrictedUrlContent: React.FC = ({ children }) => (
     <hr />
 
     <div className="mt-2">
+      Looking for the Extension Console?{" "}
+      <a href={getExtensionConsoleUrl()} onClick={openInActiveTab}>
+        Open the Extension Console
+      </a>
+    </div>
+
+    <div className="mt-2">
       Looking for the Page Editor?{" "}
       <a
-        href="https://www.pixiebrix.com/developers-welcome"
-        onClick={async (event) => {
-          if (event.shiftKey || event.ctrlKey || event.metaKey) {
-            return;
-          }
+        href="https://www.pixi
 
-          event.preventDefault();
-          await browser.tabs.update({
-            url: event.currentTarget.href,
-          });
-
-          // TODO: Drop after restrictedUrlPopup.html is removed
-          if (!isBrowserSidebar()) {
-            window.close();
-          }
-        }}
+        // TODO: Move to utils folder after ebrix.com/developers-welcome"
+        onClick={openInActiveTab}
       >
         View the Developer Welcome Page
       </a>
