@@ -22,6 +22,7 @@ import pDefer, { type DeferredPromise } from "p-defer";
 import { CancelError } from "@/errors/businessErrors";
 import { type FormPanelEntry } from "@/types/sidebarTypes";
 import { type RegistryId } from "@/types/registryTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export type RegisteredForm = {
   /**
@@ -30,7 +31,7 @@ export type RegisteredForm = {
   extensionId: UUID;
   definition: FormDefinition;
   registration: DeferredPromise<unknown>;
-  blueprintId: RegistryId | null;
+  blueprintId: Nullishable<RegistryId>;
 };
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
@@ -69,7 +70,7 @@ export async function registerForm({
   extensionId: UUID;
   nonce: UUID;
   definition: FormDefinition;
-  blueprintId: RegistryId | null;
+  blueprintId: Nullishable<RegistryId>;
 }): Promise<unknown> {
   expectContext("contentScript");
 

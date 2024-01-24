@@ -37,7 +37,7 @@ export function getItemKey({
   columnIndex,
   data: { blockOptions },
   rowIndex,
-}: ItemKeyInput): RegistryId | number {
+}: ItemKeyInput): RegistryId | number | undefined {
   const resultIndex = getFlatArrayIndex({ rowIndex, columnIndex });
   // Number of bricks for the last Grid row could be less than the number of columns
   // Returning the index here, ItemRenderer will render an empty cell

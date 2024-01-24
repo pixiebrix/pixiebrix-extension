@@ -149,7 +149,8 @@ export class FormTransformer extends TransformerABC {
     // Pre-registering the form also allows the sidebar to know a form will be shown in computing the default
     // tab to show during sidebar initialization.
     const formPromise = registerForm({
-      extensionId: logger.context.extensionId,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Review MessageContext types/usage
+      extensionId: logger.context.extensionId!,
       nonce: formNonce,
       definition: formDefinition,
       blueprintId: logger.context.blueprintId,
@@ -160,7 +161,8 @@ export class FormTransformer extends TransformerABC {
       await showSidebar();
 
       await showSidebarForm({
-        extensionId: logger.context.extensionId,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Review MessageContext types/usage
+        extensionId: logger.context.extensionId!,
         blueprintId: logger.context.blueprintId,
         nonce: formNonce,
         form: formDefinition,
