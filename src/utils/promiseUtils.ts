@@ -219,8 +219,7 @@ function isPromiseSettledResults<T>(
  * This function exists to enforce the handling of rejections or to "ignore" them explicitly.
  * The second parameter must be an object with either `eachRejection` or `allRejections` defined, or both.
  * @param promises Array of promises to await (or the result of `Promise.allSettled()`)
- * @param options.eachRejection Called for each rejected promise
- * @param options.allRejections Called once with all rejected promises
+ * @param options.catch Called once with all the rejections, or ignored if `options.catch === "ignore"`
  */
 export async function allSettled<T>(
   promises: Array<Promise<T>> | Array<PromiseSettledResult<T>>,
