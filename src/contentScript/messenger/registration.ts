@@ -34,7 +34,8 @@ import {
 import {
   hideSidebar,
   showSidebar,
-  rehydrateSidebar,
+  sidebarWasLoaded,
+  updateSidebar,
   removeExtensions as removeSidebars,
   reloadSidebar,
   getReservedPanelEntries,
@@ -103,11 +104,13 @@ declare global {
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
-    REHYDRATE_SIDEBAR: typeof rehydrateSidebar;
+
+    UPDATE_SIDEBAR: typeof updateSidebar;
+    SIDEBAR_WAS_LOADED: typeof sidebarWasLoaded;
     SHOW_SIDEBAR: typeof showSidebar;
     HIDE_SIDEBAR: typeof hideSidebar;
-    GET_RESERVED_SIDEBAR_ENTRIES: typeof getReservedPanelEntries;
     RELOAD_SIDEBAR: typeof reloadSidebar;
+    GET_RESERVED_SIDEBAR_ENTRIES: typeof getReservedPanelEntries;
     REMOVE_SIDEBARS: typeof removeSidebars;
 
     INSERT_PANEL: typeof insertPanel;
@@ -172,7 +175,9 @@ export default function registerMessenger(): void {
 
     TOGGLE_QUICK_BAR: toggleQuickBar,
     HANDLE_MENU_ACTION: handleMenuAction,
-    REHYDRATE_SIDEBAR: rehydrateSidebar,
+
+    UPDATE_SIDEBAR: updateSidebar,
+    SIDEBAR_WAS_LOADED: sidebarWasLoaded,
     SHOW_SIDEBAR: showSidebar,
     HIDE_SIDEBAR: hideSidebar,
     RELOAD_SIDEBAR: reloadSidebar,

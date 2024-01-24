@@ -17,7 +17,7 @@
 
 import { type UnknownObject } from "@/types/objectTypes";
 import { expectContext } from "@/utils/expectContext";
-import { getTopLevelFrame } from "webext-messenger";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { getCopilotHostData } from "@/contentScript/messenger/api";
 
 /**
@@ -125,8 +125,10 @@ export async function initCopilotMessenger(): Promise<void> {
     // necessary to pass to the Co-Pilot frame.
   });
 
+  // Note: This code can be run either in the sidebar or in a modal
+  const frame = await getConnectedTarget();
+
   // Fetch the current data from the content script when the frame loads
-  const frame = await getTopLevelFrame();
   const data = await getCopilotHostData(frame);
   console.debug("Setting initial Co-Pilot data", {
     location: window.location.href,

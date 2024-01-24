@@ -429,6 +429,7 @@
     "./store/settings/settingsSlice.ts",
     "./store/settings/settingsStorage.ts",
     "./store/settings/settingsTypes.ts",
+    "./types/typeOnlyMessengerRegistration.ts",
     "./store/workshopSlice.ts",
     "./telemetry/deployments.ts",
     "./telemetry/dnt.ts",

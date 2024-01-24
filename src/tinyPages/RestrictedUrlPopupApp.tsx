@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid -- options page behaves like a link */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
@@ -23,27 +22,38 @@ import {
   DISPLAY_REASON_EXTENSION_CONSOLE,
   DISPLAY_REASON_UNKNOWN,
 } from "@/tinyPages/restrictedUrlPopupConstants";
+import { isBrowserSidebar } from "@/utils/expectContext";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 
-const RestrictedUrlContent: React.FC = () => (
+// TODO: Move to utils folder after the isBrowserSidebar condition is dropped
+async function openInActiveTab(event: React.MouseEvent<HTMLAnchorElement>) {
+  if (event.shiftKey || event.ctrlKey || event.metaKey) {
+    return;
+  }
+
+  event.preventDefault();
+  await browser.tabs.update({
+    url: event.currentTarget.href,
+  });
+
+  // TODO: Drop after restrictedUrlPopup.html is removed
+  if (!isBrowserSidebar()) {
+    window.close();
+  }
+}
+
+const RestrictedUrlContent: React.FC = ({ children }) => (
   <div className="p-3">
-    <div className="font-weight-bold">This is a restricted browser page.</div>
-    <div className="mt-2">PixieBrix cannot access this page.</div>
-
+    {children}
     <div className="mt-2">
       To open the PixieBrix Sidebar, navigate to a website and then click the
       PixieBrix toolbar icon again.
     </div>
-
     <hr />
 
     <div className="mt-2">
       Looking for the Extension Console?{" "}
-      <a
-        href="#"
-        onClick={async () => {
-          await browser.runtime.openOptionsPage();
-        }}
-      >
+      <a href={getExtensionConsoleUrl()} onClick={openInActiveTab}>
         Open the Extension Console
       </a>
     </div>
@@ -51,13 +61,8 @@ const RestrictedUrlContent: React.FC = () => (
     <div className="mt-2">
       Looking for the Page Editor?{" "}
       <a
-        href="#"
-        onClick={async () => {
-          await browser.tabs.update({
-            url: "https://www.pixiebrix.com/developers-welcome",
-          });
-          window.close();
-        }}
+        href="https://www.pixiebrix.com/developers-welcome"
+        onClick={openInActiveTab}
       >
         View the Developer Welcome Page
       </a>
@@ -65,40 +70,9 @@ const RestrictedUrlContent: React.FC = () => (
   </div>
 );
 
-const ExtensionConsoleContent: React.FC = () => (
-  <div className="p-3">
-    <div className="font-weight-bold">This is the Extension Console.</div>
-    <div className="mt-2">PixieBrix mods cannot run on this page.</div>
-
-    <div className="mt-2">
-      To open the PixieBrix Sidebar, navigate to a website and then click the
-      PixieBrix toolbar icon again.
-    </div>
-
-    <hr />
-
-    <div className="mt-2">
-      Looking for the Page Editor?{" "}
-      <a
-        href="#"
-        onClick={async () => {
-          await browser.tabs.update({
-            url: "https://www.pixiebrix.com/developers-welcome",
-          });
-          window.close();
-        }}
-      >
-        View the Developer Welcome Page
-      </a>
-    </div>
-  </div>
-);
-
-const RestrictedUrlPopupApp: React.FC = () => {
-  const reason =
-    new URLSearchParams(location.search).get("reason") ??
-    DISPLAY_REASON_UNKNOWN;
-
+const RestrictedUrlPopupApp: React.FC<{ reason: string | null }> = ({
+  reason = DISPLAY_REASON_UNKNOWN,
+}) => {
   useEffect(() => {
     reportEvent(Events.BROWSER_ACTION_RESTRICTED_URL, {
       reason,
@@ -107,9 +81,15 @@ const RestrictedUrlPopupApp: React.FC = () => {
   }, []);
 
   return reason === DISPLAY_REASON_EXTENSION_CONSOLE ? (
-    <ExtensionConsoleContent />
+    <RestrictedUrlContent>
+      <div className="font-weight-bold">This is the Extension Console.</div>
+      <div className="mt-2">PixieBrix mods cannot run on this page.</div>
+    </RestrictedUrlContent>
   ) : (
-    <RestrictedUrlContent />
+    <RestrictedUrlContent>
+      <div className="font-weight-bold">This is a restricted browser page.</div>
+      <div className="mt-2">PixieBrix cannot access this page.</div>
+    </RestrictedUrlContent>
   );
 };
 

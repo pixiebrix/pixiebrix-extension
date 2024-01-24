@@ -19,9 +19,10 @@ import React from "react";
 import SidebarBody from "@/sidebar/SidebarBody";
 import { render } from "@/sidebar/testHelpers";
 import useContextInvalidated from "@/hooks/useContextInvalidated";
+import useConnectedTargetUrl from "@/sidebar/hooks/useConnectedTargetUrl";
 
 jest.mock("@/hooks/useContextInvalidated");
-
+jest.mock("@/sidebar/hooks/useConnectedTargetUrl");
 jest.mock("@/contentScript/messenger/api", () => ({
   ensureExtensionPointsInstalled: jest.fn(),
   getReservedSidebarEntries: jest.fn().mockResolvedValue({
@@ -32,13 +33,27 @@ jest.mock("@/contentScript/messenger/api", () => ({
 }));
 
 describe("SidebarBody", () => {
-  test("it renders", () => {
+  test("it renders", async () => {
+    jest
+      .mocked(useConnectedTargetUrl)
+      .mockReturnValueOnce("https://www.example.com");
     const { asFragment } = render(<SidebarBody />);
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("it renders error when context is invalidated", () => {
-    jest.mocked(useContextInvalidated).mockReturnValue(true);
+  test("it renders error when context is invalidated", async () => {
+    jest
+      .mocked(useConnectedTargetUrl)
+      .mockReturnValueOnce("https://www.example.com");
+    jest.mocked(useContextInvalidated).mockReturnValueOnce(true);
+    const { asFragment } = render(<SidebarBody />);
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  test("it renders error when URL is restricted", async () => {
+    jest
+      .mocked(useConnectedTargetUrl)
+      .mockReturnValueOnce("chrome://extensions");
     const { asFragment } = render(<SidebarBody />);
     expect(asFragment()).toMatchSnapshot();
   });

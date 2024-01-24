@@ -15,15 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@/extensionContext";
-import RestrictedUrlPopupApp from "@/tinyPages/RestrictedUrlPopupApp";
-import ReactDOM from "react-dom";
-import React from "react";
+/** @file Temporary helpers useful for the MV3 sidePanel transition */
 
-ReactDOM.render(
-  <RestrictedUrlPopupApp
-    reason={new URLSearchParams(location.search).get("reason")}
-  />,
-  document.querySelector("#container"),
-);
+import { getMethod } from "webext-messenger";
+import { _openSidePanel } from "@/sidebar/sidePanel/messenger/api";
+import { isMV3 } from "./api";
+
+export const openSidePanel = isMV3()
+  ? _openSidePanel
+  : // Called via `getMethod` until we complete the strictNullChecks transition
+    async (tabId: number) => getMethod("SHOW_SIDEBAR")({ tabId });
