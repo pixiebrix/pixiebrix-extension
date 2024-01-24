@@ -34,7 +34,7 @@ import {
   type ModComponentBase,
   type ResolvedModComponent,
 } from "@/types/modComponentTypes";
-import { allSettledValues, memoizeUntilSettled } from "@/utils/promiseUtils";
+import { allSettled, memoizeUntilSettled } from "@/utils/promiseUtils";
 
 const MENU_PREFIX = "pixiebrix-";
 
@@ -184,28 +184,28 @@ export async function preloadContextMenus(
   extensions: ModComponentBase[],
 ): Promise<void> {
   expectContext("background");
-  await Promise.allSettled(
-    extensions.map(async (definition) => {
-      const resolved = await resolveExtensionInnerDefinitions(definition);
+  const promises = extensions.map(async (definition) => {
+    const resolved = await resolveExtensionInnerDefinitions(definition);
 
-      const extensionPoint = await extensionPointRegistry.lookup(
-        resolved.extensionPointId,
+    const extensionPoint = await extensionPointRegistry.lookup(
+      resolved.extensionPointId,
+    );
+    if (extensionPoint instanceof ContextMenuStarterBrickABC) {
+      await extensionPoint.ensureMenu(
+        definition as unknown as ResolvedModComponent<ContextMenuConfig>,
       );
-      if (extensionPoint instanceof ContextMenuStarterBrickABC) {
-        await extensionPoint.ensureMenu(
-          definition as unknown as ResolvedModComponent<ContextMenuConfig>,
-        );
-      }
-    }),
-  );
+    }
+  });
+  await allSettled(promises, { catch: "ignore" });
 }
 
 async function preloadAllContextMenus(): Promise<void> {
   const { extensions } = await getModComponentState();
-  const resolved = await allSettledValues(
+  const { fulfilled } = await allSettled(
     extensions.map(async (x) => resolveExtensionInnerDefinitions(x)),
+    { catch: "ignore" },
   );
-  await preloadContextMenus(resolved);
+  await preloadContextMenus(fulfilled);
 }
 
 export default function initContextMenus(): void {

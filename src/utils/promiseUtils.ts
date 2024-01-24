@@ -45,18 +45,6 @@ export async function asyncMapValues<
   };
 }
 
-export async function allSettledValues<T = unknown>(
-  promises: Array<Promise<T>>,
-): Promise<T[]> {
-  const settled = await Promise.allSettled(promises);
-  return settled
-    .filter(
-      (promise): promise is PromiseFulfilledResult<Awaited<T>> =>
-        promise.status === "fulfilled",
-    )
-    .map(({ value }) => value);
-}
-
 export async function logPromiseDuration<P>(
   title: string,
   promise: Promise<P>,
@@ -204,6 +192,50 @@ export function groupPromisesByStatus<T>(
         result.status === "fulfilled",
     )
     .map(({ value }) => value);
+
+  return { fulfilled, rejected };
+}
+
+type AllSettledOptions = {
+  catch: "ignore" | ((errors: unknown[]) => void);
+};
+
+function isPromiseSettledResult<T>(
+  value: Promise<unknown> | PromiseSettledResult<T>,
+): value is PromiseSettledResult<T> {
+  return Boolean(
+    "status" in value && ["fulfilled", "rejected"].includes(value.status),
+  );
+}
+
+function isPromiseSettledResults<T>(
+  promises: Array<Promise<unknown>> | Array<PromiseSettledResult<T>>,
+): promises is Array<PromiseSettledResult<T>> {
+  // Handles empty arrays. Either true or false the outcome is the same.
+  return Boolean(promises[0] && isPromiseSettledResult(promises[0]));
+}
+
+/**
+ * This function exists to enforce the handling of rejections or to "ignore" them explicitly.
+ * The second parameter must be an object with either `eachRejection` or `allRejections` defined, or both.
+ * @param promises Array of promises to await (or the result of `Promise.allSettled()`)
+ * @param options.catch Called once with all the rejections, or ignored if `options.catch === "ignore"`
+ */
+export async function allSettled<T>(
+  promises: Array<Promise<T>> | Array<PromiseSettledResult<T>>,
+  options: AllSettledOptions,
+): Promise<{ fulfilled: T[]; rejected: unknown[] }> {
+  const results = isPromiseSettledResults(promises)
+    ? promises
+    : // eslint-disable-next-line no-restricted-syntax -- The only allowed usage
+      await Promise.allSettled(promises);
+
+  const { fulfilled, rejected } = groupPromisesByStatus(results);
+
+  if (rejected.length > 0 && typeof options.catch === "function") {
+    // eslint-disable-next-line promise/prefer-await-to-then -- Not Promise#catch
+    options.catch(rejected);
+  }
 
   return { fulfilled, rejected };
 }

@@ -88,6 +88,11 @@ module.exports = {
     "no-restricted-syntax": [
       "error",
       {
+        selector: "CallExpression[callee.property.name='allSettled']",
+        message:
+          'For safety and convenience, use this instead: import { allSettled } from "@/utils/promiseUtils";',
+      },
+      {
         message:
           "Use the `uuid` module instead because crypto.randomUUID is not available in http: contexts",
         selector: 'MemberExpression > Identifier[name="randomUUID"]',
