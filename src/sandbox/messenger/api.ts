@@ -51,6 +51,8 @@ export type TemplateRenderPayload = {
   autoescape: boolean;
 };
 
+export type TemplateValidatePayload = string;
+
 export async function renderNunjucksTemplate(payload: TemplateRenderPayload) {
   return (await isSandboxed())
     ? postMessage({
@@ -59,6 +61,18 @@ export async function renderNunjucksTemplate(payload: TemplateRenderPayload) {
         type: "RENDER_NUNJUCKS",
       })
     : directApi.renderNunjucksTemplate(payload);
+}
+
+export async function validateNunjucksTemplate(
+  payload: TemplateValidatePayload,
+) {
+  return (await isSandboxed())
+    ? postMessage({
+        recipient: await loadSandbox(),
+        payload,
+        type: "VALIDATE_NUNJUCKS",
+      })
+    : directApi.validateNunjucksTemplate(payload);
 }
 
 export async function renderHandlebarsTemplate(payload: TemplateRenderPayload) {

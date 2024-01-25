@@ -21,7 +21,6 @@ import {
 } from "@/analysis/analysisTypes";
 import { type BrickPosition } from "@/bricks/types";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
-import { Template } from "nunjucks";
 import PipelineExpressionVisitor from "@/bricks/PipelineExpressionVisitor";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type Expression } from "@/types/runtimeTypes";
@@ -30,6 +29,8 @@ import {
   isNunjucksExpression,
   isTemplateExpression,
 } from "@/utils/expressionUtils";
+import { validateNunjucksTemplate } from "@/sandbox/messenger/api";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 const TEMPLATE_ERROR_MESSAGE =
   "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/developing-mods/developer-concepts/text-template-guide";
@@ -74,7 +75,10 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
     position: BrickPosition,
     expression: Expression<unknown>,
   ): void {
-    if (!isTemplateExpression(expression)) {
+    if (
+      !isTemplateExpression(expression) ||
+      expression.__value__.trim() === ""
+    ) {
       return;
     }
 
@@ -90,19 +94,17 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
         expression,
       });
     } else if (isNunjucksExpression(expression)) {
-      try {
-        // eslint-disable-next-line no-new
-        new Template(expression.__value__, undefined, undefined, true);
-      } catch (error) {
-        // @ts-expect-error nunjucks error does have message property
-        const failureCause = (error.message as string)
-          ?.replace("(unknown path)", "")
-          .trim();
+      // MUST DO: Await this call and remove logging
+      console.log("validateNunjucksTemplate", expression.__value__);
+      void validateNunjucksTemplate(expression.__value__).catch((error) => {
+        console.error("validateNunjucksTemplate", error);
 
-        const message = `Invalid template: ${failureCause}.`;
-
-        this.pushErrorAnnotation({ position, message, expression });
-      }
+        this.pushErrorAnnotation({
+          position,
+          message: getErrorMessage(error),
+          expression,
+        });
+      });
     }
   }
 }

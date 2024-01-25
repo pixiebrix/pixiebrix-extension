@@ -38,7 +38,7 @@ import { type JsonValue } from "type-fest";
 
 const TIMEOUT_MS = 3000;
 
-type Payload = JsonValue;
+type Payload = JsonValue | void;
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const log = process.env.SANDBOX_LOGGING ? console.debug : () => {};
@@ -56,7 +56,7 @@ export interface PostMessageInfo {
   recipient: Window;
 }
 
-type PostMessageListener = (payload?: Payload) => Promise<Payload>;
+type PostMessageListener = (payload?: Payload) => Promise<Payload | void>;
 
 /** Use the postMessage API but expect a response from the target */
 export default async function postMessage({
