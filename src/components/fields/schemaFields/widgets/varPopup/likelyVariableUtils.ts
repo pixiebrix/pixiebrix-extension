@@ -56,7 +56,7 @@ export function getLikelyVariableAtPosition(
 
   // This method is based on regex because we want to show popup even for incomplete template, ex. "{{ @foo."
   let match = varRegex.exec(template);
-  while (match !== null) {
+  while (match != null) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Guaranteed by regex
     const varName = match.groups!.varName!;
     const startIndex = match.index;

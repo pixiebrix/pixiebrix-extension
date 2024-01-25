@@ -32,7 +32,7 @@ function useInterval(callback: () => void, delayMillis: number) {
       savedCallback.current();
     }
 
-    if (delayMillis !== null) {
+    if (delayMillis != null) {
       const id = setInterval(tick, delayMillis);
       return () => {
         clearInterval(id);
