@@ -23,7 +23,7 @@ let timer: NodeJS.Timeout;
 
 function updateBadge(errorMessage: string | null): void {
   void browserAction.setTitle({
-    title: errorMessage ?? "Unknown error (no error message provided)",
+    title: errorMessage,
   });
   void browserAction.setBadgeText({
     text: counter ? String(counter) : "",
@@ -33,6 +33,12 @@ function updateBadge(errorMessage: string | null): void {
 
 function showBadgeOnBackgroundErrors(error: Error): void {
   counter++;
+  if (counter > 20) {
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/7430
+    // eslint-disable-next-line no-debugger -- This file is already dev-only, it helps us
+    debugger;
+  }
+
   // Show the last error as tooltip
   updateBadge(getErrorMessage(error));
 
