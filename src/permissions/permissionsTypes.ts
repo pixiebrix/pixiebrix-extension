@@ -39,7 +39,7 @@ export function isPermissionsStatus(
 ): value is PermissionsStatus {
   return (
     typeof value === "object" &&
-    value !== null &&
+    value != null &&
     "hasPermissions" in value &&
     "permissions" in value
   );

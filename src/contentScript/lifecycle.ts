@@ -45,7 +45,7 @@ import {
   pollUntilTruthy,
 } from "@/utils/promiseUtils";
 import { $safeFind } from "@/utils/domUtils";
-import { invalidatedContextSignal } from "@/errors/contextInvalidated";
+import { onContextInvalidated } from "webext-events";
 
 /**
  * True if handling the initial page load.
@@ -645,7 +645,7 @@ async function onNavigate(event: NavigateEvent): Promise<void> {
     // Ignore navigations to external pages
     !event.destination.url.startsWith(location.origin) ||
     // Ignore <a download> links
-    event.downloadRequest !== null // Specifically `null` and not `''`
+    event.downloadRequest != null // Specifically `null` and not `''`
   ) {
     return;
   }
@@ -674,6 +674,6 @@ export async function initNavigation() {
       trailing: true,
       maxWait: 1000,
     }),
-    { signal: invalidatedContextSignal },
+    { signal: onContextInvalidated.signal },
   );
 }

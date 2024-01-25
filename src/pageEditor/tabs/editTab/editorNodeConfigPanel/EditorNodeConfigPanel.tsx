@@ -57,7 +57,7 @@ const EditorNodeConfigPanel: React.FC = () => {
     listings[brickId] ?? {};
 
   const isOutputDisabled = !(
-    brickInfo === null || showOutputKey(brickInfo?.type)
+    brickInfo == null || showOutputKey(brickInfo?.type)
   );
   const outputDescription = isOutputDisabled
     ? "Effect and renderer bricks do not produce outputs"

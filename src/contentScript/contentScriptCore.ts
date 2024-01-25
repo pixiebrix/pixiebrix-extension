@@ -41,6 +41,12 @@ import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
 import { initRuntime } from "@/runtime/reducePipeline";
 import { renderPanelsIfVisible } from "./sidebarController";
+import {
+  isSidebarFrameVisible,
+  removeSidebarFrame,
+} from "./sidebarDomControllerLite";
+import { isMV3 } from "@/mv3/api";
+import { onContextInvalidated } from "webext-events";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -82,4 +88,16 @@ export async function init(): Promise<void> {
   void initFloatingActions();
 
   void initPerformanceMonitoring();
+
+  onContextInvalidated.addListener(() => {
+    // The sidebar breaks when the context is invalidated, so it's best to close it
+    // In MV3, this happens automatically
+    if (!isMV3() && isSidebarFrameVisible()) {
+      removeSidebarFrame();
+      // TODO: Also notify closure in MV3.
+      // There it's more complicated to show this message ONLY if the sidebar was open
+      // because the sidebar is closed before this listener is called.
+      void notifyContextInvalidated();
+    }
+  });
 }

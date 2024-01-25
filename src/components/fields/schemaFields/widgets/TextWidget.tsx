@@ -228,7 +228,7 @@ const TextWidget: React.VFC<SchemaFieldProps & FormControlProps> = ({
   }, [allowExpressions, onChangeForTemplate, setValue, value]);
 
   if (
-    value !== null &&
+    value != null &&
     !isTemplateExpression(value) &&
     typeof value === "object"
   ) {

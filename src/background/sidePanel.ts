@@ -30,8 +30,6 @@ export async function initSidePanel(): Promise<void> {
     return;
   }
 
-  // TODO: Drop this once the popover URL behavior is merged into sidebar.html
-  // https://github.com/pixiebrix/pixiebrix-extension/issues/7364
   chrome.tabs.onCreated.addListener(({ id: tabId }) => {
     if (tabId) {
       void chrome.sidePanel.setOptions({

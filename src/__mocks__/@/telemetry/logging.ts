@@ -17,12 +17,8 @@
 
 export const logValues = true;
 
-export const loggingConfig = {
-  get() {
-    return {
-      logValues,
-    };
-  },
-};
+export const getLoggingConfig = () => ({
+  logValues,
+});
 
 export const count = jest.fn().mockResolvedValue(0);
