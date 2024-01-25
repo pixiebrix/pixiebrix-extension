@@ -391,4 +391,68 @@ describe("FormEditor", () => {
       ).default,
     ).toBeUndefined();
   });
+
+  test.each([
+    "Single line text",
+    "Paragraph text",
+    "Email",
+    "Website",
+    "Number",
+  ])("displays the placeholder field for %s", async (inputType: string) => {
+    const fieldName = "foo";
+    const onSubmitMock = jest.fn();
+    const FormikTemplate = createFormikTemplate(
+      { [RJSF_SCHEMA_PROPERTY_NAME]: initOneFieldSchemaCase(fieldName) },
+      onSubmitMock,
+    );
+
+    render(
+      <FormikTemplate>
+        <FormEditor activeField={fieldName} {...defaultProps} />
+      </FormikTemplate>,
+    );
+
+    await selectEvent.select(screen.getByRole("combobox"), inputType);
+
+    expect(
+      screen.getByRole("textbox", {
+        name: "Placeholder",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  test.each([
+    "File",
+    "Date",
+    "Date and time",
+    "Dropdown",
+    "Dropdown with labels",
+    "Checkbox",
+    "Checkboxes (multi-select)",
+    "Image crop",
+  ])(
+    "does not render the placeholder field for %s",
+    async (inputType: string) => {
+      const fieldName = "foo";
+      const onSubmitMock = jest.fn();
+      const FormikTemplate = createFormikTemplate(
+        { [RJSF_SCHEMA_PROPERTY_NAME]: initOneFieldSchemaCase(fieldName) },
+        onSubmitMock,
+      );
+
+      render(
+        <FormikTemplate>
+          <FormEditor activeField={fieldName} {...defaultProps} />
+        </FormikTemplate>,
+      );
+
+      await selectEvent.select(screen.getByRole("combobox"), inputType);
+
+      expect(
+        screen.queryByRole("textbox", {
+          name: "Placeholder",
+        }),
+      ).not.toBeInTheDocument();
+    },
+  );
 });
