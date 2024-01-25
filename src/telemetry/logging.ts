@@ -493,12 +493,14 @@ const loggingConfig = new StorageItem<LoggingConfig>("LOG_OPTIONS", {
   },
 });
 
+let lastValue: LoggingConfig | null = null;
 export async function getLoggingConfig(): Promise<LoggingConfig> {
   try {
-    return await loggingConfig.get();
+    lastValue = await loggingConfig.get();
+    return lastValue;
   } catch {
     // The context was probably invalidated. Logging utilities shouldn't throw errors
-    return loggingConfig.defaultValue;
+    return lastValue ?? loggingConfig.defaultValue;
   }
 }
 
