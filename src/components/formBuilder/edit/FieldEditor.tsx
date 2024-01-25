@@ -285,7 +285,6 @@ const FieldEditor: React.FC<{
       />
       <SchemaField {...labelFieldProps} />
       <SchemaField {...descriptionFieldProps} />
-      <SchemaField {...placeholderProps} />
       <FieldTemplate
         name={getFullFieldName("uiType")}
         label="Input Type"
@@ -308,6 +307,8 @@ const FieldEditor: React.FC<{
         !FIELD_TYPES_WITHOUT_DEFAULT.includes(selectedUiTypeOption.value) && (
           <SchemaField {...defaultFieldProps} />
         )}
+
+      <SchemaField {...placeholderProps} />
 
       {propertySchema.enum && (
         <>
