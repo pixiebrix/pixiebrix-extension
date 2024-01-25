@@ -39,6 +39,9 @@ export async function notifyContextInvalidated(): Promise<void> {
 
   notify.error({
     id: CONTEXT_INVALIDATED_NOTIFICATION_ID,
+    // Note: If you use JSX here to add buttons/actions to the notifications, React will no longer
+    // be lazyloaded. Possible solution: Automatically linkify "Reload the page" in the notifier.
+    // Context: https://github.com/pixiebrix/pixiebrix-extension/pull/7419#issuecomment-1908966558
     message: "PixieBrix was updated or restarted. Reload the page to continue",
     reportError: false, // It cannot report it because its background page no longer exists
     autoDismissTimeMs: CONTEXT_INVALIDATED_NOTIFICATION_DURATION_MS,
