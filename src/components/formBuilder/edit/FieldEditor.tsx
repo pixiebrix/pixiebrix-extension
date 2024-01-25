@@ -67,7 +67,7 @@ const UNKNOWN_OPTION: SelectStringOption = {
   value: null,
 };
 
-function showPlaceholderText(uiType: UiType): boolean {
+function shouldShowPlaceholderText(uiType: UiType): boolean {
   switch (true) {
     case uiType.propertyType === "number": {
       return true;
@@ -333,7 +333,9 @@ const FieldEditor: React.FC<{
           <SchemaField {...defaultFieldProps} />
         )}
 
-      {showPlaceholderText(uiType) && <SchemaField {...placeholderProps} />}
+      {shouldShowPlaceholderText(uiType) && (
+        <SchemaField {...placeholderProps} />
+      )}
 
       {propertySchema.enum && (
         <>
