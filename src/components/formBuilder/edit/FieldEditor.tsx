@@ -295,8 +295,6 @@ const FieldEditor: React.FC<{
               : undefined,
         };
 
-  console.log("FieldEditor", { uiType });
-
   return (
     <div className={styles.root}>
       <FieldTemplate
