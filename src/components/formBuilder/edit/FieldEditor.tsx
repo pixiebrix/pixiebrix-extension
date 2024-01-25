@@ -226,6 +226,15 @@ const FieldEditor: React.FC<{
     },
     label: "Field Description",
   };
+  const placeholderProps: SchemaFieldProps = {
+    name: `${name}.uiSchema.${propertyName}.ui:placeholder`,
+    schema: {
+      type: "string",
+      description:
+        "A short hint displayed in the input field before the user enters a value.",
+    },
+    label: "Placeholder",
+  };
 
   const uiType: UiType =
     selectedUiTypeOption.value == null
@@ -276,6 +285,7 @@ const FieldEditor: React.FC<{
       />
       <SchemaField {...labelFieldProps} />
       <SchemaField {...descriptionFieldProps} />
+      <SchemaField {...placeholderProps} />
       <FieldTemplate
         name={getFullFieldName("uiType")}
         label="Input Type"
