@@ -23,6 +23,8 @@ import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { openSidePanel } from "@/mv3/sidePanelMigration";
 import { setActionPopup } from "webext-tools";
 import { getReasonByUrl } from "@/tinyPages/restrictedUrlPopupUtils";
+import { messenger } from "webext-messenger";
+import { getSidebarPath } from "@/sidebar/sidePanel/messenger/api";
 
 /**
  * Show a popover on restricted URLs because we're unable to inject content into the page. Previously we'd open
@@ -58,7 +60,19 @@ export default async function initBrowserAction(): Promise<void> {
   });
 
   browserAction.onClicked.addListener(async (tab) => {
+    // This handler relies on a race condition:
+    // - If the was open, openSidePanel will do nothing,
+    //   but SIDEBAR_CLOSE will reach the sidebar and close it
+    // - If the sidebar was closed, openSidePanel will open it,
+    //   and SIDEBAR_CLOSE will fail because the message won't reach the sidebar in time
     await openSidePanel(tab.id);
+    await messenger(
+      "SIDEBAR_CLOSE",
+      { isNotification: true, retry: false },
+      {
+        page: getSidebarPath(tab.id),
+      },
+    );
   });
 }
 
