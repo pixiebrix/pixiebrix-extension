@@ -471,11 +471,15 @@ function sidePanelOnCloseSignal(): AbortSignal {
   const controller = new AbortController();
   expectContext("contentScript");
   if (isMV3()) {
-    // TODO: It doesn't work when the dev tools are open on the side
-    // Official event requested in https://github.com/w3c/webextensions/issues/517
     window.addEventListener(
       "resize",
       () => {
+        // TODO: It doesn't work when the dev tools are open on the side.
+        // This is a rare event because we condition users to move the dev tools to
+        // the bottom via https://github.com/pixiebrix/pixiebrix-extension/pull/6952
+        // … but it's still possible for people with very large screens and those
+        // who temporarily moved the dev tools to the side anyway.
+        // Official event requested in https://github.com/w3c/webextensions/issues/517
         if (isSidePanelOpenSync() === false) {
           controller.abort();
         }

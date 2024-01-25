@@ -18,10 +18,8 @@
 import { type Logger, type MessageContext } from "@/types/loggerTypes";
 import { type JsonObject } from "type-fest";
 import { isBackground } from "webext-detect-page";
-import {
-  notifyContextInvalidated,
-  wasContextInvalidated,
-} from "@/errors/contextInvalidated";
+import { notifyContextInvalidated } from "@/errors/contextInvalidated";
+import { wasContextInvalidated } from "webext-events";
 import { recordLog } from "@/background/messenger/api";
 import { expectContext, isPageEditor } from "@/utils/expectContext";
 import reportError from "@/telemetry/reportError";
