@@ -14,3 +14,6 @@ export const alertMockedFunction = alert as jest.MockedFunction<typeof alert>;
 
 // eslint-disable-next-line no-restricted-syntax
 export const mockPromise = jest.fn().mockResolvedValue(undefined);
+
+// eslint-disable-next-line no-restricted-syntax
+void Promise.allSettled([Promise.resolve(), Promise.reject()]);

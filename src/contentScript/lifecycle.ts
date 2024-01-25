@@ -39,7 +39,11 @@ import {
   getReloadOnNextNavigate,
   setReloadOnNextNavigate,
 } from "@/contentScript/ready";
-import { logPromiseDuration, pollUntilTruthy } from "@/utils/promiseUtils";
+import {
+  allSettled,
+  logPromiseDuration,
+  pollUntilTruthy,
+} from "@/utils/promiseUtils";
 import { $safeFind } from "@/utils/domUtils";
 import { onContextInvalidated } from "webext-events";
 
@@ -197,8 +201,9 @@ export async function ensureInstalled(): Promise<void> {
   console.debug("lifecycle:ensureInstalled", {
     sidebarExtensionPoints,
   });
-  await Promise.allSettled(
+  await allSettled(
     sidebarExtensionPoints.map(async (x) => x.install()),
+    { catch: "ignore" },
   );
 }
 
