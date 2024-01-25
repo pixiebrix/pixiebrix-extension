@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ensureContentScript } from "@/background/contentScript";
-import { updateSidebar } from "@/contentScript/messenger/api";
 import { browserAction, isMV3, type Tab } from "@/mv3/api";
 import { executeScript } from "webext-content-scripts";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
@@ -74,40 +72,21 @@ const toggleSidebar = memoizeUntilSettled(_toggleSidebar);
 async function _toggleSidebar(tabId: number, tabUrl: string): Promise<void> {
   console.debug("browserAction:toggleSidebar", tabId, tabUrl);
 
-  // Load the raw toggle script first, then the content script. The browser executes them
-  // in order, but we don't need to use `Promise.all` to await them at the same time as we
-  // want to catch each error separately.
-  const sidebarTogglePromise = executeScript({
-    tabId,
-    frameId: TOP_LEVEL_FRAME_ID,
-    files: ["browserActionInstantHandler.js"],
-    matchAboutBlank: false,
-    allFrames: false,
-    // Run at end instead of idle to ensure immediate feedback to clicking the browser action icon
-    runAt: "document_end",
-  });
-
-  const contentScriptTarget = {
-    tabId,
-    frameId: TOP_LEVEL_FRAME_ID,
-  } as const;
-
-  // Chrome adds automatically at document_idle, so it might not be ready yet when the user click the browser action
-  const contentScriptPromise = ensureContentScript(contentScriptTarget);
-
   try {
-    await sidebarTogglePromise;
+    await executeScript({
+      tabId,
+      frameId: TOP_LEVEL_FRAME_ID,
+      files: ["browserActionInstantHandler.js"],
+      matchAboutBlank: false,
+      allFrames: false,
+      // Run at start instead of idle to ensure immediate feedback to clicking the browser action icon
+      runAt: "document_start",
+    });
   } catch (error) {
     // eslint-disable-next-line no-alert -- Intentional usage, no alternative UI
     alert(ERR_UNABLE_TO_OPEN);
     throw error;
   }
-
-  // NOTE: at this point, the sidebar should already be visible on the page, even if not ready.
-  // Avoid showing any alerts or notifications: further messaging can appear in the sidebar itself.
-  // Any errors are automatically reported by the global error handler.
-  await contentScriptPromise;
-  updateSidebar(contentScriptTarget);
 }
 
 async function handleBrowserAction(tab: Tab): Promise<void> {
