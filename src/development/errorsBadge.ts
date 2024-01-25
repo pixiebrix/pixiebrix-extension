@@ -21,14 +21,18 @@ import { browserAction } from "@/mv3/api";
 let counter = 0;
 let timer: NodeJS.Timeout;
 
+/** @param errorMessage The message to display or `null` to reset the badge */
 function updateBadge(errorMessage: string | null): void {
-  void browserAction.setTitle({
-    title: errorMessage,
-  });
+  if (errorMessage) {
+    void browserAction.setTitle({
+      title: errorMessage,
+    });
+    void browserAction.setBadgeBackgroundColor({ color: "#F00" });
+  }
+
   void browserAction.setBadgeText({
     text: counter ? String(counter) : "",
   });
-  void browserAction.setBadgeBackgroundColor({ color: "#F00" });
 }
 
 function showBadgeOnBackgroundErrors(error: Error): void {
