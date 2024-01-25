@@ -6,16 +6,20 @@ function get() {
 	`ReferenceError: window is not defined` without pointing to the correct line.
 	This listener defines some globals so that they return `undefined` instead
 	of throwing an error on access.
-
-	This line also lets you add a breakpoint so that you can stop the debugger and
-	see where the access originated from. Or temporarily add console.trace() here.
 	*/
+
+  // Debug helpers: trace or breakable line
+
+  // There are a lot of safe `window` checks in the code so the logger cannot be enabled by default.
+  // console.trace('DOM access in worker');
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  1; // This line lets you add a breakpoint so that you can stop the debugger
 }
 
 Object.defineProperties(self, {
   document: { get },
   window: { get },
-  navigator: { get },
 });
 
 self.importScripts("./grayIconWhileLoading.js", "./background.js");
