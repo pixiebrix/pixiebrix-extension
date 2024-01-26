@@ -195,8 +195,8 @@
     "@testing-library/user-event": "^14.5.2",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/chrome": "^0.0.258",
-    "@types/dompurify": "^3.0.5",
     "@types/dom-navigation": "^1.0.3",
+    "@types/dompurify": "^3.0.5",
     "@types/downloadjs": "^1.4.6",
     "@types/gapi.client": "^1.0.8",
     "@types/gapi.client.drive-v3": "^0.0.4",
@@ -284,7 +284,7 @@
     "webpack-bundle-analyzer": "^4.10.1",
     "webpack-cli": "^5.1.4",
     "webpack-merge": "^5.10.0",
-    "webpack-target-webextension": "^1.1.0",
+    "webpack-target-webextension": "github:awesome-webextension/webpack-target-webextension#ccbae6251a28a5e797804b2b4393bf3357009373",
     "yaml-jest-transform": "^2.0.2",
     "yaml-loader": "^0.7.0"
   },

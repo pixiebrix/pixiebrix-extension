@@ -97,6 +97,7 @@ const createConfig = (env, options) =>
       path: path.resolve("dist"),
       chunkFilename: "bundles/[name].bundle.js",
       environment: {
+        // https://github.com/awesome-webextension/webpack-target-webextension#code-splitting
         dynamicImport: true,
       },
     },
@@ -201,11 +202,24 @@ const createConfig = (env, options) =>
         }),
 
       new NodePolyfillPlugin({
-        // Specify the least amount of polyfills because by default it event polyfills `console`
+        // Specify the least amount of polyfills.
+        // By default it polyfills even `console`
         includeAliases: ["buffer", "Buffer", "http", "https"],
       }),
       new WebExtensionTarget({
         weakRuntimeCheck: true,
+
+        // Required to support sandboxed iframes
+        // https://github.com/awesome-webextension/webpack-target-webextension/pull/42
+        background:
+          process.env.MV === "3"
+            ? {
+                // TODO: Restore after https://github.com/awesome-webextension/webpack-target-webextension/issues/43
+                // serviceWorkerEntry: "background",
+              }
+            : {
+                pageEntry: "background",
+              },
       }),
       new webpack.ProvidePlugin({
         $: "jquery",
