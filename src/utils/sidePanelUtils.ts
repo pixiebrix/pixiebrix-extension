@@ -19,11 +19,29 @@
 
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isMV3 } from "@/mv3/api";
-import { forbidContext } from "@/utils/expectContext";
+import { forbidContext, isBrowserSidebar } from "@/utils/expectContext";
 import { type PageTarget, messenger } from "webext-messenger";
+import { getMethod } from "webext-messenger";
 
-/** @deprecated Use this instead: import { openSidePanel } from "@/mv3/sidePanelMigration"; */
-export async function _openSidePanel(tabId: number): Promise<void> {
+export const openSidePanel = async (tabId: number) => {
+  if (isBrowserSidebar()) {
+    console.warn(
+      'The sidePanel called "openSidePanel". This should not happen.',
+    );
+    return;
+  }
+
+  forbidContext(
+    "contentScript",
+    "The content script doesn't have direct access to the `sidePanel` API. Call `showMySidePanel` instead",
+  );
+  return isMV3()
+    ? openSidePanelMv3(tabId)
+    : // Called via `getMethod` until we complete the strictNullChecks transition
+      async (tabId: number) => getMethod("SHOW_SIDEBAR")({ tabId });
+};
+
+async function openSidePanelMv3(tabId: number): Promise<void> {
   // Simultaneously enable and open the side panel.
   // If we wait too long before calling .open(), we will lose the "user gesture" permission
   // There is no way to know whether the side panel is open yet, so we call it regardless.
