@@ -263,7 +263,7 @@ export function removeExtensions(extensionIds: UUID[]): void {
   console.debug("sidebarController:removeExtensions", { extensionIds });
 
   // `panels` is const, so replace the contents
-  const current = panels.splice(0, panels.length);
+  const current = panels.splice(0);
   panels.push(...current.filter((x) => !extensionIds.includes(x.extensionId)));
   void renderPanelsIfVisible();
 }
@@ -286,7 +286,7 @@ export function removeExtensionPoint(
   });
 
   // `panels` is const, so replace the contents
-  const current = panels.splice(0, panels.length);
+  const current = panels.splice(0);
   panels.push(
     ...current.filter(
       (x) =>

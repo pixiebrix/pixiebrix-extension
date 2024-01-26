@@ -174,7 +174,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
   override uninstall({ global = false }: { global?: boolean }): void {
     // NOTE: don't uninstall the mouse/click handler because other context menus need it
-    const extensions = this.modComponents.splice(0, this.modComponents.length);
+    const extensions = this.modComponents.splice(0);
     if (global) {
       for (const extension of extensions) {
         void uninstallContextMenu({ extensionId: extension.id });
