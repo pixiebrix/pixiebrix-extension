@@ -15,52 +15,131 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-interface Coordinates {
-  top: number;
-  left: number;
-}
+// We'll copy the properties below into the mirror div.
+// Note that some browsers, such as Firefox, do not concatenate properties
+// into their shorthand (e.g. padding-top, padding-bottom etc. -> padding),
+// so we have to list every single property explicitly.
+const properties = [
+  "direction", // RTL support
+  "boxSizing",
+  "width", // On Chrome and IE, exclude the scrollbar, so the mirror div wraps exactly as the textarea does
+  "height",
+  "overflowX",
+  "overflowY", // Copy the scrollbar for IE
+
+  "borderTopWidth",
+  "borderRightWidth",
+  "borderBottomWidth",
+  "borderLeftWidth",
+  "borderStyle",
+
+  "paddingTop",
+  "paddingRight",
+  "paddingBottom",
+  "paddingLeft",
+
+  // https://developer.mozilla.org/en-US/docs/Web/CSS/font
+  "fontStyle",
+  "fontVariant",
+  "fontWeight",
+  "fontStretch",
+  "fontSize",
+  "fontSizeAdjust",
+  "lineHeight",
+  "fontFamily",
+
+  "textAlign",
+  "textTransform",
+  "textIndent",
+  "textDecoration", // Might not make a difference, but better be safe
+
+  "letterSpacing",
+  "wordSpacing",
+
+  "tabSize",
+] as const;
 
 /**
  * Get the caret coordinates in a textarea in pixels.
+ * Firefox lies about the overflow property for textareas: https://bugzilla.mozilla.org/show_bug.cgi?id=984275
+ * Used https://github.com/component/textarea-caret-position/blob/master/index.js as a reference
+ * XXX: Due to the complicated nature of doing visual regression testing, this method is not covered by automated testing.
  * @param element
  * @param position
  */
 export function getTextareaCaretCoordinates(
   element: HTMLTextAreaElement,
   position: number,
-): Coordinates {
+) {
+  // The mirror div will replicate the textarea's style
   const div = document.createElement("div");
-  const span = document.createElement("span");
-  const computedStyle = getComputedStyle(element);
-
-  // Create a mirror div, and style it so that it doesn't actually appear on the screen
-  div.style.position = "absolute";
-  div.style.top = `${element.scrollTop}px`;
-  div.style.left = "-9999px";
-  div.style.width = computedStyle.width;
-  div.style.height = computedStyle.height;
-  div.style.font = computedStyle.font;
-  div.style.whiteSpace = "pre-wrap";
-  div.style.overflowWrap = "break-word";
-  div.style.overflowY = "auto";
-
-  // Append it to the body
+  div.id = "input-textarea-caret-position-mirror-div";
   document.body.append(div);
 
-  // Set its text content up to the caret position to mimic the input's text up to the caret
-  div.textContent = element.value.slice(0, Math.max(0, position));
+  const { style } = div;
+  const computed = window.getComputedStyle(element);
+  const isInput = element.nodeName === "INPUT";
 
-  // Create a span and insert it at the end to get the caret position
-  span.textContent = element.value.slice(Math.max(0, position)) || ".";
+  // Default textarea styles
+  style.whiteSpace = "pre-wrap";
+  if (!isInput) style.wordWrap = "break-word"; // Only for textarea-s
+
+  // Position off-screen
+  style.position = "absolute"; // Required to return coordinates properly
+
+  // Transfer the element's properties to the div
+  for (const prop of properties) {
+    if (isInput && prop === "lineHeight") {
+      // Special case for <input>s because text is rendered centered and line height may be != height
+      if (computed.boxSizing === "border-box") {
+        const height = Number.parseInt(computed.height, 10);
+        const outerHeight =
+          Number.parseInt(computed.paddingTop, 10) +
+          Number.parseInt(computed.paddingBottom, 10) +
+          Number.parseInt(computed.borderTopWidth, 10) +
+          Number.parseInt(computed.borderBottomWidth, 10);
+        const targetHeight =
+          outerHeight + Number.parseInt(computed.lineHeight, 10);
+        if (height > targetHeight) {
+          style.lineHeight = height - outerHeight + "px";
+        } else if (height === targetHeight) {
+          style.lineHeight = computed.lineHeight;
+        } else {
+          style.lineHeight = "0";
+        }
+      } else {
+        style.lineHeight = computed.height;
+      }
+    } else {
+      // eslint-disable-next-line security/detect-object-injection -- assigning styles from computed into hidden div
+      style[prop] = computed[prop] as never;
+    }
+  }
+
+  style.overflow = "hidden"; // For Chrome to not render a scrollbar;
+
+  div.textContent = element.value.slice(0, Math.max(0, position));
+  // The second special handling for input type="text" vs textarea:
+  // spaces need to be replaced with non-breaking spaces - http://stackoverflow.com/a/13402035/1269037
+  if (isInput)
+    // eslint-disable-next-line unicorn/consistent-destructuring
+    div.textContent = div.textContent.replaceAll(/\s/g, "\u00A0");
+
+  const span = document.createElement("span");
+  // Wrapping must be replicated *exactly*, including when a long word gets
+  // onto the next line, with whitespace at the end of the line before (#7).
+  // The  *only* reliable way to do that is to copy the *entire* rest of the
+  // textarea's content into the <span> created at the caret position.
+  // For inputs, just '.' would be enough, but no need to bother.
+  span.textContent = element.value.slice(Math.max(0, position)) || "."; // || because a completely empty faux span doesn't render at all
   div.append(span);
 
-  // Get caret coordinates
-  const coordinates: Coordinates = {
-    top: span.offsetTop,
-    left: span.offsetLeft,
+  const coordinates = {
+    top: span.offsetTop + Number.parseInt(computed.borderTopWidth, 10),
+    left: span.offsetLeft + Number.parseInt(computed.borderLeftWidth, 10),
+    height: Number.parseInt(computed.lineHeight, 10),
   };
 
-  // Clean up
   div.remove();
 
   return coordinates;
