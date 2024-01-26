@@ -17,7 +17,7 @@
 
 /* Do not use `registerMethod` in this file */
 import { getMethod, getNotifier } from "webext-messenger";
-import { getSidebarTargetForCurrentTab } from "@/sidebar/sidePanel/messenger/api";
+import { getSidebarTargetForCurrentTab } from "@/utils/sidePanelUtils";
 
 const target = getSidebarTargetForCurrentTab();
 

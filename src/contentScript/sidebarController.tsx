@@ -37,7 +37,7 @@ import type {
 } from "@/types/sidebarTypes";
 import { getTemporaryPanelSidebarEntries } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
-import * as sidePanel from "@/sidebar/sidePanel/messenger/api";
+import { getSidebarTargetForCurrentTab } from "@/utils/sidePanelUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
 import { backgroundTarget, getMethod, messenger } from "webext-messenger";
@@ -83,7 +83,7 @@ async function isSidePanelOpenMv3(): Promise<boolean> {
     await messenger(
       "SIDEBAR_PING",
       { retry: false },
-      await sidePanel.getSidebarTargetForCurrentTab(),
+      await getSidebarTargetForCurrentTab(),
     );
     return true;
   } catch {

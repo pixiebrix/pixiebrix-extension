@@ -18,11 +18,10 @@
 import { browserAction, isMV3, type Tab } from "@/mv3/api";
 import { executeScript } from "webext-content-scripts";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
-import { openSidePanel } from "@/utils/sidePanelUtils";
+import { openSidePanel, getSidebarTarget } from "@/utils/sidePanelUtils";
 import { setActionPopup } from "webext-tools";
 import { getReasonByUrl } from "@/tinyPages/restrictedUrlPopupUtils";
 import { messenger } from "webext-messenger";
-import { getSidebarTarget } from "@/utils/sidePanelUtils";
 
 /**
  * Show a popover on restricted URLs because we're unable to inject content into the page. Previously we'd open

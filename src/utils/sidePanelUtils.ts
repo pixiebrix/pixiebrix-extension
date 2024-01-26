@@ -20,8 +20,13 @@
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isMV3 } from "@/mv3/api";
 import { forbidContext, isBrowserSidebar } from "@/utils/expectContext";
-import { type PageTarget, messenger } from "webext-messenger";
-import { getMethod } from "webext-messenger";
+import {
+  getMethod,
+  type PageTarget,
+  messenger,
+  getThisFrame,
+} from "webext-messenger";
+import { isContentScript } from "webext-detect-page";
 
 export const openSidePanel = async (tabId: number) => {
   if (isBrowserSidebar()) {
@@ -96,4 +101,23 @@ export function getSidebarTarget(tabId: number): PageTarget {
   return {
     page: getSidebarPath(tabId),
   };
+}
+
+export async function getSidebarTargetForCurrentTab(): Promise<PageTarget> {
+  // Do not use `expectContext("contentScript")` here because other contexts import this file transitively.
+
+  if (!isMV3()) {
+    return { tabId: "this", page: "/sidebar.html" };
+  }
+
+  if (!isContentScript()) {
+    // The background imports the sidebar controller, which imports the API, which calls this function.
+    // No messages are actually sent anywhere through this path.
+    return {
+      page: "Use `getSidebarTarget` instead of `getSidebarTargetForCurrentTab` in contexts other than the content script",
+    };
+  }
+
+  const frame = await getThisFrame();
+  return getSidebarTarget(frame.tabId);
 }
