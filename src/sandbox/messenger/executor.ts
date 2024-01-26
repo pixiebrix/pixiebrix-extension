@@ -53,13 +53,12 @@ export async function validateNunjucksTemplate(
   template: TemplateValidatePayload,
 ): Promise<void> {
   // Webpack caches the module import, so doesn't need to cache via lodash's `once`
-  const { Template } = await import(
+  const { compile } = await import(
     /* webpackChunkName: "nunjucks" */ "nunjucks"
   );
 
   try {
-    // eslint-disable-next-line no-new
-    new Template(template, undefined, undefined, true);
+    compile(template, undefined, undefined, true);
   } catch (error) {
     if (isErrorObject(error) && error.name === "Template render error") {
       const failureCause = error.message?.replace("(unknown path)", "").trim();
