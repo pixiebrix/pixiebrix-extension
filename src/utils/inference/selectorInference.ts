@@ -502,9 +502,9 @@ export function inferSelectors(
 
 export type InferSelectorArgs = {
   /**
-   * The root to generate the selector with respect to. Provide null to use the document.
+   * The root to generate the selector with respect to.
    */
-  root: HTMLElement | null;
+  root: HTMLElement;
   /**
    * True to exclude class names that appear to be randomly generated.
    */

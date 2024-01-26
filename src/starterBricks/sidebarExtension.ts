@@ -36,6 +36,7 @@ import {
   sidebarShowEvents,
   updateHeading,
   upsertPanel,
+  isSidePanelOpen,
 } from "@/contentScript/sidebarController";
 import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
@@ -47,12 +48,11 @@ import {
 import { cloneDeep, debounce, remove } from "lodash";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { selectAllBlocks } from "@/bricks/util";
+import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { NoRendererError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
-import { isSidebarFrameVisible } from "@/contentScript/sidebarDomControllerLite";
 import { type Schema } from "@/types/schemaTypes";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type Brick } from "@/types/brickTypes";
@@ -150,7 +150,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   async getBricks(
     extension: ResolvedModComponent<SidebarConfig>,
   ): Promise<Brick[]> {
-    return selectAllBlocks(extension.config.body);
+    return collectAllBricks(extension.config.body);
   }
 
   clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
@@ -416,7 +416,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       })),
     );
 
-    if (!isSidebarFrameVisible()) {
+    if (!(await isSidePanelOpen())) {
       console.debug(
         "SidebarStarterBrick:run Skipping run for %s because sidebar is not visible",
         this.id,

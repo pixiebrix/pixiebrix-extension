@@ -34,7 +34,7 @@ import notify from "@/utils/notify";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/starterBricks/helpers";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
-import { selectAllBlocks } from "@/bricks/util";
+import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
@@ -63,6 +63,7 @@ import { type Brick } from "@/types/brickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import pluralize from "@/utils/pluralize";
+import { allSettled } from "@/utils/promiseUtils";
 
 export type QuickBarProviderConfig = {
   /**
@@ -135,7 +136,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
   async getBricks(
     extension: ResolvedModComponent<QuickBarProviderConfig>,
   ): Promise<Brick[]> {
-    return selectAllBlocks(extension.config.generator);
+    return collectAllBricks(extension.config.generator);
   }
 
   public get kind(): "quickBarProvider" {
@@ -216,23 +217,25 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
       return;
     }
 
-    const results = await Promise.allSettled(
-      this.modComponents.map(async (extension) => {
-        try {
-          await this.registerActionProvider(extension);
-        } catch (error) {
-          reportError(error, selectEventData(extension));
-          throw error;
-        }
-      }),
-    );
+    const promises = this.modComponents.map(async (extension) => {
+      try {
+        await this.registerActionProvider(extension);
+      } catch (error) {
+        reportError(error, selectEventData(extension));
+        throw error;
+      }
+    });
 
-    const numErrors = results.filter((x) => x.status === "rejected").length;
-    if (numErrors > 0) {
-      notify.error(
-        `An error occurred adding ${pluralize(numErrors, "$$ quick bar item")}`,
-      );
-    }
+    await allSettled(promises, {
+      catch(errors) {
+        notify.error(
+          `An error occurred adding ${pluralize(
+            errors.length,
+            "$$ quick bar item",
+          )}`,
+        );
+      },
+    });
   }
 
   /**

@@ -15,6 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import MarkdownInline from "@/components/MarkdownInline";
+/** @file This file defines the internal API for the sidePanel, only meant to be run in the sidePanel itself */
 
-export default MarkdownInline;
+import { expectContext } from "@/utils/expectContext";
+import { isMV3 } from "@/mv3/api";
+
+expectContext("sidebar");
+
+export function initSidePanel() {
+  if (isMV3()) {
+    // Just a placeholder for now
+  }
+}

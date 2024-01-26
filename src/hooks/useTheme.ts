@@ -71,7 +71,7 @@ export function useGetTheme(): Theme {
   const managedPartnerId = managedState?.partnerId;
 
   useEffect(() => {
-    if (partnerId === null && !managedPartnerIdIsLoading) {
+    if (partnerId == null && !managedPartnerIdIsLoading) {
       // Initialize initial partner id with the one in managed storage, if any
       dispatch(
         settingsSlice.actions.setPartnerId({

@@ -21,18 +21,30 @@ import { browserAction } from "@/mv3/api";
 let counter = 0;
 let timer: NodeJS.Timeout;
 
+/** @param errorMessage The message to display or `null` to reset the badge */
 function updateBadge(errorMessage: string | null): void {
-  void browserAction.setTitle({
-    title: errorMessage ?? "Unknown error (no error message provided)",
-  });
+  if (errorMessage) {
+    void browserAction.setTitle({
+      title: errorMessage,
+    });
+    void browserAction.setBadgeBackgroundColor({ color: "#F00" });
+  }
+
   void browserAction.setBadgeText({
     text: counter ? String(counter) : "",
   });
-  void browserAction.setBadgeBackgroundColor({ color: "#F00" });
 }
 
 function showBadgeOnBackgroundErrors(error: Error): void {
   counter++;
+  if (counter > 20) {
+    // If the dev tools is already open, this will pause the execution of the script
+    // automatically before the browser hangs and makes it difficult to manually pause.
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/7430
+    // eslint-disable-next-line no-debugger -- This whole file is not part of the production build
+    debugger;
+  }
+
   // Show the last error as tooltip
   updateBadge(getErrorMessage(error));
 

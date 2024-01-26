@@ -100,12 +100,13 @@ export function insertSidebarFrame(): boolean {
 
   storeOriginalCSSOnce();
   const nonce = uuidv4();
-  const actionURL = browser.runtime.getURL("sidebar.html");
+  const actionUrl = new URL(browser.runtime.getURL("sidebar.html"));
+  actionUrl.searchParams.set("nonce", nonce);
 
   setSidebarWidth(SIDEBAR_WIDTH_PX);
 
   const iframe = document.createElement("iframe");
-  iframe.src = `${actionURL}?nonce=${nonce}`;
+  iframe.src = actionUrl.href;
 
   Object.assign(iframe.style, {
     position: "fixed",
@@ -145,16 +146,10 @@ export function insertSidebarFrame(): boolean {
 /**
  * Toggle the sidebar frame. Returns true if the sidebar is now visible, false otherwise.
  */
-export function toggleSidebarFrame(): boolean {
-  console.debug("sidebarDomControllerLite:toggleSidebarFrame", {
-    isSidebarFrameVisible: isSidebarFrameVisible(),
-  });
-
+export function toggleSidebarFrame(): void {
   if (isSidebarFrameVisible()) {
     removeSidebarFrame();
-    return false;
+  } else {
+    insertSidebarFrame();
   }
-
-  insertSidebarFrame();
-  return true;
 }

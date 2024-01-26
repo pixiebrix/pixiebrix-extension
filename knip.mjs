@@ -26,6 +26,8 @@ const knipConfig = {
     "scripts/manifest.mjs",
     // Content script entry point, init() is dynamically imported in src/contentScript/contentScript.ts
     "src/contentScript/contentScriptCore.ts",
+    // Type-only strictNullChecks helper
+    "src/types/typeOnlyMessengerRegistration.ts",
   ],
   project: ["src/**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"],
   // https://knip.dev/guides/handling-issues#mocks-and-other-implicit-imports
@@ -61,11 +63,14 @@ const knipConfig = {
     // Referenced in global.d.ts
     "@total-typescript/ts-reset",
     // Referenced in scss files
-    "webext-base-css",
     "compass-mixins",
     // Not getting detected by webpack plugin for .storybook/main.js
     "style-loader",
     "@storybook/react-webpack5",
+    // Used by src/contrib/google/sheets/core/types.ts
+    "@types/gapi.client",
+    "@types/gapi.client.drive-v3",
+    "@types/gapi.client.oauth2-v2",
   ],
   rules: {
     // Issue Type reference: https://knip.dev/reference/issue-types/

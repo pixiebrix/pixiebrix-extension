@@ -15,21 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Suspense } from "react";
-import { type MarkdownProps } from "./Markdown";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import {
+  DISPLAY_REASON_EXTENSION_CONSOLE,
+  DISPLAY_REASON_RESTRICTED_URL,
+} from "./restrictedUrlPopupConstants";
+import { isScriptableUrl } from "webext-content-scripts";
 
-const MarkdownLoader = React.lazy(
-  async () =>
-    import(
-      /* webpackChunkName: "components-lazy" */
-      "./Markdown"
-    ),
-);
+export function getReasonByUrl(url: string | undefined): string | null {
+  if (url?.startsWith(getExtensionConsoleUrl())) {
+    return DISPLAY_REASON_EXTENSION_CONSOLE;
+  }
 
-const MarkdownLazy: React.FC<MarkdownProps> = (props) => (
-  <Suspense fallback={null}>
-    <MarkdownLoader {...props} />
-  </Suspense>
-);
+  if (!isScriptableUrl(url)) {
+    return DISPLAY_REASON_RESTRICTED_URL;
+  }
 
-export default MarkdownLazy;
+  return null;
+}

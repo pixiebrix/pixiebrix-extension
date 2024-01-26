@@ -21,6 +21,7 @@ const restrictedZones = [
   // These can be imported from anywhere
   except: [
     `../${exporter}/messenger`,
+    `../${exporter}/sidePanel/messenger`,
     `../${exporter}/types.ts`,
     // `../${exporter}/**/*Types.ts`, // TODO: Globs don't seem to work
     `../${exporter}/pageEditor/types.ts`,
@@ -86,6 +87,11 @@ module.exports = {
     "@typescript-eslint/no-unsafe-call": "warn",
     "no-restricted-syntax": [
       "error",
+      {
+        selector: "CallExpression[callee.property.name='allSettled']",
+        message:
+          'For safety and convenience, use this instead: import { allSettled } from "@/utils/promiseUtils";',
+      },
       {
         message:
           "Use the `uuid` module instead because crypto.randomUUID is not available in http: contexts",

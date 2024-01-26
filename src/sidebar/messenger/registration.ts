@@ -20,6 +20,7 @@ import { registerMethods } from "webext-messenger";
 import {
   activatePanel,
   hideActivateMods,
+  closeSelf,
   hideForm,
   hideTemporaryPanel,
   renderPanels,
@@ -30,10 +31,6 @@ import {
 } from "@/sidebar/protocol";
 import { expectContext } from "@/utils/expectContext";
 import { noop } from "lodash";
-import { type SerializedError } from "@/types/messengerTypes";
-import { type MessageContext } from "@/types/loggerTypes";
-import { type JsonObject } from "type-fest";
-import { type Event } from "@/telemetry/events";
 
 expectContext("sidebar");
 
@@ -44,6 +41,8 @@ declare global {
     SIDEBAR_SHOW_FORM: typeof showForm;
     SIDEBAR_HIDE_FORM: typeof hideForm;
     SIDEBAR_PING: typeof noop;
+    SIDEBAR_CLOSE: typeof closeSelf;
+    SIDEBAR_RELOAD: typeof location.reload;
     SIDEBAR_SHOW_TEMPORARY_PANEL: typeof showTemporaryPanel;
     SIDEBAR_UPDATE_TEMPORARY_PANEL: typeof updateTemporaryPanel;
     SIDEBAR_HIDE_TEMPORARY_PANEL: typeof hideTemporaryPanel;
@@ -58,29 +57,13 @@ export default function registerMessenger(): void {
     SIDEBAR_RENDER_PANELS: renderPanels,
     SIDEBAR_SHOW_FORM: showForm,
     SIDEBAR_HIDE_FORM: hideForm,
+    SIDEBAR_CLOSE: closeSelf,
     SIDEBAR_PING: noop,
+    SIDEBAR_RELOAD: location.reload.bind(location),
     SIDEBAR_SHOW_TEMPORARY_PANEL: showTemporaryPanel,
     SIDEBAR_UPDATE_TEMPORARY_PANEL: updateTemporaryPanel,
     SIDEBAR_HIDE_TEMPORARY_PANEL: hideTemporaryPanel,
     SIDEBAR_SHOW_ACTIVATE_RECIPE: showActivateMods,
     SIDEBAR_HIDE_ACTIVATE_RECIPE: hideActivateMods,
   });
-}
-
-declare global {
-  // TODO: Remove once background/registration.ts and telemetry/logging.ts are in strictNullChecks
-  interface MessengerMethods {
-    // Temporary duplicate type for a background method used by the sidebar.
-    // NOTE: Changes to those functions must be reflected here.
-    RECORD_ERROR: (
-      serializedError: SerializedError,
-      context: MessageContext,
-      data?: JsonObject,
-    ) => Promise<void>;
-
-    RECORD_EVENT: (event: {
-      event: Event;
-      data: JsonObject | undefined;
-    }) => Promise<void>;
-  }
 }

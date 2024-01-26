@@ -21,7 +21,7 @@ import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
 import * as contentScriptApi from "@/contentScript/messenger/api";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
-import { UIPATH_ID } from "@/contrib/uipath/localProcess";
+import RunLocalProcess from "@/contrib/uipath/localProcess";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import * as auth from "@/hooks/auth";
@@ -82,7 +82,7 @@ function makeBaseState() {
     },
     [
       {
-        id: UIPATH_ID,
+        id: RunLocalProcess.BRICK_ID,
         config: {
           service: null,
           releaseKey: null,

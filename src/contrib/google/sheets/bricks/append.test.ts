@@ -205,6 +205,7 @@ const brickArgs = {
       value: "value2",
     } as Entry,
   ],
+  requireAllHeaders: false,
   requireSheetIsVisible: false,
 } as unknown as BrickArgs<{
   googleAccount?: SanitizedIntegrationConfig | undefined;
@@ -212,6 +213,7 @@ const brickArgs = {
   tabName: string;
   shape: Shape;
   rowValues: RowValues;
+  requireAllHeaders: boolean;
   requireSheetIsVisible: boolean;
 }>;
 const brickOptions = { logger } as unknown as BrickOptions;
@@ -316,6 +318,34 @@ describe("append logic", () => {
     const appendRowsSpy = jest.spyOn(sheets, "appendRows");
 
     await brick.run(brickArgs, brickOptions);
+
+    expect(appendRowsSpy).toHaveBeenCalledWith(
+      {
+        googleAccount,
+        spreadsheetId: TEST_SPREADSHEET_ID,
+        tabName: "Sheet1",
+      },
+      [["value1", "value2"]],
+    );
+  });
+
+  it("appends row successfully with leading empty columns and require-all-headers enabled", async () => {
+    const brick = new GoogleSheetsAppend();
+    jest.mocked(sheets.getAllRows).mockResolvedValue({
+      values: [
+        ["", "", "header1", "header2"],
+        ["", "", "foo", "bar"],
+      ],
+    });
+
+    const appendRowsSpy = jest.spyOn(sheets, "appendRows");
+
+    await brick.run(
+      produce(brickArgs, (draft) => {
+        draft.requireAllHeaders = true;
+      }),
+      brickOptions,
+    );
 
     expect(appendRowsSpy).toHaveBeenCalledWith(
       {

@@ -31,6 +31,7 @@ import mergeWithShared from "./webpack.sharedConfig.js";
 import { parseEnv, loadEnv } from "./scripts/env.mjs";
 import customizeManifest from "./scripts/manifest.mjs";
 import { createRequire } from "node:module";
+import DiscardFilePlugin from "./scripts/DiscardFilePlugin.mjs";
 
 const require = createRequire(import.meta.url);
 
@@ -125,7 +126,6 @@ const createConfig = (env, options) =>
 
         // Tiny files without imports
         "tinyPages/frame",
-        "tinyPages/alert",
         "tinyPages/devtools",
 
         // The script that gets injected into the host page
@@ -271,6 +271,7 @@ const createConfig = (env, options) =>
           "static",
         ],
       }),
+      new DiscardFilePlugin(),
     ]),
     module: {
       rules: [

@@ -15,22 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useState } from "react";
-import useAsyncEffect from "use-async-effect";
-import {
-  onContextInvalidated,
-  wasContextInvalidated,
-} from "@/errors/contextInvalidated";
+/** @file Temporary helpers useful for the MV3 sidePanel transition */
 
-export default function useContextInvalidated(): boolean {
-  const [invalidated, setInvalidated] = useState(wasContextInvalidated());
-  useAsyncEffect(async (isMounted) => {
-    await onContextInvalidated();
+import { getMethod } from "webext-messenger";
+import { _openSidePanel } from "@/sidebar/sidePanel/messenger/api";
+import { isMV3 } from "./api";
 
-    if (isMounted()) {
-      setInvalidated(true);
-    }
-  });
-
-  return invalidated;
-}
+export const openSidePanel = isMV3()
+  ? _openSidePanel
+  : // Called via `getMethod` until we complete the strictNullChecks transition
+    async (tabId: number) => getMethod("SHOW_SIDEBAR")({ tabId });

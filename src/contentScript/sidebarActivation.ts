@@ -18,8 +18,8 @@
 import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import {
-  ensureSidebar,
-  HIDE_SIDEBAR_EVENT_NAME,
+  showSidebar,
+  sidePanelOnClose,
   hideModActivationInSidebar,
   showModActivationInSidebar,
 } from "@/contentScript/sidebarController";
@@ -33,6 +33,7 @@ import { Events } from "@/telemetry/events";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getActivatedModIds } from "@/store/extensionsStorage";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import { allSettled } from "@/utils/promiseUtils";
 
 let listener: EventListener | null;
 
@@ -55,31 +56,18 @@ async function getInProgressModActivation(): Promise<RegistryId[] | null> {
 async function showSidebarActivationForMods(
   modIds: RegistryId[],
 ): Promise<void> {
-  const controller = new AbortController();
-
-  await ensureSidebar();
-  showModActivationInSidebar({
+  await showSidebar();
+  await showModActivationInSidebar({
     modIds,
     heading: "Activating",
   });
-  window.addEventListener(
-    HIDE_SIDEBAR_EVENT_NAME,
-    () => {
-      controller.abort();
-    },
-    {
-      signal: controller.signal,
-    },
-  );
-  controller.signal.addEventListener("abort", () => {
-    hideModActivationInSidebar();
-  });
+
+  sidePanelOnClose(hideModActivationInSidebar);
 }
 
 function getNextUrlFromActivateUrl(activateUrl: string): string | null {
   const url = new URL(activateUrl);
-  const searchParams = new URLSearchParams(url.search);
-  return searchParams.get("nextUrl");
+  return url.searchParams.get("nextUrl");
 }
 
 function addActivateModsListener(): void {
@@ -135,10 +123,13 @@ export async function initSidebarActivation(): Promise<void> {
     !isLoadedInIframe() &&
     !document.location.href.includes(DEFAULT_SERVICE_URL)
   ) {
-    await Promise.allSettled([
-      // Clear out local storage
-      setActivatingMods({ blueprintId: null }),
-      showSidebarActivationForMods(modIds),
-    ]);
+    await allSettled(
+      [
+        // Clear out local storage
+        setActivatingMods({ blueprintId: null }),
+        showSidebarActivationForMods(modIds),
+      ],
+      { catch: "ignore" },
+    );
   }
 }

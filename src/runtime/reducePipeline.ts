@@ -59,7 +59,7 @@ import {
 } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { type PanelPayload } from "@/types/sidebarTypes";
-import { loggingConfig } from "@/telemetry/logging";
+import { getLoggingConfig } from "@/telemetry/logging";
 import { type UUID } from "@/types/stringTypes";
 import {
   type BrickArgs,
@@ -79,6 +79,7 @@ import { type RegistryProtocol } from "@/registry/memoryRegistry";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
+import { allSettled } from "@/utils/promiseUtils";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
@@ -450,7 +451,7 @@ async function renderBlockArg(
 ): Promise<RenderedArgs> {
   const { config, type } = resolvedConfig;
 
-  const globalLoggingConfig = await loggingConfig.get();
+  const globalLoggingConfig = await getLoggingConfig();
 
   const {
     // If logValues not provided explicitly, default to the global setting
@@ -609,7 +610,7 @@ async function applyReduceDefaults({
   logger: providedLogger,
   ...overrides
 }: Partial<ReduceOptions>): Promise<ReduceOptions> {
-  const globalLoggingConfig = await loggingConfig.get();
+  const globalLoggingConfig = await getLoggingConfig();
   const logger = providedLogger ?? new ConsoleLogger();
 
   return {
@@ -906,10 +907,13 @@ export async function reduceExtensionPipeline(
   const pipelineLogger = partialOptions.logger ?? new ConsoleLogger();
 
   // `await` promises to avoid race condition where the calls here delete debug entries from this call to reducePipeline
-  await Promise.allSettled([
-    traces.clear(pipelineLogger.context.extensionId),
-    clearExtensionDebugLogs(pipelineLogger.context.extensionId),
-  ]);
+  await allSettled(
+    [
+      traces.clear(pipelineLogger.context.extensionId),
+      clearExtensionDebugLogs(pipelineLogger.context.extensionId),
+    ],
+    { catch: "ignore" },
+  );
 
   return reducePipeline(pipeline, initialValues, {
     ...partialOptions,

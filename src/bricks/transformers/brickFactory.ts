@@ -50,7 +50,7 @@ import {
 import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineExpression } from "@/utils/expressionUtils";
 import { isContentScript } from "webext-detect-page";
-import { getTopLevelFrame } from "webext-messenger";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { HeadlessModeError } from "@/bricks/errors";
@@ -342,8 +342,8 @@ class UserDefinedBrick extends BrickABC {
     // renderer. The caller can't run the whole brick in the contentScript because renderers can return React
     // Components which can't be serialized across messenger boundaries.
 
-    // TODO: call top-level contentScript directly after https://github.com/pixiebrix/webext-messenger/issues/72
-    const topLevelFrame = await getTopLevelFrame();
+    // Note: This code can be run either in the sidebar or in a modal
+    const topLevelFrame = await getConnectedTarget();
 
     try {
       return await runHeadlessPipeline(topLevelFrame, {

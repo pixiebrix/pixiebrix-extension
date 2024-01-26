@@ -15,18 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import reportError from "@/telemetry/reportError";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import sidebarInThisTab from "@/sidebar/messenger/api";
-import { isEmpty } from "lodash";
+import { isEmpty, throttle } from "lodash";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
-import {
-  insertSidebarFrame,
-  isSidebarFrameVisible,
-  removeSidebarFrame,
-} from "./sidebarDomControllerLite";
+import * as sidebarMv2 from "./sidebarDomControllerLite";
 import { type Except } from "type-fest";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -42,16 +37,45 @@ import type {
 } from "@/types/sidebarTypes";
 import { getTemporaryPanelSidebarEntries } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
 import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
-import { logPromiseDuration } from "@/utils/promiseUtils";
-import { waitAnimationFrame } from "@/utils/domUtils";
+import * as sidePanel from "@/sidebar/sidePanel/messenger/api";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
+import { backgroundTarget, getMethod } from "webext-messenger";
+import { isMV3 } from "@/mv3/api";
 
-export const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
+const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
+
+export const isSidePanelOpen = isMV3()
+  ? sidePanel.isSidePanelOpen
+  : sidebarMv2.isSidebarFrameVisible;
+
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
+const isSidePanelOpenSync = isMV3()
+  ? sidePanel.isSidePanelOpenSync
+  : sidebarMv2.isSidebarFrameVisible;
+
+// - Only start one ping at a time
+// - Limit to one request every second (if the user closes the sidebar that quickly, we likely see those errors anyway)
+// - Throw custom error if the sidebar doesn't respond in time
+const pingSidebar = memoizeUntilSettled(
+  throttle(async () => {
+    try {
+      await sidebarInThisTab.pingSidebar();
+    } catch (error) {
+      // TODO: Use TimeoutError after https://github.com/sindresorhus/p-timeout/issues/41
+      throw new Error("The sidebar did not respond in time", { cause: error });
+    }
+  }, 1000) as () => Promise<void>,
+);
 
 /**
  * Event listeners triggered when the sidebar shows and is ready to receive messages.
  */
 export const sidebarShowEvents = new SimpleEventTarget<RunArgs>();
+
+export function sidebarWasLoaded(): void {
+  sidebarShowEvents.emit({ reason: RunReason.MANUAL });
+}
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
 const panels: PanelEntry[] = [];
@@ -60,63 +84,21 @@ let modActivationPanelEntry: ModActivationPanelEntry | null = null;
 
 /**
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
- * @param activateOptions options controlling the visible panel in the sidebar
  */
-export async function showSidebar(
-  activateOptions: ActivatePanelOptions = {},
-): Promise<void> {
-  console.debug("sidebarController:showSidebar", {
-    isSidebarFrameVisible: isSidebarFrameVisible(),
-  });
-
+export async function showSidebar(): Promise<void> {
+  console.debug("sidebarController:showSidebar");
   reportEvent(Events.SIDEBAR_SHOW);
-  const isAlreadyShowing = isSidebarFrameVisible();
-
-  if (!isAlreadyShowing) {
-    insertSidebarFrame();
+  if (isMV3()) {
+    // TODO: Import from background/messenger/api.ts after the strictNullChecks migration, drop "SIDEBAR_PING" string
+    await getMethod("SHOW_MY_SIDE_PANEL" as "SIDEBAR_PING", backgroundTarget)();
+  } else if (!sidebarMv2.isSidebarFrameVisible()) {
+    sidebarMv2.insertSidebarFrame();
   }
 
   try {
-    await sidebarInThisTab.pingSidebar();
+    await pingSidebar();
   } catch (error) {
     throw new Error("The sidebar did not respond in time", { cause: error });
-  }
-
-  if (!isAlreadyShowing || (activateOptions.refresh ?? true)) {
-    // Run the sidebar extension points available on the page. If the sidebar is already in the page, running
-    // all the callbacks ensures the content is up-to-date
-
-    // Currently, this runs the listening SidebarExtensionPoint.run callbacks in not particular order. Also note that
-    // we're not awaiting their resolution (because they may contain long-running bricks).
-    if (!isSidebarFrameVisible()) {
-      console.error(
-        "Pre-condition failed: sidebar is not attached in the page for call to sidebarShowEvents.emit",
-      );
-    }
-
-    console.debug("sidebarController:showSidebar emitting sidebarShowEvents", {
-      isSidebarFrameVisible: isSidebarFrameVisible(),
-    });
-
-    sidebarShowEvents.emit({ reason: RunReason.MANUAL });
-  }
-
-  if (!isEmpty(activateOptions)) {
-    // The sidebarSlice handles the race condition with the panels loading by keeping track of the latest pending
-    // activatePanel request.
-    void sidebarInThisTab
-      .activatePanel(getTimedSequence(), {
-        ...activateOptions,
-        // If the sidebar wasn't showing, force the behavior. (Otherwise, there's a race on the initial activation,
-        // where depending on when the message is received, the sidebar might already be showing a panel)
-        force: activateOptions.force || !isAlreadyShowing,
-      })
-      // eslint-disable-next-line promise/prefer-await-to-then -- not in an async method
-      .catch((error: unknown) => {
-        reportError(
-          new Error("Error activating sidebar panel", { cause: error }),
-        );
-      });
   }
 }
 
@@ -127,7 +109,7 @@ export async function showSidebar(
 export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
   expectContext("contentScript");
 
-  if (!isSidebarFrameVisible()) {
+  if (!(await isSidePanelOpen())) {
     console.warn("sidebar is not attached to the page");
   }
 
@@ -138,31 +120,16 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
 }
 
 /**
- * Awaitable version of showSidebar which does not reload existing panels if the sidebar is already visible
- * @see showSidebar
- */
-export async function ensureSidebar(): Promise<void> {
-  console.debug("sidebarController:ensureSidebar", {
-    isSidebarFrameVisible: isSidebarFrameVisible(),
-  });
-
-  if (!isSidebarFrameVisible()) {
-    expectContext("contentScript");
-    await logPromiseDuration("ensureSidebar", showSidebar());
-  }
-}
-
-/**
  * Hide the sidebar. Dispatches HIDE_SIDEBAR_EVENT_NAME event even if the sidebar is not currently visible.
  * @see HIDE_SIDEBAR_EVENT_NAME
  */
 export function hideSidebar(): void {
   console.debug("sidebarController:hideSidebar", {
-    isSidebarFrameVisible: isSidebarFrameVisible(),
+    isSidebarFrameVisible: sidebarMv2.isSidebarFrameVisible(),
   });
 
   reportEvent(Events.SIDEBAR_HIDE);
-  removeSidebarFrame();
+  sidebarMv2.removeSidebarFrame();
   window.dispatchEvent(new CustomEvent(HIDE_SIDEBAR_EVENT_NAME));
 }
 
@@ -177,7 +144,7 @@ export async function reloadSidebar(): Promise<void> {
 
   // Hide and reshow to force a full-refresh of the sidebar
 
-  if (isSidebarFrameVisible()) {
+  if (sidebarMv2.isSidebarFrameVisible()) {
     hideSidebar();
   }
 
@@ -185,40 +152,29 @@ export async function reloadSidebar(): Promise<void> {
 }
 
 /**
- * Rehydrate the already visible sidebar.
- *
- * For use with background/browserAction.
- * - `browserAction` calls toggleSidebarFrame to immediately adds the sidebar iframe
- * - It injects the content script
- * - It calls this method via messenger to complete the sidebar initialization
+ * @param activateOptions options controlling the visible panel in the sidebar
  */
-export async function rehydrateSidebar(): Promise<void> {
-  // Ensure DOM state is ready for accurate call to isSidebarFrameVisible. Shouldn't strictly be necessary, but
-  // giving it a try and shouldn't impact performance. The background page has limited ability to determine when it's
-  // OK to call rehydrateSidebar via messenger. See background/browserAction.ts.
-  await waitAnimationFrame();
+export async function updateSidebar(
+  activateOptions: ActivatePanelOptions = {},
+): Promise<void> {
+  await pingSidebar();
 
-  // To assist with debugging race conditions in sidebar initialization
-  console.debug("sidebarController:rehydrateSidebar", {
-    isSidebarFrameVisible: isSidebarFrameVisible(),
-  });
-
-  if (isSidebarFrameVisible()) {
-    // `showSidebar` includes the logic to hydrate it
-    // `refresh: true` is the default, but be explicit that the sidebarShowEvents must run.
-    void showSidebar({ refresh: true });
-  } else {
-    // `hideSidebar` includes events to cleanup the sidebar
-    hideSidebar();
+  if (!isEmpty(activateOptions)) {
+    // The sidebarSlice handles the race condition with the panels loading by keeping track of the latest pending
+    // activatePanel request.
+    await sidebarInThisTab.activatePanel(getTimedSequence(), {
+      ...activateOptions,
+      force: activateOptions.force,
+    });
   }
 }
 
-function renderPanelsIfVisible(): void {
+export async function renderPanelsIfVisible(): Promise<void> {
   expectContext("contentScript");
 
   console.debug("sidebarController:renderPanelsIfVisible");
 
-  if (isSidebarFrameVisible()) {
+  if (await isSidePanelOpen()) {
     void sidebarInThisTab.renderPanels(getTimedSequence(), panels);
   } else {
     console.debug(
@@ -227,10 +183,12 @@ function renderPanelsIfVisible(): void {
   }
 }
 
-export function showSidebarForm(entry: Except<FormPanelEntry, "type">): void {
+export async function showSidebarForm(
+  entry: Except<FormPanelEntry, "type">,
+): Promise<void> {
   expectContext("contentScript");
 
-  if (!isSidebarFrameVisible()) {
+  if (!(await isSidePanelOpen())) {
     throw new Error("Cannot add sidebar form if the sidebar is not visible");
   }
 
@@ -240,10 +198,10 @@ export function showSidebarForm(entry: Except<FormPanelEntry, "type">): void {
   });
 }
 
-export function hideSidebarForm(nonce: UUID): void {
+export async function hideSidebarForm(nonce: UUID): Promise<void> {
   expectContext("contentScript");
 
-  if (!isSidebarFrameVisible()) {
+  if (!(await isSidePanelOpen())) {
     // Already hidden
     return;
   }
@@ -251,12 +209,12 @@ export function hideSidebarForm(nonce: UUID): void {
   void sidebarInThisTab.hideForm(getTimedSequence(), nonce);
 }
 
-export function showTemporarySidebarPanel(
+export async function showTemporarySidebarPanel(
   entry: Except<TemporaryPanelEntry, "type">,
-): void {
+): Promise<void> {
   expectContext("contentScript");
 
-  if (!isSidebarFrameVisible()) {
+  if (!(await isSidePanelOpen())) {
     throw new Error(
       "Cannot add temporary sidebar panel if the sidebar is not visible",
     );
@@ -268,12 +226,12 @@ export function showTemporarySidebarPanel(
   });
 }
 
-export function updateTemporarySidebarPanel(
+export async function updateTemporarySidebarPanel(
   entry: Except<TemporaryPanelEntry, "type">,
-): void {
+): Promise<void> {
   expectContext("contentScript");
 
-  if (!isSidebarFrameVisible()) {
+  if (!(await isSidePanelOpen())) {
     throw new Error(
       "Cannot add temporary sidebar panel if the sidebar is not visible",
     );
@@ -285,10 +243,10 @@ export function updateTemporarySidebarPanel(
   });
 }
 
-export function hideTemporarySidebarPanel(nonce: UUID): void {
+export async function hideTemporarySidebarPanel(nonce: UUID): Promise<void> {
   expectContext("contentScript");
 
-  if (!isSidebarFrameVisible()) {
+  if (!(await isSidePanelOpen())) {
     return;
   }
 
@@ -307,7 +265,7 @@ export function removeExtensions(extensionIds: UUID[]): void {
   // `panels` is const, so replace the contents
   const current = panels.splice(0, panels.length);
   panels.push(...current.filter((x) => !extensionIds.includes(x.extensionId)));
-  renderPanelsIfVisible();
+  void renderPanelsIfVisible();
 }
 
 /**
@@ -337,7 +295,7 @@ export function removeExtensionPoint(
     ),
   );
 
-  renderPanelsIfVisible();
+  void renderPanelsIfVisible();
 }
 
 /**
@@ -372,7 +330,7 @@ export function reservePanels(refs: ModComponentRef[]): void {
     }
   }
 
-  renderPanelsIfVisible();
+  void renderPanelsIfVisible();
 }
 
 export function updateHeading(extensionId: UUID, heading: string): void {
@@ -391,7 +349,7 @@ export function updateHeading(extensionId: UUID, heading: string): void {
       entry.extensionPointId,
       { ...entry },
     );
-    renderPanelsIfVisible();
+    void renderPanelsIfVisible();
   } else {
     console.warn(
       "updateHeading: No panel exists for extension %s",
@@ -439,7 +397,7 @@ export function upsertPanel(
     });
   }
 
-  renderPanelsIfVisible();
+  void renderPanelsIfVisible();
 }
 
 /**
@@ -448,12 +406,12 @@ export function upsertPanel(
  * @param entry the mod activation panel entry
  * @throws Error if the sidebar frame is not visible
  */
-export function showModActivationInSidebar(
+export async function showModActivationInSidebar(
   entry: Except<ModActivationPanelEntry, "type">,
-): void {
+): Promise<void> {
   expectContext("contentScript");
 
-  if (!isSidebarFrameVisible()) {
+  if (!(await isSidePanelOpen())) {
     throw new Error(
       "Cannot activate mods in the sidebar if the sidebar is not visible",
     );
@@ -474,13 +432,13 @@ export function showModActivationInSidebar(
  * Hide the mod activation panel in the sidebar.
  * @see showModActivationInSidebar
  */
-export function hideModActivationInSidebar(): void {
+export async function hideModActivationInSidebar(): Promise<void> {
   expectContext("contentScript");
 
   // Clear out in in-memory tracking
   modActivationPanelEntry = null;
 
-  if (!isSidebarFrameVisible()) {
+  if (!(await isSidePanelOpen())) {
     return;
   }
 
@@ -507,4 +465,43 @@ export function getReservedPanelEntries(): {
     forms: getFormPanelSidebarEntries(),
     modActivationPanel: modActivationPanelEntry,
   };
+}
+
+function sidePanelOnCloseSignal(): AbortSignal {
+  const controller = new AbortController();
+  expectContext("contentScript");
+  if (isMV3()) {
+    window.addEventListener(
+      "resize",
+      () => {
+        // TODO: It doesn't work when the dev tools are open on the side.
+        // This is a rare event because we condition users to move the dev tools to
+        // the bottom via https://github.com/pixiebrix/pixiebrix-extension/pull/6952
+        // … but it's still possible for people with very large screens and those
+        // who temporarily moved the dev tools to the side anyway.
+        // Official event requested in https://github.com/w3c/webextensions/issues/517
+        if (isSidePanelOpenSync() === false) {
+          controller.abort();
+        }
+      },
+      { signal: controller.signal },
+    );
+  } else {
+    window.addEventListener(
+      HIDE_SIDEBAR_EVENT_NAME,
+      () => {
+        controller.abort();
+      },
+      {
+        signal: controller.signal,
+      },
+    );
+  }
+
+  return controller.signal;
+}
+
+export function sidePanelOnClose(callback: () => void): void {
+  const signal = sidePanelOnCloseSignal();
+  signal.addEventListener("abort", callback, { once: true });
 }

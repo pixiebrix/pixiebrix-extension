@@ -52,7 +52,7 @@ import { selectExtensionContext } from "@/starterBricks/helpers";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { selectAllBlocks } from "@/bricks/util";
+import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { guessSelectedElement } from "@/utils/selectionController";
 import {
@@ -69,6 +69,7 @@ import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import pluralize from "@/utils/pluralize";
+import { allSettled } from "@/utils/promiseUtils";
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
@@ -168,7 +169,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   async getBricks(
     extension: ResolvedModComponent<ContextMenuConfig>,
   ): Promise<Brick[]> {
-    return selectAllBlocks(extension.config.action);
+    return collectAllBricks(extension.config.action);
   }
 
   override uninstall({ global = false }: { global?: boolean }): void {
@@ -255,32 +256,31 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       "contextMenu starter bricks",
     );
 
-    const results = await Promise.allSettled(
-      this.modComponents.map(async (extension) => {
-        try {
-          await this.registerExtension(extension);
-        } catch (error) {
-          reportError(error, {
-            context: {
-              deploymentId: extension._deployment?.id,
-              extensionPointId: extension.extensionPointId,
-              extensionId: extension.id,
-            },
-          });
-          throw error;
-        }
-      }),
-    );
+    const promises = this.modComponents.map(async (extension) => {
+      try {
+        await this.registerExtension(extension);
+      } catch (error) {
+        reportError(error, {
+          context: {
+            deploymentId: extension._deployment?.id,
+            extensionPointId: extension.extensionPointId,
+            extensionId: extension.id,
+          },
+        });
+        throw error;
+      }
+    });
 
-    const numErrors = results.filter((x) => x.status === "rejected").length;
-    if (numErrors > 0) {
-      notify.error(
-        `An error occurred adding ${pluralize(
-          numErrors,
-          "$$ context menu item",
-        )}`,
-      );
-    }
+    await allSettled(promises, {
+      catch(errors) {
+        notify.error(
+          `An error occurred adding ${pluralize(
+            errors.length,
+            "$$ context menu item",
+          )}`,
+        );
+      },
+    });
   }
 
   decideReaderRoot(target: HTMLElement | Document): HTMLElement | Document {

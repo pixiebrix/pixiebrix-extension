@@ -474,21 +474,6 @@ export const editorSlice = createSlice({
     setBetaUIEnabled(state, action: PayloadAction<boolean>) {
       state.isBetaUI = action.payload;
     },
-    removeElementNodeUIState(
-      state,
-      action: PayloadAction<{
-        nodeIdToRemove: UUID;
-        newActiveNodeId?: UUID;
-      }>,
-    ) {
-      const elementUIState = state.elementUIStates[state.activeElementId];
-      const { nodeIdToRemove, newActiveNodeId } = action.payload;
-
-      const activeNodeId = newActiveNodeId ?? FOUNDATION_NODE_ID;
-      setActiveNodeId(state, activeNodeId);
-
-      delete elementUIState.nodeUIStates[nodeIdToRemove];
-    },
     setElementActiveNodeId(state, action: PayloadAction<UUID>) {
       setActiveNodeId(state, action.payload);
     },

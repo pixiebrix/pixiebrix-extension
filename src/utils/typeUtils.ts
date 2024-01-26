@@ -23,7 +23,7 @@ import { type Primitive } from "type-fest";
  */
 export function isPrimitive(value: unknown): value is Primitive {
   if (typeof value === "object") {
-    return value === null;
+    return value == null;
   }
 
   return typeof value !== "function";

@@ -53,7 +53,8 @@ export class SelectElement extends TransformerABC {
   );
 
   async transform(): Promise<unknown> {
-    // Include here to avoid error during header generation (which runs in node environment)
+    // The picker uses `bootstrap-switch-button`, which does a `window` check on load and breaks
+    // the MV3 background worker. Lazy-loading it keeps the background worker from breaking.
     const { userSelectElement } = await import(
       /* webpackChunkName: "editorContentScript" */ "@/contentScript/pageEditor/elementPicker"
     );
