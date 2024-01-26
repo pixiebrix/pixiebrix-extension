@@ -60,7 +60,7 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
       extensionPointType: extension.type,
     });
 
-    await Promise.all(this.nunjuckValidationPromises.splice(0));
+    await Promise.all(this.nunjuckValidationPromises);
   }
 
   private pushErrorAnnotation({
