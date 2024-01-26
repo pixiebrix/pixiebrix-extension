@@ -67,6 +67,31 @@ const UNKNOWN_OPTION: SelectStringOption = {
   value: null,
 };
 
+function shouldShowPlaceholderText(uiType: UiType): boolean {
+  switch (true) {
+    case uiType.propertyType === "number": {
+      return true;
+    }
+
+    // No need to render placeholder text for anything that isn't propertyType string or number
+    case uiType.propertyType !== "string": {
+      return false;
+    }
+
+    // Single-line text, Paragraph text, Email, and Website fields
+    case uiType.uiWidget === "textarea":
+    case uiType.propertyFormat === "email":
+    case uiType.propertyFormat === "uri":
+    case !uiType.uiWidget && !uiType.propertyFormat: {
+      return true;
+    }
+
+    default: {
+      return false;
+    }
+  }
+}
+
 const FieldEditor: React.FC<{
   name: string;
   propertyName: string;
@@ -226,6 +251,15 @@ const FieldEditor: React.FC<{
     },
     label: "Field Description",
   };
+  const placeholderProps: SchemaFieldProps = {
+    name: `${name}.uiSchema.${propertyName}.ui:placeholder`,
+    schema: {
+      type: "string",
+      description:
+        "A short hint displayed in the input field before the user enters a value.",
+    },
+    label: "Placeholder",
+  };
 
   const uiType: UiType =
     selectedUiTypeOption.value == null
@@ -298,6 +332,10 @@ const FieldEditor: React.FC<{
         !FIELD_TYPES_WITHOUT_DEFAULT.includes(selectedUiTypeOption.value) && (
           <SchemaField {...defaultFieldProps} />
         )}
+
+      {shouldShowPlaceholderText(uiType) && (
+        <SchemaField {...placeholderProps} />
+      )}
 
       {propertySchema.enum && (
         <>
