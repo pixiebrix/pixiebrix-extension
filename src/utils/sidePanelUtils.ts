@@ -52,14 +52,14 @@ export async function _openSidePanel(tabId: number): Promise<void> {
   }
 }
 
-export async function isSidePanelOpen(tabId: number): Promise<boolean> {
+async function isSidePanelOpen(tabId: number): Promise<boolean> {
   forbidContext(
     "sidebar",
     "The sidebar shouldn't ask whether it's open. The code should be refactored to avoid this call.",
   );
 
   try {
-    await messenger("SIDEBAR_PING", { retry: false }, { tabId });
+    await messenger("SIDEBAR_PING", { retry: false }, getSidebarTarget(tabId));
     return true;
   } catch {
     return false;
@@ -70,7 +70,7 @@ export function getSidebarPath(tabId: number): string {
   return "/sidebar.html?tabId=" + tabId;
 }
 
-export async function getSidebarTarget(tabId: number): Promise<PageTarget> {
+export function getSidebarTarget(tabId: number): PageTarget {
   if (!isMV3()) {
     return { tabId, page: "/sidebar.html" };
   }

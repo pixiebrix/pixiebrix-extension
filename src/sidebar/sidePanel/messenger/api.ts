@@ -22,22 +22,25 @@
  */
 
 import { isMV3 } from "@/mv3/api";
-import { expectContext } from "@/utils/expectContext";
-import { getSidebarPath } from "@/utils/sidePanelUtils";
+import { isContentScript } from "webext-detect-page";
+import { getSidebarTarget } from "@/utils/sidePanelUtils";
 import { type PageTarget, getThisFrame } from "webext-messenger";
 
 export async function getSidebarTargetForCurrentTab(): Promise<PageTarget> {
-  expectContext(
-    "contentScript",
-    "Only the content script can call `getSidebarTargetForCurrentTab`, use `getSidebarTarget` in other contexts",
-  );
+  // Do not use `expectContext("contentScript")` here because other contexts import this file transitively.
 
   if (!isMV3()) {
     return { tabId: "this", page: "/sidebar.html" };
   }
 
+  if (!isContentScript()) {
+    // The background imports the sidebar controller, which imports the API, which calls this function.
+    // No messages are actually sent anywhere through this path.
+    return {
+      page: "Use `getSidebarTarget` instead of `getSidebarTargetForCurrentTab` in contexts other than the content script",
+    };
+  }
+
   const frame = await getThisFrame();
-  return {
-    page: getSidebarPath(frame.tabId),
-  };
+  return getSidebarTarget(frame.tabId);
 }
