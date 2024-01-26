@@ -202,15 +202,20 @@ const createConfig = (env, options) =>
         }),
 
       new NodePolyfillPlugin({
-        // Specify the least amount of polyfills because by default it event polyfills `console`
+        // Specify the least amount of polyfills.
+        // By default it polyfills even `console`
         includeAliases: ["buffer", "Buffer", "http", "https"],
       }),
       new WebExtensionTarget({
         weakRuntimeCheck: true,
-        background: {
-          pageEntry: "background",
-          serviceWorkerEntry: "background",
-        },
+        background:
+          process.env.MV === "3"
+            ? {
+                serviceWorkerEntry: "background",
+              }
+            : {
+                pageEntry: "background",
+              },
       }),
       new webpack.ProvidePlugin({
         $: "jquery",
