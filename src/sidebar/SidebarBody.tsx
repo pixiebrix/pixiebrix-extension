@@ -18,7 +18,6 @@
 import React from "react";
 import ConnectedSidebar from "./ConnectedSidebar";
 import Header from "./Header";
-import ErrorBanner from "./ErrorBanner";
 import RestrictedUrlPopupApp from "@/tinyPages/RestrictedUrlPopupApp";
 import useConnectedTargetUrl from "./hooks/useConnectedTargetUrl";
 import { getReasonByUrl as getRestrictedReasonByUrl } from "@/tinyPages/restrictedUrlPopupUtils";
@@ -39,7 +38,6 @@ function SidebarBody() {
   const url = useConnectedTargetUrl();
   return (
     <>
-      <ErrorBanner />
       <Header />
       <div className="full-height">{url && <SidebarReady url={url} />}</div>
     </>

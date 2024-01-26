@@ -67,8 +67,7 @@ async function showSidebarActivationForMods(
 
 function getNextUrlFromActivateUrl(activateUrl: string): string | null {
   const url = new URL(activateUrl);
-  const searchParams = new URLSearchParams(url.search);
-  return searchParams.get("nextUrl");
+  return url.searchParams.get("nextUrl");
 }
 
 function addActivateModsListener(): void {

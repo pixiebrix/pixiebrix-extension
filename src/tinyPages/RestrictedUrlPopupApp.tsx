@@ -36,7 +36,8 @@ async function openInActiveTab(event: React.MouseEvent<HTMLAnchorElement>) {
     url: event.currentTarget.href,
   });
 
-  // TODO: Drop after restrictedUrlPopup.html is removed
+  // TODO: Drop conditon after we drop the browser action popover since this
+  // component will only be shown in the sidebar
   if (!isBrowserSidebar()) {
     window.close();
   }
