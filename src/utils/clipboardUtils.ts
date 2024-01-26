@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import pDefer from "p-defer";
-import notify, { hideNotification } from "@/utils/notify";
 import { BusinessError } from "@/errors/businessErrors";
 import legacyCopyText from "copy-text-to-clipboard";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -55,48 +53,27 @@ async function interactiveWriteToClipboard(
 ): Promise<void> {
   try {
     await clipboardFn();
+    return;
   } catch (error) {
-    if (isDocumentFocusError(error)) {
-      const copyPromise = pDefer<void>();
+    if (!isDocumentFocusError(error)) {
+      throw error;
+    }
+  }
 
-      const notificationId = notify.info({
-        message: `Click anywhere to copy ${type} to clipboard`,
-        autoDismissTimeMs: Number.POSITIVE_INFINITY,
-        dismissable: false,
-      });
+  // eslint-disable-next-line no-alert -- Easiest UI for this, we can revisit later
+  alert('Please click "OK" to allow PixieBrix to copy to your clipboard.');
 
-      const handler = async () => {
-        try {
-          hideNotification(notificationId);
-          await clipboardFn();
-          copyPromise.resolve();
-        } catch (error) {
-          if (isDocumentFocusError(error)) {
-            copyPromise.reject(
-              new BusinessError(
-                "Your Browser was unable to determine the user action that initiated the clipboard write.",
-              ),
-            );
-            return;
-          }
-
-          copyPromise.reject(error);
-        }
-      };
-
-      document.body.addEventListener("click", handler);
-
-      try {
-        await copyPromise.promise;
-      } finally {
-        document.body.removeEventListener("click", handler);
-      }
-
-      // Remember to return to avoid falling through to the original error
-      return;
+  try {
+    await clipboardFn();
+  } catch (error) {
+    if (!isDocumentFocusError(error)) {
+      throw error;
     }
 
-    throw error;
+    throw new BusinessError(
+      "Your Browser was unable to determine the user action that initiated the clipboard write.",
+      { cause: error },
+    );
   }
 }
 
