@@ -67,6 +67,10 @@ export default async function initBrowserAction(): Promise<void> {
     - Otherwise:
       - openSidePanel will open it
       - SIDEBAR_CLOSE will fail because the message won't reach the sidebar in time
+
+    More info in:
+    - https://github.com/pixiebrix/pixiebrix-extension/pull/7429
+    - https://github.com/w3c/webextensions/issues/521
     */
     await openSidePanel(tab.id);
     await messenger(
