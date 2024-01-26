@@ -108,14 +108,7 @@ exports[`Storyshots Blueprints/OnboardingView Default 1`] = `
           className="d-flex justify-content-center flex-column text-center col"
         >
           <p>
-            Learn how to create your own mods in minutes by following our
-             
-            <span
-              className="text-primary"
-            >
-              step-by-step guide
-            </span>
-            .
+            Learn how to create your own mods in minutes by following our step-by-step guide.
           </p>
           <div
             className="align-self-center"

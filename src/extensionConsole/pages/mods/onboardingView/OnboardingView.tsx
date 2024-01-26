@@ -33,8 +33,8 @@ import { MARKETPLACE_URL } from "@/urlConstants";
 const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
   <Col className="d-flex justify-content-center flex-column text-center">
     <p>
-      <span className="text-primary">Not sure what to build?</span> Activate a
-      pre-made mod from the public marketplace, or just peruse for inspiration.
+      Not sure what to build Activate a pre-made mod from the public
+      marketplace, or just peruse for inspiration.
     </p>
     <div className="align-self-center">
       <a
@@ -96,8 +96,8 @@ const ContactTeamAdminColumn: React.VoidFunctionComponent = () => (
 const UnaffiliatedColumn: React.VoidFunctionComponent = () => (
   <Col className="d-flex justify-content-center flex-column text-center">
     <p>
-      Learn how to create your own mods in minutes by following our{" "}
-      <span className="text-primary">step-by-step guide</span>.
+      Learn how to create your own mods in minutes by following our step-by-step
+      guide.
     </p>
     <div className="align-self-center">
       <a
