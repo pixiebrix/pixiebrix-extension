@@ -33,7 +33,7 @@ import { MARKETPLACE_URL } from "@/urlConstants";
 const ActivateFromMarketplaceColumn: React.VoidFunctionComponent = () => (
   <Col className="d-flex justify-content-center flex-column text-center">
     <p>
-      Not sure what to build Activate a pre-made mod from the public
+      Not sure what to build? Activate a pre-made mod from the public
       marketplace, or just peruse for inspiration.
     </p>
     <div className="align-self-center">
