@@ -51,6 +51,8 @@ const knipConfig = {
     "src/vendors/page-metadata-parser/**",
     // False positive - dynamically imported in initRobot
     "src/contrib/uipath/UiPathRobot.ts",
+    // Unused, but we'll likely need this again in the future
+    "src/hooks/useContextInvalidated.ts",
   ],
   ignoreDependencies: [
     // Browser environment types
