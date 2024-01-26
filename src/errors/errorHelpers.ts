@@ -62,6 +62,7 @@ const IGNORED_ERROR_PATTERNS = [
   /No frame with id \d+ in tab \d+/,
   /^No tab with id/,
   "The tab was closed.",
+  /RECORD_ERROR/, // Reporting errors cause loops https://github.com/pixiebrix/pixiebrix-extension/issues/7430
   ERROR_TAB_DOES_NOT_EXIST,
   ERROR_TARGET_CLOSED_EARLY,
   CONTEXT_INVALIDATED_ERROR,
