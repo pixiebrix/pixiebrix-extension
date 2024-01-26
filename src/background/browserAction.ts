@@ -58,11 +58,16 @@ export default async function initBrowserAction(): Promise<void> {
   });
 
   browserAction.onClicked.addListener(async (tab) => {
-    // This handler relies on a race condition:
-    // - If the was open, openSidePanel will do nothing,
-    //   but SIDEBAR_CLOSE will reach the sidebar and close it
-    // - If the sidebar was closed, openSidePanel will open it,
-    //   and SIDEBAR_CLOSE will fail because the message won't reach the sidebar in time
+    /*
+    This handler relies on a race condition:
+
+    - If the sidebar was open:
+      - openSidePanel will do nothing
+      - SIDEBAR_CLOSE will reach the sidebar and close it
+    - Otherwise:
+      - openSidePanel will open it
+      - SIDEBAR_CLOSE will fail because the message won't reach the sidebar in time
+    */
     await openSidePanel(tab.id);
     await messenger(
       "SIDEBAR_CLOSE",
