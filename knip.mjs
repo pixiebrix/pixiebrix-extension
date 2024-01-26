@@ -12,7 +12,6 @@ const knipConfig = {
     ...Object.values(config.entry).map((x) =>
       `${x}.{ts,tsx,js,jsx}`.replace("./", ""),
     ),
-    "src/development/headers.ts",
     // App messenger and common storage
     "src/contentScript/externalProtocol.ts",
     "src/background/messenger/external/api.ts",
