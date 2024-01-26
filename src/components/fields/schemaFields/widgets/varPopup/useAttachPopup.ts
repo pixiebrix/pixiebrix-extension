@@ -102,38 +102,45 @@ function useAttachPopup({ inputMode, inputElementRef, value }: Props) {
   const isMenuAvailable =
     (inputMode === "var" || inputMode === "string") && autosuggestEnabled;
 
-  const updateSelection = (value: string) => {
-    if (inputMode !== "var" && inputMode !== "string") {
-      return;
-    }
-
-    // For string inputs, we always use TextAreas, hence the cast of the ref to HTMLTextAreaElement
-    const cursorPosition =
-      (inputElementRef.current as HTMLTextAreaElement)?.selectionStart ?? 0;
-
-    if (inputMode === "var") {
-      const variableName = getVariableAtPosition(value, cursorPosition);
-      dispatch(popupSlice.actions.showMenuForVariable(variableName));
-    }
-
-    if (inputMode === "string") {
-      const variableName = getLikelyVariableAtPosition(value, cursorPosition, {
-        clampPosition: true,
-        includeBoundary: true,
-      }).name;
-
-      console.debug("getLikelyVariableAtPosition", variableName, {
-        value,
-        cursorPosition,
-      });
-
-      if (variableName) {
-        dispatch(popupSlice.actions.showMenuForVariable(variableName));
-      } else if (isMenuShowing) {
-        dispatch(popupSlice.actions.hideMenu());
+  const updateSelection = useCallback(
+    (value: string) => {
+      if (inputMode !== "var" && inputMode !== "string") {
+        return;
       }
-    }
-  };
+
+      // For string inputs, we always use TextAreas, hence the cast of the ref to HTMLTextAreaElement
+      const cursorPosition =
+        (inputElementRef.current as HTMLTextAreaElement)?.selectionStart ?? 0;
+
+      if (inputMode === "var") {
+        const variableName = getVariableAtPosition(value, cursorPosition);
+        dispatch(popupSlice.actions.showMenuForVariable(variableName));
+      }
+
+      if (inputMode === "string") {
+        const variableName = getLikelyVariableAtPosition(
+          value,
+          cursorPosition,
+          {
+            clampPosition: true,
+            includeBoundary: true,
+          },
+        ).name;
+
+        console.debug("getLikelyVariableAtPosition", variableName, {
+          value,
+          cursorPosition,
+        });
+
+        if (variableName) {
+          dispatch(popupSlice.actions.showMenuForVariable(variableName));
+        } else if (isMenuShowing) {
+          dispatch(popupSlice.actions.hideMenu());
+        }
+      }
+    },
+    [inputElementRef, inputMode, isMenuShowing],
+  );
 
   useEffect(() => {
     if (!inputElementRef.current || !isMenuAvailable) {
@@ -178,7 +185,14 @@ function useAttachPopup({ inputMode, inputElementRef, value }: Props) {
       inputElement?.removeEventListener("keypress", onKeyPress);
       inputElement?.removeEventListener("keydown", onKeyDown);
     };
-  }, [inputElementRef, isMenuAvailable, inputMode, isMenuShowing, value]);
+  }, [
+    inputElementRef,
+    isMenuAvailable,
+    inputMode,
+    isMenuShowing,
+    value,
+    updateSelection,
+  ]);
 
   // Update the likely variable as the user types
   useDebouncedEffect(

@@ -76,6 +76,8 @@ function usePositionVarPopup({
   const dispatch = useDispatch();
   const rootElementRef = useRef<HTMLDivElement>(null);
   const [resize, setResize] = useState(0);
+  // Whether the final position has been computed and the var container has been translated
+  const [positioned, setPositioned] = useState(false);
 
   // Use ResizeObserver to detect changes in the height of the menu
   // This is especially important when the menu is above the textarea
@@ -126,12 +128,13 @@ function usePositionVarPopup({
     );
 
     rootElementRef.current.style.transform = `translate3d(0, ${position.y}px, 0)`;
+    setPositioned(true);
 
     // While the position does not rely on the knownVars or the resize state,
     // we need to recompute the position when either of these change.
   }, [knownVars, dispatch, resize]);
 
-  return { rootElementRef };
+  return { rootElementRef, positioned };
 }
 
 const VarMenu: React.FunctionComponent<VarMenuProps> = ({
@@ -146,7 +149,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   const { allBricks } = useAllBricks();
 
   const knownVars = useSelector(selectKnownVarsForActiveNode);
-  const { rootElementRef } = usePositionVarPopup({
+  const { rootElementRef, positioned } = usePositionVarPopup({
     knownVars,
     inputElementRef,
   });
@@ -211,6 +214,12 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     menuOptions: filteredOptions,
     onSelect: onVarSelect,
   });
+
+  // Render a hidden element if the component has not been positioned yet to avoid jumpiness
+  // when the menu is shown. This is needed because the position is computed asynchronously (see usePositionVarPopup).
+  // Also see the discussion thread for floating-ui to support synchronous computePosition:
+  // https://github.com/floating-ui/floating-ui/discussions/2720
+  if (!positioned) return <div className="hidden" ref={rootElementRef} />;
 
   if (knownVars == null) {
     return (
