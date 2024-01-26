@@ -18,10 +18,28 @@
 import { type BrickPosition } from "@/bricks/types";
 import TemplateAnalysis from "./templateAnalysis";
 import { toExpression } from "@/utils/expressionUtils";
+import { RemoteMethod } from "@/bricks/transformers/remoteMethod";
+import { triggerFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import { type Expression } from "@/types/runtimeTypes";
 
 const position: BrickPosition = {
   path: "test.path.property",
 };
+
+function blockExtensionFactory(expression: Expression<unknown>) {
+  const extension = triggerFormStateFactory();
+  extension.extension.blockPipeline = [
+    brickConfigFactory({
+      id: RemoteMethod.BLOCK_ID,
+      config: {
+        url: expression,
+      },
+    }),
+  ];
+
+  return extension;
+}
 
 describe("TemplateAnalysis", () => {
   const validNunjucksTemplates = [
@@ -46,9 +64,13 @@ describe("TemplateAnalysis", () => {
   ];
   test.each(mustacheOnlyTemplates)(
     "accepts valid mustache [%s]",
-    (template) => {
+    async (template) => {
       const analysis = new TemplateAnalysis();
-      analysis.visitExpression(position, toExpression("mustache", template));
+      const extension = blockExtensionFactory(
+        toExpression("mustache", template),
+      );
+
+      await analysis.run(extension);
 
       expect(analysis.getAnnotations()).toHaveLength(0);
     },
@@ -56,9 +78,13 @@ describe("TemplateAnalysis", () => {
 
   test.each(mustacheOnlyTemplates)(
     "rejects mustache template in non-mustache expression [%s]",
-    (template) => {
+    async (template) => {
       const analysis = new TemplateAnalysis();
-      analysis.visitExpression(position, toExpression("nunjucks", template));
+      const extension = blockExtensionFactory(
+        toExpression("nunjucks", template),
+      );
+
+      await analysis.run(extension);
 
       expect(analysis.getAnnotations()).toHaveLength(1);
     },
@@ -68,9 +94,14 @@ describe("TemplateAnalysis", () => {
 
   test.each(invalidNunjucksTemplates)(
     "rejects invalid nunjucks [%s]",
-    (template) => {
+    async (template) => {
       const analysis = new TemplateAnalysis();
-      analysis.visitExpression(position, toExpression("nunjucks", template));
+      const extension = blockExtensionFactory(
+        toExpression("nunjucks", template),
+      );
+
+      await analysis.run(extension);
+
       expect(analysis.getAnnotations()).toHaveLength(1);
     },
   );

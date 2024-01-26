@@ -52,8 +52,6 @@ export async function renderNunjucksTemplate(
 export async function validateNunjucksTemplate(
   template: TemplateValidatePayload,
 ): Promise<void> {
-  console.log("validateNunjucksTemplate", template);
-
   // Webpack caches the module import, so doesn't need to cache via lodash's `once`
   const { Template } = await import(
     /* webpackChunkName: "nunjucks" */ "nunjucks"
