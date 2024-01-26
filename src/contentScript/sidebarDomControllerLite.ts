@@ -146,16 +146,10 @@ export function insertSidebarFrame(): boolean {
 /**
  * Toggle the sidebar frame. Returns true if the sidebar is now visible, false otherwise.
  */
-export function toggleSidebarFrame(): boolean {
-  console.debug("sidebarDomControllerLite:toggleSidebarFrame", {
-    isSidebarFrameVisible: isSidebarFrameVisible(),
-  });
-
+export function toggleSidebarFrame(): void {
   if (isSidebarFrameVisible()) {
     removeSidebarFrame();
-    return false;
+  } else {
+    insertSidebarFrame();
   }
-
-  insertSidebarFrame();
-  return true;
 }

@@ -103,7 +103,7 @@ export function createTypePredicate(predicate: TypePredicate): TypePredicate {
 export function unwrapTemplateExpressions<
   T extends UnknownObject | ArrayLike<unknown>,
 >(mutableObj: Draft<T | null>) {
-  if (mutableObj === null || typeof mutableObj !== "object") {
+  if (mutableObj == null || typeof mutableObj !== "object") {
     return;
   }
 

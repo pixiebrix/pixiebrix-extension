@@ -487,11 +487,26 @@ export type LoggingConfig = {
   logValues: boolean;
 };
 
-export const loggingConfig = new StorageItem<LoggingConfig>("LOG_OPTIONS", {
+const loggingConfig = new StorageItem<LoggingConfig>("LOG_OPTIONS", {
   defaultValue: {
     logValues: false,
   },
 });
+
+let lastValue: LoggingConfig | null = null;
+export async function getLoggingConfig(): Promise<LoggingConfig> {
+  try {
+    lastValue = await loggingConfig.get();
+    return lastValue;
+  } catch {
+    // The context was probably invalidated. Logging utilities shouldn't throw errors
+    return lastValue ?? loggingConfig.defaultValue;
+  }
+}
+
+export async function setLoggingConfig(config: LoggingConfig): Promise<void> {
+  await loggingConfig.set(config);
+}
 
 /**
  * Clear all debug and trace level logs for the given extension.
