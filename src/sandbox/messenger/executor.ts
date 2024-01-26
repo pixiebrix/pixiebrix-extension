@@ -58,6 +58,7 @@ export async function validateNunjucksTemplate(
   );
 
   try {
+    // @ts-expect-error -- The last parameter is not in the types yet
     compile(template, undefined, undefined, true);
   } catch (error) {
     if (isErrorObject(error) && error.name === "Template render error") {
