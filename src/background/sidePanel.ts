@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { openSidePanel } from "@/mv3/sidePanelMigration";
+import { openSidePanel, getSidebarPath } from "@/utils/sidePanelUtils";
 import type { MessengerMeta } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
-import { getSidebarPath } from "@/sidebar/sidePanel/messenger/api";
 
 export async function showMySidePanel(this: MessengerMeta): Promise<void> {
   await openSidePanel(this.trace[0].tab.id);

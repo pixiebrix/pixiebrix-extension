@@ -18,11 +18,10 @@
 import { browserAction, isMV3, type Tab } from "@/mv3/api";
 import { executeScript } from "webext-content-scripts";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
-import { openSidePanel } from "@/mv3/sidePanelMigration";
+import { openSidePanel, getSidebarTarget } from "@/utils/sidePanelUtils";
 import { setActionPopup } from "webext-tools";
 import { getReasonByUrl } from "@/tinyPages/restrictedUrlPopupUtils";
 import { messenger } from "webext-messenger";
-import { getSidebarPath } from "@/sidebar/sidePanel/messenger/api";
 
 /**
  * Show a popover on restricted URLs because we're unable to inject content into the page. Previously we'd open
@@ -76,9 +75,7 @@ export default async function initBrowserAction(): Promise<void> {
     await messenger(
       "SIDEBAR_CLOSE",
       { isNotification: true, retry: false },
-      {
-        page: getSidebarPath(tab.id),
-      },
+      getSidebarTarget(tab.id),
     );
   });
 }

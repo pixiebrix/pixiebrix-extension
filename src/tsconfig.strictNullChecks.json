@@ -482,6 +482,7 @@
     "./types/stringTypes.ts",
     "./types/swagger.ts",
     "./urlConstants.ts",
+    "./utils/sidePanelUtils.ts",
     "./utils/ConsoleLogger.ts",
     "./utils/SimpleEventTarget.ts",
     "./utils/arrayUtils.ts",
