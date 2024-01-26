@@ -28,7 +28,7 @@ import {
 } from "webext-messenger";
 import { isContentScript } from "webext-detect-page";
 
-export const openSidePanel = async (tabId: number) => {
+export async function openSidePanel(tabId: number) {
   if (isBrowserSidebar()) {
     console.warn(
       'The sidePanel called "openSidePanel". This should not happen.',
@@ -44,7 +44,7 @@ export const openSidePanel = async (tabId: number) => {
     ? openSidePanelMv3(tabId)
     : // Called via `getMethod` until we complete the strictNullChecks transition
       async (tabId: number) => getMethod("SHOW_SIDEBAR")({ tabId });
-};
+}
 
 async function openSidePanelMv3(tabId: number): Promise<void> {
   // Simultaneously enable and open the side panel.
