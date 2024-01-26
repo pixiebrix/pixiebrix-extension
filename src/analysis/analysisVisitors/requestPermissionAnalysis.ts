@@ -106,13 +106,12 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
 
       const permissionsValue = `${parsedURL.origin}/*`;
 
-      const permissionCheckPromise = browser.permissions
-        .contains({
-          origins: [parsedURL.href],
-        })
-        // eslint-disable-next-line promise/prefer-await-to-then -- need the complete Promise
-        .then((hasPermission) => {
-          if (!hasPermission) {
+      this.permissionCheckPromises.push(
+        (async () => {
+          const hasPermissions = await browser.permissions.contains({
+            origins: [parsedURL.href],
+          });
+          if (!hasPermissions) {
             this.annotations.push({
               position: nestedPosition(position, "config.url"),
               message:
@@ -134,9 +133,8 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
               ],
             });
           }
-        });
-
-      this.permissionCheckPromises.push(permissionCheckPromise);
+        })(),
+      );
     }
   }
 
@@ -144,7 +142,9 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
     super.run(extension);
 
     // Use allSettled because `browser.permissions.contains` errors out for certain cases, e.g., malformed URLs
-    await allSettled(this.permissionCheckPromises, { catch: "ignore" });
+    await allSettled(this.permissionCheckPromises, {
+      catch: "ignore",
+    });
   }
 }
 

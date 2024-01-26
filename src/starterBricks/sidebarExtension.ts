@@ -158,7 +158,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   }
 
   public override uninstall(): void {
-    const extensions = this.modComponents.splice(0, this.modComponents.length);
+    const extensions = this.modComponents.splice(0);
     this.clearModComponentInterfaceAndEvents(extensions.map((x) => x.id));
     removeExtensionPoint(this.id);
     console.debug(

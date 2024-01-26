@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type JavaScriptPayload, type TemplateRenderPayload } from "./api";
+import {
+  type TemplateValidatePayload,
+  type JavaScriptPayload,
+  type TemplateRenderPayload,
+} from "./api";
 import { isErrorObject } from "@/errors/errorHelpers";
 import {
   BusinessError,
@@ -39,6 +43,27 @@ export async function renderNunjucksTemplate(
   } catch (error) {
     if (isErrorObject(error) && error.name === "Template render error") {
       throw new InvalidTemplateError(error.message, template);
+    }
+
+    throw error;
+  }
+}
+
+export async function validateNunjucksTemplate(
+  template: TemplateValidatePayload,
+): Promise<void> {
+  // Webpack caches the module import, so doesn't need to cache via lodash's `once`
+  const { compile } = await import(
+    /* webpackChunkName: "nunjucks" */ "nunjucks"
+  );
+
+  try {
+    // @ts-expect-error -- The last parameter is not in the types yet
+    compile(template, undefined, undefined, true);
+  } catch (error) {
+    if (isErrorObject(error) && error.name === "Template render error") {
+      const failureCause = error.message?.replace("(unknown path)", "").trim();
+      throw new InvalidTemplateError(failureCause, template);
     }
 
     throw error;
