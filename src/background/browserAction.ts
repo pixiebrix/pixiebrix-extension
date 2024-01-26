@@ -21,6 +21,8 @@ import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { openSidePanel } from "@/mv3/sidePanelMigration";
 import { setActionPopup } from "webext-tools";
 import { getReasonByUrl } from "@/tinyPages/restrictedUrlPopupUtils";
+import { messenger } from "webext-messenger";
+import { getSidebarPath } from "@/sidebar/sidePanel/messenger/api";
 
 /**
  * Show a popover on restricted URLs because we're unable to inject content into the page. Previously we'd open
@@ -56,7 +58,28 @@ export default async function initBrowserAction(): Promise<void> {
   });
 
   browserAction.onClicked.addListener(async (tab) => {
+    /*
+    This handler relies on a race condition:
+
+    - If the sidebar was open:
+      - openSidePanel will do nothing
+      - SIDEBAR_CLOSE will reach the sidebar and close it
+    - Otherwise:
+      - openSidePanel will open it
+      - SIDEBAR_CLOSE will fail because the message won't reach the sidebar in time
+
+    More info in:
+    - https://github.com/pixiebrix/pixiebrix-extension/pull/7429
+    - https://github.com/w3c/webextensions/issues/521
+    */
     await openSidePanel(tab.id);
+    await messenger(
+      "SIDEBAR_CLOSE",
+      { isNotification: true, retry: false },
+      {
+        page: getSidebarPath(tab.id),
+      },
+    );
   });
 }
 
