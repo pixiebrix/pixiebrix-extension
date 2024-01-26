@@ -4,7 +4,7 @@ const config = configFactory(process.env, {});
 
 // https://knip.dev/overview/configuration#customize
 const knipConfig = {
-  $schema: "https://unpkg.com/knip@3/schema.json",
+  $schema: "https://unpkg.com/knip@4/schema.json",
   webpack: {
     config: ["webpack.config.mjs", ".storybook/main.js"],
   },
