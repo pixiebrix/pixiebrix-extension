@@ -17,7 +17,6 @@
 
 import { type VirtualElement } from "@floating-ui/dom";
 import { getTextareaCaretCoordinates } from "@/utils/textAreaUtils";
-
 /**
  * Get a virtual element for the line that the caret is on.
  * Essentially a box that has the same position and dimensions as the line that the caret is on.
@@ -28,15 +27,16 @@ export function getSelectedLineVirtualElement(
 ): VirtualElement {
   const inputRect = textarea.getBoundingClientRect();
 
-  const caretOffset = getTextareaCaretCoordinates(
+  const { top: caretOffset, height: lineHeight } = getTextareaCaretCoordinates(
     textarea,
     textarea.selectionEnd,
-  ).top;
-
-  const lineHeight = Number.parseInt(
-    getComputedStyle(textarea).getPropertyValue("line-height"),
-    10,
   );
+
+  // The top margin + border space
+  const computed = window.getComputedStyle(textarea);
+  const topOffset =
+    Number.parseInt(computed.borderTopWidth, 10) +
+    Number.parseInt(computed.paddingTop, 10);
 
   const lineTop = caretOffset;
   const lineBottom = caretOffset + lineHeight;
@@ -47,12 +47,12 @@ export function getSelectedLineVirtualElement(
     getBoundingClientRect: () => ({
       width: inputRect.width,
       height: lineHeight,
-      top: lineTop + inputRect.top - textarea.scrollTop,
+      top: lineTop + inputRect.top - topOffset,
       right: inputRect.right,
-      bottom: lineBottom + inputRect.top - textarea.scrollTop,
+      bottom: lineBottom + inputRect.top,
       left: inputRect.left,
       x: inputRect.left,
-      y: lineTop + inputRect.top - textarea.scrollTop,
+      y: lineTop + inputRect.top - topOffset,
     }),
   };
 }

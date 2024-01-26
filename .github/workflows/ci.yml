@@ -48,6 +48,7 @@ jobs:
           attempt_limit: 40
 
   build:
+    name: build-mv${{ matrix.MV }}
     runs-on: ubuntu-latest
     env:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
@@ -169,8 +170,9 @@ jobs:
       # https://knip.dev/overview/getting-started#without-installation
       - run: npm install -D knip@4
       # Do a run without an exit code. Knip's "warn" setting is not working for files and devDependencies.
-      - run: npm run dead-code -- --config knip.mjs --no-exit-code
-      - run: npm run dead-code -- --config knip.mjs --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports
+      - run: npm run dead-code:base -- --no-exit-code
+      # Automatically excludes exports tagged with `@knip` in their JSDoc
+      - run: npm run dead-code
 
   # https://pre-commit.com/#usage-in-continuous-integration
   prettier:

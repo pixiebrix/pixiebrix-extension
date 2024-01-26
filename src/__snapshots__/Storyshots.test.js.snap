@@ -6321,6 +6321,78 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
           </div>
           <label
             className="label form-label col-form-label col-xl-2 col-lg-3"
+            htmlFor="dynamicForm.uiSchema.firstName.ui:placeholder"
+          >
+            Placeholder
+          </label>
+          <div
+            className="col-xl-10 col-lg-9"
+          >
+            <div
+              className="root"
+            >
+              <div
+                className="field"
+              >
+                <input
+                  className="form-control"
+                  id="dynamicForm.uiSchema.firstName.ui:placeholder"
+                  name="dynamicForm.uiSchema.firstName.ui:placeholder"
+                  onBlur={[Function]}
+                  onClick={[Function]}
+                  readOnly={true}
+                  value=""
+                />
+              </div>
+              <div
+                className="dropdown dropdown"
+                data-test-selected="Exclude"
+                data-testid="toggle-dynamicForm.uiSchema.firstName.ui:placeholder"
+              >
+                <button
+                  aria-expanded={false}
+                  aria-haspopup={true}
+                  className="dropdown-toggle btn btn-link"
+                  disabled={false}
+                  onClick={[Function]}
+                  type="button"
+                >
+                  <span
+                    className="symbol"
+                  >
+                    <test-file-stub
+                      className="root"
+                    />
+                  </span>
+                </button>
+              </div>
+            </div>
+            <small
+              className="text-muted form-text"
+            >
+              <span
+                dangerouslySetInnerHTML={
+                  {
+                    "__html": "A short hint displayed in the input field before the user enters a value.",
+                  }
+                }
+              />
+            </small>
+          </div>
+        </div>
+        <div
+          className="formGroup form-group row"
+        >
+          <div
+            aria-expanded={null}
+            className="mb-2 collapse col-12"
+          >
+            <div
+              className="annotationPlaceholder"
+            />
+          </div>
+          <label
+            className="label form-label col-form-label col-xl-2 col-lg-3"
             htmlFor="dynamicForm.schema.required"
           >
             Required Field?
