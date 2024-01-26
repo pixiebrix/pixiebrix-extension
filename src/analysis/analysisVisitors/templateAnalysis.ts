@@ -42,6 +42,10 @@ type PushAnnotationArgs = {
 };
 
 class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
+  // XXX: for now we handle asynchronous pipeline traversal by gathering all the promises and awaiting them all
+  // see discussion https://github.com/pixiebrix/pixiebrix-extension/pull/4013#discussion_r944690969
+  private readonly nunjuckValidationPromises: Array<Promise<void>> = [];
+
   get id() {
     return "template";
   }
@@ -51,10 +55,12 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
     return this.annotations;
   }
 
-  run(extension: ModComponentFormState): void {
+  async run(extension: ModComponentFormState): Promise<void> {
     this.visitRootPipeline(extension.extension.blockPipeline, {
       extensionPointType: extension.type,
     });
+
+    await Promise.all(this.nunjuckValidationPromises.splice(0));
   }
 
   private pushErrorAnnotation({
@@ -94,17 +100,19 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
         expression,
       });
     } else if (isNunjucksExpression(expression)) {
-      // MUST DO: Await this call and remove logging
-      console.log("validateNunjucksTemplate", expression.__value__);
-      void validateNunjucksTemplate(expression.__value__).catch((error) => {
-        console.error("validateNunjucksTemplate", error);
-
-        this.pushErrorAnnotation({
-          position,
-          message: getErrorMessage(error),
-          expression,
-        });
-      });
+      this.nunjuckValidationPromises.push(
+        (async () => {
+          try {
+            await validateNunjucksTemplate(expression.__value__);
+          } catch (error) {
+            this.pushErrorAnnotation({
+              position,
+              message: getErrorMessage(error),
+              expression,
+            });
+          }
+        })(),
+      );
     }
   }
 }
