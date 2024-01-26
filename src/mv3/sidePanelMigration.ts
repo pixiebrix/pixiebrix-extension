@@ -18,7 +18,7 @@
 /** @file Temporary helpers useful for the MV3 sidePanel transition */
 
 import { getMethod } from "webext-messenger";
-import { _openSidePanel } from "@/sidebar/sidePanel/messenger/api";
+import { _openSidePanel } from "@/utils/sidePanelUtils";
 import { isMV3 } from "./api";
 
 export const openSidePanel = isMV3()

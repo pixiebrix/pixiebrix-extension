@@ -22,7 +22,7 @@ import { openSidePanel } from "@/mv3/sidePanelMigration";
 import { setActionPopup } from "webext-tools";
 import { getReasonByUrl } from "@/tinyPages/restrictedUrlPopupUtils";
 import { messenger } from "webext-messenger";
-import { getSidebarPath } from "@/sidebar/sidePanel/messenger/api";
+import { getSidebarPath } from "@/utils/sidePanelUtils";
 
 /**
  * Show a popover on restricted URLs because we're unable to inject content into the page. Previously we'd open

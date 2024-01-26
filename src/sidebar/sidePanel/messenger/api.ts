@@ -21,107 +21,23 @@
  * to match that expectation and avoid lint issues.
  */
 
-import { expectContext } from "@/utils/expectContext";
-import { messenger } from "webext-messenger";
-import { getErrorMessage } from "@/errors/errorHelpers";
 import { isMV3 } from "@/mv3/api";
-import { isContentScript } from "webext-detect-page";
+import { expectContext } from "@/utils/expectContext";
+import { getSidebarPath } from "@/utils/sidePanelUtils";
 import { type PageTarget, getThisFrame } from "webext-messenger";
 
-export function getSidebarPath(tabId: number): string {
-  return "/sidebar.html?tabId=" + tabId;
-}
-
 export async function getSidebarTargetForCurrentTab(): Promise<PageTarget> {
+  expectContext(
+    "contentScript",
+    "Only the content script can call `getSidebarTargetForCurrentTab`, use `getSidebarTarget` in other contexts",
+  );
+
   if (!isMV3()) {
     return { tabId: "this", page: "/sidebar.html" };
-  }
-
-  if (!isContentScript()) {
-    // Probably just other pages importing this file transitively, this is dead code
-    return {
-      page: "the sidebar API is only available from the content script",
-    };
   }
 
   const frame = await getThisFrame();
   return {
     page: getSidebarPath(frame.tabId),
   };
-}
-
-export async function isSidePanelOpen(): Promise<boolean> {
-  expectContext(
-    "contentScript",
-    "isSidePanelOpen only works from the same content script for now",
-  );
-
-  // Sync check where possible, which is the content script
-  if (isSidePanelOpenSync() === false) {
-    return false;
-  }
-
-  try {
-    // If ever needed, `isSidePanelOpen` could be called from any context, as long as
-    // `getSidebarTargetForCurrentTab` is replaced/complemented by a tabid-specific `{page: "/sidebar.html?tabId=123"}` target
-    await messenger(
-      "SIDEBAR_PING",
-      { retry: false },
-      await getSidebarTargetForCurrentTab(),
-    );
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-/** @deprecated Use this instead: import { openSidePanel } from "@/mv3/sidePanelMigration"; */
-export async function _openSidePanel(tabId: number): Promise<void> {
-  // Simultaneously enable and open the side panel.
-  // If we wait too long before calling .open(), we will lose the "user gesture" permission
-  // There is no way to know whether the side panel is open yet, so we call it regardless.
-  void chrome.sidePanel.setOptions({
-    tabId,
-    enabled: true,
-  });
-
-  try {
-    // TODO: Implement toggle, but I don't think it's possible:
-    // https://github.com/pixiebrix/pixiebrix-extension/issues/7327
-    await chrome.sidePanel.open({ tabId });
-  } catch (error) {
-    // In some cases, `openSidePanel` is called as a precaution and it might work if
-    // it's still part of a user gesture.
-    // If it's not, it will throw an error *even if the side panel is already open*.
-    // The following code silences that error iff the side panel is already open.
-    if (
-      getErrorMessage(error).includes("user gesture") &&
-      (await isSidePanelOpen())
-    ) {
-      // The `openSidePanel` call was not required in the first place, the error can be silenced
-      // TODO: After switching to MV3, verify whether we drop that `openSidePanel` call
-      return;
-    }
-
-    throw error;
-  }
-}
-
-/* Approximate sidebar width in pixels. Used to determine whether it's open */
-const MINIMUM_SIDEBAR_WIDTH = 300;
-
-/**
- * Determines whether the sidebar is open.
- * @returns false when it's definitely closed
- * @returns 'unknown' when it cannot be determined
- */
-// The type cannot be `undefined` due to strictNullChecks
-export function isSidePanelOpenSync(): false | "unknown" {
-  if (!globalThis.window) {
-    return "unknown";
-  }
-
-  return window.outerWidth - window.innerWidth > MINIMUM_SIDEBAR_WIDTH
-    ? "unknown"
-    : false;
 }

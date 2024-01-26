@@ -18,7 +18,7 @@
 import { openSidePanel } from "@/mv3/sidePanelMigration";
 import type { MessengerMeta } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
-import { getSidebarPath } from "@/sidebar/sidePanel/messenger/api";
+import { getSidebarPath } from "@/utils/sidePanelUtils";
 
 export async function showMySidePanel(this: MessengerMeta): Promise<void> {
   await openSidePanel(this.trace[0].tab.id);
