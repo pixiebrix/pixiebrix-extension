@@ -38,8 +38,10 @@ function updateBadge(errorMessage: string | null): void {
 function showBadgeOnBackgroundErrors(error: Error): void {
   counter++;
   if (counter > 20) {
+    // If the dev tools is already open, this will pause the execution of the script
+    // automatically before the browser hangs and makes it difficult to manually pause.
     // https://github.com/pixiebrix/pixiebrix-extension/issues/7430
-    // eslint-disable-next-line no-debugger -- This file is already dev-only, it helps us
+    // eslint-disable-next-line no-debugger -- This whole file is not part of the production build
     debugger;
   }
 
