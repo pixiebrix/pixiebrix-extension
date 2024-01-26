@@ -208,10 +208,14 @@ const createConfig = (env, options) =>
       }),
       new WebExtensionTarget({
         weakRuntimeCheck: true,
+
+        // Required to support sandboxed iframes
+        // https://github.com/awesome-webextension/webpack-target-webextension/pull/42
         background:
           process.env.MV === "3"
             ? {
-                serviceWorkerEntry: "background",
+                // TODO: Restore after https://github.com/awesome-webextension/webpack-target-webextension/issues/43
+                // serviceWorkerEntry: "background",
               }
             : {
                 pageEntry: "background",
