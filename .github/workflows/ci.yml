@@ -48,6 +48,7 @@ jobs:
           attempt_limit: 40
 
   build:
+    name: build-mv${{ matrix.MV }}
     runs-on: ubuntu-latest
     env:
       SOURCE_MAP_URL_BASE: https://pixiebrix-extension-source-maps.s3.amazonaws.com
