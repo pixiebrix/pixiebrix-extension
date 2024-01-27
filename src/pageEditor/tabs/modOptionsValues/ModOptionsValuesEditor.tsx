@@ -29,7 +29,7 @@ import genericOptionsFactory from "@/components/fields/schemaFields/genericOptio
 import FieldRuntimeContext, {
   type RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { Card, Col, Container, Row } from "react-bootstrap";
+import { Card, Container } from "react-bootstrap";
 import Form, { type RenderBody } from "@/components/form/Form";
 import Loader from "@/components/Loader";
 import Alert from "@/components/Alert";
@@ -175,11 +175,7 @@ const ModOptionsValuesContent: React.FC = () => {
 
 const ModOptionsValuesEditor: React.FC = () => (
   <Container fluid className="pt-3">
-    <Row>
-      <Col>
-        <ModOptionsValuesContent />
-      </Col>
-    </Row>
+    <ModOptionsValuesContent />
   </Container>
 );
 

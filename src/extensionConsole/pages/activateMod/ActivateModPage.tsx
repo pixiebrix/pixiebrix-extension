@@ -18,7 +18,7 @@
 import React, { useEffect } from "react";
 import Page from "@/layout/Page";
 import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
-import { Card, Col, Row } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import ActivateModCard from "@/extensionConsole/pages/activateMod/ActivateModCard";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Link } from "react-router-dom";
@@ -113,13 +113,11 @@ const ActivateModPage: React.FunctionComponent = () => {
       isPending={isFetching}
       error={error}
     >
-      <Row>
-        <Col xs={12} xl={10}>
-          <ErrorBoundary>
-            <ActivateModPageContent />
-          </ErrorBoundary>
-        </Col>
-      </Row>
+      <div className="max-950">
+        <ErrorBoundary>
+          <ActivateModPageContent />
+        </ErrorBoundary>
+      </div>
     </Page>
   );
 };

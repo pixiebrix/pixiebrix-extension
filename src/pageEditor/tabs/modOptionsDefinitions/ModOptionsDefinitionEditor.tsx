@@ -19,7 +19,7 @@ import React, { useCallback, useState } from "react";
 import FieldRuntimeContext, {
   type RuntimeContext,
 } from "@/components/fields/schemaFields/FieldRuntimeContext";
-import { Card, Col, Container, Nav, Row, Tab } from "react-bootstrap";
+import { Card, Nav, Tab } from "react-bootstrap";
 import Loader from "@/components/Loader";
 import { isEmpty } from "lodash";
 import styles from "./ModOptionsDefinitionEditor.module.scss";
@@ -107,17 +107,13 @@ const ModOptionsDefinitionEditor: React.VFC = () => {
 
   if (isFetching || error) {
     return (
-      <Container>
-        <Row>
-          <Col>
-            {isFetching ? (
-              <Loader />
-            ) : (
-              <div className="text-danger">{getErrorMessage(error)}</div>
-            )}
-          </Col>
-        </Row>
-      </Container>
+      <div className="d-flex p-3">
+        {isFetching ? (
+          <Loader />
+        ) : (
+          <div className="text-danger">{getErrorMessage(error)}</div>
+        )}
+      </div>
     );
   }
 

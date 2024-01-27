@@ -221,14 +221,14 @@ exports[`ModsPageLayout renders 1`] = `
         style="flex: 1 1 auto;"
       >
         <div
-          class="root"
+          class="root card"
           style="height: 600px; width: 600px;"
         >
           <div
-            class="infoRow row"
+            class="card-body"
           >
             <div
-              class="col"
+              class="infoRow"
             >
               <h4>
                 Want to create a new mod?
@@ -257,12 +257,8 @@ exports[`ModsPageLayout renders 1`] = `
                 </li>
               </ul>
             </div>
-          </div>
-          <div
-            class="infoRow row"
-          >
             <div
-              class="col"
+              class="infoRow"
             >
               <h4>
                 Need more help?

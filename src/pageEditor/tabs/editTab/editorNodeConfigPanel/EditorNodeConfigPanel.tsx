@@ -75,7 +75,9 @@ const EditorNodeConfigPanel: React.FC = () => {
 
   return (
     <>
-      <AnalysisResult />
+      <div className="mb-3">
+        <AnalysisResult />
+      </div>
       <Row className={cx(styles.brickInfo, "justify-content-between")}>
         <Col>
           <p>{brickInfo?.block.name}</p>

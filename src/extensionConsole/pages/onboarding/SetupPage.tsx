@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { Col, Row } from "react-bootstrap";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import DefaultSetupCard from "@/extensionConsole/pages/onboarding/DefaultSetupCard";
 import { getBaseURL } from "@/services/baseService";
@@ -32,9 +31,7 @@ import { syncRemotePackages } from "@/registry/memoryRegistry";
 import useAsyncState from "@/hooks/useAsyncState";
 
 const Layout: React.FunctionComponent = ({ children }) => (
-  <Row className="w-100 mx-0">
-    <Col className="mt-5 col-md-10 col-lg-7 col-sm-12 mx-auto">{children}</Col>
-  </Row>
+  <div className="mt-5 w-100 max-550 mx-auto">{children}</div>
 );
 
 /**
@@ -79,11 +76,7 @@ const SetupPage: React.FunctionComponent = () => {
   }, []);
 
   if (isLoading || isPartnerLoading) {
-    return (
-      <Layout>
-        <Loader />
-      </Layout>
-    );
+    return <Loader />;
   }
 
   let setupCard = <DefaultSetupCard installURL={baseURL} />;
