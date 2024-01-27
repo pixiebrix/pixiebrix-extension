@@ -30,6 +30,8 @@ export const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";
 export const PIXIEBRIX_QUICK_BAR_CONTAINER_CLASS =
   "pixiebrix-quickbar-container";
 
+export const PIXIEBRIX_NOTIFICATION_CLASS = "pixiebrix-notifier-container";
+
 export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
 
 /**
@@ -41,6 +43,7 @@ export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
 export const PRIVATE_ATTRIBUTES_SELECTOR = `
   #${PANEL_FRAME_ID},
   .${PIXIEBRIX_QUICK_BAR_CONTAINER_CLASS},
+  .${PIXIEBRIX_NOTIFICATION_CLASS},
   [${PIXIEBRIX_DATA_ATTR}],
   [${CONTENT_SCRIPT_READY_ATTRIBUTE}],
   [${EXTENSION_POINT_DATA_ATTR}]
