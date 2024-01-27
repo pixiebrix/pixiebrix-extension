@@ -49,6 +49,7 @@ import defaultActions, {
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { flagOn } from "@/auth/authUtils";
 import useContextInvalidated from "@/hooks/useContextInvalidated";
+import { onContextInvalidated } from "webext-events";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -211,8 +212,13 @@ export const initQuickBarApp = once(async () => {
   container.className = PIXIEBRIX_QUICK_BAR_CONTAINER_CLASS;
   document.body.prepend(container);
   ReactDOM.render(<QuickBarApp />, container);
-
   console.debug("Initialized quick bar");
+
+  onContextInvalidated.addListener(() => {
+    console.debug("Removed quick bar due to context invalidation");
+    ReactDOM.unmountComponentAtNode(container);
+    container.remove();
+  });
 });
 
 /**
