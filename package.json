@@ -67,7 +67,7 @@
     "copy-text-to-clipboard": "^3.2.0",
     "csharp-helpers": "^0.9.3",
     "css-selector-generator": "^3.6.6",
-    "date-fns": "^3.3.0",
+    "date-fns": "^3.3.1",
     "dompurify": "^3.0.8",
     "downloadjs": "^1.4.7",
     "escape-string-regexp": "^5.0.0",
