@@ -51,7 +51,7 @@ const Title: React.FC<{
 }> = ({ icon, text, iconClassName }) => (
   <>
     <FontAwesomeIcon icon={icon} fixedWidth className={iconClassName} />
-    {text}
+    {` ${text}`}
   </>
 );
 

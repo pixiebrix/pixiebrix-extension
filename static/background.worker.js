@@ -1,5 +1,11 @@
 // Don't include `background.worker.js` in webpack, there's no advantage in doing so
 
+if (chrome.runtime.getManifest === undefined) {
+  throw new Error(
+    "Chrome bug: The extension was loaded as MV2, but Chrome is still running the worker. Unregister the loader from chrome://serviceworker-internals/",
+  );
+}
+
 function get() {
   /*
 	When scripts use DOM APIs, the worker will crash on load with the error
