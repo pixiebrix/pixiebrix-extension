@@ -122,10 +122,6 @@ module.exports = {
 
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/restrict-template-expressions": "warn",
-
-    // TODO: Drop/replace `allowExpressions` after https://github.com/jsx-eslint/eslint-plugin-react/issues/2584
-    // https://github.com/jsx-eslint/eslint-plugin-react/blob/master/docs/rules/jsx-no-useless-fragment.md#allowexpressions
-    "react/jsx-no-useless-fragment": ["error", { allowexpressions: true }],
   },
   overrides: [
     {
