@@ -117,7 +117,9 @@ export function getPropByPath(
       isNumeric = true;
     }
 
-    if (!(typeof value == "object" || (Array.isArray(previous) && isNumeric))) {
+    if (
+      !(typeof value === "object" || (Array.isArray(previous) && isNumeric))
+    ) {
       throw new InvalidPathError(`Invalid path ${path}`, path);
     }
 
