@@ -70,6 +70,7 @@ import { type UUID } from "@/types/stringTypes";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
+import { onContextInvalidated } from "webext-events";
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
@@ -97,34 +98,27 @@ export type ContextMenuConfig = {
  * The element the user right-clicked on to trigger the context menu
  */
 let clickedElement: HTMLElement = null;
-let selectionHandlerInstalled = false;
-
-const BUTTON_SECONDARY = 2;
 
 function setActiveElement(event: MouseEvent): void {
   // This method can't throw, otherwise I think it breaks event dispatching because we're passing
   // useCapture: true to the event listener
-  clickedElement = null;
-  if (event?.button === BUTTON_SECONDARY) {
-    console.debug("Setting right-clicked element for contextMenu", {
-      target: event.target,
-    });
-    clickedElement = event?.target as HTMLElement;
-  }
+  console.debug("Setting right-clicked element for contextMenu", {
+    target: event.target,
+  });
+  clickedElement = event.target as HTMLElement;
 }
 
-function installMouseHandlerOnce(): void {
-  if (!selectionHandlerInstalled) {
-    selectionHandlerInstalled = true;
-    // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
-    document.addEventListener("mousedown", setActiveElement, {
-      // Handle it first in case a target beneath it cancels the event
-      capture: true,
-      // For performance, indicate we won't call preventDefault
-      passive: true,
-    });
-  }
-}
+const installMouseHandlerOnce = (): void => {
+  // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
+  document.addEventListener("contextmenu", setActiveElement, {
+    // Handle it first in case a target beneath it cancels the event
+    capture: true,
+    // For performance, indicate we won't call preventDefault
+    passive: true,
+    // Remove after context invalidation
+    signal: onContextInvalidated.signal,
+  });
+};
 
 /**
  * See also: https://developer.chrome.com/extensions/contextMenus
