@@ -50,6 +50,7 @@ export async function getOptionsValidationSchema(
   // "this field is required" error unless we allow null values for required fields
   // @see FieldTemplate.tsx for context as to why fields are null instead of undefined
   return yupSchema.shape(
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
     mapValues(yupSchema.fields, (value) => value.nullable()),
   );
 }

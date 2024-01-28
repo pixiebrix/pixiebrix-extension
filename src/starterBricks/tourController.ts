@@ -328,7 +328,8 @@ export async function runSubTour({
   tour: string;
   blueprintId: RegistryId;
 }): Promise<TourRun> {
-  const blueprintTours = blueprintTourRegistry.get(blueprintId) ?? new Map();
+  const blueprintTours =
+    blueprintTourRegistry.get(blueprintId) ?? new Map<string, RegisteredTour>();
 
   const tour = blueprintTours.get(tourName);
 

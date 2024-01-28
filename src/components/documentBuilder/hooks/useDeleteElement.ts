@@ -40,7 +40,7 @@ function useDeleteElement(documentBodyName: string) {
 
       // Remove the element from the form state
       let nextState = produce(formState, (draft) => {
-        const elementsCollection = getIn(draft, collectionName);
+        const elementsCollection = getIn(draft, collectionName) as unknown[];
         elementsCollection.splice(Number(elementIndex), 1);
       });
 

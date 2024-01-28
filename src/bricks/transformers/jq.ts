@@ -65,7 +65,8 @@ type ApplyJqPayload = {
 async function applyJq(payload: ApplyJqPayload) {
   const { input, filter } = payload;
   const { default: jq } = await import(
-    /* webpackChunkName: "jq-web" */ "@pixiebrix/jq-web"
+    /* webpackChunkName: "jq-web" */
+    "@pixiebrix/jq-web"
   );
 
   return jq.promised.json(input, filter);

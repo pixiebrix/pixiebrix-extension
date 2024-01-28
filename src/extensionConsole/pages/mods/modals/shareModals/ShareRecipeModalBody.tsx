@@ -144,8 +144,9 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
           renderStatus={({ status }) => (
             <div className="text-danger p-3">{status}</div>
           )}
-          renderBody={({ values, setFieldValue }) => (
-            <>
+          renderBody={({ values: valuesUntyped, setFieldValue }) => {
+            const values = valuesUntyped as ShareModFormState;
+            return (
               <Modal.Body>
                 <ReactSelect
                   options={organizationsForSelect
@@ -197,8 +198,8 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
                     </div>
                   ))}
               </Modal.Body>
-            </>
-          )}
+            );
+          }}
           renderSubmit={({ isValid, isSubmitting }) => (
             <Modal.Footer>
               <Button variant="link" onClick={closeModal}>

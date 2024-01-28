@@ -708,7 +708,7 @@ export const editorSlice = createSlice({
         (x) => x.uuid === state.activeElementId,
       );
 
-      const pipeline = get(element, pipelinePath);
+      const pipeline: unknown[] | null = get(element, pipelinePath);
       if (pipeline == null) {
         console.error("Invalid pipeline path for element: %s", pipelinePath, {
           block,
@@ -770,7 +770,7 @@ export const editorSlice = createSlice({
       const elementUiState = selectActiveElementUIState({ editor: state });
       const { pipelinePath, index } =
         elementUiState.pipelineMap[nodeIdToRemove];
-      const pipeline = get(element, pipelinePath);
+      const pipeline: BrickConfig[] = get(element, pipelinePath);
 
       // TODO: this fails when the brick is the last in a pipeline, need to select parent node
       const nextActiveNode =

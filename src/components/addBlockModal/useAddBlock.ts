@@ -100,7 +100,7 @@ function useAddBlock(): AddBlock {
       // Add the block to a copy of the extension
       const newBlock = await makeNewBlock(block);
       const newExtension = produce(activeExtension, (draft) => {
-        const pipeline = get(draft, addBlockLocation.path);
+        const pipeline = get(draft, addBlockLocation.path) as BrickConfig[];
         pipeline.splice(addBlockLocation.index, 0, newBlock);
       });
 

@@ -145,7 +145,7 @@ export const appApi = createApi({
           // WARNING: currently this role is only accurate for Admin. All other users are passed as Restricted even if
           // they have a Member or Developer role on the team
 
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `organization.members` is about to be removed
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call -- `organization.members` is about to be removed
           role: (apiOrganization as any).members?.some(
             (member: { role: UserRole }) => member.role === UserRole.admin,
           )

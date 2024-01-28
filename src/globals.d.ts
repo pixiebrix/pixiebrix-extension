@@ -89,8 +89,18 @@ declare module "generate-schema" {
 }
 
 // No types available
-declare module "@pixiebrix/jq-web";
-declare module "canvas-confetti";
+declare module "@pixiebrix/jq-web" {
+  const jq: {
+    promised: {
+      json: (input: JsonValue, filter: string) => Promise<JsonValue>;
+    };
+  };
+  export default jq;
+}
+declare module "canvas-confetti" {
+  const confetti: (options: Record<unknown, unknown>) => void;
+  export default confetti;
+}
 
 // From https://github.com/mozilla/page-metadata-parser/issues/116#issuecomment-614882830
 declare module "@/vendors/page-metadata-parser/parser" {
@@ -205,4 +215,7 @@ interface Text {
 }
 interface Element {
   textContent: string;
+
+  /** https://caniuse.com/scrollintoviewifneeded */
+  scrollIntoViewIfNeeded: (centerIfNeeded?: boolean) => void;
 }
