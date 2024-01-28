@@ -327,20 +327,20 @@ exports[`ActivateModCard activate mod definition with missing required mod defin
                   class="formGroup form-group row"
                 >
                   <div
-                    class="mb-2 collapse col-12"
+                    class="mb-2 collapse col-lg-12"
                   >
                     <div
                       class="annotationPlaceholder"
                     />
                   </div>
                   <label
-                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    class="label form-label col-form-label col-xl-3 col-lg-12"
                     for="optionsArgs.database"
                   >
                     Database
                   </label>
                   <div
-                    class="col-xl-10 col-lg-9"
+                    class="col"
                   >
                     <div
                       class="root"

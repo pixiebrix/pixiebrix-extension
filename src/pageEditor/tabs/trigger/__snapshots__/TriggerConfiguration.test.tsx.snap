@@ -9,20 +9,20 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 collapse col-lg-12"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label col-form-label col-xl-3 col-lg-12"
         for="extensionPoint.definition.trigger"
       >
         Trigger Event
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="col"
       >
         <select
           class="form-control"
@@ -123,20 +123,20 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 collapse col-lg-12"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label col-form-label col-xl-3 col-lg-12"
         for="extensionPoint.definition.customEvent.eventName"
       >
         Custom Event
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="col"
       >
         <div
           class=" css-b62m3t-container"
@@ -289,20 +289,20 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 collapse col-lg-12"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label col-form-label col-xl-3 col-lg-12"
         for="extensionPoint.definition.background"
       >
         Run in Background
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="col"
       >
         <div
           class="switch btn on btn-primary"
@@ -338,20 +338,20 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 collapse col-lg-12"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label col-form-label col-xl-3 col-lg-12"
         for="extensionPoint.definition.rootSelector"
       >
         Element Selector
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="col"
       >
         <div
           class="root"
@@ -412,20 +412,20 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 collapse col-lg-12"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label col-form-label col-xl-3 col-lg-12"
         for="extensionPoint.definition.attachMode"
       >
         Attach Mode
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="col"
       >
         <select
           class="form-control"
@@ -465,20 +465,20 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 collapse col-lg-12"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label col-form-label col-xl-3 col-lg-12"
         for="extensionPoint.definition.targetMode"
       >
         Target Mode
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="col"
       >
         <select
           class="form-control"
@@ -518,20 +518,20 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 collapse col-lg-12"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label col-form-label col-xl-3 col-lg-12"
         for="debounce"
       >
         Debounce
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="col"
       >
         <div
           class="root"
@@ -571,20 +571,20 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 collapse col-lg-12"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label col-form-label col-xl-3 col-lg-12"
         for="extensionPoint.definition.isAvailable.matchPatterns"
       >
         Sites
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="col"
       >
         <div
           class="small"
@@ -627,14 +627,14 @@ exports[`TriggerConfiguration renders custom event field with known event names 
               class="formGroup mb-0 form-group row"
             >
               <div
-                class="mb-2 collapse col-12"
+                class="mb-2 collapse col-lg-12"
               >
                 <div
                   class="annotationPlaceholder"
                 />
               </div>
               <div
-                class="col-xl-12 col-lg-12"
+                class="col"
               >
                 <div
                   class="root"
@@ -706,20 +706,20 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 collapse col-lg-12"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label col-form-label col-xl-3 col-lg-12"
         for="extensionPoint.definition.showErrors"
       >
         Show Error Notifications
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="col"
       >
         <div
           class="switch btn on btn-primary"
@@ -755,20 +755,20 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group row"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 collapse col-lg-12"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label col-form-label col-xl-3 col-lg-12"
         for="extensionPoint.definition.reportMode"
       >
         Telemetry Mode
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="col"
       >
         <select
           class="form-control"
@@ -829,20 +829,20 @@ exports[`TriggerConfiguration renders custom event field with known event names 
           class="formGroup form-group row"
         >
           <div
-            class="mb-2 collapse col-12"
+            class="mb-2 collapse col-lg-12"
           >
             <div
               class="annotationPlaceholder"
             />
           </div>
           <label
-            class="label form-label col-form-label col-xl-2 col-lg-3"
+            class="label form-label col-form-label col-xl-3 col-lg-12"
             for="extensionPoint.definition.isAvailable.urlPatterns"
           >
             URL Patterns
           </label>
           <div
-            class="col-xl-10 col-lg-9"
+            class="col"
           >
             <ul
               class="list-group mb-2"
@@ -874,20 +874,20 @@ exports[`TriggerConfiguration renders custom event field with known event names 
           class="formGroup form-group row"
         >
           <div
-            class="mb-2 collapse col-12"
+            class="mb-2 collapse col-lg-12"
           >
             <div
               class="annotationPlaceholder"
             />
           </div>
           <label
-            class="label form-label col-form-label col-xl-2 col-lg-3"
+            class="label form-label col-form-label col-xl-3 col-lg-12"
             for="extensionPoint.definition.isAvailable.selectors"
           >
             Selectors
           </label>
           <div
-            class="col-xl-10 col-lg-9"
+            class="col"
           >
             <ul
               class="list-group mb-2"
@@ -946,20 +946,20 @@ exports[`TriggerConfiguration renders custom event field with known event names 
           class="formGroup form-group row"
         >
           <div
-            class="mb-2 collapse col-12"
+            class="mb-2 collapse col-lg-12"
           >
             <div
               class="annotationPlaceholder"
             />
           </div>
           <label
-            class="label form-label col-form-label col-xl-2 col-lg-3"
+            class="label form-label col-form-label col-xl-3 col-lg-12"
             for="permissions.origins"
           >
             Sites/APIs
           </label>
           <div
-            class="col-xl-10 col-lg-9"
+            class="col"
           >
             <div
               class="small"

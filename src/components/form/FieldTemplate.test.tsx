@@ -108,6 +108,6 @@ describe("computeLabelSize", () => {
       widerLabel: false,
     });
 
-    expect(labelSize).toEqual({ lg: "3", xl: "2" });
+    expect(labelSize).toEqual({ lg: "12", xl: "3" });
   });
 });

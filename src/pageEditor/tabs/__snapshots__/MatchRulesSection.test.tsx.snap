@@ -38,20 +38,20 @@ exports[`MatchRulesSection render empty section 1`] = `
           class="formGroup form-group row"
         >
           <div
-            class="mb-2 collapse col-12"
+            class="mb-2 collapse col-lg-12"
           >
             <div
               class="annotationPlaceholder"
             />
           </div>
           <label
-            class="label form-label col-form-label col-xl-2 col-lg-3"
+            class="label form-label col-form-label col-xl-3 col-lg-12"
             for="extensionPoint.definition.isAvailable.urlPatterns"
           >
             URL Patterns
           </label>
           <div
-            class="col-xl-10 col-lg-9"
+            class="col"
           >
             <ul
               class="list-group mb-2"
@@ -83,20 +83,20 @@ exports[`MatchRulesSection render empty section 1`] = `
           class="formGroup form-group row"
         >
           <div
-            class="mb-2 collapse col-12"
+            class="mb-2 collapse col-lg-12"
           >
             <div
               class="annotationPlaceholder"
             />
           </div>
           <label
-            class="label form-label col-form-label col-xl-2 col-lg-3"
+            class="label form-label col-form-label col-xl-3 col-lg-12"
             for="extensionPoint.definition.isAvailable.selectors"
           >
             Selectors
           </label>
           <div
-            class="col-xl-10 col-lg-9"
+            class="col"
           >
             <ul
               class="list-group mb-2"
@@ -169,20 +169,20 @@ exports[`MatchRulesSection render populated section 1`] = `
           class="formGroup form-group row"
         >
           <div
-            class="mb-2 collapse col-12"
+            class="mb-2 collapse col-lg-12"
           >
             <div
               class="annotationPlaceholder"
             />
           </div>
           <label
-            class="label form-label col-form-label col-xl-2 col-lg-3"
+            class="label form-label col-form-label col-xl-3 col-lg-12"
             for="extensionPoint.definition.isAvailable.urlPatterns"
           >
             URL Patterns
           </label>
           <div
-            class="col-xl-10 col-lg-9"
+            class="col"
           >
             <ul
               class="list-group mb-2"
@@ -194,14 +194,14 @@ exports[`MatchRulesSection render populated section 1`] = `
                   class="formGroup mb-0 form-group row"
                 >
                   <div
-                    class="mb-2 collapse col-12"
+                    class="mb-2 collapse col-lg-12"
                   >
                     <div
                       class="annotationPlaceholder"
                     />
                   </div>
                   <div
-                    class="col-xl-12 col-lg-12"
+                    class="col"
                   >
                     <div
                       class="root"
@@ -243,14 +243,14 @@ exports[`MatchRulesSection render populated section 1`] = `
                                     class="formGroup mb-0 form-group row"
                                   >
                                     <div
-                                      class="mb-2 collapse col-12"
+                                      class="mb-2 collapse col-lg-12"
                                     >
                                       <div
                                         class="annotationPlaceholder"
                                       />
                                     </div>
                                     <div
-                                      class="col-xl-12 col-lg-12"
+                                      class="col"
                                     >
                                       <div
                                         class="root"
@@ -313,14 +313,14 @@ exports[`MatchRulesSection render populated section 1`] = `
                                     class="formGroup mb-0 form-group row"
                                   >
                                     <div
-                                      class="mb-2 collapse col-12"
+                                      class="mb-2 collapse col-lg-12"
                                     >
                                       <div
                                         class="annotationPlaceholder"
                                       />
                                     </div>
                                     <div
-                                      class="col-xl-12 col-lg-12"
+                                      class="col"
                                     >
                                       <div
                                         class="root"
@@ -383,14 +383,14 @@ exports[`MatchRulesSection render populated section 1`] = `
                                     class="formGroup mb-0 form-group row"
                                   >
                                     <div
-                                      class="mb-2 collapse col-12"
+                                      class="mb-2 collapse col-lg-12"
                                     >
                                       <div
                                         class="annotationPlaceholder"
                                       />
                                     </div>
                                     <div
-                                      class="col-xl-12 col-lg-12"
+                                      class="col"
                                     >
                                       <div
                                         class="root"
@@ -454,14 +454,14 @@ exports[`MatchRulesSection render populated section 1`] = `
                                     class="formGroup mb-0 form-group row"
                                   >
                                     <div
-                                      class="mb-2 collapse col-12"
+                                      class="mb-2 collapse col-lg-12"
                                     >
                                       <div
                                         class="annotationPlaceholder"
                                       />
                                     </div>
                                     <div
-                                      class="col-xl-12 col-lg-12"
+                                      class="col"
                                     >
                                       <div
                                         class="root"
@@ -571,20 +571,20 @@ exports[`MatchRulesSection render populated section 1`] = `
           class="formGroup form-group row"
         >
           <div
-            class="mb-2 collapse col-12"
+            class="mb-2 collapse col-lg-12"
           >
             <div
               class="annotationPlaceholder"
             />
           </div>
           <label
-            class="label form-label col-form-label col-xl-2 col-lg-3"
+            class="label form-label col-form-label col-xl-3 col-lg-12"
             for="extensionPoint.definition.isAvailable.selectors"
           >
             Selectors
           </label>
           <div
-            class="col-xl-10 col-lg-9"
+            class="col"
           >
             <ul
               class="list-group mb-2"
@@ -596,14 +596,14 @@ exports[`MatchRulesSection render populated section 1`] = `
                   class="formGroup mb-0 form-group row"
                 >
                   <div
-                    class="mb-2 collapse col-12"
+                    class="mb-2 collapse col-lg-12"
                   >
                     <div
                       class="annotationPlaceholder"
                     />
                   </div>
                   <div
-                    class="col-xl-12 col-lg-12"
+                    class="col"
                   >
                     <div
                       class="root"

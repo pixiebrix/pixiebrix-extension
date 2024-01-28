@@ -6,20 +6,20 @@ exports[`UiPath Options Render integration selector 1`] = `
     class="formGroup form-group row"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 collapse col-lg-12"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <label
-      class="label form-label col-form-label col-xl-2 col-lg-3"
+      class="label form-label col-form-label col-xl-3 col-lg-12"
       for="extension.blockPipeline.0.config.uipath"
     >
       Integration
     </label>
     <div
-      class="col-xl-10 col-lg-9"
+      class="col"
     >
       <div
         class="d-flex"
@@ -173,20 +173,20 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     class="formGroup form-group row"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 collapse col-lg-12"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <label
-      class="label form-label col-form-label col-xl-2 col-lg-3"
+      class="label form-label col-form-label col-xl-3 col-lg-12"
       for="extension.blockPipeline.0.config.uipath"
     >
       Integration
     </label>
     <div
-      class="col-xl-10 col-lg-9"
+      class="col"
     >
       <div
         class="d-flex"
@@ -335,20 +335,20 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     class="formGroup form-group row"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 collapse col-lg-12"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <label
-      class="label form-label col-form-label col-xl-2 col-lg-3"
+      class="label form-label col-form-label col-xl-3 col-lg-12"
       for="extension.blockPipeline.0.config.releaseKey"
     >
       Release
     </label>
     <div
-      class="col-xl-10 col-lg-9"
+      class="col"
     >
       <div
         class="d-flex"
@@ -399,20 +399,20 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     class="formGroup form-group row"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 collapse col-lg-12"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <label
-      class="label form-label col-form-label col-xl-2 col-lg-3"
+      class="label form-label col-form-label col-xl-3 col-lg-12"
       for="extension.blockPipeline.0.config.strategy"
     >
       Strategy
     </label>
     <div
-      class="col-xl-10 col-lg-9"
+      class="col"
     >
       <div
         class="root"
@@ -529,20 +529,20 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     class="formGroup form-group row"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 collapse col-lg-12"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <label
-      class="label form-label col-form-label col-xl-2 col-lg-3"
+      class="label form-label col-form-label col-xl-3 col-lg-12"
       for="extension.blockPipeline.0.config.jobsCount"
     >
       Jobs Count
     </label>
     <div
-      class="col-xl-10 col-lg-9"
+      class="col"
     >
       <div
         class="root"
@@ -592,20 +592,20 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     class="formGroup form-group row"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 collapse col-lg-12"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <label
-      class="label form-label col-form-label col-xl-2 col-lg-3"
+      class="label form-label col-form-label col-xl-3 col-lg-12"
       for="extension.blockPipeline.0.config.awaitResult"
     >
       Await Result
     </label>
     <div
-      class="col-xl-10 col-lg-9"
+      class="col"
     >
       <div
         class="root"
@@ -669,14 +669,14 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     class="formGroup form-group row"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 collapse col-lg-12"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <div
-      class="col-xl-12 col-lg-12"
+      class="col"
     >
       <div
         class="card"

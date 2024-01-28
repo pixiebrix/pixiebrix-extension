@@ -106,7 +106,7 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
               class="formGroup form-group row"
             >
               <div
-                class="mb-2 collapse col-12"
+                class="mb-2 collapse col-lg-12"
               >
                 <div
                   class="annotationPlaceholder"
@@ -119,7 +119,7 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
                 Search
               </label>
               <div
-                class="col-lg"
+                class="col"
               >
                 <input
                   class="form-control"

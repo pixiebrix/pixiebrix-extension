@@ -30,20 +30,20 @@ exports[`ModOptionsValuesEditor renders blueprint options with additional props 
                 class="formGroup form-group row"
               >
                 <div
-                  class="mb-2 collapse col-12"
+                  class="mb-2 collapse col-lg-12"
                 >
                   <div
                     class="annotationPlaceholder"
                   />
                 </div>
                 <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  class="label form-label col-form-label col-xl-3 col-lg-12"
                   for="additionalProperties"
                 >
                   Additional Properties
                 </label>
                 <div
-                  class="col-xl-10 col-lg-9"
+                  class="col"
                 >
                   <div
                     class="root"
@@ -159,20 +159,20 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
                 class="formGroup form-group row"
               >
                 <div
-                  class="mb-2 collapse col-12"
+                  class="mb-2 collapse col-lg-12"
                 >
                   <div
                     class="annotationPlaceholder"
                   />
                 </div>
                 <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  class="label form-label col-form-label col-xl-3 col-lg-12"
                   for="myDatabase"
                 >
                   My Database
                 </label>
                 <div
-                  class="col-xl-10 col-lg-9"
+                  class="col"
                 >
                   <div
                     class="root"
@@ -215,20 +215,20 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
                 class="formGroup form-group row"
               >
                 <div
-                  class="mb-2 collapse col-12"
+                  class="mb-2 collapse col-lg-12"
                 >
                   <div
                     class="annotationPlaceholder"
                   />
                 </div>
                 <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  class="label form-label col-form-label col-xl-3 col-lg-12"
                   for="myBool"
                 >
                   My Bool
                 </label>
                 <div
-                  class="col-xl-10 col-lg-9"
+                  class="col"
                 >
                   <div
                     class="root"
@@ -271,20 +271,20 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
                 class="formGroup form-group row"
               >
                 <div
-                  class="mb-2 collapse col-12"
+                  class="mb-2 collapse col-lg-12"
                 >
                   <div
                     class="annotationPlaceholder"
                   />
                 </div>
                 <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  class="label form-label col-form-label col-xl-3 col-lg-12"
                   for="myNum"
                 >
                   My Num
                 </label>
                 <div
-                  class="col-xl-10 col-lg-9"
+                  class="col"
                 >
                   <div
                     class="root"
@@ -327,20 +327,20 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
                 class="formGroup form-group row"
               >
                 <div
-                  class="mb-2 collapse col-12"
+                  class="mb-2 collapse col-lg-12"
                 >
                   <div
                     class="annotationPlaceholder"
                   />
                 </div>
                 <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  class="label form-label col-form-label col-xl-3 col-lg-12"
                   for="myArray"
                 >
                   My Array
                 </label>
                 <div
-                  class="col-xl-10 col-lg-9"
+                  class="col"
                 >
                   <div
                     class="root"
@@ -383,20 +383,20 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
                 class="formGroup form-group row"
               >
                 <div
-                  class="mb-2 collapse col-12"
+                  class="mb-2 collapse col-lg-12"
                 >
                   <div
                     class="annotationPlaceholder"
                   />
                 </div>
                 <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  class="label form-label col-form-label col-xl-3 col-lg-12"
                   for="myGoogleSheet"
                 >
                   My Google Sheet
                 </label>
                 <div
-                  class="col-xl-10 col-lg-9"
+                  class="col"
                 >
                   <div
                     class="root"
@@ -439,20 +439,20 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
                 class="formGroup form-group row"
               >
                 <div
-                  class="mb-2 collapse col-12"
+                  class="mb-2 collapse col-lg-12"
                 >
                   <div
                     class="annotationPlaceholder"
                   />
                 </div>
                 <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  class="label form-label col-form-label col-xl-3 col-lg-12"
                   for="myObject"
                 >
                   My Object
                 </label>
                 <div
-                  class="col-xl-10 col-lg-9"
+                  class="col"
                 >
                   <div
                     class="root"
@@ -495,20 +495,20 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
                 class="formGroup form-group row"
               >
                 <div
-                  class="mb-2 collapse col-12"
+                  class="mb-2 collapse col-lg-12"
                 >
                   <div
                     class="annotationPlaceholder"
                   />
                 </div>
                 <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
+                  class="label form-label col-form-label col-xl-3 col-lg-12"
                   for="myStr"
                 >
                   My Str
                 </label>
                 <div
-                  class="col-xl-10 col-lg-9"
+                  class="col"
                 >
                   <div
                     class="root"
