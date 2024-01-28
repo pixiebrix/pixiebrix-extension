@@ -338,35 +338,31 @@ const FieldEditor: React.FC<{
       )}
 
       {propertySchema.enum && (
-        <>
-          <SchemaField
-            label="Options"
-            name={getFullFieldName("enum")}
-            schema={{
-              type: "array",
-              items: {
-                type: "string",
-              },
-            }}
-            isRequired
-          />
-        </>
+        <SchemaField
+          label="Options"
+          name={getFullFieldName("enum")}
+          schema={{
+            type: "array",
+            items: {
+              type: "string",
+            },
+          }}
+          isRequired
+        />
       )}
 
       {propertySchema.type === "array" && (
-        <>
-          <SchemaField
-            label="Options"
-            name={getFullFieldName("items.enum")}
-            schema={{
-              type: "array",
-              items: {
-                type: "string",
-              },
-            }}
-            isRequired
-          />
-        </>
+        <SchemaField
+          label="Options"
+          name={getFullFieldName("items.enum")}
+          schema={{
+            type: "array",
+            items: {
+              type: "string",
+            },
+          }}
+          isRequired
+        />
       )}
 
       {propertySchema.oneOf && (

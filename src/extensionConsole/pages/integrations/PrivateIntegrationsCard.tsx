@@ -233,14 +233,12 @@ const PrivateIntegrationsCard: React.FunctionComponent<OwnProps> = ({
   );
 
   return (
-    <>
-      <PaginatedTable
-        columns={columns}
-        data={data}
-        showSearchFilter
-        forceShowRecord={forceShowRecord}
-      />
-    </>
+    <PaginatedTable
+      columns={columns}
+      data={data}
+      showSearchFilter
+      forceShowRecord={forceShowRecord}
+    />
   );
 };
 
