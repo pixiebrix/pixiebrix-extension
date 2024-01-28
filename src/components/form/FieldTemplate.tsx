@@ -81,36 +81,28 @@ export type CustomFieldWidget<
   > = CustomFieldWidgetProps<TValue, TInputElement>,
 > = React.ComponentType<TFieldWidgetProps>;
 
-type ComputeLabelAndColSizeArgs = {
+type computeLabelSizeArgs = {
   fitLabelWidth?: boolean;
   widerLabel?: boolean;
-  label?: ReactNode;
 };
 
-export function computeLabelAndColSize({
+export function computeLabelSize({
   fitLabelWidth,
   widerLabel,
-  label,
-}: ComputeLabelAndColSizeArgs) {
+}: computeLabelSizeArgs) {
   const labelSize: ColProps = {};
-  const colSize: ColProps = {};
 
   if (fitLabelWidth) {
     labelSize.lg = "auto";
-    colSize.lg = true;
   } else if (widerLabel) {
     labelSize.lg = "4";
     labelSize.xl = "3";
-    colSize.lg = label ? "8" : "12";
-    colSize.xl = label ? "9" : "12";
   } else {
-    labelSize.lg = "3";
-    labelSize.xl = "2";
-    colSize.lg = label ? "9" : "12";
-    colSize.xl = label ? "10" : "12";
+    labelSize.lg = "12";
+    labelSize.xl = "3";
   }
 
-  return { labelSize, colSize };
+  return { labelSize };
 }
 
 const FieldTemplate: <As extends React.ElementType, T = Element>(
@@ -186,16 +178,15 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
     </AsControl>
   );
 
-  const { labelSize, colSize } = computeLabelAndColSize({
+  const { labelSize } = computeLabelSize({
     fitLabelWidth,
     widerLabel,
-    label,
   });
 
   return (
     <BootstrapForm.Group as={Row} className={cx(styles.formGroup, className)}>
       <Collapse in={!isEmpty(annotations)}>
-        <Col xs="12" className="mb-2">
+        <Col lg="12" className="mb-2">
           {isEmpty(annotations) ? (
             <div className={styles.annotationPlaceholder} />
           ) : (
@@ -220,7 +211,7 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
           {label}
         </BootstrapForm.Label>
       )}
-      <Col {...colSize}>
+      <Col>
         {formControl}
         {description && (
           <BootstrapForm.Text className="text-muted">
