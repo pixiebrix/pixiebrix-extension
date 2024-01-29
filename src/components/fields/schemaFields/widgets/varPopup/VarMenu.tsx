@@ -140,7 +140,7 @@ function usePositionVarPopup({
 
     // While the menu position does not rely on the knownVars, the resize state or the variable position
     // we need to recompute the position when either of these change.
-  }, [knownVars, dispatch, resize, variablePosition]); // Add a dependency here... either position, line number or variable
+  }, [knownVars, dispatch, resize, variablePosition]);
 
   return { rootElementRef, positioned };
 }

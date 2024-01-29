@@ -67,7 +67,7 @@ const properties = [
  * @param element
  * @param position
  */
-export function getTextareaCaretCoordinates(
+export function getCaretCoordinates(
   element: HTMLTextAreaElement | HTMLInputElement,
   position: number,
 ) {
