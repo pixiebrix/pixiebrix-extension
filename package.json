@@ -250,7 +250,7 @@
     "csp-parse": "0.0.2",
     "css-loader": "^6.9.1",
     "css-minimizer-webpack-plugin": "^6.0.0",
-    "dotenv": "^16.3.2",
+    "dotenv": "^16.4.1",
     "eslint": "^8.56.0",
     "eslint-config-pixiebrix": "^0.34.1",
     "eslint-plugin-local-rules": "^2.0.1",
