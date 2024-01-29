@@ -28,14 +28,12 @@ import primeicons from "primeicons/primeicons.css?loadAsUrl";
 const PropertyTree: React.FunctionComponent<{ value: TreeNode[] }> = ({
   value,
 }) => (
-  <React.Fragment>
-    <Stylesheets href={[theme, primereact, primeicons]}>
-      <TreeTable value={value}>
-        <Column field="name" header="Property" expander />
-        <Column field="value" header="Value" />
-      </TreeTable>
-    </Stylesheets>
-  </React.Fragment>
+  <Stylesheets href={[theme, primereact, primeicons]}>
+    <TreeTable value={value}>
+      <Column field="name" header="Property" expander />
+      <Column field="value" header="Value" />
+    </TreeTable>
+  </Stylesheets>
 );
 
 export default PropertyTree;

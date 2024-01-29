@@ -252,7 +252,7 @@
     "css-minimizer-webpack-plugin": "^6.0.0",
     "dotenv": "^16.3.2",
     "eslint": "^8.56.0",
-    "eslint-config-pixiebrix": "^0.32.0",
+    "eslint-config-pixiebrix": "^0.34.1",
     "eslint-plugin-local-rules": "^2.0.1",
     "fake-indexeddb": "^5.0.2",
     "identity-obj-proxy": "^3.0.0",
