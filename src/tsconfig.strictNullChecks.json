@@ -239,7 +239,6 @@
     "./contrib/uipath/typeUtils.ts",
     "./contrib/uipath/uipathContract.ts",
     "./contrib/zapier/contract.ts",
-    "./development/autoreload.ts",
     "./development/errorsBadge.ts",
     "./development/messengerLogging.ts",
     "./development/runtimeLogging.ts",
