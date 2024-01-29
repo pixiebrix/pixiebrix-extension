@@ -18,7 +18,7 @@
 import { BusinessError } from "@/errors/businessErrors";
 import legacyCopyText from "copy-text-to-clipboard";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { focusCaptureDialog } from "./focusCaptureDialog";
+import { focusCaptureDialog } from "@/utils/focusCaptureDialog";
 
 export type ContentType = "infer" | "text" | "image";
 
@@ -68,10 +68,6 @@ async function interactiveWriteToClipboard(
   try {
     await navigator.clipboard.write(clipboardItems);
   } catch (error) {
-    if (!isDocumentFocusError(error)) {
-      throw error;
-    }
-
     throw new BusinessError(
       "Your Browser was unable to determine the user action that initiated the clipboard write.",
       { cause: error },

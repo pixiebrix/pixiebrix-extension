@@ -70,23 +70,7 @@ export class ShowSidebar extends EffectABC {
     }>,
     { logger }: BrickOptions,
   ): Promise<void> {
-    // Don't pass extensionId here because the extensionId in showOptions refers to the extensionId of the panel,
-    // not the extensionId of the extension toggling the sidebar
-    if (isMV3()) {
-      try {
-        await showMySidePanel();
-      } catch (error) {
-        if (getErrorMessage(error).includes("user gesture")) {
-          await focusCaptureDialog(
-            'Please click "OK" to allow PixieBrix to open the sidebar.',
-          );
-        }
-
-        await showMySidePanel();
-      }
-    } else {
-      await showSidebar();
-    }
+    await showSidebar();
 
     void logPromiseDuration(
       "ShowSidebar:updateSidebar",
