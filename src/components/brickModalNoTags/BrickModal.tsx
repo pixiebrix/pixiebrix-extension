@@ -37,7 +37,7 @@ import {
 } from "react-bootstrap";
 import { compact, sortBy } from "lodash";
 import { useDebounce } from "use-debounce";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import Fuse from "fuse.js";
 import { FixedSizeList as LazyList } from "react-window";
 import AutoSizer, { type Size } from "react-virtualized-auto-sizer";

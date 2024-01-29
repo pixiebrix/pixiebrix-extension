@@ -16,7 +16,7 @@
  */
 
 import axios, { type AxiosInstance } from "axios";
-import { getBaseURL } from "@/services/baseService";
+import { getBaseURL } from "@/data/service/baseService";
 import { getAuthHeaders } from "@/auth/token";
 import {
   ExtensionNotLinkedError,

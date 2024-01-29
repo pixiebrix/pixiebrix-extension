@@ -24,7 +24,7 @@ import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
 import sidebarSlice, { persistSidebarConfig } from "@/sidebar/sidebarSlice";
 import { persistSettingsConfig } from "@/store/settings/settingsStorage";
 import settingsSlice from "@/store/settings/settingsSlice";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import integrationsSlice, {
   persistIntegrationsConfig,

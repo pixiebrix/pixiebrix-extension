@@ -17,7 +17,7 @@
 
 import React from "react";
 import { type RegistryId } from "@/types/registryTypes";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import type { MarketplaceListing } from "@/types/contract";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { type IconDefinition } from "@fortawesome/fontawesome-common-types";

@@ -35,7 +35,7 @@ import { MenuItemStarterBrickABC } from "@/starterBricks/menuItemExtension";
 import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu";
 import { PanelStarterBrickABC } from "@/starterBricks/panelExtension";
 import { SidebarStarterBrickABC } from "@/starterBricks/sidebarExtension";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { useAsyncIcon } from "@/components/asyncIcon";
 import { type MarketplaceListing } from "@/types/contract";
 import getType from "@/runtime/getType";

@@ -29,7 +29,7 @@ import { authSlice } from "@/auth/authSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 // FIXME: this is coming through as a module with default being a JSON object. (yaml-jest-transform is being applied)
 import pipedriveYaml from "@contrib/integrations/pipedrive.yaml?loadAsText";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { brickToYaml } from "@/utils/objToYaml";
 import { act } from "react-dom/test-utils";
 import testMiddleware, {

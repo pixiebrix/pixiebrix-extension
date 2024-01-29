@@ -19,7 +19,7 @@ import React from "react";
 import { renderHook } from "@testing-library/react-hooks";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import { Provider } from "react-redux";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { uuidv4 } from "@/types/helpers";
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "@/auth/authSlice";
@@ -41,7 +41,7 @@ jest.mock("@/store/enterprise/useManagedStorageState", () => ({
   default: jest.fn().mockReturnValue({ data: {}, isLoading: false }),
 }));
 
-jest.mock("@/services/api", () => ({
+jest.mock("@/data/service/api", () => ({
   appApi: {
     endpoints: {
       getMe: {

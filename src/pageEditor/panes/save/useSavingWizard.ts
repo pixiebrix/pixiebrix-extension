@@ -37,7 +37,7 @@ import {
   useCreateRecipeMutation,
   useGetEditablePackagesQuery,
   useUpdateRecipeMutation,
-} from "@/services/api";
+} from "@/data/service/api";
 import { replaceModComponent } from "./saveHelpers";
 import extensionsSlice from "@/store/extensionsSlice";
 import pDefer, { type DeferredPromise } from "p-defer";

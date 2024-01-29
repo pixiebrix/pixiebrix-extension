@@ -16,8 +16,8 @@
  */
 
 import axios from "axios";
-import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
-import { isAppUrl } from "@/services/requestErrorUtils";
+import { getApiClient, getLinkedApiClient } from "@/data/service/apiClient";
+import { isAppUrl } from "@/data/service/requestErrorUtils";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { EndpointAuthError } from "@/errors/genericErrors";
 import { isAxiosError } from "@/errors/networkErrorHelpers";

@@ -20,7 +20,7 @@ import {
 import { type TableInstance } from "react-table";
 import { type ModViewItem } from "@/types/modTypes";
 import useFlags from "@/hooks/useFlags";
-import { appApi, useGetStarterBlueprintsQuery } from "@/services/api";
+import { appApi, useGetStarterBlueprintsQuery } from "@/data/service/api";
 import { kebabCase } from "lodash";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 

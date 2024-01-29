@@ -22,7 +22,7 @@ import {
   useGetMarketplaceListingsQuery,
   useGetPackageQuery,
   useUpdatePackageMutation,
-} from "@/services/api";
+} from "@/data/service/api";
 import { renderHook } from "@testing-library/react-hooks";
 import { Provider } from "react-redux";
 import React from "react";

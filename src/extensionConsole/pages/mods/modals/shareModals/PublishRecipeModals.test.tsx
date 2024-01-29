@@ -23,7 +23,7 @@ import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSl
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type AuthState } from "@/auth/authTypes";
 import { validateRegistryId } from "@/types/helpers";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";

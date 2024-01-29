@@ -36,7 +36,7 @@ import useLogContext from "@/extensionConsole/pages/brickEditor/useLogContext";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import BooleanWidget from "@/components/fields/schemaFields/widgets/BooleanWidget";
 import { type Package } from "@/types/contract";
-import { useGetPackageQuery } from "@/services/api";
+import { useGetPackageQuery } from "@/data/service/api";
 import useIsMounted from "@/hooks/useIsMounted";
 import { type UUID } from "@/types/stringTypes";
 import { type Definition } from "@/types/registryTypes";

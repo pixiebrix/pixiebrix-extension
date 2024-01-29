@@ -23,7 +23,7 @@ import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
 import serviceRegistry from "@/integrations/registry";
 import axios from "axios";
-import { getBaseURL } from "@/services/baseService";
+import { getBaseURL } from "@/data/service/baseService";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import chromeP from "webext-polyfill-kinda";
 import { safeParseUrl } from "@/utils/urlUtils";

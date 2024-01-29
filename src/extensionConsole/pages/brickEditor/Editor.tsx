@@ -42,7 +42,7 @@ import LogCard from "@/components/logViewer/LogCard";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { isMac } from "@/utils/browserUtils";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import useAsyncState from "@/hooks/useAsyncState";
 
 const SharingIcon: React.FunctionComponent<{

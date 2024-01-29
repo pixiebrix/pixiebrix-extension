@@ -24,7 +24,7 @@ import amazonSearch from "@contrib/bricks/amazon-search.yaml";
 import { brickToYaml } from "@/utils/objToYaml";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import brickRegistry from "@/bricks/registry";
 import { partial } from "lodash";
 

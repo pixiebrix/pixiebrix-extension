@@ -22,7 +22,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Col, Row } from "react-bootstrap";
 import useMilestones from "@/hooks/useMilestones";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import { type RegistryId } from "@/types/registryTypes";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import ModIcon from "@/mods/ModIcon";

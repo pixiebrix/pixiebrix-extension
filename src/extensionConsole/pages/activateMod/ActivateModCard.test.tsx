@@ -26,7 +26,7 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { useGetRecipeQuery } from "@/services/api";
+import { useGetRecipeQuery } from "@/data/service/api";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { validateRegistryId } from "@/types/helpers";
 import { type RecipeResponse } from "@/types/contract";

@@ -25,7 +25,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
-import { useGetIntegrationAuthsQuery } from "@/services/api";
+import { useGetIntegrationAuthsQuery } from "@/data/service/api";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
 
 function defaultLabel(label: string): string {

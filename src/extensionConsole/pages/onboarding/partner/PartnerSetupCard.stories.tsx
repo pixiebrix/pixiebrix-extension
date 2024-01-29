@@ -27,7 +27,7 @@ import { uuidv4 } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
 import PartnerSetupCard from "@/extensionConsole/pages/onboarding/partner/PartnerSetupCard";
 import { type AuthState } from "@/auth/authTypes";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { rest } from "msw";
 import { HashRouter } from "react-router-dom";
 import { createHashHistory } from "history";

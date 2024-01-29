@@ -22,7 +22,7 @@ import { persistReducer } from "redux-persist";
 import modsPageSlice, {
   persistModsConfig,
 } from "@/extensionConsole/pages/mods/modsPageSlice";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import GetStartedView from "@/extensionConsole/pages/mods/GetStartedView";
 import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";

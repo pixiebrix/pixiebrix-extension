@@ -26,7 +26,10 @@ import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmi
 import { useDispatch, useSelector } from "react-redux";
 import { selectRecipeHasAnyExtensionsInstalled } from "@/store/extensionsSelectors";
 import useRegistryIdParam from "@/extensionConsole/pages/useRegistryIdParam";
-import { useCreateMilestoneMutation, useGetRecipeQuery } from "@/services/api";
+import {
+  useCreateMilestoneMutation,
+  useGetRecipeQuery,
+} from "@/data/service/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import useActivateRecipe from "@/activation/useActivateRecipe";

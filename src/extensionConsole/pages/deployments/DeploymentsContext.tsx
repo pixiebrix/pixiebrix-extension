@@ -30,7 +30,7 @@ import { getUID, services } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { type Dispatch } from "@reduxjs/toolkit";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { maybeGetLinkedApiClient } from "@/services/apiClient";
+import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import extensionsSlice from "@/store/extensionsSlice";
 import useFlags from "@/hooks/useFlags";
 import {

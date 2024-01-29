@@ -23,7 +23,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import Page from "@/layout/Page";
 import ActivateExtensionCard from "@/extensionConsole/pages/activateExtension/ActivateExtensionCard";
 import { useAuthOptions } from "@/hooks/auth";
-import { useGetStandaloneModDefinitionQuery } from "@/services/api";
+import { useGetStandaloneModDefinitionQuery } from "@/data/service/api";
 import { type UUID } from "@/types/stringTypes";
 
 /**

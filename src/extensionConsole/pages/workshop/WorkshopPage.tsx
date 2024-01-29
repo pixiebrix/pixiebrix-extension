@@ -32,7 +32,7 @@ import { type EnrichedBrick, type NavigateProps } from "./workshopTypes";
 import { RequireScope } from "@/auth/RequireScope";
 import { mapKindToKindUiValue } from "@/extensionConsole/pages/workshop/workshopUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
-import { useGetEditablePackagesQuery } from "@/services/api";
+import { useGetEditablePackagesQuery } from "@/data/service/api";
 import { type EditablePackageMetadata } from "@/types/contract";
 
 const { actions } = workshopSlice;

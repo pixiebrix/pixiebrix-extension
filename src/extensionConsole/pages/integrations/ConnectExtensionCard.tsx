@@ -16,7 +16,7 @@
  */
 
 import React, { useState } from "react";
-import { getBaseURL } from "@/services/baseService";
+import { getBaseURL } from "@/data/service/baseService";
 import { useAsyncEffect } from "use-async-effect";
 import { isLinked } from "@/auth/token";
 import { Card } from "react-bootstrap";

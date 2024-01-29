@@ -27,7 +27,7 @@ import {
 import {
   useGetEditablePackagesQuery,
   useUpdateRecipeMutation,
-} from "@/services/api";
+} from "@/data/service/api";
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";

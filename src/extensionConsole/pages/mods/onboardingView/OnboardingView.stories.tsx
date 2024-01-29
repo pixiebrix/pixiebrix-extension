@@ -20,7 +20,7 @@ import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import OnboardingView from "@/extensionConsole/pages/mods/onboardingView/OnboardingView";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { persistReducer } from "redux-persist";
 import modsPageSlice, {
   persistModsConfig,

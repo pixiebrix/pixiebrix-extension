@@ -24,7 +24,7 @@ import { getModComponentState } from "@/store/extensionsStorage";
 import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,
-} from "@/services/apiClient";
+} from "@/data/service/apiClient";
 import { allowsTrack } from "@/telemetry/dnt";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { type UnknownObject } from "@/types/objectTypes";

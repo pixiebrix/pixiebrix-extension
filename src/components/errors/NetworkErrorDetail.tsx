@@ -22,7 +22,7 @@ import {
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import JsonTree from "@/components/jsonTree/JsonTree";
-import { selectAbsoluteUrl } from "@/services/requestErrorUtils";
+import { selectAbsoluteUrl } from "@/data/service/requestErrorUtils";
 import {
   safeGuessStatusText,
   type SerializableAxiosError,

@@ -47,7 +47,7 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { type UUID } from "@/types/stringTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { type Schema } from "@/types/schemaTypes";
 import useAsyncState from "@/hooks/useAsyncState";

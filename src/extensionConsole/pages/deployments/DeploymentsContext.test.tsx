@@ -28,7 +28,7 @@ import userEvent from "@testing-library/user-event";
 import {
   getLinkedApiClient,
   maybeGetLinkedApiClient,
-} from "@/services/apiClient";
+} from "@/data/service/apiClient";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type ModComponentState } from "@/store/extensionsTypes";
 
@@ -36,7 +36,7 @@ import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
 
 const axiosMock = new MockAdapter(axios);
 
-jest.mock("@/services/apiClient");
+jest.mock("@/data/service/apiClient");
 
 jest.mocked(getLinkedApiClient).mockResolvedValue(axios.create());
 jest.mocked(maybeGetLinkedApiClient).mockResolvedValue(axios.create());

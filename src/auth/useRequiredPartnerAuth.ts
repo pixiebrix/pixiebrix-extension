@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
 import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
@@ -26,7 +26,7 @@ import {
   removeListener as removeAuthListener,
 } from "@/auth/token";
 import { useEffect } from "react";
-import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
+import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/data/service/constants";
 import { type AuthState } from "@/auth/authTypes";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";

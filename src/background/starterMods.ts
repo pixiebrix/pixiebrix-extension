@@ -16,7 +16,7 @@
  */
 
 import extensionsSlice from "@/store/extensionsSlice";
-import { maybeGetLinkedApiClient } from "@/services/apiClient";
+import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import {
   getModComponentState,
   saveModComponentState,

@@ -29,7 +29,7 @@ import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinition
 
 jest.mock("@/components/integrations/AuthWidget", () => {});
 jest.mock("react-redux");
-jest.mock("@/services/api", () => ({
+jest.mock("@/data/service/api", () => ({
   useGetServiceAuthsQuery: jest.fn().mockReturnValue({
     data: [],
   }),

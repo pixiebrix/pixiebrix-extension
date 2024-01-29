@@ -22,7 +22,7 @@ import { uuidv4 } from "@/types/helpers";
 
 const APP_BASE_URL = "https://app.pixiebrix.com";
 
-jest.mock("@/services/baseService", () => ({
+jest.mock("@/data/service/baseService", () => ({
   // Can't use APP_BASE_URL because it's not defined yet when Jest defines the mock
   getBaseURL: jest.fn().mockResolvedValue("https://app.pixiebrix.com"),
 }));

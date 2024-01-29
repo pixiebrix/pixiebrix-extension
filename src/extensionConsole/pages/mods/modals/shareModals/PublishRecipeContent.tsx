@@ -24,7 +24,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import {
   useGetEditablePackagesQuery,
   useUpdateRecipeMutation,
-} from "@/services/api";
+} from "@/data/service/api";
 import notify from "@/utils/notify";
 import { produce } from "immer";
 import ActivationLink from "@/activation/ActivationLink";

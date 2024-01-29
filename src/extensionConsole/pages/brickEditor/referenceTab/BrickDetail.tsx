@@ -30,7 +30,7 @@ import SchemaTree from "@/components/schemaTree/SchemaTree";
 import useUserAction from "@/hooks/useUserAction";
 import DetailSection from "./DetailSection";
 import { type Schema } from "@/types/schemaTypes";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import BrickIcon from "@/components/BrickIcon";
 import { writeTextToClipboard } from "@/utils/clipboardUtils";
 import { type Metadata } from "@/types/registryTypes";

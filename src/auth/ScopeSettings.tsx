@@ -26,7 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { StatusCodes } from "http-status-codes";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import Form, {
   type OnSubmit,
   type RenderBody,

@@ -24,7 +24,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import RequireBrickRegistry from "@/extensionConsole/components/RequireBrickRegistry";
-import { useGetRecipeQuery } from "@/services/api";
+import { useGetRecipeQuery } from "@/data/service/api";
 import { useSelector } from "react-redux";
 import { selectRecipeHasAnyExtensionsInstalled } from "@/store/extensionsSelectors";
 import useRegistryIdParam from "@/extensionConsole/pages/useRegistryIdParam";

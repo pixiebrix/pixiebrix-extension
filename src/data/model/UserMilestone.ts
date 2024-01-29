@@ -14,24 +14,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { absoluteApiUrl } from "@/services/apiClient";
 
-// Disable automatic __mocks__ resolution #6799
-jest.mock("@/services/apiClient", () => jest.requireActual("./apiClient.ts"));
+import { type components } from "@/types/swagger";
 
-describe("absoluteApiUrl", () => {
-  it("makes relative url absolute", async () => {
-    await expect(absoluteApiUrl("/relative")).resolves.toBe(
-      "https://app.pixiebrix.com/relative",
-    );
-  });
+export type UserMilestone = {
+  /**
+   * A lower-snake-case, human-readible identifier for the Milestone, e.g. "first_time_extension_install"
+   */
+  milestoneIdentifier: string;
+  /**
+   * Optional additional information to provide context about the Milestone
+   */
+  metadata: Record<string, unknown>;
+};
 
-  it("throws on other absolute URL", async () => {
-    await expect(absoluteApiUrl("https://virus.com")).rejects.toThrow();
-  });
-
-  it("handles absolute URL", async () => {
-    const absoluteUrl = "https://app.pixiebrix.com/path";
-    await expect(absoluteApiUrl(absoluteUrl)).resolves.toBe(absoluteUrl);
-  });
-});
+export function transformUserMilestoneResponse(
+  response: components["schemas"]["Me"]["milestones"][number],
+): UserMilestone {
+  return {
+    milestoneIdentifier: response.key,
+    metadata: response.metadata ?? {},
+  };
+}

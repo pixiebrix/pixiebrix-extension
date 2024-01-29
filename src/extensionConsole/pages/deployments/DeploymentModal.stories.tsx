@@ -24,7 +24,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { authSlice } from "@/auth/authSlice";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 
 export default {
   title: "Options/DeploymentModal",

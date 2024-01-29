@@ -18,7 +18,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "@/components/Loader";
-import { useGetMeQuery } from "@/services/api";
+import { useGetMeQuery } from "@/data/service/api";
 import { clearCachedAuthSecrets, updateUserData } from "@/auth/token";
 import {
   selectExtensionAuthState,

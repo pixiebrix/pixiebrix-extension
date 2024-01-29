@@ -18,7 +18,7 @@
 import { isErrorObject } from "@/errors/errorHelpers";
 import { type AxiosRequestConfig } from "axios";
 import { testMatchPatterns } from "@/bricks/available";
-import { getBaseURL, withoutTrailingSlash } from "@/services/baseService";
+import { getBaseURL, withoutTrailingSlash } from "@/data/service/baseService";
 import urljoin from "url-join";
 import {
   isAxiosError,

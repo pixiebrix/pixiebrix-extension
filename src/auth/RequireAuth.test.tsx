@@ -20,7 +20,7 @@ import { render, screen } from "@testing-library/react";
 import RequireAuth from "@/auth/RequireAuth";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
-import { appApi, useGetMeQuery } from "@/services/api";
+import { appApi, useGetMeQuery } from "@/data/service/api";
 import { Provider } from "react-redux";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import integrationsSlice, {
@@ -43,7 +43,7 @@ function optionsStore(initialState?: any) {
   });
 }
 
-jest.mock("@/services/api");
+jest.mock("@/data/service/api");
 
 function mockMeQuery(state: { isLoading: boolean; data?: Me; error?: any }) {
   jest.mocked(appApi.endpoints.getMe.useQueryState).mockReturnValue(state);

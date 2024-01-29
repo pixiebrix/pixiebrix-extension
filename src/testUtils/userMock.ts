@@ -16,7 +16,7 @@
  */
 
 import { type Me } from "@/types/contract";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { querySuccessFactory } from "@/testUtils/rtkQueryFactories";
 
 import { userFactory } from "@/testUtils/factories/authFactories";
