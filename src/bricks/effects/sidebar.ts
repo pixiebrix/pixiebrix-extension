@@ -28,6 +28,8 @@ import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isMV3 } from "@/mv3/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { logPromiseDuration } from "@/utils/promiseUtils";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import { focusCaptureDialog } from "@/utils/focusCaptureDialog";
 
 export class ShowSidebar extends EffectABC {
   constructor() {
@@ -71,7 +73,17 @@ export class ShowSidebar extends EffectABC {
     // Don't pass extensionId here because the extensionId in showOptions refers to the extensionId of the panel,
     // not the extensionId of the extension toggling the sidebar
     if (isMV3()) {
-      await showMySidePanel();
+      try {
+        await showMySidePanel();
+      } catch (error) {
+        if (getErrorMessage(error).includes("user gesture")) {
+          await focusCaptureDialog(
+            'Please click "OK" to allow PixieBrix to open the sidebar.',
+          );
+        }
+
+        await showMySidePanel();
+      }
     } else {
       await showSidebar();
     }

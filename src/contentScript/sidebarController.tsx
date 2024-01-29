@@ -42,6 +42,8 @@ import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
 import { backgroundTarget, getMethod, messenger } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import { focusCaptureDialog } from "@/utils/focusCaptureDialog";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
@@ -119,6 +121,11 @@ const panels: PanelEntry[] = [];
 
 let modActivationPanelEntry: ModActivationPanelEntry | null = null;
 
+// TODO: Import from background/messenger/api.ts after the strictNullChecks migration, drop "SIDEBAR_PING" assertion
+async function showMySidePanel(): Promise<void> {
+  return getMethod("SHOW_MY_SIDE_PANEL" as "SIDEBAR_PING", backgroundTarget)();
+}
+
 /**
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
  */
@@ -126,8 +133,18 @@ export async function showSidebar(): Promise<void> {
   console.debug("sidebarController:showSidebar");
   reportEvent(Events.SIDEBAR_SHOW);
   if (isMV3()) {
-    // TODO: Import from background/messenger/api.ts after the strictNullChecks migration, drop "SIDEBAR_PING" string
-    await getMethod("SHOW_MY_SIDE_PANEL" as "SIDEBAR_PING", backgroundTarget)();
+    try {
+      await showMySidePanel();
+    } catch (error) {
+      if (!getErrorMessage(error).includes("user gesture")) {
+        throw error;
+      }
+
+      await focusCaptureDialog(
+        'Please click "OK" to allow PixieBrix to open the sidebar.',
+      );
+      await showMySidePanel();
+    }
   } else if (!sidebarMv2.isSidebarFrameVisible()) {
     sidebarMv2.insertSidebarFrame();
   }

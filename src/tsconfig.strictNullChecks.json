@@ -484,6 +484,7 @@
     "./urlConstants.ts",
     "./utils/sidePanelUtils.ts",
     "./utils/ConsoleLogger.ts",
+    "./utils/focusCaptureDialog.ts",
     "./utils/SimpleEventTarget.ts",
     "./utils/arrayUtils.ts",
     "./utils/asyncStateUtils.ts",

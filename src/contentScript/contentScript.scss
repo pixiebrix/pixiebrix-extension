@@ -69,3 +69,27 @@
   background: none !important;
   border-color: transparent !important;
 }
+
+.pixiebrix-dialog {
+  border: none;
+  border-radius: 5px;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+
+  button {
+    display: block;
+    margin: 1em auto 0;
+    min-width: 7em;
+    line-height: 2em;
+  }
+}
+
+.pixiebrix-dialog::backdrop {
+  background-color: rgba(31, 0, 38, 0.2) !important;
+  animation: pixiebrix-fade-in-backdrop 0.1s;
+}
+
+@keyframes pixiebrix-fade-in-backdrop {
+  from {
+    opacity: 0;
+  }
+}
