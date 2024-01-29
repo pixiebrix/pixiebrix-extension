@@ -54,7 +54,6 @@ async function interactiveWriteToClipboard(
 ): Promise<void> {
   try {
     await navigator.clipboard.write(clipboardItems);
-    return;
   } catch (error) {
     if (!isDocumentFocusError(error)) {
       throw error;
@@ -65,14 +64,8 @@ async function interactiveWriteToClipboard(
     `Please click "OK" to allow PixieBrix to copy ${type} to your clipboard.`,
   );
 
-  try {
-    await navigator.clipboard.write(clipboardItems);
-  } catch (error) {
-    throw new BusinessError(
-      "Your Browser was unable to determine the user action that initiated the clipboard write.",
-      { cause: error },
-    );
-  }
+  // Let the error be caught by the caller if it still fails
+  await navigator.clipboard.write(clipboardItems);
 }
 
 /**
@@ -110,7 +103,9 @@ export async function writeTextToClipboard({
       // The legacy approach uses a hidden text area and document.execCommand('copy') under the hood
       const copied = legacyCopyText(text);
       if (!copied) {
-        throw new BusinessError("Unable to write text to clipboard");
+        throw new BusinessError("Unable to write text to clipboard", {
+          cause: error,
+        });
       }
 
       return;
