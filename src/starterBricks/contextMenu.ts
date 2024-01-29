@@ -75,7 +75,7 @@ import batchedFunction from "batched-function";
 // eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const groupRegistrationErrorNotification = batchedFunction(
   (errors: unknown[][]): void => {
-    // `batchedFunction` will throttle the alls and coalesce all the errors into a
+    // `batchedFunction` will throttle the calls and coalesce all the errors into a
     // single notification, even if they come from different extensions
     // https://github.com/pixiebrix/pixiebrix-extension/issues/7353
     notify.error({
