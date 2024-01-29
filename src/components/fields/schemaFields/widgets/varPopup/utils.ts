@@ -23,7 +23,7 @@ import { getTextareaCaretCoordinates } from "@/utils/textAreaUtils";
  * Used to position the floating UI menu.
  */
 export function getSelectedLineVirtualElement(
-  textarea: HTMLTextAreaElement,
+  textarea: HTMLTextAreaElement | HTMLInputElement,
 ): VirtualElement {
   const inputRect = textarea.getBoundingClientRect();
 
