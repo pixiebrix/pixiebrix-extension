@@ -108,8 +108,8 @@ function setActiveElement(event: MouseEvent): void {
   clickedElement = event.target as HTMLElement;
 }
 
-const installMouseHandlerOnce = (): void => {
-  // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
+function installMouseHandlerOnce(): void {
+  // `addEventListener` natively avoids duplicate listeners
   document.addEventListener("contextmenu", setActiveElement, {
     // Handle it first in case a target beneath it cancels the event
     capture: true,
@@ -118,7 +118,7 @@ const installMouseHandlerOnce = (): void => {
     // Remove after context invalidation
     signal: onContextInvalidated.signal,
   });
-};
+}
 
 /**
  * See also: https://developer.chrome.com/extensions/contextMenus
