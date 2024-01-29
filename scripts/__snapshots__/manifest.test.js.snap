@@ -157,6 +157,7 @@ exports[`customizeManifest mv3 1`] = `
   "author": "PixieBrix, Inc.",
   "background": {
     "service_worker": "background.worker.js",
+    "type": "module",
   },
   "browser_specific_settings": {
     "gecko": {
