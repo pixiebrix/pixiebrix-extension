@@ -140,7 +140,7 @@ describe("quickBarExtension", () => {
 
     // QuickBar adds another div to the body
     expect(document.body.innerHTML).toBe(
-      '<div id="pixiebrix-quickbar-container"></div><div></div>',
+      '<div class="pixiebrix-quickbar-container"></div><div></div>',
     );
 
     // :shrug: I'm not sure how to get the kbar to show using shortcuts in jsdom, so just toggle manually

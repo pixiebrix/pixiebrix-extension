@@ -103,7 +103,6 @@ describe("IdentityTransformer.getOutputSchema", () => {
   it("returns array type", () => {
     const schema = brick.getOutputSchema({
       id: IdentityTransformer.BRICK_ID,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- config technically accepts anything
       config: [] as any,
     });
     expect(schema).toStrictEqual({

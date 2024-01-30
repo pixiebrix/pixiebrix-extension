@@ -208,145 +208,140 @@ function PaginatedTable<
   }, [forceShowRecord, gotoPage, pageSize, rows]);
 
   return (
-    <>
-      <Table {...getTableProps()} responsive className={styles.paginatedTable}>
-        <thead className="d-block w-100">
-          {headerGroups.map((headerGroup) => (
-            // eslint-disable-next-line react/jsx-key -- handled by getHeaderGroupProps
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column, index) => (
-                // eslint-disable-next-line react/jsx-key -- handled by getHeaderProps
-                <th
-                  {...column.getHeaderProps(column.getSortByToggleProps())}
-                  className={styles.th}
-                >
-                  <div className="header-content d-flex">
-                    {column.render("Header")}
-                    {column.canSort && (
-                      <span className="text-muted ml-2">
-                        {column.isSorted ? (
-                          column.isSortedDesc ? (
-                            <FontAwesomeIcon
-                              icon={faCaretDown}
-                              className={styles.sortIcon}
-                            />
-                          ) : (
-                            <FontAwesomeIcon
-                              icon={faCaretUp}
-                              className={styles.sortIcon}
-                            />
-                          )
-                        ) : (
+    <Table {...getTableProps()} responsive className={styles.paginatedTable}>
+      <thead className="d-block w-100">
+        {headerGroups.map((headerGroup) => (
+          // eslint-disable-next-line react/jsx-key -- handled by getHeaderGroupProps
+          <tr {...headerGroup.getHeaderGroupProps()}>
+            {headerGroup.headers.map((column, index) => (
+              // eslint-disable-next-line react/jsx-key -- handled by getHeaderProps
+              <th
+                {...column.getHeaderProps(column.getSortByToggleProps())}
+                className={styles.th}
+              >
+                <div className="header-content d-flex">
+                  {column.render("Header")}
+                  {column.canSort && (
+                    <span className="text-muted ml-2">
+                      {column.isSorted ? (
+                        column.isSortedDesc ? (
                           <FontAwesomeIcon
-                            icon={faSort}
+                            icon={faCaretDown}
                             className={styles.sortIcon}
                           />
-                        )}
-                      </span>
-                    )}
-                  </div>
-                  {column.canResize &&
-                  index !== headerGroup.headers.length - 1 ? (
-                    <>
-                      {column?.isResizing && <div className={styles.overlay} />}
-                      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-                      <div
-                        className={styles.resize}
-                        {...column.getResizerProps()}
-                        onClick={(event) => {
-                          // Support the whole header cell as the sort toggle target
-                          event.preventDefault();
-                          event.stopPropagation();
-                        }}
-                      />
-                    </>
-                  ) : (
-                    ""
+                        ) : (
+                          <FontAwesomeIcon
+                            icon={faCaretUp}
+                            className={styles.sortIcon}
+                          />
+                        )
+                      ) : (
+                        <FontAwesomeIcon
+                          icon={faSort}
+                          className={styles.sortIcon}
+                        />
+                      )}
+                    </span>
                   )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()} className="d-block w-100">
-          {page.map((row) => {
-            prepareRow(row);
-            return (
-              // eslint-disable-next-line react/jsx-key -- handled by getRowProps
-              <tr
-                {...row.getRowProps(
-                  rowProps ? rowProps(row.original) : undefined,
-                )}
-              >
-                {row.cells.map((cell) => (
-                  // eslint-disable-next-line react/jsx-key -- handled by getCellProps?
-                  <td {...cell.getCellProps()} className={styles.td}>
-                    {cell.render("Cell")}
-                  </td>
-                ))}
-              </tr>
-            );
-          })}
-          {rows.length === 0 && (
-            <tr>
-              <td colSpan={5} className="text-muted">
-                No records found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-        <tfoot className={styles.tfoot}>
-          <tr className="d-block w-100">
-            <td className="d-block w-100">
-              <div className="d-flex align-items-center">
-                <div className="text-muted">
-                  Showing {rowNumber} to{" "}
-                  {Math.min(rowNumber + pageSize - 1, rows.length)} of{" "}
-                  {rows.length}
                 </div>
-                {showSearchFilter ? (
-                  <div className="flex-grow-1 px-3">
-                    <div style={{ maxWidth: 300 }}>
-                      <SearchFilter setGlobalFilter={setGlobalFilter} />
-                    </div>
-                  </div>
+                {column.canResize &&
+                index !== headerGroup.headers.length - 1 ? (
+                  <>
+                    {column?.isResizing && <div className={styles.overlay} />}
+                    {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+                    <div
+                      className={styles.resize}
+                      {...column.getResizerProps()}
+                      onClick={(event) => {
+                        // Support the whole header cell as the sort toggle target
+                        event.preventDefault();
+                        event.stopPropagation();
+                      }}
+                    />
+                  </>
                 ) : (
                   ""
                 )}
-
-                <div className="flex-grow-1">
-                  <Pagination className="m-0 float-right">
-                    <Pagination.First
-                      onClick={() => {
-                        gotoPage(0);
-                      }}
-                      disabled={!canPreviousPage}
-                    />
-                    <Pagination.Prev
-                      onClick={previousPage}
-                      disabled={!canPreviousPage}
-                    />
-                    <Pagination.Item disabled>
-                      Page {pageIndex + 1} of {pageCount === 0 ? 1 : pageCount}
-                    </Pagination.Item>
-                    <Pagination.Next
-                      onClick={nextPage}
-                      disabled={!canNextPage}
-                    />
-                    <Pagination.Last
-                      onClick={() => {
-                        gotoPage(pageCount - 1);
-                      }}
-                      disabled={!canNextPage}
-                    />
-                  </Pagination>
-                </div>
-              </div>
+              </th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody {...getTableBodyProps()} className="d-block w-100">
+        {page.map((row) => {
+          prepareRow(row);
+          return (
+            // eslint-disable-next-line react/jsx-key -- handled by getRowProps
+            <tr
+              {...row.getRowProps(
+                rowProps ? rowProps(row.original) : undefined,
+              )}
+            >
+              {row.cells.map((cell) => (
+                // eslint-disable-next-line react/jsx-key -- handled by getCellProps?
+                <td {...cell.getCellProps()} className={styles.td}>
+                  {cell.render("Cell")}
+                </td>
+              ))}
+            </tr>
+          );
+        })}
+        {rows.length === 0 && (
+          <tr>
+            <td colSpan={5} className="text-muted">
+              No records found.
             </td>
           </tr>
-        </tfoot>
-      </Table>
-    </>
+        )}
+      </tbody>
+      <tfoot className={styles.tfoot}>
+        <tr className="d-block w-100">
+          <td className="d-block w-100">
+            <div className="d-flex align-items-center">
+              <div className="text-muted">
+                Showing {rowNumber} to{" "}
+                {Math.min(rowNumber + pageSize - 1, rows.length)} of{" "}
+                {rows.length}
+              </div>
+              {showSearchFilter ? (
+                <div className="flex-grow-1 px-3">
+                  <div style={{ maxWidth: 300 }}>
+                    <SearchFilter setGlobalFilter={setGlobalFilter} />
+                  </div>
+                </div>
+              ) : (
+                ""
+              )}
+
+              <div className="flex-grow-1">
+                <Pagination className="m-0 float-right">
+                  <Pagination.First
+                    onClick={() => {
+                      gotoPage(0);
+                    }}
+                    disabled={!canPreviousPage}
+                  />
+                  <Pagination.Prev
+                    onClick={previousPage}
+                    disabled={!canPreviousPage}
+                  />
+                  <Pagination.Item disabled>
+                    Page {pageIndex + 1} of {pageCount === 0 ? 1 : pageCount}
+                  </Pagination.Item>
+                  <Pagination.Next onClick={nextPage} disabled={!canNextPage} />
+                  <Pagination.Last
+                    onClick={() => {
+                      gotoPage(pageCount - 1);
+                    }}
+                    disabled={!canNextPage}
+                  />
+                </Pagination>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tfoot>
+    </Table>
   );
 }
 

@@ -74,12 +74,10 @@ type GetPropOptions = {
 /**
  * Error indicating input elements to a block did not match the schema.
  */
-class InvalidPathError extends Error {
+export class InvalidPathError extends Error {
   override name = "InvalidPathError";
 
   public readonly path: string;
-
-  readonly input: unknown;
 
   constructor(message: string, path: string) {
     super(message);
@@ -117,7 +115,7 @@ export function getPropByPath(
       isNumeric = true;
     }
 
-    if (!(typeof value == "object" || (Array.isArray(previous) && isNumeric))) {
+    if (typeof value !== "object" && !(Array.isArray(previous) && isNumeric)) {
       throw new InvalidPathError(`Invalid path ${path}`, path);
     }
 
