@@ -21,7 +21,7 @@ import { type Deployment } from "@/types/contract";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { checkExtensionUpdateRequired } from "@/utils/deploymentUtils";
 import notify from "@/utils/notify";
-import { type Dispatch } from "@reduxjs/toolkit";
+import { AnyAction, type Dispatch } from "@reduxjs/toolkit";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import useAsyncEffect from "use-async-effect";
@@ -31,7 +31,7 @@ function useAutoDeploy(
   installedExtensions: ModComponentBase[],
   isLoadingDeployments: boolean,
 ): boolean {
-  const dispatch = useDispatch<Dispatch>();
+  const dispatch = useDispatch<Dispatch<AnyAction>>();
   const [isAutoDeploying, setIsAutoDeploying] = useState(true);
   const [isAttemptingAutoDeploy, setIsAttemptingAutoDeploy] = useState(false);
   const { hasPermissions } = useModPermissions(installedExtensions);
