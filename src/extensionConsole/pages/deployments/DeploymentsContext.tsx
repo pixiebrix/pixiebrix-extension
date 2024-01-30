@@ -28,7 +28,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
 import { getUID, services } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
-import { AnyAction, type Dispatch } from "@reduxjs/toolkit";
+import { type Dispatch } from "@reduxjs/toolkit";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -182,7 +182,7 @@ export type DeploymentsState = {
 };
 
 function useDeployments(): DeploymentsState {
-  const dispatch = useDispatch<Dispatch<AnyAction>>();
+  const dispatch = useDispatch<Dispatch>();
   const installedExtensions = useSelector(selectExtensions);
   const { restrict } = useFlags();
 
@@ -220,7 +220,7 @@ function useDeployments(): DeploymentsState {
       restricted: restrict("uninstall"),
     });
 
-    const updatedDeployments = (deployments ?? []).filter(isUpdated);
+    const updatedDeployments = (deployments ?? []).filter((x) => isUpdated(x));
 
     return [
       updatedDeployments,

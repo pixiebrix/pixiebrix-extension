@@ -17,11 +17,11 @@
 
 import { activateDeployments } from "@/extensionConsole/pages/deployments/DeploymentsContext";
 import useModPermissions from "@/mods/hooks/useModPermissions";
-import { Deployment } from "@/types/contract";
-import { ModComponentBase } from "@/types/modComponentTypes";
+import { type Deployment } from "@/types/contract";
+import { type ModComponentBase } from "@/types/modComponentTypes";
 import { checkExtensionUpdateRequired } from "@/utils/deploymentUtils";
 import notify from "@/utils/notify";
-import { AnyAction, Dispatch } from "@reduxjs/toolkit";
+import { type AnyAction, type Dispatch } from "@reduxjs/toolkit";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import useAsyncEffect from "use-async-effect";
@@ -31,7 +31,7 @@ function useAutoDeploy(
   installedExtensions: ModComponentBase[],
   isLoadingDeployments: boolean,
 ): boolean {
-  const dispatch = useDispatch<Dispatch<AnyAction>>();
+  const dispatch = useDispatch<Dispatch>();
   const [isAutoDeploying, setIsAutoDeploying] = useState(true);
   const [isAttemptingAutoDeploy, setIsAttemptingAutoDeploy] = useState(false);
   const { hasPermissions } = useModPermissions(installedExtensions);
@@ -45,7 +45,7 @@ function useAutoDeploy(
 
       // No deployments to deploy or user interaction required
       if (
-        !deployments.length ||
+        deployments.length === 0 ||
         !hasPermissions ||
         checkExtensionUpdateRequired(deployments)
       ) {
