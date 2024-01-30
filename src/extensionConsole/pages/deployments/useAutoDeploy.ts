@@ -21,7 +21,7 @@ import { type Deployment } from "@/types/contract";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { checkExtensionUpdateRequired } from "@/utils/deploymentUtils";
 import notify from "@/utils/notify";
-import { type AnyAction, type Dispatch } from "@reduxjs/toolkit";
+import { type Dispatch } from "@reduxjs/toolkit";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import useAsyncEffect from "use-async-effect";
