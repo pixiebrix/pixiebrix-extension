@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSyncExternalStore } from "use-sync-external-store";
+import { useSyncExternalStore } from "use-sync-external-store/shim";
 import { onContextInvalidated, wasContextInvalidated } from "webext-events";
 
 function subscribe(callback: () => void) {

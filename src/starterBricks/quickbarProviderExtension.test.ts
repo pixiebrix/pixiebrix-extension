@@ -131,7 +131,7 @@ describe("quickBarProviderExtension", () => {
 
     // QuickBar installation adds another div to the body
     expect(document.body.innerHTML).toBe(
-      '<div id="pixiebrix-quickbar-container"></div><div></div>',
+      '<div class="pixiebrix-quickbar-container"></div><div></div>',
     );
 
     // :shrug: I'm not sure how to get the kbar to show using shortcuts in jsdom, so just toggle manually
@@ -181,7 +181,7 @@ describe("quickBarProviderExtension", () => {
 
     // QuickBar installation adds another div to the body
     expect(document.body.innerHTML).toBe(
-      '<div id="pixiebrix-quickbar-container"></div><div></div>',
+      '<div class="pixiebrix-quickbar-container"></div><div></div>',
     );
 
     // :shrug: I'm not sure how to get the kbar to show using shortcuts in jsdom, so just toggle manually
@@ -192,7 +192,7 @@ describe("quickBarProviderExtension", () => {
 
     // Should be showing the QuickBar portal. The innerHTML doesn't contain the QuickBar actions at this point
     expect(document.body.innerHTML).not.toBe(
-      '<div id="pixiebrix-quickbar-container"></div><div></div>',
+      '<div class="pixiebrix-quickbar-container"></div><div></div>',
     );
 
     // Getting an error here: make sure you apple `query.inputRefSetter`

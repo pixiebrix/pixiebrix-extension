@@ -22,6 +22,7 @@ import { MAX_Z_INDEX } from "@/domConstants";
  */
 export function addContentScriptIndicator() {
   const indicator = document.createElement("div");
+  indicator.className = "pixiebrix-content-script-indicator";
 
   // Hide on hover
   indicator.addEventListener("mouseenter", indicator.remove);
