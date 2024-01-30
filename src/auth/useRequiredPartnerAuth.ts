@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { appApi } from "@/data/service/api";
+import { useGetMeQuery } from "@/data/service/api";
 import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
 import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
@@ -27,7 +27,6 @@ import {
 } from "@/auth/token";
 import { useEffect } from "react";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/data/service/constants";
-import { type AuthState } from "@/auth/authTypes";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import { type RegistryId } from "@/types/registryTypes";
@@ -36,6 +35,7 @@ import {
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
 import useAsyncState from "@/hooks/useAsyncState";
+import { selectExtensionAuthState } from "@/auth/authUtils";
 
 /**
  * Map from partner keys to partner service IDs
@@ -94,7 +94,7 @@ function decidePartnerIntegrationIds({
 }: {
   authIntegrationIdOverride: RegistryId | null;
   authMethodOverride: SettingsState["authMethod"];
-  partnerId: AuthState["partner"]["theme"] | null;
+  partnerId: string | null;
 }): Set<RegistryId> {
   if (authIntegrationIdOverride) {
     return new Set<RegistryId>([authIntegrationIdOverride]);
@@ -120,7 +120,12 @@ function decidePartnerIntegrationIds({
  */
 function useRequiredPartnerAuth(): RequiredPartnerState {
   // Prefer the most recent /api/me/ data from the server
-  const { isLoading, data: me, error } = appApi.endpoints.getMe.useQueryState();
+  const {
+    isLoading,
+    data: me,
+    error,
+  } = useGetMeQuery(undefined, { refetchOnMountOrArgChange: true });
+  const remoteAuth = me ? selectExtensionAuthState(me) : null;
   const localAuth = useSelector(selectAuth);
   const {
     authIntegrationId: authIntegrationIdOverride,
@@ -135,14 +140,16 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     managedState;
 
   // Prefer the latest remote data, but use local data to avoid blocking page load
-  const { partner, organization } = me ?? localAuth;
+  const { partner, organization, milestones } = remoteAuth ?? localAuth;
 
   // `organization?.control_room?.id` can only be set when authenticated or the auth is cached. For unauthorized users,
   // the organization will be null on result of useGetMeQuery
   const hasControlRoom =
-    Boolean(organization?.control_room?.id) || Boolean(managedControlRoomUrl);
-  const isCommunityEditionUser = (me?.milestones ?? []).some(
-    ({ key }) => key === "aa_community_edition_register",
+    Boolean(organization?.control_room?.controlRoomId) ||
+    Boolean(managedControlRoomUrl);
+  const isCommunityEditionUser = (milestones ?? []).some(
+    ({ milestoneIdentifier }) =>
+      milestoneIdentifier === "aa_community_edition_register",
   );
   const hasPartner =
     Boolean(partner) ||
@@ -152,7 +159,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   const partnerId =
     partnerIdOverride ??
     managedPartnerId ??
-    partner?.theme ??
+    partner?.partnerTheme ??
     (hasControlRoom || isCommunityEditionUser ? "automation-anywhere" : null);
 
   const partnerIntegrationIds = decidePartnerIntegrationIds({
@@ -223,7 +230,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     // if any, but don't require a partner integration configuration.
     return {
       hasPartner,
-      partnerKey: partner?.theme,
+      partnerKey: partner?.partnerTheme,
       requiresIntegration: false,
       hasConfiguredIntegration: false,
       isLoading: false,
@@ -233,7 +240,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
 
   return {
     hasPartner,
-    partnerKey: partner?.theme ?? managedPartnerId,
+    partnerKey: partner?.partnerTheme ?? managedPartnerId,
     requiresIntegration,
     hasConfiguredIntegration:
       requiresIntegration &&

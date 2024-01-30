@@ -22,8 +22,15 @@ import {
   type OrganizationAuthState,
 } from "@/auth/authTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { type Me, type Milestone, UserRole } from "@/types/contract";
+import { UserRole } from "@/types/contract";
 import { type AuthData } from "@/integrations/integrationTypes";
+import { type MeOrganization } from "@/data/model/MeOrganization";
+import { type Me } from "@/data/model/Me";
+import { type MeOrganizationMembership } from "@/data/model/MeOrganizationMembership";
+import { type MeUserGroupMembership } from "@/data/model/MeUserGroupMembership";
+import { type UserMilestone } from "@/data/model/UserMilestone";
+import { type PartnerPrincipal } from "@/data/model/PartnerPrincipal";
+import { type OrganizationPartner } from "@/data/model/OrganizationPartner";
 
 /**
  * @see userOrganizationFactory
@@ -95,40 +102,53 @@ export const authStateFactory = define<AuthState>({
     const flags: AuthState["flags"] = [];
     return flags;
   },
-  milestones(): Milestone[] {
+  milestones(): UserMilestone[] {
     return [];
   },
 });
 
-export const userOrganizationFactory = define<Me["organization"]>({
-  id: uuidSequence,
-  name(n: number): string {
+export const userOrganizationFactory = define<MeOrganization>({
+  organizationId: uuidSequence,
+  organizationName(n: number): string {
     return `Test Organization ${n}`;
   },
   scope(n: number): string {
     return `@organization-${n}`;
   },
-  control_room: null,
-  theme: null,
 });
 export const userFactory = define<Me>({
-  id: uuidSequence,
+  userId: uuidSequence,
   email: (n: number) => `user${n}@test.com`,
   scope: (n: number) => `@user${n}`,
-  flags: () => [] as Me["flags"],
-  is_onboarded: true,
-  organization: null,
-  telemetry_organization: null,
-  organization_memberships: () => [] as Me["organization_memberships"],
-  group_memberships: () => [] as Me["group_memberships"],
-  milestones: () => [] as Me["milestones"],
+  featureFlags(): string[] {
+    return [];
+  },
+  organizationMemberships(): MeOrganizationMembership[] {
+    return [];
+  },
+  groupMemberships(): MeUserGroupMembership[] {
+    return [];
+  },
+  partnerPrincipals(): PartnerPrincipal[] {
+    return [];
+  },
+  userMilestones(): UserMilestone[] {
+    return [];
+  },
+  isOnboarded: true,
+  isServiceAccount: false,
+  isTestAccount: false,
+  enforceUpdateMillis: null,
 });
 
 export const partnerUserFactory = extend<Me, Me>(userFactory, {
-  partner: () => ({
-    name: "Automation Anywhere",
-    theme: "automation-anywhere",
-  }),
+  partner(n: number): OrganizationPartner {
+    return {
+      partnerId: uuidSequence(n),
+      partnerName: "Automation Anywhere",
+      partnerTheme: "automation-anywhere",
+    };
+  },
 });
 
 export const authDataFactory = define<AuthData>({

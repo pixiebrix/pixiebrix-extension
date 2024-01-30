@@ -40,9 +40,10 @@ describe("Header", () => {
   it("renders sidebar header logo per organization theme", () => {
     mockCachedUser(
       userFactory({
-        organization: userOrganizationFactory({
-          theme: {
-            show_sidebar_logo: true,
+        primaryOrganization: userOrganizationFactory({
+          organizationTheme: {
+            showSidebarLogo: true,
+            organizationLogoUrl: new URL("https://example.com/logo.png"),
           },
         }),
       }),
@@ -56,9 +57,10 @@ describe("Header", () => {
   it("renders no sidebar header logo per organization theme", () => {
     mockCachedUser(
       userFactory({
-        organization: userOrganizationFactory({
-          theme: {
-            show_sidebar_logo: false,
+        primaryOrganization: userOrganizationFactory({
+          organizationTheme: {
+            showSidebarLogo: false,
+            organizationLogoUrl: new URL("https://example.com/logo.png"),
           },
         }),
       }),

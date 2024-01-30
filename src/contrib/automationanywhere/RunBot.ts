@@ -207,7 +207,7 @@ export class RunBot extends TransformerABC {
       const { partnerPrincipals = [] } = await getUserData();
 
       const principal = partnerPrincipals.find(
-        (x) => x.control_room_url === service.config.controlRoomUrl,
+        (x) => x.controlRoomUrl.href === service.config.controlRoomUrl,
       );
       if (!principal) {
         throw new PropError(
@@ -218,7 +218,7 @@ export class RunBot extends TransformerABC {
         );
       }
 
-      runAsUserIds = [principal.control_room_user_id];
+      runAsUserIds = [principal.controlRoomUserId];
       enterpriseBotArgs.poolIds = [];
     } else if (
       enterpriseBotArgs.isAttended &&

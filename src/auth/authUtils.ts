@@ -15,56 +15,65 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Me } from "@/types/contract";
-import { type UserDataUpdate, type AuthState } from "@/auth/authTypes";
-import { type UUID } from "@/types/stringTypes";
+import {
+  type UserDataUpdate,
+  type AuthState,
+  type OrganizationAuthState,
+  type AuthUserOrganization,
+} from "@/auth/authTypes";
 import { readAuthData } from "@/auth/token";
+import { type MeOrganizationMembership } from "@/data/model/MeOrganizationMembership";
+import { type Me } from "@/data/model/Me";
+import { convertToLegacyUserRole } from "@/data/model/UserOrganizationMembershipRole";
 
 // Used by the app
 function selectOrganizations(
-  organizationMemberships: Me["organization_memberships"],
-): AuthState["organizations"] {
+  organizationMemberships: MeOrganizationMembership[],
+): AuthUserOrganization[] {
   if (organizationMemberships == null) {
     return [];
   }
 
   return organizationMemberships.map(
     ({
-      organization,
-      organization_name,
-      control_room,
-      role,
-      scope,
-      is_deployment_manager,
+      organizationId,
+      organizationName,
+      organizationControlRoom,
+      userOrganizationRole,
+      organizationScope,
+      meUserIsDeploymentManager,
     }) => ({
-      id: organization,
-      name: organization_name,
-      control_room,
-      role,
-      scope,
-      isDeploymentManager: is_deployment_manager,
+      id: organizationId,
+      name: organizationName,
+      control_room: organizationControlRoom,
+      role: convertToLegacyUserRole(userOrganizationRole),
+      scope: organizationScope,
+      isDeploymentManager: meUserIsDeploymentManager,
     }),
   );
 }
 
 export function selectUserDataUpdate({
   email,
-  organization,
-  telemetry_organization: telemetryOrganization,
-  organization_memberships: organizationMemberships = [],
-  group_memberships = [],
-  flags = [],
+  primaryOrganization,
+  telemetryOrganization,
+  organizationMemberships,
+  groupMemberships,
+  featureFlags: flags,
   partner,
-  enforce_update_millis: enforceUpdateMillis,
-  partner_principals: partnerPrincipals = [],
+  enforceUpdateMillis,
+  partnerPrincipals,
 }: Me): UserDataUpdate {
   const organizations = selectOrganizations(organizationMemberships);
-  const groups = group_memberships.map(({ id, name }) => ({ id, name }));
+  const groups = groupMemberships.map(({ groupId, groupName }) => ({
+    id: groupId,
+    name: groupName,
+  }));
 
   return {
     email,
-    organizationId: organization?.id,
-    telemetryOrganizationId: telemetryOrganization?.id,
+    organizationId: primaryOrganization?.organizationId,
+    telemetryOrganizationId: telemetryOrganization?.organizationId,
     flags,
     organizations,
     groups,
@@ -75,25 +84,38 @@ export function selectUserDataUpdate({
 }
 
 export function selectExtensionAuthState({
-  id,
+  userId,
   email,
   scope,
-  organization,
-  telemetry_organization,
-  is_onboarded: isOnboarded,
-  test_account: isTestAccount,
-  flags = [],
-  milestones = [],
-  organization_memberships: organizationMemberships = [],
-  group_memberships = [],
+  primaryOrganization,
+  telemetryOrganization,
+  isOnboarded,
+  isTestAccount,
+  featureFlags: flags,
+  userMilestones: milestones,
+  organizationMemberships,
+  groupMemberships,
   partner,
-  enforce_update_millis: enforceUpdateMillis,
+  enforceUpdateMillis,
 }: Me): AuthState {
   const organizations = selectOrganizations(organizationMemberships);
-  const groups = group_memberships.map(({ id, name }) => ({ id, name }));
+  const groups = groupMemberships.map(({ groupId, groupName }) => ({
+    id: groupId,
+    name: groupName,
+  }));
+  const organization: OrganizationAuthState =
+    primaryOrganization == null
+      ? null
+      : {
+          id: primaryOrganization.organizationId,
+          name: primaryOrganization.organizationName,
+          scope: primaryOrganization.scope,
+          theme: primaryOrganization.organizationTheme,
+          control_room: primaryOrganization.controlRoom,
+        };
 
   return {
-    userId: id as UUID,
+    userId,
     email,
     scope,
     isLoggedIn: true,
@@ -101,7 +123,7 @@ export function selectExtensionAuthState({
     isTestAccount,
     extension: true,
     organization,
-    telemetryOrganizationId: telemetry_organization?.id,
+    telemetryOrganizationId: telemetryOrganization?.organizationId,
     organizations,
     groups,
     flags,

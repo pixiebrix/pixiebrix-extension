@@ -16,8 +16,9 @@
  */
 
 import { type UUID } from "@/types/stringTypes";
-import type { components } from "@/types/swagger";
+import { type components } from "@/types/swagger";
 import { validateUUID } from "@/types/helpers";
+import { type RequireAll } from "type-fest/source/require-all-or-none";
 
 export type OrganizationPartner = {
   readonly partnerId: UUID;
@@ -27,7 +28,7 @@ export type OrganizationPartner = {
 };
 
 export function transformOrganizationPartnerResponse(
-  response: components["schemas"]["Me"]["partner"],
+  response: RequireAll<components["schemas"]["Me"], "partner">["partner"],
 ): OrganizationPartner {
   const partner: OrganizationPartner = {
     partnerId: validateUUID(response.id),

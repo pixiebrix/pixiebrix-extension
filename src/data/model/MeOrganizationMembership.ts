@@ -24,7 +24,7 @@ import {
   type ControlRoom,
   transformControlRoomResponse,
 } from "@/data/model/ControlRoom";
-import { components } from "@/types/swagger";
+import { type components } from "@/types/swagger";
 import { validateUUID } from "@/types/helpers";
 
 export type MeOrganizationMembership = {

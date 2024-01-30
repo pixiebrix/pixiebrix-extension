@@ -88,10 +88,14 @@ describe("debouncedInstallStarterMods", () => {
   });
 
   test("getBuiltInIntegrationConfigs", async () => {
+    const userOrganization = userOrganizationFactory();
     axiosMock.onGet("/api/services/shared/?meta=1").reply(200, [
       remoteIntegrationConfigurationFactory(),
       remoteIntegrationConfigurationFactory({
-        organization: userOrganizationFactory(),
+        organization: {
+          id: userOrganization.organizationId,
+          name: userOrganization.organizationName,
+        },
       }),
       remoteIntegrationConfigurationFactory({ user: uuidv4() }),
     ]);

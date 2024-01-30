@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { components } from "@/types/swagger";
+import { type components } from "@/types/swagger";
 
 export type OrganizationTheme = {
   /**

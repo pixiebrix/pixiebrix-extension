@@ -28,6 +28,7 @@ import {
   userFactory,
   userOrganizationFactory,
 } from "@/testUtils/factories/authFactories";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
 describe("useGetTheme", () => {
   test("has no partner", () => {
@@ -85,8 +86,9 @@ describe("useGetTheme", () => {
           authSlice.actions.setAuth(
             authStateFactory({
               partner: {
-                name: "Automation Anywhere",
-                theme: "automation-anywhere",
+                partnerId: uuidSequence(1),
+                partnerName: "Automation Anywhere",
+                partnerTheme: "automation-anywhere",
               },
             }),
           ),
@@ -120,8 +122,9 @@ describe("useGetTheme", () => {
       setupRedux(dispatch) {
         authStateFactory({
           partner: {
-            name: "PixieBrix",
-            theme: "default",
+            partnerId: uuidSequence(1),
+            partnerName: "Automation Anywhere",
+            partnerTheme: "automation-anywhere",
           },
         });
       },
@@ -139,10 +142,10 @@ describe("useGetOrganizationTheme", () => {
 
     mockCachedUser(
       userFactory({
-        organization: userOrganizationFactory({
-          theme: {
-            show_sidebar_logo: false,
-            logo: newTestLogoUrl,
+        primaryOrganization: userOrganizationFactory({
+          organizationTheme: {
+            showSidebarLogo: false,
+            organizationLogoUrl: new URL(newTestLogoUrl),
           },
         }),
       }),
@@ -157,8 +160,8 @@ describe("useGetOrganizationTheme", () => {
             id: uuidv4(),
             name: "Cached Organization",
             theme: {
-              show_sidebar_logo: true,
-              logo: customTestLogoUrl,
+              showSidebarLogo: false,
+              organizationLogoUrl: new URL(customTestLogoUrl),
             },
           },
         });

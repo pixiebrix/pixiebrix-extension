@@ -22,7 +22,7 @@ import OnboardingChecklistCard, {
 import ControlRoomOAuthForm from "@/extensionConsole/pages/onboarding/partner/ControlRoomOAuthForm";
 import ControlRoomTokenForm from "@/extensionConsole/pages/onboarding/partner/ControlRoomTokenForm";
 import { selectSettings } from "@/store/settings/settingsSelectors";
-import { appApi } from "@/data/service/api";
+import { useGetMeQuery } from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Button } from "react-bootstrap";
@@ -115,7 +115,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   // Make sure to use useLocation because the location.search are on the hash route
   const location = useLocation();
   const mode = usePartnerLoginMode();
-  const { data: me } = appApi.endpoints.getMe.useQueryState();
+  const { data: me } = useGetMeQuery();
   const managedStorage = useManagedStorageState();
 
   // Hostname passed from manual flow during manual setup initiated via Control Room link
@@ -129,7 +129,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   const controlRoomUrl =
     managedStorage.data?.controlRoomUrl ??
     hostnameToUrl(hostname) ??
-    me?.organization?.control_room?.url ??
+    me?.primaryOrganization?.controlRoom?.controlRoomUrl.href ??
     "";
 
   const { data: installUrl } = usePartnerAppStartUrl(controlRoomUrl);
@@ -170,34 +170,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
     );
   }
 
-  if (!me?.id) {
-    return (
-      <OnboardingChecklistCard title="Set up your account">
-        <OnboardingStep
-          number={1}
-          title="Browser Extension installed"
-          completed
-        />
-        <OnboardingStep
-          number={2}
-          title="Link the extension to a PixieBrix account"
-          active
-        >
-          <Button
-            className="btn btn-primary mt-2"
-            // The async state for installUrl will be ready by the time the button is rendered/clicked
-            href={installUrl}
-            data-testid="link-account-btn"
-          >
-            <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
-          </Button>
-        </OnboardingStep>
-        <OnboardingStep number={3} title="Connect your AARI account" />
-      </OnboardingChecklistCard>
-    );
-  }
-
-  return (
+  return me ? (
     <OnboardingChecklistCard title="Set up your account">
       <OnboardingStep
         number={1}
@@ -215,6 +188,29 @@ const PartnerSetupCard: React.FunctionComponent = () => {
           key={controlRoomUrl}
         />
       </OnboardingStep>
+    </OnboardingChecklistCard>
+  ) : (
+    <OnboardingChecklistCard title="Set up your account">
+      <OnboardingStep
+        number={1}
+        title="Browser Extension installed"
+        completed
+      />
+      <OnboardingStep
+        number={2}
+        title="Link the extension to a PixieBrix account"
+        active
+      >
+        <Button
+          className="btn btn-primary mt-2"
+          // The async state for installUrl will be ready by the time the button is rendered/clicked
+          href={installUrl}
+          data-testid="link-account-btn"
+        >
+          <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
+        </Button>
+      </OnboardingStep>
+      <OnboardingStep number={3} title="Connect your AARI account" />
     </OnboardingChecklistCard>
   );
 };

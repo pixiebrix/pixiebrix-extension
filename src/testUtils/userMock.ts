@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Me } from "@/types/contract";
 import { appApi } from "@/data/service/api";
 import { querySuccessFactory } from "@/testUtils/rtkQueryFactories";
-
 import { userFactory } from "@/testUtils/factories/authFactories";
+import { type Me } from "@/data/model/Me";
 
 // Instead of monkey-patching RTK Query's Redux State, we might want to instead encourage using setupRedux
 // in the render helper?

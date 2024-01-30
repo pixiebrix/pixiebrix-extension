@@ -28,7 +28,7 @@ import {
   setThemeFavicon,
   type ThemeLogo,
 } from "@/themes/themeUtils";
-import { appApi } from "@/data/service/api";
+import { appApi, useGetMeQuery } from "@/data/service/api";
 import { selectAuth } from "@/auth/authSelectors";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import { isEmpty } from "lodash";
@@ -53,18 +53,18 @@ async function activateBackgroundTheme(
 export function useGetTheme(): Theme {
   const { theme, partnerId } = useSelector(selectSettings);
   const { partner: cachedPartner } = useSelector(selectAuth);
-  const { data: me } = appApi.endpoints.getMe.useQueryState();
+  const { data: me } = useGetMeQuery();
   const dispatch = useDispatch();
 
   const partnerTheme = useMemo(() => {
     if (!isEmpty(me)) {
-      const meTheme = me.partner?.theme;
+      const meTheme = me.partner?.partnerTheme;
       return isValidTheme(meTheme) ? meTheme : null;
     }
 
-    const cachedTheme = cachedPartner?.theme;
+    const cachedTheme = cachedPartner?.partnerTheme;
     return isValidTheme(cachedTheme) ? cachedTheme : null;
-  }, [me, cachedPartner?.theme]);
+  }, [me, cachedPartner?.partnerTheme]);
 
   const { data: managedState, isLoading: managedPartnerIdIsLoading } =
     useManagedStorageState();
@@ -101,14 +101,14 @@ export function useGetOrganizationTheme(): {
   const { organization: cachedOrganization } = useSelector(selectAuth);
 
   const organizationTheme = me
-    ? me.organization?.theme
+    ? me.primaryOrganization?.organizationTheme
     : cachedOrganization?.theme;
 
   return {
     showSidebarLogo: organizationTheme
-      ? Boolean(organizationTheme.show_sidebar_logo)
+      ? Boolean(organizationTheme.showSidebarLogo)
       : true,
-    customSidebarLogo: organizationTheme?.logo || null,
+    customSidebarLogo: organizationTheme?.organizationLogoUrl.href || null,
   };
 }
 

@@ -25,8 +25,6 @@ import {
   type Group,
   type MarketplaceListing,
   type MarketplaceTag,
-  type Me,
-  type Milestone,
   type Organization,
   type Package,
   type PackageUpsertResponse,
@@ -47,6 +45,8 @@ import {
 } from "@/types/modDefinitionTypes";
 import baseQuery from "@/data/service/baseQuery";
 import type { ModComponentBase } from "@/types/modComponentTypes";
+import { type Me, transformMeResponse } from "@/data/model/Me";
+import { type UserMilestone } from "@/data/model/UserMilestone";
 
 export const appApi = createApi({
   reducerPath: "appApi",
@@ -78,6 +78,7 @@ export const appApi = createApi({
         requireLinked: false,
       }),
       providesTags: ["Me"],
+      transformResponse: transformMeResponse,
     }),
     getDatabases: builder.query<Database[], void>({
       query: () => ({ url: "/api/databases/", method: "get" }),
@@ -404,7 +405,7 @@ export const appApi = createApi({
         { type: "StarterBlueprints", id: "LIST" },
       ],
     }),
-    createMilestone: builder.mutation<Milestone, Omit<Milestone, "user">>({
+    createMilestone: builder.mutation<UserMilestone, UserMilestone>({
       query: (data) => ({
         url: "/api/me/milestones/",
         method: "post",

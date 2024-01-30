@@ -24,7 +24,7 @@ import {
   type OrganizationTheme,
   transformOrganizationThemeResponse,
 } from "@/data/model/OrganizationTheme";
-import { components } from "@/types/swagger";
+import { type components } from "@/types/swagger";
 import { validateUUID } from "@/types/helpers";
 
 export type MeOrganization = {

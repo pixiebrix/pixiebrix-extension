@@ -18,15 +18,14 @@
 import useMilestones from "@/hooks/useMilestones";
 import { renderHook } from "@/testUtils/renderWithCommonStore";
 import { authSlice } from "@/auth/authSlice";
-import { type AuthState } from "@/auth/authTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { selectExtensionAuthState } from "@/auth/authUtils";
-
 import { userFactory } from "@/testUtils/factories/authFactories";
+import { type UserMilestone } from "@/data/model/UserMilestone";
 
-const renderUseMilestones = (milestones: AuthState["milestones"]) => {
+const renderUseMilestones = (userMilestones: UserMilestone[]) => {
   const user = userFactory({
-    milestones,
+    userMilestones,
   });
 
   appApiMock.onGet("/api/me/").reply(200, user);
@@ -50,7 +49,8 @@ describe("useMilestones", () => {
       },
     } = renderUseMilestones([
       {
-        key: "test_milestone",
+        milestoneIdentifier: "test_milestone",
+        metadata: {},
       },
     ]);
 
@@ -65,10 +65,12 @@ describe("useMilestones", () => {
       },
     } = renderUseMilestones([
       {
-        key: "test_milestone_1",
+        milestoneIdentifier: "test_milestone_1",
+        metadata: {},
       },
       {
-        key: "test_milestone_2",
+        milestoneIdentifier: "test_milestone_2",
+        metadata: {},
       },
     ]);
 
@@ -87,9 +89,11 @@ describe("useMilestones", () => {
   });
 
   test("get milestone", () => {
-    const test_milestone = {
-      key: "test_milestone_1",
-      value: "foo",
+    const test_milestone: UserMilestone = {
+      milestoneIdentifier: "test_milestone_1",
+      metadata: {
+        value: "foo",
+      },
     };
     const {
       result: {
@@ -98,8 +102,10 @@ describe("useMilestones", () => {
     } = renderUseMilestones([
       test_milestone,
       {
-        key: "test_milestone_2",
-        value: "bar",
+        milestoneIdentifier: "test_milestone_2",
+        metadata: {
+          value: "bar",
+        },
       },
     ]);
 

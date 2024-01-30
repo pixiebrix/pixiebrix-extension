@@ -27,7 +27,7 @@ import integrationsSlice, {
   persistIntegrationsConfig,
 } from "@/integrations/store/integrationsSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
-import { type Me } from "@/types/contract";
+import { type Me } from "@/data/model/Me";
 
 function optionsStore(initialState?: any) {
   return configureStore({

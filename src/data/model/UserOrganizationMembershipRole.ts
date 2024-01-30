@@ -16,6 +16,7 @@
  */
 
 import { type components } from "@/types/swagger";
+import { UserRole } from "@/types/contract";
 
 export type UserOrganizationMembershipRole =
   | "member"
@@ -52,6 +53,39 @@ export function transformUserOrganizationMembershipRoleResponse(
       throw new Error(
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- future-proofing
         `Invalid user organization membership role: ${response}`,
+      );
+    }
+  }
+}
+
+export function convertToLegacyUserRole(
+  userOrganizationMembershipRole: UserOrganizationMembershipRole,
+): UserRole {
+  switch (userOrganizationMembershipRole) {
+    case "member": {
+      return UserRole.member;
+    }
+
+    case "admin": {
+      return UserRole.admin;
+    }
+
+    case "developer": {
+      return UserRole.developer;
+    }
+
+    case "restricted": {
+      return UserRole.restricted;
+    }
+
+    case "manager": {
+      return UserRole.manager;
+    }
+
+    default: {
+      throw new Error(
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- future-proofing
+        `Invalid user organization membership role: ${userOrganizationMembershipRole}`,
       );
     }
   }
