@@ -53,15 +53,12 @@ const ExpandableCell: React.FunctionComponent<{
       },
     })}
   >
-    {row.canExpand && (
-      <>
-        {row.isExpanded ? (
-          <FontAwesomeIcon icon={faCaretDown} className="mr-1" />
-        ) : (
-          <FontAwesomeIcon icon={faCaretRight} className="mr-1" />
-        )}
-      </>
-    )}
+    {row.canExpand &&
+      (row.isExpanded ? (
+        <FontAwesomeIcon icon={faCaretDown} className="mr-1" />
+      ) : (
+        <FontAwesomeIcon icon={faCaretRight} className="mr-1" />
+      ))}
     {cell.value}
   </span>
 );

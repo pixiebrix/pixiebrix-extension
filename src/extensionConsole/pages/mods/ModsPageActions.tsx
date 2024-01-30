@@ -80,17 +80,13 @@ const ModsPageActions: React.FunctionComponent<{
         hide: !actions.viewLogs,
       },
       {
-        title: (
+        title: hasUpdate ? (
+          <span className="text-info">
+            <FontAwesomeIcon fixedWidth icon={faSyncAlt} /> Update
+          </span>
+        ) : (
           <>
-            {hasUpdate ? (
-              <span className="text-info">
-                <FontAwesomeIcon fixedWidth icon={faSyncAlt} /> Update
-              </span>
-            ) : (
-              <>
-                <FontAwesomeIcon fixedWidth icon={faSyncAlt} /> Reactivate
-              </>
-            )}
+            <FontAwesomeIcon fixedWidth icon={faSyncAlt} /> Reactivate
           </>
         ),
         action: actions.reactivate,
