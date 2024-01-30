@@ -16,7 +16,7 @@
  */
 
 import { type Deployment } from "@/types/contract";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ensurePermissionsFromUserGesture,
   mergePermissionsStatuses,
@@ -28,7 +28,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
 import { getUID, services } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
-import { type Dispatch } from "@reduxjs/toolkit";
+import { AnyAction, type Dispatch } from "@reduxjs/toolkit";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -49,6 +49,8 @@ import {
   getExtensionVersion,
   reloadIfNewVersionIsReady,
 } from "@/utils/extensionUtils";
+import useModPermissions from "@/mods/hooks/useModPermissions";
+import useAsyncEffect from "use-async-effect";
 
 const { actions } = extensionsSlice;
 
@@ -143,6 +145,51 @@ async function activateDeployments(
   }
 }
 
+function useAutoDeploy(
+  deployments: Deployment[],
+  installedExtensions: ModComponentBase[],
+  isLoadingDeployments: boolean,
+): boolean {
+  const dispatch = useDispatch<Dispatch<AnyAction>>();
+  const [isAutoDeploying, setIsAutoDeploying] = useState(true);
+  const [isAttemptingAutoDeploy, setIsAttemptingAutoDeploy] = useState(false);
+  const { hasPermissions } = useModPermissions(installedExtensions);
+
+  useAsyncEffect(
+    async (isMounted) => {
+      // Still loading deployments or already deploying
+      if (!isMounted || isLoadingDeployments || isAttemptingAutoDeploy) {
+        return;
+      }
+
+      // No deployments to deploy or user interaction required
+      if (
+        !deployments.length ||
+        !hasPermissions ||
+        checkExtensionUpdateRequired(deployments)
+      ) {
+        setIsAutoDeploying(false);
+        return;
+      }
+
+      // Attempt to automatically deploy the deployments
+      try {
+        setIsAttemptingAutoDeploy(true);
+        await activateDeployments(dispatch, deployments, installedExtensions);
+        notify.success("Updated team deployments");
+      } catch (error) {
+        notify.error({ message: "Error updating team deployments", error });
+      } finally {
+        setIsAttemptingAutoDeploy(false);
+        setIsAutoDeploying(false);
+      }
+    },
+    [hasPermissions, deployments],
+  );
+
+  return isAutoDeploying;
+}
+
 export type DeploymentsState = {
   /**
    * `true` iff one or more new deployments/deployment updates are available
@@ -170,13 +217,18 @@ export type DeploymentsState = {
   isLoading: boolean;
 
   /**
+   * `true` when attempting to automatically deploy updates
+   */
+  isAutoDeploying: boolean;
+
+  /**
    * The error if fetching available deployments failed, or undefined if loading/deployments were successfully fetched
    */
   error: unknown;
 };
 
 function useDeployments(): DeploymentsState {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<Dispatch<AnyAction>>();
   const installedExtensions = useSelector(selectExtensions);
   const { restrict } = useFlags();
 
@@ -213,12 +265,20 @@ function useDeployments(): DeploymentsState {
     const isUpdated = makeUpdatedFilter(installedExtensions, {
       restricted: restrict("uninstall"),
     });
-    const updatedDeployments = (deployments ?? []).filter((x) => isUpdated(x));
+
+    const updatedDeployments = (deployments ?? []).filter(isUpdated);
+
     return [
       updatedDeployments,
       checkExtensionUpdateRequired(updatedDeployments),
     ];
   }, [restrict, installedExtensions, deployments]);
+
+  const isAutoDeploying = useAutoDeploy(
+    updatedDeployments,
+    installedExtensions,
+    isLoading,
+  );
 
   const handleUpdateFromUserGesture = useCallback(async () => {
     // IMPORTANT: can't do a fetch or any potentially stalling operation (including IDB calls) because the call to
@@ -263,12 +323,10 @@ function useDeployments(): DeploymentsState {
     }
 
     try {
-      // Default should be Dispatch<AnyAction>, but it's showing up as Dispatch<any>
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       await activateDeployments(dispatch, deployments, installedExtensions);
-      notify.success("Activated team deployments");
+      notify.success("Updated team deployments");
     } catch (error) {
-      notify.error({ message: "Error activating team deployments", error });
+      notify.error({ message: "Error updating team deployments", error });
     }
   }, [data, dispatch, installedExtensions]);
 
@@ -286,6 +344,7 @@ function useDeployments(): DeploymentsState {
     extensionUpdateRequired,
     isLoading,
     error,
+    isAutoDeploying,
   };
 }
 
@@ -294,6 +353,7 @@ const defaultValue: DeploymentsState = {
   async update() {},
   extensionUpdateRequired: false,
   async updateExtension() {},
+  isAutoDeploying: true,
   isLoading: true,
   error: false,
 };

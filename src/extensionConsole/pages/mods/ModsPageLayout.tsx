@@ -18,7 +18,7 @@
 import styles from "./ModsPageLayout.module.scss";
 
 import { Card, Col, Row as BootstrapRow } from "react-bootstrap";
-import React, { useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import {
   type Column,
   type Row,
@@ -43,6 +43,7 @@ import ModsPageToolbar from "@/extensionConsole/pages/mods/ModsPageToolbar";
 import ModsPageContent from "@/extensionConsole/pages/mods/ModsPageContent";
 import Loader from "@/components/Loader";
 import type { Mod, ModViewItem } from "@/types/modTypes";
+import DeploymentsContext from "@/extensionConsole/pages/deployments/DeploymentsContext";
 
 const statusFilter = (
   rows: Array<Row<ModViewItem>>,
@@ -109,6 +110,7 @@ const ModsPageLayout: React.FunctionComponent<{
   mods: Mod[];
 }> = ({ mods }) => {
   const { modViewItems, isLoading } = useModViewItems(mods);
+  const { isAutoDeploying } = useContext(DeploymentsContext);
 
   const teamFilters = useMemo(
     () =>
@@ -162,7 +164,7 @@ const ModsPageLayout: React.FunctionComponent<{
         <ModsPageToolbar tableInstance={tableInstance} />
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
         <div style={{ flex: "1 1 auto" }}>
-          {isLoading ? (
+          {isLoading || isAutoDeploying ? (
             <Card>
               <Card.Body>
                 <Loader />
