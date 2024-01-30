@@ -29,6 +29,7 @@ import {
   userFactory,
   userOrganizationFactory,
 } from "@/testUtils/factories/authFactories";
+import { DeploymentsProvider } from "@/extensionConsole/pages/deployments/DeploymentsContext";
 
 jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest
@@ -58,8 +59,13 @@ describe("ModsPageLayout", () => {
   });
 
   test("renders", async () => {
-    const { asFragment } = render(<ModsPageLayout mods={mods} />);
+    const { asFragment } = render(
+      <DeploymentsProvider>
+        <ModsPageLayout mods={mods} />
+      </DeploymentsProvider>,
+    );
     await waitForEffect();
+
     expect(asFragment()).toMatchSnapshot();
   });
 

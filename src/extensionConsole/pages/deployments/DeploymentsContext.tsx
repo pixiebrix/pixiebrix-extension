@@ -16,7 +16,7 @@
  */
 
 import { type Deployment } from "@/types/contract";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   ensurePermissionsFromUserGesture,
   mergePermissionsStatuses,
@@ -49,8 +49,7 @@ import {
   getExtensionVersion,
   reloadIfNewVersionIsReady,
 } from "@/utils/extensionUtils";
-import useModPermissions from "@/mods/hooks/useModPermissions";
-import useAsyncEffect from "use-async-effect";
+import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
 
 const { actions } = extensionsSlice;
 
@@ -121,7 +120,7 @@ async function activateDeployment(
   });
 }
 
-async function activateDeployments(
+export async function activateDeployments(
   dispatch: Dispatch,
   deployments: Deployment[],
   installed: ModComponentBase[],
@@ -143,51 +142,6 @@ async function activateDeployments(
     // activate deployments again
     throw errors[0];
   }
-}
-
-function useAutoDeploy(
-  deployments: Deployment[],
-  installedExtensions: ModComponentBase[],
-  isLoadingDeployments: boolean,
-): boolean {
-  const dispatch = useDispatch<Dispatch<AnyAction>>();
-  const [isAutoDeploying, setIsAutoDeploying] = useState(true);
-  const [isAttemptingAutoDeploy, setIsAttemptingAutoDeploy] = useState(false);
-  const { hasPermissions } = useModPermissions(installedExtensions);
-
-  useAsyncEffect(
-    async (isMounted) => {
-      // Still loading deployments or already deploying
-      if (!isMounted || isLoadingDeployments || isAttemptingAutoDeploy) {
-        return;
-      }
-
-      // No deployments to deploy or user interaction required
-      if (
-        !deployments.length ||
-        !hasPermissions ||
-        checkExtensionUpdateRequired(deployments)
-      ) {
-        setIsAutoDeploying(false);
-        return;
-      }
-
-      // Attempt to automatically deploy the deployments
-      try {
-        setIsAttemptingAutoDeploy(true);
-        await activateDeployments(dispatch, deployments, installedExtensions);
-        notify.success("Updated team deployments");
-      } catch (error) {
-        notify.error({ message: "Error updating team deployments", error });
-      } finally {
-        setIsAttemptingAutoDeploy(false);
-        setIsAutoDeploying(false);
-      }
-    },
-    [hasPermissions, deployments],
-  );
-
-  return isAutoDeploying;
 }
 
 export type DeploymentsState = {
