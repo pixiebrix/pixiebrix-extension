@@ -113,19 +113,19 @@ export function transformMeResponse(response: components["schemas"]["Me"]): Me {
     userId: validateUUID(response.id),
     featureFlags: [...response.flags],
     organizationMemberships:
-      response.organization_memberships.map((membership) =>
+      response.organization_memberships?.map((membership) =>
         transformMeOrganizationMembershipResponse(membership),
       ) ?? [],
     groupMemberships:
-      response.group_memberships.map((membership) =>
+      response.group_memberships?.map((membership) =>
         transformMeUserGroupMembershipResponse(membership),
       ) ?? [],
     partnerPrincipals:
-      response.partner_principals.map((principal) =>
+      response.partner_principals?.map((principal) =>
         transformPartnerPrincipalResponse(principal),
       ) ?? [],
     userMilestones:
-      response.milestones.map((milestone) =>
+      response.milestones?.map((milestone) =>
         transformUserMilestoneResponse(milestone),
       ) ?? [],
     isOnboarded: response.is_onboarded ?? false,
