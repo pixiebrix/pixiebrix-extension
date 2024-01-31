@@ -19,7 +19,6 @@ import { activateDeployments } from "@/extensionConsole/pages/deployments/activa
 import useModPermissions from "@/mods/hooks/useModPermissions";
 import { type Deployment } from "@/types/contract";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { checkExtensionUpdateRequired } from "@/utils/deploymentUtils";
 import notify from "@/utils/notify";
 import { type Dispatch } from "@reduxjs/toolkit";
 import { useState } from "react";
