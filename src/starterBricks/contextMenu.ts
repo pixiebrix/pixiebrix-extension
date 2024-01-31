@@ -71,6 +71,7 @@ import makeServiceContextFromDependencies from "@/integrations/util/makeServiceC
 import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
 import batchedFunction from "batched-function";
+import { onContextInvalidated } from "webext-events";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const groupRegistrationErrorNotification = batchedFunction(
@@ -117,33 +118,26 @@ export type ContextMenuConfig = {
  * The element the user right-clicked on to trigger the context menu
  */
 let clickedElement: HTMLElement = null;
-let selectionHandlerInstalled = false;
-
-const BUTTON_SECONDARY = 2;
 
 function setActiveElement(event: MouseEvent): void {
   // This method can't throw, otherwise I think it breaks event dispatching because we're passing
   // useCapture: true to the event listener
-  clickedElement = null;
-  if (event?.button === BUTTON_SECONDARY) {
-    console.debug("Setting right-clicked element for contextMenu", {
-      target: event.target,
-    });
-    clickedElement = event?.target as HTMLElement;
-  }
+  console.debug("Setting right-clicked element for contextMenu", {
+    target: event.target,
+  });
+  clickedElement = event.target as HTMLElement;
 }
 
 function installMouseHandlerOnce(): void {
-  if (!selectionHandlerInstalled) {
-    selectionHandlerInstalled = true;
-    // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
-    document.addEventListener("mousedown", setActiveElement, {
-      // Handle it first in case a target beneath it cancels the event
-      capture: true,
-      // For performance, indicate we won't call preventDefault
-      passive: true,
-    });
-  }
+  // `addEventListener` natively avoids duplicate listeners
+  document.addEventListener("contextmenu", setActiveElement, {
+    // Handle it first in case a target beneath it cancels the event
+    capture: true,
+    // For performance, indicate we won't call preventDefault
+    passive: true,
+    // Remove after context invalidation
+    signal: onContextInvalidated.signal,
+  });
 }
 
 /**

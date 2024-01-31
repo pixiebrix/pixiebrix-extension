@@ -31,7 +31,7 @@ import {
   sidePanelOnClose,
 } from "@/contentScript/sidebarController";
 import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
-import { getThisFrame } from "webext-messenger";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type BrickConfig } from "@/bricks/types";
 import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
 import { isExpression } from "@/utils/expressionUtils";
@@ -44,7 +44,7 @@ export async function createFrameSource(
   nonce: string,
   mode: Mode,
 ): Promise<URL> {
-  const target = await getThisFrame();
+  const target = await getConnectedTarget();
 
   const frameSource = new URL(browser.runtime.getURL("ephemeralForm.html"));
   frameSource.searchParams.set("nonce", nonce);

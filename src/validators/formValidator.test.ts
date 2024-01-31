@@ -1,4 +1,4 @@
-/* eslint-disable max-nested-callbacks,@typescript-eslint/no-unsafe-member-access -- copied from RJSF test suite */
+/* eslint-disable max-nested-callbacks -- copied from RJSF test suite */
 /*
  * Copyright (C) 2023 PixieBrix, Inc.
  *
