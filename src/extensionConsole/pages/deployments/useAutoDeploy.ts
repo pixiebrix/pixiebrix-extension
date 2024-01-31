@@ -16,6 +16,7 @@
  */
 
 import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
+import useFlags from "@/hooks/useFlags";
 import useModPermissions from "@/mods/hooks/useModPermissions";
 import { type Deployment } from "@/types/contract";
 import { type ModComponentBase } from "@/types/modComponentTypes";
@@ -37,14 +38,31 @@ function useAutoDeploy(
   { extensionUpdateRequired }: { extensionUpdateRequired: boolean },
 ): UseAutoDeployReturn {
   const dispatch = useDispatch<Dispatch>();
-  const [isAutoDeploying, setIsAutoDeploying] = useState(true);
-  const [isAttemptingAutoDeploy, setIsAttemptingAutoDeploy] = useState(false);
+  // `true` until deployments have been fetched and activated
+  const [
+    isFetchingAndActivatingDeployments,
+    setIsFetchingAndActivatingDeployments,
+  ] = useState(true);
+  // Only `true` while deployments are being activated. Prevents multiple activations from happening at once.
+  const [isActivationInProgress, setIsActivationInProgress] = useState(false);
   const { hasPermissions } = useModPermissions(installedExtensions);
+  const { restrict } = useFlags();
+
+  /**
+   *  Users who can uninstall (admins and developers) should not have auto-deploy enabled
+   *  Deployments will still auto-activate in the background, but won't downgrade the user
+   *  so they can work on developing new versions of the mod.
+   */
+  const shouldAutoDeploy = restrict("uninstall");
 
   useAsyncEffect(
     async (isMounted) => {
-      // Still loading deployments or already deploying
-      if (!isMounted() || !deployments || isAttemptingAutoDeploy) {
+      if (
+        !isMounted() ||
+        // Still loading deployments or already deploying
+        !deployments ||
+        isActivationInProgress
+      ) {
         return;
       }
 
@@ -52,28 +70,29 @@ function useAutoDeploy(
       if (
         deployments.length === 0 ||
         !hasPermissions ||
-        extensionUpdateRequired
+        extensionUpdateRequired ||
+        !shouldAutoDeploy
       ) {
-        setIsAutoDeploying(false);
+        setIsFetchingAndActivatingDeployments(false);
         return;
       }
 
       // Attempt to automatically deploy the deployments
       try {
-        setIsAttemptingAutoDeploy(true);
+        setIsActivationInProgress(true);
         await activateDeployments(dispatch, deployments, installedExtensions);
         notify.success("Updated team deployments");
       } catch (error) {
         notify.error({ message: "Error updating team deployments", error });
       } finally {
-        setIsAttemptingAutoDeploy(false);
-        setIsAutoDeploying(false);
+        setIsActivationInProgress(false);
+        setIsFetchingAndActivatingDeployments(false);
       }
     },
     [hasPermissions, deployments],
   );
 
-  return isAutoDeploying;
+  return isFetchingAndActivatingDeployments;
 }
 
 export default useAutoDeploy;
