@@ -26,11 +26,17 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import useAsyncEffect from "use-async-effect";
 
+/**
+ * `true` if the deployments are still being loaded or if the deployments are being automatically deployed.
+ */
+type UseAutoDeployReturn = boolean;
+
 function useAutoDeploy(
-  deployments: Deployment[],
+  // Deployments can be undefined if they are still being loaded
+  deployments: Deployment[] | undefined,
   installedExtensions: ModComponentBase[],
-  isLoadingDeployments: boolean,
-): boolean {
+  { extensionUpdateRequired }: { extensionUpdateRequired: boolean },
+): UseAutoDeployReturn {
   const dispatch = useDispatch<Dispatch>();
   const [isAutoDeploying, setIsAutoDeploying] = useState(true);
   const [isAttemptingAutoDeploy, setIsAttemptingAutoDeploy] = useState(false);
@@ -39,7 +45,7 @@ function useAutoDeploy(
   useAsyncEffect(
     async (isMounted) => {
       // Still loading deployments or already deploying
-      if (!isMounted || isLoadingDeployments || isAttemptingAutoDeploy) {
+      if (!isMounted() || !deployments || isAttemptingAutoDeploy) {
         return;
       }
 
@@ -47,7 +53,7 @@ function useAutoDeploy(
       if (
         deployments.length === 0 ||
         !hasPermissions ||
-        checkExtensionUpdateRequired(deployments)
+        extensionUpdateRequired
       ) {
         setIsAutoDeploying(false);
         return;

@@ -151,7 +151,8 @@ function useDeployments(): DeploymentsState {
       restricted: restrict("uninstall"),
     });
 
-    const updatedDeployments = (deployments ?? []).filter((x) => isUpdated(x));
+    const updatedDeployments =
+      deployments == null ? null : deployments.filter((x) => isUpdated(x));
 
     return [
       updatedDeployments,
@@ -162,7 +163,7 @@ function useDeployments(): DeploymentsState {
   const isAutoDeploying = useAutoDeploy(
     updatedDeployments,
     installedExtensions,
-    isLoading,
+    { extensionUpdateRequired },
   );
 
   const handleUpdateFromUserGesture = useCallback(async () => {
