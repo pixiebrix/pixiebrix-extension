@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { activateDeployments } from "@/extensionConsole/pages/deployments/DeploymentsContext";
+import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 import useModPermissions from "@/mods/hooks/useModPermissions";
 import { type Deployment } from "@/types/contract";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { checkExtensionUpdateRequired } from "@/utils/deploymentUtils";
 import notify from "@/utils/notify";
-import { AnyAction, type Dispatch } from "@reduxjs/toolkit";
+import { type Dispatch } from "@reduxjs/toolkit";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import useAsyncEffect from "use-async-effect";
@@ -31,7 +31,7 @@ function useAutoDeploy(
   installedExtensions: ModComponentBase[],
   isLoadingDeployments: boolean,
 ): boolean {
-  const dispatch = useDispatch<Dispatch<AnyAction>>();
+  const dispatch = useDispatch<Dispatch>();
   const [isAutoDeploying, setIsAutoDeploying] = useState(true);
   const [isAttemptingAutoDeploy, setIsAttemptingAutoDeploy] = useState(false);
   const { hasPermissions } = useModPermissions(installedExtensions);

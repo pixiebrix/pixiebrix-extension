@@ -31,12 +31,10 @@ import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { type Dispatch } from "@reduxjs/toolkit";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
-import extensionsSlice from "@/store/extensionsSlice";
 import useFlags from "@/hooks/useFlags";
 import {
   checkExtensionUpdateRequired,
   makeUpdatedFilter,
-  mergeDeploymentIntegrationDependencies,
   selectInstalledDeployments,
 } from "@/utils/deploymentUtils";
 import settingsSlice from "@/store/settings/settingsSlice";
@@ -50,8 +48,7 @@ import {
   reloadIfNewVersionIsReady,
 } from "@/utils/extensionUtils";
 import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
-
-const { actions } = extensionsSlice;
+import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 
 /**
  * Fetch deployments, or return empty array if the extension is not linked to the PixieBrix API.
@@ -76,72 +73,6 @@ async function fetchDeployments(
   );
 
   return deployments;
-}
-
-async function activateDeployment(
-  dispatch: Dispatch,
-  deployment: Deployment,
-  installed: ModComponentBase[],
-): Promise<void> {
-  let isReinstall = false;
-
-  // Clear existing installations of the blueprint
-  for (const extension of installed) {
-    // Extension won't have recipe if it was locally created by a developer
-    if (extension._recipe?.id === deployment.package.package_id) {
-      dispatch(
-        actions.removeExtension({
-          extensionId: extension.id,
-        }),
-      );
-
-      isReinstall = true;
-    }
-  }
-
-  // Install the blueprint with the service definition
-  dispatch(
-    actions.installMod({
-      modDefinition: deployment.package.config,
-      deployment,
-      configuredDependencies: await mergeDeploymentIntegrationDependencies(
-        deployment,
-        services.locateAllForId,
-      ),
-      // Assume validation on the backend for options
-      optionsArgs: deployment.options_config,
-      screen: "extensionConsole",
-      isReinstall,
-    }),
-  );
-
-  reportEvent(Events.DEPLOYMENT_ACTIVATE, {
-    deployment: deployment.id,
-  });
-}
-
-export async function activateDeployments(
-  dispatch: Dispatch,
-  deployments: Deployment[],
-  installed: ModComponentBase[],
-): Promise<void> {
-  // Activate as many as we can
-  const errors = [];
-
-  for (const deployment of deployments) {
-    try {
-      // eslint-disable-next-line no-await-in-loop -- modifies redux state
-      await activateDeployment(dispatch, deployment, installed);
-    } catch (error) {
-      errors.push(error);
-    }
-  }
-
-  if (errors.length > 0) {
-    // XXX: only throwing the first is OK, because the user will see the next error if they fix this error and then
-    // activate deployments again
-    throw errors[0];
-  }
 }
 
 export type DeploymentsState = {
