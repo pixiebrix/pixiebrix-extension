@@ -17,6 +17,12 @@
 
 /** @file This is a standalone background entry point that must run independently of the rest of extension */
 
+if (chrome.runtime.getManifest === undefined) {
+  throw new Error(
+    "Chrome bug: The extension was loaded as MV2, but Chrome is still running the worker. Unregister the loader from chrome://serviceworker-internals/",
+  );
+}
+
 const { icons } = chrome.runtime.getManifest();
 const inactiveIcons = {};
 for (const [size, path] of Object.entries(icons)) {
