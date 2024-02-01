@@ -126,9 +126,7 @@ function useTreeRow({
       if (isActive) {
         $row.addClass("active");
 
-        // https://caniuse.com/scrollintoviewifneeded
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- supported by Chromium
-        ($row.get(0) as any).scrollIntoViewIfNeeded?.({ behavior: "smooth" });
+        $row.get(0).scrollIntoViewIfNeeded?.();
       } else {
         $row.removeClass("active");
       }

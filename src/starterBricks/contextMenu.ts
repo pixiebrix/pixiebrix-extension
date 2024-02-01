@@ -70,7 +70,27 @@ import { type UUID } from "@/types/stringTypes";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
+import batchedFunction from "batched-function";
 import { onContextInvalidated } from "webext-events";
+
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
+const groupRegistrationErrorNotification = batchedFunction(
+  (errors: unknown[][]): void => {
+    // `batchedFunction` will throttle the calls and coalesce all the errors into a
+    // single notification, even if they come from different extensions
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/7353
+    notify.error({
+      message: `An error occurred adding ${pluralize(
+        errors.flat().length,
+        "$$ context menu item",
+      )}`,
+      reportError: false,
+    });
+  },
+  {
+    delay: 100,
+  },
+);
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
@@ -266,14 +286,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     });
 
     await allSettled(promises, {
-      catch(errors) {
-        notify.error(
-          `An error occurred adding ${pluralize(
-            errors.length,
-            "$$ context menu item",
-          )}`,
-        );
-      },
+      catch: groupRegistrationErrorNotification,
     });
   }
 

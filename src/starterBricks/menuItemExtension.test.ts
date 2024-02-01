@@ -44,12 +44,12 @@ jest.mock("@/runtime/reducePipeline");
 const reduceExtensionPipelineMock = jest.mocked(reduceExtensionPipeline);
 
 globalThis.requestIdleCallback = jest.fn((callback) => {
-  (callback as any)();
+  callback({ didTimeout: false, timeRemaining: () => 1 });
   return 0;
 });
 
 globalThis.requestAnimationFrame = jest.fn((callback) => {
-  (callback as any)();
+  callback(1);
   return 0;
 });
 

@@ -94,8 +94,15 @@ export function moveElement(
       destination,
     });
 
-    getIn(sourceParent, "children").splice(source.index, 1);
-    getIn(destinationParent, "children").splice(destination.index, 0, element);
+    (getIn(sourceParent, "children") as DocumentElement[]).splice(
+      source.index,
+      1,
+    );
+    (getIn(destinationParent, "children") as DocumentElement[]).splice(
+      destination.index,
+      0,
+      element,
+    );
   });
 }
 

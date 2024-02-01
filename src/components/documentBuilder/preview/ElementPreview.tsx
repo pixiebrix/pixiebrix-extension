@@ -58,7 +58,7 @@ export type ElementPreviewProps = {
 };
 
 const useScrollIntoViewEffect = (elementName: string, isActive: boolean) => {
-  const elementRef = React.useRef(null);
+  const elementRef = React.useRef<Element>(null);
 
   useEffect(() => {
     if (!elementRef.current) {
