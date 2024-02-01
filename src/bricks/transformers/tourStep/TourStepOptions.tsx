@@ -91,7 +91,7 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
                 await setFieldValue(
                   configName("body"),
                   toExpression("pipeline", [
-                    createNewConfiguredBrick(DocumentRenderer.BLOCK_ID, {
+                    createNewConfiguredBrick(DocumentRenderer.BRICK_ID, {
                       parentBrickId: TourStepTransformer.BRICK_ID,
                     }),
                   ]),

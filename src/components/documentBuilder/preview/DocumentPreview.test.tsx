@@ -39,7 +39,7 @@ import { toExpression } from "@/utils/expressionUtils";
 function renderDocumentPreview(documentElement: DocumentElement) {
   const formState = formStateFactory(undefined, [
     {
-      id: DocumentRenderer.BLOCK_ID,
+      id: DocumentRenderer.BRICK_ID,
       config: {
         body: [documentElement],
       },
@@ -157,7 +157,7 @@ describe("Show live preview", () => {
           title: toExpression("nunjucks", "Test Tab"),
           body: toExpression("pipeline", [
             {
-              id: DocumentRenderer.BLOCK_ID,
+              id: DocumentRenderer.BRICK_ID,
               instanceId: uuidSequence(2),
               config: {
                 body: [documentElement],

@@ -188,7 +188,7 @@ export function getExampleBrickConfig(
         title: "Example Info",
         location: "panel",
         body: toExpression("pipeline", [
-          createNewConfiguredBrick(DocumentRenderer.BLOCK_ID),
+          createNewConfiguredBrick(DocumentRenderer.BRICK_ID),
         ]),
         isRootAware: true,
       };

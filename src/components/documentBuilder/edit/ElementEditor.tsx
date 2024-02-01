@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./DocumentEditor.module.scss";
+import styles from "./DocumentOptions.module.scss";
 
 import { useField } from "formik";
 import React from "react";

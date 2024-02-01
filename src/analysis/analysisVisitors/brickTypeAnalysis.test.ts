@@ -40,7 +40,7 @@ describe("BrickTypeAnalysis", () => {
 
     modComponent.extension.blockPipeline = [
       createNewConfiguredBrick(ALERT_EFFECT_ID),
-      createNewConfiguredBrick(DocumentRenderer.BLOCK_ID),
+      createNewConfiguredBrick(DocumentRenderer.BRICK_ID),
     ];
 
     const analysis = new BrickTypeAnalysis();
@@ -59,7 +59,7 @@ describe("BrickTypeAnalysis", () => {
 
     modComponent.extension.blockPipeline = [
       createNewConfiguredBrick(brickId),
-      createNewConfiguredBrick(DocumentRenderer.BLOCK_ID),
+      createNewConfiguredBrick(DocumentRenderer.BRICK_ID),
     ];
 
     const analysis = new BrickTypeAnalysis();

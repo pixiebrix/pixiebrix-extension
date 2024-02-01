@@ -72,7 +72,7 @@ test("should invoke the callback for a Document expression", () => {
   containerElement.children[0].children[0].children.push(textElement);
 
   const documentBrick = brickConfigFactory({
-    id: DocumentRenderer.BLOCK_ID,
+    id: DocumentRenderer.BRICK_ID,
     config: {
       body: [containerElement],
     },

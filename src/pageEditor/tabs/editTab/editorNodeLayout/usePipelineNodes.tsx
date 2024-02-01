@@ -108,7 +108,7 @@ function getNodePreviewElementId(
   brickConfig: BrickConfig,
   path: string,
 ): string | null {
-  if (brickConfig.id === DocumentRenderer.BLOCK_ID) {
+  if (brickConfig.id === DocumentRenderer.BRICK_ID) {
     // The Document Preview element name is a substring of the header node path, e.g.
     // SubPipeline.path: config.body.0.children.9.children.0.children.0.config.onClick.__value__0.children.9.children.0.children.0
     // Document element: 0.children.9.children.0.children.0
@@ -132,7 +132,7 @@ function getSubPipelinesForBlock(
   blockConfig: BrickConfig,
 ): SubPipeline[] {
   const subPipelines: SubPipeline[] = [];
-  if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
+  if (blockConfig.id === DocumentRenderer.BRICK_ID) {
     for (const docPipelinePath of getDocumentPipelinePaths(blockConfig)) {
       const path = joinPathParts(docPipelinePath, "__value__");
       const pipeline: BrickPipeline = get(blockConfig, path) ?? [];
