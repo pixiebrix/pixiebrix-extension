@@ -36,9 +36,10 @@ const DocumentOptions: React.FC<{
   configKey: string;
 }> = ({ name, configKey }) => {
   const documentConfigName = joinName(name, configKey);
-  const activeElement = useSelector(selectNodePreviewActiveElement);
   const documentBodyName = joinName(documentConfigName, "body");
   const stylesheetsName = joinName(documentConfigName, "stylesheets");
+
+  const activeElement = useSelector(selectNodePreviewActiveElement);
 
   const [{ value: bodyValue }, , { setValue: setBodyValue }] =
     useField<DocumentElement[]>(documentBodyName);

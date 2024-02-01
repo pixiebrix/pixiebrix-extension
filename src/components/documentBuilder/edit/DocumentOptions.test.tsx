@@ -36,7 +36,6 @@ import { integrationDependencyFactory } from "@/testUtils/factories/integrationF
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 import { within } from "@testing-library/react";
-import { waitForEffect } from "@/testUtils/testHelpers";
 import DocumentOptions from "@/components/documentBuilder/edit/DocumentOptions";
 
 beforeAll(() => {
