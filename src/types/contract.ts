@@ -291,3 +291,6 @@ export type PackageVersionUpdates = {
     name: RegistryId;
   }>;
 };
+
+export type ManagedOrganizationData =
+  components["schemas"]["ManagedOrganizationData"];

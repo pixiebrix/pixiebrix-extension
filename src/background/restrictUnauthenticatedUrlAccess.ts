@@ -15,20 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { maybeGetLinkedApiClient } from "@/services/apiClient";
+import { fetch } from "@/hooks/fetch";
+import { ManagedOrganizationData } from "@/types/contract";
+import { readManagedStorage } from "@/store/enterprise/managedStorage";
+import { isLinked } from "@/auth/token";
 
 /**
  * Browser administrators can restrict access to certain urls for unauthenticated PixieBrix users via managed storage
  * `enforceAuthentication` and `managedOrganizationId` settings. Policies for specified urls are stored on the server.
  */
 async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
-  const client = await maybeGetLinkedApiClient();
-  if (client == null) {
-    console.debug(
-      "Skipping enforced PixieBrix authentication check because the mod is not linked to the PixieBrix service",
-    );
+  const { managedOrganizationId, enforceAuthentication } =
+    await readManagedStorage();
+
+  if (!enforceAuthentication || !managedOrganizationId) {
     return;
   }
+
+  const { auth_url_patterns } = await fetch<ManagedOrganizationData>(
+    `/api/organizations/${managedOrganizationId}/managed-data/`,
+  );
 }
 
 export default initRestrictUnauthenticatedUrlAccess;

@@ -16,9 +16,54 @@
  */
 
 import initRestrictUnauthenticatedUrlAccess from "@/background/restrictUnauthenticatedUrlAccess";
+import MockAdapter from "axios-mock-adapter";
+import axios from "axios";
+import { uuidv4 } from "@/types/helpers";
+import { isLinked } from "@/auth/token";
+
+const axiosMock = new MockAdapter(axios);
+const isLinkedMock = jest.mocked(isLinked);
+
+jest.mock("@/auth/token", () => ({
+  isLinked: jest.fn(),
+}));
+
+const expectedManageOrganizationId = uuidv4();
+const expectedAuthUrlPatterns = [
+  "https://foo.com/*",
+  "https://bar.com/*",
+  "https://baz.com/*",
+];
 
 describe("enforceAuthentication", () => {
-  it("runs without error", () => {
-    initRestrictUnauthenticatedUrlAccess();
+  beforeEach(async () => {
+    axiosMock
+      .onGet(`/api/organizations/${expectedManageOrganizationId}/managed-data/`)
+      .reply(200, {
+        auth_url_patterns: expectedAuthUrlPatterns,
+      });
+  });
+
+  afterEach(async () => {
+    await browser.storage.managed.clear();
+    axiosMock.reset();
+    isLinkedMock.mockClear();
+  });
+
+  it("does nothing if managed storage values are not configured", async () => {
+    await initRestrictUnauthenticatedUrlAccess();
+    expect(axiosMock.history.get).toHaveLength(0);
+  });
+
+  it("fetches managed organization data if enforceAuthentication and managedOrganizationId are configured", async () => {
+    await browser.storage.managed.set({
+      managedOrganizationId: expectedManageOrganizationId,
+      enforceAuthentication: true,
+    });
+
+    // isLinkedMock.mockResolvedValue(false);
+
+    await initRestrictUnauthenticatedUrlAccess();
+    expect(axiosMock.history.get).toHaveLength(1);
   });
 });
