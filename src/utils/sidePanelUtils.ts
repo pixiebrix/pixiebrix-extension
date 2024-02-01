@@ -20,13 +20,9 @@
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isMV3 } from "@/mv3/api";
 import { forbidContext, isBrowserSidebar } from "@/utils/expectContext";
-import {
-  getMethod,
-  type PageTarget,
-  messenger,
-  getThisFrame,
-} from "webext-messenger";
+import { type PageTarget, messenger, getThisFrame } from "webext-messenger";
 import { isContentScript } from "webext-detect-page";
+import { showSidebar } from "@/types/strictMessengerApi";
 
 export async function openSidePanel(tabId: number): Promise<void> {
   if (isBrowserSidebar()) {
@@ -44,8 +40,7 @@ export async function openSidePanel(tabId: number): Promise<void> {
   if (isMV3()) {
     openSidePanelMv3(tabId);
   } else {
-    // Called via `getMethod` until we complete the strictNullChecks transition
-    getMethod("SHOW_SIDEBAR")({ tabId });
+    showSidebar({ tabId });
   }
 }
 

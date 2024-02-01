@@ -40,9 +40,10 @@ import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtoco
 import { getSidebarTargetForCurrentTab } from "@/utils/sidePanelUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
-import { backgroundTarget, getMethod, messenger } from "webext-messenger";
+import { backgroundTarget, messenger } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { showMySidePanel } from "@/types/strictMessengerApi";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
@@ -127,8 +128,7 @@ export async function showSidebar(): Promise<void> {
   console.debug("sidebarController:showSidebar");
   reportEvent(Events.SIDEBAR_SHOW);
   if (isMV3() || isLoadedInIframe()) {
-    // TODO: Import from background/messenger/api.ts after the strictNullChecks migration, drop "SIDEBAR_PING" string
-    await getMethod("SHOW_MY_SIDE_PANEL" as "SIDEBAR_PING", backgroundTarget)();
+    showMySidePanel(backgroundTarget);
   } else if (!sidebarMv2.isSidebarFrameVisible()) {
     sidebarMv2.insertSidebarFrame();
   }
