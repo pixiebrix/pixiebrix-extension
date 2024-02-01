@@ -127,8 +127,12 @@ const CustomFormComponent: React.FunctionComponent<{
               }}
             >
               {autoSave || uiSchema["ui:submitButtonOptions"]?.norender ? (
-                // XXX: Due to a RJSF bug, rendering a child react component will cause infinite rerenders in dev mode.
-                //  To get around this, we return `true` in order to avoid rendering the default submitButton
+                // XXX: Due to a bug in RJSF, rendering a child react component for the Form will cause infinite
+                //  rerenders in dev mode. To get around this, we return `true` in order to avoid rendering the
+                //  default submitButton. RJSF forces us to provide a non-falsy children prop if we want to render
+                //  our own submit button component. `true` avoids rendering anything to the dom while avoiding
+                //  the infinite rerender bug. See:
+                //  https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/core/src/components/Form.tsx#L919
                 //  https://github.com/rjsf-team/react-jsonschema-form/issues/1693
                 true
               ) : (
