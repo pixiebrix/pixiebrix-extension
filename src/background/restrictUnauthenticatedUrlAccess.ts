@@ -18,10 +18,10 @@
 import { maybeGetLinkedApiClient } from "@/services/apiClient";
 
 /**
- * Restricts access to urls specified by an organization in managed storage for users unauthenticated with PixieBrix.
+ * Browser administrators can restrict access to certain urls for unauthenticated PixieBrix users via managed storage
+ * `enforceAuthentication` and `managedOrganizationId` settings. Policies for specified urls are stored on the server.
  */
-// TODO: call this restrictUnauthenticatedUrlAccess
-async function initEnforceAuthentication(): Promise<void> {
+async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
@@ -31,4 +31,4 @@ async function initEnforceAuthentication(): Promise<void> {
   }
 }
 
-export default initEnforceAuthentication;
+export default initRestrictUnauthenticatedUrlAccess;

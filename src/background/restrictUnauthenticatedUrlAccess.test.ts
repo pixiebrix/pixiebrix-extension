@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import initEnforceAuthentication from "@/background/enforceAuthentication";
+import initRestrictUnauthenticatedUrlAccess from "@/background/restrictUnauthenticatedUrlAccess";
 
 describe("enforceAuthentication", () => {
   it("runs without error", () => {
-    initEnforceAuthentication();
+    initRestrictUnauthenticatedUrlAccess();
   });
 });
