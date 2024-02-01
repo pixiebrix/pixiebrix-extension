@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -117,7 +117,7 @@ beforeAll(async () => {
     (listing, index) =>
       ({
         id: uuidSequence(index),
-        name: listing.id,
+        name: listing.package.name,
       }) as EditablePackageMetadata,
   );
 

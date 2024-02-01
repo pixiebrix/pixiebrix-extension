@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -45,6 +45,7 @@ export const removeExtensionForEveryTab = getNotifier(
   bg,
 );
 
+/** @knip It will be used by the content script after the strictNullCheck migration */
 export const showMySidePanel = getMethod("SHOW_MY_SIDE_PANEL", bg);
 
 export const closeTab = getMethod("CLOSE_TAB", bg);
