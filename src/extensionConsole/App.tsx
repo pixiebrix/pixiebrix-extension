@@ -34,7 +34,6 @@ import { ConnectedRouter } from "connected-react-router";
 import EnvironmentBanner from "@/layout/EnvironmentBanner";
 import ActivateModPage from "@/extensionConsole/pages/activateMod/ActivateModPage";
 import ActivateExtensionPage from "@/extensionConsole/pages/activateExtension/ActivateExtensionPage";
-import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import SetupPage from "@/extensionConsole/pages/onboarding/SetupPage";
 import UpdateBanner from "@/extensionConsole/pages/UpdateBanner";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
@@ -55,7 +54,6 @@ import ReduxPersistenceContext, {
 } from "@/store/ReduxPersistenceContext";
 import IDBErrorDisplay from "@/extensionConsole/components/IDBErrorDisplay";
 import { DeploymentsProvider } from "@/extensionConsole/pages/deployments/DeploymentsContext";
-import Loader from "@/components/Loader";
 
 // Register the built-in bricks
 registerEditors();
@@ -73,13 +71,6 @@ const AuthenticatedContent: React.VFC = () => {
     // Start polling logs
     dispatch(logActions.pollLogs());
   }, [dispatch]);
-
-  // Get the latest brick definitions
-  const [loaded] = useRefreshRegistries();
-
-  if (!loaded) {
-    return <Loader />;
-  }
 
   return (
     <DeploymentsProvider>
