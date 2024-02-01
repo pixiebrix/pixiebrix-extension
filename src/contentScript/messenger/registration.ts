@@ -81,6 +81,7 @@ import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformat
 import { closeWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
 import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughModal";
 import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
+import * as streamingAudio from "@/contentScript/streamingAudio";
 
 expectContext("contentScript");
 
@@ -149,6 +150,9 @@ declare global {
     GET_COPILOT_HOST_DATA: typeof getCopilotHostData;
 
     RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadActivationEnhancements;
+
+    CONNECT_AUDIO: typeof streamingAudio.connect;
+    DISCONNECT_AUDIO: typeof streamingAudio.disconnect;
   }
 }
 
@@ -220,5 +224,8 @@ export default function registerMessenger(): void {
     GET_COPILOT_HOST_DATA: getCopilotHostData,
 
     RELOAD_MARKETPLACE_ENHANCEMENTS: reloadActivationEnhancements,
+
+    CONNECT_AUDIO: streamingAudio.connect,
+    DISCONNECT_AUDIO: streamingAudio.disconnect,
   });
 }

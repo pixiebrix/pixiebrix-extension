@@ -67,7 +67,11 @@ import {
   sendDeploymentAlert,
   uid,
 } from "@/background/telemetry";
-import { captureTab } from "@/background/capture";
+import {
+  captureTab,
+  startAudioCapture,
+  stopAudioCapture,
+} from "@/background/capture";
 import { getUserData } from "@/auth/token";
 import {
   getPartnerPrincipals,
@@ -159,6 +163,8 @@ declare global {
     SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
 
     CAPTURE_TAB: typeof captureTab;
+    AUDIO_CAPTURE_START: typeof startAudioCapture;
+    AUDIO_CAPTURE_STOP: typeof stopAudioCapture;
 
     GET_USER_DATA: typeof getUserData;
   }
@@ -242,6 +248,8 @@ export default function registerMessenger(): void {
     SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
 
     CAPTURE_TAB: captureTab,
+    AUDIO_CAPTURE_START: startAudioCapture,
+    AUDIO_CAPTURE_STOP: stopAudioCapture,
 
     GET_USER_DATA: getUserData,
   });

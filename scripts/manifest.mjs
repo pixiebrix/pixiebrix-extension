@@ -76,8 +76,13 @@ function updateManifestToV3(manifestV2) {
 
   // Update CSP format and drop invalid values
   const policy = new Policy(manifest.content_security_policy);
+  // TODO: always remove https://apis.google.com?
   policy.remove("script-src", "https://apis.google.com");
   policy.remove("script-src", "'unsafe-eval'");
+
+  // TODO: move to manifest.json?
+  policy.add("connect-src", "wss:");
+
   manifest.content_security_policy = {
     extension_pages: policy.toString(),
 

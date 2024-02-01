@@ -123,6 +123,7 @@ const createConfig = (env, options) =>
         "tinyPages/walkthroughModal",
         "tinyPages/ephemeralPanel",
         "tinyPages/restrictedUrlPopup",
+        "tinyPages/offscreen",
 
         // Tiny files without imports
         "tinyPages/frame",
@@ -249,6 +250,9 @@ const createConfig = (env, options) =>
         // DataDog RUM/Logging
         DATADOG_APPLICATION_ID: null,
         DATADOG_CLIENT_TOKEN: null,
+
+        // XXX: Deepgram demo information. Don't merge into main
+        DEEPGRAM_API_KEY: null,
       }),
 
       new MiniCssExtractPlugin({

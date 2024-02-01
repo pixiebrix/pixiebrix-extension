@@ -148,3 +148,6 @@ export const collectPerformanceDiagnostics = getMethod(
   "COLLECT_PERFORMANCE_DIAGNOSTICS",
   bg,
 );
+
+export const startAudioCapture = getMethod("AUDIO_CAPTURE_START", bg);
+export const stopAudioCapture = getMethod("AUDIO_CAPTURE_STOP", bg);

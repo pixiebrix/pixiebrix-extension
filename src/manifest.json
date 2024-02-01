@@ -49,6 +49,8 @@
     "storage",
     "identity",
     "tabs",
+    "tabCapture",
+    "offscreen",
     "webNavigation",
     "contextMenus",
     "<all_urls>"
