@@ -20,6 +20,7 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { uuidv4 } from "@/types/helpers";
 import { isLinked } from "@/auth/token";
+import { INTERNAL_reset } from "@/store/enterprise/managedStorage";
 
 const axiosMock = new MockAdapter(axios);
 const isLinkedMock = jest.mocked(isLinked);
@@ -45,6 +46,7 @@ describe("enforceAuthentication", () => {
   });
 
   afterEach(async () => {
+    INTERNAL_reset();
     await browser.storage.managed.clear();
     axiosMock.reset();
     isLinkedMock.mockClear();

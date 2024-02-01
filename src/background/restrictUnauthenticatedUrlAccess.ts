@@ -19,6 +19,22 @@ import { fetch } from "@/hooks/fetch";
 import { ManagedOrganizationData } from "@/types/contract";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { isLinked } from "@/auth/token";
+import { validateUUID } from "@/types/helpers";
+import { UUID } from "@/types/stringTypes";
+
+let authUrlPatterns = [];
+
+async function getAuthUrlPatterns(organizationId: UUID) {
+  try {
+    const { auth_url_patterns } = await fetch<ManagedOrganizationData>(
+      `/api/organizations/${organizationId}/managed-data/`,
+    );
+    return auth_url_patterns;
+  } catch (error) {
+    reportError(error);
+    return [];
+  }
+}
 
 /**
  * Browser administrators can restrict access to certain urls for unauthenticated PixieBrix users via managed storage
@@ -32,9 +48,15 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
     return;
   }
 
-  const { auth_url_patterns } = await fetch<ManagedOrganizationData>(
-    `/api/organizations/${managedOrganizationId}/managed-data/`,
-  );
+  try {
+    authUrlPatterns = await getAuthUrlPatterns(
+      validateUUID(managedOrganizationId),
+    );
+  } catch (error) {
+    reportError(
+      new Error(`Unable to initialize restricted url access: ${error}`),
+    );
+  }
 }
 
 export default initRestrictUnauthenticatedUrlAccess;
