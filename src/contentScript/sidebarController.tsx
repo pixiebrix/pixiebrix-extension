@@ -42,6 +42,8 @@ import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
 import { backgroundTarget, messenger } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { showMySidePanel } from "@/types/strictMessengerApi";
 
@@ -128,7 +130,18 @@ export async function showSidebar(): Promise<void> {
   console.debug("sidebarController:showSidebar");
   reportEvent(Events.SIDEBAR_SHOW);
   if (isMV3() || isLoadedInIframe()) {
-    await showMySidePanel(backgroundTarget);
+    try {
+      await showMySidePanel(backgroundTarget);
+    } catch (error) {
+      if (!getErrorMessage(error).includes("user gesture")) {
+        throw error;
+      }
+
+      await focusCaptureDialog(
+        'Please click "OK" to allow PixieBrix to open the sidebar.',
+      );
+      await showMySidePanel(backgroundTarget);
+    }
   } else if (!sidebarMv2.isSidebarFrameVisible()) {
     sidebarMv2.insertSidebarFrame();
   }
