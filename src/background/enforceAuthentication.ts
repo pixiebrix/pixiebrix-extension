@@ -15,8 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function initEnforceAuthentication() {
-  // TODO
+import { maybeGetLinkedApiClient } from "@/services/apiClient";
+
+/**
+ * Restricts access to urls specified by an organization in managed storage for users unauthenticated with PixieBrix.
+ */
+// TODO: call this restrictUnauthenticatedUrlAccess
+async function initEnforceAuthentication(): Promise<void> {
+  const client = await maybeGetLinkedApiClient();
+  if (client == null) {
+    console.debug(
+      "Skipping enforced PixieBrix authentication check because the mod is not linked to the PixieBrix service",
+    );
+    return;
+  }
 }
 
 export default initEnforceAuthentication;
