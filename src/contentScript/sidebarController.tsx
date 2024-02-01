@@ -128,7 +128,7 @@ export async function showSidebar(): Promise<void> {
   console.debug("sidebarController:showSidebar");
   reportEvent(Events.SIDEBAR_SHOW);
   if (isMV3() || isLoadedInIframe()) {
-    showMySidePanel(backgroundTarget);
+    await showMySidePanel(backgroundTarget);
   } else if (!sidebarMv2.isSidebarFrameVisible()) {
     sidebarMv2.insertSidebarFrame();
   }

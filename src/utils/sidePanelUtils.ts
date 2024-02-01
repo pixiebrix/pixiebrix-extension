@@ -38,9 +38,9 @@ export async function openSidePanel(tabId: number): Promise<void> {
   );
 
   if (isMV3()) {
-    openSidePanelMv3(tabId);
+    await openSidePanelMv3(tabId);
   } else {
-    showSidebar({ tabId });
+    await showSidebar({ tabId });
   }
 }
 

@@ -18,10 +18,12 @@
 import { openSidePanel, getSidebarPath } from "@/utils/sidePanelUtils";
 import type { MessengerMeta } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export async function showMySidePanel(this: MessengerMeta): Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- There's always at least one
-  await openSidePanel(this.trace[0]!.tab.id!);
+  const tabId = this.trace[0]?.tab?.id;
+  assertNotNullish(tabId, "showMySidePanel can only be called from a tab");
+  await openSidePanel(tabId);
 }
 
 // TODO: Drop if this is ever implemented: https://github.com/w3c/webextensions/issues/515
