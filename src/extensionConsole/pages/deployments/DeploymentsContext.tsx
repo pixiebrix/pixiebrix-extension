@@ -160,7 +160,7 @@ function useDeployments(): DeploymentsState {
     ];
   }, [restrict, installedExtensions, deployments]);
 
-  const isAutoDeploying = useAutoDeploy(
+  const { isAutoDeploying } = useAutoDeploy(
     updatedDeployments,
     installedExtensions,
     { extensionUpdateRequired },
