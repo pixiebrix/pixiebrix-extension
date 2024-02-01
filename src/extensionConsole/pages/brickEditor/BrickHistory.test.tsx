@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,7 +26,7 @@ import selectEvent from "react-select-event";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/extensionConsole/testHelpers";
 import { type Package, type PackageVersion } from "@/types/contract";
-import { Timestamp } from "@/types/stringTypes";
+import { type Timestamp } from "@/types/stringTypes";
 
 const axiosMock = new MockAdapter(axios);
 
