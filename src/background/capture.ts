@@ -15,10 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { type MessengerMeta } from "webext-messenger";
 
 export async function captureTab(this: MessengerMeta): Promise<string> {
-  return browser.tabs.captureVisibleTab(this.trace[0].tab.windowId, {
+  const windowId = this.trace[0]?.tab?.windowId;
+  assertNotNullish(windowId, "showMySidePanel can only be called from a tab");
+  return browser.tabs.captureVisibleTab(windowId, {
     format: "png",
   });
 }
