@@ -18,14 +18,14 @@
 @import "@/themes/colors";
 
 .root {
-  flex: 1 1 auto;
   li,
   p {
     font-size: 16px;
   }
 
   kbd {
-    background: $N300;
+    color: $N900;
+    background: $N0;
     border-radius: 4px;
     padding: 4.5px 6px;
     margin: 0 12px;

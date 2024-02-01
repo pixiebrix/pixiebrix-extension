@@ -27,7 +27,6 @@ import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import ModIcon from "@/mods/ModIcon";
 import { isMac } from "@/utils/browserUtils";
 import { MARKETPLACE_URL } from "@/urlConstants";
-import { Card } from "react-bootstrap";
 
 const ExternalLink: React.VoidFunctionComponent<{
   linkText: string;
@@ -68,92 +67,90 @@ const GetStartedView: React.VoidFunctionComponent<{
   const marketplaceUrl = `${homepageUrl}/marketplace/${onboardingModListing?.id}/`;
 
   return (
-    <Card
+    <div
       style={{ height: `${height}px`, width: `${width}px` }}
       className={styles.root}
     >
-      <Card.Body>
-        {onboardingModListing && (
-          <div className={styles.infoRow}>
-            <h4>
-              Success!{" "}
-              {!isFetchingRecipe && (
-                <>
-                  <ModIcon mod={recipe} />{" "}
-                </>
-              )}
-              <ExternalLink
-                linkText={onboardingModListing.package.verbose_name}
-                url={marketplaceUrl}
-              />{" "}
-              is ready to use.
-            </h4>
-            <ul>
-              <li>
-                Time to try this mod in the wild! You can navigate to a webpage
-                this mod enhances to see it in action.
-              </li>
-              <li>
-                Check out the &quot;How to Use&quot; section for{" "}
-                <ExternalLink
-                  linkText={`${onboardingModListing.package.verbose_name}`}
-                  url={marketplaceUrl}
-                />{" "}
-                in the Marketplace for more details about how to use this mod.
-              </li>
-            </ul>
-          </div>
-        )}
+      {onboardingModListing && (
         <div className={styles.infoRow}>
-          <h4>Want to create a new mod?</h4>
+          <h4>
+            Success!{" "}
+            {!isFetchingRecipe && (
+              <>
+                <ModIcon mod={recipe} />{" "}
+              </>
+            )}
+            <ExternalLink
+              linkText={onboardingModListing.package.verbose_name}
+              url={marketplaceUrl}
+            />{" "}
+            is ready to use.
+          </h4>
           <ul>
             <li>
-              Start by opening a new browser tab and navigating to the webpage
-              you want to modify.
+              Time to try this mod in the wild! You can navigate to a webpage
+              this mod enhances to see it in action.
             </li>
             <li>
-              Open the Page Editor by selecting the PixieBrix tab via the{" "}
-              <strong>Chrome DevTools</strong> using{" "}
-              {isMac() ? (
-                <kbd>Cmd + Option + C</kbd>
-              ) : (
-                <kbd>Ctrl + Shift + C</kbd>
-              )}{" "}
-              or <kbd>F12</kbd> and start editing your page.
-            </li>
-            <li>
-              Save your mod in the Page Editor, and you&apos;ll see it here as a
-              personal mod.
+              Check out the &quot;How to Use&quot; section for{" "}
+              <ExternalLink
+                linkText={`${onboardingModListing.package.verbose_name}`}
+                url={marketplaceUrl}
+              />{" "}
+              in the Marketplace for more details about how to use this mod.
             </li>
           </ul>
         </div>
-        <div className={styles.infoRow}>
-          <h4>Need more help?</h4>
-          <p>
-            Visit the{" "}
-            <ExternalLink
-              linkText="Quick Start Guide"
-              url="https://docs.pixiebrix.com/quick-start"
-            />{" "}
-            or ask questions in the{" "}
-            <ExternalLink
-              linkText="Slack Community"
-              url="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
-            />
-            .
-          </p>
-          <p>
-            {" "}
-            Visit the{" "}
-            <ExternalLink
-              linkText="PixieBrix Marketplace"
-              url={MARKETPLACE_URL}
-            />{" "}
-            for ideas.
-          </p>
-        </div>
-      </Card.Body>
-    </Card>
+      )}
+      <div className={styles.infoRow}>
+        <h4>Want to create a new mod?</h4>
+        <ul>
+          <li>
+            Start by opening a new browser tab and navigating to the webpage you
+            want to modify.
+          </li>
+          <li>
+            Open the Page Editor by selecting the PixieBrix tab via the{" "}
+            <strong>Chrome DevTools</strong> using{" "}
+            {isMac() ? (
+              <kbd>Cmd + Option + C</kbd>
+            ) : (
+              <kbd>Ctrl + Shift + C</kbd>
+            )}{" "}
+            or <kbd>F12</kbd> and start editing your page.
+          </li>
+          <li>
+            Save your mod in the Page Editor, and you&apos;ll see it here as a
+            personal mod.
+          </li>
+        </ul>
+      </div>
+      <div className={styles.infoRow}>
+        <h4>Need more help?</h4>
+        <p>
+          Visit the{" "}
+          <ExternalLink
+            linkText="Quick Start Guide"
+            url="https://docs.pixiebrix.com/quick-start"
+          />{" "}
+          or ask questions in the{" "}
+          <ExternalLink
+            linkText="Slack Community"
+            url="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
+          />
+          .
+        </p>
+        <p>
+          {" "}
+          Visit the{" "}
+          <ExternalLink
+            linkText="PixieBrix Marketplace"
+            url={MARKETPLACE_URL}
+          />{" "}
+          for ideas.
+        </p>
+      </div>
+    </div>
   );
 };
 
