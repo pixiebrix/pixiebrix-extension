@@ -79,7 +79,7 @@ function useRefreshRegistries(options?: {
   const [loaded, setLoaded] = useState(false);
 
   const refresh = useCallback(
-    async (isMounted = stubTrue) => {
+    async (isMounted: typeof stubTrue = stubTrue) => {
       try {
         // Use throttledRefreshRegistries to support useRefresh being included in multiple components on the page
         await throttledRefreshRegistries();
@@ -93,7 +93,7 @@ function useRefreshRegistries(options?: {
   );
 
   useAsyncEffect(
-    async (isMounted) => {
+    async (isMounted: typeof stubTrue) => {
       if (refreshOnMount) {
         await refresh(isMounted);
       }

@@ -26,6 +26,7 @@ import {
   InvalidTemplateError,
   PropError,
 } from "@/errors/businessErrors";
+import { type JsonObject } from "type-fest";
 
 export async function renderNunjucksTemplate(
   payload: TemplateRenderPayload,
@@ -91,10 +92,10 @@ export async function runUserJs({
   data,
   blockId,
 }: JavaScriptPayload): Promise<string> {
-  let userFunction;
+  let userFunction: (context: JsonObject | undefined) => string;
   try {
     // Returning the user-defined function allows for an anonymous function
-    // eslint-disable-next-line no-new-func -- We're in the sandbox
+    // eslint-disable-next-line no-new-func, @typescript-eslint/no-unsafe-assignment
     userFunction = new Function(`return ${code}`)();
   } catch {
     throw new PropError(

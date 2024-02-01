@@ -25,6 +25,22 @@ import {
   type ElementReference,
 } from "@/types/runtimeTypes";
 
+const traversalTypes = [
+  "closest",
+  "children",
+  "find",
+  "next",
+  "nextAll",
+  "nextUntil",
+  "parent",
+  "parents",
+  "parentsUntil",
+  "prev",
+  "prevAll",
+  "prevUntil",
+  "siblings",
+];
+
 class TraverseElements extends TransformerABC {
   override async isPure(): Promise<boolean> {
     return true;
@@ -54,21 +70,7 @@ class TraverseElements extends TransformerABC {
         description:
           "jQuery traversal type: https://api.jquery.com/category/traversing/tree-traversal/",
         default: "find",
-        enum: [
-          "closest",
-          "children",
-          "find",
-          "next",
-          "nextAll",
-          "nextUntil",
-          "parent",
-          "parents",
-          "parentsUntil",
-          "prev",
-          "prevAll",
-          "prevUntil",
-          "siblings",
-        ],
+        enum: traversalTypes,
       },
     },
     ["selector", "traversal"],
@@ -100,7 +102,7 @@ class TraverseElements extends TransformerABC {
       traversal = "find",
     }: BrickArgs<{
       selector: string;
-      traversal: string;
+      traversal: (typeof traversalTypes)[number];
     }>,
     { ctxt, root }: BrickOptions,
   ): Promise<{
@@ -108,7 +110,7 @@ class TraverseElements extends TransformerABC {
     count: number;
   }> {
     // @ts-expect-error -- indexing method of jQuery
-    // eslint-disable-next-line security/detect-object-injection -- input validated
+    // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-unsafe-call -- input validated
     const elements = $(root)[traversal](selector) as JQuery;
     const elementRefs = elements
       .get()

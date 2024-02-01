@@ -88,7 +88,16 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
   );
 
   const submit = useCallback(
-    async (values: EditorValues & { id: UUID }, { setErrors, resetForm }) => {
+    async (
+      values: EditorValues & { id: UUID },
+      {
+        setErrors,
+        resetForm,
+      }: {
+        setErrors: (errors: unknown) => void;
+        resetForm: (form: { values: EditorValues & { id: UUID } }) => void;
+      },
+    ) => {
       const { config, reactivate: reinstallBlueprint } = values;
 
       const unsavedBrickJson = loadBrickYaml(String(config)) as

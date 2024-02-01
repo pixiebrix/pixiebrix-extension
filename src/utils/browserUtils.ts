@@ -30,6 +30,7 @@ export function isGoogleChrome(): boolean {
   // https://learn.microsoft.com/en-us/microsoft-edge/web-platform/user-agent-guidance
   // https://caniuse.com/mdn-api_navigator_useragentdata -- not defined for Firefox/Safari
   // @ts-expect-error -- userAgentData is defined in Chrome browser
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
   return navigator.userAgentData?.brands?.some(
     (x: { brand: string }) => x.brand === "Google Chrome",
   );
