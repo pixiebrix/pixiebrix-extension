@@ -28,7 +28,7 @@ import { joinPathParts } from "@/utils/formUtils";
 
 const DocumentView: React.FC<DocumentViewProps> = ({
   body,
-  stylesheets,
+  stylesheets = [],
   options,
   meta,
   onAction,
