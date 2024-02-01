@@ -28,7 +28,7 @@ import {
 } from "webext-messenger";
 import { isContentScript } from "webext-detect-page";
 
-export async function openSidePanel(tabId: number) {
+export async function openSidePanel(tabId: number): Promise<void> {
   if (isBrowserSidebar()) {
     console.warn(
       'The sidePanel called "openSidePanel". This should not happen.',
@@ -40,10 +40,13 @@ export async function openSidePanel(tabId: number) {
     "contentScript",
     "The content script doesn't have direct access to the `sidePanel` API. Call `showMySidePanel` instead",
   );
-  return isMV3()
-    ? openSidePanelMv3(tabId)
-    : // Called via `getMethod` until we complete the strictNullChecks transition
-      async (tabId: number) => getMethod("SHOW_SIDEBAR")({ tabId });
+
+  if (isMV3()) {
+    openSidePanelMv3(tabId);
+  } else {
+    // Called via `getMethod` until we complete the strictNullChecks transition
+    getMethod("SHOW_SIDEBAR")({ tabId });
+  }
 }
 
 async function openSidePanelMv3(tabId: number): Promise<void> {
