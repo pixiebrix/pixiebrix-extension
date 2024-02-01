@@ -24,7 +24,7 @@ import { initialLogState, logSlice } from "./logSlice";
 import { type LogState } from "./logViewerTypes";
 
 function renderLogCard(state?: LogState) {
-  // @ts-expect-error -- assigning state with collections of LogEntries is perfectly fine
+  // @ts-ignore-error -- assigning state with collections of LogEntries is perfectly fine
   const store = configureStore({
     reducer: {
       logs: logSlice.reducer,

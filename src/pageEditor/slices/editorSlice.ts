@@ -941,5 +941,5 @@ export const persistEditorConfig = {
   storage: localStorage as StorageInterface,
   version: 2,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
-  blacklist: ["isVarPopoverVisible"],
+  blacklist: ["isVarPopoverVisible", "inserting"],
 };

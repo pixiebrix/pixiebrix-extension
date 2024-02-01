@@ -270,7 +270,7 @@ function setVarsFromSchema({
       }
 
       if (
-        typeof propertySchema.items == "object" &&
+        typeof propertySchema.items === "object" &&
         !Array.isArray(propertySchema.items) &&
         propertySchema.items.type === "object"
       ) {

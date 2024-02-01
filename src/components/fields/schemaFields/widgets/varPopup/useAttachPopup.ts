@@ -38,7 +38,7 @@ import type { UnknownObject } from "@/types/objectTypes";
 
 type Props = {
   inputMode: FieldInputMode;
-  inputElementRef: MutableRefObject<HTMLElement>;
+  inputElementRef: MutableRefObject<HTMLTextAreaElement | HTMLInputElement>;
   value: string;
 };
 
@@ -51,11 +51,16 @@ type State = {
    * The variable that the user is interacting with.
    */
   likelyVariable: string | null;
+  /**
+   * The index of the start position of the likelyVariable that corresponds with the cursor position in the input element.
+   */
+  variablePosition: number | null;
 };
 
 const initialState: State = {
   isMenuShowing: false,
   likelyVariable: null,
+  variablePosition: null,
 };
 
 const popupSlice = createSlice({
@@ -66,14 +71,16 @@ const popupSlice = createSlice({
       state.isMenuShowing = false;
       state.likelyVariable = null;
     },
-    showMenuForVariable(state, action: PayloadAction<string | null>) {
+    showMenuForVariable(
+      state,
+      action: PayloadAction<{
+        likelyVariable: string | null;
+        variablePosition: number | null;
+      }>,
+    ) {
       state.isMenuShowing = true;
-      state.likelyVariable = action.payload;
-    },
-    updateVariable(state, action: PayloadAction<string | null>) {
-      if (state.isMenuShowing) {
-        state.likelyVariable = action.payload;
-      }
+      state.likelyVariable = action.payload.likelyVariable;
+      state.variablePosition = action.payload.variablePosition;
     },
   },
 });
@@ -91,10 +98,8 @@ function useAttachPopup({ inputMode, inputElementRef, value }: Props) {
   const { allowExpressions } = useContext(FieldRuntimeContext);
   const { varAutosuggest } = useSelector(selectSettings);
 
-  const [{ isMenuShowing, likelyVariable }, dispatch] = useReducer(
-    popupSlice.reducer,
-    initialState,
-  );
+  const [{ isMenuShowing, likelyVariable, variablePosition }, dispatch] =
+    useReducer(popupSlice.reducer, initialState);
 
   const autosuggestEnabled =
     varAutosuggest && allowExpressions && analysisSliceExists;
@@ -108,24 +113,27 @@ function useAttachPopup({ inputMode, inputElementRef, value }: Props) {
         return;
       }
 
-      // For string inputs, we always use TextAreas, hence the cast of the ref to HTMLTextAreaElement
-      const cursorPosition =
-        (inputElementRef.current as HTMLTextAreaElement)?.selectionStart ?? 0;
+      const cursorPosition = inputElementRef.current?.selectionStart ?? 0;
 
       if (inputMode === "var") {
         const variableName = getVariableAtPosition(value, cursorPosition);
-        dispatch(popupSlice.actions.showMenuForVariable(variableName));
+        dispatch(
+          popupSlice.actions.showMenuForVariable({
+            likelyVariable: variableName,
+            variablePosition: 0,
+          }),
+        );
       }
 
       if (inputMode === "string") {
-        const variableName = getLikelyVariableAtPosition(
+        const { name: variableName, startIndex } = getLikelyVariableAtPosition(
           value,
           cursorPosition,
           {
             clampPosition: true,
             includeBoundary: true,
           },
-        ).name;
+        );
 
         console.debug("getLikelyVariableAtPosition", variableName, {
           value,
@@ -133,7 +141,12 @@ function useAttachPopup({ inputMode, inputElementRef, value }: Props) {
         });
 
         if (variableName) {
-          dispatch(popupSlice.actions.showMenuForVariable(variableName));
+          dispatch(
+            popupSlice.actions.showMenuForVariable({
+              likelyVariable: variableName,
+              variablePosition: startIndex,
+            }),
+          );
         } else if (isMenuShowing) {
           dispatch(popupSlice.actions.hideMenu());
         }
@@ -167,7 +180,13 @@ function useAttachPopup({ inputMode, inputElementRef, value }: Props) {
       const { key } = event;
 
       if ((key === "@" || inputMode === "var") && !isMenuShowing) {
-        dispatch(popupSlice.actions.showMenuForVariable(null));
+        const cursorPosition = inputElementRef.current?.selectionStart ?? 0;
+        dispatch(
+          popupSlice.actions.showMenuForVariable({
+            likelyVariable: null,
+            variablePosition: cursorPosition,
+          }),
+        );
       }
 
       if (key === ".") {
@@ -219,6 +238,7 @@ function useAttachPopup({ inputMode, inputElementRef, value }: Props) {
     isMenuAvailable,
     isMenuShowing,
     likelyVariable,
+    variablePosition,
     hideMenu,
   };
 }

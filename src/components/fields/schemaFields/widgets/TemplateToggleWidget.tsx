@@ -166,7 +166,12 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
         {renderVarPopup ? (
           <VarPopup
             inputMode={inputMode}
-            inputElementRef={inputRef}
+            // FIXME: define elementRef type from the SchemaField definition rather than inferring from inputMode
+            inputElementRef={
+              inputRef as React.MutableRefObject<
+                HTMLInputElement | HTMLTextAreaElement
+              >
+            }
             value={stringValue}
             setValue={setNewValueFromString}
           />
