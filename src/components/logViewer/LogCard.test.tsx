@@ -24,7 +24,8 @@ import { initialLogState, logSlice } from "./logSlice";
 import { type LogState } from "./logViewerTypes";
 
 function renderLogCard(state?: LogState) {
-  // @ts-ignore-error -- assigning state with collections of LogEntries is perfectly fine
+  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment -- Flaky error
+  // @ts-ignore-error "Type instantiation is excessively deep and possibly infinite" -- assigning state with collections of LogEntries is perfectly fine
   const store = configureStore({
     reducer: {
       logs: logSlice.reducer,
