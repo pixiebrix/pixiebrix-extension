@@ -38,6 +38,7 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { isObject } from "@/utils/objectUtils";
 import type { UnknownObject } from "@/types/objectTypes";
 import { flagOn } from "@/auth/authUtils";
+import type { Timestamp } from "@/types/stringTypes";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -147,7 +148,7 @@ export async function reportToErrorService(
     user_agent_extension_version: extensionVersion,
     is_application_error: !selectSpecificError(error, BusinessError),
     error_data: data,
-    timestamp: new Date().toISOString(),
+    timestamp: new Date().toISOString() as Timestamp,
   };
 
   // For blueprint_version/service_version/brick_version the server can't handle null value. Must leave the property

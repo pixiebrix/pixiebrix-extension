@@ -17,7 +17,6 @@
 
 import { type Me } from "@/types/contract";
 import { type UserDataUpdate, type AuthState } from "@/auth/authTypes";
-import { type UUID } from "@/types/stringTypes";
 import { readAuthData } from "@/auth/token";
 
 // Used by the app
@@ -93,7 +92,7 @@ export function selectExtensionAuthState({
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
 
   return {
-    userId: id as UUID,
+    userId: id,
     email,
     scope,
     isLoggedIn: true,

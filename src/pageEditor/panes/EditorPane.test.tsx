@@ -117,7 +117,7 @@ beforeAll(async () => {
     (listing, index) =>
       ({
         id: uuidSequence(index),
-        name: listing.id,
+        name: listing.package.name,
       }) as EditablePackageMetadata,
   );
 
