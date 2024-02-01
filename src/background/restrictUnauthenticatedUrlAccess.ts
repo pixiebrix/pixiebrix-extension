@@ -21,6 +21,7 @@ import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { isLinked } from "@/auth/token";
 import { validateUUID } from "@/types/helpers";
 import { UUID } from "@/types/stringTypes";
+import { testMatchPatterns } from "@/bricks/available";
 
 let authUrlPatterns: string[] = [];
 
@@ -67,9 +68,14 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
       return;
     }
 
-    authUrlPatterns.map((matchPattern) => {
-      // TODO: Compare tab.url to matchPattern
-    });
+    const isRestrictedUrl = testMatchPatterns(authUrlPatterns, tab?.url ?? "");
+
+    if (isRestrictedUrl) {
+      const errorMessage = `Access is restricted to '${tab.url}'. Log in with PixieBrix to proceed`;
+      browser.tabs.update(tabId, {
+        url: `app.pixiebrix.com/?error=${errorMessage}`,
+      });
+    }
   });
 }
 
