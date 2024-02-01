@@ -43,7 +43,7 @@ async function openInActiveTab(event: React.MouseEvent<HTMLAnchorElement>) {
   }
 }
 
-const RestrictedUrlContent: React.FC<{ extensionConsoleLink: boolean }> = ({
+const RestrictedUrlContent: React.FC<{ extensionConsoleLink?: boolean }> = ({
   children,
   extensionConsoleLink = true,
 }) => (
