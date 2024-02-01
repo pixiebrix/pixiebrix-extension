@@ -30,7 +30,8 @@ const DocumentOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
-  const documentBodyName = joinName(name, configKey, "body");
+  const documentConfigName = joinName(name, configKey);
+  const documentBodyName = joinName(documentConfigName, "body");
   const [{ value }, , { setValue }] =
     useField<DocumentElement[]>(documentBodyName);
 
@@ -43,7 +44,7 @@ const DocumentOptions: React.FC<{
 
   return (
     <ConfigErrorBoundary>
-      <DocumentEditor documentBodyName={documentBodyName} />
+      <DocumentEditor documentConfigName={documentConfigName} />
     </ConfigErrorBoundary>
   );
 };

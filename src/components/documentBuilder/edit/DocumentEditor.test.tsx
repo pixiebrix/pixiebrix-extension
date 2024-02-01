@@ -60,7 +60,7 @@ describe("move element", () => {
     });
 
     return render(
-      <DocumentEditor documentBodyName="extension.blockPipeline.0.config.body" />,
+      <DocumentEditor documentConfigName="extension.blockPipeline.0.config" />,
       {
         initialValues: formState,
         setupRedux(dispatch) {
@@ -152,7 +152,7 @@ describe("remove element", () => {
       formikStateRef.current = values;
 
       return (
-        <DocumentEditor documentBodyName="extension.blockPipeline.0.config.body" />
+        <DocumentEditor documentConfigName="extension.blockPipeline.0.config" />
       );
     };
 

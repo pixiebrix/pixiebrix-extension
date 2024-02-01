@@ -21,32 +21,49 @@ import ElementEditor from "./ElementEditor";
 import { Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
+import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { joinName } from "@/utils/formUtils";
+import { DOCUMENT_SCHEMA } from "@/bricks/renderers/document";
+import { Schema } from "@/types/schemaTypes";
 
 type DocumentEditorProps = {
   /**
-   * Formik name of the root element
+   * Formik name of the brick config
    */
-  documentBodyName: string;
+  documentConfigName: string;
 };
 
 const DocumentEditor: React.FC<DocumentEditorProps> = ({
-  documentBodyName,
+  documentConfigName,
 }) => {
   const activeElement = useSelector(selectNodePreviewActiveElement);
+  const documentBodyName = joinName(documentConfigName, "body");
+  const stylesheetsName = joinName(documentConfigName, "stylesheets");
 
-  return activeElement ? (
-    <ElementEditor documentBodyName={documentBodyName} />
-  ) : (
-    <Row className={styles.currentFieldRow}>
-      <Col xl="3" className={styles.currentField}>
-        <h6>Nothing selected</h6>
-      </Col>
-      <Col xl>
-        <small className="text-muted">
-          Use the Preview Tab on the right to select an element to edit ⟶
-        </small>
-      </Col>
-    </Row>
+  return (
+    <>
+      {activeElement ? (
+        <ElementEditor documentBodyName={documentBodyName} />
+      ) : (
+        <Row className={styles.currentFieldRow}>
+          <Col xl="3" className={styles.currentField}>
+            <h6>Nothing selected</h6>
+          </Col>
+          <Col xl>
+            <small className="text-muted">
+              Use the Preview Tab on the right to select an element to edit ⟶
+            </small>
+          </Col>
+        </Row>
+      )}
+      <ConnectedCollapsibleFieldSection title={"Advanced: Theme"}>
+        <SchemaField
+          name={stylesheetsName}
+          schema={DOCUMENT_SCHEMA.properties.stylesheets as Schema}
+        />
+      </ConnectedCollapsibleFieldSection>
+    </>
   );
 };
 
