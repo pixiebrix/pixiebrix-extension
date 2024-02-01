@@ -71,25 +71,42 @@
 }
 
 .pixiebrix-dialog {
-  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  gap: 15px;
+  max-width: 500px;
+
+  // Style and animation modeled/copied from react-hot-toast
   border-radius: 5px;
-  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+  border: 2px solid #9065e6;
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.1),
+    0 3px 3px rgba(0, 0, 0, 0.05);
+  animation: 0.35s cubic-bezier(0.21, 1.02, 0.73, 1) pixiebrix-fade-in-dialog;
 
   button {
-    display: block;
-    margin: 1em auto 0;
     min-width: 7em;
     line-height: 2em;
   }
 }
 
 .pixiebrix-dialog::backdrop {
-  background-color: rgba(31, 0, 38, 0.2) !important;
+  background-color: #0002 !important;
   animation: pixiebrix-fade-in-backdrop 0.1s;
 }
 
 @keyframes pixiebrix-fade-in-backdrop {
   from {
     opacity: 0;
+  }
+}
+
+// Style and animation modeled/copied from react-hot-toast
+@keyframes pixiebrix-fade-in-dialog {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -50px, 0) scale(0.6);
   }
 }

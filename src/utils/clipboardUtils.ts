@@ -18,7 +18,7 @@
 import { BusinessError } from "@/errors/businessErrors";
 import legacyCopyText from "copy-text-to-clipboard";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { focusCaptureDialog } from "@/utils/focusCaptureDialog";
+import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
 
 export type ContentType = "infer" | "text" | "image";
 

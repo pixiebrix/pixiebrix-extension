@@ -43,7 +43,7 @@ import { getTimedSequence } from "@/types/helpers";
 import { backgroundTarget, getMethod, messenger } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { focusCaptureDialog } from "@/utils/focusCaptureDialog";
+import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
