@@ -77,10 +77,10 @@ export const DOCUMENT_SCHEMA: Schema = {
 };
 
 export class DocumentRenderer extends RendererABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/document");
+  static BRICK_ID = validateRegistryId("@pixiebrix/document");
   constructor() {
     super(
-      DocumentRenderer.BLOCK_ID,
+      DocumentRenderer.BRICK_ID,
       "Render Document",
       "Render an interactive document",
     );

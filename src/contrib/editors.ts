@@ -40,9 +40,7 @@ import DatabaseGetOptions, {
 import DatabasePutOptions, {
   DATABASE_PUT_ID,
 } from "@/pageEditor/fields/DatabasePutOptions";
-import DocumentOptions, {
-  DOCUMENT_ID,
-} from "@/pageEditor/fields/DocumentOptions";
+import DocumentOptions from "@/components/documentBuilder/edit/DocumentOptions";
 import RemoteMethodOptions, {
   REMOTE_METHOD_ID,
 } from "@/pageEditor/fields/RemoteMethodOptions";
@@ -58,6 +56,7 @@ import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import IdentityTransformerOptions from "@/bricks/transformers/IdentityTransformerOptions";
 import CommentEffect from "@/bricks/effects/comment";
 import CommentOptions from "@/bricks/effects/CommentOptions";
+import { DocumentRenderer } from "@/bricks/renderers/document";
 
 /**
  * Custom BlockConfiguration pageEditor components.
@@ -77,7 +76,7 @@ export default function registerEditors() {
   optionsRegistry.set(DATABASE_GET_ID, DatabaseGetOptions);
   optionsRegistry.set(DATABASE_PUT_ID, DatabasePutOptions);
   optionsRegistry.set(REMOTE_METHOD_ID, RemoteMethodOptions);
-  optionsRegistry.set(DOCUMENT_ID, DocumentOptions);
+  optionsRegistry.set(DocumentRenderer.BRICK_ID, DocumentOptions);
   optionsRegistry.set(TourStepTransformer.BRICK_ID, TourStepOptions);
   optionsRegistry.set(ALERT_EFFECT_ID, AlertOptions);
   optionsRegistry.set(JQueryReader.BRICK_ID, JQueryReaderOptions);

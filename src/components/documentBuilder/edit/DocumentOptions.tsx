@@ -16,33 +16,42 @@
  */
 
 import React from "react";
-import styles from "./DocumentEditor.module.scss";
-import ElementEditor from "./ElementEditor";
-import { Row, Col } from "react-bootstrap";
+import { useField } from "formik";
+import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
+import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
+import { joinName } from "@/utils/formUtils";
+import useAsyncEffect from "use-async-effect";
 import { useSelector } from "react-redux";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
+import ElementEditor from "@/components/documentBuilder/edit/ElementEditor";
+import { Col, Row } from "react-bootstrap";
+import styles from "@/components/documentBuilder/edit/DocumentOptions.module.scss";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import { joinName } from "@/utils/formUtils";
 import { DOCUMENT_SCHEMA } from "@/bricks/renderers/document";
-import { Schema } from "@/types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 
-type DocumentEditorProps = {
-  /**
-   * Formik name of the brick config
-   */
-  documentConfigName: string;
-};
-
-const DocumentEditor: React.FC<DocumentEditorProps> = ({
-  documentConfigName,
-}) => {
+const DocumentOptions: React.FC<{
+  name: string;
+  configKey: string;
+}> = ({ name, configKey }) => {
+  const documentConfigName = joinName(name, configKey);
   const activeElement = useSelector(selectNodePreviewActiveElement);
   const documentBodyName = joinName(documentConfigName, "body");
   const stylesheetsName = joinName(documentConfigName, "stylesheets");
 
+  const [{ value: bodyValue }, , { setValue: setBodyValue }] =
+    useField<DocumentElement[]>(documentBodyName);
+
+  useAsyncEffect(async () => {
+    if (!Array.isArray(bodyValue)) {
+      await setBodyValue([]);
+    }
+    // Exclude setValue because reference changes on render
+  }, [bodyValue]);
+
   return (
-    <>
+    <ConfigErrorBoundary>
       {activeElement ? (
         <ElementEditor documentBodyName={documentBodyName} />
       ) : (
@@ -63,8 +72,8 @@ const DocumentEditor: React.FC<DocumentEditorProps> = ({
           schema={DOCUMENT_SCHEMA.properties.stylesheets as Schema}
         />
       </ConnectedCollapsibleFieldSection>
-    </>
+    </ConfigErrorBoundary>
   );
 };
 
-export default DocumentEditor;
+export default DocumentOptions;

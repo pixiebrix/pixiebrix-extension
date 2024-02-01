@@ -18,7 +18,6 @@
 import React from "react";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
-import DocumentEditor from "./DocumentEditor";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -38,12 +37,13 @@ import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 import { within } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import DocumentOptions from "@/components/documentBuilder/edit/DocumentOptions";
 
 beforeAll(() => {
   registerDefaultWidgets();
 });
 
-describe("DocumentEditor", () => {
+describe("DocumentOptions", () => {
   function basicFormState(
     documentElements: DocumentElement[],
     stylesheets: string[] = [],
@@ -62,12 +62,12 @@ describe("DocumentEditor", () => {
     });
   }
 
-  function renderDocumentEditor(
+  function renderDocumentOptions(
     formState: ModComponentFormState,
     initialActiveElement: string = null,
   ) {
     return render(
-      <DocumentEditor documentConfigName="extension.blockPipeline.0.config" />,
+      <DocumentOptions name="extension.blockPipeline.0" configKey="config" />,
       {
         initialValues: formState,
         setupRedux(dispatch) {
@@ -92,7 +92,7 @@ describe("DocumentEditor", () => {
       ];
       documentElements[0].config.text = "test text 1";
       documentElements[1].config.text = "test text 2";
-      renderDocumentEditor(basicFormState(documentElements), "0");
+      renderDocumentOptions(basicFormState(documentElements), "0");
 
       // The first text element is active
       expect(screen.getByText("test text 1")).toBeInTheDocument();
@@ -122,7 +122,7 @@ describe("DocumentEditor", () => {
       ];
       documentElements[0].config.text = "test text 1";
       documentElements[1].config.text = "test text 2";
-      renderDocumentEditor(basicFormState(documentElements), "1");
+      renderDocumentOptions(basicFormState(documentElements), "1");
 
       // The second text element is active
       expect(screen.getByText("test text 2")).toBeInTheDocument();
@@ -188,7 +188,7 @@ describe("DocumentEditor", () => {
         }),
       });
 
-      const { getFormState } = renderDocumentEditor(formState, "0");
+      const { getFormState } = renderDocumentOptions(formState, "0");
 
       await userEvent.click(screen.getByText("Remove element"));
 
@@ -204,7 +204,7 @@ describe("DocumentEditor", () => {
       ];
       documentElements[0].config.text = "test text 1";
       documentElements[1].config.text = "test text 2";
-      const { getFormState } = renderDocumentEditor(
+      const { getFormState } = renderDocumentOptions(
         basicFormState(documentElements),
         "0",
       );
