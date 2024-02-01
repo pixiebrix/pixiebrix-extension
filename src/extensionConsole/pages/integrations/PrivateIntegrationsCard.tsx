@@ -116,15 +116,12 @@ const columnFactory = ({
   {
     Header: "Label",
     accessor: "label",
-    Cell: ({ value }) => (
-      <>
-        {value ? (
-          <span>{value}</span>
-        ) : (
-          <span className="text-muted">No label provided</span>
-        )}
-      </>
-    ),
+    Cell: ({ value }) =>
+      value ? (
+        <span>{value}</span>
+      ) : (
+        <span className="text-muted">No label provided</span>
+      ),
   },
   {
     Header: "Type",
@@ -233,14 +230,12 @@ const PrivateIntegrationsCard: React.FunctionComponent<OwnProps> = ({
   );
 
   return (
-    <>
-      <PaginatedTable
-        columns={columns}
-        data={data}
-        showSearchFilter
-        forceShowRecord={forceShowRecord}
-      />
-    </>
+    <PaginatedTable
+      columns={columns}
+      data={data}
+      showSearchFilter
+      forceShowRecord={forceShowRecord}
+    />
   );
 };
 
