@@ -17,7 +17,7 @@
 
 import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
-import { act, renderHook } from "@/extensionConsole/testHelpers";
+import { renderHook } from "@/extensionConsole/testHelpers";
 import useFlags from "@/hooks/useFlags";
 import useModPermissions from "@/mods/hooks/useModPermissions";
 import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
