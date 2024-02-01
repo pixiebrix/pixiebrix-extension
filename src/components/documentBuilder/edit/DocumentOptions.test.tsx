@@ -213,10 +213,6 @@ describe("DocumentOptions", () => {
 
       await userEvent.click(themeToggle);
 
-      await waitForEffect();
-
-      screen.debug(undefined, 100_000);
-
       const stylesheetsLabel = await screen.findByText("CSS Stylesheet URLs");
       // eslint-disable-next-line testing-library/no-node-access -- ArrayWidget is hard to use with jest
       const stylesheetsFieldContainer = stylesheetsLabel.parentElement;
