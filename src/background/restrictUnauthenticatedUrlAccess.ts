@@ -22,7 +22,7 @@ import { isLinked } from "@/auth/token";
 import { validateUUID } from "@/types/helpers";
 import { UUID } from "@/types/stringTypes";
 
-let authUrlPatterns = [];
+let authUrlPatterns: string[] = [];
 
 async function getAuthUrlPatterns(organizationId: UUID) {
   try {
@@ -57,6 +57,20 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
       new Error(`Unable to initialize restricted url access: ${error}`),
     );
   }
+
+  if (authUrlPatterns.length === 0) {
+    console.debug("No auth url patterns found, skipping url restriction");
+  }
+
+  browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (isLinked()) {
+      return;
+    }
+
+    authUrlPatterns.map((matchPattern) => {
+      // TODO: Compare tab.url to matchPattern
+    });
+  });
 }
 
 export default initRestrictUnauthenticatedUrlAccess;

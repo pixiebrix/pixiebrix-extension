@@ -36,6 +36,8 @@ const expectedAuthUrlPatterns = [
   "https://baz.com/*",
 ];
 
+const addListenerSpy = jest.spyOn(browser.tabs.onUpdated, "addListener");
+
 describe("enforceAuthentication", () => {
   beforeEach(async () => {
     axiosMock
@@ -67,5 +69,6 @@ describe("enforceAuthentication", () => {
 
     await initRestrictUnauthenticatedUrlAccess();
     expect(axiosMock.history.get).toHaveLength(1);
+    expect(addListenerSpy).toHaveBeenCalledTimes(1);
   });
 });
