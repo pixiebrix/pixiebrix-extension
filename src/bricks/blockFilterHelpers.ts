@@ -52,7 +52,7 @@ export function getSubPipelineFlavor(
   pipelinePath: string,
 ): PipelineFlavor {
   if (
-    parentNodeId === DocumentRenderer.BLOCK_ID &&
+    parentNodeId === DocumentRenderer.BRICK_ID &&
     pipelinePath.split(".").at(-2) === "pipeline"
   ) {
     // Current pipeline is the Brick sub pipeline of a Document renderer.

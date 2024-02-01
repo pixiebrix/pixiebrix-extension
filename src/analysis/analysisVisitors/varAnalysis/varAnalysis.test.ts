@@ -825,7 +825,7 @@ describe("Collecting available vars", () => {
       otherTextElement.config.text = toExpression("nunjucks", "{{ @element }}");
 
       const documentRendererBrick = {
-        id: DocumentRenderer.BLOCK_ID,
+        id: DocumentRenderer.BRICK_ID,
         config: {
           body: [listElement, otherTextElement],
         },
@@ -887,7 +887,7 @@ describe("Collecting available vars", () => {
       ]);
 
       const documentRendererBrick = {
-        id: DocumentRenderer.BLOCK_ID,
+        id: DocumentRenderer.BRICK_ID,
         config: {
           body: [listElement],
         },

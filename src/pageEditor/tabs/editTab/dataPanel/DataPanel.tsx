@@ -153,7 +153,7 @@ const DataPanel: React.FC = () => {
   const showFormPreview =
     brickId === CustomFormRenderer.BLOCK_ID ||
     brickId === FormTransformer.BRICK_ID;
-  const showDocumentPreview = brickId === DocumentRenderer.BLOCK_ID;
+  const showDocumentPreview = brickId === DocumentRenderer.BRICK_ID;
   const showBrickPreview = record || previewInfo?.traceOptional;
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(
