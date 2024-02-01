@@ -89,6 +89,7 @@ function updateManifestToV3(manifestV2) {
   // Replace background script
   manifest.background = {
     service_worker: "background.worker.js",
+    type: "module",
   };
 
   return manifest;

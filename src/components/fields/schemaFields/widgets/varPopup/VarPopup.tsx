@@ -33,7 +33,9 @@ type VarPopupProps = {
   /**
    * Reference to the underlying input element/textarea.
    */
-  inputElementRef: React.MutableRefObject<HTMLElement>;
+  inputElementRef: React.MutableRefObject<
+    HTMLTextAreaElement | HTMLInputElement
+  >;
   /**
    * The current field value.
    */
@@ -50,11 +52,12 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
   value,
   setValue,
 }) => {
-  const { hideMenu, isMenuShowing, likelyVariable } = useAttachPopup({
-    inputMode,
-    inputElementRef,
-    value,
-  });
+  const { hideMenu, isMenuShowing, likelyVariable, variablePosition } =
+    useAttachPopup({
+      inputMode,
+      inputElementRef,
+      value,
+    });
 
   useEffect(() => {
     if (isMenuShowing) {
@@ -72,11 +75,13 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
 
       switch (inputMode) {
         case "var": {
+          // "var" input type is a HTMLInputElement
           setValue(fullVariableName);
           break;
         }
 
         case "string": {
+          // "string" input type is a HTMLTextAreaElement
           const textElement = inputElementRef.current as HTMLTextAreaElement;
           if (textElement == null) {
             return;
@@ -125,6 +130,7 @@ const VarPopup: React.FunctionComponent<VarPopupProps> = ({
       onVarSelect={onVarSelect}
       onClose={hideMenu}
       likelyVariable={likelyVariable}
+      variablePosition={variablePosition}
     />
   );
 };

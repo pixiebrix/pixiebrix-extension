@@ -238,7 +238,6 @@ const IntegrationDependencyWidget: React.FC<
       }
 
       await setRootValues(newState);
-      // eslint-disable-next-line unicorn/no-useless-undefined -- need to clear the error
       helpers.setError(undefined);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- formik helpers change on every render

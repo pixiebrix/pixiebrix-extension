@@ -67,8 +67,8 @@ const properties = [
  * @param element
  * @param position
  */
-export function getTextareaCaretCoordinates(
-  element: HTMLTextAreaElement,
+export function getCaretCoordinates(
+  element: HTMLTextAreaElement | HTMLInputElement,
   position: number,
 ) {
   // The mirror div will replicate the textarea's style
@@ -82,7 +82,7 @@ export function getTextareaCaretCoordinates(
 
   // Default textarea styles
   style.whiteSpace = "pre-wrap";
-  if (!isInput) style.wordWrap = "break-word"; // Only for textarea-s
+  if (!isInput) style.overflowWrap = "break-word"; // Only for textarea-s
 
   // Position off-screen
   style.position = "absolute"; // Required to return coordinates properly
