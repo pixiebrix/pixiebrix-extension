@@ -17,7 +17,6 @@
 
 import { type Me } from "@/types/contract";
 import { type UserDataUpdate, type AuthState } from "@/auth/authTypes";
-import { type UUID } from "@/types/stringTypes";
 import { readAuthData } from "@/auth/token";
 
 // Used by the app
