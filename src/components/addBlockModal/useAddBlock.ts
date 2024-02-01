@@ -39,6 +39,7 @@ import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { joinPathParts } from "@/utils/formUtils";
+import { assertNotNullish } from "@/utils/nullishUtils.js";
 
 type TestAddBlockResult = {
   error?: React.ReactNode;
@@ -100,7 +101,13 @@ function useAddBlock(): AddBlock {
       // Add the block to a copy of the extension
       const newBlock = await makeNewBlock(block);
       const newExtension = produce(activeExtension, (draft) => {
-        const pipeline = get(draft, addBlockLocation.path) as BrickConfig[];
+        const pipeline = get(draft, addBlockLocation.path) as
+          | BrickConfig[]
+          | undefined;
+        assertNotNullish(
+          pipeline,
+          `The path provided to add a block could not be found: ${addBlockLocation.path}`,
+        );
         pipeline.splice(addBlockLocation.index, 0, newBlock);
       });
 
