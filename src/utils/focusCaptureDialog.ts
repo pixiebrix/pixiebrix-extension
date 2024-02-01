@@ -17,9 +17,9 @@
 
 import oneEvent from "one-event";
 import { onContextInvalidated } from "webext-events";
+import { memoizeUntilSettled } from "./promiseUtils";
 
-/** The style for this component is currently in `contentScript.scss */
-export async function focusCaptureDialog(message: string): Promise<void> {
+async function rawFocusCaptureDialog(message: string): Promise<void> {
   const dialog = document.createElement("dialog");
   dialog.className = "pixiebrix-dialog";
   dialog.textContent = message;
@@ -40,3 +40,12 @@ export async function focusCaptureDialog(message: string): Promise<void> {
   ]);
   dialog.remove();
 }
+
+/** The style for this component is currently in `contentScript.scss */
+export const focusCaptureDialog = memoizeUntilSettled(rawFocusCaptureDialog, {
+  // We only need one focus event, so multiple requests will just wait for the
+  // first request to resolve, even if the message is different. Without a static `cacheKey`,
+  // we'd still get one dialog per message.
+  // If problematic, it's up to the caller to avoid queueing multiple requests.
+  cacheKey: () => "focusCaptureDialog",
+});
