@@ -29,6 +29,10 @@ export type DocumentViewProps = {
    * Top-level elements in the document.
    */
   body: DocumentElement[];
+  /**
+   * Remote stylesheets (URLs) to include in the document.
+   */
+  stylesheets?: string[];
   options: BrickOptions<BrickArgsContext>;
   meta: {
     runId: UUID;
