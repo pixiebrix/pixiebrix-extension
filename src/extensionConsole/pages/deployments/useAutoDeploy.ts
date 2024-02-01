@@ -37,8 +37,6 @@ function useAutoDeploy(
   installedExtensions: ModComponentBase[],
   { extensionUpdateRequired }: { extensionUpdateRequired: boolean },
 ): UseAutoDeployReturn {
-  console.log("Use Auto Deploy Enter");
-
   const dispatch = useDispatch<Dispatch>();
   // `true` until deployments have been fetched and activated
   const [
@@ -56,8 +54,6 @@ function useAutoDeploy(
    *  so they can work on developing new versions of the mod.
    */
   const shouldAutoDeploy = restrict("uninstall");
-
-  console.log({ shouldAutoDeploy, hasPermissions });
 
   useAsyncEffect(
     async (isMounted) => {
