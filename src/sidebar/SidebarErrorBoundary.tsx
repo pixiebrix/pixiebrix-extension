@@ -42,9 +42,7 @@ class SidebarErrorBoundary extends ErrorBoundary {
           <Alert variant="danger">
             <Alert.Heading>Something went wrong</Alert.Heading>
             {!isEmpty(this.state.errorMessage) && (
-              <>
-                <p>{this.state.errorMessage}</p>
-              </>
+              <p>{this.state.errorMessage}</p>
             )}
 
             <p>Please close and re-open the sidebar panel.</p>

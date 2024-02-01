@@ -145,59 +145,57 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
             <div className="text-danger p-3">{status}</div>
           )}
           renderBody={({ values, setFieldValue }) => (
-            <>
-              <Modal.Body>
-                <ReactSelect
-                  options={organizationsForSelect
-                    .filter((x) => !values.organizations.includes(x.id))
-                    .map(
-                      (x) =>
-                        ({
-                          label: x.name,
-                          value: x.id,
-                        }) satisfies Option,
-                    )}
-                  onChange={(selected: Option) => {
-                    setFieldValue("organizations", [
-                      ...values.organizations,
-                      selected.value,
-                    ]);
-                  }}
-                  value={null}
-                  placeholder="Add a team"
-                  components={{
-                    MenuList: AddATeamMenuList,
-                  }}
-                />
+            <Modal.Body>
+              <ReactSelect
+                options={organizationsForSelect
+                  .filter((x) => !values.organizations.includes(x.id))
+                  .map(
+                    (x) =>
+                      ({
+                        label: x.name,
+                        value: x.id,
+                      }) satisfies Option,
+                  )}
+                onChange={(selected: Option) => {
+                  setFieldValue("organizations", [
+                    ...values.organizations,
+                    selected.value,
+                  ]);
+                }}
+                value={null}
+                placeholder="Add a team"
+                components={{
+                  MenuList: AddATeamMenuList,
+                }}
+              />
 
-                <div className={styles.row}>
-                  <OwnerLabel blueprintId={blueprintId} />
-                  <span className="text-muted">Owner</span>
-                </div>
+              <div className={styles.row}>
+                <OwnerLabel blueprintId={blueprintId} />
+                <span className="text-muted">Owner</span>
+              </div>
 
-                {organizationsForSelect
-                  .filter((x) => values.organizations.includes(x.id))
-                  .map((organization) => (
-                    <div className={styles.row} key={organization.id}>
-                      <span>
-                        <FontAwesomeIcon icon={faUsers} /> {organization.name}
-                      </span>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => {
-                          const next = values.organizations.filter(
-                            (x: string) => x !== organization.id,
-                          );
-                          setFieldValue("organizations", next);
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faTimes} />
-                      </Button>
-                    </div>
-                  ))}
-              </Modal.Body>
-            </>
+              {organizationsForSelect
+                .filter((x) => values.organizations.includes(x.id))
+                .map((organization) => (
+                  <div className={styles.row} key={organization.id}>
+                    <span>
+                      <FontAwesomeIcon icon={faUsers} /> {organization.name}
+                    </span>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => {
+                        const next = values.organizations.filter(
+                          (x: string) => x !== organization.id,
+                        );
+                        setFieldValue("organizations", next);
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faTimes} />
+                    </Button>
+                  </div>
+                ))}
+            </Modal.Body>
           )}
           renderSubmit={({ isValid, isSubmitting }) => (
             <Modal.Footer>

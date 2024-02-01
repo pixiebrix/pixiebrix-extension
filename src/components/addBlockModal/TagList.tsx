@@ -52,9 +52,7 @@ const TagListItem: React.VFC<{
         </>
       )}
       {item.svgIcon && (
-        <>
-          <img src={item.svgIcon} alt="Icon" className={styles.svgIcon} />
-        </>
+        <img src={item.svgIcon} alt="Icon" className={styles.svgIcon} />
       )}
       {item.tag}
     </button>
