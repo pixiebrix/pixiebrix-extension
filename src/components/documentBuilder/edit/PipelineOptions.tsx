@@ -17,7 +17,6 @@
 
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import React from "react";
-import { Col, Row } from "react-bootstrap";
 import { joinPathParts } from "@/utils/formUtils";
 
 type PipelineOptionsProps = {
@@ -26,9 +25,7 @@ type PipelineOptionsProps = {
 
 const PipelineOptions: React.FC<PipelineOptionsProps> = ({ elementName }) => (
   <>
-    <Row>
-      <Col>Use the Brick Actions Panel on the left to add and edit bricks.</Col>
-    </Row>
+    <p>Use the Brick Actions Panel on the left to add and edit bricks.</p>
     <ConnectedFieldTemplate
       name={joinPathParts(elementName, "config", "label")}
       label="Pipeline name"

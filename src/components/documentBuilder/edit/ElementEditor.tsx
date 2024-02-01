@@ -61,27 +61,17 @@ const ElementEditor: React.FC<ElementEditorProps> = ({ documentBodyName }) => {
         </Col>
       </Row>
 
-      <Row>
-        <Col>
-          <ElementOptions />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <MoveElement documentBodyName={documentBodyName} />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <ConnectedCollapsibleFieldSection title="Advanced: Layout">
-            <CssSpacingField
-              name={joinName(elementName, "config", "className")}
-              schema={{ type: "string" }}
-              label="Spacing"
-            />
-          </ConnectedCollapsibleFieldSection>
-        </Col>
-      </Row>
+      <div>
+        <ElementOptions />
+      </div>
+      <MoveElement documentBodyName={documentBodyName} />
+      <ConnectedCollapsibleFieldSection title="Advanced: Layout">
+        <CssSpacingField
+          name={joinName(elementName, "config", "className")}
+          schema={{ type: "string" }}
+          label="Spacing"
+        />
+      </ConnectedCollapsibleFieldSection>
     </>
   );
 };

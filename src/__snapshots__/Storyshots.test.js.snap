@@ -5823,37 +5823,33 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
       </div>
       <hr />
       <div
-        className="addRow row"
+        className="addRow"
       >
-        <div
-          className="col"
+        <button
+          className="btn btn-primary btn-sm"
+          disabled={false}
+          onClick={[Function]}
+          type="button"
         >
-          <button
-            className="btn btn-primary btn-sm"
-            disabled={false}
-            onClick={[Function]}
-            type="button"
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-plus fa-w-14 "
+            data-icon="plus"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <svg
-              aria-hidden="true"
-              className="svg-inline--fa fa-plus fa-w-14 "
-              data-icon="plus"
-              data-prefix="fas"
-              focusable="false"
-              role="img"
+            <path
+              d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+              fill="currentColor"
               style={{}}
-              viewBox="0 0 448 512"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-                fill="currentColor"
-                style={{}}
-              />
-            </svg>
-             Add new field
-          </button>
-        </div>
+            />
+          </svg>
+           Add new field
+        </button>
       </div>
       <div
         className="currentFieldRow row"
@@ -6871,37 +6867,33 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
       </div>
       <hr />
       <div
-        className="addRow row"
+        className="addRow"
       >
-        <div
-          className="col"
+        <button
+          className="btn btn-primary btn-sm"
+          disabled={false}
+          onClick={[Function]}
+          type="button"
         >
-          <button
-            className="btn btn-primary btn-sm"
-            disabled={false}
-            onClick={[Function]}
-            type="button"
+          <svg
+            aria-hidden="true"
+            className="svg-inline--fa fa-plus fa-w-14 "
+            data-icon="plus"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            style={{}}
+            viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <svg
-              aria-hidden="true"
-              className="svg-inline--fa fa-plus fa-w-14 "
-              data-icon="plus"
-              data-prefix="fas"
-              focusable="false"
-              role="img"
+            <path
+              d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+              fill="currentColor"
               style={{}}
-              viewBox="0 0 448 512"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-                fill="currentColor"
-                style={{}}
-              />
-            </svg>
-             Add new field
-          </button>
-        </div>
+            />
+          </svg>
+           Add new field
+        </button>
       </div>
       <div
         className="currentFieldRow row"
@@ -7792,7 +7784,7 @@ exports[`Storyshots Layout/Page Load Error 1`] = `
 
 exports[`Storyshots ModsPage/GetStartedView Activate Blueprint 1`] = `
 <div
-  className="root"
+  className="root card"
   style={
     {
       "height": "500px",
@@ -7801,10 +7793,10 @@ exports[`Storyshots ModsPage/GetStartedView Activate Blueprint 1`] = `
   }
 >
   <div
-    className="infoRow row"
+    className="max-950 card-body"
   >
     <div
-      className="col"
+      className="infoRow"
     >
       <h4>
         Want to create a new mod?
@@ -7836,12 +7828,8 @@ exports[`Storyshots ModsPage/GetStartedView Activate Blueprint 1`] = `
         </li>
       </ul>
     </div>
-  </div>
-  <div
-    className="infoRow row"
-  >
     <div
-      className="col"
+      className="infoRow"
     >
       <h4>
         Need more help?
@@ -7946,7 +7934,7 @@ exports[`Storyshots ModsPage/GetStartedView Activate Blueprint 1`] = `
 
 exports[`Storyshots ModsPage/GetStartedView Default 1`] = `
 <div
-  className="root"
+  className="root card"
   style={
     {
       "height": "500px",
@@ -7955,10 +7943,10 @@ exports[`Storyshots ModsPage/GetStartedView Default 1`] = `
   }
 >
   <div
-    className="infoRow row"
+    className="max-950 card-body"
   >
     <div
-      className="col"
+      className="infoRow"
     >
       <h4>
         Want to create a new mod?
@@ -7990,12 +7978,8 @@ exports[`Storyshots ModsPage/GetStartedView Default 1`] = `
         </li>
       </ul>
     </div>
-  </div>
-  <div
-    className="infoRow row"
-  >
     <div
-      className="col"
+      className="infoRow"
     >
       <h4>
         Need more help?
@@ -9589,59 +9573,51 @@ exports[`Storyshots Sidebar/LoginPanel Default 1`] = `
   className="container"
 >
   <div
-    className="mt-4 row"
+    className="text-center mt-4"
   >
-    <div
-      className="text-center col"
+    <h4
+      className="display-6"
     >
-      <h4
-        className="display-6"
+      Connect PixieBrix Account
+    </h4>
+    <p>
+      Register/log-in to PixieBrix to access your personal and team bricks
+    </p>
+    <a
+      className="mt-4 btn btn-primary"
+      href="https://app.pixiebrix.com"
+      onClick={[Function]}
+      onKeyDown={[Function]}
+      target="_blank"
+    >
+      <svg
+        aria-hidden="true"
+        className="svg-inline--fa fa-sign-in-alt fa-w-16 "
+        data-icon="sign-in-alt"
+        data-prefix="fas"
+        focusable="false"
+        role="img"
+        style={{}}
+        viewBox="0 0 512 512"
+        xmlns="http://www.w3.org/2000/svg"
       >
-        Connect PixieBrix Account
-      </h4>
-      <p>
-        Register/log-in to PixieBrix to access your personal and team bricks
-      </p>
-      <a
-        className="mt-4 btn btn-primary"
-        href="https://app.pixiebrix.com"
-        onClick={[Function]}
-        onKeyDown={[Function]}
-        target="_blank"
-      >
-        <svg
-          aria-hidden="true"
-          className="svg-inline--fa fa-sign-in-alt fa-w-16 "
-          data-icon="sign-in-alt"
-          data-prefix="fas"
-          focusable="false"
-          role="img"
+        <path
+          d="M416 448h-84c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h84c17.7 0 32-14.3 32-32V160c0-17.7-14.3-32-32-32h-84c-6.6 0-12-5.4-12-12V76c0-6.6 5.4-12 12-12h84c53 0 96 43 96 96v192c0 53-43 96-96 96zm-47-201L201 79c-15-15-41-4.5-41 17v96H24c-13.3 0-24 10.7-24 24v96c0 13.3 10.7 24 24 24h136v96c0 21.5 26 32 41 17l168-168c9.3-9.4 9.3-24.6 0-34z"
+          fill="currentColor"
           style={{}}
-          viewBox="0 0 512 512"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M416 448h-84c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h84c17.7 0 32-14.3 32-32V160c0-17.7-14.3-32-32-32h-84c-6.6 0-12-5.4-12-12V76c0-6.6 5.4-12 12-12h84c53 0 96 43 96 96v192c0 53-43 96-96 96zm-47-201L201 79c-15-15-41-4.5-41 17v96H24c-13.3 0-24 10.7-24 24v96c0 13.3 10.7 24 24 24h136v96c0 21.5 26 32 41 17l168-168c9.3-9.4 9.3-24.6 0-34z"
-            fill="currentColor"
-            style={{}}
-          />
-        </svg>
-         Connect Account
-      </a>
-    </div>
+        />
+      </svg>
+       Connect Account
+    </a>
   </div>
   <div
-    className="row"
+    className="text-center mt-4"
   >
-    <div
-      className="text-center col"
-    >
-      <img
-        alt="Marketplace"
-        src="test-file-stub"
-        width={300}
-      />
-    </div>
+    <img
+      alt="Marketplace"
+      src="test-file-stub"
+      width={300}
+    />
   </div>
 </div>
 `;

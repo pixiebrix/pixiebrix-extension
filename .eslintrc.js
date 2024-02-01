@@ -92,6 +92,12 @@ module.exports = {
       },
       {
         message:
+          "Bootstrap columns should not be used if there's a single column. Use a plain `div` or drop the wrapper altogether if not needed. You might also consider using one of the classes 'max-550', 'max-750', or 'max-950' to limit the width of the body.",
+        selector:
+          "JSXElement[openingElement.name.name='Row'] > JSXText:first-child + JSXElement:nth-last-child(2)",
+      },
+      {
+        message:
           "Use the `uuid` module instead because crypto.randomUUID is not available in http: contexts",
         selector: 'MemberExpression > Identifier[name="randomUUID"]',
       },

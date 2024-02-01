@@ -2015,6 +2015,9 @@ exports[`renders the first selected node 1`] = `
             class="configPanel"
           >
             <div
+              class="mb-3"
+            />
+            <div
               class="brickInfo justify-content-between row"
             >
               <div

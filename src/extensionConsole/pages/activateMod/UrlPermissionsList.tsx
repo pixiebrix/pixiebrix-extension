@@ -18,7 +18,6 @@
 import React, { useMemo } from "react";
 import { uniq } from "lodash";
 import { selectOptionalPermissions } from "@/permissions/permissionsUtils";
-import { Col, Row } from "react-bootstrap";
 import useReportError from "@/hooks/useReportError";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type AsyncState } from "@/types/sliceTypes";
@@ -86,21 +85,17 @@ const UrlPermissionsList: React.FunctionComponent<
 
   return (
     <>
-      <Row>
-        <Col>{helpText}</Col>
-      </Row>
+      <p>{helpText}</p>
       {permissionsList?.length ? (
         // Use Table single column table instead of ListGroup to more closely match style on other wizard tabs
-        <Row>
-          <Col>
-            <h6>URLs</h6>
-            <ul className="list-unstyled">
-              {permissionsList.map((permission) => (
-                <li key={permission}>{permission}</li>
-              ))}
-            </ul>
-          </Col>
-        </Row>
+        <>
+          <h6>URLs</h6>
+          <ul className="list-unstyled">
+            {permissionsList.map((permission) => (
+              <li key={permission}>{permission}</li>
+            ))}
+          </ul>
+        </>
       ) : null}
     </>
   );
