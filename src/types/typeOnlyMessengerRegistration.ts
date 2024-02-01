@@ -23,11 +23,16 @@
  * @see https://github.com/pixiebrix/pixiebrix-extension/issues/6526
  */
 
-/* eslint-disable import/no-restricted-paths -- Type-only file. Remove each import once they end up in th strictNullChecks list */
+/* eslint-disable import/no-restricted-paths -- Type-only file. Remove each import once they end up in the strictNullChecks list */
 
 import {
   type hideSidebar,
   type showSidebar,
+  type sidebarWasLoaded,
+  type updateSidebar,
+  type removeExtensions as removeSidebars,
+  type reloadSidebar,
+  type getReservedPanelEntries,
 } from "@/contentScript/sidebarController";
 import { type SerializedError } from "@/types/messengerTypes";
 import { type MessageContext } from "@/types/loggerTypes";
@@ -49,11 +54,58 @@ import {
   type getCachedAuthData,
 } from "@/background/auth/authStorage";
 import { type setToolbarBadge } from "@/background/toolbarBadge";
+import { type handleMenuAction } from "@/contentScript/contextMenus";
+import {
+  type getFormDefinition,
+  type resolveForm,
+  type cancelForm,
+} from "@/contentScript/ephemeralFormProtocol";
+import { type getProcesses, type initRobot } from "@/contentScript/uipath";
+import { type checkAvailable } from "@/bricks/available";
+import type notify from "@/utils/notify";
+import {
+  type getPageState,
+  type setPageState,
+} from "@/contentScript/pageState";
+import {
+  type cancelTemporaryPanels,
+  type getPanelDefinition,
+  type resolveTemporaryPanel,
+  type stopWaitingForTemporaryPanels,
+} from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { type closeWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
+import type showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughModal";
 
 declare global {
   interface MessengerMethods {
+    // Content script
+    FORM_GET_DEFINITION: typeof getFormDefinition;
+    FORM_RESOLVE: typeof resolveForm;
+    FORM_CANCEL: typeof cancelForm;
+    UPDATE_SIDEBAR: typeof updateSidebar;
+    SIDEBAR_WAS_LOADED: typeof sidebarWasLoaded;
     SHOW_SIDEBAR: typeof showSidebar;
     HIDE_SIDEBAR: typeof hideSidebar;
+    RELOAD_SIDEBAR: typeof reloadSidebar;
+    REMOVE_SIDEBARS: typeof removeSidebars;
+    HANDLE_MENU_ACTION: typeof handleMenuAction;
+    GET_RESERVED_SIDEBAR_ENTRIES: typeof getReservedPanelEntries;
+    UIPATH_INIT: typeof initRobot;
+    UIPATH_GET_PROCESSES: typeof getProcesses;
+    CHECK_AVAILABLE: typeof checkAvailable;
+    GET_PAGE_STATE: typeof getPageState;
+    SET_PAGE_STATE: typeof setPageState;
+    NOTIFY_INFO: typeof notify.info;
+    NOTIFY_ERROR: typeof notify.error;
+    NOTIFY_SUCCESS: typeof notify.success;
+    TEMPORARY_PANEL_CLOSE: typeof stopWaitingForTemporaryPanels;
+    TEMPORARY_PANEL_CANCEL: typeof cancelTemporaryPanels;
+    TEMPORARY_PANEL_RESOLVE: typeof resolveTemporaryPanel;
+    PANEL_GET_DEFINITION: typeof getPanelDefinition;
+    WALKTHROUGH_MODAL_CLOSE: typeof closeWalkthroughModal;
+    WALKTHROUGH_MODAL_SHOW: typeof showWalkthroughModal;
+
+    // Background
     SHOW_MY_SIDE_PANEL: typeof showMySidePanel;
     INJECT_SCRIPT: typeof ensureContentScript;
     GET_DATA_STORE: typeof getRecord;
