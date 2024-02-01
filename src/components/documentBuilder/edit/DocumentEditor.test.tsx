@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useFormikContext } from "formik";
 import React from "react";
 import { createNewElement } from "@/components/documentBuilder/createNewElement";
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
@@ -37,28 +36,36 @@ import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
+import { within } from "@testing-library/react";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 beforeAll(() => {
   registerDefaultWidgets();
 });
 
-describe("move element", () => {
-  function renderDocumentEditor(
+describe("DocumentEditor", () => {
+  function basicFormState(
     documentElements: DocumentElement[],
-    initialActiveElement: string = null,
-  ) {
-    const formState = formStateFactory({
+    stylesheets: string[] = [],
+  ): ModComponentFormState {
+    return formStateFactory({
       extension: baseExtensionStateFactory({
         blockPipeline: [
           brickConfigFactory({
             config: {
               body: documentElements,
+              stylesheets,
             },
           }),
         ],
       }),
     });
+  }
 
+  function renderDocumentEditor(
+    formState: ModComponentFormState,
+    initialActiveElement: string = null,
+  ) {
     return render(
       <DocumentEditor documentConfigName="extension.blockPipeline.0.config" />,
       {
@@ -77,145 +84,158 @@ describe("move element", () => {
     );
   }
 
-  test("can move text element down", async () => {
-    const documentElements = [
-      createNewElement("text"),
-      createNewElement("text"),
-    ];
-    documentElements[0].config.text = "test text 1";
-    documentElements[1].config.text = "test text 2";
-    renderDocumentEditor(documentElements, "0");
+  describe("move element", () => {
+    test("can move text element down", async () => {
+      const documentElements = [
+        createNewElement("text"),
+        createNewElement("text"),
+      ];
+      documentElements[0].config.text = "test text 1";
+      documentElements[1].config.text = "test text 2";
+      renderDocumentEditor(basicFormState(documentElements), "0");
 
-    // The first text element is active
-    expect(screen.getByText("test text 1")).toBeInTheDocument();
+      // The first text element is active
+      expect(screen.getByText("test text 1")).toBeInTheDocument();
 
-    await userEvent.click(
-      screen.getByText("Move down", { selector: "button" }),
-    );
-
-    // The element is still active
-    expect(screen.getByText("test text 1")).toBeInTheDocument();
-
-    // Now can move the element up
-    expect(
-      screen.getByText("Move up", { selector: "button" }),
-    ).not.toBeDisabled();
-
-    // Can't move it further down
-    expect(
-      screen.getByText("Move down", { selector: "button" }),
-    ).toBeDisabled();
-  });
-
-  test("can move text element up", async () => {
-    const documentElements = [
-      createNewElement("text"),
-      createNewElement("text"),
-    ];
-    documentElements[0].config.text = "test text 1";
-    documentElements[1].config.text = "test text 2";
-    renderDocumentEditor(documentElements, "1");
-
-    // The second text element is active
-    expect(screen.getByText("test text 2")).toBeInTheDocument();
-
-    await userEvent.click(screen.getByText("Move up", { selector: "button" }));
-
-    // The element is still active
-    expect(screen.getByText("test text 2")).toBeInTheDocument();
-
-    // Can't move the element up
-    expect(screen.getByText("Move up", { selector: "button" })).toBeDisabled();
-
-    // Can move it down
-    expect(
-      screen.getByText("Move down", { selector: "button" }),
-    ).not.toBeDisabled();
-  });
-});
-
-describe("remove element", () => {
-  /**
-   * Renders the DocumentEditor inside Formik context.
-   * @returns Rendered result and reference to the current Formik state.
-   */
-  function renderDocumentEditorWithFormState(
-    formState: ModComponentFormState,
-    initialActiveElement: string = null,
-  ) {
-    const formikStateRef = {
-      current: formState,
-    };
-
-    const WrappedEditor = () => {
-      const { values } = useFormikContext<ModComponentFormState>();
-      formikStateRef.current = values;
-
-      return (
-        <DocumentEditor documentConfigName="extension.blockPipeline.0.config" />
+      await userEvent.click(
+        screen.getByText("Move down", { selector: "button" }),
       );
-    };
 
-    return render(<WrappedEditor />, {
-      initialValues: formState,
-      setupRedux(dispatch) {
-        dispatch(actions.addElement(formState));
-        dispatch(actions.selectElement(formState.uuid));
-        dispatch(
-          actions.setElementActiveNodeId(
-            formState.extension.blockPipeline[0].instanceId,
-          ),
-        );
-        dispatch(actions.setNodePreviewActiveElement(initialActiveElement));
-      },
+      // The element is still active
+      expect(screen.getByText("test text 1")).toBeInTheDocument();
+
+      // Now can move the element up
+      expect(
+        screen.getByText("Move up", { selector: "button" }),
+      ).not.toBeDisabled();
+
+      // Can't move it further down
+      expect(
+        screen.getByText("Move down", { selector: "button" }),
+      ).toBeDisabled();
     });
-  }
 
-  test("removes integration dependency", async () => {
-    // Integration dependencies included in the form state
-    const integrationDependencies: IntegrationDependency[] = [
-      integrationDependencyFactory({
-        integrationId: validateRegistryId("@test/service"),
-        outputKey: validateOutputKey("serviceOutput"),
-        configId: uuidSequence,
-      }),
-    ];
+    test("can move text element up", async () => {
+      const documentElements = [
+        createNewElement("text"),
+        createNewElement("text"),
+      ];
+      documentElements[0].config.text = "test text 1";
+      documentElements[1].config.text = "test text 2";
+      renderDocumentEditor(basicFormState(documentElements), "1");
 
-    // Document brick definition
-    const documentWithButtonConfig = {
-      body: [
-        {
-          type: "button",
-          config: {
-            title: "Action",
-            onClick: toExpression("pipeline", [
-              {
-                id: validateRegistryId("@test/action"),
-                instanceId: uuidSequence(2),
-                config: {
-                  input: toExpression("var", "@serviceOutput"),
+      // The second text element is active
+      expect(screen.getByText("test text 2")).toBeInTheDocument();
+
+      await userEvent.click(
+        screen.getByText("Move up", { selector: "button" }),
+      );
+
+      // The element is still active
+      expect(screen.getByText("test text 2")).toBeInTheDocument();
+
+      // Can't move the element up
+      expect(
+        screen.getByText("Move up", { selector: "button" }),
+      ).toBeDisabled();
+
+      // Can move it down
+      expect(
+        screen.getByText("Move down", { selector: "button" }),
+      ).not.toBeDisabled();
+    });
+  });
+
+  describe("remove element", () => {
+    test("removes integration dependency", async () => {
+      // Integration dependencies included in the form state
+      const integrationDependencies: IntegrationDependency[] = [
+        integrationDependencyFactory({
+          integrationId: validateRegistryId("@test/service"),
+          outputKey: validateOutputKey("serviceOutput"),
+          configId: uuidSequence,
+        }),
+      ];
+
+      // Document brick definition
+      const documentWithButtonConfig = {
+        body: [
+          {
+            type: "button",
+            config: {
+              title: "Action",
+              onClick: toExpression("pipeline", [
+                {
+                  id: validateRegistryId("@test/action"),
+                  instanceId: uuidSequence(2),
+                  config: {
+                    input: toExpression("var", "@serviceOutput"),
+                  },
                 },
-              },
-            ]),
+              ]),
+            },
           },
-        },
-      ],
-    };
-
-    // Form state for the test
-    const formState = formStateFactory({
-      integrationDependencies,
-      extension: baseExtensionStateFactory({
-        blockPipeline: [
-          brickConfigFactory({ config: documentWithButtonConfig }),
         ],
-      }),
+      };
+
+      // Form state for the test
+      const formState = formStateFactory({
+        integrationDependencies,
+        extension: baseExtensionStateFactory({
+          blockPipeline: [
+            brickConfigFactory({ config: documentWithButtonConfig }),
+          ],
+        }),
+      });
+
+      const { getFormState } = renderDocumentEditor(formState, "0");
+
+      await userEvent.click(screen.getByText("Remove element"));
+
+      expect(getFormState().integrationDependencies).toStrictEqual([]);
     });
+  });
 
-    const { getFormState } = renderDocumentEditorWithFormState(formState, "0");
+  describe("stylesheets field", () => {
+    test("renders correctly", async () => {
+      const documentElements = [
+        createNewElement("text"),
+        createNewElement("text"),
+      ];
+      documentElements[0].config.text = "test text 1";
+      documentElements[1].config.text = "test text 2";
+      const { getFormState } = renderDocumentEditor(
+        basicFormState(documentElements),
+        "0",
+      );
 
-    await userEvent.click(screen.getByText("Remove element"));
+      const themeToggle = await screen.findByText("Advanced: Theme");
 
-    expect(getFormState().integrationDependencies).toStrictEqual([]);
+      await userEvent.click(themeToggle);
+
+      await waitForEffect();
+
+      screen.debug(undefined, 100_000);
+
+      const stylesheetsLabel = await screen.findByText("CSS Stylesheet URLs");
+      // eslint-disable-next-line testing-library/no-node-access -- ArrayWidget is hard to use with jest
+      const stylesheetsFieldContainer = stylesheetsLabel.parentElement;
+
+      // Add a stylesheet
+      const addItemButton = await within(stylesheetsFieldContainer).findByText(
+        "Add Item",
+      );
+      await userEvent.click(addItemButton);
+
+      const urlInput = within(stylesheetsFieldContainer).getByRole("textbox");
+      await userEvent.type(urlInput, "https://example.com/stylesheet.css");
+
+      // The form state should be updated
+      expect(
+        getFormState().extension.blockPipeline[0].config.stylesheets,
+      ).toStrictEqual([
+        toExpression("nunjucks", "https://example.com/stylesheet.css"),
+      ]);
+    });
   });
 });
