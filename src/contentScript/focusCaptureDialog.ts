@@ -17,7 +17,7 @@
 
 import oneEvent from "one-event";
 import { onContextInvalidated } from "webext-events";
-import { memoizeUntilSettled } from "../utils/promiseUtils";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
 async function rawFocusCaptureDialog(message: string): Promise<void> {
   const dialog = document.createElement("dialog");
