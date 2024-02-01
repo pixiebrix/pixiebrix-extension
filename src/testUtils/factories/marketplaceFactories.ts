@@ -37,7 +37,6 @@ export function modDefinitionToMarketplacePackage(
   modDefinition: ModDefinition,
 ): MarketplaceListing["package"] {
   return {
-    id: modDefinition.metadata.id,
     name: modDefinition.metadata.name,
     description: modDefinition.metadata.description,
     version: modDefinition.metadata.version,

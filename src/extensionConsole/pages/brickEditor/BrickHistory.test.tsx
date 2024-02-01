@@ -26,6 +26,7 @@ import selectEvent from "react-select-event";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/extensionConsole/testHelpers";
 import { type Package, type PackageVersion } from "@/types/contract";
+import { Timestamp } from "@/types/stringTypes";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -50,16 +51,16 @@ describe("BrickHistory", () => {
         version: "1.0.1",
         config: {},
         raw_config: "some big yaml file",
-        created_at: "2024-01-24T20:55:41.263846Z",
-        updated_at: "2024-01-26T23:58:12.270168Z",
+        created_at: "2024-01-24T20:55:41.263846Z" as Timestamp,
+        updated_at: "2024-01-26T23:58:12.270168Z" as Timestamp,
       },
       {
         id: testBrickId,
         version: "1.0.0",
         config: {},
         raw_config: "some big yaml file2",
-        created_at: "2024-01-20T16:55:41.263846Z",
-        updated_at: "2024-01-22T18:58:12.270168Z",
+        created_at: "2024-01-20T16:55:41.263846Z" as Timestamp,
+        updated_at: "2024-01-22T18:58:12.270168Z" as Timestamp,
       },
     ];
 
@@ -71,7 +72,7 @@ describe("BrickHistory", () => {
       config: "some config yaml",
       public: true,
       organizations: [],
-      updated_at: "2024-01-26T23:58:12.270168Z",
+      updated_at: "2024-01-26T23:58:12.270168Z" as Timestamp,
       verbose_name: "AI Copilot",
     };
     axiosMock
