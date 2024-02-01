@@ -42,7 +42,7 @@ jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
 }));
 
 jest.mock("@/extensionConsole/pages/deployments/useAutoDeploy");
-jest.mocked(useAutoDeploy).mockReturnValue(false);
+jest.mocked(useAutoDeploy).mockReturnValue({ isAutoDeploying: false });
 
 const mods: Mod[] = [];
 

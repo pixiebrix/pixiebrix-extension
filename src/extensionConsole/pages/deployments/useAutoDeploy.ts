@@ -26,10 +26,12 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import useAsyncEffect from "use-async-effect";
 
-/**
- * `true` if the deployments are still being loaded or if the deployments are being automatically deployed.
- */
-type UseAutoDeployReturn = boolean;
+type UseAutoDeployReturn = {
+  /**
+   * `true` if the deployments are still being loaded or if the deployments are being automatically deployed.
+   */
+  isAutoDeploying: boolean;
+};
 
 function useAutoDeploy(
   // Deployments can be undefined if they are still being loaded
@@ -92,7 +94,7 @@ function useAutoDeploy(
     [hasPermissions, deployments],
   );
 
-  return isFetchingAndActivatingDeployments;
+  return { isAutoDeploying: isFetchingAndActivatingDeployments };
 }
 
 export default useAutoDeploy;

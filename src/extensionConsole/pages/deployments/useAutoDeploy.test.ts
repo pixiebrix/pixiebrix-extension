@@ -68,7 +68,7 @@ describe("useAutoDeploy", () => {
         }),
       );
 
-      expect(result.current).toBe(true);
+      expect(result.current.isAutoDeploying).toBe(true);
     });
 
     it("returns false if there are no deployments", () => {
@@ -87,7 +87,7 @@ describe("useAutoDeploy", () => {
         }),
       );
 
-      expect(result.current).toBe(false);
+      expect(result.current.isAutoDeploying).toBe(false);
     });
   });
 
@@ -112,15 +112,15 @@ describe("useAutoDeploy", () => {
         }),
       );
 
-      expect(result.current).toBe(true);
+      expect(result.current.isAutoDeploying).toBe(true);
       expect(activateDeployments).toHaveBeenCalledWith(
         expect.any(Function),
         deployments,
         installedExtensions,
       );
 
-      await waitForValueToChange(() => result.current);
-      expect(result.current).toBe(false);
+      await waitForValueToChange(() => result.current.isAutoDeploying);
+      expect(result.current.isAutoDeploying).toBe(false);
     });
 
     it("should return false once the deployments have been fetched and activated", async () => {
@@ -139,11 +139,11 @@ describe("useAutoDeploy", () => {
         }),
       );
 
-      expect(result.current).toBe(true);
+      expect(result.current.isAutoDeploying).toBe(true);
 
-      await waitForValueToChange(() => result.current);
+      await waitForValueToChange(() => result.current.isAutoDeploying);
 
-      expect(result.current).toBe(false);
+      expect(result.current.isAutoDeploying).toBe(false);
     });
 
     it("should only attempt to activate deployments once", async () => {
@@ -175,9 +175,9 @@ describe("useAutoDeploy", () => {
 
       expect(activateDeployments).toHaveBeenCalledTimes(1);
 
-      await waitForValueToChange(() => result.current);
+      await waitForValueToChange(() => result.current.isAutoDeploying);
 
-      expect(result.current).toBe(false);
+      expect(result.current.isAutoDeploying).toBe(false);
     });
   });
 
@@ -198,7 +198,7 @@ describe("useAutoDeploy", () => {
         }),
       );
 
-      expect(result.current).toBe(false);
+      expect(result.current.isAutoDeploying).toBe(false);
     });
 
     it("should return false if the user has uninstall permissions", () => {
@@ -217,7 +217,7 @@ describe("useAutoDeploy", () => {
         }),
       );
 
-      expect(result.current).toBe(false);
+      expect(result.current.isAutoDeploying).toBe(false);
     });
   });
 });
