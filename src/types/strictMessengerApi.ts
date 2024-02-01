@@ -15,7 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  padding-top: 1rem;
-  align-items: center;
-}
+/**
+ * @file This file provides Messenger to the strictNullChecks build.
+ * Make sure you add the methods you need to ./typeOnlyMessengerRegistration.ts
+ * @see https://github.com/pixiebrix/pixiebrix-extension/issues/6526
+ */
+
+import { getMethod } from "webext-messenger";
+
+export const showSidebar = getMethod("SHOW_SIDEBAR");
+export const hideSidebar = getMethod("HIDE_SIDEBAR");
+export const showMySidePanel = getMethod("SHOW_MY_SIDE_PANEL");

@@ -20,7 +20,6 @@
 // eslint-disable-next-line import/no-unassigned-import -- Automatic registration
 import "webext-inject-on-install";
 import "@/extensionContext";
-import "@/development/autoreload";
 import "@/development/errorsBadge";
 
 // Required for MV3; Service Workers don't have XMLHttpRequest

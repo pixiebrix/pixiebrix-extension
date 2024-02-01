@@ -21,7 +21,7 @@ import {
   selectAnnotationsForPath,
 } from "@/pageEditor/slices/editorSelectors";
 import React from "react";
-import { Col, Row } from "react-bootstrap";
+
 import { useSelector } from "react-redux";
 
 const AnalysisResult: React.FunctionComponent = () => {
@@ -32,17 +32,15 @@ const AnalysisResult: React.FunctionComponent = () => {
   }
 
   return (
-    <Row className="mb-3">
-      <Col>
-        {annotations.map(({ message, type }, index) => (
-          <FieldAnnotationAlert
-            key={`${type}-${index}`}
-            message={message}
-            type={type}
-          />
-        ))}
-      </Col>
-    </Row>
+    <>
+      {annotations.map(({ message, type }, index) => (
+        <FieldAnnotationAlert
+          key={`${type}-${index}`}
+          message={message}
+          type={type}
+        />
+      ))}
+    </>
   );
 };
 

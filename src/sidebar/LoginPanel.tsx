@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Button, Container } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";
 import marketplaceImage from "@img/marketplace.svg";
@@ -27,7 +27,7 @@ import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 
 const DefaultLogin: React.FunctionComponent = () => (
-  <Col className="text-center">
+  <>
     <h4 className="display-6">Connect PixieBrix Account</h4>
 
     <p>Register/log-in to PixieBrix to access your personal and team bricks</p>
@@ -40,11 +40,11 @@ const DefaultLogin: React.FunctionComponent = () => (
     >
       <FontAwesomeIcon icon={faSignInAlt} /> Connect Account
     </Button>
-  </Col>
+  </>
 );
 
 const PartnerAuth: React.FunctionComponent = () => (
-  <Col className="text-center">
+  <>
     <h4 className="display-6">Connect your AARI account</h4>
     <p>
       Authenticate with Automation Anywhere to continue using your team&apos;s
@@ -58,7 +58,7 @@ const PartnerAuth: React.FunctionComponent = () => (
     >
       <FontAwesomeIcon icon={faSignInAlt} /> Connect Account
     </Button>
-  </Col>
+  </>
 );
 
 const LoginPanel: React.FunctionComponent = () => {
@@ -71,15 +71,13 @@ const LoginPanel: React.FunctionComponent = () => {
 
   return (
     <Container>
-      <Row className="mt-4">
+      <div className="text-center mt-4">
         {showPartnerAuth ? <PartnerAuth /> : <DefaultLogin />}
-      </Row>
+      </div>
 
-      <Row>
-        <Col className="text-center">
-          <img src={marketplaceImage} alt="Marketplace" width={300} />
-        </Col>
-      </Row>
+      <div className="text-center mt-4">
+        <img src={marketplaceImage} alt="Marketplace" width={300} />
+      </div>
     </Container>
   );
 };

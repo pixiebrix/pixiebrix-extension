@@ -17,18 +17,15 @@
 
 import React from "react";
 import { type LogEntry } from "@/telemetry/logging";
-import { Col, Row } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
 
 const OutputDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
   entry,
 }) => (
-  <Row>
-    <Col>
-      {entry.data.outputKey && <code>{entry.data.outputKey}</code>}
-      <JsonTree data={entry.data.output} />
-    </Col>
-  </Row>
+  <>
+    {entry.data.outputKey && <code>{entry.data.outputKey}</code>}
+    <JsonTree data={entry.data.output} />
+  </>
 );
 
 export default OutputDetail;

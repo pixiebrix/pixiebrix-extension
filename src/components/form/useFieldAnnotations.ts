@@ -44,7 +44,7 @@ function makeFieldActionForAnnotationAction(
     async action() {
       const newValues = produce(formik.values, (draft) => {
         if (action.type === AnalysisAnnotationActionType.AddValueToArray) {
-          const array = get(draft, action.path) ?? [];
+          const array = get(draft, action.path) as unknown[];
           array.push(action.value);
           set(draft, action.path, array);
         }

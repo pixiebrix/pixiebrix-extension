@@ -17,10 +17,7 @@
 
 .wizardHeader {
   padding: 32px;
-
-  :global(.col) {
-    display: flex;
-  }
+  display: flex;
 }
 
 .wizardHeaderLayout {

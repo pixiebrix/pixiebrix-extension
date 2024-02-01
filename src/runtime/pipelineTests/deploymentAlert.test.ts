@@ -35,7 +35,7 @@ import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register([echoBrick, contextBrick, throwBrick]);
-  (sendDeploymentAlert as any).mockReset();
+  jest.mocked(sendDeploymentAlert).mockReset();
 });
 
 describe.each([["v1"], ["v2"], ["v3"]])(

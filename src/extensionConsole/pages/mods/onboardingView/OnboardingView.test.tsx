@@ -107,6 +107,7 @@ describe("useOnboarding", () => {
       hasUpdate: true,
       extensionUpdateRequired: false,
       isLoading: false,
+      isAutoDeploying: false,
       error: undefined as unknown,
       async update() {},
       async updateExtension() {},

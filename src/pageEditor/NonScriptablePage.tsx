@@ -83,6 +83,7 @@ const NonScriptablePage: React.FunctionComponent<{ url: string }> = ({
         </Col>
       </Row>
       <Row className={styles.paneRowWithDivider}>
+        {/* <Col> Used to align it with the row above */}
         <Col lg={9}>
           <NeedHelp />
         </Col>

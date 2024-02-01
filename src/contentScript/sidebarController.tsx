@@ -40,10 +40,12 @@ import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtoco
 import { getSidebarTargetForCurrentTab } from "@/utils/sidePanelUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
-import { backgroundTarget, getMethod, messenger } from "webext-messenger";
+import { backgroundTarget, messenger } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { showMySidePanel } from "@/types/strictMessengerApi";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
@@ -121,20 +123,15 @@ const panels: PanelEntry[] = [];
 
 let modActivationPanelEntry: ModActivationPanelEntry | null = null;
 
-// TODO: Import from background/messenger/api.ts after the strictNullChecks migration, drop "SIDEBAR_PING" assertion
-async function showMySidePanel(): Promise<void> {
-  return getMethod("SHOW_MY_SIDE_PANEL" as "SIDEBAR_PING", backgroundTarget)();
-}
-
 /**
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
  */
 export async function showSidebar(): Promise<void> {
   console.debug("sidebarController:showSidebar");
   reportEvent(Events.SIDEBAR_SHOW);
-  if (isMV3()) {
+  if (isMV3() || isLoadedInIframe()) {
     try {
-      await showMySidePanel();
+      await showMySidePanel(backgroundTarget);
     } catch (error) {
       if (!getErrorMessage(error).includes("user gesture")) {
         throw error;
@@ -143,7 +140,7 @@ export async function showSidebar(): Promise<void> {
       await focusCaptureDialog(
         'Please click "OK" to allow PixieBrix to open the sidebar.',
       );
-      await showMySidePanel();
+      await showMySidePanel(backgroundTarget);
     }
   } else if (!sidebarMv2.isSidebarFrameVisible()) {
     sidebarMv2.insertSidebarFrame();

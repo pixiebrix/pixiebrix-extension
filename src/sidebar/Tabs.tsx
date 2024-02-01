@@ -399,7 +399,7 @@ const Tabs: React.FC = () => {
               mountOnEnter
               // Allow the user to quickly switch back to the panel
               unmountOnExit={false}
-              className={cx("h-100", styles.paneOverrides)}
+              className={cx("full-height", styles.paneOverrides)}
               key={staticPanel.key}
               eventKey={eventKeyForEntry(staticPanel)}
             >

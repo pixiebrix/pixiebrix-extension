@@ -43,7 +43,10 @@ async function openInActiveTab(event: React.MouseEvent<HTMLAnchorElement>) {
   }
 }
 
-const RestrictedUrlContent: React.FC = ({ children }) => (
+const RestrictedUrlContent: React.FC<{ extensionConsoleLink?: boolean }> = ({
+  children,
+  extensionConsoleLink = true,
+}) => (
   <div className="p-3">
     {children}
     <div className="mt-2">
@@ -52,12 +55,14 @@ const RestrictedUrlContent: React.FC = ({ children }) => (
     </div>
     <hr />
 
-    <div className="mt-2">
-      Looking for the Extension Console?{" "}
-      <a href={getExtensionConsoleUrl()} onClick={openInActiveTab}>
-        Open the Extension Console
-      </a>
-    </div>
+    {extensionConsoleLink && (
+      <div className="mt-2">
+        Looking for the Extension Console?{" "}
+        <a href={getExtensionConsoleUrl()} onClick={openInActiveTab}>
+          Open the Extension Console
+        </a>
+      </div>
+    )}
 
     <div className="mt-2">
       Looking for the Page Editor?{" "}
@@ -82,7 +87,7 @@ const RestrictedUrlPopupApp: React.FC<{ reason: string | null }> = ({
   }, []);
 
   return reason === DISPLAY_REASON_EXTENSION_CONSOLE ? (
-    <RestrictedUrlContent>
+    <RestrictedUrlContent extensionConsoleLink={false}>
       <div className="font-weight-bold">This is the Extension Console.</div>
       <div className="mt-2">PixieBrix mods cannot run on this page.</div>
     </RestrictedUrlContent>

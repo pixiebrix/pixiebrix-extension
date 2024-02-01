@@ -111,12 +111,12 @@ export const makeUpdatedFilter =
  * violation).
  */
 export function checkExtensionUpdateRequired(
-  deployments: Deployment[],
+  deployments: Deployment[] | undefined,
 ): boolean {
   // Check that the user's extension van run the deployment
   const { version: extensionVersion } = browser.runtime.getManifest();
   const versionRanges = compact(
-    deployments.map((x) => x.package.config.metadata.extensionVersion),
+    deployments?.map((x) => x.package.config.metadata.extensionVersion),
   );
 
   console.debug("Checking deployment version requirements", {

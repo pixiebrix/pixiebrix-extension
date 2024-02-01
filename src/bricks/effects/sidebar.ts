@@ -27,6 +27,7 @@ import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isMV3 } from "@/mv3/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { logPromiseDuration } from "@/utils/promiseUtils";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 
 export class ShowSidebar extends EffectABC {
   constructor() {
@@ -92,7 +93,7 @@ export class HideSidebar extends EffectABC {
   inputSchema: Schema = SCHEMA_EMPTY_OBJECT;
 
   async effect(): Promise<void> {
-    if (isMV3()) {
+    if (isMV3() || isLoadedInIframe()) {
       sidebarInThisTab.close();
     } else {
       hideSidebar();

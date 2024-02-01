@@ -60,6 +60,7 @@ if (typeof createLogger === "function") {
   conditionalMiddleware.push(
     createLogger({
       // Do not log polling actions (they happen too often)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO
       predicate: (getState, action) => !action.type.includes("logs/polling"),
     }),
   );
