@@ -152,4 +152,80 @@ describe("PanelBody", () => {
 
     expect(screen.getByShadowText("Test")).toBeVisible();
   });
+
+  it("renders document", async () => {
+    const payload: RendererRunPayload = {
+      key: uuidv4(),
+      runId: uuidv4(),
+      extensionId,
+      blockId: validateRegistryId("@pixiebrix/document"),
+      args: {
+        body: [
+          {
+            type: "container",
+            config: {},
+            children: [
+              {
+                type: "row",
+                config: {},
+                children: [
+                  {
+                    type: "column",
+                    config: {},
+                    children: [
+                      {
+                        type: "header",
+                        config: {
+                          title: "Example document",
+                          heading: "h1",
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: "row",
+                config: {},
+                children: [
+                  {
+                    type: "column",
+                    config: {},
+                    children: [
+                      {
+                        type: "text",
+                        config: {
+                          text: "Example styled text element",
+                          enableMarkdown: true,
+                          className: "override-styles",
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      ctxt: {},
+    };
+
+    render(
+      <PanelBody
+        isRootPanel
+        onAction={jest.fn()}
+        context={{ extensionId, blueprintId }}
+        payload={payload}
+      />,
+    );
+
+    const header1 = await screen.findByShadowText("Example document");
+    expect(header1).toBeInTheDocument();
+
+    const textElement = await screen.findByShadowText(
+      "Example styled text element",
+    );
+    expect(textElement).toBeInTheDocument();
+  });
 });
