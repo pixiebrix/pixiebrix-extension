@@ -277,7 +277,7 @@ describe("updateDeployments", () => {
         id: deployment.package.package_id,
         name: deployment.package.name,
         version: validateSemVerString("0.0.1"),
-        updated_at: deployment.updated_at as Timestamp,
+        updated_at: deployment.updated_at,
         sharing: sharingDefinitionFactory(),
       },
     }) as ActivatedModComponent;
@@ -322,7 +322,7 @@ describe("updateDeployments", () => {
         id: deployment.package.package_id,
         name: deployment.package.name,
         version: validateSemVerString("0.0.1"),
-        updated_at: deployment.updated_at as Timestamp,
+        updated_at: deployment.updated_at,
         sharing: sharingDefinitionFactory(),
       },
     }) as ActivatedModComponent;

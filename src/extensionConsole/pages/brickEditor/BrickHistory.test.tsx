@@ -26,7 +26,7 @@ import selectEvent from "react-select-event";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/extensionConsole/testHelpers";
 import { type Package, type PackageVersion } from "@/types/contract";
-import { Timestamp } from "@/types/stringTypes";
+import { type Timestamp } from "@/types/stringTypes";
 
 const axiosMock = new MockAdapter(axios);
 

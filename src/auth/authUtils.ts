@@ -93,7 +93,7 @@ export function selectExtensionAuthState({
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
 
   return {
-    userId: id as UUID,
+    userId: id,
     email,
     scope,
     isLoggedIn: true,
