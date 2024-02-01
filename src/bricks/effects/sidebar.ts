@@ -23,7 +23,6 @@ import {
   hideSidebar,
   showSidebar,
 } from "@/contentScript/sidebarController";
-import { showMySidePanel } from "@/background/messenger/api";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isMV3 } from "@/mv3/api";
 import { propertiesToSchema } from "@/validators/generic";
@@ -69,13 +68,7 @@ export class ShowSidebar extends EffectABC {
     }>,
     { logger }: BrickOptions,
   ): Promise<void> {
-    // Don't pass extensionId here because the extensionId in showOptions refers to the extensionId of the panel,
-    // not the extensionId of the extension toggling the sidebar
-    if (isMV3()) {
-      await showMySidePanel();
-    } else {
-      await showSidebar();
-    }
+    await showSidebar();
 
     void logPromiseDuration(
       "ShowSidebar:updateSidebar",
