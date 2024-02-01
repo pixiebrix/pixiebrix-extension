@@ -39,7 +39,7 @@ import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { joinPathParts } from "@/utils/formUtils";
-import { assertNotNullish } from "@/utils/nullishUtils.js";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type TestAddBlockResult = {
   error?: React.ReactNode;
