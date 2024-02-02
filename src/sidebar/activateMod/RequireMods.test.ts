@@ -15,7 +15,7 @@ describe("requiresUserConfiguration", () => {
       },
     });
 
-    expect(requiresUserConfiguration(definition, [])).toBe(false);
+    expect(requiresUserConfiguration(definition, [], {})).toBe(false);
   });
 
   it("handles empty required prop", () => {
@@ -32,7 +32,7 @@ describe("requiresUserConfiguration", () => {
       },
     });
 
-    expect(requiresUserConfiguration(definition, [])).toBe(false);
+    expect(requiresUserConfiguration(definition, [], {})).toBe(false);
   });
 
   it("considers required field", () => {
@@ -49,7 +49,7 @@ describe("requiresUserConfiguration", () => {
       },
     });
 
-    expect(requiresUserConfiguration(definition, [])).toBe(true);
+    expect(requiresUserConfiguration(definition, [], {})).toBe(true);
   });
 
   it("databases don't require configuration when required", () => {
@@ -67,7 +67,7 @@ describe("requiresUserConfiguration", () => {
       },
     });
 
-    expect(requiresUserConfiguration(definition, [])).toBe(false);
+    expect(requiresUserConfiguration(definition, [], {})).toBe(false);
   });
 
   it("non-preview databases require configuration", () => {
@@ -84,6 +84,6 @@ describe("requiresUserConfiguration", () => {
       },
     });
 
-    expect(requiresUserConfiguration(definition, [])).toBe(true);
+    expect(requiresUserConfiguration(definition, [], {})).toBe(true);
   });
 });

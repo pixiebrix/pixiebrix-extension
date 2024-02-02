@@ -243,7 +243,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
         <p className="mb-1">
           People with access can activate the mod with this link
         </p>
-        <ActivationLink blueprintId={blueprintId} />
+        <ActivationLink modId={blueprintId} />
       </Modal.Body>
     </>
   );

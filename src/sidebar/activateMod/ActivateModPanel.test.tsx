@@ -173,7 +173,9 @@ function setupMocksAndRender(
   });
 
   const element = componentOverride ?? (
-    <ActivateModPanel modId={modDefinition.metadata.id} />
+    <ActivateModPanel
+      mod={{ modId: modDefinition.metadata.id, initialOptions: {} }}
+    />
   );
 
   return render(element, {
@@ -567,7 +569,9 @@ describe("ActivateMultipleModsPanel", () => {
 
     const { asFragment } = setupMocksAndRender(modDefinition, {
       componentOverride: (
-        <ActivateMultipleModsPanel modIds={[modDefinition.metadata.id]} />
+        <ActivateMultipleModsPanel
+          mods={[{ modId: modDefinition.metadata.id, initialOptions: {} }]}
+        />
       ),
     });
 
@@ -582,7 +586,9 @@ describe("ActivateMultipleModsPanel", () => {
     setupMocksAndRender(modDefinition, {
       componentOverride: (
         <ErrorBoundary>
-          <ActivateMultipleModsPanel modIds={[modDefinition.metadata.id]} />
+          <ActivateMultipleModsPanel
+            mods={[{ modId: modDefinition.metadata.id, initialOptions: {} }]}
+          />
         </ErrorBoundary>
       ),
     });

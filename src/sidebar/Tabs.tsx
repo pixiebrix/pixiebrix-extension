@@ -374,18 +374,16 @@ const Tabs: React.FC = () => {
                     reportEvent(Events.VIEW_ERROR, {
                       panelType: "activate",
                       // For backward compatability, provide a single modId to the recipeToActivate property
-                      recipeToActivate: modActivationPanel.modIds[0],
-                      modCount: modActivationPanel.modIds.length,
-                      modIds: modActivationPanel.modIds,
+                      recipeToActivate: modActivationPanel.mods[0].modId,
+                      modCount: modActivationPanel.mods.length,
+                      modIds: modActivationPanel.mods.map((x) => x.modId),
                     });
                   }}
                 >
-                  {modActivationPanel.modIds.length === 1 ? (
-                    <ActivateModPanel modId={modActivationPanel.modIds[0]} />
+                  {modActivationPanel.mods.length === 1 ? (
+                    <ActivateModPanel mod={modActivationPanel.mods[0]} />
                   ) : (
-                    <ActivateMultipleModsPanel
-                      modIds={modActivationPanel.modIds}
-                    />
+                    <ActivateMultipleModsPanel mods={modActivationPanel.mods} />
                   )}
                 </ErrorBoundary>
               </Suspense>

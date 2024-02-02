@@ -17,21 +17,14 @@
 
 import { validateRegistryId } from "@/types/helpers";
 import { type ModActivationPanelEntry } from "@/types/sidebarTypes";
-import { isActivationUrl } from "@/activation/ActivationLink";
 import notify from "@/utils/notify";
-import { compact, isEmpty } from "lodash";
-
-/**
- * Read id search params from the URL. Handles both `id` and `id[]`.
- * @param url
- */
-function readIdsFromUrl(url: URL): string[] {
-  const rawIds = [
-    ...url.searchParams.getAll("id"),
-    ...url.searchParams.getAll("id[]"),
-  ];
-  return rawIds.filter((x) => !isEmpty(x));
-}
+import { compact } from "lodash";
+import {
+  getEncodedOptionsFromActivateUrl,
+  isActivationUrl,
+  parseEncodedOptions,
+  readIdsFromUrl,
+} from "@/activation/activationLinkUtils";
 
 export default function activateLinkClickHandler(
   event: MouseEvent,
@@ -51,6 +44,7 @@ export default function activateLinkClickHandler(
 
   const url = new URL(href);
   const rawIds = readIdsFromUrl(url);
+
   let modIds;
 
   try {
@@ -65,11 +59,16 @@ export default function activateLinkClickHandler(
     return;
   }
 
+  const encodedOptions = getEncodedOptionsFromActivateUrl(href);
+  const initialOptions = parseEncodedOptions(encodedOptions);
+  // NOTE: currently applying same options to all mods
+  const mods = modIds.map((modId) => ({ modId, initialOptions }));
+
   event.preventDefault();
 
   callback({
     type: "activateMods",
-    modIds,
+    mods,
     heading: "Activating",
   });
 }

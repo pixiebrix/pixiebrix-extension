@@ -24,30 +24,25 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import { writeTextToClipboard } from "@/utils/clipboardUtils";
+import { constructActivationUrl } from "@/activation/activationLinkUtils";
 
 type ActivationLinkProps = {
-  blueprintId: RegistryId;
+  modId: RegistryId;
 };
 
-export const ACTIVATION_LINK_PREFIX = "https://app.pixiebrix.com/activate?id=";
-
-export function isActivationUrl(url: string): boolean {
-  return url.startsWith(ACTIVATION_LINK_PREFIX);
-}
-
 const ActivationLink: React.FunctionComponent<ActivationLinkProps> = ({
-  blueprintId,
+  modId,
 }) => {
-  const installationLink = `${ACTIVATION_LINK_PREFIX}${blueprintId}`;
+  const activationLink = constructActivationUrl([modId]).toString();
 
   return (
     <InputGroup>
-      <Form.Control type="text" readOnly defaultValue={installationLink} />
+      <Form.Control type="text" readOnly defaultValue={activationLink} />
       <InputGroup.Append>
         <AsyncButton
           variant="info"
           onClick={async () => {
-            await writeTextToClipboard({ text: installationLink });
+            await writeTextToClipboard({ text: activationLink });
             // Don't close the modal - that allows the user to re-copy the link and verify the link works
             notify.success("Copied activation link to clipboard");
           }}

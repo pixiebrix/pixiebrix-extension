@@ -27,6 +27,7 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import { isObject } from "@/utils/objectUtils";
 import { type RunMetadata } from "@/types/runtimeTypes";
+import type { ModOptionsPair } from "@/types/modTypes";
 
 /**
  * Entry types supported by the sidebar.
@@ -228,13 +229,16 @@ export function isFormPanelEntry(panel: unknown): panel is FormPanelEntry {
  * Panel entry for activating one or more mods.
  *
  * @since 1.7.35 supports activating multiple mods if all mods don't require configuration
+ * @since 1.8.8 supports providing initial options for each mod
  */
 export type ModActivationPanelEntry = BasePanelEntry & {
   type: "activateMods";
+
   /**
    * One or more mod id(s) to activate. If providing multiple mod ids, none of the mods may require configuration.
    */
-  modIds: RegistryId[];
+  mods: ModOptionsPair[];
+
   /**
    * Heading for tab name in the sidebar
    */

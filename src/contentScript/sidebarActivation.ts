@@ -18,10 +18,10 @@
 import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import {
-  showSidebar,
-  sidePanelOnClose,
   hideModActivationInSidebar,
   showModActivationInSidebar,
+  showSidebar,
+  sidePanelOnClose,
 } from "@/contentScript/sidebarController";
 import { isLinked } from "@/auth/token";
 import {
@@ -34,6 +34,13 @@ import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getActivatedModIds } from "@/store/extensionsStorage";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import { allSettled } from "@/utils/promiseUtils";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { ModOptionsPair } from "@/types/modTypes";
+import {
+  getEncodedOptionsFromActivateUrl,
+  getNextUrlFromActivateUrl,
+  parseEncodedOptions,
+} from "@/activation/activationLinkUtils";
 
 let listener: EventListener | null;
 
@@ -44,30 +51,27 @@ let listener: EventListener | null;
  *
  * @see getActivatingModIds
  */
-async function getInProgressModActivation(): Promise<RegistryId[] | null> {
-  const modIds = (await getActivatingModIds()) ?? [];
+async function getInProgressModActivation(): Promise<
+  Nullishable<ModOptionsPair[]>
+> {
+  const mods = (await getActivatingModIds()) ?? [];
 
   // Defensive validation
-  const valid = modIds.filter((x: string) => isRegistryId(x));
+  const valid = mods.filter((x) => isRegistryId(x.modId));
 
   return valid.length > 0 ? valid : null;
 }
 
 async function showSidebarActivationForMods(
-  modIds: RegistryId[],
+  mods: ModOptionsPair[],
 ): Promise<void> {
   await showSidebar();
   await showModActivationInSidebar({
-    modIds,
+    mods,
     heading: "Activating",
   });
 
   sidePanelOnClose(hideModActivationInSidebar);
-}
-
-function getNextUrlFromActivateUrl(activateUrl: string): string | null {
-  const url = new URL(activateUrl);
-  return url.searchParams.get("nextUrl");
 }
 
 function addActivateModsListener(): void {
@@ -86,8 +90,13 @@ function addActivateModsListener(): void {
       return;
     }
 
+    const encodedOptions = getEncodedOptionsFromActivateUrl(activateUrl);
+    const initialOptions = parseEncodedOptions(encodedOptions);
+    // NOTE: currently applying same options to all mods
+    const mods = modIds.map((modId) => ({ modId, initialOptions }));
+
     if (nextUrl) {
-      await setActivatingMods({ blueprintId: modIds });
+      await setActivatingMods(mods);
       window.location.assign(nextUrl);
       return;
     }
@@ -102,7 +111,7 @@ function addActivateModsListener(): void {
       reinstall: modIds.some((x) => activatedModIds.has(x)),
     });
 
-    await showSidebarActivationForMods(modIds);
+    await showSidebarActivationForMods(mods);
   };
 
   window.addEventListener("ActivateMods", listener);
@@ -126,7 +135,7 @@ export async function initSidebarActivation(): Promise<void> {
     await allSettled(
       [
         // Clear out local storage
-        setActivatingMods({ blueprintId: null }),
+        setActivatingMods(null),
         showSidebarActivationForMods(modIds),
       ],
       { catch: "ignore" },

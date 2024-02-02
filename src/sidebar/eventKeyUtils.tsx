@@ -27,16 +27,17 @@ import {
 } from "@/types/sidebarTypes";
 import hash from "object-hash";
 import { sortBy } from "lodash";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 export function eventKeyForEntry(
-  entry: SidebarEntry | undefined | null,
+  entry: Nullishable<SidebarEntry>,
 ): string | null {
   if (entry == null) {
     return null;
   }
 
   if (isModActivationPanelEntry(entry)) {
-    return `activate-${hash(sortBy(entry.modIds))}`;
+    return `activate-${hash(sortBy(entry.mods.map((x) => x.modId)))}`;
   }
 
   if (isPanelEntry(entry)) {

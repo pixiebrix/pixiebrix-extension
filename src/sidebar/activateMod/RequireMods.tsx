@@ -30,6 +30,8 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
+import type { ModOptionsPair } from "@/types/modTypes";
+import type { UnknownObject } from "@/types/objectTypes";
 
 export type RequiredModDefinition = {
   /**
@@ -52,10 +54,18 @@ export type RequiredModDefinition = {
    * The default integration configurations for the mod
    */
   defaultAuthOptions: Record<RegistryId, AuthOption | null>;
+  /**
+   * Initial options to pass to the mod configuration form for new activations.
+   *
+   * Introduced to support providing initial options via activation URL.
+   *
+   * @since 1.8.8
+   */
+  initialOptions: UnknownObject;
 };
 
 type Props = {
-  modIds: RegistryId[];
+  mods: ModOptionsPair[];
   children: (props: RequiredModDefinition[]) => React.ReactElement;
 };
 
@@ -66,11 +76,13 @@ type Props = {
  *
  * @param modDefinition the mod definition
  * @param authOptions the integration configurations available to the user
+ * @param initialOptions the initial options for the mod
  * @see checkModDefinitionPermissions
  */
 export function requiresUserConfiguration(
   modDefinition: ModDefinition,
   authOptions: AuthOption[],
+  initialOptions: UnknownObject,
 ): boolean {
   const defaultAuthOptionsByIntegrationId = getDefaultAuthOptionsForMod(
     modDefinition,
@@ -99,7 +111,12 @@ export function requiresUserConfiguration(
       }
 
       // We require user input for any option that isn't explicitly excluded, so we return true here
-      return requiredOptions.includes(name);
+      // Since 1.8.8., validate whether an initial option is provided, but don't validate its value
+      return (
+        requiredOptions.includes(name) &&
+        initialOptions[name] === undefined &&
+        !optionSchema.default
+      );
     });
 
   const modIntegrationIds = getUnconfiguredComponentIntegrations(modDefinition);
@@ -123,8 +140,10 @@ export function requiresUserConfiguration(
 /**
  * Helper component to conditionally render children that depend on mod definitions.
  */
-const RequireMods: React.FC<Props> = ({ modIds, children }) => {
-  const modDefinitionsState = useRequiredModDefinitions(modIds);
+const RequireMods: React.FC<Props> = ({ mods, children }) => {
+  const modDefinitionsState = useRequiredModDefinitions(
+    mods.map((x) => x.modId),
+  );
 
   const modComponents = useSelector(selectExtensions);
 
@@ -136,6 +155,10 @@ const RequireMods: React.FC<Props> = ({ modIds, children }) => {
     async (modDefinitions: ModDefinition[], authOptions: AuthOption[]) =>
       Promise.all(
         modDefinitions.map(async (modDefinition) => {
+          const { initialOptions } = mods.find(
+            (x) => x.modId === modDefinition.metadata.id,
+          );
+
           const defaultAuthOptions = getDefaultAuthOptionsForMod(
             modDefinition,
             authOptions,
@@ -144,9 +167,11 @@ const RequireMods: React.FC<Props> = ({ modIds, children }) => {
           return {
             modDefinition,
             defaultAuthOptions,
+            initialOptions,
             requiresConfiguration: requiresUserConfiguration(
               modDefinition,
               authOptions,
+              initialOptions,
             ),
             includesQuickBar: await includesQuickBarStarterBrick(modDefinition),
             isActive: modComponents.some(

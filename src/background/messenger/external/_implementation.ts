@@ -25,18 +25,36 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { installStarterBlueprints as installStarterBlueprintsInBackground } from "@/background/messenger/api";
 import { type RegistryId } from "@/types/registryTypes";
-import { castArray } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { validateRegistryId } from "@/types/helpers";
 import { StorageItem } from "webext-storage";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { ModOptionsPair } from "@/types/modTypes";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 
 /**
+ * @deprecated superseded by ActivationWithOptions. Will be dropped in 1.8.9
+ */
+type SingleModActivation = RegistryId;
+
+/**
+ * @deprecated superseded by ActivationWithOptions. Will be dropped in 1.8.9
+ */
+type MultiModActivation = RegistryId[];
+
+// Type preserving backwards compatibility
+type ModActivation =
+  | SingleModActivation
+  | MultiModActivation
+  | ModOptionsPair[];
+
+/**
  * Chrome Storage key for tracking the mod id(s) that PixieBrix should start activation for.
  */
-const modIdsStorage = new StorageItem<RegistryId | RegistryId[]>(
+const activationStorage = new StorageItem<ModOptionsPair[]>(
+  // Keeping key for backwards compatibility
   "activatingBlueprintId",
 );
 
@@ -93,26 +111,56 @@ export async function openMarketplace({
   return true;
 }
 
-type SetActivatingModsOptions = {
-  /**
-   * The id of a blueprint to activate
-   *
-   * As of 1.7.35, this can be a single mod or list of mods. But we're keeping the name for backwards compatibility.
-   */
-  blueprintId: RegistryId | RegistryId[];
-};
-
 /**
  * Set the mod id(s) that PixieBrix should start activation for.
  *
  * @see getActivatingModIds
  */
-export async function setActivatingMods({
-  blueprintId: modIdOrIds,
-}: SetActivatingModsOptions): Promise<void> {
+export async function setActivatingMods(
+  mods: Nullishable<ModOptionsPair[]>,
+): Promise<void> {
+  if (!mods || mods.length === 0) {
+    await activationStorage.remove();
+    return;
+  }
+
   // Defensive check for syntactically valid registry ids
-  const modIds = castArray(modIdOrIds).map((x) => validateRegistryId(x));
-  return modIdsStorage.set(modIds);
+  for (const { modId } of mods) {
+    validateRegistryId(modId);
+  }
+
+  return activationStorage.set(mods);
+}
+
+/**
+ * Normalize activation state to new format.
+ * @param value mod activation state
+ */
+function normalizeActivatingMods(
+  value: Nullishable<ModActivation>,
+): ModOptionsPair[] {
+  if (!value) {
+    return [];
+  }
+
+  if (typeof value === "string") {
+    // Legacy support for single mod activation
+    return [{ modId: value, initialOptions: {} }];
+  }
+
+  if (!Array.isArray(value) || value.length === 0) {
+    return [];
+  }
+
+  if (typeof value[0] === "string") {
+    // Legacy support for multiple mod activation
+    return (value as MultiModActivation).map((modId) => ({
+      modId,
+      initialOptions: {},
+    }));
+  }
+
+  return value as ModOptionsPair[];
 }
 
 /**
@@ -120,20 +168,40 @@ export async function setActivatingMods({
  *
  * @see setActivatingMods
  */
-export async function getActivatingModIds(): Promise<RegistryId[] | null> {
-  const value = await modIdsStorage.get();
-
-  return value?.length > 0 ? castArray(value) : null;
+export async function getActivatingModIds(): Promise<
+  Nullishable<ModOptionsPair[]>
+> {
+  const value = await activationStorage.get();
+  const normalized = normalizeActivatingMods(value);
+  return normalized.length === 0 ? null : normalized;
 }
 
-type ActivateModsOptions = {
+/**
+ * The mod(s) to activate.
+ * @deprecated superseded by ActivationPartial
+ * @see ActivationPartial
+ */
+type LegacyModActivationPartial = {
   /**
    * The mods(s) to activate.
    *
    * As of 1.7.35, this can be a single mod or list of mods. But we're keeping the name for backwards compatibility.
    */
   blueprintId: RegistryId | RegistryId[];
+};
 
+/**
+ * The mod(s) to activate.
+ * @since 1.8.8
+ */
+type ModActivationPartial = {
+  mods: ModOptionsPair[];
+};
+
+type ActivateModsOptions = (
+  | LegacyModActivationPartial
+  | ModActivationPartial
+) & {
   /**
    * True to open the extension in a new tab, false to replace the current tab (default=True)
    */
@@ -161,15 +229,18 @@ type ActivateModsOptions = {
  * @throws Error if no mod ids are provided
  */
 export async function openActivateModPage({
-  blueprintId: modIdOrIds,
   newTab = true,
   redirectUrl,
+  ...options
 }: ActivateModsOptions): Promise<boolean> {
-  const modIds = castArray(modIdOrIds);
+  const mods = normalizeActivatingMods(
+    (options as ModActivationPartial).mods ??
+      (options as LegacyModActivationPartial).blueprintId,
+  );
 
-  if (modIds.length === 0) {
-    throw new Error("No mod ids provided");
-  } else if (redirectUrl == null && modIds.length > 1) {
+  if (mods.length === 0) {
+    throw new Error("No mods provided");
+  } else if (redirectUrl == null && mods.length > 1) {
     reportError(
       new Error("No redirectUrl provided for multiple mod activation"),
     );
@@ -178,8 +249,9 @@ export async function openActivateModPage({
   const url =
     redirectUrl ??
     // For extension console activation, only support a single mod id
+    // TODO: support passing options to the Extension Console activation page
     getExtensionConsoleUrl(
-      `marketplace/activate/${encodeURIComponent(modIds[0])}`,
+      `marketplace/activate/${encodeURIComponent(mods[0].modId)}`,
     );
 
   if (newTab) {
