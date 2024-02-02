@@ -93,7 +93,7 @@ function addActivateModsListener(): void {
     const mods = parseModActivationUrl(activateUrl);
 
     if (nextUrl) {
-      await setActivatingMods(mods);
+      await setActivatingMods({ mods });
       window.location.assign(nextUrl);
       return;
     }
