@@ -92,18 +92,25 @@ export class DocumentRenderer extends RendererABC {
   async render(
     {
       body,
-      stylesheets = [],
+      stylesheets: _stylesheets = [],
     }: BrickArgs<{
       body: DocumentElement[];
       stylesheets: string[];
     }>,
     options: BrickOptions,
   ): Promise<ComponentRef> {
+    const stylesheets = compact(_stylesheets);
+    for (const url of stylesheets) {
+      if (!isValidUrl(url)) {
+        throw new Error(`Invalid Stylesheet URL: ${url}`);
+      }
+    }
+
     return {
       Component: DocumentViewLazy,
       props: {
         body,
-        stylesheets: compact(stylesheets).filter((url) => isValidUrl(url)),
+        stylesheets,
         options,
       },
     };
