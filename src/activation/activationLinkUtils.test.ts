@@ -17,7 +17,10 @@
 
 import {
   createActivationUrl,
+  getNextUrlFromActivateUrl,
+  getRegistryIdsFromActivateUrl,
   isActivationUrl,
+  parseModActivationUrl,
 } from "@/activation/activationLinkUtils";
 import { validateRegistryId } from "@/types/helpers";
 
@@ -49,5 +52,68 @@ describe("isActivationUrl", () => {
 
   test("login url", () => {
     expect(isActivationUrl("https://app.pixiebrix.com/login")).toBe(false);
+  });
+});
+
+describe("getRegistryIdsFromActivateUrl", () => {
+  test("handles id and id[]", () => {
+    expect(
+      getRegistryIdsFromActivateUrl(
+        new URL(
+          "https://app.pixiebrix.com/activate?id=test%2F123&id[]=test%2Fabc",
+        ),
+      ),
+    ).toStrictEqual(["test/123", "test/abc"]);
+  });
+});
+
+describe("getNextUrlFromActivateUrl", () => {
+  test("handles next URL", () => {
+    expect(
+      getNextUrlFromActivateUrl(
+        `https://app.pixiebrix.com/activate?id=test%2F123&nextUrl=${encodeURIComponent(
+          "https://www.pixiebrix.com",
+        )}`,
+      ),
+    ).toBe("https://www.pixiebrix.com");
+  });
+
+  test("returns null for no URL", () => {
+    expect(
+      getNextUrlFromActivateUrl(
+        "https://app.pixiebrix.com/activate?id=test%2F123",
+      ),
+    ).toBeNull();
+  });
+});
+
+describe("parseModActivationUrl", () => {
+  test("handles no options", () => {
+    expect(
+      parseModActivationUrl("https://app.pixiebrix.com/activate?id=test%2F123"),
+    ).toStrictEqual([{ modId: "test/123", initialOptions: {} }]);
+  });
+
+  test("handles encoded options", () => {
+    expect(
+      parseModActivationUrl(
+        `https://app.pixiebrix.com/activate?id=test%2F123&activateOptions=${encodeURIComponent(
+          "eyJmb28iOiA0Mn0=",
+        )}`,
+      ),
+    ).toStrictEqual([{ modId: "test/123", initialOptions: { foo: 42 } }]);
+  });
+
+  test("spreads encoded options", () => {
+    expect(
+      parseModActivationUrl(
+        `https://app.pixiebrix.com/activate?id[]=test%2F123&id[]=test%2Fabc&activateOptions=${encodeURIComponent(
+          "eyJmb28iOiA0Mn0=",
+        )}`,
+      ),
+    ).toStrictEqual([
+      { modId: "test/123", initialOptions: { foo: 42 } },
+      { modId: "test/abc", initialOptions: { foo: 42 } },
+    ]);
   });
 });

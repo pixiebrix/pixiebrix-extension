@@ -22,6 +22,7 @@ import type { RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import type { ModOptionsPair } from "@/types/modTypes";
+import { uniq } from "lodash";
 
 const ACTIVATE_PATH = "/activate";
 
@@ -68,10 +69,12 @@ export function getRegistryIdsFromActivateUrl(url: URL): RegistryId[] {
     ...url.searchParams.getAll("id[]"),
   ];
 
-  return rawIds.filter((x) => isRegistryId(x)) as RegistryId[];
+  return uniq(rawIds.filter((x) => isRegistryId(x)) as RegistryId[]);
 }
 
-export function getNextUrlFromActivateUrl(activateUrl: string): string | null {
+export function getNextUrlFromActivateUrl(
+  activateUrl: string,
+): Nullishable<string> {
   const url = new URL(activateUrl);
   return url.searchParams.get("nextUrl");
 }
@@ -87,7 +90,7 @@ function parseEncodedOptions(
     return {};
   }
 
-  const json = JSON.parse(btoa(encodedOptions));
+  const json = JSON.parse(atob(encodedOptions));
 
   if (typeof json !== "object") {
     throw new TypeError(`Invalid options: ${typeof json}`);
