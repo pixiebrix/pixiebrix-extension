@@ -18,7 +18,7 @@
 import {
   createActivationUrl,
   getNextUrlFromActivateUrl,
-  getRegistryIdsFromActivateUrl,
+  getRegistryIdsFromActivateUrlSearchParams,
   isActivationUrl,
   parseModActivationUrl,
 } from "@/activation/activationLinkUtils";
@@ -55,13 +55,11 @@ describe("isActivationUrl", () => {
   });
 });
 
-describe("getRegistryIdsFromActivateUrl", () => {
+describe("getRegistryIdsFromActivateUrlSearchParams", () => {
   test("handles id and id[]", () => {
     expect(
-      getRegistryIdsFromActivateUrl(
-        new URL(
-          "https://app.pixiebrix.com/activate?id=test%2F123&id[]=test%2Fabc",
-        ),
+      getRegistryIdsFromActivateUrlSearchParams(
+        new URLSearchParams("id=test%2F123&id[]=test%2Fabc"),
       ),
     ).toStrictEqual(["test/123", "test/abc"]);
   });

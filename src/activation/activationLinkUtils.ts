@@ -60,14 +60,13 @@ export function isActivationUrl(maybeActivationUrl: string): boolean {
 }
 
 /**
- * Read valid registry ids from an activation URL. Handles both `id` and `id[]`.
- * @param url the activation URL
+ * Read valid registry ids from an activation URL's search params. Handles both `id` and `id[]`.
+ * @param searchParams the activation URL search params
  */
-export function getRegistryIdsFromActivateUrl(url: URL): RegistryId[] {
-  const rawIds = [
-    ...url.searchParams.getAll("id"),
-    ...url.searchParams.getAll("id[]"),
-  ];
+export function getRegistryIdsFromActivateUrlSearchParams(
+  searchParams: URLSearchParams,
+): RegistryId[] {
+  const rawIds = [...searchParams.getAll("id"), ...searchParams.getAll("id[]")];
 
   return uniq(rawIds.filter((x) => isRegistryId(x)) as RegistryId[]);
 }
@@ -110,7 +109,7 @@ function parseEncodedOptions(
  */
 export function parseModActivationUrl(activateUrl: string): ModOptionsPair[] {
   const url = new URL(activateUrl);
-  const modIds = getRegistryIdsFromActivateUrl(url);
+  const modIds = getRegistryIdsFromActivateUrlSearchParams(url.searchParams);
   const encodedOptions = url.searchParams.get("activateOptions") as EncodedJSON;
   const initialOptions = parseEncodedOptions(encodedOptions);
   // NOTE: currently applying same options to all mods
