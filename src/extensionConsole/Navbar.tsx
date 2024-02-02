@@ -37,6 +37,7 @@ import { type ThemeLogo } from "@/themes/themeUtils";
 import useLinkState from "@/auth/useLinkState";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import useAsyncState from "@/hooks/useAsyncState";
+import AsyncButton from "@/components/AsyncButton";
 
 function useAdminConsoleUrl(): string {
   // Need to update serviceURL on changes to partner auth data:
@@ -117,6 +118,20 @@ const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
         >
           Extension Console
         </div>
+
+        <AsyncButton
+          onClick={async () => {
+            // NOTE: this will fail if extension doesn't already have microphone permissions
+            // https://github.com/GoogleChrome/chrome-extensions-samples/issues/627#issuecomment-1737511452
+            // https://github.com/GoogleChrome/chrome-extensions-samples/issues/821
+            await navigator.mediaDevices.getUserMedia({
+              audio: true,
+              video: false,
+            });
+          }}
+        >
+          Request Audio Permission
+        </AsyncButton>
 
         <ul className="navbar-nav navbar-nav-right flex-grow-1 justify-content-end">
           {

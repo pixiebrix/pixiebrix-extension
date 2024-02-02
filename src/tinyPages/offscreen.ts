@@ -10,7 +10,7 @@ import pDefer from "p-defer";
 import type { UnknownObject } from "@/types/objectTypes";
 
 let liveClient: LiveClient;
-let tabRecorder: MediaRecorder;
+let recorder: MediaRecorder;
 
 // eslint-disable-next-line prefer-destructuring -- environment variable
 const DEEPGRAM_API_KEY = process.env.DEEPGRAM_API_KEY;
@@ -59,7 +59,10 @@ async function startRecording(streamId: string): Promise<void> {
     throw new Error("Connection already exists");
   }
 
-  const microphoneStream = await navigator.mediaDevices.getUserMedia({
+  // NOTE: call to get microphone will fail if extension doesn't already have microphone permissions
+  // https://github.com/GoogleChrome/chrome-extensions-samples/issues/627#issuecomment-1737511452
+  // https://github.com/GoogleChrome/chrome-extensions-samples/issues/821
+  const micStream = await navigator.mediaDevices.getUserMedia({
     audio: true,
     video: false,
   });
@@ -78,38 +81,34 @@ async function startRecording(streamId: string): Promise<void> {
   const client = createClient(DEEPGRAM_API_KEY);
 
   // https://developers.deepgram.com/reference/stt-streaming-feature-overview
-  liveClient = client.listen.live({ model: "nova" });
+  liveClient = client.listen.live({ model: "nova", multichannel: true });
 
   const connectPromise = pDefer<void>();
 
   liveClient.on(LiveTranscriptionEvents.Open, () => {
-    connectPromise.resolve();
-
     liveClient.on(LiveTranscriptionEvents.Transcript, (data: UnknownObject) => {
-      // TODO: decide how to combine the data
+      // TODO: forward the transcript and analysis to the top-level content script being recorded
       console.log(data);
     });
+
+    // Call after setting up the event listeners so we don't miss any events
+    connectPromise.resolve();
   });
 
-  // Continue to play the captured audio to the user.
-  const output = new AudioContext();
-  const source = output.createMediaStreamSource(tabStream);
-  source.connect(output.destination);
-
+  // Continue to play the captured audio to the user
   const context = new AudioContext();
-  context.createMediaStreamSource(microphoneStream);
-  context.createMediaStreamSource(tabStream);
-  // Start recording.
-  context.tabRecorder = new MediaRecorder(tabStream);
-  const microphoneRecorder = new MediaRecorder(microphoneStream);
+  const micSource = context.createMediaStreamSource(micStream);
+  const tabSource = context.createMediaStreamSource(tabStream);
+  tabSource.connect(context.destination);
 
-  // tabRecorder.addEventListener("dataavailable", event => {
-  //   if (event.data.size > 0 && liveClient?.getReadyState() === LiveConnectionState.OPEN) {
-  //     liveClient.send(event.data);
-  //   }
-  // })
+  // Combine the mic and tab streams
+  const analysisDestination = context.createMediaStreamDestination();
+  micSource.connect(analysisDestination);
+  tabSource.connect(analysisDestination);
 
-  microphoneRecorder.addEventListener("dataavailable", (event) => {
+  const recorder = new MediaRecorder(analysisDestination.stream);
+
+  recorder.addEventListener("dataavailable", (event) => {
     if (
       event.data.size > 0 &&
       liveClient?.getReadyState() === LiveConnectionState.OPEN
@@ -121,8 +120,7 @@ async function startRecording(streamId: string): Promise<void> {
   // Wait to start recording until we're connected to deepgram
   await connectPromise.promise;
 
-  tabRecorder.start(250);
-  microphoneRecorder.start(250);
+  recorder.start(250);
 
   // Record the current state in the URL. This provides a very low-bandwidth
   // way of communicating with the service worker (the service worker can check
@@ -134,19 +132,20 @@ async function startRecording(streamId: string): Promise<void> {
 }
 
 async function stopRecording(): Promise<void> {
-  if (!tabRecorder) {
+  if (!recorder) {
     console.debug("Recording not in progress");
     return;
   }
 
-  tabRecorder.stop();
+  recorder.stop();
 
+  // TODO: double-check this doesn't disrupt the dialer on the page
   // Stop so the recording icon goes away
-  for (const track of tabRecorder.stream.getTracks()) {
+  for (const track of recorder.stream.getTracks()) {
     track.stop();
   }
 
-  tabRecorder = null;
+  recorder = null;
 
   liveClient.finish();
   liveClient = null;

@@ -17,6 +17,8 @@
 
 import { type MessengerMeta } from "webext-messenger";
 
+let isAudioRecording = false;
+
 /**
  * Capture the visible tab as a PNG image.
  */
@@ -26,49 +28,45 @@ export async function captureTab(this: MessengerMeta): Promise<string> {
   });
 }
 
-let recording = false;
-
-export async function startAudioCapture(this: MessengerMeta): Promise<string> {
-  console.warn("startAudioCapture", { sender: this });
-
+export async function startAudioCapture(this: MessengerMeta): Promise<void> {
   const existingContexts = await chrome.runtime.getContexts({});
 
   const offscreenDocument = existingContexts.find(
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison -- errors at runtime when importing enum
     (x) => x.contextType === "OFFSCREEN_DOCUMENT",
   );
 
-  if (recording) {
+  if (isAudioRecording) {
     throw new Error("Recording already in progress");
   }
 
   // If an offscreen document is not already open, create one.
   if (offscreenDocument) {
-    recording = offscreenDocument.documentUrl.endsWith("#recording");
+    isAudioRecording = offscreenDocument.documentUrl.endsWith("#recording");
   } else {
     // Create an offscreen document.
     await chrome.offscreen.createDocument({
       url: "offscreen.html",
+      // @ts-expect-error -- errors at runtime when importing reasons
       reasons: ["USER_MEDIA"],
       justification: "Recording from chrome.tabCapture API",
     });
   }
 
-  // If called from sidebar, the tab ID is not available.
-  const tabId =
+  // If called from MV3 sidebar, the tab ID is not available.
+  const tabId = String(
     this.trace[0].tab?.id ??
-    new URL(this.trace[0].url).searchParams.get("tabId");
+      new URL(this.trace[0].url).searchParams.get("tabId"),
+  );
 
-  console.warn("getMediaStreamId", { tabId });
+  const targetTabId = Number.parseInt(tabId, 10);
 
   // Get a MediaStream for the active tab.
-  // TODO: fix typings so we can use await here
+  // TODO: fix typings so we can use await on chrome API directly here
   const streamId = await new Promise<string>((resolve) => {
-    chrome.tabCapture.getMediaStreamId(
-      { targetTabId: Number.parseInt(String(tabId), 10) },
-      (streamId: string) => {
-        resolve(streamId);
-      },
-    );
+    chrome.tabCapture.getMediaStreamId({ targetTabId }, (streamId: string) => {
+      resolve(streamId);
+    });
   });
 
   // Send the stream ID to the offscreen document to start recording.
@@ -78,20 +76,14 @@ export async function startAudioCapture(this: MessengerMeta): Promise<string> {
     data: streamId,
   });
 
-  recording = true;
-
-  // Returning streamId is not necessary - it's just used in the offscreen document.
-  // TODO: could we pass the stream ID to the content script vs. using the offscreen document?
-  return streamId;
+  isAudioRecording = true;
 }
 
 export async function stopAudioCapture(this: MessengerMeta): Promise<void> {
-  console.warn("stopAudioCapture", { sender: this });
-
   void chrome.runtime.sendMessage({
     type: "stop-recording",
     target: "offscreen",
   });
 
-  recording = false;
+  isAudioRecording = false;
 }

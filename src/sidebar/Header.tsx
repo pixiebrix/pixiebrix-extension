@@ -91,6 +91,7 @@ const Header: React.FunctionComponent = () => {
           } else {
             try {
               await startAudioCapture();
+
               setAudioOn(true);
             } catch (error) {
               notify.error({ message: "Error enabling audio analysis", error });
