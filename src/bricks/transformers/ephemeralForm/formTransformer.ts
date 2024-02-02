@@ -90,7 +90,7 @@ export const MODAL_FORM_SCHEMA: Schema = {
       },
       title: "CSS Stylesheet URLs",
       description:
-        "Stylesheets will apply to the rendered document in the order listed here",
+        "Stylesheets will apply to the form in the order listed here",
     },
   },
   required: ["schema"],
