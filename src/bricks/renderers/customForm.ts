@@ -173,6 +173,7 @@ export const CUSTOM_FORM_SCHEMA = {
       type: "array",
       items: {
         type: "string",
+        format: "uri",
       },
       title: "CSS Stylesheet URLs",
       description:
@@ -229,17 +230,19 @@ export class CustomFormRenderer extends RendererABC {
       successMessage,
       submitCaption = "Submit",
       className,
+      stylesheets = [],
       onSubmit,
     }: BrickArgs<{
       storage?: Storage;
       recordId?: string | null;
       schema: Schema;
       uiSchema?: UiSchema;
-      className?: string;
       autoSave?: boolean;
-      onSubmit?: PipelineExpression;
-      submitCaption?: string;
       successMessage?: string;
+      submitCaption?: string;
+      className?: string;
+      stylesheets?: string[];
+      onSubmit?: PipelineExpression;
     }>,
     { logger, runPipeline }: BrickOptions,
   ): Promise<ComponentRef> {
@@ -289,6 +292,7 @@ export class CustomFormRenderer extends RendererABC {
         autoSave,
         submitCaption,
         className,
+        stylesheets,
         async onSubmit(
           values: JsonObject,
           { submissionCount }: { submissionCount: number },
