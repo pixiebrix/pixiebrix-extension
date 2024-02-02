@@ -53,6 +53,8 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
     return;
   }
 
+  console.log("*** getting auth url patterns)");
+
   try {
     const authUrlPatterns = await getAuthUrlPatterns(
       validateUUID(managedOrganizationId),
