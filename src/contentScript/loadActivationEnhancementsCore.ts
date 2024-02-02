@@ -24,7 +24,7 @@ import { getRegistryIdsFromActivateUrl } from "@/activation/activationLinkUtils"
 import {
   type ACTIVATE_EVENT_DETAIL,
   ACTIVATE_EVENT_TYPE,
-} from "@/contentScript/sidebarActivation";
+} from "@/contentScript/activationConstants";
 
 let enhancementsLoaded = false;
 

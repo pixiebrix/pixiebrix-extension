@@ -39,6 +39,10 @@ import {
   getNextUrlFromActivateUrl,
   parseModActivationUrl,
 } from "@/activation/activationLinkUtils";
+import {
+  ACTIVATE_EVENT_DETAIL,
+  ACTIVATE_EVENT_TYPE,
+} from "@/contentScript/activationConstants";
 
 let listener: EventListener | null;
 
@@ -71,9 +75,6 @@ async function showSidebarActivationForMods(
 
   sidePanelOnClose(hideModActivationInSidebar);
 }
-
-export const ACTIVATE_EVENT_TYPE = "ActivateMods";
-export type ACTIVATE_EVENT_DETAIL = { activateUrl: string };
 
 function addActivateModsListener(): void {
   // Prevent duplicating listener
