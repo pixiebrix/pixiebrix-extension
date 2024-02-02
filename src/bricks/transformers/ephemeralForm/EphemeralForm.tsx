@@ -17,8 +17,7 @@
 
 import React, { useEffect } from "react";
 import validator from "@/validators/formValidator";
-import { Theme } from "@rjsf/bootstrap-4";
-import { withTheme, getDefaultRegistry } from "@rjsf/core";
+import JsonSchemaForm from "@rjsf/bootstrap-4";
 import {
   getFormDefinition,
   resolveForm,
@@ -35,8 +34,12 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isEmpty } from "lodash";
 import useAsyncState from "@/hooks/useAsyncState";
+import { Stylesheets } from "@/components/Stylesheets";
+import EmotionShadowRoot from "react-shadow/emotion";
+import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
+import bootstrapOverrides from "@/pageEditor/sidebar/sidebarBootstrapOverrides.scss?loadAsUrl";
 
 const fields = {
   DescriptionField,
@@ -56,17 +59,6 @@ const ModalLayout: React.FC = ({ children }) => (
 const PanelLayout: React.FC = ({ children }) => (
   <div className="p-3">{children}</div>
 );
-
-function monkeyPatchFormWidgets() {
-  const registry = getDefaultRegistry();
-  // Use default widget instead of bs4 widget because the bs4 file widget is broken
-  // https://github.com/rjsf-team/react-jsonschema-form/issues/2095#issuecomment-844309622
-  // TODO: Remove this monkeypatch since it was fixed in March 2023
-  Theme.widgets.FileWidget = registry.widgets.FileWidget;
-  return withTheme(Theme);
-}
-
-const JsonSchemaForm = monkeyPatchFormWidgets();
 
 /**
  * @see FormTransformer
@@ -130,40 +122,49 @@ const EphemeralForm: React.FC = () => {
     );
   }
 
+  // Custom stylesheets overrides bootstrap themes
+  const stylesheetUrls = isEmpty(definition.stylesheets)
+    ? [bootstrap, bootstrapOverrides]
+    : definition.stylesheets;
+
   return (
     <FormContainer>
       <ErrorBoundary>
-        <JsonSchemaForm
-          // Deep clone the schema because otherwise the schema is not extensible, which
-          // breaks validation when @cfworker/json-schema dereferences the schema
-          // See https://github.com/cfworker/cfworker/blob/263260ea661b6f8388116db7b8daa859e0d28b25/packages/json-schema/src/dereference.ts#L115
-          schema={cloneDeep(definition.schema)}
-          uiSchema={definition.uiSchema}
-          fields={fields}
-          widgets={uiWidgets}
-          validator={validator}
-          templates={templates}
-          onSubmit={({ formData: values }) => {
-            void resolveForm(target, nonce, values);
-          }}
-        >
-          <div>
-            <button className="btn btn-primary" type="submit">
-              {definition.submitCaption}
-            </button>
-            {definition.cancelable && isModal && (
-              <button
-                className="btn btn-link"
-                type="button"
-                onClick={() => {
-                  cancelForm(target, nonce);
-                }}
-              >
-                Cancel
-              </button>
-            )}
-          </div>
-        </JsonSchemaForm>
+        <EmotionShadowRoot.div>
+          <Stylesheets href={stylesheetUrls}>
+            <JsonSchemaForm
+              // Deep clone the schema because otherwise the schema is not extensible, which
+              // breaks validation when @cfworker/json-schema dereferences the schema
+              // See https://github.com/cfworker/cfworker/blob/263260ea661b6f8388116db7b8daa859e0d28b25/packages/json-schema/src/dereference.ts#L115
+              schema={cloneDeep(definition.schema)}
+              uiSchema={definition.uiSchema}
+              fields={fields}
+              widgets={uiWidgets}
+              validator={validator}
+              templates={templates}
+              onSubmit={({ formData: values }) => {
+                void resolveForm(target, nonce, values);
+              }}
+            >
+              <div>
+                <button className="btn btn-primary" type="submit">
+                  {definition.submitCaption}
+                </button>
+                {definition.cancelable && isModal && (
+                  <button
+                    className="btn btn-link"
+                    type="button"
+                    onClick={() => {
+                      cancelForm(target, nonce);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </JsonSchemaForm>
+          </Stylesheets>
+        </EmotionShadowRoot.div>
       </ErrorBoundary>
     </FormContainer>
   );

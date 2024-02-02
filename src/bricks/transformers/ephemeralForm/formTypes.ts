@@ -43,4 +43,10 @@ export type FormDefinition = {
    * @since 1.7.29
    */
   location: "sidebar" | "modal";
+  /**
+   * URLs for custom stylesheets to use and override base bootstrap theme in the form
+   *
+   * @since 1.8.8
+   */
+  stylesheets?: string[];
 };
