@@ -18,7 +18,6 @@
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
 import React, { useCallback, useState } from "react";
-import { validateRegistryId } from "@/types/helpers";
 import FormEditor, {
   FormIntroFields,
 } from "@/components/formBuilder/edit/FormEditor";
@@ -29,7 +28,7 @@ import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useField, useFormikContext } from "formik";
 import { partial } from "lodash";
 import {
-  customFormRendererSchema,
+  CUSTOM_FORM_SCHEMA,
   type Storage,
 } from "@/bricks/renderers/customForm";
 import AppApiIntegrationDependencyField from "@/components/fields/schemaFields/AppApiIntegrationDependencyField";
@@ -43,8 +42,6 @@ import { joinName } from "@/utils/formUtils";
 import useAsyncEffect from "use-async-effect";
 import PipelineToggleField from "@/pageEditor/fields/PipelineToggleField";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
-
-export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
 const recordIdSchema: Schema = {
   type: "string",
@@ -156,7 +153,7 @@ const FormDataBindingOptions: React.FC<{
           label="Namespace"
           isRequired
           schema={
-            customFormRendererSchema.properties.storage.oneOf[1].properties
+            CUSTOM_FORM_SCHEMA.properties.storage.oneOf[1].properties
               .namespace as Schema
           }
         />
@@ -190,7 +187,7 @@ const FormSubmissionOptions: React.FC<{
       <SchemaField
         name={makeName("autoSave")}
         label="Auto Save/Submit"
-        schema={customFormRendererSchema.properties.autoSave as Schema}
+        schema={CUSTOM_FORM_SCHEMA.properties.autoSave as Schema}
       />
 
       {!autoSave && (
@@ -210,9 +207,7 @@ const FormSubmissionOptions: React.FC<{
             <SchemaField
               name={makeName("submitCaption")}
               label="Submit Button Caption"
-              schema={
-                customFormRendererSchema.properties.submitCaption as Schema
-              }
+              schema={CUSTOM_FORM_SCHEMA.properties.submitCaption as Schema}
             />
           )}
         </>
@@ -221,7 +216,7 @@ const FormSubmissionOptions: React.FC<{
       <SchemaField
         name={makeName("successMessage")}
         label="Success Message"
-        schema={customFormRendererSchema.properties.successMessage as Schema}
+        schema={CUSTOM_FORM_SCHEMA.properties.successMessage as Schema}
       />
 
       <PipelineToggleField
@@ -273,6 +268,13 @@ const FormRendererOptions: React.FC<{
             fieldTypes={FORM_FIELD_TYPE_OPTIONS}
           />
         </ConfigErrorBoundary>
+      </ConnectedCollapsibleFieldSection>
+
+      <ConnectedCollapsibleFieldSection title={"Advanced: Theme"}>
+        <SchemaField
+          name={makeName("stylesheets")}
+          schema={CUSTOM_FORM_SCHEMA.properties.stylesheets as Schema}
+        />
       </ConnectedCollapsibleFieldSection>
     </div>
   );

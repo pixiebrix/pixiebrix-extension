@@ -29,9 +29,7 @@ import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/Run
 import FormModalOptions, {
   FORM_MODAL_ID,
 } from "@/pageEditor/fields/FormModalOptions";
-import FormRendererOptions, {
-  FORM_RENDERER_ID,
-} from "@/pageEditor/fields/FormRendererOptions";
+import FormRendererOptions from "@/pageEditor/fields/FormRendererOptions";
 import { GOOGLE_SHEETS_LOOKUP_ID } from "@/contrib/google/sheets/bricks/lookup";
 import LookupSpreadsheetOptions from "@/contrib/google/sheets/ui/LookupSpreadsheetOptions";
 import DatabaseGetOptions, {
@@ -57,6 +55,7 @@ import IdentityTransformerOptions from "@/bricks/transformers/IdentityTransforme
 import CommentEffect from "@/bricks/effects/comment";
 import CommentOptions from "@/bricks/effects/CommentOptions";
 import { DocumentRenderer } from "@/bricks/renderers/document";
+import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 
 /**
  * Custom BlockConfiguration pageEditor components.
@@ -72,7 +71,7 @@ export default function registerEditors() {
   optionsRegistry.set(GOOGLE_SHEETS_LOOKUP_ID, LookupSpreadsheetOptions);
   optionsRegistry.set(AUTOMATION_ANYWHERE_RUN_BOT_ID, BotOptions);
   optionsRegistry.set(FORM_MODAL_ID, FormModalOptions);
-  optionsRegistry.set(FORM_RENDERER_ID, FormRendererOptions);
+  optionsRegistry.set(CustomFormRenderer.BRICK_ID, FormRendererOptions);
   optionsRegistry.set(DATABASE_GET_ID, DatabaseGetOptions);
   optionsRegistry.set(DATABASE_PUT_ID, DatabasePutOptions);
   optionsRegistry.set(REMOTE_METHOD_ID, RemoteMethodOptions);

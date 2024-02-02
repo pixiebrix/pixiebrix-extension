@@ -1093,7 +1093,7 @@ describe("Collecting available vars", () => {
   describe("custom form renderer brick", () => {
     beforeAll(async () => {
       const customFormBlock = {
-        id: CustomFormRenderer.BLOCK_ID,
+        id: CustomFormRenderer.BRICK_ID,
         config: {
           schema: {
             type: "object",
@@ -1115,7 +1115,7 @@ describe("Collecting available vars", () => {
       jest.mocked(blockRegistry.allTyped).mockResolvedValue(
         new Map([
           [
-            CustomFormRenderer.BLOCK_ID,
+            CustomFormRenderer.BRICK_ID,
             {
               type: "renderer",
               block: new CustomFormRenderer(),

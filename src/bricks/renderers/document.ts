@@ -30,6 +30,7 @@ import {
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { compact } from "lodash";
 import { isValidUrl } from "@/utils/urlUtils";
+import { BusinessError } from "@/errors/businessErrors";
 
 export const DOCUMENT_SCHEMA: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -92,18 +93,25 @@ export class DocumentRenderer extends RendererABC {
   async render(
     {
       body,
-      stylesheets = [],
+      stylesheets: _stylesheets = [],
     }: BrickArgs<{
       body: DocumentElement[];
       stylesheets: string[];
     }>,
     options: BrickOptions,
   ): Promise<ComponentRef> {
+    const stylesheets = compact(_stylesheets);
+    for (const url of stylesheets) {
+      if (!isValidUrl(url)) {
+        throw new BusinessError(`Invalid Stylesheet URL: ${url}`);
+      }
+    }
+
     return {
       Component: DocumentViewLazy,
       props: {
         body,
-        stylesheets: compact(stylesheets).filter((url) => isValidUrl(url)),
+        stylesheets,
         options,
       },
     };
