@@ -21,7 +21,7 @@ import { useRequiredModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import Loader from "@/components/Loader";
 import { getDefaultAuthOptionsForMod, useAuthOptions } from "@/hooks/auth";
-import { isEmpty } from "lodash";
+import { isEmpty, zip } from "lodash";
 import { type AuthOption } from "@/auth/authTypes";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
@@ -32,6 +32,7 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 import type { ModOptionsPair } from "@/types/modTypes";
 import type { UnknownObject } from "@/types/objectTypes";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
 export type RequiredModDefinition = {
   /**
@@ -144,41 +145,45 @@ const RequireMods: React.FC<Props> = ({ mods, children }) => {
   const modDefinitionsState = useRequiredModDefinitions(
     mods.map((x) => x.modId),
   );
-
-  const modComponents = useSelector(selectExtensions);
-
+  const originalState = valueToAsyncState(mods);
   const authOptionsState = useAuthOptions();
 
+  const activedModComponents = useSelector(selectExtensions);
+
   const state = useDeriveAsyncState(
+    originalState,
     modDefinitionsState,
     authOptionsState,
-    async (modDefinitions: ModDefinition[], authOptions: AuthOption[]) =>
+    async (
+      modOptionPairs: ModOptionsPair[],
+      modDefinitions: ModDefinition[],
+      authOptions: AuthOption[],
+    ) =>
       Promise.all(
-        modDefinitions.map(async (modDefinition) => {
-          const { initialOptions } = mods.find(
-            (x) => x.modId === modDefinition.metadata.id,
-          );
-
-          const defaultAuthOptions = getDefaultAuthOptionsForMod(
-            modDefinition,
-            authOptions,
-          );
-
-          return {
-            modDefinition,
-            defaultAuthOptions,
-            initialOptions,
-            requiresConfiguration: requiresUserConfiguration(
+        zip(modOptionPairs, modDefinitions).map(
+          async ([{ initialOptions }, modDefinition]) => {
+            const defaultAuthOptions = getDefaultAuthOptionsForMod(
               modDefinition,
               authOptions,
+            );
+
+            return {
+              modDefinition,
+              defaultAuthOptions,
               initialOptions,
-            ),
-            includesQuickBar: await includesQuickBarStarterBrick(modDefinition),
-            isActive: modComponents.some(
-              (x) => x._recipe?.id === modDefinition.metadata.id,
-            ),
-          };
-        }),
+              requiresConfiguration: requiresUserConfiguration(
+                modDefinition,
+                authOptions,
+                initialOptions,
+              ),
+              includesQuickBar:
+                await includesQuickBarStarterBrick(modDefinition),
+              isActive: activedModComponents.some(
+                (x) => x._recipe?.id === modDefinition.metadata.id,
+              ),
+            };
+          },
+        ),
       ),
   );
 

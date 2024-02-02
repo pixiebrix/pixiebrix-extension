@@ -86,4 +86,23 @@ describe("requiresUserConfiguration", () => {
 
     expect(requiresUserConfiguration(definition, [], {})).toBe(true);
   });
+
+  it("treat initial option as not missing", () => {
+    const definition = modDefinitionFactory({
+      options: {
+        schema: {
+          properties: {
+            foo: {
+              type: "string",
+            },
+          },
+          required: ["foo"],
+        },
+      },
+    });
+
+    expect(requiresUserConfiguration(definition, [], { foo: "hello" })).toBe(
+      false,
+    );
+  });
 });
