@@ -16,14 +16,18 @@
  */
 
 import { fetch } from "@/hooks/fetch";
-import { ManagedOrganizationData } from "@/types/contract";
+import { type ManagedOrganizationData } from "@/types/contract";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { isLinked } from "@/auth/token";
 import { validateUUID } from "@/types/helpers";
-import { UUID } from "@/types/stringTypes";
+import { type UUID } from "@/types/stringTypes";
 import { testMatchPatterns } from "@/bricks/available";
+import { SessionValue } from "@/mv3/SessionStorage";
 
-let authUrlPatterns: string[] = [];
+const sessionValue = new SessionValue<string[]>(
+  "authUrlPatterns",
+  import.meta.url,
+);
 
 async function getAuthUrlPatterns(organizationId: UUID) {
   try {
@@ -50,30 +54,35 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
   }
 
   try {
-    authUrlPatterns = await getAuthUrlPatterns(
+    const authUrlPatterns = await getAuthUrlPatterns(
       validateUUID(managedOrganizationId),
     );
-  } catch (error) {
-    reportError(
-      new Error(`Unable to initialize restricted url access: ${error}`),
-    );
-  }
 
-  if (authUrlPatterns.length === 0) {
-    console.debug("No auth url patterns found, skipping url restriction");
-  }
-
-  browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (isLinked()) {
+    if (authUrlPatterns.length === 0) {
+      console.debug("No auth url patterns found, skipping url restriction");
       return;
     }
 
-    const isRestrictedUrl = testMatchPatterns(authUrlPatterns, tab?.url ?? "");
+    await sessionValue.set(authUrlPatterns);
+  } catch (error) {
+    reportError(error);
+  }
+
+  browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+    if (await isLinked()) {
+      return;
+    }
+
+    const cachedAuthUrlPatterns = await sessionValue.get();
+    const isRestrictedUrl = testMatchPatterns(
+      cachedAuthUrlPatterns,
+      tab?.url ?? "",
+    );
 
     if (isRestrictedUrl) {
       const errorMessage = `Access is restricted to '${tab.url}'. Log in with PixieBrix to proceed`;
-      browser.tabs.update(tabId, {
-        url: `app.pixiebrix.com/?error=${errorMessage}`,
+      await browser.tabs.update(tabId, {
+        url: `https://app.pixiebrix.com/?error=${errorMessage}`,
       });
     }
   });
