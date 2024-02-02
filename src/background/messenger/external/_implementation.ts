@@ -35,12 +35,12 @@ import type { ModOptionsPair } from "@/types/modTypes";
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 
 /**
- * @deprecated superseded by ActivationWithOptions. Will be dropped in 1.8.9
+ * @deprecated superseded by ModOptionsPair[]. Will be dropped in 1.8.9 or later version
  */
 type SingleModActivation = RegistryId;
 
 /**
- * @deprecated superseded by ActivationWithOptions. Will be dropped in 1.8.9
+ * @deprecated superseded by ModOptionsPair[]. Will be dropped in 1.8.9 or later version
  */
 type MultiModActivation = RegistryId[];
 
