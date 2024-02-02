@@ -91,7 +91,7 @@ export class DocumentRenderer extends RendererABC {
   async render(
     {
       body,
-      stylesheets = [],
+      stylesheets: _stylesheets = [],
     }: BrickArgs<{
       body: DocumentElement[];
       // Stylesheets array is validated to contain URIs in the brick input schema
@@ -99,6 +99,13 @@ export class DocumentRenderer extends RendererABC {
     }>,
     options: BrickOptions,
   ): Promise<ComponentRef> {
+    const stylesheets = compact(_stylesheets);
+    for (const url of stylesheets) {
+      if (!isValidUrl(url)) {
+        throw new Error(`Invalid Stylesheet URL: ${url}`);
+      }
+    }
+
     return {
       Component: DocumentViewLazy,
       props: {
