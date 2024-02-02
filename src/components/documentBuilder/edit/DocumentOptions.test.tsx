@@ -42,8 +42,6 @@ beforeAll(() => {
   registerDefaultWidgets();
 });
 
-jest.setTimeout(10_000); // Increase to 10 seconds, the stylesheets test can time out on CI with 5 seconds
-
 describe("DocumentOptions", () => {
   function basicFormState(
     documentElements: DocumentElement[],
@@ -233,6 +231,6 @@ describe("DocumentOptions", () => {
       ).toStrictEqual([
         toExpression("nunjucks", "https://example.com/stylesheet.css"),
       ]);
-    });
+    }, 10_000); // Increase to 10 seconds, the stylesheets test can time out on CI with 5 secondsg
   });
 });
