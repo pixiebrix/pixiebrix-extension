@@ -94,7 +94,7 @@ export class DocumentRenderer extends RendererABC {
       stylesheets = [],
     }: BrickArgs<{
       body: DocumentElement[];
-      // Stylesheets is validated to contain URIs in the brick input schema
+      // Stylesheets array is validated to contain URIs in the brick input schema
       stylesheets: string[];
     }>,
     options: BrickOptions,

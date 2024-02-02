@@ -30,6 +30,7 @@ import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import { joinName } from "@/utils/formUtils";
 import { partial } from "lodash";
+import { MODAL_FORM_SCHEMA } from "@/bricks/transformers/ephemeralForm/formTransformer";
 
 export const FORM_MODAL_ID = validateRegistryId("@pixiebrix/form-modal");
 
@@ -110,6 +111,13 @@ const FormModalOptions: React.FC<{
             showFormIntroFields={false}
           />
         </ConfigErrorBoundary>
+      </ConnectedCollapsibleFieldSection>
+
+      <ConnectedCollapsibleFieldSection title={"Advanced: Theme"}>
+        <SchemaField
+          name={configName("stylesheets")}
+          schema={MODAL_FORM_SCHEMA.properties.stylesheets as Schema}
+        />
       </ConnectedCollapsibleFieldSection>
     </div>
   );
