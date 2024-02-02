@@ -18,9 +18,10 @@
 import { type ModActivationPanelEntry } from "@/types/sidebarTypes";
 import notify from "@/utils/notify";
 import {
-  parseModActivationUrl,
+  parseModActivationUrlSearchParams,
   isActivationUrl,
 } from "@/activation/activationLinkUtils";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 export default function activateLinkClickHandler(
   event: MouseEvent,
@@ -38,7 +39,9 @@ export default function activateLinkClickHandler(
     return;
   }
 
-  const mods = parseModActivationUrl(href);
+  const mods = parseModActivationUrlSearchParams(
+    new URL(href, DEFAULT_SERVICE_URL).searchParams,
+  );
 
   if (mods.length === 0) {
     notify.warning(`No valid mod ids provided in URL: ${href}`);

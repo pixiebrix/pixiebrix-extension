@@ -37,7 +37,7 @@ import type { Nullishable } from "@/utils/nullishUtils";
 import type { ModOptionsPair } from "@/types/modTypes";
 import {
   getNextUrlFromActivateUrl,
-  parseModActivationUrl,
+  parseModActivationUrlSearchParams,
 } from "@/activation/activationLinkUtils";
 import {
   type ACTIVATE_EVENT_DETAIL,
@@ -90,7 +90,9 @@ function addActivateModsListener(): void {
       return;
     }
 
-    const mods = parseModActivationUrl(activateUrl);
+    const mods = parseModActivationUrlSearchParams(
+      new URL(activateUrl).searchParams,
+    );
 
     if (nextUrl) {
       await setActivatingMods({ mods });

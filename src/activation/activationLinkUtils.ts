@@ -105,12 +105,13 @@ function parseEncodedOptions(
 
 /**
  * Parse a mod activation URL into an array of mod ids and initial options.
- * @param activateUrl the activation URL
+ * @param searchParams the activation URL search params
  */
-export function parseModActivationUrl(activateUrl: string): ModOptionsPair[] {
-  const url = new URL(activateUrl);
-  const modIds = getRegistryIdsFromActivateUrlSearchParams(url.searchParams);
-  const encodedOptions = url.searchParams.get("activateOptions") as EncodedJSON;
+export function parseModActivationUrlSearchParams(
+  searchParams: URLSearchParams,
+): ModOptionsPair[] {
+  const modIds = getRegistryIdsFromActivateUrlSearchParams(searchParams);
+  const encodedOptions = searchParams.get("activateOptions") as EncodedJSON;
   const initialOptions = parseEncodedOptions(encodedOptions);
   // NOTE: currently applying same options to all mods
   return modIds.map((modId) => ({ modId, initialOptions }));

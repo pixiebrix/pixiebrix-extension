@@ -20,7 +20,7 @@ import {
   getNextUrlFromActivateUrl,
   getRegistryIdsFromActivateUrlSearchParams,
   isActivationUrl,
-  parseModActivationUrl,
+  parseModActivationUrlSearchParams,
 } from "@/activation/activationLinkUtils";
 import { validateRegistryId } from "@/types/helpers";
 
@@ -85,29 +85,33 @@ describe("getNextUrlFromActivateUrl", () => {
   });
 });
 
-describe("parseModActivationUrl", () => {
+describe("parseModActivationUrlSearchParams", () => {
   test("handles no options", () => {
     expect(
-      parseModActivationUrl("https://app.pixiebrix.com/activate?id=test%2F123"),
+      parseModActivationUrlSearchParams(new URLSearchParams("id=test%2F123")),
     ).toStrictEqual([{ modId: "test/123", initialOptions: {} }]);
   });
 
   test("handles encoded options", () => {
     expect(
-      parseModActivationUrl(
-        `https://app.pixiebrix.com/activate?id=test%2F123&activateOptions=${encodeURIComponent(
-          "eyJmb28iOiA0Mn0=",
-        )}`,
+      parseModActivationUrlSearchParams(
+        new URLSearchParams(
+          `id=test%2F123&activateOptions=${encodeURIComponent(
+            "eyJmb28iOiA0Mn0=",
+          )}`,
+        ),
       ),
     ).toStrictEqual([{ modId: "test/123", initialOptions: { foo: 42 } }]);
   });
 
   test("spreads encoded options", () => {
     expect(
-      parseModActivationUrl(
-        `https://app.pixiebrix.com/activate?id[]=test%2F123&id[]=test%2Fabc&activateOptions=${encodeURIComponent(
-          "eyJmb28iOiA0Mn0=",
-        )}`,
+      parseModActivationUrlSearchParams(
+        new URLSearchParams(
+          `id[]=test%2F123&id[]=test%2Fabc&activateOptions=${encodeURIComponent(
+            "eyJmb28iOiA0Mn0=",
+          )}`,
+        ),
       ),
     ).toStrictEqual([
       { modId: "test/123", initialOptions: { foo: 42 } },
