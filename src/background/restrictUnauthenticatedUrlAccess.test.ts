@@ -19,15 +19,9 @@ import initRestrictUnauthenticatedUrlAccess from "@/background/restrictUnauthent
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { uuidv4 } from "@/types/helpers";
-import { isLinked } from "@/auth/token";
 import { INTERNAL_reset } from "@/store/enterprise/managedStorage";
 
 const axiosMock = new MockAdapter(axios);
-const isLinkedMock = jest.mocked(isLinked);
-
-jest.mock("@/auth/token", () => ({
-  isLinked: jest.fn(),
-}));
 
 const expectedManageOrganizationId = uuidv4();
 const expectedAuthUrlPatterns = [
@@ -48,10 +42,10 @@ describe("enforceAuthentication", () => {
   });
 
   afterEach(async () => {
+    // eslint-disable-next-line new-cap -- used for testing
     INTERNAL_reset();
     await browser.storage.managed.clear();
     axiosMock.reset();
-    isLinkedMock.mockClear();
   });
 
   it("does nothing if managed storage values are not configured", async () => {
@@ -64,8 +58,6 @@ describe("enforceAuthentication", () => {
       managedOrganizationId: expectedManageOrganizationId,
       enforceAuthentication: true,
     });
-
-    // isLinkedMock.mockResolvedValue(false);
 
     await initRestrictUnauthenticatedUrlAccess();
     expect(axiosMock.history.get).toHaveLength(1);
