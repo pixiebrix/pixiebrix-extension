@@ -155,8 +155,6 @@ const RequireMods: React.FC<Props> = ({ mods, children }) => {
     async (modDefinitions: ModDefinition[], authOptions: AuthOption[]) =>
       Promise.all(
         modDefinitions.map(async (modDefinition) => {
-          debugger;
-
           const { initialOptions } = mods.find(
             (x) => x.modId === modDefinition.metadata.id,
           );
