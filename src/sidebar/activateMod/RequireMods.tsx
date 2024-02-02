@@ -148,7 +148,7 @@ const RequireMods: React.FC<Props> = ({ mods, children }) => {
   const originalState = valueToAsyncState(mods);
   const authOptionsState = useAuthOptions();
 
-  const activedModComponents = useSelector(selectExtensions);
+  const activatedModComponents = useSelector(selectExtensions);
 
   const state = useDeriveAsyncState(
     originalState,
@@ -178,7 +178,7 @@ const RequireMods: React.FC<Props> = ({ mods, children }) => {
               ),
               includesQuickBar:
                 await includesQuickBarStarterBrick(modDefinition),
-              isActive: activedModComponents.some(
+              isActive: activatedModComponents.some(
                 (x) => x._recipe?.id === modDefinition.metadata.id,
               ),
             };
