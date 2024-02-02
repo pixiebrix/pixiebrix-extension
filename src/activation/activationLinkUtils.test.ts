@@ -16,7 +16,7 @@
  */
 
 import {
-  constructActivationUrl,
+  createActivationUrl,
   isActivationUrl,
 } from "@/activation/activationLinkUtils";
 import { validateRegistryId } from "@/types/helpers";
@@ -24,13 +24,13 @@ import { validateRegistryId } from "@/types/helpers";
 describe("constructActivationUrl", () => {
   test("single id", () => {
     expect(
-      constructActivationUrl([validateRegistryId("test/123")]).toString(),
+      createActivationUrl([validateRegistryId("test/123")]).toString(),
     ).toBe("https://app.pixiebrix.com/activate?id=test%2F123");
   });
 
   test("multiple ids", () => {
     expect(
-      constructActivationUrl([
+      createActivationUrl([
         validateRegistryId("test/123"),
         validateRegistryId("test/abc"),
       ]).toString(),

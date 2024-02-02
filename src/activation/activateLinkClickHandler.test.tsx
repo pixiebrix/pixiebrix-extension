@@ -20,7 +20,7 @@ import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
 import { render, screen } from "@testing-library/react";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import userEvent from "@testing-library/user-event";
-import { constructActivationUrl } from "@/activation/activationLinkUtils";
+import { createActivationUrl } from "@/activation/activationLinkUtils";
 
 const callback = jest.fn();
 
@@ -35,7 +35,7 @@ beforeEach(() => {
 describe("activateLinkClickHandler", () => {
   it("handles simple anchor element", async () => {
     const modId = registryIdFactory();
-    const href = constructActivationUrl([modId]).toString();
+    const href = createActivationUrl([modId]).toString();
     render(<a href={href}>Activate Mod</a>);
 
     document.addEventListener("click", handleClicks);

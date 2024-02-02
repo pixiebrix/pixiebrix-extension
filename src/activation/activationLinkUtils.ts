@@ -26,10 +26,10 @@ import type { ModOptionsPair } from "@/types/modTypes";
 const ACTIVATE_PATH = "/activate";
 
 /**
- * Construct a mod activation URL. Handles URL encoding.
+ * Create a mod activation URL. Handles URL encoding.
  * @param modIds
  */
-export function constructActivationUrl(modIds: RegistryId[]): URL {
+export function createActivationUrl(modIds: RegistryId[]): URL {
   const url = new URL(`${DEFAULT_SERVICE_URL}${ACTIVATE_PATH}`);
 
   if (modIds.length === 1) {
@@ -62,7 +62,7 @@ export function isActivationUrl(maybeActivationUrl: string): boolean {
  * Read valid registry ids from an activation URL. Handles both `id` and `id[]`.
  * @param url the activation URL
  */
-export function getIdsFromActivateUrl(url: URL): RegistryId[] {
+export function getRegistryIdsFromActivateUrl(url: URL): RegistryId[] {
   const rawIds = [
     ...url.searchParams.getAll("id"),
     ...url.searchParams.getAll("id[]"),
@@ -107,7 +107,7 @@ function parseEncodedOptions(
  */
 export function parseModActivationUrl(activateUrl: string): ModOptionsPair[] {
   const url = new URL(activateUrl);
-  const modIds = getIdsFromActivateUrl(url);
+  const modIds = getRegistryIdsFromActivateUrl(url);
   const encodedOptions = url.searchParams.get("activateOptions") as EncodedJSON;
   const initialOptions = parseEncodedOptions(encodedOptions);
   // NOTE: currently applying same options to all mods

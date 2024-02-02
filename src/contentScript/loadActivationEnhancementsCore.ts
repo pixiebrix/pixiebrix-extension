@@ -20,7 +20,7 @@ import { DEFAULT_SERVICE_URL, MARKETPLACE_URL } from "@/urlConstants";
 import { getActivatedModIds } from "@/store/extensionsStorage";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
 import { isReadyInThisDocument } from "@/contentScript/ready";
-import { getIdsFromActivateUrl } from "@/activation/activationLinkUtils";
+import { getRegistryIdsFromActivateUrl } from "@/activation/activationLinkUtils";
 import {
   type ACTIVATE_EVENT_DETAIL,
   ACTIVATE_EVENT_TYPE,
@@ -82,7 +82,7 @@ export async function loadActivationEnhancements(): Promise<void> {
 
   for (const button of activateButtonLinks) {
     const url = new URL(button.href);
-    const modIds = getIdsFromActivateUrl(url);
+    const modIds = getRegistryIdsFromActivateUrl(url);
     if (modIds.length === 0) {
       continue;
     }

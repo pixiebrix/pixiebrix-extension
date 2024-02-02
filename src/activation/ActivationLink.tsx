@@ -24,7 +24,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import { writeTextToClipboard } from "@/utils/clipboardUtils";
-import { constructActivationUrl } from "@/activation/activationLinkUtils";
+import { createActivationUrl } from "@/activation/activationLinkUtils";
 
 type ActivationLinkProps = {
   modId: RegistryId;
@@ -33,7 +33,7 @@ type ActivationLinkProps = {
 const ActivationLink: React.FunctionComponent<ActivationLinkProps> = ({
   modId,
 }) => {
-  const activationLink = constructActivationUrl([modId]).toString();
+  const activationLink = createActivationUrl([modId]).toString();
 
   return (
     <InputGroup>
