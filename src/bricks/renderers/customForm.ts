@@ -24,7 +24,7 @@ import notify from "@/utils/notify";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { getPageState, setPageState } from "@/contentScript/messenger/api";
-import { isEmpty, isPlainObject, set } from "lodash";
+import { compact, isEmpty, isPlainObject, set } from "lodash";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type UUID } from "@/types/stringTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
@@ -47,6 +47,7 @@ import { ensureJsonObject, isObject } from "@/utils/objectUtils";
 import { getOutputReference, validateOutputKey } from "@/runtime/runtimeTypes";
 import { type BrickConfig } from "@/bricks/types";
 import { isExpression } from "@/utils/expressionUtils";
+import { isValidUrl } from "@/utils/urlUtils";
 
 interface DatabaseResult {
   success: boolean;
@@ -230,7 +231,7 @@ export class CustomFormRenderer extends RendererABC {
       successMessage,
       submitCaption = "Submit",
       className,
-      stylesheets = [],
+      stylesheets: _stylesheets = [],
       onSubmit,
     }: BrickArgs<{
       storage?: Storage;
@@ -281,6 +282,14 @@ export class CustomFormRenderer extends RendererABC {
       /* webpackChunkName: "CustomFormComponent" */
       "./CustomFormComponent"
     );
+
+    const stylesheets = compact(_stylesheets);
+    // Validate the urls
+    for (const url of stylesheets) {
+      if (!isValidUrl(url)) {
+        throw new BusinessError(`Invalid Stylesheet URL: ${url}`);
+      }
+    }
 
     return {
       Component: CustomFormComponent,
