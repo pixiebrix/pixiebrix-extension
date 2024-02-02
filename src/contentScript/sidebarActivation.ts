@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import {
   hideModActivationInSidebar,
@@ -37,9 +36,8 @@ import { allSettled } from "@/utils/promiseUtils";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { ModOptionsPair } from "@/types/modTypes";
 import {
-  getEncodedOptionsFromActivateUrl,
   getNextUrlFromActivateUrl,
-  parseEncodedOptions,
+  parseModActivationUrl,
 } from "@/activation/activationLinkUtils";
 
 let listener: EventListener | null;
@@ -74,14 +72,15 @@ async function showSidebarActivationForMods(
   sidePanelOnClose(hideModActivationInSidebar);
 }
 
+export const ACTIVATE_EVENT_TYPE = "ActivateMods";
+export type ACTIVATE_EVENT_DETAIL = { activateUrl: string };
+
 function addActivateModsListener(): void {
   // Prevent duplicating listener
-  window.removeEventListener("ActivateMods", listener);
+  window.removeEventListener(ACTIVATE_EVENT_TYPE, listener);
 
-  listener = async (
-    event: CustomEvent<{ modIds: RegistryId[]; activateUrl: string }>,
-  ) => {
-    const { modIds, activateUrl } = event.detail;
+  listener = async (event: CustomEvent<ACTIVATE_EVENT_DETAIL>) => {
+    const { activateUrl } = event.detail;
     const nextUrl = getNextUrlFromActivateUrl(activateUrl);
 
     if (!(await isLinked())) {
@@ -90,10 +89,7 @@ function addActivateModsListener(): void {
       return;
     }
 
-    const encodedOptions = getEncodedOptionsFromActivateUrl(activateUrl);
-    const initialOptions = parseEncodedOptions(encodedOptions);
-    // NOTE: currently applying same options to all mods
-    const mods = modIds.map((modId) => ({ modId, initialOptions }));
+    const mods = parseModActivationUrl(activateUrl);
 
     if (nextUrl) {
       await setActivatingMods(mods);
@@ -103,9 +99,11 @@ function addActivateModsListener(): void {
 
     const activatedModIds = await getActivatedModIds();
 
+    const modIds = mods.map((x) => x.modId);
+
     reportEvent(Events.START_MOD_ACTIVATE, {
       // For legacy, report the first mod id
-      blueprintId: modIds[0],
+      blueprintId: modIds,
       modIds,
       screen: "marketplace",
       reinstall: modIds.some((x) => activatedModIds.has(x)),
@@ -114,7 +112,7 @@ function addActivateModsListener(): void {
     await showSidebarActivationForMods(mods);
   };
 
-  window.addEventListener("ActivateMods", listener);
+  window.addEventListener(ACTIVATE_EVENT_TYPE, listener);
 }
 
 export async function initSidebarActivation(): Promise<void> {

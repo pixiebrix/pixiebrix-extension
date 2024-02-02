@@ -15,15 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "@/types/helpers";
 import { type ModActivationPanelEntry } from "@/types/sidebarTypes";
 import notify from "@/utils/notify";
-import { compact } from "lodash";
 import {
-  getEncodedOptionsFromActivateUrl,
+  parseModActivationUrl,
   isActivationUrl,
-  parseEncodedOptions,
-  readIdsFromUrl,
 } from "@/activation/activationLinkUtils";
 
 export default function activateLinkClickHandler(
@@ -42,27 +38,12 @@ export default function activateLinkClickHandler(
     return;
   }
 
-  const url = new URL(href);
-  const rawIds = readIdsFromUrl(url);
+  const mods = parseModActivationUrl(href);
 
-  let modIds;
-
-  try {
-    modIds = compact(rawIds.map((x) => validateRegistryId(x)));
-  } catch {
-    notify.warning(`Invalid mod id in URL: ${href}`);
+  if (mods.length === 0) {
+    notify.warning(`No valid mod ids provided in URL: ${href}`);
     return;
   }
-
-  if (modIds.length === 0) {
-    notify.warning(`Mod id param not found in activate link url: ${href}`);
-    return;
-  }
-
-  const encodedOptions = getEncodedOptionsFromActivateUrl(href);
-  const initialOptions = parseEncodedOptions(encodedOptions);
-  // NOTE: currently applying same options to all mods
-  const mods = modIds.map((modId) => ({ modId, initialOptions }));
 
   event.preventDefault();
 

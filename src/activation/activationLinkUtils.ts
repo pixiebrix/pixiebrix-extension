@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isEmpty } from "lodash";
 import type { EncodedJSON } from "@/types/stringTypes";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { JsonObject } from "type-fest";
 import type { RegistryId } from "@/types/registryTypes";
+import { isRegistryId } from "@/types/helpers";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import type { ModOptionsPair } from "@/types/modTypes";
 
-const SERVICE_ORIGIN = "https://app.pixiebrix.com";
 const ACTIVATE_PATH = "/activate";
 
 /**
@@ -29,10 +30,11 @@ const ACTIVATE_PATH = "/activate";
  * @param modIds
  */
 export function constructActivationUrl(modIds: RegistryId[]): URL {
-  const url = new URL(`${SERVICE_ORIGIN}${ACTIVATE_PATH}`);
+  const url = new URL(`${DEFAULT_SERVICE_URL}${ACTIVATE_PATH}`);
 
   if (modIds.length === 1) {
-    url.searchParams.append("id", modIds[0]);
+    // Known not to be undefined due to length check
+    url.searchParams.append("id", modIds[0] as string);
     return url;
   }
 
@@ -50,22 +52,23 @@ export function constructActivationUrl(modIds: RegistryId[]): URL {
 export function isActivationUrl(maybeActivationUrl: string): boolean {
   try {
     const url = new URL(maybeActivationUrl);
-    return url.origin === SERVICE_ORIGIN && url.pathname === ACTIVATE_PATH;
+    return url.origin === DEFAULT_SERVICE_URL && url.pathname === ACTIVATE_PATH;
   } catch {
     return false;
   }
 }
 
 /**
- * Read id search params from the URL. Handles both `id` and `id[]`.
- * @param url
+ * Read valid registry ids from an activation URL. Handles both `id` and `id[]`.
+ * @param url the activation URL
  */
-export function readIdsFromUrl(url: URL): string[] {
+export function getIdsFromActivateUrl(url: URL): RegistryId[] {
   const rawIds = [
     ...url.searchParams.getAll("id"),
     ...url.searchParams.getAll("id[]"),
   ];
-  return rawIds.filter((x) => !isEmpty(x));
+
+  return rawIds.filter((x) => isRegistryId(x)) as RegistryId[];
 }
 
 export function getNextUrlFromActivateUrl(activateUrl: string): string | null {
@@ -73,18 +76,11 @@ export function getNextUrlFromActivateUrl(activateUrl: string): string | null {
   return url.searchParams.get("nextUrl");
 }
 
-export function getEncodedOptionsFromActivateUrl(
-  activateUrl: string,
-): EncodedJSON | null {
-  const url = new URL(activateUrl);
-  return url.searchParams.get("activateOptions") as EncodedJSON;
-}
-
 /**
  * Parse base64 encoded mod option configuration.
  * @param encodedOptions the base64 encoded options
  */
-export function parseEncodedOptions(
+function parseEncodedOptions(
   encodedOptions: Nullishable<EncodedJSON>,
 ): JsonObject {
   if (!encodedOptions) {
@@ -103,4 +99,17 @@ export function parseEncodedOptions(
 
   // @ts-expect-error -- typescript thinks it can be a JsonObject | readonly JsonValue[] for some reason
   return json ?? {};
+}
+
+/**
+ * Parse a mod activation URL into an array of mod ids and initial options.
+ * @param activateUrl the activation URL
+ */
+export function parseModActivationUrl(activateUrl: string): ModOptionsPair[] {
+  const url = new URL(activateUrl);
+  const modIds = getIdsFromActivateUrl(url);
+  const encodedOptions = url.searchParams.get("activateOptions") as EncodedJSON;
+  const initialOptions = parseEncodedOptions(encodedOptions);
+  // NOTE: currently applying same options to all mods
+  return modIds.map((modId) => ({ modId, initialOptions }));
 }

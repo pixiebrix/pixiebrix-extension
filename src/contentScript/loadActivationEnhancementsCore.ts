@@ -17,24 +17,19 @@
 
 import { isEmpty, startsWith } from "lodash";
 import { DEFAULT_SERVICE_URL, MARKETPLACE_URL } from "@/urlConstants";
-import { type RegistryId } from "@/types/registryTypes";
-import { isRegistryId } from "@/types/helpers";
 import { getActivatedModIds } from "@/store/extensionsStorage";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
 import { isReadyInThisDocument } from "@/contentScript/ready";
+import { getIdsFromActivateUrl } from "@/activation/activationLinkUtils";
+import {
+  type ACTIVATE_EVENT_DETAIL,
+  ACTIVATE_EVENT_TYPE,
+} from "@/contentScript/sidebarActivation";
 
 let enhancementsLoaded = false;
 
 function isMarketplacePage(): boolean {
   return startsWith(window.location.href, MARKETPLACE_URL);
-}
-
-/**
- * Read all id search params from the URL. Handles both `id` and `id[]`.
- */
-function extractIdsFromUrl(searchParams: URLSearchParams): RegistryId[] {
-  const rawIds = [...searchParams.getAll("id"), ...searchParams.getAll("id[]")];
-  return rawIds.filter((x) => isRegistryId(x)) as RegistryId[];
 }
 
 /**
@@ -87,7 +82,7 @@ export async function loadActivationEnhancements(): Promise<void> {
 
   for (const button of activateButtonLinks) {
     const url = new URL(button.href);
-    const modIds = extractIdsFromUrl(url.searchParams);
+    const modIds = getIdsFromActivateUrl(url);
     if (modIds.length === 0) {
       continue;
     }
@@ -111,13 +106,14 @@ export async function loadActivationEnhancements(): Promise<void> {
       );
 
       if (isContentScriptReady) {
+        const detail: ACTIVATE_EVENT_DETAIL = {
+          // The button href may have changed since the listener was added, extract ids again
+          activateUrl: button.href,
+        };
+
         window.dispatchEvent(
-          new CustomEvent("ActivateMods", {
-            // The button href may have changed since the listener was added, extract ids again
-            detail: {
-              modIds: extractIdsFromUrl(new URL(button.href).searchParams),
-              activateUrl: button.href,
-            },
+          new CustomEvent(ACTIVATE_EVENT_TYPE, {
+            detail,
           }),
         );
       } else {
