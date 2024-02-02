@@ -53,8 +53,6 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
     return;
   }
 
-  console.log("*** getting auth url patterns)");
-
   try {
     const authUrlPatterns = await getAuthUrlPatterns(
       validateUUID(managedOrganizationId),
@@ -85,6 +83,7 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
       const errorMessage = `Access is restricted to '${tab.url}'. Log in with PixieBrix to proceed`;
       const defaultUrl = new URL("https://app.pixiebrix.com/login/");
       defaultUrl.searchParams.set("error", errorMessage);
+
       await browser.tabs.update(tabId, {
         url: ssoUrl ?? defaultUrl.href,
       });
