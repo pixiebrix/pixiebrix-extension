@@ -40,7 +40,7 @@ let defaultFieldName: string;
 beforeAll(() => {
   registerDefaultWidgets();
   const { schema, uiSchema } = getExampleBrickConfig(
-    CustomFormRenderer.BLOCK_ID,
+    CustomFormRenderer.BRICK_ID,
   );
   exampleFormSchema = {
     schema,
@@ -432,7 +432,7 @@ describe("rename a field", () => {
     const FormikTemplate = createFormikTemplate(
       {
         [RJSF_SCHEMA_PROPERTY_NAME]: getExampleBrickConfig(
-          CustomFormRenderer.BLOCK_ID,
+          CustomFormRenderer.BRICK_ID,
         ),
       },
       jest.fn(),
@@ -457,7 +457,7 @@ describe("rename a field", () => {
     const FormikTemplate = createFormikTemplate(
       {
         [RJSF_SCHEMA_PROPERTY_NAME]: getExampleBrickConfig(
-          CustomFormRenderer.BLOCK_ID,
+          CustomFormRenderer.BRICK_ID,
         ),
       },
       jest.fn(),

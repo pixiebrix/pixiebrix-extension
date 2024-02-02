@@ -115,7 +115,7 @@ export function getPipelinePropNames(
       return propNames;
     }
 
-    case CustomFormRenderer.BLOCK_ID: {
+    case CustomFormRenderer.BRICK_ID: {
       const propNames = [];
 
       // Only show onSubmit if it's provided, to avoid cluttering the UI
@@ -173,7 +173,7 @@ export function getVariableKeyForSubPipeline(
   }
 
   if (
-    brickConfig.id === CustomFormRenderer.BLOCK_ID &&
+    brickConfig.id === CustomFormRenderer.BRICK_ID &&
     pipelinePropName === "onSubmit"
   ) {
     // We currently don't allow the user to rename the variable for the onSubmit pipeline because it'd add another

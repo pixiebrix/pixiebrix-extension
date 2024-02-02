@@ -94,7 +94,7 @@ export function getExampleBrickConfig(
       };
     }
 
-    case CustomFormRenderer.BLOCK_ID: {
+    case CustomFormRenderer.BRICK_ID: {
       return {
         storage: {
           type: "state",

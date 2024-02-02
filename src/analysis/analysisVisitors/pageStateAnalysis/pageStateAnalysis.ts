@@ -71,7 +71,7 @@ class PageStateVisitor extends AnalysisVisitorWithResolvedBricksABC {
     }
 
     if (
-      blockConfig.id === CustomFormRenderer.BLOCK_ID &&
+      blockConfig.id === CustomFormRenderer.BRICK_ID &&
       (blockConfig.config.storage as Storage)?.type === "state"
     ) {
       const storage = blockConfig.config.storage as StateStorage;
