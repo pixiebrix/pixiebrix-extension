@@ -45,7 +45,7 @@ describe("activateLinkClickHandler", () => {
     expect(callback).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "activateMods",
-        modIds: [modId],
+        mods: [{ modId, initialOptions: {} }],
         heading: expect.toBeString(),
       }),
     );
@@ -70,7 +70,7 @@ describe("activateLinkClickHandler", () => {
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({
           type: "activateMods",
-          modIds,
+          mods: modIds.map((x) => ({ modId: x, initialOptions: {} })),
           heading: expect.toBeString(),
         }),
       );

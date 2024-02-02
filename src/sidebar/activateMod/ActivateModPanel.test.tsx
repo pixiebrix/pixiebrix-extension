@@ -26,7 +26,6 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { valueToAsyncCacheState } from "@/utils/asyncStateUtils";
-import { validateRegistryId } from "@/types/helpers";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
 import {
@@ -54,10 +53,13 @@ import useActivateRecipe, {
   type ActivateResult,
 } from "@/activation/useActivateRecipe";
 import brickRegistry from "@/bricks/registry";
+import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
-
 jest.mock("@/sidebar/sidebarSelectors");
+jest.mock("@/hooks/useQuickbarShortcut");
+
+const modRegistryId = registryIdFactory();
 
 const useRequiredModDefinitionsMock = jest.mocked(useRequiredModDefinitions);
 const checkModDefinitionPermissionsMock = jest.mocked(
@@ -83,8 +85,6 @@ jest.mock("@/registry/internal", () => ({
   // We're also mocking all the functions that this output is passed to, so we can return empty array
   resolveRecipe: jest.fn().mockResolvedValue([]),
 }));
-
-jest.mock("@/hooks/useQuickbarShortcut");
 
 const useQuickbarShortcutMock = jest.mocked(useQuickbarShortcut);
 
@@ -151,7 +151,7 @@ function setupMocksAndRender(
   modDefinition = defaultModDefinitionFactory({
     ...modDefinitionOverride,
     metadata: {
-      id: validateRegistryId("test-mod"),
+      id: modRegistryId,
       name: "Test Mod",
     },
   });
@@ -561,7 +561,9 @@ describe("ActivateModPanel", () => {
 describe("ActivateMultipleModsPanel", () => {
   it("automatically activates single mod", async () => {
     const { modDefinition, builtInIntegrationConfigs } =
-      getModDefinitionWithBuiltInIntegrationConfigs();
+      getModDefinitionWithBuiltInIntegrationConfigs({
+        modId: modRegistryId,
+      });
 
     appApiMock
       .onGet("/api/services/shared/")
@@ -581,7 +583,9 @@ describe("ActivateMultipleModsPanel", () => {
   });
 
   it("shows error if any mod requires configuration", async () => {
-    const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs();
+    const { modDefinition } = getModDefinitionWithBuiltInIntegrationConfigs({
+      modId: modRegistryId,
+    });
 
     setupMocksAndRender(modDefinition, {
       componentOverride: (

@@ -156,7 +156,7 @@ describe("marketplace enhancements", () => {
     // The show-sidebar function should be called
     expect(showSidebarMock).toHaveBeenCalledExactlyOnceWith({
       heading: "Activating",
-      modIds,
+      mods: modIds.map((id) => ({ modId: id, initialOptions: {} })),
     });
   });
 
