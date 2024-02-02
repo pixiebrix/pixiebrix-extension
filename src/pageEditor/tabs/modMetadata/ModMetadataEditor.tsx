@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ import {
   selectActiveRecipeId,
   selectDirtyMetadataForRecipeId,
 } from "@/pageEditor/slices/editorSelectors";
-import { Card, Col, Container, Row } from "react-bootstrap";
+import { Card, Container } from "react-bootstrap";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { actions } from "@/pageEditor/slices/editorSlice";
@@ -40,6 +40,7 @@ import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
+import cx from "classnames";
 
 // TODO: This should be yup.SchemaOf<RecipeMetadataFormState> but we can't set the `id` property to `RegistryId`
 // see: https://github.com/jquense/yup/issues/1183#issuecomment-749186432
@@ -104,15 +105,11 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
   if (isFetching || error) {
     return (
       <Container>
-        <Row>
-          <Col>
-            {isFetching ? (
-              <Loader />
-            ) : (
-              <div className="text-danger">{getErrorMessage(error)}</div>
-            )}
-          </Col>
-        </Row>
+        {isFetching ? (
+          <Loader />
+        ) : (
+          <div className="text-danger">{getErrorMessage(error)}</div>
+        )}
       </Container>
     );
   }
@@ -165,24 +162,20 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
   );
 
   return (
-    <Container fluid className={styles.root}>
-      <Row className={styles.row}>
-        <Col sm={11} md={10} lg={9} xl={8}>
-          <ErrorBoundary>
-            <Form
-              validationSchema={editModSchema}
-              initialValues={initialFormState}
-              onSubmit={() => {
-                console.error(
-                  "The form's submit should not be called to save recipe metadata. Use 'saveRecipe' from 'useRecipeSaver' instead.",
-                );
-              }}
-              renderBody={renderBody}
-              renderSubmit={() => null}
-            />
-          </ErrorBoundary>
-        </Col>
-      </Row>
+    <Container fluid className={cx(styles.root, "max-750")}>
+      <ErrorBoundary>
+        <Form
+          validationSchema={editModSchema}
+          initialValues={initialFormState}
+          onSubmit={() => {
+            console.error(
+              "The form's submit should not be called to save recipe metadata. Use 'saveRecipe' from 'useRecipeSaver' instead.",
+            );
+          }}
+          renderBody={renderBody}
+          renderSubmit={() => null}
+        />
+      </ErrorBoundary>
     </Container>
   );
 };

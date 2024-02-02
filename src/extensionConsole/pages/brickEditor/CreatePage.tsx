@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@ import React from "react";
 import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
-import { Row, Col, Button, Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import Editor, { type EditorValues } from "./Editor";
@@ -60,11 +60,7 @@ const CreatePage: React.FunctionComponent = () => {
             </p>
           </div>
 
-          <Row>
-            <Col xl={8} lg={10} md={12}>
-              <Editor showLogs={false} />
-            </Col>
-          </Row>
+          <Editor showLogs={false} />
         </Form>
       )}
     </Formik>

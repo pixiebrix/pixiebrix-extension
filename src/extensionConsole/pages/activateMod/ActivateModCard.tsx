@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +18,7 @@
 import styles from "./ActivateModCard.module.scss";
 
 import React, { useState } from "react";
-import { Button, Card, Col, Row } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import { truncate } from "lodash";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import useActivateRecipeWizard from "@/activation/useActivateRecipeWizard";
@@ -89,34 +89,30 @@ const ActivateModCard: React.FC = () => {
       <BlockFormSubmissionViaEnterIfFirstChild />
       <Card>
         <Card.Header className={styles.wizardHeader}>
-          <Row>
-            <Col>
-              <div className={styles.wizardHeaderLayout}>
-                <div className={styles.wizardMainInfo}>
-                  <span className={styles.blueprintIcon}>
-                    <ModIcon mod={mod} />
-                  </span>
-                  <span>
-                    <Card.Title>{mod.metadata.name}</Card.Title>
-                    <code className={styles.packageId}>{mod.metadata.id}</code>
-                  </span>
-                </div>
-                <div className={styles.wizardDescription}>
-                  {mod.metadata.description}
-                </div>
-              </div>
-              <div className={styles.activateButtonContainer}>
-                <Button
-                  className="text-nowrap"
-                  type="submit"
-                  disabled={isSubmitting}
-                >
-                  <FontAwesomeIcon icon={faMagic} />{" "}
-                  {isReactivate ? "Reactivate" : "Activate"}
-                </Button>
-              </div>
-            </Col>
-          </Row>
+          <div className={styles.wizardHeaderLayout}>
+            <div className={styles.wizardMainInfo}>
+              <span className={styles.blueprintIcon}>
+                <ModIcon mod={mod} />
+              </span>
+              <span>
+                <Card.Title>{mod.metadata.name}</Card.Title>
+                <code className={styles.packageId}>{mod.metadata.id}</code>
+              </span>
+            </div>
+            <div className={styles.wizardDescription}>
+              {mod.metadata.description}
+            </div>
+          </div>
+          <div className={styles.activateButtonContainer}>
+            <Button
+              className="text-nowrap"
+              type="submit"
+              disabled={isSubmitting}
+            >
+              <FontAwesomeIcon icon={faMagic} />{" "}
+              {isReactivate ? "Reactivate" : "Activate"}
+            </Button>
+          </div>
         </Card.Header>
         <Card.Body className={styles.wizardBody}>
           {activationError && <Alert variant="danger">{activationError}</Alert>}

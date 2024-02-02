@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import pDefer from "p-defer";
-import notify, { hideNotification } from "@/utils/notify";
 import { BusinessError } from "@/errors/businessErrors";
 import legacyCopyText from "copy-text-to-clipboard";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
 
 export type ContentType = "infer" | "text" | "image";
 
@@ -46,58 +45,27 @@ function isPermissionError(error: unknown): boolean {
 
 /**
  * Copy to clipboard, and prompt user to interact with page if the browser blocks the clipboard write due to focus
- * @param clipboardFn function to copy to the clipboard
+ * @param clipboardItems the ClipboardItems to copy to the clipboard
  * @param type the data type, to show in the message to the user.
  */
 async function interactiveWriteToClipboard(
-  clipboardFn: () => Promise<void>,
+  clipboardItems: ClipboardItems,
   { type }: { type: "text" | "image" },
 ): Promise<void> {
   try {
-    await clipboardFn();
+    await navigator.clipboard.write(clipboardItems);
   } catch (error) {
-    if (isDocumentFocusError(error)) {
-      const copyPromise = pDefer<void>();
-
-      const notificationId = notify.info({
-        message: `Click anywhere to copy ${type} to clipboard`,
-        autoDismissTimeMs: Number.POSITIVE_INFINITY,
-        dismissable: false,
-      });
-
-      const handler = async () => {
-        try {
-          hideNotification(notificationId);
-          await clipboardFn();
-          copyPromise.resolve();
-        } catch (error) {
-          if (isDocumentFocusError(error)) {
-            copyPromise.reject(
-              new BusinessError(
-                "Your Browser was unable to determine the user action that initiated the clipboard write.",
-              ),
-            );
-            return;
-          }
-
-          copyPromise.reject(error);
-        }
-      };
-
-      document.body.addEventListener("click", handler);
-
-      try {
-        await copyPromise.promise;
-      } finally {
-        document.body.removeEventListener("click", handler);
-      }
-
-      // Remember to return to avoid falling through to the original error
-      return;
+    if (!isDocumentFocusError(error)) {
+      throw error;
     }
-
-    throw error;
   }
+
+  await focusCaptureDialog(
+    `Please click "OK" to allow PixieBrix to copy ${type} to your clipboard.`,
+  );
+
+  // Let the error be caught by the caller if it still fails
+  await navigator.clipboard.write(clipboardItems);
 }
 
 /**
@@ -125,7 +93,7 @@ export async function writeTextToClipboard({
     await interactiveWriteToClipboard(
       // Fails in frame contexts if the frame CSP doesn't include clipboard-write. Unfortunately, that includes the
       // Chrome DevTools. In this case, will fall back to legacy method in the catch block
-      async () => navigator.clipboard.write([new ClipboardItem(items)]),
+      [new ClipboardItem(items)],
       { type: "text" },
     );
   } catch (error) {
@@ -135,7 +103,9 @@ export async function writeTextToClipboard({
       // The legacy approach uses a hidden text area and document.execCommand('copy') under the hood
       const copied = legacyCopyText(text);
       if (!copied) {
-        throw new BusinessError("Unable to write text to clipboard");
+        throw new BusinessError("Unable to write text to clipboard", {
+          cause: error,
+        });
       }
 
       return;
@@ -160,10 +130,7 @@ export async function writeItemsToClipboard(
     type: "image";
   },
 ): Promise<void> {
-  await interactiveWriteToClipboard(
-    async () => navigator.clipboard.write(items),
-    {
-      type,
-    },
-  );
+  await interactiveWriteToClipboard(items, {
+    type,
+  });
 }

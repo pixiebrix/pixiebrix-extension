@@ -115,7 +115,6 @@
 ./src/contrib/uipath/UiPathRobot.ts
 ./src/contrib/zapier/contract.ts
 ./src/contrib/zapier/push.ts
-./src/development/autoreload.ts
 ./src/development/errorsBadge.ts
 ./src/development/messengerLogging.ts
 ./src/development/runtimeLogging.ts

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -32,20 +32,12 @@ export const GatePanel: React.FunctionComponent = () => {
 
   return (
     <div className="p-3">
-      <Row>
-        <Col>
-          <h3>
-            The Page Editor is designed to work with a horizontal orientation.
-          </h3>
-        </Col>
-      </Row>
+      <h3>
+        The Page Editor is designed to work with a horizontal orientation.
+      </h3>
 
-      <Row>
-        <Col>
-          We recommend docking the DevTools to the bottom of the window.
-        </Col>
-      </Row>
-      <Row className="mt-3">
+      <p>We recommend docking the DevTools to the bottom of the window.</p>
+      <Row className="my-3">
         <Col>
           <img
             src={devtoolsToolbarScreenshot}
@@ -62,42 +54,34 @@ export const GatePanel: React.FunctionComponent = () => {
         </Col>
       </Row>
 
-      <Row className="mt-3">
-        <Col>
-          <p>
-            Click the ‘
-            <FontAwesomeIcon
-              icon={faEllipsisV}
-              className="mx-1"
-              title="Three-dot menu icon"
-            />
-            ’ menu in the top right of the DevTools
-          </p>
-          <p>
-            Select the ‘
-            <img
-              src={devtoolsDockBottomIcon}
-              alt="DevTools dock bottom icon"
-              width="16px"
-            />
-            ’ (third option) under ‘Dock side’
-          </p>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <hr />
+      <p>
+        Click the ‘
+        <FontAwesomeIcon
+          icon={faEllipsisV}
+          className="mx-1"
+          title="Three-dot menu icon"
+        />
+        ’ menu in the top right of the DevTools
+      </p>
+      <p>
+        Select the ‘
+        <img
+          src={devtoolsDockBottomIcon}
+          alt="DevTools dock bottom icon"
+          width="16px"
+        />
+        ’ (third option) under ‘Dock side’
+      </p>
+      <hr />
 
-          <Button
-            variant="warning"
-            onClick={() => {
-              dispatch(editorSlice.actions.dismissDimensionsWarning());
-            }}
-          >
-            Dismiss Warning
-          </Button>
-        </Col>
-      </Row>
+      <Button
+        variant="warning"
+        onClick={() => {
+          dispatch(editorSlice.actions.dismissDimensionsWarning());
+        }}
+      >
+        Dismiss Warning
+      </Button>
     </div>
   );
 };

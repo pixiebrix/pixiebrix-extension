@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -50,7 +50,7 @@ describe("PageStateAnalysis", () => {
   it("shows info on shared page state for custom form", async () => {
     const state = formStateFactory({}, [
       {
-        id: CustomFormRenderer.BLOCK_ID,
+        id: CustomFormRenderer.BRICK_ID,
         config: {
           storage: {
             type: "state",
@@ -73,7 +73,7 @@ describe("PageStateAnalysis", () => {
   it("shows warning on mod page state for custom form if not mod", async () => {
     const state = formStateFactory({}, [
       {
-        id: CustomFormRenderer.BLOCK_ID,
+        id: CustomFormRenderer.BRICK_ID,
         config: {
           storage: {
             type: "state",

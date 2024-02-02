@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -75,7 +75,7 @@ function assertObject(value: unknown): asserts value is UnknownObject {
 
 type Context = { blueprintId: RegistryId | null; extensionId: UUID };
 
-export const customFormRendererSchema = {
+export const CUSTOM_FORM_SCHEMA = {
   type: "object",
   properties: {
     storage: {
@@ -169,24 +169,33 @@ export const customFormRendererSchema = {
       schema: { type: "string", format: "bootstrap-class" },
       label: "Layout/Style",
     },
+    stylesheets: {
+      type: "array",
+      items: {
+        type: "string",
+      },
+      title: "CSS Stylesheet URLs",
+      description:
+        "Stylesheets will apply to the rendered document in the order listed here",
+    },
   },
   required: ["schema"],
 };
 
 export class CustomFormRenderer extends RendererABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/form");
+  static BRICK_ID = validateRegistryId("@pixiebrix/form");
 
   static ON_SUBMIT_VARIABLE_NAME = validateOutputKey("values");
 
   constructor() {
     super(
-      CustomFormRenderer.BLOCK_ID,
+      CustomFormRenderer.BRICK_ID,
       "Custom Form",
       "Show a custom form connected to a data source",
     );
   }
 
-  inputSchema: Schema = customFormRendererSchema as Schema;
+  inputSchema: Schema = CUSTOM_FORM_SCHEMA as Schema;
 
   override async isPageStateAware(): Promise<boolean> {
     return true;
@@ -372,7 +381,7 @@ async function getInitialData(
     default: {
       throw new PropError(
         "Invalid storage type",
-        CustomFormRenderer.BLOCK_ID,
+        CustomFormRenderer.BRICK_ID,
         "storage",
         storage,
       );
@@ -427,7 +436,7 @@ async function setData(
     default: {
       throw new PropError(
         "Invalid storage type",
-        CustomFormRenderer.BLOCK_ID,
+        CustomFormRenderer.BRICK_ID,
         "storage",
         storage,
       );

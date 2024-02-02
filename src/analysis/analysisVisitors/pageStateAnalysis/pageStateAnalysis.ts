@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -71,7 +71,7 @@ class PageStateVisitor extends AnalysisVisitorWithResolvedBricksABC {
     }
 
     if (
-      blockConfig.id === CustomFormRenderer.BLOCK_ID &&
+      blockConfig.id === CustomFormRenderer.BRICK_ID &&
       (blockConfig.config.storage as Storage)?.type === "state"
     ) {
       const storage = blockConfig.config.storage as StateStorage;

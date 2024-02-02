@@ -83,13 +83,18 @@ module.exports = {
     "@typescript-eslint/no-unsafe-assignment": "warn",
     "@typescript-eslint/no-unsafe-member-access": "warn",
     "@typescript-eslint/no-unsafe-return": "warn",
-    "@typescript-eslint/no-unsafe-call": "warn",
     "no-restricted-syntax": [
       "error",
       {
         selector: "CallExpression[callee.property.name='allSettled']",
         message:
           'For safety and convenience, use this instead: import { allSettled } from "@/utils/promiseUtils";',
+      },
+      {
+        message:
+          "Bootstrap columns should not be used if there's a single column. Use a plain `div` or drop the wrapper altogether if not needed. You might also consider using one of the classes 'max-550', 'max-750', or 'max-950' to limit the width of the body.",
+        selector:
+          "JSXElement[openingElement.name.name='Row'] > JSXText:first-child + JSXElement:nth-last-child(2)",
       },
       {
         message:

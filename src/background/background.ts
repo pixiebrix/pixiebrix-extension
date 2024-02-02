@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,6 @@
 // eslint-disable-next-line import/no-unassigned-import -- Automatic registration
 import "webext-inject-on-install";
 import "@/extensionContext";
-import "@/development/autoreload";
 import "@/development/errorsBadge";
 
 // Required for MV3; Service Workers don't have XMLHttpRequest

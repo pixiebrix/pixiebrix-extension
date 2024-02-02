@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -39,6 +39,7 @@ import { createNewConfiguredBrick } from "@/pageEditor/exampleBrickConfigs";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { joinPathParts } from "@/utils/formUtils";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 type TestAddBlockResult = {
   error?: React.ReactNode;
@@ -100,7 +101,13 @@ function useAddBlock(): AddBlock {
       // Add the block to a copy of the extension
       const newBlock = await makeNewBlock(block);
       const newExtension = produce(activeExtension, (draft) => {
-        const pipeline = get(draft, addBlockLocation.path);
+        const pipeline = get(draft, addBlockLocation.path) as
+          | BrickConfig[]
+          | undefined;
+        assertNotNullish(
+          pipeline,
+          `The path provided to add a block could not be found: ${addBlockLocation.path}`,
+        );
         pipeline.splice(addBlockLocation.index, 0, newBlock);
       });
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,6 +30,7 @@ export function isGoogleChrome(): boolean {
   // https://learn.microsoft.com/en-us/microsoft-edge/web-platform/user-agent-guidance
   // https://caniuse.com/mdn-api_navigator_useragentdata -- not defined for Firefox/Safari
   // @ts-expect-error -- userAgentData is defined in Chrome browser
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
   return navigator.userAgentData?.brands?.some(
     (x: { brand: string }) => x.brand === "Google Chrome",
   );

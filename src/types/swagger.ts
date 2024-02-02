@@ -3,6 +3,7 @@
  * Do not make direct changes to the file.
  */
 
+import type { UUID, Timestamp } from "@/types/stringTypes";
 export interface paths {
   "/api/audit/organizations/{id}/": {
     get: operations["listAuditEvents"];
@@ -158,7 +159,7 @@ export interface paths {
   };
   "/api/extensions/{id}/": {
     get: operations["retrieveUserExtension"];
-    put: operations["updateUserExtension"];
+    put: operations["upsertUserExtension"];
     delete: operations["destroyUserExtension"];
   };
   "/api/groups/{group_pk}/memberships/": {
@@ -313,6 +314,9 @@ export interface paths {
     delete: operations["destroyOrganizationContact"];
     patch: operations["partialUpdateOrganizationContact"];
   };
+  "/api/organizations/{organization_pk}/managed-data/": {
+    get: operations["retrieveManagedOrganizationData"];
+  };
   "/api/control-rooms/": {
     get: operations["retrieveControlRoom"];
   };
@@ -463,10 +467,10 @@ export interface components {
   schemas: {
     AuditEvent: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       actor: {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         /** Format: email */
         email?: string;
       };
@@ -485,7 +489,7 @@ export interface components {
         [key: string]: unknown;
       } | null;
       /** Format: date-time */
-      timestamp?: string;
+      timestamp?: Timestamp;
     };
     PackageConfigList: {
       apiVersion: string;
@@ -499,7 +503,7 @@ export interface components {
        * Format: uuid
        * @description Surrogate primary key
        */
-      id?: string;
+      id?: UUID;
       /** @description Unique package identifier, including the scope and collection */
       name: string;
       /** @description Human-readable name */
@@ -507,12 +511,12 @@ export interface components {
       version?: string;
       kind: string;
       /** Format: date-time */
-      updated_at: string;
+      updated_at?: Timestamp;
       sharing: {
         public?: boolean;
         organizations?: string[];
       };
-      config: {
+      config?: {
         [key: string]: unknown;
       };
     };
@@ -521,30 +525,30 @@ export interface components {
        * Format: uuid
        * @description Surrogate primary key
        */
-      id?: string;
+      id?: UUID;
       natural_id: string;
       kind?: string;
       user: {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         name?: string;
         /** Format: email */
         email?: string;
         service_account?: boolean;
         /** Format: date-time */
-        date_joined?: string;
+        date_joined?: Timestamp;
       };
       organization: {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         name: string;
       };
       /** @description Human-readable name */
       verbose_name?: string | null;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** Format: date-time */
-      updated_at?: string;
+      updated_at?: Timestamp;
       is_public: boolean;
     };
     PackageMeta: {
@@ -552,7 +556,7 @@ export interface components {
        * Format: uuid
        * @description Surrogate primary key
        */
-      id?: string;
+      id?: UUID;
       /** @description Unique package identifier, including the scope and collection */
       name: string;
       /** @description Human-readable name */
@@ -560,7 +564,7 @@ export interface components {
       version?: string;
       kind: string;
       /** Format: date-time */
-      updated_at?: string;
+      updated_at?: Timestamp;
       sharing: {
         public?: boolean;
         organizations?: string[];
@@ -571,7 +575,7 @@ export interface components {
        * Format: uuid
        * @description Surrogate primary key
        */
-      id?: string;
+      id?: UUID;
       name?: string;
       kind: string;
       version?: string;
@@ -582,46 +586,46 @@ export interface components {
       public?: boolean;
       organizations?: string[];
       /** Format: date-time */
-      updated_at?: string;
+      updated_at?: Timestamp;
       /** @description Human-readable name */
       verbose_name?: string | null;
     };
     PackageVersion: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       version?: string;
       config: {
         [key: string]: unknown;
       };
       raw_config?: string;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** Format: date-time */
-      updated_at?: string;
+      updated_at?: Timestamp;
     };
     Database: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       name: string;
       organization_id?: string;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** @description Enforce the JSON Schema for database records */
       enforce_schema?: boolean;
       /** @description Field indicating the record owner */
       owner_field?: string | null;
       user?: string;
       /** Format: date-time */
-      last_write_at?: string;
+      last_write_at?: Timestamp;
       num_records?: number;
     };
     DatabaseExportJob: {
       /** Format: uuid */
-      id: string;
+      id: UUID;
       /** @enum {string} */
       status?: "UNKNOWN" | "PENDING" | "STARTED" | "SUCCESS" | "FAILURE";
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** Format: binary */
       data?: string | null;
       error_message?: string | null;
@@ -637,18 +641,18 @@ export interface components {
        */
       merge_strategy?: "replace" | "deep" | "deep_append" | "shallow" | "";
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
     };
     Deployment: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       name: string;
       active?: boolean;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       package?: {
         /** Format: uuid */
-        readonly id: string;
+        readonly id: UUID;
         readonly version?: string;
         readonly package_id: string;
         readonly name: string;
@@ -663,20 +667,20 @@ export interface components {
     };
     CampaignSummary: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       name: string;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** Format: date-time */
-      updated_at?: string;
+      updated_at?: Timestamp;
     };
     Campaign: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       name: string;
       users: {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         /** Format: email */
         email: string;
         data: {
@@ -684,23 +688,23 @@ export interface components {
         };
         account?: {
           /** Format: uuid */
-          readonly id?: string;
+          readonly id?: UUID;
           /** Format: date-time */
-          readonly date_joined?: string;
+          readonly date_joined?: Timestamp;
         };
         clients?: string;
         groups?: string;
         assigned_deployments?: string;
         /** Format: date-time */
-        created_at?: string;
+        created_at?: Timestamp;
         /** Format: date-time */
-        updated_at?: string;
+        updated_at?: Timestamp;
         last_active_at?: string | null;
       }[];
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** Format: date-time */
-      updated_at?: string;
+      updated_at?: Timestamp;
     };
     Job: {
       id: string;
@@ -709,28 +713,28 @@ export interface components {
     };
     CampaignDatabase: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       name: string;
       organization_id?: string;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** @description Enforce the JSON Schema for database records */
       enforce_schema?: boolean;
       /** @description Field indicating the record owner */
       owner_field?: string | null;
       user?: string;
       /** Format: date-time */
-      last_write_at?: string;
+      last_write_at?: Timestamp;
       num_records?: number;
       groups?: readonly {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         name: string;
       }[];
     };
     CampaignMember: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       /** Format: email */
       email: string;
       data: {
@@ -738,30 +742,30 @@ export interface components {
       };
       account?: {
         /** Format: uuid */
-        readonly id?: string;
+        readonly id?: UUID;
         /** Format: date-time */
-        readonly date_joined?: string;
+        readonly date_joined?: Timestamp;
       };
       clients?: string;
       groups?: string;
       assigned_deployments?: string;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** Format: date-time */
-      updated_at?: string;
+      updated_at?: Timestamp;
       last_active_at?: string | null;
     };
     UserDeploymentDetail: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       name?: string;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** Format: date-time */
-      updated_at?: string;
+      updated_at?: Timestamp;
       package?: {
         /** Format: uuid */
-        readonly id: string;
+        readonly id: UUID;
         readonly version?: string;
         readonly package_id: string;
         readonly name: string;
@@ -771,14 +775,14 @@ export interface components {
       };
       bindings?: readonly {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         /** Format: date-time */
-        created_at?: string;
+        created_at?: Timestamp;
         /** @description Key for named integration dependencies */
         key?: string | null;
         auth: {
           /** Format: uuid */
-          id?: string;
+          id?: UUID;
           service_id: string;
           label?: string | null;
         };
@@ -793,7 +797,7 @@ export interface components {
        * Format: uuid
        * @description The UID of the PixieBrix extension instance (varies by install)
        */
-      uid: string;
+      uid: UUID;
       /** @description The version of the PixieBrix extension */
       version: string;
       active?: {
@@ -802,15 +806,15 @@ export interface components {
     };
     DeploymentDetail: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       name: string;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** Format: date-time */
-      updated_at?: string;
+      updated_at?: Timestamp;
       package?: {
         /** Format: uuid */
-        readonly id: string;
+        readonly id: UUID;
         readonly version?: string;
         readonly package_id: string;
         readonly name: string;
@@ -820,14 +824,14 @@ export interface components {
       };
       bindings?: readonly {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         /** Format: date-time */
-        created_at?: string;
+        created_at?: Timestamp;
         /** @description Key for named integration dependencies */
         key?: string | null;
         auth: {
           /** Format: uuid */
-          id?: string;
+          id?: UUID;
           service_id: string;
           label?: string | null;
         };
@@ -850,7 +854,7 @@ export interface components {
     };
     DeploymentReportMetadata: {
       /** Format: uuid */
-      id: string;
+      id: UUID;
       /** @description A human-readable name/label for the report */
       name: string;
       timezone: string;
@@ -860,14 +864,14 @@ export interface components {
        * Format: uuid
        * @description The id of the report
        */
-      id: string;
+      id: UUID;
       /** @description The name of the report */
       name: string;
       /**
        * Format: date-time
        * @description Report generation timestamp
        */
-      timestamp: string;
+      timestamp: Timestamp;
       data: {
         /** Format: email */
         email: string;
@@ -880,17 +884,17 @@ export interface components {
     };
     ActiveDeployment: {
       /** Format: uuid */
-      client_uuid: string;
+      client_uuid: UUID;
       user: {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         /** Format: email */
         email?: string;
       };
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** Format: date-time */
-      updated_at?: string;
+      updated_at?: Timestamp;
       version?: string;
       client_version?: string;
     };
@@ -899,7 +903,7 @@ export interface components {
       deployment: string | null;
       extension_label: string | null;
       /** Format: date-time */
-      last_occurrence_timestamp: string;
+      last_occurrence_timestamp: Timestamp;
       message: string;
       occurrence_count: number;
       people_count: number;
@@ -908,24 +912,24 @@ export interface components {
     };
     DeploymentPermission: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       /** Format: uuid */
-      group_id: string;
+      group_id: UUID;
       group_name?: string;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
     };
     DeploymentManagerPermission: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       group_id: string;
       group_name?: string;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
     };
     DeploymentAlertEmail: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       /** Format: email */
       email: string;
       notify_error?: boolean;
@@ -933,11 +937,11 @@ export interface components {
     };
     UserExtension: {
       /** Format: uuid */
-      id: string;
+      id: UUID;
       /** Format: date-time */
-      createTimestamp: string;
+      createTimestamp: Timestamp;
       /** Format: date-time */
-      updateTimestamp: string;
+      updateTimestamp: Timestamp;
     };
     GroupMembershipActivity: {
       last_name: string | null;
@@ -945,51 +949,51 @@ export interface components {
       /** Format: email */
       email: string;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** Format: date-time */
-      last_active_at?: string;
+      last_active_at?: Timestamp;
       campaigns?: string;
     };
     GroupPackagePermission: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       /** @enum {integer} */
       permission?: 1 | 2;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       package_name: string;
     };
     ServiceAuthPermission: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       /** @enum {integer} */
       permission?: 1 | 2;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       label: string;
       service_id: string;
     };
     GroupDetail: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       name: string;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       memberships?: readonly {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         /** Format: date-time */
-        created_at?: string;
+        created_at?: Timestamp;
         last_active_at?: string;
         user: {
           /** Format: uuid */
-          id?: string;
+          id?: UUID;
           name?: string;
           /** Format: email */
           email?: string;
           service_account?: boolean;
           /** Format: date-time */
-          date_joined?: string;
+          date_joined?: Timestamp;
         };
         /** Format: email */
         email: string;
@@ -997,55 +1001,55 @@ export interface components {
       }[];
       deployments?: readonly {
         /** Format: uuid */
-        id: string;
+        id: UUID;
         name: string;
       }[];
     };
     DatabasePermission: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       database_name?: string;
       database: string;
       /** @enum {integer} */
       permission?: 1 | 2;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
     };
     PendingInvitation: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       inviter: {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         name?: string;
         /** Format: email */
         email?: string;
         service_account?: boolean;
         /** Format: date-time */
-        date_joined?: string;
+        date_joined?: Timestamp;
       };
       organization: {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         name: string;
       };
     };
     Invitation: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       /** Format: email */
       email: string;
       /** @enum {integer} */
       role?: 1 | 2 | 3 | 4 | 5;
       inviter?: {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         name?: string;
         /** Format: email */
         email?: string;
         service_account?: boolean;
         /** Format: date-time */
-        date_joined?: string;
+        date_joined?: Timestamp;
       };
       organization: string;
       /** @enum {integer} */
@@ -1056,13 +1060,13 @@ export interface components {
        * Format: uuid
        * @description Surrogate key of the listing
        */
-      id?: string;
+      id?: UUID;
       package: {
         /**
          * Format: uuid
          * @description Surrogate primary key
          */
-        id?: string;
+        id?: UUID;
         name?: string;
         kind: string;
         description: string;
@@ -1083,7 +1087,7 @@ export interface components {
       instructions?: string;
       assets: {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         listing: string;
         /** @description A plain-text caption for the asset */
         caption?: string | null;
@@ -1092,9 +1096,9 @@ export interface components {
         /** @description The order in which the asset will appear in the listing */
         order?: number;
         /** Format: date-time */
-        created_at?: string;
+        created_at?: Timestamp;
         /** Format: date-time */
-        updated_at?: string;
+        updated_at?: Timestamp;
       }[];
       /** @description Font Awesome 5 icon and css class to show with the tag, e.g., fas fa-coffee */
       fa_icon?: string | null;
@@ -1104,7 +1108,7 @@ export interface components {
          * Format: uuid
          * @description Surrogate key for the tag
          */
-        id?: string;
+        id?: UUID;
         /** @description The name/caption to show in the tag */
         name: string;
         /** @description The URL slug for the tag */
@@ -1125,9 +1129,9 @@ export interface components {
           | "use_case"
           | "other";
         /** Format: date-time */
-        created_at?: string;
+        created_at?: Timestamp;
         /** Format: date-time */
-        updated_at?: string;
+        updated_at?: Timestamp;
       }[];
       image: {
         /** @description Alt text for the logo */
@@ -1143,16 +1147,16 @@ export interface components {
       /** @description Designates a listing that is undiscoverable in the Marketplace; only those with a direct link can access it. */
       unlisted?: boolean;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** Format: date-time */
-      updated_at?: string;
+      updated_at?: Timestamp;
     };
     Tag: {
       /**
        * Format: uuid
        * @description Surrogate key for the tag
        */
-      id?: string;
+      id?: UUID;
       /** @description The name/caption to show in the tag */
       name: string;
       /** @description The URL slug for the tag */
@@ -1173,26 +1177,26 @@ export interface components {
         | "use_case"
         | "other";
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** Format: date-time */
-      updated_at?: string;
+      updated_at?: Timestamp;
     };
     Me: {
       flags?: readonly string[];
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       scope?: string | null;
       /** Format: email */
       email?: string;
       name?: string;
       organization?: {
         /** Format: uuid */
-        readonly id?: string;
+        readonly id?: UUID;
         readonly name: string;
         readonly scope?: string | null;
         readonly control_room?: {
           /** Format: uuid */
-          readonly id?: string;
+          readonly id?: UUID;
           /**
            * Format: uri
            * @description The Control Room URL
@@ -1210,12 +1214,12 @@ export interface components {
       };
       telemetry_organization?: {
         /** Format: uuid */
-        readonly id?: string;
+        readonly id?: UUID;
         readonly name: string;
         readonly scope?: string | null;
         readonly control_room?: {
           /** Format: uuid */
-          readonly id?: string;
+          readonly id?: UUID;
           /**
            * Format: uri
            * @description The Control Room URL
@@ -1233,7 +1237,7 @@ export interface components {
       };
       organization_memberships?: readonly {
         /** Format: uuid */
-        organization: string;
+        organization: UUID;
         organization_name: string;
         /** @enum {integer} */
         role: 1 | 2 | 3 | 4 | 5;
@@ -1242,7 +1246,7 @@ export interface components {
         is_deployment_manager?: boolean;
         control_room: {
           /** Format: uuid */
-          id?: string;
+          id?: UUID;
           /**
            * Format: uri
            * @description The Control Room URL
@@ -1252,7 +1256,7 @@ export interface components {
       }[];
       group_memberships?: readonly {
         /** Format: uuid */
-        id: string;
+        id: UUID;
         name: string;
       }[];
       partner_principals?: readonly {
@@ -1278,7 +1282,7 @@ export interface components {
       test_account?: boolean;
       partner?: {
         /** Format: uuid */
-        readonly id?: string;
+        readonly id?: UUID;
         readonly name: string;
         readonly theme?: string;
         /** Format: uri */
@@ -1293,65 +1297,65 @@ export interface components {
       id?: number;
       user?: {
         /** Format: uuid */
-        readonly id?: string;
+        readonly id?: UUID;
         readonly name?: string;
         /** Format: email */
         readonly email?: string;
         readonly service_account?: boolean;
         /** Format: date-time */
-        readonly date_joined?: string;
+        readonly date_joined?: Timestamp;
       };
       /** @enum {integer} */
       role: 1 | 2 | 3 | 4 | 5;
       groups?: readonly {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         name: string;
         num_members?: number;
         /** Format: date-time */
-        created_at?: string;
+        created_at?: Timestamp;
       }[];
     };
     Organization: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       name: string;
       members?: readonly {
         id?: number;
         user?: {
           /** Format: uuid */
-          readonly id?: string;
+          readonly id?: UUID;
           readonly name?: string;
           /** Format: email */
           readonly email?: string;
           readonly service_account?: boolean;
           /** Format: date-time */
-          readonly date_joined?: string;
+          readonly date_joined?: Timestamp;
         };
         /** @enum {integer} */
         role: 1 | 2 | 3 | 4 | 5;
         groups?: {
           /** Format: uuid */
-          id?: string;
+          id?: UUID;
           name: string;
         }[];
       }[];
       invitations?: readonly {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         /** Format: email */
         email: string;
         /** @enum {integer} */
         role?: 1 | 2 | 3 | 4 | 5;
         inviter?: {
           /** Format: uuid */
-          id?: string;
+          id?: UUID;
           name?: string;
           /** Format: email */
           email?: string;
           service_account?: boolean;
           /** Format: date-time */
-          date_joined?: string;
+          date_joined?: Timestamp;
         };
         organization: string;
         /** @enum {integer} */
@@ -1374,22 +1378,22 @@ export interface components {
     };
     UserDetail: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       name?: string;
       /** Format: email */
       email?: string;
       groups: {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         group_id: string;
         group_name: string;
         /** Format: date-time */
-        created_at?: string;
+        created_at?: Timestamp;
       }[];
       /** Format: date-time */
-      last_login?: string | null;
+      last_login?: Timestamp | null;
       /** Format: date-time */
-      date_joined?: string;
+      date_joined?: Timestamp;
       membership?: {
         readonly id?: number;
         /** @enum {integer} */
@@ -1398,27 +1402,24 @@ export interface components {
     };
     Group: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       name: string;
       num_members?: number;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
     };
     DeployableBlueprint: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       /** Format: uuid */
-      package_id: string;
+      package_id: UUID;
       registry_id: string;
       name: string;
       version?: string;
-      config: {
-        [key: string]: unknown;
-      };
     };
     ServiceAuthMeta: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       label?: string | null;
       service_id: string;
       service_name: string;
@@ -1429,10 +1430,10 @@ export interface components {
     };
     DatabaseRecordsArchive: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       database: {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         name: string;
       };
       /** Format: date */
@@ -1440,33 +1441,33 @@ export interface components {
       /** Format: binary */
       file: string;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** Format: date-time */
-      updated_at?: string;
+      updated_at?: Timestamp;
     };
     Subscription: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       name: string;
       concurrent?: boolean;
       /** Format: decimal */
       seat_price_usd: string;
       seat_session_hours?: number;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** Format: date-time */
-      updated_at?: string;
+      updated_at?: Timestamp;
       utilization?: string;
     };
     EventInterval: {
       /** Format: uuid */
-      deployment_id: string;
+      deployment_id: UUID;
       end_timestamp: number;
       event_count: number;
     };
     OrganizationContact: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       /** Format: email */
       email: string;
       /** @description Notify when a new user joins your organization */
@@ -1474,13 +1475,16 @@ export interface components {
       /** @description Notify when a deployment has new errors */
       notify_error?: boolean;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       /** Format: date-time */
-      updated_at?: string;
+      updated_at?: Timestamp;
+    };
+    ManagedOrganizationData: {
+      auth_url_patterns: string[];
     };
     ControlRoom: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       /**
        * Format: uri
        * @description The Control Room URL
@@ -1489,7 +1493,7 @@ export interface components {
     };
     ControlRoomConfiguration: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       /**
        * Format: uri
        * @description The Control Room URL
@@ -1501,21 +1505,21 @@ export interface components {
     };
     SanitizedAuth: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       label: string | null;
       organization: {
         /** Format: uuid */
-        id?: string;
+        id?: UUID;
         name: string;
       };
       /** Format: uuid */
-      user?: string;
+      user?: UUID;
       service: {
         /**
          * Format: uuid
          * @description Surrogate primary key
          */
-        id?: string;
+        id?: UUID;
         /** @description Unique package identifier, including the scope and collection */
         name: string;
         config: {
@@ -1529,17 +1533,17 @@ export interface components {
     };
     EditableAuth: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       label?: string | null;
       organization?: string | null;
       config: {
         [key: string]: unknown;
       };
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
       service: string;
       /** Format: date-time */
-      updated_at?: string;
+      updated_at?: Timestamp;
       /** @description True to push down configuration secrets to the client */
       pushdown?: boolean;
       editable?: string;
@@ -1549,7 +1553,7 @@ export interface components {
     };
     SupportUser: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       /** Format: email */
       email?: string;
       first_name?: string;
@@ -1557,7 +1561,7 @@ export interface components {
     };
     SupportUserDetail: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
       username: string;
       first_name?: string;
@@ -1566,12 +1570,12 @@ export interface components {
       email?: string;
       organizations?: string;
       /** Format: date-time */
-      date_joined?: string;
+      date_joined?: Timestamp;
     };
     SupportUserEvent: {
       name: string;
       /** Format: date-time */
-      time: string;
+      time: Timestamp;
       id: string;
       blueprintId?: string;
       blueprintVersion?: string;
@@ -1590,7 +1594,7 @@ export interface components {
        * Format: date-time
        * @description Timestamp the error occurred, not the time the record is added to the db
        */
-      timestamp: string;
+      timestamp: Timestamp;
     };
     PublicBlueprintErrorItemGroup: {
       blueprint_name: string;
@@ -1602,11 +1606,11 @@ export interface components {
       occurrence_count: number;
       users: {
         /** Format: uuid */
-        id: string;
+        id: UUID;
         email: string;
       }[];
       /** Format: date-time */
-      last_occurrence_timestamp: string;
+      last_occurrence_timestamp: Timestamp;
       user_agent_extension_versions: string[];
       request_urls: string[];
     };
@@ -1628,7 +1632,7 @@ export interface components {
     };
     DatabaseExportRequest: {
       name: string;
-      databases: string[];
+      databases: UUID[];
       /**
        * @default application/json
        * @enum {string}
@@ -1654,15 +1658,15 @@ export interface components {
         event?: string;
       }[];
       /** Format: date-time */
-      timestamp?: string;
+      timestamp?: Timestamp;
     };
     GroupMembership: {
       /** Format: uuid */
-      id?: string;
+      id?: UUID;
       group_id: string;
       group_name: string;
       /** Format: date-time */
-      created_at?: string;
+      created_at?: Timestamp;
     };
     Identify: {
       uid?: string;
@@ -1718,7 +1722,7 @@ export interface components {
     };
     ErrorItem: {
       /** Format: uuid */
-      uuid: string;
+      uuid: UUID;
       /** @description JavaScript error class name */
       class_name: string;
       /** @description Just the error message, not the complete traceback */
@@ -1729,16 +1733,16 @@ export interface components {
        * Format: date-time
        * @description Timestamp the error occurred, not the time the record is added to the db
        */
-      timestamp: string;
+      timestamp: Timestamp;
       user?: {
         /** Format: uuid */
-        readonly id?: string;
+        readonly id?: UUID;
         readonly name?: string;
         /** Format: email */
         readonly email?: string;
         readonly service_account?: boolean;
         /** Format: date-time */
-        readonly date_joined?: string;
+        readonly date_joined?: Timestamp;
       };
       organization?: string | null;
       deployment?: string | null;
@@ -1756,17 +1760,17 @@ export interface components {
       };
       user_extension?: {
         /** Format: uuid */
-        readonly id: string;
+        readonly id: UUID;
         /** Format: date-time */
-        readonly createTimestamp: string;
+        readonly createTimestamp: Timestamp;
         /** Format: date-time */
-        readonly updateTimestamp: string;
+        readonly updateTimestamp: Timestamp;
       };
       /**
        * Format: uuid
        * @description UUID of the user-defined extension, not the Pixiebrix extension. Same value as UserExtension.extension_id
        */
-      extension_uuid: string;
+      extension_uuid: UUID;
       /** @description Label of the extension, depends on the extension's telemetry settings */
       extension_label?: string | null;
       /** @description Step of the extension, depends on the extension's telemetry settings */
@@ -3168,7 +3172,7 @@ export interface operations {
       };
     };
   };
-  updateUserExtension: {
+  upsertUserExtension: {
     parameters: {
       path: {
         id: string;
@@ -4675,6 +4679,22 @@ export interface operations {
         content: {
           "application/json; version=2.0": components["schemas"]["OrganizationContact"];
           "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["OrganizationContact"];
+        };
+      };
+    };
+  };
+  retrieveManagedOrganizationData: {
+    parameters: {
+      path: {
+        organization_pk: string;
+      };
+    };
+    responses: {
+      200: {
+        headers: {};
+        content: {
+          "application/json; version=1.0": components["schemas"]["ManagedOrganizationData"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ManagedOrganizationData"];
         };
       };
     };

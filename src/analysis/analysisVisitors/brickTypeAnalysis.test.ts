@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -40,7 +40,7 @@ describe("BrickTypeAnalysis", () => {
 
     modComponent.extension.blockPipeline = [
       createNewConfiguredBrick(ALERT_EFFECT_ID),
-      createNewConfiguredBrick(DocumentRenderer.BLOCK_ID),
+      createNewConfiguredBrick(DocumentRenderer.BRICK_ID),
     ];
 
     const analysis = new BrickTypeAnalysis();
@@ -59,7 +59,7 @@ describe("BrickTypeAnalysis", () => {
 
     modComponent.extension.blockPipeline = [
       createNewConfiguredBrick(brickId),
-      createNewConfiguredBrick(DocumentRenderer.BLOCK_ID),
+      createNewConfiguredBrick(DocumentRenderer.BRICK_ID),
     ];
 
     const analysis = new BrickTypeAnalysis();

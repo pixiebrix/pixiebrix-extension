@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -33,11 +33,13 @@ import { type SerializedError } from "@/types/messengerTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type JsonObject } from "type-fest";
 import { type Event } from "@/telemetry/events";
+import { type showMySidePanel } from "@/background/sidePanel";
 
 declare global {
   interface MessengerMethods {
     SHOW_SIDEBAR: typeof showSidebar;
     HIDE_SIDEBAR: typeof hideSidebar;
+    SHOW_MY_SIDE_PANEL: typeof showMySidePanel;
 
     // Temporary duplicate type for a background method used by the sidebar.
     // NOTE: Changes to those functions must be reflected here.

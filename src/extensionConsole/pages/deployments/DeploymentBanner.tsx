@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,8 +30,13 @@ const DeploymentBanner: React.FunctionComponent = () => {
   // Use a single useDeployments for both the banner and modal because useDeployments makes a network call. In the
   // future, we need to move the state to Redux
   const deploymentState = useContext(DeploymentsContext);
-  const { hasUpdate, update, extensionUpdateRequired, updateExtension } =
-    deploymentState;
+  const {
+    hasUpdate,
+    update,
+    extensionUpdateRequired,
+    updateExtension,
+    isAutoDeploying,
+  } = deploymentState;
 
   // Only show on certain pages where the user expects to see a top-level install button. It's especially confusing
   // to show the banner on other pages with an activate button (e.g., the marketplace wizard, in the workshop, etc.)
@@ -39,7 +44,7 @@ const DeploymentBanner: React.FunctionComponent = () => {
   const matchInstalled = useRouteMatch({ path: "/installed", exact: true });
   const matchMarketplace = useRouteMatch({ path: "/mods", exact: true });
 
-  if (!hasUpdate) {
+  if (!hasUpdate || isAutoDeploying) {
     return null;
   }
 

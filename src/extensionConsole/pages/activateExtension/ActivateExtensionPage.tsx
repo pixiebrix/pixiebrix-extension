@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +18,6 @@
 import { faCloudDownloadAlt } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { useParams } from "react-router";
-import { Col, Row } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Page from "@/layout/Page";
 import ActivateExtensionCard from "@/extensionConsole/pages/activateExtension/ActivateExtensionCard";
@@ -53,19 +52,15 @@ const ActivateExtensionPage: React.FunctionComponent = () => {
       error={error}
       isPending={isFetching || authOptions == null}
     >
-      <Row>
-        <Col xs={12} xl={10}>
-          <ErrorBoundary>
-            {standaloneModDefinition && authOptions && (
-              <ActivateExtensionCard
-                extension={standaloneModDefinition}
-                authOptions={authOptions}
-                refreshAuthOptions={refreshAuthOptions}
-              />
-            )}
-          </ErrorBoundary>
-        </Col>
-      </Row>
+      <ErrorBoundary>
+        {standaloneModDefinition && authOptions && (
+          <ActivateExtensionCard
+            extension={standaloneModDefinition}
+            authOptions={authOptions}
+            refreshAuthOptions={refreshAuthOptions}
+          />
+        )}
+      </ErrorBoundary>
     </Page>
   );
 };

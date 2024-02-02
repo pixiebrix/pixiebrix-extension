@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +17,8 @@
 import styles from "./ModLauncher.module.scss";
 
 import React from "react";
-import { Container, Navbar } from "react-bootstrap";
+import cx from "classnames";
+import { Navbar } from "react-bootstrap";
 import { ActiveSidebarModsList } from "@/sidebar/modLauncher/ActiveSidebarModsList";
 import useFlags from "@/hooks/useFlags";
 import reportEvent from "@/telemetry/reportEvent";
@@ -29,14 +30,10 @@ const ModLauncher: React.FunctionComponent = () => {
   const { permit } = useFlags();
 
   return (
-    <div className="d-flex flex-column h-100">
-      <div className="full-height flex-grow">
-        <Container className="scrollable-area">
-          <ActiveSidebarModsList />
-        </Container>
-      </div>
+    <>
+      <ActiveSidebarModsList />
       {permit("page-editor") && (
-        <Navbar className={styles.footer}>
+        <Navbar className={cx([styles.footer, "flex-grow-0"])}>
           <button
             onClick={async (event) => {
               event.preventDefault();
@@ -55,7 +52,7 @@ const ModLauncher: React.FunctionComponent = () => {
           <a href="https://docs.pixiebrix.com/">Documentation</a>
         </Navbar>
       )}
-    </div>
+    </>
   );
 };
 

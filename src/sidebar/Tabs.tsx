@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -399,7 +399,7 @@ const Tabs: React.FC = () => {
               mountOnEnter
               // Allow the user to quickly switch back to the panel
               unmountOnExit={false}
-              className={cx("h-100", styles.paneOverrides)}
+              className={cx("full-height", styles.paneOverrides)}
               key={staticPanel.key}
               eventKey={eventKeyForEntry(staticPanel)}
             >
