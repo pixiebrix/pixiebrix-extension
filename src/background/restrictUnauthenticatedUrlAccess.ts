@@ -46,7 +46,7 @@ async function getAuthUrlPatterns(organizationId: UUID) {
  * `enforceAuthentication` and `managedOrganizationId` settings. Policies for specified urls are stored on the server.
  */
 async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
-  const { managedOrganizationId, enforceAuthentication } =
+  const { managedOrganizationId, enforceAuthentication, ssoUrl } =
     await readManagedStorage();
 
   if (!enforceAuthentication || !managedOrganizationId) {
@@ -82,7 +82,7 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
     if (isRestrictedUrl) {
       const errorMessage = `Access is restricted to '${tab.url}'. Log in with PixieBrix to proceed`;
       await browser.tabs.update(tabId, {
-        url: `https://app.pixiebrix.com/?error=${errorMessage}`,
+        url: ssoUrl ?? `https://app.pixiebrix.com/?error=${errorMessage}`,
       });
     }
   });
