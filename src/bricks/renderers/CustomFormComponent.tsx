@@ -64,6 +64,7 @@ const CustomFormComponent: React.FunctionComponent<{
     { submissionCount }: { submissionCount: number },
   ) => Promise<void>;
   className?: string;
+  stylesheets?: string[];
 }> = ({
   schema,
   uiSchema,
@@ -72,6 +73,7 @@ const CustomFormComponent: React.FunctionComponent<{
   autoSave,
   className,
   onSubmit,
+  stylesheets = [],
 }) => {
   // Use useRef instead of useState because we don't need/want a re-render when count changes
   const submissionCountRef = useRef(0);
@@ -87,7 +89,9 @@ const CustomFormComponent: React.FunctionComponent<{
       })}
     >
       <ErrorBoundary>
-        <Stylesheets href={[bootstrap, bootstrapOverrides, custom]}>
+        <Stylesheets
+          href={[bootstrap, bootstrapOverrides, custom, ...stylesheets]}
+        >
           <RjsfSubmitContext.Provider
             value={{
               async submitForm() {
