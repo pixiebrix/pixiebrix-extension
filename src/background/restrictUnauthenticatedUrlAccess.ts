@@ -41,6 +41,13 @@ async function getAuthUrlPatterns(organizationId: UUID) {
   }
 }
 
+function getDefaultAuthUrl(restrictedUrl: string) {
+  const errorMessage = `Access is restricted to '${restrictedUrl}'. Log in with PixieBrix to proceed`;
+  const defaultUrl = new URL("https://app.pixiebrix.com/login/");
+  defaultUrl.searchParams.set("error", errorMessage);
+  return defaultUrl.href;
+}
+
 /**
  * Browser administrators can restrict access to certain urls for unauthenticated PixieBrix users via managed storage
  * `enforceAuthentication` and `managedOrganizationId` settings. Policies for specified urls are stored on the server.
@@ -80,12 +87,8 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
     );
 
     if (isRestrictedUrl) {
-      const errorMessage = `Access is restricted to '${tab.url}'. Log in with PixieBrix to proceed`;
-      const defaultUrl = new URL("https://app.pixiebrix.com/login/");
-      defaultUrl.searchParams.set("error", errorMessage);
-
       await browser.tabs.update(tabId, {
-        url: ssoUrl ?? defaultUrl.href,
+        url: ssoUrl ?? getDefaultAuthUrl(tab.url),
       });
     }
   });
