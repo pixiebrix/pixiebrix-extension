@@ -114,7 +114,7 @@ export async function openMarketplace({
 /**
  * Set the mod id(s) that PixieBrix should start activation for.
  *
- * @see getActivatingModIds
+ * @see getActivatingMods
  */
 export async function setActivatingMods(
   mods: Nullishable<ModOptionsPair[]>,
@@ -168,7 +168,7 @@ function migrateActivatingModsShape(
  *
  * @see setActivatingMods
  */
-export async function getActivatingModIds(): Promise<
+export async function getActivatingMods(): Promise<
   Nullishable<ModOptionsPair[]>
 > {
   const value = await activationStorage.get();
@@ -191,7 +191,7 @@ type LegacyModActivationPartial = {
 };
 
 /**
- * The mod(s) to activate.
+ * Array of mods to activate.
  * @since 1.8.8
  */
 type ModActivationPartial = {

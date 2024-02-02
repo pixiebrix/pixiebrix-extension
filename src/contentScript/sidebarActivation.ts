@@ -24,7 +24,7 @@ import {
 } from "@/contentScript/sidebarController";
 import { isLinked } from "@/auth/token";
 import {
-  getActivatingModIds,
+  getActivatingMods,
   setActivatingMods,
 } from "@/background/messenger/external/_implementation";
 import reportEvent from "@/telemetry/reportEvent";
@@ -51,12 +51,12 @@ let listener: EventListener | null;
  *
  * Same as getActivatingBlueprints, but filters out any mod ids that are not syntactically valid.
  *
- * @see getActivatingModIds
+ * @see getActivatingMods
  */
 async function getInProgressModActivation(): Promise<
   Nullishable<ModOptionsPair[]>
 > {
-  const mods = (await getActivatingModIds()) ?? [];
+  const mods = (await getActivatingMods()) ?? [];
 
   // Defensive validation
   const valid = mods.filter((x) => isRegistryId(x.modId));

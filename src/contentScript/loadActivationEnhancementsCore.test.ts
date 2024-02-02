@@ -22,7 +22,7 @@ import { getDocument } from "@/starterBricks/starterBrickTestUtils";
 import { validateRegistryId } from "@/types/helpers";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { getActivatingModIds } from "@/background/messenger/external/_implementation";
+import { getActivatingMods } from "@/background/messenger/external/_implementation";
 import {
   modComponentFactory,
   modMetadataFactory,
@@ -61,7 +61,7 @@ jest.mock("@/sidebar/store");
 
 const showSidebarMock = jest.mocked(showModActivationInSidebar);
 const getActivatedModIdsMock = jest.mocked(getActivatedModIds);
-const getActivatingModIdsMock = jest.mocked(getActivatingModIds);
+const getActivatingModsMock = jest.mocked(getActivatingMods);
 
 const recipeId1 = validateRegistryId("@pixies/misc/comment-and-vote");
 const recipeId2 = validateRegistryId("@pixies/github/github-notifications");
@@ -190,7 +190,7 @@ describe("marketplace enhancements", () => {
     expect(getActivatedModIdsMock).not.toHaveBeenCalled();
     // The marketplace script should not resume in-progress blueprint
     // activation when the user is not logged in
-    expect(getActivatingModIdsMock).not.toHaveBeenCalled();
+    expect(getActivatingModsMock).not.toHaveBeenCalled();
   });
 
   test("given user is not logged in, when loaded, should change button text", async () => {
@@ -253,6 +253,6 @@ describe("marketplace enhancements", () => {
     expect(getActivatedModIdsMock).toHaveBeenCalledOnce();
     // The marketplace script should resume in-progress blueprint
     // activation when the user is logged in
-    expect(getActivatingModIdsMock).toHaveBeenCalledOnce();
+    expect(getActivatingModsMock).toHaveBeenCalledOnce();
   });
 });
