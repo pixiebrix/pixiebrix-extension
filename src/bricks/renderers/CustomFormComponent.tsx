@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
 import cx from "classnames";
@@ -35,6 +35,7 @@ import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { type UnknownObject } from "@/types/objectTypes";
 import { cloneDeep, isEmpty } from "lodash";
+import StylesheetsContext from "@/components/StylesheetsContext";
 
 const FIELDS = {
   DescriptionField,
@@ -73,17 +74,20 @@ const CustomFormComponent: React.FunctionComponent<{
   autoSave,
   className,
   onSubmit,
-  stylesheets = [],
+  stylesheets: newStylesheets = [],
 }) => {
   // Use useRef instead of useState because we don't need/want a re-render when count changes
   const submissionCountRef = useRef(0);
   // Track values during onChange so we can access it our RjsfSubmitContext submitForm callback
   const valuesRef = useRef<UnknownObject>(formData);
 
+  const { stylesheets: inheritedStylesheets } = useContext(StylesheetsContext);
+  const customStylesheetUrls = [...inheritedStylesheets, ...newStylesheets];
+
   // Custom stylesheets overrides bootstrap themes
-  const stylesheetUrls = isEmpty(stylesheets)
+  const stylesheetUrls = isEmpty(customStylesheetUrls)
     ? [bootstrap, bootstrapOverrides, custom]
-    : stylesheets;
+    : customStylesheetUrls;
 
   return (
     <div

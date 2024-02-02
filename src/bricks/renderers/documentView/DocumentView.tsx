@@ -16,7 +16,7 @@
  */
 
 import { buildDocumentBranch } from "@/components/documentBuilder/documentTree";
-import React from "react";
+import React, { useContext } from "react";
 import EmotionShadowRoot from "react-shadow/emotion";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import bootstrapOverrides from "@/pageEditor/sidebar/sidebarBootstrapOverrides.scss?loadAsUrl";
@@ -25,10 +25,11 @@ import DocumentContext from "@/components/documentBuilder/render/DocumentContext
 import { Stylesheets } from "@/components/Stylesheets";
 import { joinPathParts } from "@/utils/formUtils";
 import { isEmpty } from "lodash";
+import StylesheetsContext from "@/components/StylesheetsContext";
 
 const DocumentView: React.FC<DocumentViewProps> = ({
   body,
-  stylesheets = [],
+  stylesheets: newStylesheets = [],
   options,
   meta,
   onAction,
@@ -50,33 +51,40 @@ const DocumentView: React.FC<DocumentViewProps> = ({
     "/DocumentView.css",
   ];
 
-  if (isEmpty(stylesheets)) {
+  const { stylesheets: inheritedStylesheets } = useContext(StylesheetsContext);
+  const customStylesheetUrls = [...inheritedStylesheets, ...newStylesheets];
+
+  if (isEmpty(customStylesheetUrls)) {
     stylesheetUrls.push(bootstrap, bootstrapOverrides);
   } else {
     // Custom stylesheets overrides bootstrap themes
-    stylesheetUrls.push(...stylesheets);
+    stylesheetUrls.push(...customStylesheetUrls);
   }
 
   return (
     // Wrap in a React context provider that passes BrickOptions down to any embedded bricks
     <DocumentContext.Provider value={{ options, onAction }}>
       <EmotionShadowRoot.div className="h-100">
-        <Stylesheets href={stylesheetUrls}>
-          {body.map((documentElement, index) => {
-            const documentBranch = buildDocumentBranch(documentElement, {
-              staticId: joinPathParts("body", "children"),
-              // Root of the document, so no branches taken yet
-              branches: [],
-            });
+        <StylesheetsContext.Provider
+          value={{ stylesheets: customStylesheetUrls }}
+        >
+          <Stylesheets href={stylesheetUrls}>
+            {body.map((documentElement, index) => {
+              const documentBranch = buildDocumentBranch(documentElement, {
+                staticId: joinPathParts("body", "children"),
+                // Root of the document, so no branches taken yet
+                branches: [],
+              });
 
-            if (documentBranch == null) {
-              return null;
-            }
+              if (documentBranch == null) {
+                return null;
+              }
 
-            const { Component, props } = documentBranch;
-            return <Component key={index} {...props} />;
-          })}
-        </Stylesheets>
+              const { Component, props } = documentBranch;
+              return <Component key={index} {...props} />;
+            })}
+          </Stylesheets>
+        </StylesheetsContext.Provider>
       </EmotionShadowRoot.div>
     </DocumentContext.Provider>
   );
