@@ -59,6 +59,37 @@ const activationStorage = new StorageItem<ModOptionsPair[]>(
 );
 
 /**
+ * Migrate activation state to latest format. Does not validate the mod ids or options.
+ * @param value mod activation state
+ */
+function migrateActivatingModsShape(
+  value: Nullishable<ModActivation>,
+): ModOptionsPair[] {
+  if (!value) {
+    return [];
+  }
+
+  if (typeof value === "string") {
+    // Legacy support for single mod activation
+    return [{ modId: value, initialOptions: {} }];
+  }
+
+  if (!Array.isArray(value) || value.length === 0) {
+    return [];
+  }
+
+  if (typeof value[0] === "string") {
+    // Legacy support for multiple mod activation
+    return (value as MultiModActivation).map((modId) => ({
+      modId,
+      initialOptions: {},
+    }));
+  }
+
+  return value as ModOptionsPair[];
+}
+
+/**
  * Set the user's credentials for the PixieBrix extension. Returns true if the data was updated.
  *
  * Reloads the browser extension if the credentials were updated.
@@ -112,71 +143,6 @@ export async function openMarketplace({
 }
 
 /**
- * Set the mod id(s) that PixieBrix should start activation for.
- *
- * @see getActivatingMods
- */
-export async function setActivatingMods(
-  mods: Nullishable<ModOptionsPair[]>,
-): Promise<void> {
-  if (!mods || mods.length === 0) {
-    await activationStorage.remove();
-    return;
-  }
-
-  // Defensive check for syntactically valid registry ids
-  for (const { modId } of mods) {
-    validateRegistryId(modId);
-  }
-
-  return activationStorage.set(mods);
-}
-
-/**
- * Normalize activation state to latest format.
- * @param value mod activation state
- */
-function migrateActivatingModsShape(
-  value: Nullishable<ModActivation>,
-): ModOptionsPair[] {
-  if (!value) {
-    return [];
-  }
-
-  if (typeof value === "string") {
-    // Legacy support for single mod activation
-    return [{ modId: value, initialOptions: {} }];
-  }
-
-  if (!Array.isArray(value) || value.length === 0) {
-    return [];
-  }
-
-  if (typeof value[0] === "string") {
-    // Legacy support for multiple mod activation
-    return (value as MultiModActivation).map((modId) => ({
-      modId,
-      initialOptions: {},
-    }));
-  }
-
-  return value as ModOptionsPair[];
-}
-
-/**
- * Returns the mod id(s) that PixieBrix should show activation UI for, or null if there are none.
- *
- * @see setActivatingMods
- */
-export async function getActivatingMods(): Promise<
-  Nullishable<ModOptionsPair[]>
-> {
-  const value = await activationStorage.get();
-  const normalized = migrateActivatingModsShape(value);
-  return normalized.length === 0 ? null : normalized;
-}
-
-/**
  * The mod(s) to activate.
  * @deprecated superseded by ActivationPartial
  * @see ActivationPartial
@@ -197,6 +163,46 @@ type LegacyModActivationPartial = {
 type ModActivationPartial = {
   mods: ModOptionsPair[];
 };
+
+/**
+ * Set the mod id(s) that PixieBrix should start activation for.
+ *
+ * @see getActivatingMods
+ */
+export async function setActivatingMods(
+  args: LegacyModActivationPartial | ModActivationPartial,
+): Promise<void> {
+  const modIdsOrMods =
+    (args as ModActivationPartial).mods ??
+    (args as LegacyModActivationPartial).blueprintId;
+
+  const mods = migrateActivatingModsShape(modIdsOrMods);
+
+  if (mods.length === 0) {
+    await activationStorage.remove();
+    return;
+  }
+
+  // Defensive check for syntactically valid registry ids
+  for (const { modId } of mods) {
+    validateRegistryId(modId);
+  }
+
+  return activationStorage.set(mods);
+}
+
+/**
+ * Returns the mod id(s) that PixieBrix should show activation UI for, or null if there are none.
+ *
+ * @see setActivatingMods
+ */
+export async function getActivatingMods(): Promise<
+  Nullishable<ModOptionsPair[]>
+> {
+  const value = await activationStorage.get();
+  const normalized = migrateActivatingModsShape(value);
+  return normalized.length === 0 ? null : normalized;
+}
 
 type ActivateModsOptions = (
   | LegacyModActivationPartial
