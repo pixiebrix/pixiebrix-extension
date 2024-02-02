@@ -133,10 +133,10 @@ export async function setActivatingMods(
 }
 
 /**
- * Normalize activation state to new format.
+ * Normalize activation state to latest format.
  * @param value mod activation state
  */
-function normalizeActivatingMods(
+function migrateActivatingModsShape(
   value: Nullishable<ModActivation>,
 ): ModOptionsPair[] {
   if (!value) {
@@ -172,7 +172,7 @@ export async function getActivatingModIds(): Promise<
   Nullishable<ModOptionsPair[]>
 > {
   const value = await activationStorage.get();
-  const normalized = normalizeActivatingMods(value);
+  const normalized = migrateActivatingModsShape(value);
   return normalized.length === 0 ? null : normalized;
 }
 
@@ -233,7 +233,7 @@ export async function openActivateModPage({
   redirectUrl,
   ...options
 }: ActivateModsOptions): Promise<boolean> {
-  const mods = normalizeActivatingMods(
+  const mods = migrateActivatingModsShape(
     (options as ModActivationPartial).mods ??
       (options as LegacyModActivationPartial).blueprintId,
   );

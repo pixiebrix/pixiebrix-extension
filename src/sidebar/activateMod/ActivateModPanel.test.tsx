@@ -54,6 +54,7 @@ import useActivateRecipe, {
 } from "@/activation/useActivateRecipe";
 import brickRegistry from "@/bricks/registry";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
+import type { UnknownObject } from "@/types/objectTypes";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
 jest.mock("@/sidebar/sidebarSelectors");
@@ -144,8 +145,10 @@ function setupMocksAndRender(
   modDefinitionOverride?: Partial<ModDefinition>,
   {
     componentOverride,
+    initialOptions = {},
   }: {
     componentOverride?: React.ReactElement;
+    initialOptions?: UnknownObject;
   } = {},
 ) {
   modDefinition = defaultModDefinitionFactory({
@@ -174,7 +177,7 @@ function setupMocksAndRender(
 
   const element = componentOverride ?? (
     <ActivateModPanel
-      mod={{ modId: modDefinition.metadata.id, initialOptions: {} }}
+      mod={{ modId: modDefinition.metadata.id, initialOptions }}
     />
   );
 
@@ -505,6 +508,55 @@ describe("ActivateModPanel", () => {
     ).toBeVisible();
   });
 
+  it("activate mod automatically if initial option is passed for required field", async () => {
+    setupMocksAndRender(
+      {
+        options: {
+          schema: {
+            description: "These are instructions",
+            type: "object",
+            properties: {
+              foo: {
+                type: "string",
+              },
+            },
+            required: ["foo"],
+          },
+        },
+      },
+      {
+        // Pass initial option for required field
+        initialOptions: { foo: "bar" },
+      },
+    );
+
+    await waitForEffect();
+
+    expect(screen.getByText("Well done!")).toBeInTheDocument();
+  });
+
+  it("activate mod automatically if default exists for required field", async () => {
+    setupMocksAndRender({
+      options: {
+        schema: {
+          description: "These are instructions",
+          type: "object",
+          properties: {
+            foo: {
+              type: "string",
+              default: "bar",
+            },
+          },
+          required: ["foo"],
+        },
+      },
+    });
+
+    await waitForEffect();
+
+    expect(screen.getByText("Well done!")).toBeInTheDocument();
+  });
+
   it("renders well-done page for quick bar mod shortcut not configured", async () => {
     includesQuickBarMock.mockResolvedValue(true);
 
@@ -512,6 +564,7 @@ describe("ActivateModPanel", () => {
 
     await waitForEffect();
 
+    expect(screen.getByText("Well done!")).toBeInTheDocument();
     expect(asFragment()).toMatchSnapshot();
   });
 
