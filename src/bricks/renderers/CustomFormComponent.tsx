@@ -34,7 +34,7 @@ import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { type UnknownObject } from "@/types/objectTypes";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isEmpty } from "lodash";
 
 const FIELDS = {
   DescriptionField,
@@ -80,6 +80,11 @@ const CustomFormComponent: React.FunctionComponent<{
   // Track values during onChange so we can access it our RjsfSubmitContext submitForm callback
   const valuesRef = useRef<UnknownObject>(formData);
 
+  // Custom stylesheets overrides bootstrap themes
+  const stylesheetUrls = isEmpty(stylesheets)
+    ? [bootstrap, bootstrapOverrides, custom]
+    : stylesheets;
+
   return (
     <div
       className={cx("CustomForm", className, {
@@ -89,9 +94,7 @@ const CustomFormComponent: React.FunctionComponent<{
       })}
     >
       <ErrorBoundary>
-        <Stylesheets
-          href={[bootstrap, bootstrapOverrides, custom, ...stylesheets]}
-        >
+        <Stylesheets href={stylesheetUrls}>
           <RjsfSubmitContext.Provider
             value={{
               async submitForm() {
