@@ -28,6 +28,7 @@ import { joinPathParts } from "@/utils/formUtils";
 
 const DocumentView: React.FC<DocumentViewProps> = ({
   body,
+  stylesheets = [],
   options,
   meta,
   onAction,
@@ -50,7 +51,12 @@ const DocumentView: React.FC<DocumentViewProps> = ({
           // DocumentView.css is an artifact produced by webpack, see the DocumentView entrypoint included in
           // `webpack.config.mjs`. We build styles needed to render documents separately from the rest of the sidebar
           // in order to isolate the rendered document from the custom Bootstrap theme included in the Sidebar app
-          href={["/DocumentView.css", bootstrap, bootstrapOverrides]}
+          href={[
+            "/DocumentView.css",
+            bootstrap,
+            bootstrapOverrides,
+            ...stylesheets,
+          ]}
         >
           {body.map((documentElement, index) => {
             const documentBranch = buildDocumentBranch(documentElement, {

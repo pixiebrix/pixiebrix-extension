@@ -28,6 +28,8 @@ import {
   DOCUMENT_ELEMENT_TYPES,
   type DocumentElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
+import { compact } from "lodash";
+import { isValidUrl } from "@/utils/urlUtils";
 
 export const DOCUMENT_SCHEMA: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -44,7 +46,6 @@ export const DOCUMENT_SCHEMA: Schema = {
       type: "array",
       items: {
         type: "string",
-        format: "uri",
       },
       title: "CSS Stylesheet URLs",
       description:
@@ -91,7 +92,7 @@ export class DocumentRenderer extends RendererABC {
   async render(
     {
       body,
-      stylesheets,
+      stylesheets = [],
     }: BrickArgs<{
       body: DocumentElement[];
       stylesheets: string[];
@@ -102,6 +103,7 @@ export class DocumentRenderer extends RendererABC {
       Component: DocumentViewLazy,
       props: {
         body,
+        stylesheets: compact(stylesheets).filter((url) => isValidUrl(url)),
         options,
       },
     };
