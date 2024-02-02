@@ -84,7 +84,7 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
     if (isRestrictedUrl) {
       const errorMessage = `Access is restricted to '${tab.url}'. Log in with PixieBrix to proceed`;
       await browser.tabs.update(tabId, {
-        url: ssoUrl ?? `https://app.pixiebrix.com/?error=${errorMessage}`,
+        url: ssoUrl ?? `https://app.pixiebrix.com/login/?error=${errorMessage}`,
       });
     }
   });
