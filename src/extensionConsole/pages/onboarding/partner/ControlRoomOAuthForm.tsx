@@ -170,6 +170,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
         label="Control Room URL"
         type="text"
         description="Your Automation Anywhere Control Room URL, including https://"
+        widerLabel
       />
       {env === AA_STAGING_ENVIRONMENT && (
         <>
