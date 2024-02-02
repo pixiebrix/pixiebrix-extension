@@ -25,6 +25,7 @@ import { type DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { Stylesheets } from "@/components/Stylesheets";
 import { joinPathParts } from "@/utils/formUtils";
+import { isEmpty } from "lodash";
 
 const DocumentView: React.FC<DocumentViewProps> = ({
   body,
@@ -43,21 +44,25 @@ const DocumentView: React.FC<DocumentViewProps> = ({
     throw new Error("meta.extensionId is required for DocumentView");
   }
 
+  const stylesheetUrls = [
+    // DocumentView.css is an artifact produced by webpack, see the DocumentView entrypoint included in
+    // `webpack.config.mjs`. We build styles needed to render documents separately from the rest of the sidebar
+    // in order to isolate the rendered document from the custom Bootstrap theme included in the Sidebar app
+    "/DocumentView.css",
+  ];
+
+  if (isEmpty(stylesheets)) {
+    stylesheetUrls.push(bootstrap, bootstrapOverrides);
+  } else {
+    // Custom stylesheets overrides bootstrap themes
+    stylesheetUrls.push(...stylesheets);
+  }
+
   return (
     // Wrap in a React context provider that passes BrickOptions down to any embedded bricks
     <DocumentContext.Provider value={{ options, onAction }}>
       <EmotionShadowRoot.div className="h-100">
-        <Stylesheets
-          // DocumentView.css is an artifact produced by webpack, see the DocumentView entrypoint included in
-          // `webpack.config.mjs`. We build styles needed to render documents separately from the rest of the sidebar
-          // in order to isolate the rendered document from the custom Bootstrap theme included in the Sidebar app
-          href={[
-            "/DocumentView.css",
-            bootstrap,
-            bootstrapOverrides,
-            ...stylesheets,
-          ]}
-        >
+        <Stylesheets href={stylesheetUrls}>
           {body.map((documentElement, index) => {
             const documentBranch = buildDocumentBranch(documentElement, {
               staticId: joinPathParts("body", "children"),
