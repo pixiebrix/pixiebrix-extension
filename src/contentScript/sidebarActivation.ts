@@ -40,7 +40,7 @@ import {
   parseModActivationUrl,
 } from "@/activation/activationLinkUtils";
 import {
-  ACTIVATE_EVENT_DETAIL,
+  type ACTIVATE_EVENT_DETAIL,
   ACTIVATE_EVENT_TYPE,
 } from "@/contentScript/activationConstants";
 
