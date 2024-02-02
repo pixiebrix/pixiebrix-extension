@@ -34,6 +34,7 @@ const DEEPGRAM_API_KEY = process.env.DEEPGRAM_API_KEY;
 // - Determine how to pass transcript/tags/etc. via events
 
 // References
+// - https://github.com/pixiebrix/pixiebrix-extension/pull/4354
 // - https://developer.chrome.com/docs/extensions/how-to/web-platform/screen-capture#audio-and-video
 // - https://github.com/GoogleChrome/chrome-extensions-samples/tree/main/functional-samples/sample.tabcapture-recorder
 // - https://developer.chrome.com/docs/extensions/mv2/reference/tabCapture#method-getMediaStreamId
