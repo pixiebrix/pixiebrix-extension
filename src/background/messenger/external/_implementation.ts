@@ -68,9 +68,10 @@ function migrateActivatingModsShape(
     return [];
   }
 
-  // Remove nullish values that might have crept into storage
-  // @ts-expect-error -- ts doesn't understand the filter over sum type of RegistryId[] | ModActivationConfig[]
+  // Remove nullish values that might have crept into storage. (Seen while making changes in local environment,
+  // should never occur in the wild)
   const valid: RegistryId[] | ModActivationConfig[] = value.filter(
+    // @ts-expect-error -- ts doesn't understand the filter over sum type of RegistryId[] | ModActivationConfig[]
     (x) => x != null,
   );
 
