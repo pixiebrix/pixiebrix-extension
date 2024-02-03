@@ -19,10 +19,10 @@ import { RunBot } from "@/contrib/automationanywhere/RunBot";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { uuidv4 } from "@/types/helpers";
 import {
-  getCachedAuthData,
   getUserData,
   performConfiguredRequestInBackground,
 } from "@/background/messenger/api";
+import { getCachedAuthData } from "@/background/messenger/strict/api";
 import { type AuthData } from "@/integrations/integrationTypes";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,

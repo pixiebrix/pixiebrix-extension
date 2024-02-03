@@ -16,10 +16,8 @@
  */
 
 import { type JsonObject } from "type-fest";
-import {
-  dataStore,
-  performConfiguredRequestInBackground,
-} from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
+import { dataStore } from "@/background/messenger/strict/api";
 import notify from "@/utils/notify";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError, PropError } from "@/errors/businessErrors";

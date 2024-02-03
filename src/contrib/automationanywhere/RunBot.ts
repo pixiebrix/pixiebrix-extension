@@ -29,7 +29,8 @@ import {
 } from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { cloneDeep } from "lodash";
-import { getCachedAuthData, getUserData } from "@/background/messenger/api";
+import { getCachedAuthData } from "@/background/messenger/strict/api";
+import { getUserData } from "@/background/messenger/api";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";

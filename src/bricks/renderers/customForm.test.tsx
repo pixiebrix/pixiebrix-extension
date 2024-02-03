@@ -29,7 +29,7 @@ import {
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 
-import { dataStore } from "@/background/messenger/api";
+import { dataStore } from "@/background/messenger/strict/api";
 import { type Schema } from "@/types/schemaTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { templates } from "@/components/formBuilder/RjsfTemplates";

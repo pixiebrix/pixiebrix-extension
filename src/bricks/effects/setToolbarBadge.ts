@@ -20,7 +20,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { BusinessError } from "@/errors/businessErrors";
 import type { BrickArgs } from "@/types/runtimeTypes";
-import { setToolbarBadge } from "@/background/messenger/api";
+import { setToolbarBadge } from "@/background/messenger/strict/api";
 
 class SetToolbarBadge extends EffectABC {
   constructor() {

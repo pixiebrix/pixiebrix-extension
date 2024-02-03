@@ -17,7 +17,7 @@
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { captureTab } from "@/background/messenger/api";
+import { captureTab } from "@/background/messenger/strict/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 

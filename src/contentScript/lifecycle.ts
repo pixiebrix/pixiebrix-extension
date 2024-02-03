@@ -25,7 +25,7 @@ import reportError from "@/telemetry/reportError";
 import { compact, debounce, groupBy, intersection, uniq } from "lodash";
 import oneEvent from "one-event";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { traces } from "@/background/messenger/api";
+import { traces } from "@/background/messenger/strict/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { getThisFrame } from "webext-messenger";
