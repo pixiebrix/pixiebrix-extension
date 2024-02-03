@@ -23,7 +23,10 @@ import {
 import notify from "@/utils/notify";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError, PropError } from "@/errors/businessErrors";
-import { getPageState, setPageState } from "@/contentScript/messenger/api";
+import {
+  getPageState,
+  setPageState,
+} from "@/contentScript/messenger/strict/api";
 import { isEmpty, isPlainObject, set } from "lodash";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type UUID } from "@/types/stringTypes";

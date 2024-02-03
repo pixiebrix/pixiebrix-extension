@@ -18,6 +18,9 @@
 /* Do not use `registerMethod` in this file */
 import { getMethod, getNotifier } from "webext-messenger";
 
+export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
+export const navigateTab = getNotifier("NAVIGATE_TAB");
+export const reactivateTab = getNotifier("REACTIVATE_TAB");
 export const ensureExtensionPointsInstalled = getMethod(
   "ENSURE_EXTENSION_POINTS_INSTALLED",
 );
