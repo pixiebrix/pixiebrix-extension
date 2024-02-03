@@ -34,21 +34,11 @@ import type { ModOptionsPair } from "@/types/modTypes";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 
-/**
- * @deprecated superseded by ModOptionsPair[]. Will be dropped in 1.8.9 or later version
- */
-type SingleModActivation = RegistryId;
-
-/**
- * @deprecated superseded by ModOptionsPair[]. Will be dropped in 1.8.9 or later version
- */
-type MultiModActivation = RegistryId[];
-
-// Type preserving backwards compatibility
 type ModActivation =
-  | SingleModActivation
-  | MultiModActivation
-  | ModOptionsPair[];
+  | ModOptionsPair[]
+  // Types preserving backwards compatibility -- remove once app changes go live
+  | RegistryId
+  | RegistryId[];
 
 /**
  * Chrome Storage key for tracking the mod id(s) that PixieBrix should start activation for.
@@ -78,15 +68,19 @@ function migrateActivatingModsShape(
     return [];
   }
 
-  if (typeof value[0] === "string") {
+  // Remove nullish values that might have snuck into storage
+  // @ts-expect-error -- ts doesn't understand the filter over sum type of RegistryId[] | ModOptionsPair[]
+  const valid: RegistryId[] | ModOptionsPair[] = value.filter((x) => x != null);
+
+  if (typeof valid[0] === "string") {
     // Legacy support for multiple mod activation
-    return (value as MultiModActivation).map((modId) => ({
+    return (valid as RegistryId[]).map((modId) => ({
       modId,
       initialOptions: {},
     }));
   }
 
-  return value as ModOptionsPair[];
+  return valid as ModOptionsPair[];
 }
 
 /**
@@ -201,7 +195,7 @@ export async function getActivatingMods(): Promise<
 > {
   const value = await activationStorage.get();
   const normalized = migrateActivatingModsShape(value);
-  return normalized.length === 0 ? null : normalized;
+  return normalized.length > 0 ? normalized : null;
 }
 
 type ActivateModsOptions = (
