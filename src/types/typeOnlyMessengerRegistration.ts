@@ -29,39 +29,9 @@ import { type SerializedError } from "@/types/messengerTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type JsonObject } from "type-fest";
 import { type Event } from "@/telemetry/events";
-import { type showMySidePanel } from "@/background/sidePanel";
-import { type ensureContentScript } from "@/background/contentScript";
-import { type getRecord, type setRecord } from "@/background/dataStore";
-import type initPartnerTheme from "@/background/partnerTheme";
-import {
-  type addTraceEntry,
-  type addTraceExit,
-  type clearExtensionTraces,
-  type clearTraces,
-} from "@/telemetry/trace";
-import { type captureTab } from "@/background/capture";
-import {
-  type deleteCachedAuthData,
-  type getCachedAuthData,
-} from "@/background/auth/authStorage";
-import { type setToolbarBadge } from "@/background/toolbarBadge";
 
 declare global {
   interface MessengerMethods {
-    SHOW_MY_SIDE_PANEL: typeof showMySidePanel;
-    INJECT_SCRIPT: typeof ensureContentScript;
-    GET_DATA_STORE: typeof getRecord;
-    SET_DATA_STORE: typeof setRecord;
-    ACTIVATE_PARTNER_THEME: typeof initPartnerTheme;
-    ADD_TRACE_ENTRY: typeof addTraceEntry;
-    ADD_TRACE_EXIT: typeof addTraceExit;
-    CLEAR_TRACES: typeof clearExtensionTraces;
-    CLEAR_ALL_TRACES: typeof clearTraces;
-    CAPTURE_TAB: typeof captureTab;
-    DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
-    GET_CACHED_AUTH: typeof getCachedAuthData;
-    SET_TOOLBAR_BADGE: typeof setToolbarBadge;
-
     // Temporary duplicate type for a background method used by the sidebar.
     // NOTE: Changes to those functions must be reflected here.
     RECORD_ERROR: (
