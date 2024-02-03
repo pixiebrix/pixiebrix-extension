@@ -27,6 +27,7 @@ import "@/background/axiosFetch";
 
 import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/background/messenger/registration";
+import registerMessengerStrict from "@/background/messenger/strict/registration";
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import initLocator from "@/background/locator";
 import initContextMenus from "@/background/contextMenus";
@@ -51,6 +52,7 @@ void initLocator();
 void initMessengerLogging();
 void initRuntimeLogging();
 registerMessenger();
+registerMessengerStrict();
 registerExternalMessenger();
 void initBrowserAction();
 void initSidePanel();
