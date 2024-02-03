@@ -22,28 +22,75 @@ import type { RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import type { ModActivationConfig } from "@/types/modTypes";
-import { uniq } from "lodash";
+import { isEmpty, uniq } from "lodash";
+import deepEquals from "fast-deep-equal";
 
 const ACTIVATE_PATH = "/activate";
 
 /**
- * Create a mod activation URL. Handles URL encoding.
- * @param modIds
+ * Returns an absolute URL for activating mods.
+ * @param mods the mods to activate
+ * @param nextUrl optional redirect URL
+ * @param baseUrl optional base URL, defaults to DEFAULT_SERVICE_URL
+ *
+ * @see createActivationRelativeUrl
+ * @see DEFAULT_SERVICE_URL
  */
-export function createActivationUrl(modIds: RegistryId[]): URL {
-  const url = new URL(`${DEFAULT_SERVICE_URL}${ACTIVATE_PATH}`);
+export function createActivationUrl(
+  mods: ModActivationConfig[],
+  {
+    nextUrl,
+    baseUrl = DEFAULT_SERVICE_URL,
+  }: {
+    nextUrl?: string;
+    baseUrl?: string;
+  } = {},
+) {
+  return new URL(createActivationRelativeUrl(mods, { nextUrl }), baseUrl);
+}
 
-  if (modIds.length === 1) {
-    // Known not to be undefined due to length check
-    url.searchParams.append("id", modIds[0] as string);
-    return url;
+/**
+ * Returns a relative URL for activating mods.
+ * @param mods the mods to activate
+ * @param nextUrl an optional redirect URL
+ */
+export function createActivationRelativeUrl(
+  mods: ModActivationConfig[],
+  {
+    nextUrl,
+  }: {
+    nextUrl?: string;
+  } = {},
+): string {
+  if (mods.length === 0) {
+    throw new Error("Expected at least one mod to activate");
   }
 
-  for (const modId of modIds) {
-    url.searchParams.append("id[]", modId);
+  const searchParams = new URLSearchParams();
+
+  const { initialOptions } = mods[0];
+
+  // In 1.8.8, which introduces initial options, we only support a single set of initial options
+  if (mods.some((mod) => !deepEquals(mod.initialOptions, initialOptions))) {
+    throw new Error("Expected all mods to have the same initial options");
   }
 
-  return url;
+  for (const mod of mods) {
+    // `id[]` syntax works in extension both single and multiple values
+    searchParams.append("id[]", mod.modId);
+  }
+
+  // Only add options if they are present
+  if (mods.some((x) => !isEmpty(x.initialOptions))) {
+    searchParams.set("activateOptions", btoa(JSON.stringify(initialOptions)));
+  }
+
+  if (nextUrl) {
+    searchParams.set("nextUrl", nextUrl);
+  }
+
+  // App UI doesn't use trailing slashes
+  return `${ACTIVATE_PATH}?${searchParams.toString()}`;
 }
 
 /**

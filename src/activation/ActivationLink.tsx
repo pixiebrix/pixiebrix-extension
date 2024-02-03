@@ -33,7 +33,9 @@ type ActivationLinkProps = {
 const ActivationLink: React.FunctionComponent<ActivationLinkProps> = ({
   modId,
 }) => {
-  const activationLink = createActivationUrl([modId]).toString();
+  const activationLink = createActivationUrl([
+    { modId, initialOptions: {} },
+  ]).toString();
 
   return (
     <InputGroup>

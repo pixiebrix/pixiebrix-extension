@@ -16,6 +16,7 @@
  */
 
 import {
+  createActivationRelativeUrl,
   createActivationUrl,
   getNextUrlFromActivateUrl,
   getRegistryIdsFromActivateUrlSearchParams,
@@ -24,21 +25,71 @@ import {
 } from "@/activation/activationLinkUtils";
 import { validateRegistryId } from "@/types/helpers";
 
-describe("constructActivationUrl", () => {
+describe("createActivationUrl", () => {
   test("single id", () => {
     expect(
-      createActivationUrl([validateRegistryId("test/123")]).toString(),
-    ).toBe("https://app.pixiebrix.com/activate?id=test%2F123");
+      createActivationUrl([
+        { modId: validateRegistryId("test/123"), initialOptions: {} },
+      ]).toString(),
+    ).toBe("https://app.pixiebrix.com/activate?id%5B%5D=test%2F123");
   });
 
   test("multiple ids", () => {
     expect(
       createActivationUrl([
-        validateRegistryId("test/123"),
-        validateRegistryId("test/abc"),
+        { modId: validateRegistryId("test/123"), initialOptions: {} },
+        { modId: validateRegistryId("test/abc"), initialOptions: {} },
       ]).toString(),
     ).toBe(
       "https://app.pixiebrix.com/activate?id%5B%5D=test%2F123&id%5B%5D=test%2Fabc",
+    );
+  });
+});
+
+describe("createActivationRelativeUrl", () => {
+  test("throws for no mods", () => {
+    expect(() => {
+      createActivationRelativeUrl([]);
+    }).toThrow(Error);
+  });
+
+  test("single id with no options", () => {
+    expect(
+      createActivationRelativeUrl([
+        { modId: validateRegistryId("test/123"), initialOptions: {} },
+      ]).toString(),
+    ).toBe("/activate?id%5B%5D=test%2F123");
+  });
+
+  test("single id with options", () => {
+    expect(
+      createActivationRelativeUrl([
+        { modId: validateRegistryId("test/123"), initialOptions: { foo: 42 } },
+      ]).toString(),
+    ).toBe(
+      "/activate?id%5B%5D=test%2F123&activateOptions=eyJmb28iOjQyfQ%3D%3D",
+    );
+  });
+
+  test("single id redirect", () => {
+    expect(
+      createActivationRelativeUrl(
+        [{ modId: validateRegistryId("test/123"), initialOptions: {} }],
+        { nextUrl: "https://www.pixiebrix.com" },
+      ).toString(),
+    ).toBe(
+      "/activate?id%5B%5D=test%2F123&nextUrl=https%3A%2F%2Fwww.pixiebrix.com",
+    );
+  });
+
+  test("multiple id with options", () => {
+    expect(
+      createActivationRelativeUrl([
+        { modId: validateRegistryId("test/123"), initialOptions: { foo: 42 } },
+        { modId: validateRegistryId("test/abc"), initialOptions: { foo: 42 } },
+      ]).toString(),
+    ).toBe(
+      "/activate?id%5B%5D=test%2F123&id%5B%5D=test%2Fabc&activateOptions=eyJmb28iOjQyfQ%3D%3D",
     );
   });
 });

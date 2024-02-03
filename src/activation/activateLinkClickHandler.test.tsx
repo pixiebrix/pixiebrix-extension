@@ -35,7 +35,9 @@ beforeEach(() => {
 describe("activateLinkClickHandler", () => {
   it("handles simple anchor element", async () => {
     const modId = registryIdFactory();
-    const href = createActivationUrl([modId]).toString();
+    const href = createActivationUrl([
+      { modId, initialOptions: {} },
+    ]).toString();
     render(<a href={href}>Activate Mod</a>);
 
     document.addEventListener("click", handleClicks);
