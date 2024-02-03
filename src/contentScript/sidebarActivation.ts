@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isRegistryId } from "@/types/helpers";
 import {
   hideModActivationInSidebar,
   showModActivationInSidebar,
@@ -33,8 +32,7 @@ import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getActivatedModIds } from "@/store/extensionsStorage";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import { allSettled } from "@/utils/promiseUtils";
-import type { Nullishable } from "@/utils/nullishUtils";
-import type { ModOptionsPair } from "@/types/modTypes";
+import type { ModActivationConfig } from "@/types/modTypes";
 import {
   getNextUrlFromActivateUrl,
   parseModActivationUrlSearchParams,
@@ -46,26 +44,8 @@ import {
 
 let listener: EventListener | null;
 
-/**
- * Returns mod ids that are currently being activated, or null if there are none.
- *
- * Same as getActivatingBlueprints, but filters out any mod ids that are not syntactically valid.
- *
- * @see getActivatingMods
- */
-async function getInProgressModActivation(): Promise<
-  Nullishable<ModOptionsPair[]>
-> {
-  const mods = (await getActivatingMods()) ?? [];
-
-  // Defensive validation
-  const valid = mods.filter((x) => isRegistryId(x.modId));
-
-  return valid.length > 0 ? valid : null;
-}
-
 async function showSidebarActivationForMods(
-  mods: ModOptionsPair[],
+  mods: ModActivationConfig[],
 ): Promise<void> {
   await showSidebar();
   await showModActivationInSidebar({
@@ -125,11 +105,11 @@ export async function initSidebarActivation(): Promise<void> {
     return;
   }
 
-  const modIds = await getInProgressModActivation();
+  const mods = await getActivatingMods();
 
   // Do not try to show sidebar activation inside an iframe or in the Admin Console
   if (
-    modIds &&
+    mods.length > 0 &&
     !isLoadedInIframe() &&
     !document.location.href.includes(DEFAULT_SERVICE_URL)
   ) {
@@ -137,7 +117,7 @@ export async function initSidebarActivation(): Promise<void> {
       [
         // Clear out local storage
         setActivatingMods(null),
-        showSidebarActivationForMods(modIds),
+        showSidebarActivationForMods(mods),
       ],
       { catch: "ignore" },
     );

@@ -21,7 +21,7 @@ import type { JsonObject } from "type-fest";
 import type { RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
-import type { ModOptionsPair } from "@/types/modTypes";
+import type { ModActivationConfig } from "@/types/modTypes";
 import { uniq } from "lodash";
 
 const ACTIVATE_PATH = "/activate";
@@ -109,7 +109,7 @@ function parseEncodedOptions(
  */
 export function parseModActivationUrlSearchParams(
   searchParams: URLSearchParams,
-): ModOptionsPair[] {
+): ModActivationConfig[] {
   const modIds = getRegistryIdsFromActivateUrlSearchParams(searchParams);
   const encodedOptions = searchParams.get("activateOptions") as EncodedJSON;
   const initialOptions = parseEncodedOptions(encodedOptions);

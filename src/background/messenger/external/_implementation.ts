@@ -30,12 +30,12 @@ import { validateRegistryId } from "@/types/helpers";
 import { StorageItem } from "webext-storage";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import type { Nullishable } from "@/utils/nullishUtils";
-import type { ModOptionsPair } from "@/types/modTypes";
+import type { ModActivationConfig } from "@/types/modTypes";
 
 const HACK_EXTENSION_LINK_RELOAD_DELAY_MS = 100;
 
 type ModActivation =
-  | ModOptionsPair[]
+  | ModActivationConfig[]
   // Types preserving backwards compatibility -- remove once app changes go live
   | RegistryId
   | RegistryId[];
@@ -43,7 +43,7 @@ type ModActivation =
 /**
  * Chrome Storage key for tracking the mod id(s) that PixieBrix should start activation for.
  */
-const activationStorage = new StorageItem<ModOptionsPair[]>(
+const activationStorage = new StorageItem<ModActivationConfig[]>(
   // Keeping key for backwards compatibility
   "activatingBlueprintId",
 );
@@ -54,7 +54,7 @@ const activationStorage = new StorageItem<ModOptionsPair[]>(
  */
 function migrateActivatingModsShape(
   value: Nullishable<ModActivation>,
-): ModOptionsPair[] {
+): ModActivationConfig[] {
   if (!value) {
     return [];
   }
@@ -68,9 +68,11 @@ function migrateActivatingModsShape(
     return [];
   }
 
-  // Remove nullish values that might have snuck into storage
-  // @ts-expect-error -- ts doesn't understand the filter over sum type of RegistryId[] | ModOptionsPair[]
-  const valid: RegistryId[] | ModOptionsPair[] = value.filter((x) => x != null);
+  // Remove nullish values that might have crept into storage
+  // @ts-expect-error -- ts doesn't understand the filter over sum type of RegistryId[] | ModActivationConfig[]
+  const valid: RegistryId[] | ModActivationConfig[] = value.filter(
+    (x) => x != null,
+  );
 
   if (typeof valid[0] === "string") {
     // Legacy support for multiple mod activation
@@ -80,7 +82,7 @@ function migrateActivatingModsShape(
     }));
   }
 
-  return valid as ModOptionsPair[];
+  return valid as ModActivationConfig[];
 }
 
 /**
@@ -138,7 +140,7 @@ export async function openMarketplace({
 
 /**
  * The mod(s) to activate.
- * @deprecated superseded by ActivationPartial
+ * @deprecated superseded by ActivationPartial - will be removed in 1.8.9 or later after app changes go live
  * @see ActivationPartial
  */
 type LegacyModActivationPartial = {
@@ -155,12 +157,13 @@ type LegacyModActivationPartial = {
  * @since 1.8.8
  */
 type ModActivationPartial = {
-  mods: ModOptionsPair[];
+  mods: ModActivationConfig[];
 };
 
 /**
  * Set the mod id(s) that PixieBrix should start activation for.
  *
+ * @throws if any mod id is not a valid registry id
  * @see getActivatingMods
  */
 export async function setActivatingMods(
@@ -186,16 +189,13 @@ export async function setActivatingMods(
 }
 
 /**
- * Returns the mod id(s) that PixieBrix should show activation UI for, or null if there are none.
+ * Returns the mod id(s) that PixieBrix should show activation UI for.
  *
  * @see setActivatingMods
  */
-export async function getActivatingMods(): Promise<
-  Nullishable<ModOptionsPair[]>
-> {
+export async function getActivatingMods(): Promise<ModActivationConfig[]> {
   const value = await activationStorage.get();
-  const normalized = migrateActivatingModsShape(value);
-  return normalized.length > 0 ? normalized : null;
+  return migrateActivatingModsShape(value);
 }
 
 type ActivateModsOptions = (

@@ -52,10 +52,7 @@ jest.mock("@/contentScript/ready", () => ({
   isReadyInThisDocument: jest.fn(() => true),
 }));
 
-jest.mock("@/store/extensionsStorage", () => ({
-  getActivatedModIds: jest.fn().mockResolvedValue([]),
-}));
-
+jest.mock("@/store/extensionsStorage");
 jest.mock("@/background/messenger/external/_implementation");
 jest.mock("@/sidebar/store");
 
@@ -63,16 +60,16 @@ const showSidebarMock = jest.mocked(showModActivationInSidebar);
 const getActivatedModIdsMock = jest.mocked(getActivatedModIds);
 const getActivatingModsMock = jest.mocked(getActivatingMods);
 
-const recipeId1 = validateRegistryId("@pixies/misc/comment-and-vote");
-const recipeId2 = validateRegistryId("@pixies/github/github-notifications");
+const modId1 = validateRegistryId("@pixies/misc/comment-and-vote");
+const modId2 = validateRegistryId("@pixies/github/github-notifications");
 
 const activateButtonsHtml = `
 <div>
     <a class="btn btn-primary" data-activate-button href="https://app.pixiebrix.com/activate?id=${encodeURIComponent(
-      recipeId1,
+      modId1,
     )}&utm_source=marketplace&utm_campaign=activate_blueprint" target="_blank" rel="noreferrer noopener"><i class="fas fa-plus-circle"></i> Activate</a>
     <a class="btn btn-primary" data-activate-button href="https://app.pixiebrix.com/activate?id=${encodeURIComponent(
-      recipeId2,
+      modId2,
     )}&utm_source=marketplace&utm_campaign=activate_blueprint" target="_blank" rel="noreferrer noopener"><i class="fas fa-plus-circle"></i> Activate</a>
 </div>
 `;
@@ -83,6 +80,7 @@ describe("marketplace enhancements", () => {
     document.body.innerHTML = getDocument(activateButtonsHtml).body.innerHTML;
     jest.mocked(isReadyInThisDocument).mockImplementation(() => true);
     getActivatedModIdsMock.mockResolvedValue(new Set());
+    getActivatingModsMock.mockResolvedValue([]);
   });
 
   afterEach(async () => {
@@ -97,7 +95,7 @@ describe("marketplace enhancements", () => {
     // Recipe 1 is installed, recipe 2 is not
     const modComponent1 = modComponentFactory({
       _recipe: modMetadataFactory({
-        id: recipeId1,
+        id: modId1,
       }),
     }) as ActivatedModComponent;
     const modComponent2 = modComponentFactory() as ActivatedModComponent;
@@ -199,7 +197,7 @@ describe("marketplace enhancements", () => {
     // Recipe 1 is installed, recipe 2 is not
     const modComponent1 = modComponentFactory({
       _recipe: modMetadataFactory({
-        id: recipeId1,
+        id: modId1,
       }),
     }) as ActivatedModComponent;
     const modComponent2 = modComponentFactory() as ActivatedModComponent;
@@ -222,7 +220,7 @@ describe("marketplace enhancements", () => {
     // Recipe 1 is installed, recipe 2 is not
     const modComponent1 = modComponentFactory({
       _recipe: modMetadataFactory({
-        id: recipeId1,
+        id: modId1,
       }),
     }) as ActivatedModComponent;
     const modComponent2 = modComponentFactory() as ActivatedModComponent;

@@ -30,7 +30,7 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
-import type { ModOptionsPair } from "@/types/modTypes";
+import type { ModActivationConfig } from "@/types/modTypes";
 import type { UnknownObject } from "@/types/objectTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
@@ -66,7 +66,7 @@ export type RequiredModDefinition = {
 };
 
 type Props = {
-  mods: ModOptionsPair[];
+  mods: ModActivationConfig[];
   children: (props: RequiredModDefinition[]) => React.ReactElement;
 };
 
@@ -155,7 +155,7 @@ const RequireMods: React.FC<Props> = ({ mods, children }) => {
     modDefinitionsState,
     authOptionsState,
     async (
-      modOptionPairs: ModOptionsPair[],
+      modOptionPairs: ModActivationConfig[],
       modDefinitions: ModDefinition[],
       authOptions: AuthOption[],
     ) =>

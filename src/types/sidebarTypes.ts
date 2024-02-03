@@ -27,7 +27,7 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import { isObject } from "@/utils/objectUtils";
 import { type RunMetadata } from "@/types/runtimeTypes";
-import type { ModOptionsPair } from "@/types/modTypes";
+import type { ModActivationConfig } from "@/types/modTypes";
 
 /**
  * Entry types supported by the sidebar.
@@ -237,7 +237,7 @@ export type ModActivationPanelEntry = BasePanelEntry & {
   /**
    * One or more mod id(s) to activate. If providing multiple mod ids, none of the mods may require configuration.
    */
-  mods: ModOptionsPair[];
+  mods: ModActivationConfig[];
 
   /**
    * Heading for tab name in the sidebar

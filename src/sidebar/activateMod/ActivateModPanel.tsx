@@ -51,7 +51,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
 import Markdown from "@/components/Markdown";
 import { getModActivationInstructions } from "@/utils/modUtils";
-import type { ModOptionsPair } from "@/types/modTypes";
+import type { ModActivationConfig } from "@/types/modTypes";
 
 const { actions } = sidebarSlice;
 
@@ -385,7 +385,7 @@ const ActivateModWizardPanel: React.FC<RequiredModDefinition> = (modState) => {
  * React Component Panel for activating a single mod, which may require end-user configuration.
  * @param modId the mod id
  */
-const ActivateModPanel: React.FC<{ mod: ModOptionsPair }> = ({ mod }) => {
+const ActivateModPanel: React.FC<{ mod: ModActivationConfig }> = ({ mod }) => {
   // Memoize to array reference doesn't change on re-render
   const memoizedMods = useMemo(() => [mod], [mod]);
 

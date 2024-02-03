@@ -76,10 +76,10 @@ export type ModViewItem = {
 };
 
 /**
- * A mod id with initial activation options.
+ * A mod id with activation configuration.
  * @since 1.8.8
  */
-export type ModOptionsPair = {
+export type ModActivationConfig = {
   /**
    * The mod to activate.
    */

@@ -32,7 +32,7 @@ import useActivateRecipe, {
 } from "@/activation/useActivateRecipe";
 import { SuccessPanel } from "@/sidebar/activateMod/ActivateModPanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
-import type { ModOptionsPair } from "@/types/modTypes";
+import type { ModActivationConfig } from "@/types/modTypes";
 
 type ModResultPair = {
   mod: RequiredModDefinition;
@@ -137,7 +137,7 @@ const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
  *
  * @since 1.7.35
  */
-const ActivateMultipleModsPanel: React.FC<{ mods: ModOptionsPair[] }> = ({
+const ActivateMultipleModsPanel: React.FC<{ mods: ModActivationConfig[] }> = ({
   mods,
 }) => (
   <RequireMods mods={mods}>
