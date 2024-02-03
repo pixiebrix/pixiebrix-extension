@@ -21,7 +21,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
-import { getInstalledExtensionPoints } from "@/contentScript/messenger/looseNull/api";
+import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 import { getCurrentURL } from "@/pageEditor/utils";
 import { validateRegistryId } from "@/types/helpers";
 import {
@@ -38,7 +38,7 @@ import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFa
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 
-jest.mock("@/contentScript/messenger/looseNull/api");
+jest.mock("@/contentScript/messenger/api");
 
 jest.mock("@/pageEditor/utils");
 

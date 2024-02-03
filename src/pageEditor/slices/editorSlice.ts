@@ -74,7 +74,7 @@ import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import {
   checkAvailable,
   getInstalledExtensionPoints,
-} from "@/contentScript/messenger/looseNull/api";
+} from "@/contentScript/messenger/api";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";

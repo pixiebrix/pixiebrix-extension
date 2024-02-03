@@ -42,7 +42,7 @@ const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
 
 jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter");
 jest.mock("@/hooks/auth");
-jest.mock("@/contentScript/messenger/looseNull/api");
+jest.mock("@/contentScript/messenger/api");
 
 function makeBaseState() {
   return menuItemFormStateFactory(

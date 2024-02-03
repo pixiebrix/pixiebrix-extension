@@ -37,7 +37,7 @@ import { initCopilotMessenger } from "@/contrib/automationanywhere/aaFrameProtoc
 import { initPerformanceMonitoring } from "@/telemetry/performance";
 import { initSidePanel } from "./sidePanel";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { sidebarWasLoaded } from "@/contentScript/messenger/api";
+import { sidebarWasLoaded } from "@/contentScript/messenger/strict/api";
 
 async function init(): Promise<void> {
   ReactDOM.render(<App />, document.querySelector("#container"));

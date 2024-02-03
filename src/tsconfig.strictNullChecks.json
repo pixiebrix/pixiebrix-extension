@@ -203,7 +203,7 @@
     "./contentScript/ephemeralFormProtocol.ts",
     "./contentScript/ephemeralPanelController.tsx",
     "./contentScript/focusCaptureDialog.ts",
-    "./contentScript/messenger/api.ts",
+    "./contentScript/messenger/strict/api.ts",
     "./contentScript/messenger/runBrickTypes.ts",
     "./contentScript/pageEditor/beautify.ts",
     "./contentScript/pageState.ts",

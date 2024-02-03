@@ -29,7 +29,7 @@ import styles from "./ActivateModPanel.module.scss";
 import AsyncButton from "@/components/AsyncButton";
 import { useDispatch } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
-import { reloadMarketplaceEnhancements as reloadMarketplaceEnhancementsInContentScript } from "@/contentScript/messenger/looseNull/api";
+import { reloadMarketplaceEnhancements as reloadMarketplaceEnhancementsInContentScript } from "@/contentScript/messenger/api";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import cx from "classnames";
 import { isEmpty } from "lodash";

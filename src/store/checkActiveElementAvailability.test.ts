@@ -23,7 +23,7 @@ import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import { validateRegistryId } from "@/types/helpers";
 import { type RegistryId } from "@/types/registryTypes";
-import { checkAvailable } from "@/contentScript/messenger/looseNull/api";
+import { checkAvailable } from "@/contentScript/messenger/api";
 import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
 import { type Availability } from "@/bricks/types";
@@ -32,7 +32,7 @@ import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors
 import { produce } from "immer";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
-jest.mock("@/contentScript/messenger/looseNull/api");
+jest.mock("@/contentScript/messenger/api");
 
 jest.mock("@/pageEditor/utils");
 

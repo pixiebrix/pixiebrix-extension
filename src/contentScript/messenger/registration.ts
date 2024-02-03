@@ -16,91 +16,129 @@
  */
 
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
-
-import {
-  hideSidebar,
-  showSidebar,
-  sidebarWasLoaded,
-  updateSidebar,
-  removeExtensions as removeSidebars,
-  reloadSidebar,
-  getReservedPanelEntries,
-} from "@/contentScript/sidebarController";
-import { handleMenuAction } from "@/contentScript/contextMenus";
-import {
-  getFormDefinition,
-  resolveForm,
-  cancelForm,
-} from "@/contentScript/ephemeralFormProtocol";
-import { getProcesses, initRobot } from "@/contentScript/uipath";
-import { checkAvailable } from "@/bricks/available";
-import notify from "@/utils/notify";
-import { getPageState, setPageState } from "@/contentScript/pageState";
-import {
-  cancelTemporaryPanels,
-  getPanelDefinition,
-  resolveTemporaryPanel,
-  stopWaitingForTemporaryPanels,
-} from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { closeWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
-import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughModal";
 import { registerMethods } from "webext-messenger";
+import { expectContext } from "@/utils/expectContext";
+import {
+  ensureInstalled,
+  getActiveExtensionPoints,
+  queueReactivateTab,
+  reactivateTab,
+  removePersistedExtension,
+} from "@/contentScript/lifecycle";
+import { resolveForm } from "@/contentScript/ephemeralFormProtocol";
+import { getReservedPanelEntries } from "@/contentScript/sidebarController";
+import { insertPanel } from "@/contentScript/pageEditor/insertPanel";
+import { insertButton } from "@/contentScript/pageEditor/insertButton";
+import {
+  clearDynamicElements,
+  disableOverlay,
+  enableOverlay,
+  runExtensionPointReader,
+  updateDynamicElement,
+} from "@/contentScript/pageEditor/dynamic";
+import {
+  runBlockPreview,
+  resetTab,
+  runRendererBlock,
+  navigateTab,
+} from "@/contentScript/pageEditor";
+import { runBrick } from "@/contentScript/executor";
+import {
+  cancelSelect,
+  selectElement,
+} from "@/contentScript/pageEditor/elementPicker";
+import {
+  runHeadlessPipeline,
+  runMapArgs,
+  runRendererPipeline,
+} from "@/contentScript/pipelineProtocol";
+import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
+import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
+import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
+import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
+
+expectContext("contentScript");
 
 declare global {
   interface MessengerMethods {
-    FORM_GET_DEFINITION: typeof getFormDefinition;
     FORM_RESOLVE: typeof resolveForm;
-    FORM_CANCEL: typeof cancelForm;
-    UPDATE_SIDEBAR: typeof updateSidebar;
-    SIDEBAR_WAS_LOADED: typeof sidebarWasLoaded;
-    SHOW_SIDEBAR: typeof showSidebar;
-    HIDE_SIDEBAR: typeof hideSidebar;
-    RELOAD_SIDEBAR: typeof reloadSidebar;
-    REMOVE_SIDEBARS: typeof removeSidebars;
-    HANDLE_MENU_ACTION: typeof handleMenuAction;
+
+    QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
+    REACTIVATE_TAB: typeof reactivateTab;
+    REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
     GET_RESERVED_SIDEBAR_ENTRIES: typeof getReservedPanelEntries;
-    UIPATH_INIT: typeof initRobot;
-    UIPATH_GET_PROCESSES: typeof getProcesses;
-    CHECK_AVAILABLE: typeof checkAvailable;
-    GET_PAGE_STATE: typeof getPageState;
-    SET_PAGE_STATE: typeof setPageState;
-    NOTIFY_INFO: typeof notify.info;
-    NOTIFY_ERROR: typeof notify.error;
-    NOTIFY_SUCCESS: typeof notify.success;
-    TEMPORARY_PANEL_CLOSE: typeof stopWaitingForTemporaryPanels;
-    TEMPORARY_PANEL_CANCEL: typeof cancelTemporaryPanels;
-    TEMPORARY_PANEL_RESOLVE: typeof resolveTemporaryPanel;
-    PANEL_GET_DEFINITION: typeof getPanelDefinition;
-    WALKTHROUGH_MODAL_CLOSE: typeof closeWalkthroughModal;
-    WALKTHROUGH_MODAL_SHOW: typeof showWalkthroughModal;
+    RESET_TAB: typeof resetTab;
+    NAVIGATE_TAB: typeof navigateTab;
+
+    TOGGLE_QUICK_BAR: typeof toggleQuickBar;
+
+    INSERT_PANEL: typeof insertPanel;
+    INSERT_BUTTON: typeof insertButton;
+
+    GET_ATTRIBUTE_EXAMPLES: typeof getAttributeExamples;
+    RUN_SINGLE_BLOCK: typeof runBlockPreview;
+    RUN_RENDERER_BLOCK: typeof runRendererBlock;
+
+    CLEAR_DYNAMIC_ELEMENTS: typeof clearDynamicElements;
+    UPDATE_DYNAMIC_ELEMENT: typeof updateDynamicElement;
+    RUN_EXTENSION_POINT_READER: typeof runExtensionPointReader;
+    ENABLE_OVERLAY: typeof enableOverlay;
+    DISABLE_OVERLAY: typeof disableOverlay;
+    INSTALLED_EXTENSION_POINTS: typeof getActiveExtensionPoints;
+    ENSURE_EXTENSION_POINTS_INSTALLED: typeof ensureInstalled;
+
+    RUN_BRICK: typeof runBrick;
+    CANCEL_SELECT_ELEMENT: typeof cancelSelect;
+    SELECT_ELEMENT: typeof selectElement;
+
+    RUN_RENDERER_PIPELINE: typeof runRendererPipeline;
+    RUN_HEADLESS_PIPELINE: typeof runHeadlessPipeline;
+    RUN_MAP_ARGS: typeof runMapArgs;
+
+    GET_COPILOT_HOST_DATA: typeof getCopilotHostData;
+
+    RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadActivationEnhancements;
   }
 }
+
 export default function registerMessenger(): void {
   registerMethods({
-    FORM_GET_DEFINITION: getFormDefinition,
     FORM_RESOLVE: resolveForm,
-    FORM_CANCEL: cancelForm,
-    UPDATE_SIDEBAR: updateSidebar,
-    SIDEBAR_WAS_LOADED: sidebarWasLoaded,
-    SHOW_SIDEBAR: showSidebar,
-    HIDE_SIDEBAR: hideSidebar,
-    RELOAD_SIDEBAR: reloadSidebar,
-    REMOVE_SIDEBARS: removeSidebars,
-    HANDLE_MENU_ACTION: handleMenuAction,
+
+    QUEUE_REACTIVATE_TAB: queueReactivateTab,
+    REACTIVATE_TAB: reactivateTab,
+    REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
     GET_RESERVED_SIDEBAR_ENTRIES: getReservedPanelEntries,
-    UIPATH_INIT: initRobot,
-    UIPATH_GET_PROCESSES: getProcesses,
-    CHECK_AVAILABLE: checkAvailable,
-    GET_PAGE_STATE: getPageState,
-    SET_PAGE_STATE: setPageState,
-    NOTIFY_INFO: notify.info,
-    NOTIFY_ERROR: notify.error,
-    NOTIFY_SUCCESS: notify.success,
-    TEMPORARY_PANEL_CLOSE: stopWaitingForTemporaryPanels,
-    TEMPORARY_PANEL_CANCEL: cancelTemporaryPanels,
-    TEMPORARY_PANEL_RESOLVE: resolveTemporaryPanel,
-    PANEL_GET_DEFINITION: getPanelDefinition,
-    WALKTHROUGH_MODAL_CLOSE: closeWalkthroughModal,
-    WALKTHROUGH_MODAL_SHOW: showWalkthroughModal,
+    RESET_TAB: resetTab,
+    NAVIGATE_TAB: navigateTab,
+
+    TOGGLE_QUICK_BAR: toggleQuickBar,
+
+    INSERT_PANEL: insertPanel,
+    INSERT_BUTTON: insertButton,
+
+    GET_ATTRIBUTE_EXAMPLES: getAttributeExamples,
+    RUN_SINGLE_BLOCK: runBlockPreview,
+    RUN_RENDERER_BLOCK: runRendererBlock,
+
+    CLEAR_DYNAMIC_ELEMENTS: clearDynamicElements,
+    UPDATE_DYNAMIC_ELEMENT: updateDynamicElement,
+    RUN_EXTENSION_POINT_READER: runExtensionPointReader,
+    ENABLE_OVERLAY: enableOverlay,
+    DISABLE_OVERLAY: disableOverlay,
+    INSTALLED_EXTENSION_POINTS: getActiveExtensionPoints,
+    ENSURE_EXTENSION_POINTS_INSTALLED: ensureInstalled,
+
+    RUN_BRICK: runBrick,
+    CANCEL_SELECT_ELEMENT: cancelSelect,
+    SELECT_ELEMENT: selectElement,
+
+    RUN_RENDERER_PIPELINE: runRendererPipeline,
+    RUN_HEADLESS_PIPELINE: runHeadlessPipeline,
+    RUN_MAP_ARGS: runMapArgs,
+
+    GET_COPILOT_HOST_DATA: getCopilotHostData,
+
+    RELOAD_MARKETPLACE_ENHANCEMENTS: reloadActivationEnhancements,
   });
 }

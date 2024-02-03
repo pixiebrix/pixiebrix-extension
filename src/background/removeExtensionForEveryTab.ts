@@ -1,8 +1,8 @@
 import {
   removeInstalledExtension,
   clearDynamicElements,
-} from "@/contentScript/messenger/looseNull/api";
-import { removeSidebars } from "@/contentScript/messenger/api";
+} from "@/contentScript/messenger/api";
+import { removeSidebars } from "@/contentScript/messenger/strict/api";
 import { forEachTab } from "@/utils/extensionUtils";
 import { type UUID } from "@/types/stringTypes";
 import { uninstallContextMenu } from "./contextMenus";

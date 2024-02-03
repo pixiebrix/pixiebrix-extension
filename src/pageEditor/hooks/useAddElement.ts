@@ -23,7 +23,7 @@ import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base
 import { isSpecificError } from "@/errors/errorHelpers";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import { getCurrentURL, thisTab } from "@/pageEditor/utils";
-import { updateDynamicElement } from "@/contentScript/messenger/looseNull/api";
+import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 import useFlags from "@/hooks/useFlags";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";

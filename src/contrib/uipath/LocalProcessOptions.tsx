@@ -26,7 +26,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 // TODO: Fix `no-restricted-paths`: Look into a standardized way to mark this whole as pageEditor-only
 import { thisTab } from "@/pageEditor/utils";
-import { getProcesses, initRobot } from "@/contentScript/messenger/api";
+import { getProcesses, initRobot } from "@/contentScript/messenger/strict/api";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
 import { expectContext } from "@/utils/expectContext";
 import { type Schema } from "@/types/schemaTypes";

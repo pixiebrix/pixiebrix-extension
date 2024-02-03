@@ -22,10 +22,7 @@ import ActivatedModComponentListItem from "@/pageEditor/sidebar/ActivatedModComp
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { screen, waitFor } from "@testing-library/react";
-import {
-  disableOverlay,
-  enableOverlay,
-} from "@/contentScript/messenger/looseNull/api";
+import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
 import userEvent from "@testing-library/user-event";
 
 jest.mock("@/pageEditor/starterBricks/adapter", () => {
@@ -36,7 +33,7 @@ jest.mock("@/pageEditor/starterBricks/adapter", () => {
   };
 });
 
-jest.mock("@/contentScript/messenger/looseNull/api");
+jest.mock("@/contentScript/messenger/api");
 
 const enableOverlayMock = jest.mocked(enableOverlay);
 const disableOverlayMock = jest.mocked(disableOverlay);

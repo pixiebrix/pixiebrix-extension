@@ -21,7 +21,7 @@ import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import React from "react";
 import EditorContent from "@/pageEditor/EditorContent";
-import { getInstalledExtensionPoints } from "@/contentScript/messenger/looseNull/api";
+import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
 jest.mock("@/permissions/extensionPermissionsHelpers", () => ({
@@ -41,7 +41,7 @@ jest.mock("@/pageEditor/utils", () => {
 
 jest.mock("@/pageEditor/hooks/useCurrentUrl");
 
-jest.mock("@/contentScript/messenger/looseNull/api");
+jest.mock("@/contentScript/messenger/api");
 
 describe("error alerting in the UI", () => {
   test("shows error when checkAvailableDynamicElements fails", async () => {

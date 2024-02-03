@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { reactivateTab } from "@/contentScript/messenger/looseNull/api";
+import { reactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/utils/extensionUtils";
 import { type Target } from "@/types/messengerTypes";
 import { canAccessTab } from "@/permissions/permissionsUtils";

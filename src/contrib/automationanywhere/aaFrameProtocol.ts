@@ -18,7 +18,7 @@
 import { type UnknownObject } from "@/types/objectTypes";
 import { expectContext } from "@/utils/expectContext";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { getCopilotHostData } from "@/contentScript/messenger/looseNull/api";
+import { getCopilotHostData } from "@/contentScript/messenger/api";
 
 /**
  * Runtime event type for setting Co-Pilot data

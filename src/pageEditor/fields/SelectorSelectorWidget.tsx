@@ -34,7 +34,7 @@ import {
   enableOverlay,
   selectElement,
   cancelSelect,
-} from "@/contentScript/messenger/looseNull/api";
+} from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { type SelectMode } from "@/contentScript/pageEditor/types";
 import { useSelector } from "react-redux";

@@ -32,7 +32,7 @@ import { thisTab } from "@/pageEditor/utils";
 import {
   removeInstalledExtension,
   updateDynamicElement,
-} from "@/contentScript/messenger/looseNull/api";
+} from "@/contentScript/messenger/api";
 import { selectActiveElement } from "./slices/editorSelectors";
 import { formStateToDynamicElement } from "./starterBricks/adapter";
 import { shouldAutoRun } from "@/pageEditor/toolbar/ReloadToolbar";

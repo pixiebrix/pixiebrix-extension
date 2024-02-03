@@ -28,7 +28,7 @@ import { selectTabHasPermissions } from "@/pageEditor/tabState/tabStateSelectors
 import { flagOn } from "@/auth/authUtils";
 import useAsyncState from "@/hooks/useAsyncState";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { navigateTab } from "@/contentScript/messenger/looseNull/api";
+import { navigateTab } from "@/contentScript/messenger/api";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
