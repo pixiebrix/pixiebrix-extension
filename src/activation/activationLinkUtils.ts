@@ -68,7 +68,8 @@ export function createActivationRelativeUrl(
 
   const searchParams = new URLSearchParams();
 
-  const { initialOptions } = mods[0];
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- known to be non-empty due to check above
+  const { initialOptions } = mods[0]!;
 
   // In 1.8.8, which introduces initial options, we only support a single set of initial options
   if (mods.some((mod) => !deepEquals(mod.initialOptions, initialOptions))) {
