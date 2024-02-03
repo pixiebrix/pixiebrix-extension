@@ -18,7 +18,6 @@
 /* Do not use `registerMethod` in this file */
 import { getMethod, getNotifier } from "webext-messenger";
 
-export const showMySidePanel = getMethod("SHOW_MY_SIDE_PANEL");
 export const showSidebar = getMethod("SHOW_SIDEBAR");
 export const hideSidebar = getMethod("HIDE_SIDEBAR");
 export const getFormDefinition = getMethod("FORM_GET_DEFINITION");

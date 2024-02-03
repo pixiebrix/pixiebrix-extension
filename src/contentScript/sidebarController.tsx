@@ -45,7 +45,7 @@ import { isMV3 } from "@/mv3/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import { showMySidePanel } from "@/contentScript/messenger/api";
+import { showMySidePanel } from "@/types/strictMessengerApi";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 

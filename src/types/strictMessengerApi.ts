@@ -20,3 +20,7 @@
  * Make sure you add the methods you need to ./typeOnlyMessengerRegistration.ts
  * @see https://github.com/pixiebrix/pixiebrix-extension/issues/6526
  */
+
+import { getMethod } from "webext-messenger";
+
+export const showMySidePanel = getMethod("SHOW_MY_SIDE_PANEL");
