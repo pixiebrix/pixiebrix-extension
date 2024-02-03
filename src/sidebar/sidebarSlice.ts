@@ -33,7 +33,7 @@ import {
   cancelTemporaryPanel,
   closeTemporaryPanel,
   resolveTemporaryPanel,
-} from "@/contentScript/messenger/strict/api";
+} from "@/contentScript/messenger/api";
 import { partition, remove, sortBy } from "lodash";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type SubmitPanelAction } from "@/bricks/errors";

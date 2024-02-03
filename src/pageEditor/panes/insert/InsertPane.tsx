@@ -21,7 +21,7 @@ import InsertMenuItemPane from "@/pageEditor/panes/insert/InsertMenuItemPane";
 import InsertPanelPane from "@/pageEditor/panes/insert/InsertPanelPane";
 import { useDispatch } from "react-redux";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { cancelSelect } from "@/contentScript/messenger/api";
+import { cancelSelect } from "@/contentScript/messenger/looseNull/api";
 import { thisTab } from "@/pageEditor/utils";
 import useEscapeHandler from "@/pageEditor/hooks/useEscapeHandler";
 import useAutoInsert from "@/pageEditor/panes/insert/useAutoInsert";

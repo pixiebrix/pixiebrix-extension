@@ -20,7 +20,7 @@ import { useDebouncedCallback } from "use-debounce";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type UnknownObject } from "@/types/objectTypes";
-import { runExtensionPointReader } from "@/contentScript/messenger/api";
+import { runExtensionPointReader } from "@/contentScript/messenger/looseNull/api";
 import { thisTab } from "@/pageEditor/utils";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";

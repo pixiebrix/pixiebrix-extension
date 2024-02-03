@@ -22,7 +22,7 @@ import { isMV3 } from "@/mv3/api";
 import { forbidContext, isBrowserSidebar } from "@/utils/expectContext";
 import { type PageTarget, messenger, getThisFrame } from "webext-messenger";
 import { isContentScript } from "webext-detect-page";
-import { showSidebar } from "@/contentScript/messenger/strict/api";
+import { showSidebar } from "@/contentScript/messenger/api";
 
 export async function openSidePanel(tabId: number): Promise<void> {
   if (isBrowserSidebar()) {

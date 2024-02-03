@@ -23,7 +23,7 @@ import { ActiveSidebarModsList } from "@/sidebar/modLauncher/ActiveSidebarModsLi
 import useFlags from "@/hooks/useFlags";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { showWalkthroughModal } from "@/contentScript/messenger/strict/api";
+import { showWalkthroughModal } from "@/contentScript/messenger/api";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 
 const ModLauncher: React.FunctionComponent = () => {

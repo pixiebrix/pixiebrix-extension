@@ -30,8 +30,11 @@ import {
   ExtensionIcon,
   NotAvailableIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
-import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
-import { updateSidebar } from "@/contentScript/messenger/strict/api";
+import {
+  disableOverlay,
+  enableOverlay,
+} from "@/contentScript/messenger/looseNull/api";
+import { updateSidebar } from "@/contentScript/messenger/api";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";

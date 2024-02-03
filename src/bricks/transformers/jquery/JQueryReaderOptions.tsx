@@ -36,7 +36,7 @@ import SelectWidget, {
   type SelectLike,
 } from "@/components/form/widgets/SelectWidget";
 import useAsyncState from "@/hooks/useAsyncState";
-import { getAttributeExamples } from "@/contentScript/messenger/api";
+import { getAttributeExamples } from "@/contentScript/messenger/looseNull/api";
 import { thisTab } from "@/pageEditor/utils";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type AttributeExample } from "@/contentScript/pageEditor/types";

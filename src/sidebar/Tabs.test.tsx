@@ -24,7 +24,7 @@ import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
-import * as messengerApi from "@/contentScript/messenger/strict/api";
+import * as messengerApi from "@/contentScript/messenger/api";
 import * as sidebarController from "@/sidebar/protocol";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { mockAllApiEndpoints } from "@/testUtils/appApiMock";
@@ -81,8 +81,8 @@ async function setupPanelsAndRender(options: {
   return utils;
 }
 
-jest.mock("@/contentScript/messenger/strict/api", () => ({
-  ...jest.requireActual("@/contentScript/messenger/strict/api"),
+jest.mock("@/contentScript/messenger/api", () => ({
+  ...jest.requireActual("@/contentScript/messenger/api"),
   getReservedSidebarEntries: jest.fn(),
 }));
 

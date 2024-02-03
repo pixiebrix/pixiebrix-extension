@@ -21,7 +21,7 @@ import {
   cancelForm,
   cancelTemporaryPanel,
   closeTemporaryPanel,
-} from "@/contentScript/messenger/strict/api";
+} from "@/contentScript/messenger/api";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import type { SidebarState } from "@/types/sidebarTypes";
@@ -31,7 +31,7 @@ import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { type Draft } from "immer";
 
 jest.mock("@/sidebar/messenger/api");
-jest.mock("@/contentScript/messenger/strict/api");
+jest.mock("@/contentScript/messenger/api");
 jest.mock("@/bricks/transformers/temporaryInfo/messenger/api");
 
 const cancelTemporaryPanelMock = jest.mocked(cancelTemporaryPanel);

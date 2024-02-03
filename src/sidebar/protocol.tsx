@@ -29,7 +29,7 @@ import { sortBy } from "lodash";
 import { getTimedSequence } from "@/types/helpers";
 import { getTopLevelFrame } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
-import { hideSidebar } from "@/contentScript/messenger/strict/api";
+import { hideSidebar } from "@/contentScript/messenger/api";
 
 let lastMessageSeen = getTimedSequence();
 // Track activate messages separately. The Sidebar App Redux state has special handling for these messages to account

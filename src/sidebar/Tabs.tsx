@@ -58,7 +58,7 @@ import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { cancelForm } from "@/contentScript/messenger/strict/api";
+import { cancelForm } from "@/contentScript/messenger/api";
 import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
 
 const ActivateModPanel = lazy(

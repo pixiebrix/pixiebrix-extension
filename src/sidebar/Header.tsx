@@ -20,7 +20,7 @@ import styles from "./ConnectedSidebar.module.scss";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
-import { hideSidebar } from "@/contentScript/messenger/strict/api";
+import { hideSidebar } from "@/contentScript/messenger/api";
 import useTheme, { useGetTheme } from "@/hooks/useTheme";
 import cx from "classnames";
 import { getTopLevelFrame } from "webext-messenger";

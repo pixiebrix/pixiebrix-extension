@@ -21,7 +21,7 @@ import { Button, Modal, Popover } from "react-bootstrap";
 import {
   cancelTemporaryPanel,
   resolveTemporaryPanel,
-} from "@/contentScript/messenger/strict/api";
+} from "@/contentScript/messenger/api";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type Target } from "@/types/messengerTypes";

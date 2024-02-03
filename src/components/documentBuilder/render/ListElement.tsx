@@ -28,7 +28,7 @@ import {
 import { produce } from "immer";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { runMapArgs } from "@/contentScript/messenger/api";
+import { runMapArgs } from "@/contentScript/messenger/looseNull/api";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import useAsyncState from "@/hooks/useAsyncState";
 import DelayedRender from "@/components/DelayedRender";

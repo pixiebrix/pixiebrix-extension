@@ -19,7 +19,7 @@ import React from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { navigateTab } from "@/contentScript/messenger/api";
+import { navigateTab } from "@/contentScript/messenger/looseNull/api";
 import { thisTab } from "@/pageEditor/utils";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";

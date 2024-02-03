@@ -55,7 +55,7 @@ import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { HeadlessModeError } from "@/bricks/errors";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { runHeadlessPipeline } from "@/contentScript/messenger/api";
+import { runHeadlessPipeline } from "@/contentScript/messenger/looseNull/api";
 import {
   inputProperties,
   unionSchemaDefinitionTypes,

@@ -28,7 +28,7 @@ import { getErrorMessage, type SimpleErrorObject } from "@/errors/errorHelpers";
 import { type SerializableResponse } from "@/types/messengerTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { useDebouncedCallback } from "use-debounce";
-import { runRendererBlock } from "@/contentScript/messenger/api";
+import { runRendererBlock } from "@/contentScript/messenger/looseNull/api";
 import { thisTab } from "@/pageEditor/utils";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
 import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";

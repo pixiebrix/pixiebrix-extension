@@ -20,7 +20,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/pageEditor/testHelpers";
 import PageStateTab from "./PageStateTab";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { getPageState } from "@/contentScript/messenger/strict/api";
+import { getPageState } from "@/contentScript/messenger/api";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { Tab } from "react-bootstrap";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";

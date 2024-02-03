@@ -22,7 +22,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
 import { getCurrentURL } from "@/pageEditor/utils";
-import { checkAvailable } from "@/contentScript/messenger/api";
+import { checkAvailable } from "@/contentScript/messenger/looseNull/api";
 import { checkAvailable as backgroundCheckAvailable } from "@/bricks/available";
 import { type Target } from "@/types/messengerTypes";
 import { type PageTarget } from "webext-messenger";
@@ -31,7 +31,7 @@ import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
-jest.mock("@/contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/looseNull/api");
 
 jest.mock("@/pageEditor/utils");
 

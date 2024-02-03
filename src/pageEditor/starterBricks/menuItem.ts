@@ -42,7 +42,7 @@ import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { type ElementConfig } from "@/pageEditor/starterBricks/elementConfig";
 import MenuItemConfiguration from "@/pageEditor/tabs/menuItem/MenuItemConfiguration";
-import { insertButton } from "@/contentScript/messenger/api";
+import { insertButton } from "@/contentScript/messenger/looseNull/api";
 import {
   type ButtonDefinition,
   type ButtonSelectionResult,

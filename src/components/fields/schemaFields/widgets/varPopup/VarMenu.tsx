@@ -40,7 +40,7 @@ import VarMap from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import useKeyboardNavigation from "@/components/fields/schemaFields/widgets/varPopup/useKeyboardNavigation";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import useAsyncState from "@/hooks/useAsyncState";
-import { getPageState } from "@/contentScript/messenger/strict/api";
+import { getPageState } from "@/contentScript/messenger/api";
 import { thisTab } from "@/pageEditor/utils";
 import { isEmpty } from "lodash";
 import { getSelectedLineVirtualElement } from "@/components/fields/schemaFields/widgets/varPopup/utils";

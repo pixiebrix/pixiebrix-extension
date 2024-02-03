@@ -18,7 +18,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
-import * as contentScriptApi from "@/contentScript/messenger/strict/api";
+import * as contentScriptApi from "@/contentScript/messenger/api";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import RunLocalProcess from "@/contrib/uipath/localProcess";
@@ -45,7 +45,7 @@ const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
 jest.mock("@/hooks/auth");
 jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
-jest.mock("@/contentScript/messenger/strict/api");
+jest.mock("@/contentScript/messenger/api");
 jest.mock("@/contrib/uipath/uipathHooks", () => {
   const mock = jest.requireActual("@/contrib/uipath/uipathHooks");
   return {

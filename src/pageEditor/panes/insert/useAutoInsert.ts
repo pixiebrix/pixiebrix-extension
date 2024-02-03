@@ -5,7 +5,7 @@ import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { getExampleBrickPipeline } from "@/pageEditor/exampleStarterBrickConfigs";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { updateDynamicElement } from "@/contentScript/messenger/api";
+import { updateDynamicElement } from "@/contentScript/messenger/looseNull/api";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
