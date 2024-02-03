@@ -162,14 +162,19 @@ type ModActivationPartial = {
 };
 
 /**
- * Set the mod id(s) that PixieBrix should start activation for.
+ * Set the mod id(s) that PixieBrix should start activation for. Pass a nullish value to clear the activation state.
  *
- * @throws if any mod id is not a valid registry id
+ * @throws Error if any mod id is not a valid registry id
  * @see getActivatingMods
  */
 export async function setActivatingMods(
-  args: LegacyModActivationPartial | ModActivationPartial,
+  args: Nullishable<LegacyModActivationPartial | ModActivationPartial>,
 ): Promise<void> {
+  if (args == null) {
+    await activationStorage.remove();
+    return;
+  }
+
   const modIdsOrMods =
     (args as ModActivationPartial).mods ??
     (args as LegacyModActivationPartial).blueprintId;
