@@ -164,7 +164,7 @@
     "webext-content-scripts": "^2.6.1",
     "webext-detect-page": "^5.0.0",
     "webext-events": "^2.1.0",
-    "webext-inject-on-install": "^2.0.0",
+    "webext-inject-on-install": "^2.0.1",
     "webext-messenger": "^0.25.0",
     "webext-patterns": "^1.4.0",
     "webext-permissions": "^3.1.2",
