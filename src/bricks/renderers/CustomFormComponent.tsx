@@ -34,7 +34,7 @@ import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { type UnknownObject } from "@/types/objectTypes";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isEmpty } from "lodash";
 
 const FIELDS = {
   DescriptionField,
@@ -64,6 +64,7 @@ const CustomFormComponent: React.FunctionComponent<{
     { submissionCount }: { submissionCount: number },
   ) => Promise<void>;
   className?: string;
+  stylesheets?: string[];
 }> = ({
   schema,
   uiSchema,
@@ -72,11 +73,17 @@ const CustomFormComponent: React.FunctionComponent<{
   autoSave,
   className,
   onSubmit,
+  stylesheets = [],
 }) => {
   // Use useRef instead of useState because we don't need/want a re-render when count changes
   const submissionCountRef = useRef(0);
   // Track values during onChange so we can access it our RjsfSubmitContext submitForm callback
   const valuesRef = useRef<UnknownObject>(formData);
+
+  // Custom stylesheets overrides bootstrap themes
+  const stylesheetUrls = isEmpty(stylesheets)
+    ? [bootstrap, bootstrapOverrides, custom]
+    : stylesheets;
 
   return (
     <div
@@ -87,7 +94,7 @@ const CustomFormComponent: React.FunctionComponent<{
       })}
     >
       <ErrorBoundary>
-        <Stylesheets href={[bootstrap, bootstrapOverrides, custom]}>
+        <Stylesheets href={stylesheetUrls}>
           <RjsfSubmitContext.Provider
             value={{
               async submitForm() {
