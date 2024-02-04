@@ -277,7 +277,7 @@
     "style-loader": "^3.3.4",
     "terser-webpack-plugin": "^5.3.10",
     "ts-loader": "^9.5.1",
-    "type-fest": "^4.10.1",
+    "type-fest": "^4.10.2",
     "typescript": "^5.3.3",
     "typescript-plugin-css-modules": "^5.0.2",
     "webpack": "^5.90.0",
