@@ -162,7 +162,7 @@
     "use-sync-external-store": "^1.2.0",
     "uuid": "^9.0.1",
     "webext-content-scripts": "^2.6.1",
-    "webext-detect-page": "^5.0.0",
+    "webext-detect-page": "^5.0.1",
     "webext-events": "^2.1.0",
     "webext-inject-on-install": "^2.0.0",
     "webext-messenger": "^0.25.0",
