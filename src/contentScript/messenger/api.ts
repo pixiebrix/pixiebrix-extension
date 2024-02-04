@@ -88,6 +88,8 @@ export const reloadMarketplaceEnhancements = getMethod(
   "RELOAD_MARKETPLACE_ENHANCEMENTS",
 );
 
+export const emitAudioEvent = getNotifier("AUDIO_CAPTURE_EMIT");
+
 export const notify = {
   info: getNotifier("NOTIFY_INFO"),
   // TODO: Automatically report from api.ts because of https://github.com/pixiebrix/pixiebrix-extension/blob/dce0d5cbb54d5fc1a61d720e43d17383a152df2e/src/background/contextMenus.ts#L92-L95

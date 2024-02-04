@@ -15,32 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import styles from "./ConnectedSidebar.module.scss";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faAngleDoubleRight,
-  faCog,
-  faPhone,
-  faPhoneSlash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
 import { hideSidebar } from "@/contentScript/messenger/api";
 import useTheme, { useGetTheme } from "@/hooks/useTheme";
 import cx from "classnames";
 import { getTopLevelFrame } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
-import AsyncButton from "@/components/AsyncButton";
-import notify from "@/utils/notify";
-import {
-  startAudioCapture,
-  stopAudioCapture,
-} from "@/background/messenger/api";
 
 const Header: React.FunctionComponent = () => {
   const { logo, showSidebarLogo, customSidebarLogo } = useTheme();
   const theme = useGetTheme();
-  const [audioOn, setAudioOn] = useState<boolean>(false);
   /* In MV3, Chrome offers a native Close button */
   const showCloseButton = !isMV3();
 
@@ -73,36 +61,6 @@ const Header: React.FunctionComponent = () => {
           />
         </div>
       )}
-
-      <AsyncButton
-        size="sm"
-        variant="info"
-        onClick={async () => {
-          if (audioOn) {
-            try {
-              await stopAudioCapture();
-              setAudioOn(false);
-            } catch (error) {
-              notify.error({
-                message: "Error disabling audio analysis",
-                error,
-              });
-            }
-          } else {
-            try {
-              await startAudioCapture();
-
-              setAudioOn(true);
-            } catch (error) {
-              notify.error({ message: "Error enabling audio analysis", error });
-            }
-          }
-        }}
-      >
-        <span>
-          <FontAwesomeIcon icon={audioOn ? faPhone : faPhoneSlash} fixedWidth />
-        </span>
-      </AsyncButton>
 
       <Button
         href="/options.html"

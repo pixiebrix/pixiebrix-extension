@@ -81,6 +81,7 @@ import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformat
 import { closeWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
 import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughModal";
 import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
+import { emitAudioEvent } from "@/contentScript/audio";
 
 expectContext("contentScript");
 
@@ -149,6 +150,8 @@ declare global {
     GET_COPILOT_HOST_DATA: typeof getCopilotHostData;
 
     RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadActivationEnhancements;
+
+    AUDIO_CAPTURE_EMIT: typeof emitAudioEvent;
   }
 }
 
@@ -220,5 +223,7 @@ export default function registerMessenger(): void {
     GET_COPILOT_HOST_DATA: getCopilotHostData,
 
     RELOAD_MARKETPLACE_ENHANCEMENTS: reloadActivationEnhancements,
+
+    AUDIO_CAPTURE_EMIT: emitAudioEvent,
   });
 }

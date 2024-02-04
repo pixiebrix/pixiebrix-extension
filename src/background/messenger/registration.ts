@@ -69,6 +69,7 @@ import {
 } from "@/background/telemetry";
 import {
   captureTab,
+  forwardAudioCaptureEvent,
   startAudioCapture,
   stopAudioCapture,
 } from "@/background/capture";
@@ -165,6 +166,7 @@ declare global {
     CAPTURE_TAB: typeof captureTab;
     AUDIO_CAPTURE_START: typeof startAudioCapture;
     AUDIO_CAPTURE_STOP: typeof stopAudioCapture;
+    AUDIO_CAPTURE_EVENT: typeof forwardAudioCaptureEvent;
 
     GET_USER_DATA: typeof getUserData;
   }
@@ -250,6 +252,7 @@ export default function registerMessenger(): void {
     CAPTURE_TAB: captureTab,
     AUDIO_CAPTURE_START: startAudioCapture,
     AUDIO_CAPTURE_STOP: stopAudioCapture,
+    AUDIO_CAPTURE_EVENT: forwardAudioCaptureEvent,
 
     GET_USER_DATA: getUserData,
   });

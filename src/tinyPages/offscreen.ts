@@ -8,6 +8,9 @@ import {
 } from "@deepgram/sdk";
 import pDefer from "p-defer";
 import type { UnknownObject } from "@/types/objectTypes";
+import type { Nullishable } from "@/utils/nullishUtils";
+import { forwardAudioCaptureEvent } from "@/background/messenger/api";
+import type { JsonObject } from "type-fest";
 
 let liveClient: LiveClient;
 let recorder: MediaRecorder;
@@ -15,10 +18,14 @@ let recorder: MediaRecorder;
 // eslint-disable-next-line prefer-destructuring -- environment variable
 const DEEPGRAM_API_KEY = process.env.DEEPGRAM_API_KEY;
 
-type StartMessage = {
+export type StartMessage = {
   type: "start-recording";
   target: "offscreen";
-  data: string;
+  data: {
+    tabId: number;
+    tabStreamId: Nullishable<string>;
+    captureMicrophone: boolean;
+  };
 };
 
 type StopMessage = {
@@ -50,7 +57,15 @@ chrome.runtime.onMessage.addListener(
   },
 );
 
-async function startRecording(streamId: string): Promise<void> {
+async function startRecording({
+  tabId,
+  tabStreamId,
+  captureMicrophone,
+}: {
+  tabId: number;
+  tabStreamId: Nullishable<string>;
+  captureMicrophone: boolean;
+}): Promise<void> {
   if (!DEEPGRAM_API_KEY) {
     throw new Error("Deepgram API key not configured");
   }
@@ -72,7 +87,7 @@ async function startRecording(streamId: string): Promise<void> {
       // @ts-expect-error -- incorrect types
       mandatory: {
         chromeMediaSource: "tab",
-        chromeMediaSourceId: streamId,
+        chromeMediaSourceId: tabStreamId,
       },
     },
     video: false,
@@ -80,6 +95,7 @@ async function startRecording(streamId: string): Promise<void> {
 
   const client = createClient(DEEPGRAM_API_KEY);
 
+  // TODO: determine use of multichannel vs. diarization: https://developers.deepgram.com/docs/diarization
   // https://developers.deepgram.com/reference/stt-streaming-feature-overview
   liveClient = client.listen.live({ model: "nova", multichannel: true });
 
@@ -87,8 +103,9 @@ async function startRecording(streamId: string): Promise<void> {
 
   liveClient.on(LiveTranscriptionEvents.Open, () => {
     liveClient.on(LiveTranscriptionEvents.Transcript, (data: UnknownObject) => {
-      // TODO: forward the transcript and analysis to the top-level content script being recorded
-      console.log(data);
+      // Known to be valid JSON because it came back from the Deepgram API
+      forwardAudioCaptureEvent(data as JsonObject);
+      console.debug(data);
     });
 
     // Call after setting up the event listeners so we don't miss any events
@@ -128,7 +145,7 @@ async function startRecording(streamId: string): Promise<void> {
   // store that directly in the service worker as it may be terminated while
   // recording is in progress. We could write it to storage but that slightly
   // increases the risk of things getting out of sync.
-  window.location.hash = "recording";
+  window.location.hash = `recording-${tabId}`;
 }
 
 async function stopRecording(): Promise<void> {
@@ -150,6 +167,6 @@ async function stopRecording(): Promise<void> {
   liveClient.finish();
   liveClient = null;
 
-  // Update current state in URL
+  // Update current state in URL to indicate recording has stopped
   window.location.hash = "";
 }
