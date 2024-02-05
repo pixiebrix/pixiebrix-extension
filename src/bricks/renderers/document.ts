@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,36 +24,86 @@ import {
   type ComponentRef,
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
+import {
+  DOCUMENT_ELEMENT_TYPES,
+  type DocumentElement,
+} from "@/components/documentBuilder/documentBuilderTypes";
+
+export const DOCUMENT_SCHEMA: Schema = {
+  $schema: "https://json-schema.org/draft/2019-09/schema#",
+  type: "object",
+  properties: {
+    body: {
+      type: "array",
+      description: "A list of document element configurations",
+      items: {
+        $ref: "#/definitions/element",
+      },
+    },
+    stylesheets: {
+      type: "array",
+      items: {
+        type: "string",
+        format: "uri",
+      },
+      title: "CSS Stylesheet URLs",
+      description:
+        "Stylesheets will apply to the rendered document in the order listed here",
+    },
+  },
+  required: ["body"],
+  definitions: {
+    element: {
+      type: "object",
+      properties: {
+        type: {
+          type: "string",
+          enum: [...DOCUMENT_ELEMENT_TYPES],
+        },
+        config: {
+          type: "object",
+          additionalProperties: true,
+        },
+        children: {
+          type: "array",
+          items: {
+            $ref: "#/definitions/element",
+          },
+        },
+      },
+      required: ["type", "config"],
+    },
+  },
+};
 
 export class DocumentRenderer extends RendererABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/document");
+  static BRICK_ID = validateRegistryId("@pixiebrix/document");
   constructor() {
     super(
-      DocumentRenderer.BLOCK_ID,
+      DocumentRenderer.BRICK_ID,
       "Render Document",
       "Render an interactive document",
     );
   }
 
-  inputSchema: Schema = {
-    properties: {
-      body: {
-        type: "object",
-        description: "A document configuration",
-        additionalProperties: true,
-      },
-    },
-    required: ["body"],
-  };
+  inputSchema = DOCUMENT_SCHEMA;
 
   async render(
-    { body }: BrickArgs,
+    {
+      body,
+      stylesheets = [],
+    }: BrickArgs<{
+      body: DocumentElement[];
+      // Stylesheets array is validated to contain URIs in the brick input schema
+      stylesheets: string[];
+    }>,
     options: BrickOptions,
   ): Promise<ComponentRef> {
     return {
       Component: DocumentViewLazy,
       props: {
         body,
+        stylesheets,
         options,
       },
     };

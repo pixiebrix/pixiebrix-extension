@@ -8327,13 +8327,13 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard OAuth2 1`] = `
                       />
                     </div>
                     <label
-                      className="label form-label col-form-label col-xl-2 col-lg-3"
+                      className="label form-label col-form-label col-xl-3 col-lg-4"
                       htmlFor="controlRoomUrl"
                     >
                       Control Room URL
                     </label>
                     <div
-                      className="col-xl-10 col-lg-9"
+                      className="col-xl-9 col-lg-8"
                     >
                       <input
                         className="form-control"

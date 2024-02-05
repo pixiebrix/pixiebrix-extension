@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -53,6 +53,49 @@ export async function createFrameSource(
   return frameSource;
 }
 
+export const MODAL_FORM_SCHEMA: Schema = {
+  type: "object",
+  properties: {
+    schema: {
+      type: "object",
+      description: "The JSON Schema for the form",
+      additionalProperties: true,
+    },
+    uiSchema: {
+      type: "object",
+      description: "The react-jsonschema-form uiSchema for the form",
+      additionalProperties: true,
+    },
+    cancelable: {
+      type: "boolean",
+      description: "Whether or not the user can cancel the form (default=true)",
+      default: true,
+    },
+    submitCaption: {
+      type: "string",
+      description: "The submit button caption (default='Submit')",
+      default: "Submit",
+    },
+    location: {
+      type: "string",
+      enum: ["modal", "sidebar"],
+      description: "The location of the form (default='modal')",
+      default: "modal",
+    },
+    stylesheets: {
+      type: "array",
+      items: {
+        type: "string",
+        format: "uri",
+      },
+      title: "CSS Stylesheet URLs",
+      description:
+        "Stylesheets will apply to the form in the order listed here",
+    },
+  },
+  required: ["schema"],
+};
+
 export class FormTransformer extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/form-modal");
   override defaultOutputKey = "form";
@@ -65,39 +108,7 @@ export class FormTransformer extends TransformerABC {
     );
   }
 
-  inputSchema: Schema = {
-    type: "object",
-    properties: {
-      schema: {
-        type: "object",
-        description: "The JSON Schema for the form",
-        additionalProperties: true,
-      },
-      uiSchema: {
-        type: "object",
-        description: "The react-jsonschema-form uiSchema for the form",
-        additionalProperties: true,
-      },
-      cancelable: {
-        type: "boolean",
-        description:
-          "Whether or not the user can cancel the form (default=true)",
-        default: true,
-      },
-      submitCaption: {
-        type: "string",
-        description: "The submit button caption (default='Submit')",
-        default: "Submit",
-      },
-      location: {
-        type: "string",
-        enum: ["modal", "sidebar"],
-        description: "The location of the form (default='modal')",
-        default: "modal",
-      },
-    },
-    required: ["schema"],
-  };
+  inputSchema = MODAL_FORM_SCHEMA;
 
   override outputSchema: Schema = {
     type: "object",

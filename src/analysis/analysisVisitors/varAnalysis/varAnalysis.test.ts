@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -825,7 +825,7 @@ describe("Collecting available vars", () => {
       otherTextElement.config.text = toExpression("nunjucks", "{{ @element }}");
 
       const documentRendererBrick = {
-        id: DocumentRenderer.BLOCK_ID,
+        id: DocumentRenderer.BRICK_ID,
         config: {
           body: [listElement, otherTextElement],
         },
@@ -887,7 +887,7 @@ describe("Collecting available vars", () => {
       ]);
 
       const documentRendererBrick = {
-        id: DocumentRenderer.BLOCK_ID,
+        id: DocumentRenderer.BRICK_ID,
         config: {
           body: [listElement],
         },
@@ -1093,7 +1093,7 @@ describe("Collecting available vars", () => {
   describe("custom form renderer brick", () => {
     beforeAll(async () => {
       const customFormBlock = {
-        id: CustomFormRenderer.BLOCK_ID,
+        id: CustomFormRenderer.BRICK_ID,
         config: {
           schema: {
             type: "object",
@@ -1115,7 +1115,7 @@ describe("Collecting available vars", () => {
       jest.mocked(blockRegistry.allTyped).mockResolvedValue(
         new Map([
           [
-            CustomFormRenderer.BLOCK_ID,
+            CustomFormRenderer.BRICK_ID,
             {
               type: "renderer",
               block: new CustomFormRenderer(),

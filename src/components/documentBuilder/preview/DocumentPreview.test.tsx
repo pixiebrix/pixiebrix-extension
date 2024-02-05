@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -39,7 +39,7 @@ import { toExpression } from "@/utils/expressionUtils";
 function renderDocumentPreview(documentElement: DocumentElement) {
   const formState = formStateFactory(undefined, [
     {
-      id: DocumentRenderer.BLOCK_ID,
+      id: DocumentRenderer.BRICK_ID,
       config: {
         body: [documentElement],
       },
@@ -157,7 +157,7 @@ describe("Show live preview", () => {
           title: toExpression("nunjucks", "Test Tab"),
           body: toExpression("pipeline", [
             {
-              id: DocumentRenderer.BLOCK_ID,
+              id: DocumentRenderer.BRICK_ID,
               instanceId: uuidSequence(2),
               config: {
                 body: [documentElement],
