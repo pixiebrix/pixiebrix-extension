@@ -40,7 +40,7 @@ import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtoco
 import { getSidebarTargetForCurrentTab } from "@/utils/sidePanelUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
-import { backgroundTarget, messenger } from "webext-messenger";
+import { messenger } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
@@ -131,7 +131,7 @@ export async function showSidebar(): Promise<void> {
   reportEvent(Events.SIDEBAR_SHOW);
   if (isMV3() || isLoadedInIframe()) {
     try {
-      await showMySidePanel(backgroundTarget);
+      await showMySidePanel();
     } catch (error) {
       if (!getErrorMessage(error).includes("user gesture")) {
         throw error;
@@ -140,7 +140,7 @@ export async function showSidebar(): Promise<void> {
       await focusCaptureDialog(
         'Please click "OK" to allow PixieBrix to open the sidebar.',
       );
-      await showMySidePanel(backgroundTarget);
+      await showMySidePanel();
     }
   } else if (!sidebarMv2.isSidebarFrameVisible()) {
     sidebarMv2.insertSidebarFrame();

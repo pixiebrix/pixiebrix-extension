@@ -26,7 +26,6 @@ import {
   removePersistedExtension,
 } from "@/contentScript/lifecycle";
 import { resolveForm } from "@/contentScript/ephemeralFormProtocol";
-import { getReservedPanelEntries } from "@/contentScript/sidebarController";
 import { insertPanel } from "@/contentScript/pageEditor/insertPanel";
 import { insertButton } from "@/contentScript/pageEditor/insertButton";
 import {
