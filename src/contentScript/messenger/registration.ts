@@ -66,7 +66,6 @@ declare global {
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
-    GET_RESERVED_SIDEBAR_ENTRIES: typeof getReservedPanelEntries;
     RESET_TAB: typeof resetTab;
     NAVIGATE_TAB: typeof navigateTab;
 
@@ -108,7 +107,6 @@ export default function registerMessenger(): void {
     QUEUE_REACTIVATE_TAB: queueReactivateTab,
     REACTIVATE_TAB: reactivateTab,
     REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
-    GET_RESERVED_SIDEBAR_ENTRIES: getReservedPanelEntries,
     RESET_TAB: resetTab,
     NAVIGATE_TAB: navigateTab,
 

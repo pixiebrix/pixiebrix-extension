@@ -16,14 +16,20 @@
  */
 
 /**
- * @file This file provides Messenger to the strictNullChecks build.
- * It must not be imported.
- * The actual methods must be registered in the appropriate registration.ts file,
- * this is enforced by typescript itself as long as this file is never imported.
  * @see https://github.com/pixiebrix/pixiebrix-extension/issues/6526
+ * @context Importing a file from a `strictNullCheck`ed file, will cause all of its dependencies
+ *          to be strictNullChecked too. This makes it difficult to use certain files.
+ *
+ * @file    This file provides types for some common messenger methods without actually pushing
+ *          them and their dependencies into the strictNullChecks config.
+ *
+ * @warning This file must not be imported.
+ *
+ * @warning The actual methods must be registered in the appropriate registration.ts file,
+ *          this is enforced by typescript itself as long as this file is never imported.
+ *
+ * If if works there, you should add the registration to `/messenger/strict/registration.ts` instad of here
  */
-
-/* eslint-disable import/no-restricted-paths -- Type-only file. Remove each import once they end up in the strictNullChecks list */
 
 import { type SerializedError } from "@/types/messengerTypes";
 import { type MessageContext } from "@/types/loggerTypes";

@@ -493,7 +493,6 @@
     "./types/sidebarTypes.ts",
     "./types/sliceTypes.ts",
     "./types/starterBrickTypes.ts",
-    "./types/strictMessengerApi.ts",
     "./types/stringTypes.ts",
     "./types/swagger.ts",
     "./types/typeOnlyMessengerRegistration.ts",
