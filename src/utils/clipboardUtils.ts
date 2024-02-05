@@ -58,14 +58,14 @@ async function interactiveWriteToClipboard(
     if (!isDocumentFocusError(error)) {
       throw error;
     }
+
+    await focusCaptureDialog(
+      `Please click "OK" to allow PixieBrix to copy ${type} to your clipboard.`,
+    );
+
+    // Let the error be caught by the caller if it still fails
+    await navigator.clipboard.write(clipboardItems);
   }
-
-  await focusCaptureDialog(
-    `Please click "OK" to allow PixieBrix to copy ${type} to your clipboard.`,
-  );
-
-  // Let the error be caught by the caller if it still fails
-  await navigator.clipboard.write(clipboardItems);
 }
 
 /**
