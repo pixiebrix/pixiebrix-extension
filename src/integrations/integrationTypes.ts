@@ -276,8 +276,8 @@ export type TokenContext = {
  */
 export type OAuth2Context = {
   host?: string;
-  authorizeUrl?: string;
-  tokenUrl?: string;
+  authorizeUrl: string;
+  tokenUrl: string;
   client_id: string;
   client_secret?: string;
   code_challenge_method?: "S256";
