@@ -35,6 +35,7 @@
     "./types/reactTableConfig.d.ts",
     "./activation/ActivationLink.tsx",
     "./activation/activateLinkClickHandler.ts",
+    "./activation/activationLinkUtils.ts",
     "./contentScript/setExtensionIdInApp.ts",
     "./activation/WizardValuesModIntegrationsContextAdapter.tsx",
     "./activation/wizardTypes.ts",

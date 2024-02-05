@@ -16,23 +16,23 @@
  */
 
 import React, { useMemo } from "react";
-import { type RegistryId } from "@/types/registryTypes";
 import RequireMods, {
   type RequiredModDefinition,
 } from "@/sidebar/activateMod/RequireMods";
 import AsyncStateGate from "@/components/AsyncStateGate";
-import { getOptionsValidationSchema } from "@/hooks/useAsyncRecipeOptionsValidationSchema";
+import { getOptionsValidationSchema } from "@/hooks/useAsyncModOptionsValidationSchema";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { type Option } from "@/components/form/widgets/SelectWidget";
-import { wizardStateFactory } from "@/activation/useActivateRecipeWizard";
+import { wizardStateFactory } from "@/activation/useActivateModWizard";
 import useActivateRecipe, {
   type ActivateResult,
 } from "@/activation/useActivateRecipe";
 import { SuccessPanel } from "@/sidebar/activateMod/ActivateModPanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
+import type { ModActivationConfig } from "@/types/modTypes";
 
 type ModResultPair = {
   mod: RequiredModDefinition;
@@ -99,6 +99,7 @@ const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
             defaultAuthOptions: mod.defaultAuthOptions,
             databaseOptions,
             optionsValidationSchema,
+            initialModOptions: mod.initialOptions,
             installedExtensions: activatedModComponents,
           });
 
@@ -136,11 +137,11 @@ const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
  *
  * @since 1.7.35
  */
-const ActivateMultipleModsPanel: React.FC<{ modIds: RegistryId[] }> = ({
-  modIds,
+const ActivateMultipleModsPanel: React.FC<{ mods: ModActivationConfig[] }> = ({
+  mods,
 }) => (
-  <RequireMods modIds={modIds}>
-    {(mods) => <AutoActivatePanel mods={mods} />}
+  <RequireMods mods={mods}>
+    {(modDefinitions) => <AutoActivatePanel mods={modDefinitions} />}
   </RequireMods>
 );
 
