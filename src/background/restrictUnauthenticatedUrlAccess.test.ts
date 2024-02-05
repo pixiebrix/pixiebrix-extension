@@ -27,9 +27,9 @@ const reportErrorMock = jest.mocked(reportError);
 
 const expectedManageOrganizationId = uuidv4();
 const expectedAuthUrlPatterns = [
-  "https://foo.com/*",
-  "https://bar.com/*",
-  "https://baz.com/*",
+  { url_pattern: "https://foo.com/*" },
+  { url_pattern: "https://bar.com/*" },
+  { url_pattern: "https://baz.com/*" },
 ];
 
 const addListenerSpy = jest.spyOn(browser.tabs.onUpdated, "addListener");
@@ -37,10 +37,10 @@ const addListenerSpy = jest.spyOn(browser.tabs.onUpdated, "addListener");
 describe("enforceAuthentication", () => {
   beforeEach(async () => {
     axiosMock
-      .onGet(`/api/organizations/${expectedManageOrganizationId}/managed-data/`)
-      .reply(200, {
-        auth_url_patterns: expectedAuthUrlPatterns,
-      });
+      .onGet(
+        `/api/organizations/${expectedManageOrganizationId}/auth-url-patterns/`,
+      )
+      .reply(200, expectedAuthUrlPatterns);
   });
 
   afterEach(async () => {
@@ -69,7 +69,9 @@ describe("enforceAuthentication", () => {
 
   it("does not add event listener if network request fails", async () => {
     axiosMock
-      .onGet(`/api/organizations/${expectedManageOrganizationId}/managed-data/`)
+      .onGet(
+        `/api/organizations/${expectedManageOrganizationId}/auth-url-patterns/`,
+      )
       .reply(500);
 
     await browser.storage.managed.set({

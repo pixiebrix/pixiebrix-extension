@@ -292,5 +292,5 @@ export type PackageVersionUpdates = {
   }>;
 };
 
-export type ManagedOrganizationData =
-  components["schemas"]["ManagedOrganizationData"];
+export type OrganizationAuthUrlPattern =
+  components["schemas"]["OrganizationAuthUrlPattern"];

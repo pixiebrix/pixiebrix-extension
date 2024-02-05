@@ -16,7 +16,7 @@
  */
 
 import { fetch } from "@/hooks/fetch";
-import { type ManagedOrganizationData } from "@/types/contract";
+import { type OrganizationAuthUrlPattern } from "@/types/contract";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { isLinked } from "@/auth/token";
 import { validateUUID } from "@/types/helpers";
@@ -30,12 +30,12 @@ const sessionValue = new SessionValue<string[]>(
   import.meta.url,
 );
 
-async function getAuthUrlPatterns(organizationId: UUID) {
+async function getAuthUrlPatterns(organizationId: UUID): Promise<string[]> {
   try {
-    const { auth_url_patterns } = await fetch<ManagedOrganizationData>(
-      `/api/organizations/${organizationId}/managed-data/`,
+    const authUrlPatterns = await fetch<OrganizationAuthUrlPattern[]>(
+      `/api/organizations/${organizationId}/auth-url-patterns/`,
     );
-    return auth_url_patterns;
+    return authUrlPatterns.map(({ url_pattern }) => url_pattern);
   } catch (error) {
     reportError(error);
     return [];
