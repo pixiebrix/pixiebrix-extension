@@ -324,7 +324,7 @@ export type ActivatePanelOptions = {
 export type PanelRunMeta = Pick<RunMetadata, "runId" | "extensionId">;
 
 export type SidebarState = SidebarEntries & {
-  activeKey: string;
+  activeKey: string | null;
 
   /**
    * Pending panel activation request.

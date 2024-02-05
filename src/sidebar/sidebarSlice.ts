@@ -42,6 +42,7 @@ import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { getVisiblePanelCount } from "@/sidebar/utils";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 const emptySidebarState: SidebarState = {
   panels: [],
@@ -71,7 +72,7 @@ function eventKeyExists(state: SidebarState, query: string | null): boolean {
 function findNextActiveKey(
   state: SidebarState,
   { extensionId, blueprintId, panelHeading }: ActivatePanelOptions,
-): string {
+): string | null {
   // Try matching on extension
   if (extensionId) {
     // Prefer form to panel -- however, it would be unusual to target an ephemeral form when reshowing the sidebar
@@ -118,7 +119,7 @@ function findNextActiveKey(
   }
 
   // Return the first static panel, if it exists
-  if (state.staticPanels.length > 0) {
+  if (state.staticPanels[0]) {
     return eventKeyForEntry(state.staticPanels[0]);
   }
 
@@ -159,7 +160,7 @@ async function resolvePanel(
 
 export function fixActiveTabOnRemove(
   state: SidebarState,
-  removedEntry: SidebarEntry | null,
+  removedEntry: Nullishable<SidebarEntry>,
 ) {
   // Only update the active panel if the panel needs to change
   if (removedEntry && state.activeKey === eventKeyForEntry(removedEntry)) {
