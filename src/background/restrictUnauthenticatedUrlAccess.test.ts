@@ -20,8 +20,10 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { uuidv4 } from "@/types/helpers";
 import { INTERNAL_reset } from "@/store/enterprise/managedStorage";
+import reportError from "@/telemetry/reportError";
 
 const axiosMock = new MockAdapter(axios);
+const reportErrorMock = jest.mocked(reportError);
 
 const expectedManageOrganizationId = uuidv4();
 const expectedAuthUrlPatterns = [
@@ -46,6 +48,7 @@ describe("enforceAuthentication", () => {
     INTERNAL_reset();
     await browser.storage.managed.clear();
     axiosMock.reset();
+    jest.clearAllMocks();
   });
 
   it("does nothing if managed storage values are not configured", async () => {
@@ -62,5 +65,21 @@ describe("enforceAuthentication", () => {
     await initRestrictUnauthenticatedUrlAccess();
     expect(axiosMock.history.get).toHaveLength(1);
     expect(addListenerSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not add event listener if network request fails", async () => {
+    axiosMock
+      .onGet(`/api/organizations/${expectedManageOrganizationId}/managed-data/`)
+      .reply(500);
+
+    await browser.storage.managed.set({
+      managedOrganizationId: expectedManageOrganizationId,
+      enforceAuthentication: true,
+    });
+
+    await initRestrictUnauthenticatedUrlAccess();
+    expect(axiosMock.history.get).toHaveLength(1);
+    expect(addListenerSpy).toHaveBeenCalledTimes(0);
+    expect(reportErrorMock).toHaveBeenCalledTimes(1);
   });
 });

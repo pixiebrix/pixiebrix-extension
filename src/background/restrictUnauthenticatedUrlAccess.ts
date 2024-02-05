@@ -23,6 +23,7 @@ import { validateUUID } from "@/types/helpers";
 import { type UUID } from "@/types/stringTypes";
 import { testMatchPatterns } from "@/bricks/available";
 import { SessionValue } from "@/mv3/SessionStorage";
+import reportError from "@/telemetry/reportError";
 
 const sessionValue = new SessionValue<string[]>(
   "authUrlPatterns",
@@ -76,15 +77,20 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
   }
 
   browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-    if (await isLinked()) {
+    if (!changeInfo.url || !tab?.url) {
       return;
     }
 
-    const cachedAuthUrlPatterns = await sessionValue.get();
-    const isRestrictedUrl = testMatchPatterns(
-      cachedAuthUrlPatterns,
-      tab?.url ?? "",
-    );
+    const [linked, cachedAuthUrlPatterns] = await Promise.all([
+      isLinked(),
+      sessionValue.get(),
+    ]);
+
+    if (linked || !cachedAuthUrlPatterns) {
+      return;
+    }
+
+    const isRestrictedUrl = testMatchPatterns(cachedAuthUrlPatterns, tab.url);
 
     if (isRestrictedUrl) {
       await browser.tabs.update(tabId, {
