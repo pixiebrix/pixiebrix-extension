@@ -37,7 +37,6 @@ const DocumentOptions: React.FC<{
 }> = ({ name, configKey }) => {
   const documentConfigName = joinName(name, configKey);
   const documentBodyName = joinName(documentConfigName, "body");
-  const stylesheetsName = joinName(documentConfigName, "stylesheets");
 
   const activeElement = useSelector(selectNodePreviewActiveElement);
 
@@ -69,8 +68,12 @@ const DocumentOptions: React.FC<{
       )}
       <ConnectedCollapsibleFieldSection title={"Advanced: Theme"}>
         <SchemaField
-          name={stylesheetsName}
+          name={joinName(documentConfigName, "stylesheets")}
           schema={DOCUMENT_SCHEMA.properties.stylesheets as Schema}
+        />
+        <SchemaField
+          name={joinName(documentConfigName, "disableParentStyles")}
+          schema={DOCUMENT_SCHEMA.properties.disableParentStyles as Schema}
         />
       </ConnectedCollapsibleFieldSection>
     </ConfigErrorBoundary>

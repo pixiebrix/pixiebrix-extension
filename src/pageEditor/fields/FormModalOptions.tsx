@@ -118,6 +118,10 @@ const FormModalOptions: React.FC<{
           name={configName("stylesheets")}
           schema={MODAL_FORM_SCHEMA.properties.stylesheets as Schema}
         />
+        <SchemaField
+          name={configName("disableParentStyles")}
+          schema={MODAL_FORM_SCHEMA.properties.disableParentStyles as Schema}
+        />
       </ConnectedCollapsibleFieldSection>
     </div>
   );

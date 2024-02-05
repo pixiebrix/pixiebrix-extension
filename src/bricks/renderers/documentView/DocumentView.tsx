@@ -16,20 +16,21 @@
  */
 
 import { buildDocumentBranch } from "@/components/documentBuilder/documentTree";
-import React, { useContext } from "react";
+import React from "react";
 import EmotionShadowRoot from "react-shadow/emotion";
-import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
-import bootstrapOverrides from "@/pageEditor/sidebar/sidebarBootstrapOverrides.scss?loadAsUrl";
 import { type DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { Stylesheets } from "@/components/Stylesheets";
 import { joinPathParts } from "@/utils/formUtils";
-import { isEmpty } from "lodash";
-import StylesheetsContext from "@/components/StylesheetsContext";
+import StylesheetsContext, {
+  type StylesheetsContextType,
+  useStylesheetsContextWithDocumentDefault,
+} from "@/components/StylesheetsContext";
 
 const DocumentView: React.FC<DocumentViewProps> = ({
   body,
   stylesheets: newStylesheets = [],
+  disableParentStyles,
   options,
   meta,
   onAction,
@@ -44,31 +45,29 @@ const DocumentView: React.FC<DocumentViewProps> = ({
     throw new Error("meta.extensionId is required for DocumentView");
   }
 
-  const stylesheetUrls = [
-    // DocumentView.css is an artifact produced by webpack, see the DocumentView entrypoint included in
-    // `webpack.config.mjs`. We build styles needed to render documents separately from the rest of the sidebar
-    // in order to isolate the rendered document from the custom Bootstrap theme included in the Sidebar app
-    "/DocumentView.css",
-  ];
+  const { stylesheets: inheritedStylesheets, isInitialized } =
+    useStylesheetsContextWithDocumentDefault();
 
-  const { stylesheets: inheritedStylesheets } = useContext(StylesheetsContext);
-  const customStylesheetUrls = [...inheritedStylesheets, ...newStylesheets];
+  const stylesheets = [];
 
-  if (isEmpty(customStylesheetUrls)) {
-    stylesheetUrls.push(bootstrap, bootstrapOverrides);
-  } else {
-    // Custom stylesheets overrides bootstrap themes
-    stylesheetUrls.push(...customStylesheetUrls);
+  if (!disableParentStyles) {
+    stylesheets.push(...inheritedStylesheets);
   }
+
+  stylesheets.push(...newStylesheets);
+
+  const stylesheetsContextValue: StylesheetsContextType = {
+    stylesheets,
+    // In practice, this should always be true
+    isInitialized,
+  };
 
   return (
     // Wrap in a React context provider that passes BrickOptions down to any embedded bricks
     <DocumentContext.Provider value={{ options, onAction }}>
       <EmotionShadowRoot.div className="h-100">
-        <StylesheetsContext.Provider
-          value={{ stylesheets: customStylesheetUrls }}
-        >
-          <Stylesheets href={stylesheetUrls}>
+        <StylesheetsContext.Provider value={stylesheetsContextValue}>
+          <Stylesheets href={stylesheets}>
             {body.map((documentElement, index) => {
               const documentBranch = buildDocumentBranch(documentElement, {
                 staticId: joinPathParts("body", "children"),

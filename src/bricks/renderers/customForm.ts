@@ -179,6 +179,13 @@ export const CUSTOM_FORM_SCHEMA = {
       description:
         "Stylesheets will apply to the form in the order listed here",
     },
+    disableParentStyles: {
+      type: "boolean",
+      title: "Disable Parent Styling",
+      description:
+        "Disable the default/inherited styling for the rendered form",
+      default: false,
+    },
   },
   required: ["schema"],
 };
@@ -231,6 +238,7 @@ export class CustomFormRenderer extends RendererABC {
       submitCaption = "Submit",
       className,
       stylesheets = [],
+      disableParentStyles,
       onSubmit,
     }: BrickArgs<{
       storage?: Storage;
@@ -242,6 +250,7 @@ export class CustomFormRenderer extends RendererABC {
       submitCaption?: string;
       className?: string;
       stylesheets?: string[];
+      disableParentStyles?: boolean;
       onSubmit?: PipelineExpression;
     }>,
     { logger, runPipeline }: BrickOptions,
@@ -293,6 +302,7 @@ export class CustomFormRenderer extends RendererABC {
         submitCaption,
         className,
         stylesheets,
+        disableParentStyles,
         async onSubmit(
           values: JsonObject,
           { submissionCount }: { submissionCount: number },
