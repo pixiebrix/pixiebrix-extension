@@ -96,7 +96,8 @@ async function implicitGrantFlow(
   }
 
   const data: AuthData = { access_token, ...rest } as unknown as AuthData;
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: Fix IntegrationConfig types
+  // TODO: Fix IntegrationConfig types
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
   await setCachedAuthData(auth.id!, data);
   return data;
 }
