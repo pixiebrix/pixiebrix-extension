@@ -314,8 +314,8 @@ export interface paths {
     delete: operations["destroyOrganizationContact"];
     patch: operations["partialUpdateOrganizationContact"];
   };
-  "/api/organizations/{organization_pk}/managed-data/": {
-    get: operations["retrieveManagedOrganizationData"];
+  "/api/organizations/{organization_id}/auth-url-patterns/": {
+    get: operations["listOrganizationAuthUrlPatterns"];
   };
   "/api/control-rooms/": {
     get: operations["retrieveControlRoom"];
@@ -1479,8 +1479,9 @@ export interface components {
       /** Format: date-time */
       updated_at?: Timestamp;
     };
-    ManagedOrganizationData: {
-      auth_url_patterns: string[];
+    OrganizationAuthUrlPattern: {
+      /** @description A chrome-style url match pattern, see https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns */
+      url_pattern: string;
     };
     ControlRoom: {
       /** Format: uuid */
@@ -4683,18 +4684,18 @@ export interface operations {
       };
     };
   };
-  retrieveManagedOrganizationData: {
+  listOrganizationAuthUrlPatterns: {
     parameters: {
       path: {
-        organization_pk: string;
+        organization_id: string;
       };
     };
     responses: {
       200: {
         headers: {};
         content: {
-          "application/json; version=1.0": components["schemas"]["ManagedOrganizationData"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["ManagedOrganizationData"];
+          "application/json; version=1.0": components["schemas"]["OrganizationAuthUrlPattern"][];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["OrganizationAuthUrlPattern"][];
         };
       };
     };

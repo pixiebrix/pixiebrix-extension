@@ -5,6 +5,11 @@
       "type": "string",
       "description": "PixieBrix organization ID the extension should link to"
     },
+    "enforceAuthentication": {
+      "type": "boolean",
+      "description": "Enforce PixieBrix authentication on specified URLs ",
+      "default": false
+    },
     "partnerId": {
       "type": "string",
       "description": "PixieBrix partner ID"
