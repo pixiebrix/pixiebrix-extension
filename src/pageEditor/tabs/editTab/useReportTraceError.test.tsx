@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error -- Flaky error */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
@@ -41,8 +42,9 @@ jest.mock("@/telemetry/reportEvent");
 const renderUseReportTraceError = (traces: TraceRecord[] = []) => {
   const activeElementId = uuidv4();
 
-  // @ts-expect-error -- ignoring excessively deep warning for test
+  // @ts-ignore-error -- ignoring "Type instantiation is excessively deep and possibly infinite" for test
   const store: Store = configureStore({
+    // @ts-ignore-error -- ignoring "Type instantiation is excessively deep and possibly infinite" for test
     reducer: {
       session: sessionSlice.reducer,
       editor: editorSlice.reducer,

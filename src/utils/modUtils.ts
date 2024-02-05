@@ -121,8 +121,7 @@ export function getPackageId(mod: Mod): RegistryId | undefined {
  */
 export function getUpdatedAt(mod: Mod): string | null {
   return isResolvedModComponent(mod)
-    ? // @ts-expect-error -- TODO: need to figure out why updateTimestamp isn't included on ModComponentBase here
-      mod._recipe?.updated_at ?? mod.updateTimestamp
+    ? mod._recipe?.updated_at ?? mod.updateTimestamp
     : mod.updated_at;
 }
 
