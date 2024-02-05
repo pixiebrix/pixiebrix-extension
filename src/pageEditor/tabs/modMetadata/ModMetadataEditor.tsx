@@ -162,7 +162,7 @@ const ModMetadataEditor: React.VoidFunctionComponent = () => {
   );
 
   return (
-    <Container fluid className={cx(styles.root, "max-750 ml-0")}>
+    <Container className={cx(styles.root, "max-750 ml-0")}>
       <ErrorBoundary>
         <Form
           validationSchema={editModSchema}
