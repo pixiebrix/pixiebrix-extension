@@ -18,7 +18,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import FieldTemplate, {
-  computeLabelSize,
   type CustomFieldWidget,
   type FieldProps,
 } from "./FieldTemplate";
@@ -80,34 +79,5 @@ describe("FieldTemplate", () => {
 
     expect(onChangeMock).toHaveBeenCalledTimes(1);
     expect(onChangeMock.mock.calls[0][0].target.value).toBe(testValue);
-  });
-});
-
-describe("computeLabelSize", () => {
-  test.each([true, false])("when fitLabelWidth", (widerLabel: boolean) => {
-    const { labelSize } = computeLabelSize({
-      fitLabelWidth: true,
-      widerLabel,
-    });
-
-    expect(labelSize).toEqual({ lg: "auto" });
-  });
-
-  test("when not fitLabelWidth, widerLabel", () => {
-    const { labelSize } = computeLabelSize({
-      fitLabelWidth: false,
-      widerLabel: true,
-    });
-
-    expect(labelSize).toEqual({ lg: "4", xl: "3" });
-  });
-
-  test("when not fitLabelWidth, not widerLabel", () => {
-    const { labelSize } = computeLabelSize({
-      fitLabelWidth: false,
-      widerLabel: false,
-    });
-
-    expect(labelSize).toEqual({ lg: "12", xl: "3" });
   });
 });
