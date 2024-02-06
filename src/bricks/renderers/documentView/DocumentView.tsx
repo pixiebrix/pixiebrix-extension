@@ -23,7 +23,6 @@ import DocumentContext from "@/components/documentBuilder/render/DocumentContext
 import { Stylesheets } from "@/components/Stylesheets";
 import { joinPathParts } from "@/utils/formUtils";
 import StylesheetsContext, {
-  type StylesheetsContextType,
   useStylesheetsContextWithDocumentDefault,
 } from "@/components/StylesheetsContext";
 
@@ -45,24 +44,16 @@ const DocumentView: React.FC<DocumentViewProps> = ({
     throw new Error("meta.extensionId is required for DocumentView");
   }
 
-  const { stylesheets: inheritedStylesheets } =
-    useStylesheetsContextWithDocumentDefault();
-
-  const stylesheets = [];
-
-  if (!disableParentStyles) {
-    stylesheets.push(...inheritedStylesheets);
-  }
-
-  stylesheets.push(...newStylesheets);
-
-  const stylesheetsContextValue: StylesheetsContextType = { stylesheets };
+  const { stylesheets } = useStylesheetsContextWithDocumentDefault({
+    newStylesheets,
+    disableParentStyles,
+  });
 
   return (
     // Wrap in a React context provider that passes BrickOptions down to any embedded bricks
     <DocumentContext.Provider value={{ options, onAction }}>
       <EmotionShadowRoot.div className="h-100">
-        <StylesheetsContext.Provider value={stylesheetsContextValue}>
+        <StylesheetsContext.Provider value={{ stylesheets }}>
           <Stylesheets href={stylesheets}>
             {body.map((documentElement, index) => {
               const documentBranch = buildDocumentBranch(documentElement, {

@@ -80,16 +80,10 @@ const CustomFormComponent: React.FunctionComponent<{
   // Track values during onChange so we can access it our RjsfSubmitContext submitForm callback
   const valuesRef = useRef<UnknownObject>(formData);
 
-  const { stylesheets: inheritedStylesheets } =
-    useStylesheetsContextWithFormDefault();
-
-  const stylesheets: string[] = [];
-
-  if (!disableParentStyles) {
-    stylesheets.push(...inheritedStylesheets);
-  }
-
-  stylesheets.push(...newStylesheets);
+  const { stylesheets } = useStylesheetsContextWithFormDefault({
+    newStylesheets,
+    disableParentStyles,
+  });
 
   return (
     <div

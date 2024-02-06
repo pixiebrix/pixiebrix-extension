@@ -28,12 +28,46 @@ const StylesheetsContext = React.createContext<StylesheetsContextType>({
   stylesheets: null,
 });
 
-export function useStylesheetsContextWithDocumentDefault(): {
+function useStylesheetsContextWithDefaultValues({
+  newStylesheets,
+  defaultStylesheets,
+  disableParentStyles,
+}: {
+  newStylesheets: string[];
+  defaultStylesheets: string[];
+  disableParentStyles: boolean;
+}): {
   stylesheets: string[];
 } {
-  const { stylesheets } = useContext(StylesheetsContext);
-  return {
-    stylesheets: stylesheets || [
+  const { stylesheets: inheritedStylesheets } = useContext(StylesheetsContext);
+
+  const stylesheets: string[] = [];
+
+  if (!disableParentStyles) {
+    if (inheritedStylesheets == null) {
+      stylesheets.push(...defaultStylesheets);
+    } else {
+      stylesheets.push(...inheritedStylesheets);
+    }
+  }
+
+  stylesheets.push(...newStylesheets);
+
+  return { stylesheets };
+}
+
+export function useStylesheetsContextWithDocumentDefault({
+  newStylesheets,
+  disableParentStyles,
+}: {
+  newStylesheets: string[];
+  disableParentStyles: boolean;
+}): {
+  stylesheets: string[];
+} {
+  return useStylesheetsContextWithDefaultValues({
+    newStylesheets,
+    defaultStylesheets: [
       // DocumentView.css is an artifact produced by webpack, see the DocumentView entrypoint included in
       // `webpack.config.mjs`. We build styles needed to render documents separately from the rest of the sidebar
       // in order to isolate the rendered document from the custom Bootstrap theme included in the Sidebar app
@@ -41,16 +75,24 @@ export function useStylesheetsContextWithDocumentDefault(): {
       bootstrap,
       bootstrapOverrides,
     ],
-  };
+    disableParentStyles,
+  });
 }
 
-export function useStylesheetsContextWithFormDefault(): {
+export function useStylesheetsContextWithFormDefault({
+  newStylesheets,
+  disableParentStyles,
+}: {
+  newStylesheets: string[];
+  disableParentStyles: boolean;
+}): {
   stylesheets: string[];
 } {
-  const { stylesheets } = useContext(StylesheetsContext);
-  return {
-    stylesheets: stylesheets || [bootstrap, bootstrapOverrides, custom],
-  };
+  return useStylesheetsContextWithDefaultValues({
+    newStylesheets,
+    defaultStylesheets: [bootstrap, bootstrapOverrides, custom],
+    disableParentStyles,
+  });
 }
 
 export default StylesheetsContext;
