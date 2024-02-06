@@ -9,6 +9,7 @@ import {
 import useAsyncState from "@/hooks/useAsyncState";
 
 type ModuleImport = Promise<{ definition: IconProp }>;
+
 async function handleIconImport(moduleImport: ModuleImport): Promise<IconProp> {
   try {
     const { definition } = await moduleImport;
