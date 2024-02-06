@@ -64,7 +64,6 @@ describe("TextAreaWidget", () => {
   });
 
   test("it submits the form when enter key is pressed", async () => {
-    console.log(JSON.stringify(process.env));
     const submitForm = jest.fn();
     render(
       <TextAreaWidget {...defaultProps} options={{ submitOnEnter: true }} />,
