@@ -28,6 +28,7 @@ import { type ModComponentState } from "@/store/extensionsTypes";
 import { isObject } from "@/utils/objectUtils";
 import { type RunMetadata } from "@/types/runtimeTypes";
 import type { ModActivationConfig } from "@/types/modTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Entry types supported by the sidebar.
@@ -328,7 +329,7 @@ export type ActivatePanelOptions = {
 export type PanelRunMeta = Pick<RunMetadata, "runId" | "extensionId">;
 
 export type SidebarState = SidebarEntries & {
-  activeKey: string | null;
+  activeKey: Nullishable<string>;
 
   /**
    * Pending panel activation request.

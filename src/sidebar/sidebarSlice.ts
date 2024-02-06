@@ -55,7 +55,10 @@ const emptySidebarState: SidebarState = {
   closedTabs: {},
 };
 
-function eventKeyExists(state: SidebarState, query: string | null): boolean {
+function eventKeyExists(
+  state: SidebarState,
+  query: Nullishable<string>,
+): boolean {
   if (query == null) {
     return false;
   }
