@@ -72,6 +72,8 @@ const knipConfig = {
     "@types/gapi.client",
     "@types/gapi.client.drive-v3",
     "@types/gapi.client.oauth2-v2",
+    // Used by Code Editor so format on save matches pre-commit behavior
+    "prettier",
   ],
   rules: {
     // Issue Type reference: https://knip.dev/reference/issue-types/
