@@ -19,7 +19,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const tsconfigJson = require('./tsconfig.strictNullChecks.json');
+            const tsconfigJson = require('./src/tsconfig.strictNullChecks.json');
             const newFiles = JSON.parse('${{ steps.changedfiles.outputs.added_files }}')
             if (newFiles.length === 0) {
               console.log('No new files found');
