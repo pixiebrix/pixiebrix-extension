@@ -45,7 +45,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({
   }
 
   const { stylesheets } = useStylesheetsContextWithDocumentDefault({
-    newStylesheetgs,
+    newStylesheets,
     disableParentStyles,
   });
 
