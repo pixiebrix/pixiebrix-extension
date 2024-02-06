@@ -47,6 +47,7 @@ import { initModUpdater } from "@/background/modUpdater";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import initWalkthroughModalTrigger from "@/background/walkthroughModalTrigger";
 import { initSidePanel } from "./sidePanel";
+import initRestrictUnauthenticatedUrlAccess from "@/background/restrictUnauthenticatedUrlAccess";
 
 void initLocator();
 void initMessengerLogging();
@@ -70,3 +71,4 @@ initPartnerTokenRefresh();
 initLogSweep();
 initModUpdater();
 initWalkthroughModalTrigger();
+void initRestrictUnauthenticatedUrlAccess();

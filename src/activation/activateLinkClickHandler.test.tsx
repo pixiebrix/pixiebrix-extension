@@ -19,8 +19,8 @@ import React from "react";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
 import { render, screen } from "@testing-library/react";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
-import { ACTIVATION_LINK_PREFIX } from "@/activation/ActivationLink";
 import userEvent from "@testing-library/user-event";
+import { createActivationUrl } from "@/activation/activationLinkUtils";
 
 const callback = jest.fn();
 
@@ -35,7 +35,9 @@ beforeEach(() => {
 describe("activateLinkClickHandler", () => {
   it("handles simple anchor element", async () => {
     const modId = registryIdFactory();
-    const href = `${ACTIVATION_LINK_PREFIX}${modId}`;
+    const href = createActivationUrl([
+      { modId, initialOptions: {} },
+    ]).toString();
     render(<a href={href}>Activate Mod</a>);
 
     document.addEventListener("click", handleClicks);
@@ -45,7 +47,7 @@ describe("activateLinkClickHandler", () => {
     expect(callback).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "activateMods",
-        modIds: [modId],
+        mods: [{ modId, initialOptions: {} }],
         heading: expect.toBeString(),
       }),
     );
@@ -56,7 +58,8 @@ describe("activateLinkClickHandler", () => {
     async (paramName: string) => {
       const modIds = [registryIdFactory(), registryIdFactory()];
 
-      const url = new URL(ACTIVATION_LINK_PREFIX);
+      // Not using constructActivationUrl because testing support for id and id[] params
+      const url = new URL("https://app.pixiebrix.com/activate");
       url.searchParams.append(paramName, modIds[0]);
       url.searchParams.append(paramName, modIds[1]);
 
@@ -69,7 +72,7 @@ describe("activateLinkClickHandler", () => {
       expect(callback).toHaveBeenCalledWith(
         expect.objectContaining({
           type: "activateMods",
-          modIds,
+          mods: modIds.map((x) => ({ modId: x, initialOptions: {} })),
           heading: expect.toBeString(),
         }),
       );

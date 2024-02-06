@@ -142,7 +142,7 @@ exports[`renders edit publish modal 1`] = `
             class="form-control"
             readonly=""
             type="text"
-            value="https://app.pixiebrix.com/activate?id=@user2/test"
+            value="https://app.pixiebrix.com/activate?id%5B%5D=%40user2%2Ftest"
           />
           <div
             class="input-group-append"
@@ -260,7 +260,7 @@ exports[`renders publish modal 1`] = `
             class="form-control"
             readonly=""
             type="text"
-            value="https://app.pixiebrix.com/activate?id=@user1/test"
+            value="https://app.pixiebrix.com/activate?id%5B%5D=%40user1%2Ftest"
           />
           <div
             class="input-group-append"

@@ -27,6 +27,14 @@ export type ManagedStorageState = {
    */
   managedOrganizationId?: string;
   /**
+   * If true, the Extension will restrict access to certain urls for unauthenticated users. Url match patterns are
+   * stored on the server per `managedOrganizationId`.
+   *
+   * @since 1.8.8
+   * @see restrictUnauthenticatedUrlAccess.ts
+   */
+  enforceAuthentication?: boolean;
+  /**
    * PixieBrix partner ID
    */
   partnerId?: string;

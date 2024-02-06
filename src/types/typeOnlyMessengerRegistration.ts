@@ -28,7 +28,8 @@
  * @warning The actual methods must be registered in the appropriate registration.ts file,
  *          this is enforced by typescript itself as long as this file is never imported.
  *
- * If if works there, you should add the registration to `/messenger/strict/registration.ts` instad of here
+ * Prefer adding the types and registration to `/messenger/strict/registration.ts` instead.
+ * This file is only for methods that are common but not yet fully ready to be strictNullChecked.
  */
 
 import { type SerializedError } from "@/types/messengerTypes";

@@ -31,7 +31,12 @@ import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTyp
 
 const activateModPanelEntryFactory = define<ModActivationPanelEntry>({
   type: "activateMods",
-  modIds: (n: number) => [validateRegistryId(`@test/activate-mods-test-${n}`)],
+  mods: (n: number) => [
+    {
+      modId: validateRegistryId(`@test/activate-mods-test-${n}`),
+      initialOptions: {},
+    },
+  ],
   heading: (n: number) => `Activate Mods Test ${n}`,
 });
 const staticPanelEntryFactory = define<StaticPanelEntry>({

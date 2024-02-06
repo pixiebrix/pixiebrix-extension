@@ -22,10 +22,10 @@ import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 /**
- * Infer options from existing extension-like instances for reinstalling a recipe
+ * Infer options from existing extension-like instances for reinstalling a mod
  * @see installRecipe
  */
-export function collectRecipeOptions(
+export function collectModOptions(
   extensions: Array<Pick<ModComponentBase, "optionsArgs">>,
 ): OptionsArgs {
   // For a given recipe, all the extensions receive the same options during the install process (even if they don't

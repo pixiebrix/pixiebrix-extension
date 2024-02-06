@@ -34,7 +34,15 @@ export type Timestamp = string & {
 };
 
 /**
- * An UTC timestamp followed by a sequence number valid in the current context.
+ * Base64 encoded JSON string
+ */
+export type EncodedJSON = string & {
+  // Nominal subtyping
+  _encodedJSONBrand: never;
+};
+
+/**
+ * A UTC timestamp followed by a sequence number valid in the current context.
  * Useful to determine order of two calls to getTimedSequence.
  */
 export type TimedSequence = string & {
