@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -40,7 +40,7 @@ function useDeleteElement(documentBodyName: string) {
 
       // Remove the element from the form state
       let nextState = produce(formState, (draft) => {
-        const elementsCollection = getIn(draft, collectionName);
+        const elementsCollection = getIn(draft, collectionName) as unknown[];
         elementsCollection.splice(Number(elementIndex), 1);
       });
 

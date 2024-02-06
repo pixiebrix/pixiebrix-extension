@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -35,17 +35,13 @@ import {
   requestRunInTop,
 } from "@/background/executor";
 import * as registry from "@/registry/packageRegistry";
-import { ensureContentScript } from "@/background/contentScript";
 import serviceRegistry from "@/integrations/registry";
 import { performConfiguredRequest } from "@/background/requests";
-import { getRecord, setRecord } from "@/background/dataStore";
 import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
 import { reactivateEveryTab } from "@/background/navigation";
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
-import initPartnerTheme from "@/background/partnerTheme";
 import { debouncedInstallStarterMods as installStarterBlueprints } from "@/background/starterMods";
-
 import {
   clearExtensionDebugLogs,
   clearLog,
@@ -54,12 +50,6 @@ import {
   recordLog,
 } from "@/telemetry/logging";
 import {
-  addTraceEntry,
-  addTraceExit,
-  clearExtensionTraces,
-  clearTraces,
-} from "@/telemetry/trace";
-import {
   collectPerformanceDiagnostics,
   initTelemetry,
   pong,
@@ -67,19 +57,12 @@ import {
   sendDeploymentAlert,
   uid,
 } from "@/background/telemetry";
-import { captureTab } from "@/background/capture";
 import { getUserData } from "@/auth/token";
 import {
   getPartnerPrincipals,
   launchAuthIntegration,
 } from "@/background/partnerIntegrations";
-import {
-  deleteCachedAuthData,
-  getCachedAuthData,
-} from "@/background/auth/authStorage";
 import { setCopilotProcessData } from "@/background/partnerHandlers";
-import { showMySidePanel } from "@/background/sidePanel";
-import { setToolbarBadge } from "@/background/toolbarBadge";
 
 expectContext("background");
 
@@ -96,12 +79,10 @@ declare global {
     GOOGLE_SHEETS_APPEND_ROWS: typeof sheets.appendRows;
 
     GET_AVAILABLE_VERSION: typeof getAvailableVersion;
-    INJECT_SCRIPT: typeof ensureContentScript;
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
 
-    ACTIVATE_PARTNER_THEME: typeof initPartnerTheme;
     GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
     LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
     SET_PARTNER_COPILOT_DATA: typeof setCopilotProcessData;
@@ -113,9 +94,6 @@ declare global {
     PING: typeof pong;
     COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
 
-    SHOW_MY_SIDE_PANEL: typeof showMySidePanel;
-
-    SET_TOOLBAR_BADGE: typeof setToolbarBadge;
     ACTIVATE_TAB: typeof activateTab;
     REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
     REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
@@ -136,13 +114,8 @@ declare global {
     REQUEST_RUN_IN_OTHER_TABS: typeof requestRunInOtherTabs;
     REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
 
-    DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
-    GET_CACHED_AUTH: typeof getCachedAuthData;
     CONFIGURED_REQUEST: typeof performConfiguredRequest;
     CLEAR_SERVICE_CACHE: VoidFunction;
-    GET_DATA_STORE: typeof getRecord;
-    SET_DATA_STORE: typeof setRecord;
-
     RECORD_LOG: typeof recordLog;
     RECORD_ERROR: typeof recordError;
     RECORD_EVENT: typeof recordEvent;
@@ -150,15 +123,8 @@ declare global {
     CLEAR_LOG: typeof clearLog;
     CLEAR_EXTENSION_DEBUG_LOGS: typeof clearExtensionDebugLogs;
 
-    ADD_TRACE_ENTRY: typeof addTraceEntry;
-    ADD_TRACE_EXIT: typeof addTraceExit;
-    CLEAR_TRACES: typeof clearExtensionTraces;
-    CLEAR_ALL_TRACES: typeof clearTraces;
-
     INIT_TELEMETRY: typeof initTelemetry;
     SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
-
-    CAPTURE_TAB: typeof captureTab;
 
     GET_USER_DATA: typeof getUserData;
   }
@@ -176,7 +142,6 @@ export default function registerMessenger(): void {
     GOOGLE_SHEETS_CREATE_TAB: sheets.createTab,
     GOOGLE_SHEETS_APPEND_ROWS: sheets.appendRows,
 
-    ACTIVATE_PARTNER_THEME: initPartnerTheme,
     GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
     LAUNCH_AUTH_INTEGRATION: launchAuthIntegration,
     SET_PARTNER_COPILOT_DATA: setCopilotProcessData,
@@ -184,7 +149,6 @@ export default function registerMessenger(): void {
     INSTALL_STARTER_BLUEPRINTS: installStarterBlueprints,
 
     GET_AVAILABLE_VERSION: getAvailableVersion,
-    INJECT_SCRIPT: ensureContentScript,
 
     PRELOAD_CONTEXT_MENUS: preloadContextMenus,
     UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
@@ -195,9 +159,6 @@ export default function registerMessenger(): void {
     PING: pong,
     COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
 
-    SHOW_MY_SIDE_PANEL: showMySidePanel,
-
-    SET_TOOLBAR_BADGE: setToolbarBadge,
     ACTIVATE_TAB: activateTab,
     REACTIVATE_EVERY_TAB: reactivateEveryTab,
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
@@ -218,13 +179,8 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_OTHER_TABS: requestRunInOtherTabs,
     REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
 
-    DELETE_CACHED_AUTH: deleteCachedAuthData,
-    GET_CACHED_AUTH: getCachedAuthData,
     CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
     CONFIGURED_REQUEST: performConfiguredRequest,
-
-    GET_DATA_STORE: getRecord,
-    SET_DATA_STORE: setRecord,
 
     RECORD_LOG: recordLog,
     RECORD_ERROR: recordError,
@@ -233,15 +189,8 @@ export default function registerMessenger(): void {
     CLEAR_LOG: clearLog,
     CLEAR_EXTENSION_DEBUG_LOGS: clearExtensionDebugLogs,
 
-    ADD_TRACE_ENTRY: addTraceEntry,
-    ADD_TRACE_EXIT: addTraceExit,
-    CLEAR_TRACES: clearExtensionTraces,
-    CLEAR_ALL_TRACES: clearTraces,
-
     INIT_TELEMETRY: initTelemetry,
     SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
-
-    CAPTURE_TAB: captureTab,
 
     GET_USER_DATA: getUserData,
   });

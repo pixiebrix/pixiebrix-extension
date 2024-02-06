@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -155,7 +155,11 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
             </Formik>
           </Provider>
         )
-      : ({ children }) => <Provider store={store}>{children}</Provider>;
+      : ({ children }) => (
+          <Provider store={store}>
+            <ExtraWrapper>{children}</ExtraWrapper>
+          </Provider>
+        );
 
     const utils = render(ui, { wrapper: Wrapper, ...renderOptions });
 

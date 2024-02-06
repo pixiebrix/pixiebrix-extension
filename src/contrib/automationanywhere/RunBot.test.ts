@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,10 +19,10 @@ import { RunBot } from "@/contrib/automationanywhere/RunBot";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { uuidv4 } from "@/types/helpers";
 import {
-  getCachedAuthData,
   getUserData,
   performConfiguredRequestInBackground,
 } from "@/background/messenger/api";
+import { getCachedAuthData } from "@/background/messenger/strict/api";
 import { type AuthData } from "@/integrations/integrationTypes";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,

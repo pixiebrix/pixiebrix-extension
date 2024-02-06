@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +17,7 @@
 
 import React from "react";
 import JsonTree from "@/components/jsonTree/JsonTree";
-import { getPageState } from "@/contentScript/messenger/api";
+import { getPageState } from "@/contentScript/messenger/strict/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { thisTab } from "@/pageEditor/utils";

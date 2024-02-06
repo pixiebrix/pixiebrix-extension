@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,8 +17,6 @@
 
 import { forbidContext } from "@/utils/expectContext";
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- The build fails without this
-const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID!;
 const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
 
 // Used only in the app
@@ -34,10 +32,12 @@ export function setChromeExtensionId(extensionId = ""): void {
 }
 
 // Used only in the app
-export function getChromeExtensionId(): string {
+export function getChromeExtensionId(): string | undefined {
   forbidContext("extension");
 
   return (
-    localStorage.getItem(CHROME_EXTENSION_STORAGE_KEY) ?? CHROME_EXTENSION_ID
+    localStorage.getItem(CHROME_EXTENSION_STORAGE_KEY) ??
+    // We can grab the Chrome Extension ID from the App body's dataset, see setExtensionIdInApp.ts
+    document.body.dataset.chromeExtensionId
   );
 }

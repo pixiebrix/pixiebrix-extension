@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -146,7 +146,7 @@ export const appApi = createApi({
           // WARNING: currently this role is only accurate for Admin. All other users are passed as Restricted even if
           // they have a Member or Developer role on the team
 
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- `organization.members` is about to be removed
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call -- `organization.members` is about to be removed
           role: (apiOrganization as any).members?.some(
             (member: { role: UserRole }) => member.role === UserRole.admin,
           )

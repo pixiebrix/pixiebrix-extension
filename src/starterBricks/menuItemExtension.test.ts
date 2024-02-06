@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -44,12 +44,12 @@ jest.mock("@/runtime/reducePipeline");
 const reduceExtensionPipelineMock = jest.mocked(reduceExtensionPipeline);
 
 globalThis.requestIdleCallback = jest.fn((callback) => {
-  (callback as any)();
+  callback({ didTimeout: false, timeRemaining: () => 1 });
   return 0;
 });
 
 globalThis.requestAnimationFrame = jest.fn((callback) => {
-  (callback as any)();
+  callback(1);
   return 0;
 });
 

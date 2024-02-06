@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -166,7 +166,12 @@ const TemplateToggleWidget: React.VFC<TemplateToggleWidgetProps> = ({
         {renderVarPopup ? (
           <VarPopup
             inputMode={inputMode}
-            inputElementRef={inputRef}
+            // FIXME: define elementRef type from the SchemaField definition rather than inferring from inputMode
+            inputElementRef={
+              inputRef as React.MutableRefObject<
+                HTMLInputElement | HTMLTextAreaElement
+              >
+            }
             value={stringValue}
             setValue={setNewValueFromString}
           />

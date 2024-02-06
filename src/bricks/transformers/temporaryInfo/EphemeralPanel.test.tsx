@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,14 +24,14 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import {
   cancelTemporaryPanel,
   resolveTemporaryPanel,
-} from "@/contentScript/messenger/api";
+} from "@/contentScript/messenger/strict/api";
 
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import userEvent from "@testing-library/user-event";
 
 jest.mock("@/bricks/transformers/temporaryInfo/useTemporaryPanelDefinition");
 
-jest.mock("@/contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/strict/api");
 
 jest.mock("@/sidebar/PanelBody", () => ({
   __esModule: true,

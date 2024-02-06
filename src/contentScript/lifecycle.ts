@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,7 +25,7 @@ import reportError from "@/telemetry/reportError";
 import { compact, debounce, groupBy, intersection, uniq } from "lodash";
 import oneEvent from "one-event";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { traces } from "@/background/messenger/api";
+import { traces } from "@/background/messenger/strict/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { getThisFrame } from "webext-messenger";

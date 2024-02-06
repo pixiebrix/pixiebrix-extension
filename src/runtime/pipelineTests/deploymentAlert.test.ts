@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -35,7 +35,7 @@ import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 beforeEach(() => {
   blockRegistry.clear();
   blockRegistry.register([echoBrick, contextBrick, throwBrick]);
-  (sendDeploymentAlert as any).mockReset();
+  jest.mocked(sendDeploymentAlert).mockReset();
 });
 
 describe.each([["v1"], ["v2"], ["v3"]])(

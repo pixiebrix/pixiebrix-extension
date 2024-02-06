@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,14 +16,15 @@
  */
 
 import { type JsonObject } from "type-fest";
-import {
-  dataStore,
-  performConfiguredRequestInBackground,
-} from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
+import { dataStore } from "@/background/messenger/strict/api";
 import notify from "@/utils/notify";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError, PropError } from "@/errors/businessErrors";
-import { getPageState, setPageState } from "@/contentScript/messenger/api";
+import {
+  getPageState,
+  setPageState,
+} from "@/contentScript/messenger/strict/api";
 import { isEmpty, isPlainObject, set } from "lodash";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type UUID } from "@/types/stringTypes";
@@ -75,7 +76,7 @@ function assertObject(value: unknown): asserts value is UnknownObject {
 
 type Context = { blueprintId: RegistryId | null; extensionId: UUID };
 
-export const customFormRendererSchema = {
+export const CUSTOM_FORM_SCHEMA = {
   type: "object",
   properties: {
     storage: {
@@ -169,24 +170,41 @@ export const customFormRendererSchema = {
       schema: { type: "string", format: "bootstrap-class" },
       label: "Layout/Style",
     },
+    stylesheets: {
+      type: "array",
+      items: {
+        type: "string",
+        format: "uri",
+      },
+      title: "CSS Stylesheet URLs",
+      description:
+        "Stylesheets will apply to the form in the order listed here",
+    },
+    disableParentStyles: {
+      type: "boolean",
+      title: "Disable Parent Styling",
+      description:
+        "Disable the default/inherited styling for the rendered form",
+      default: false,
+    },
   },
   required: ["schema"],
 };
 
 export class CustomFormRenderer extends RendererABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/form");
+  static BRICK_ID = validateRegistryId("@pixiebrix/form");
 
   static ON_SUBMIT_VARIABLE_NAME = validateOutputKey("values");
 
   constructor() {
     super(
-      CustomFormRenderer.BLOCK_ID,
+      CustomFormRenderer.BRICK_ID,
       "Custom Form",
       "Show a custom form connected to a data source",
     );
   }
 
-  inputSchema: Schema = customFormRendererSchema as Schema;
+  inputSchema: Schema = CUSTOM_FORM_SCHEMA as Schema;
 
   override async isPageStateAware(): Promise<boolean> {
     return true;
@@ -220,17 +238,21 @@ export class CustomFormRenderer extends RendererABC {
       successMessage,
       submitCaption = "Submit",
       className,
+      stylesheets = [],
+      disableParentStyles,
       onSubmit,
     }: BrickArgs<{
       storage?: Storage;
       recordId?: string | null;
       schema: Schema;
       uiSchema?: UiSchema;
-      className?: string;
       autoSave?: boolean;
-      onSubmit?: PipelineExpression;
-      submitCaption?: string;
       successMessage?: string;
+      submitCaption?: string;
+      className?: string;
+      stylesheets?: string[];
+      disableParentStyles?: boolean;
+      onSubmit?: PipelineExpression;
     }>,
     { logger, runPipeline }: BrickOptions,
   ): Promise<ComponentRef> {
@@ -280,6 +302,8 @@ export class CustomFormRenderer extends RendererABC {
         autoSave,
         submitCaption,
         className,
+        stylesheets,
+        disableParentStyles,
         async onSubmit(
           values: JsonObject,
           { submissionCount }: { submissionCount: number },
@@ -372,7 +396,7 @@ async function getInitialData(
     default: {
       throw new PropError(
         "Invalid storage type",
-        CustomFormRenderer.BLOCK_ID,
+        CustomFormRenderer.BRICK_ID,
         "storage",
         storage,
       );
@@ -427,7 +451,7 @@ async function setData(
     default: {
       throw new PropError(
         "Invalid storage type",
-        CustomFormRenderer.BLOCK_ID,
+        CustomFormRenderer.BRICK_ID,
         "storage",
         storage,
       );

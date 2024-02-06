@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -38,6 +38,7 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { isObject } from "@/utils/objectUtils";
 import type { UnknownObject } from "@/types/objectTypes";
 import { flagOn } from "@/auth/authUtils";
+import type { Timestamp } from "@/types/stringTypes";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -147,7 +148,7 @@ export async function reportToErrorService(
     user_agent_extension_version: extensionVersion,
     is_application_error: !selectSpecificError(error, BusinessError),
     error_data: data,
-    timestamp: new Date().toISOString(),
+    timestamp: new Date().toISOString() as Timestamp,
   };
 
   // For blueprint_version/service_version/brick_version the server can't handle null value. Must leave the property

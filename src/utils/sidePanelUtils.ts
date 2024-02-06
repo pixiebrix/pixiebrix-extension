@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,15 +20,11 @@
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { isMV3 } from "@/mv3/api";
 import { forbidContext, isBrowserSidebar } from "@/utils/expectContext";
-import {
-  getMethod,
-  type PageTarget,
-  messenger,
-  getThisFrame,
-} from "webext-messenger";
+import { type PageTarget, messenger, getThisFrame } from "webext-messenger";
 import { isContentScript } from "webext-detect-page";
+import { showSidebar } from "@/contentScript/messenger/strict/api";
 
-export async function openSidePanel(tabId: number) {
+export async function openSidePanel(tabId: number): Promise<void> {
   if (isBrowserSidebar()) {
     console.warn(
       'The sidePanel called "openSidePanel". This should not happen.',
@@ -40,10 +36,12 @@ export async function openSidePanel(tabId: number) {
     "contentScript",
     "The content script doesn't have direct access to the `sidePanel` API. Call `showMySidePanel` instead",
   );
-  return isMV3()
-    ? openSidePanelMv3(tabId)
-    : // Called via `getMethod` until we complete the strictNullChecks transition
-      async (tabId: number) => getMethod("SHOW_SIDEBAR")({ tabId });
+
+  if (isMV3()) {
+    await openSidePanelMv3(tabId);
+  } else {
+    await showSidebar({ tabId });
+  }
 }
 
 async function openSidePanelMv3(tabId: number): Promise<void> {

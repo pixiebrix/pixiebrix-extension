@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,7 +26,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 // TODO: Fix `no-restricted-paths`: Look into a standardized way to mark this whole as pageEditor-only
 import { thisTab } from "@/pageEditor/utils";
-import { getProcesses, initRobot } from "@/contentScript/messenger/api";
+import { getProcesses, initRobot } from "@/contentScript/messenger/strict/api";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
 import { expectContext } from "@/utils/expectContext";
 import { type Schema } from "@/types/schemaTypes";

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -71,6 +71,7 @@ function useOnboarding(): {
 
   return {
     onboardingType,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- TODO: Fix type?
     onboardingFilter: activeTab?.filters?.[0]?.value?.toLowerCase(),
     isLoading:
       isOrganizationsLoading || isDeploymentsLoading || isRecipesLoading,

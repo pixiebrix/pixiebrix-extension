@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,6 +30,7 @@ import FORM_FIELD_TYPE_OPTIONS from "@/pageEditor/fields/formFieldTypeOptions";
 import ConnectedCollapsibleFieldSection from "@/pageEditor/fields/ConnectedCollapsibleFieldSection";
 import { joinName } from "@/utils/formUtils";
 import { partial } from "lodash";
+import { MODAL_FORM_SCHEMA } from "@/bricks/transformers/ephemeralForm/formTransformer";
 
 export const FORM_MODAL_ID = validateRegistryId("@pixiebrix/form-modal");
 
@@ -110,6 +111,17 @@ const FormModalOptions: React.FC<{
             showFormIntroFields={false}
           />
         </ConfigErrorBoundary>
+      </ConnectedCollapsibleFieldSection>
+
+      <ConnectedCollapsibleFieldSection title={"Advanced: Theme"}>
+        <SchemaField
+          name={configName("stylesheets")}
+          schema={MODAL_FORM_SCHEMA.properties.stylesheets as Schema}
+        />
+        <SchemaField
+          name={configName("disableParentStyles")}
+          schema={MODAL_FORM_SCHEMA.properties.disableParentStyles as Schema}
+        />
       </ConnectedCollapsibleFieldSection>
     </div>
   );

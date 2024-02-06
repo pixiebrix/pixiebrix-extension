@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,7 +17,7 @@
 import styles from "@/sidebar/modLauncher/ActiveSidebarModsList.module.scss";
 
 import React, { useMemo } from "react";
-import { ListGroup, Row } from "react-bootstrap";
+import { ListGroup } from "react-bootstrap";
 import { type Column, useTable } from "react-table";
 import ActiveSidebarModsListItem from "@/sidebar/modLauncher/ActiveSidebarModsListItem";
 import { isEmpty, sortBy } from "lodash";
@@ -119,18 +119,19 @@ export const ActiveSidebarModsList: React.FunctionComponent = () => {
   }
 
   return (
-    <Row>
-      <ListGroup {...tableInstance.getTableProps()} className="flex-grow">
-        {tableInstance.rows.map((row) => {
-          tableInstance.prepareRow(row);
-          return (
-            <ActiveSidebarModsListItem
-              key={row.original.extensionId}
-              panel={row.original}
-            />
-          );
-        })}
-      </ListGroup>
-    </Row>
+    <ListGroup
+      {...tableInstance.getTableProps()}
+      className="flex-grow scrollable-area"
+    >
+      {tableInstance.rows.map((row) => {
+        tableInstance.prepareRow(row);
+        return (
+          <ActiveSidebarModsListItem
+            key={row.original.extensionId}
+            panel={row.original}
+          />
+        );
+      })}
+    </ListGroup>
   );
 };

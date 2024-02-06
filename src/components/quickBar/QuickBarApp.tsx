@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +30,10 @@ import EmotionShadowRoot from "react-shadow/emotion";
 import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl";
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
-import { MAX_Z_INDEX, PIXIEBRIX_QUICK_BAR_CONTAINER_ID } from "@/domConstants";
+import {
+  MAX_Z_INDEX,
+  PIXIEBRIX_QUICK_BAR_CONTAINER_CLASS,
+} from "@/domConstants";
 import { useEventListener } from "@/hooks/useEventListener";
 import { Stylesheets } from "@/components/Stylesheets";
 import selection from "@/utils/selectionController";
@@ -45,6 +48,7 @@ import defaultActions, {
 } from "@/components/quickBar/defaultActions";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { flagOn } from "@/auth/authUtils";
+import { onContextInvalidated } from "webext-events";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -198,11 +202,16 @@ export const initQuickBarApp = once(async () => {
   }
 
   const container = document.createElement("div");
-  container.id = PIXIEBRIX_QUICK_BAR_CONTAINER_ID;
+  container.className = PIXIEBRIX_QUICK_BAR_CONTAINER_CLASS;
   document.body.prepend(container);
   ReactDOM.render(<QuickBarApp />, container);
-
   console.debug("Initialized quick bar");
+
+  onContextInvalidated.addListener(() => {
+    console.debug("Removed quick bar due to context invalidation");
+    ReactDOM.unmountComponentAtNode(container);
+    container.remove();
+  });
 });
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,6 +16,12 @@
  */
 
 /** @file This is a standalone background entry point that must run independently of the rest of extension */
+
+if (chrome.runtime.getManifest === undefined) {
+  throw new Error(
+    "Chrome bug: The extension was loaded as MV2, but Chrome is still running the worker. Unregister the loader from chrome://serviceworker-internals/",
+  );
+}
 
 const { icons } = chrome.runtime.getManifest();
 const inactiveIcons = {};

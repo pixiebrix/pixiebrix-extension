@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,9 +18,12 @@
 import { openSidePanel, getSidebarPath } from "@/utils/sidePanelUtils";
 import type { MessengerMeta } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export async function showMySidePanel(this: MessengerMeta): Promise<void> {
-  await openSidePanel(this.trace[0].tab.id);
+  const tabId = this.trace[0]?.tab?.id;
+  assertNotNullish(tabId, "showMySidePanel can only be called from a tab");
+  await openSidePanel(tabId);
 }
 
 // TODO: Drop if this is ever implemented: https://github.com/w3c/webextensions/issues/515
@@ -41,12 +44,14 @@ export async function initSidePanel(): Promise<void> {
   // We need to target _all_ tabs, not just those we have access to
   const existingTabs = await chrome.tabs.query({});
   await Promise.all(
-    existingTabs.map(async ({ id: tabId, url }) =>
-      chrome.sidePanel.setOptions({
-        tabId,
-        path: getSidebarPath(tabId),
-        enabled: true,
-      }),
+    existingTabs.map(
+      async ({ id: tabId, url }) =>
+        tabId &&
+        chrome.sidePanel.setOptions({
+          tabId,
+          path: getSidebarPath(tabId),
+          enabled: true,
+        }),
     ),
   );
 }

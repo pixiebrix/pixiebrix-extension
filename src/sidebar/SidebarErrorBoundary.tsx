@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@ import { isEmpty } from "lodash";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Button } from "react-bootstrap";
-import { reloadSidebar } from "@/contentScript/messenger/api";
+import { reloadSidebar } from "@/contentScript/messenger/strict/api";
 import { getTopLevelFrame } from "webext-messenger";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { isMV3 } from "@/mv3/api";

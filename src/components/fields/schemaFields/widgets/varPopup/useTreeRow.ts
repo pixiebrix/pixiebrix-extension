@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -126,9 +126,7 @@ function useTreeRow({
       if (isActive) {
         $row.addClass("active");
 
-        // https://caniuse.com/scrollintoviewifneeded
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- supported by Chromium
-        ($row.get(0) as any).scrollIntoViewIfNeeded?.({ behavior: "smooth" });
+        $row.get(0).scrollIntoViewIfNeeded?.();
       } else {
         $row.removeClass("active");
       }

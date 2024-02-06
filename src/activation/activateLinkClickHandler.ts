@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,23 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateRegistryId } from "@/types/helpers";
 import { type ModActivationPanelEntry } from "@/types/sidebarTypes";
-import { isActivationUrl } from "@/activation/ActivationLink";
 import notify from "@/utils/notify";
-import { compact, isEmpty } from "lodash";
-
-/**
- * Read id search params from the URL. Handles both `id` and `id[]`.
- * @param url
- */
-function readIdsFromUrl(url: URL): string[] {
-  const rawIds = [
-    ...url.searchParams.getAll("id"),
-    ...url.searchParams.getAll("id[]"),
-  ];
-  return rawIds.filter((x) => !isEmpty(x));
-}
+import {
+  parseModActivationUrlSearchParams,
+  isActivationUrl,
+} from "@/activation/activationLinkUtils";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 export default function activateLinkClickHandler(
   event: MouseEvent,
@@ -49,19 +39,12 @@ export default function activateLinkClickHandler(
     return;
   }
 
-  const url = new URL(href);
-  const rawIds = readIdsFromUrl(url);
-  let modIds;
+  const mods = parseModActivationUrlSearchParams(
+    new URL(href, DEFAULT_SERVICE_URL).searchParams,
+  );
 
-  try {
-    modIds = compact(rawIds.map((x) => validateRegistryId(x)));
-  } catch {
-    notify.warning(`Invalid mod id in URL: ${href}`);
-    return;
-  }
-
-  if (modIds.length === 0) {
-    notify.warning(`Mod id param not found in activate link url: ${href}`);
+  if (mods.length === 0) {
+    notify.warning(`No valid mod ids provided in URL: ${href}`);
     return;
   }
 
@@ -69,7 +52,7 @@ export default function activateLinkClickHandler(
 
   callback({
     type: "activateMods",
-    modIds,
+    mods,
     heading: "Activating",
   });
 }

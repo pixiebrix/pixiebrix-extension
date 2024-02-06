@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ import {
   cancelForm,
   cancelTemporaryPanel,
   closeTemporaryPanel,
-} from "@/contentScript/messenger/api";
+} from "@/contentScript/messenger/strict/api";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import type { SidebarState } from "@/types/sidebarTypes";
@@ -31,7 +31,7 @@ import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { type Draft } from "immer";
 
 jest.mock("@/sidebar/messenger/api");
-jest.mock("@/contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/strict/api");
 jest.mock("@/bricks/transformers/temporaryInfo/messenger/api");
 
 const cancelTemporaryPanelMock = jest.mocked(cancelTemporaryPanel);

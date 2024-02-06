@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -29,6 +29,14 @@ export type DocumentViewProps = {
    * Top-level elements in the document.
    */
   body: DocumentElement[];
+  /**
+   * Remote stylesheets (URLs) to include in the document.
+   */
+  stylesheets?: string[];
+  /**
+   * Whether to disable the base (bootstrap) styles, plus any inherited styles, on the document (and children).
+   */
+  disableParentStyles?: boolean;
   options: BrickOptions<BrickArgsContext>;
   meta: {
     runId: UUID;

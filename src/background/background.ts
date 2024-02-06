@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,6 @@
 // eslint-disable-next-line import/no-unassigned-import -- Automatic registration
 import "webext-inject-on-install";
 import "@/extensionContext";
-import "@/development/autoreload";
 import "@/development/errorsBadge";
 
 // Required for MV3; Service Workers don't have XMLHttpRequest
@@ -28,6 +27,7 @@ import "@/background/axiosFetch";
 
 import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/background/messenger/registration";
+import registerMessengerStrict from "@/background/messenger/strict/registration";
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import initLocator from "@/background/locator";
 import initContextMenus from "@/background/contextMenus";
@@ -47,11 +47,13 @@ import { initModUpdater } from "@/background/modUpdater";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import initWalkthroughModalTrigger from "@/background/walkthroughModalTrigger";
 import { initSidePanel } from "./sidePanel";
+import initRestrictUnauthenticatedUrlAccess from "@/background/restrictUnauthenticatedUrlAccess";
 
 void initLocator();
 void initMessengerLogging();
 void initRuntimeLogging();
 registerMessenger();
+registerMessengerStrict();
 registerExternalMessenger();
 void initBrowserAction();
 void initSidePanel();
@@ -69,3 +71,4 @@ initPartnerTokenRefresh();
 initLogSweep();
 initModUpdater();
 initWalkthroughModalTrigger();
+void initRestrictUnauthenticatedUrlAccess();

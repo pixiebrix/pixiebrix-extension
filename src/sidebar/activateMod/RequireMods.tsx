@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ import { useRequiredModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import Loader from "@/components/Loader";
 import { getDefaultAuthOptionsForMod, useAuthOptions } from "@/hooks/auth";
-import { isEmpty } from "lodash";
+import { isEmpty, zip } from "lodash";
 import { type AuthOption } from "@/auth/authTypes";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
@@ -30,6 +30,9 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
+import type { ModActivationConfig } from "@/types/modTypes";
+import type { UnknownObject } from "@/types/objectTypes";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
 export type RequiredModDefinition = {
   /**
@@ -52,10 +55,18 @@ export type RequiredModDefinition = {
    * The default integration configurations for the mod
    */
   defaultAuthOptions: Record<RegistryId, AuthOption | null>;
+  /**
+   * Initial options to pass to the mod configuration form for new activations.
+   *
+   * Introduced to support providing initial options via activation URL.
+   *
+   * @since 1.8.8
+   */
+  initialOptions: UnknownObject;
 };
 
 type Props = {
-  modIds: RegistryId[];
+  mods: ModActivationConfig[];
   children: (props: RequiredModDefinition[]) => React.ReactElement;
 };
 
@@ -66,11 +77,13 @@ type Props = {
  *
  * @param modDefinition the mod definition
  * @param authOptions the integration configurations available to the user
+ * @param initialOptions the initial options for the mod
  * @see checkModDefinitionPermissions
  */
 export function requiresUserConfiguration(
   modDefinition: ModDefinition,
   authOptions: AuthOption[],
+  initialOptions: UnknownObject,
 ): boolean {
   const defaultAuthOptionsByIntegrationId = getDefaultAuthOptionsForMod(
     modDefinition,
@@ -99,7 +112,12 @@ export function requiresUserConfiguration(
       }
 
       // We require user input for any option that isn't explicitly excluded, so we return true here
-      return requiredOptions.includes(name);
+      // Since 1.8.8., validate whether an initial option is provided, but don't validate its value
+      return (
+        requiredOptions.includes(name) &&
+        initialOptions[name] === undefined &&
+        !optionSchema.default
+      );
     });
 
   const modIntegrationIds = getUnconfiguredComponentIntegrations(modDefinition);
@@ -123,37 +141,49 @@ export function requiresUserConfiguration(
 /**
  * Helper component to conditionally render children that depend on mod definitions.
  */
-const RequireMods: React.FC<Props> = ({ modIds, children }) => {
-  const modDefinitionsState = useRequiredModDefinitions(modIds);
-
-  const modComponents = useSelector(selectExtensions);
-
+const RequireMods: React.FC<Props> = ({ mods, children }) => {
+  const modDefinitionsState = useRequiredModDefinitions(
+    mods.map((x) => x.modId),
+  );
+  const originalState = valueToAsyncState(mods);
   const authOptionsState = useAuthOptions();
 
+  const activatedModComponents = useSelector(selectExtensions);
+
   const state = useDeriveAsyncState(
+    originalState,
     modDefinitionsState,
     authOptionsState,
-    async (modDefinitions: ModDefinition[], authOptions: AuthOption[]) =>
+    async (
+      modOptionPairs: ModActivationConfig[],
+      modDefinitions: ModDefinition[],
+      authOptions: AuthOption[],
+    ) =>
       Promise.all(
-        modDefinitions.map(async (modDefinition) => {
-          const defaultAuthOptions = getDefaultAuthOptionsForMod(
-            modDefinition,
-            authOptions,
-          );
-
-          return {
-            modDefinition,
-            defaultAuthOptions,
-            requiresConfiguration: requiresUserConfiguration(
+        zip(modOptionPairs, modDefinitions).map(
+          async ([{ initialOptions }, modDefinition]) => {
+            const defaultAuthOptions = getDefaultAuthOptionsForMod(
               modDefinition,
               authOptions,
-            ),
-            includesQuickBar: await includesQuickBarStarterBrick(modDefinition),
-            isActive: modComponents.some(
-              (x) => x._recipe?.id === modDefinition.metadata.id,
-            ),
-          };
-        }),
+            );
+
+            return {
+              modDefinition,
+              defaultAuthOptions,
+              initialOptions,
+              requiresConfiguration: requiresUserConfiguration(
+                modDefinition,
+                authOptions,
+                initialOptions,
+              ),
+              includesQuickBar:
+                await includesQuickBarStarterBrick(modDefinition),
+              isActive: activatedModComponents.some(
+                (x) => x._recipe?.id === modDefinition.metadata.id,
+              ),
+            };
+          },
+        ),
       ),
   );
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -52,7 +52,7 @@ export function getSubPipelineFlavor(
   pipelinePath: string,
 ): PipelineFlavor {
   if (
-    parentNodeId === DocumentRenderer.BLOCK_ID &&
+    parentNodeId === DocumentRenderer.BRICK_ID &&
     pipelinePath.split(".").at(-2) === "pipeline"
   ) {
     // Current pipeline is the Brick sub pipeline of a Document renderer.

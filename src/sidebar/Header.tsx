@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@ import styles from "./ConnectedSidebar.module.scss";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
-import { hideSidebar } from "@/contentScript/messenger/api";
+import { hideSidebar } from "@/contentScript/messenger/strict/api";
 import useTheme, { useGetTheme } from "@/hooks/useTheme";
 import cx from "classnames";
 import { getTopLevelFrame } from "webext-messenger";

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -29,6 +29,8 @@ import {
   userFactory,
   userOrganizationFactory,
 } from "@/testUtils/factories/authFactories";
+import { DeploymentsProvider } from "@/extensionConsole/pages/deployments/DeploymentsContext";
+import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
 
 jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest
@@ -38,6 +40,9 @@ jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
     .fn()
     .mockReturnValue({ data: [], isFetchingFromCache: false }),
 }));
+
+jest.mock("@/extensionConsole/pages/deployments/useAutoDeploy");
+jest.mocked(useAutoDeploy).mockReturnValue({ isAutoDeploying: false });
 
 const mods: Mod[] = [];
 
@@ -58,8 +63,13 @@ describe("ModsPageLayout", () => {
   });
 
   test("renders", async () => {
-    const { asFragment } = render(<ModsPageLayout mods={mods} />);
+    const { asFragment } = render(
+      <DeploymentsProvider>
+        <ModsPageLayout mods={mods} />
+      </DeploymentsProvider>,
+    );
     await waitForEffect();
+
     expect(asFragment()).toMatchSnapshot();
   });
 

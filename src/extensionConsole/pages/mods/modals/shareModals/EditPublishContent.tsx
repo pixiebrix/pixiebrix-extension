@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -57,7 +57,7 @@ const EditPublishContent: React.FunctionComponent = () => {
         </p>
 
         <p className="mb-1">Public link to share:</p>
-        <ActivationLink blueprintId={blueprintId} />
+        <ActivationLink modId={blueprintId} />
       </Modal.Body>
       <Modal.Footer>
         <Button variant="danger" onClick={cancelPublish}>

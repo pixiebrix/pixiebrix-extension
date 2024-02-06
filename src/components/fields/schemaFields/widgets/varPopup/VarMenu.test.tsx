@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -65,6 +65,7 @@ describe("VarMenu", () => {
             onClose={jest.fn()}
             onVarSelect={jest.fn()}
             likelyVariable="@foo"
+            variablePosition={3}
           />
         )}
       />,
@@ -94,6 +95,7 @@ describe("VarMenu", () => {
             onClose={jest.fn()}
             onVarSelect={jest.fn()}
             likelyVariable="@foo"
+            variablePosition={3}
           />
         )}
       />,
@@ -138,6 +140,7 @@ describe("VarMenu", () => {
             onClose={jest.fn()}
             onVarSelect={jest.fn()}
             likelyVariable="@inp"
+            variablePosition={3}
           />
         )}
       />,
@@ -174,6 +177,7 @@ describe("VarMenu", () => {
     // @inp matches @input
     expect(screen.getByText("@input")).toBeInTheDocument();
 
+    // eslint-disable-next-line @shopify/jest/no-snapshots -- verifies the menu is rendered as expected
     expect(asFragment()).toMatchSnapshot();
   });
 });

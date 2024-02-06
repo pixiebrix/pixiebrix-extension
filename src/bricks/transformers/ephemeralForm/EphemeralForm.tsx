@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,13 +17,12 @@
 
 import React, { useEffect } from "react";
 import validator from "@/validators/formValidator";
-import { Theme } from "@rjsf/bootstrap-4";
-import { withTheme, getDefaultRegistry } from "@rjsf/core";
+import JsonSchemaForm from "@rjsf/bootstrap-4";
 import {
+  cancelForm,
   getFormDefinition,
   resolveForm,
-  cancelForm,
-} from "@/contentScript/messenger/api";
+} from "@/contentScript/messenger/strict/api";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type Target } from "@/types/messengerTypes";
@@ -37,6 +36,11 @@ import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { cloneDeep } from "lodash";
 import useAsyncState from "@/hooks/useAsyncState";
+import { Stylesheets } from "@/components/Stylesheets";
+import EmotionShadowRoot from "react-shadow/emotion";
+import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
+import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
+import { type UUID } from "@/types/stringTypes";
 
 const fields = {
   DescriptionField,
@@ -57,16 +61,68 @@ const PanelLayout: React.FC = ({ children }) => (
   <div className="p-3">{children}</div>
 );
 
-function monkeyPatchFormWidgets() {
-  const registry = getDefaultRegistry();
-  // Use default widget instead of bs4 widget because the bs4 file widget is broken
-  // https://github.com/rjsf-team/react-jsonschema-form/issues/2095#issuecomment-844309622
-  // TODO: Remove this monkeypatch since it was fixed in March 2023
-  Theme.widgets.FileWidget = registry.widgets.FileWidget;
-  return withTheme(Theme);
-}
+const EphemeralFormContent: React.FC<{
+  definition: FormDefinition;
+  target: Target;
+  nonce: UUID;
+  isModal: boolean;
+}> = ({ definition, target, nonce, isModal }) => {
+  const {
+    schema,
+    uiSchema,
+    cancelable,
+    submitCaption,
+    stylesheets: newStylesheets,
+    disableParentStyles,
+  } = definition;
 
-const JsonSchemaForm = monkeyPatchFormWidgets();
+  // Ephemeral form can never be nested, but we use this to pull in
+  // the (boostrap) base themes
+  const { stylesheets } = useStylesheetsContextWithFormDefault({
+    newStylesheets,
+    disableParentStyles,
+  });
+
+  return (
+    <ErrorBoundary>
+      <EmotionShadowRoot.div>
+        <Stylesheets href={stylesheets}>
+          <JsonSchemaForm
+            // Deep clone the schema because otherwise the schema is not extensible, which
+            // breaks validation when @cfworker/json-schema dereferences the schema
+            // See https://github.com/cfworker/cfworker/blob/263260ea661b6f8388116db7b8daa859e0d28b25/packages/json-schema/src/dereference.ts#L115
+            schema={cloneDeep(schema)}
+            uiSchema={uiSchema}
+            fields={fields}
+            widgets={uiWidgets}
+            validator={validator}
+            templates={templates}
+            onSubmit={({ formData: values }) => {
+              void resolveForm(target, nonce, values);
+            }}
+          >
+            <div>
+              <button className="btn btn-primary" type="submit">
+                {submitCaption}
+              </button>
+              {cancelable && isModal && (
+                <button
+                  className="btn btn-link"
+                  type="button"
+                  onClick={() => {
+                    cancelForm(target, nonce);
+                  }}
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
+          </JsonSchemaForm>
+        </Stylesheets>
+      </EmotionShadowRoot.div>
+    </ErrorBoundary>
+  );
+};
 
 /**
  * @see FormTransformer
@@ -87,7 +143,7 @@ const EphemeralForm: React.FC = () => {
   const FormContainer = isModal ? ModalLayout : PanelLayout;
 
   const {
-    data: definition,
+    data: formDefinition,
     isLoading,
     error,
   } = useAsyncState(async () => getFormDefinition(target, nonce), [nonce]);
@@ -132,39 +188,12 @@ const EphemeralForm: React.FC = () => {
 
   return (
     <FormContainer>
-      <ErrorBoundary>
-        <JsonSchemaForm
-          // Deep clone the schema because otherwise the schema is not extensible, which
-          // breaks validation when @cfworker/json-schema dereferences the schema
-          // See https://github.com/cfworker/cfworker/blob/263260ea661b6f8388116db7b8daa859e0d28b25/packages/json-schema/src/dereference.ts#L115
-          schema={cloneDeep(definition.schema)}
-          uiSchema={definition.uiSchema}
-          fields={fields}
-          widgets={uiWidgets}
-          validator={validator}
-          templates={templates}
-          onSubmit={({ formData: values }) => {
-            void resolveForm(target, nonce, values);
-          }}
-        >
-          <div>
-            <button className="btn btn-primary" type="submit">
-              {definition.submitCaption}
-            </button>
-            {definition.cancelable && isModal && (
-              <button
-                className="btn btn-link"
-                type="button"
-                onClick={() => {
-                  cancelForm(target, nonce);
-                }}
-              >
-                Cancel
-              </button>
-            )}
-          </div>
-        </JsonSchemaForm>
-      </ErrorBoundary>
+      <EphemeralFormContent
+        definition={formDefinition}
+        target={target}
+        nonce={nonce}
+        isModal={isModal}
+      />
     </FormContainer>
   );
 };

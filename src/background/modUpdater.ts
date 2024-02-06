@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -36,7 +36,7 @@ import type {
   ActivatedModComponent,
   UnresolvedModComponent,
 } from "@/types/modComponentTypes";
-import { collectRecipeOptions } from "@/store/extensionsUtils";
+import { collectModOptions } from "@/store/extensionsUtils";
 import type { ModComponentState } from "@/store/extensionsTypes";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
@@ -274,7 +274,7 @@ function updateMod(
     deactivatedModComponents,
   );
 
-  const optionsArgs = collectRecipeOptions(
+  const optionsArgs = collectModOptions(
     deactivatedModComponents.filter((modComponent) => modComponent.optionsArgs),
   );
 

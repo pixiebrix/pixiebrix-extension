@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,11 +23,11 @@ import {
   hideSidebar,
   showSidebar,
 } from "@/contentScript/sidebarController";
-import { showMySidePanel } from "@/background/messenger/api";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isMV3 } from "@/mv3/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { logPromiseDuration } from "@/utils/promiseUtils";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 
 export class ShowSidebar extends EffectABC {
   constructor() {
@@ -68,13 +68,7 @@ export class ShowSidebar extends EffectABC {
     }>,
     { logger }: BrickOptions,
   ): Promise<void> {
-    // Don't pass extensionId here because the extensionId in showOptions refers to the extensionId of the panel,
-    // not the extensionId of the extension toggling the sidebar
-    if (isMV3()) {
-      await showMySidePanel();
-    } else {
-      await showSidebar();
-    }
+    await showSidebar();
 
     void logPromiseDuration(
       "ShowSidebar:updateSidebar",
@@ -99,7 +93,7 @@ export class HideSidebar extends EffectABC {
   inputSchema: Schema = SCHEMA_EMPTY_OBJECT;
 
   async effect(): Promise<void> {
-    if (isMV3()) {
+    if (isMV3() || isLoadedInIframe()) {
       sidebarInThisTab.close();
     } else {
       hideSidebar();

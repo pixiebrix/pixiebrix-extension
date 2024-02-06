@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -29,7 +29,8 @@ import {
 } from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { cloneDeep } from "lodash";
-import { getCachedAuthData, getUserData } from "@/background/messenger/api";
+import { getCachedAuthData } from "@/background/messenger/strict/api";
+import { getUserData } from "@/background/messenger/api";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";

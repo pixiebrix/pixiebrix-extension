@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@ import { selectSettings } from "@/store/settings/settingsSelectors";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { DEFAULT_THEME, type Theme } from "@/themes/themeTypes";
-import { activatePartnerTheme } from "@/background/messenger/api";
+import { activatePartnerTheme } from "@/background/messenger/strict/api";
 import {
   addThemeClassToDocumentRoot,
   getThemeLogo,

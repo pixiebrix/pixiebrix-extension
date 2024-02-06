@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -27,7 +27,10 @@ export const PANEL_FRAME_ID = "pixiebrix-extension";
 
 export const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";
 
-export const PIXIEBRIX_QUICK_BAR_CONTAINER_ID = "pixiebrix-quickbar-container";
+export const PIXIEBRIX_QUICK_BAR_CONTAINER_CLASS =
+  "pixiebrix-quickbar-container";
+
+export const PIXIEBRIX_NOTIFICATION_CLASS = "pixiebrix-notifier-container";
 
 export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
 
@@ -39,7 +42,8 @@ export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
 // When adding additional properties, be sure to make sure they're compatible with :not
 export const PRIVATE_ATTRIBUTES_SELECTOR = `
   #${PANEL_FRAME_ID},
-  #${PIXIEBRIX_QUICK_BAR_CONTAINER_ID},
+  .${PIXIEBRIX_QUICK_BAR_CONTAINER_CLASS},
+  .${PIXIEBRIX_NOTIFICATION_CLASS},
   [${PIXIEBRIX_DATA_ATTR}],
   [${CONTENT_SCRIPT_READY_ATTRIBUTE}],
   [${EXTENSION_POINT_DATA_ATTR}]

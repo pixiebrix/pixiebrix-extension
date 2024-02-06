@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -94,8 +94,15 @@ export function moveElement(
       destination,
     });
 
-    getIn(sourceParent, "children").splice(source.index, 1);
-    getIn(destinationParent, "children").splice(destination.index, 0, element);
+    (getIn(sourceParent, "children") as DocumentElement[]).splice(
+      source.index,
+      1,
+    );
+    (getIn(destinationParent, "children") as DocumentElement[]).splice(
+      destination.index,
+      0,
+      element,
+    );
   });
 }
 

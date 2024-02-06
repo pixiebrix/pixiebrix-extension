@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -58,7 +58,7 @@ export type ElementPreviewProps = {
 };
 
 const useScrollIntoViewEffect = (elementName: string, isActive: boolean) => {
-  const elementRef = React.useRef(null);
+  const elementRef = React.useRef<Element>(null);
 
   useEffect(() => {
     if (!elementRef.current) {

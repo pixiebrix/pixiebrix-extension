@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@ import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 import { type RootState } from "@/store/optionsStore";
 import { faEdit, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { deleteCachedAuthData } from "@/background/messenger/api";
+import { deleteCachedAuthData } from "@/background/messenger/strict/api";
 import notify from "@/utils/notify";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import BrickIcon from "@/components/BrickIcon";
