@@ -22,7 +22,6 @@ import {
   cancelForm,
   getFormDefinition,
   resolveForm,
-  cancelForm,
 } from "@/contentScript/messenger/strict/api";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
