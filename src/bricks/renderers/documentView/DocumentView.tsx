@@ -45,7 +45,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({
     throw new Error("meta.extensionId is required for DocumentView");
   }
 
-  const { stylesheets: inheritedStylesheets, isInitialized } =
+  const { stylesheets: inheritedStylesheets } =
     useStylesheetsContextWithDocumentDefault();
 
   const stylesheets = [];
@@ -56,11 +56,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({
 
   stylesheets.push(...newStylesheets);
 
-  const stylesheetsContextValue: StylesheetsContextType = {
-    stylesheets,
-    // In practice, this should always be true
-    isInitialized,
-  };
+  const stylesheetsContextValue: StylesheetsContextType = { stylesheets };
 
   return (
     // Wrap in a React context provider that passes BrickOptions down to any embedded bricks
