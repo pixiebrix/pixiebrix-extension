@@ -32,7 +32,7 @@ import { appApiMock } from "@/testUtils/appApiMock";
 
 jest.mock("@/auth/useLinkState");
 
-jest.mock("@/contentScript/messenger/api", () => ({
+jest.mock("@/contentScript/messenger/strict/api", () => ({
   ensureExtensionPointsInstalled: jest.fn(),
   getReservedSidebarEntries: jest.fn().mockResolvedValue({
     panels: [],

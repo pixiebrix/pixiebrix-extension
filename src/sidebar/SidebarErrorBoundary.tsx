@@ -20,7 +20,7 @@ import { isEmpty } from "lodash";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Alert, Button } from "react-bootstrap";
-import { reloadSidebar } from "@/contentScript/messenger/api";
+import { reloadSidebar } from "@/contentScript/messenger/strict/api";
 import { getTopLevelFrame } from "webext-messenger";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { isMV3 } from "@/mv3/api";

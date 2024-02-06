@@ -16,31 +16,29 @@
  */
 
 /**
- * @file This file provides Messenger to the strictNullChecks build.
- * It must not be imported.
- * The actual methods must be registered in the appropriate registration.ts file,
- * this is enforced by typescript itself as long as this file is never imported.
  * @see https://github.com/pixiebrix/pixiebrix-extension/issues/6526
+ * @context Importing a file from a `strictNullCheck`ed file, will cause all of its dependencies
+ *          to be strictNullChecked too. This makes it difficult to use certain files.
+ *
+ * @file    This file provides types for some common messenger methods without actually pushing
+ *          them and their dependencies into the strictNullChecks config.
+ *
+ * @warning This file must not be imported.
+ *
+ * @warning The actual methods must be registered in the appropriate registration.ts file,
+ *          this is enforced by typescript itself as long as this file is never imported.
+ *
+ * Prefer adding the types and registration to `/messenger/strict/registration.ts` instead.
+ * This file is only for methods that are common but not yet fully ready to be strictNullChecked.
  */
 
-/* eslint-disable import/no-restricted-paths -- Type-only file. Remove each import once they end up in th strictNullChecks list */
-
-import {
-  type hideSidebar,
-  type showSidebar,
-} from "@/contentScript/sidebarController";
 import { type SerializedError } from "@/types/messengerTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { type JsonObject } from "type-fest";
 import { type Event } from "@/telemetry/events";
-import { type showMySidePanel } from "@/background/sidePanel";
 
 declare global {
   interface MessengerMethods {
-    SHOW_SIDEBAR: typeof showSidebar;
-    HIDE_SIDEBAR: typeof hideSidebar;
-    SHOW_MY_SIDE_PANEL: typeof showMySidePanel;
-
     // Temporary duplicate type for a background method used by the sidebar.
     // NOTE: Changes to those functions must be reflected here.
     RECORD_ERROR: (

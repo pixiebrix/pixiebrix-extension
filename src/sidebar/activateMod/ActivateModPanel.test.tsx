@@ -38,7 +38,7 @@ import {
   marketplaceListingFactory,
   modDefinitionToMarketplacePackage,
 } from "@/testUtils/factories/marketplaceFactories";
-import * as messengerApi from "@/contentScript/messenger/api";
+import * as messengerApi from "@/contentScript/messenger/strict/api";
 import ActivateMultipleModsPanel from "@/sidebar/activateMod/ActivateMultipleModsPanel";
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";

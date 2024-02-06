@@ -19,7 +19,7 @@ import pTimeout from "p-timeout";
 import { type Menus, type Tabs } from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
 import reportError from "@/telemetry/reportError";
-import { handleMenuAction, notify } from "@/contentScript/messenger/api";
+import { handleMenuAction, notify } from "@/contentScript/messenger/strict/api";
 import { ensureContentScript } from "@/background/contentScript";
 import { expectContext } from "@/utils/expectContext";
 import extensionPointRegistry from "@/starterBricks/registry";

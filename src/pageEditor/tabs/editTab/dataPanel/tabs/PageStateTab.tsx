@@ -17,7 +17,7 @@
 
 import React from "react";
 import JsonTree from "@/components/jsonTree/JsonTree";
-import { getPageState } from "@/contentScript/messenger/api";
+import { getPageState } from "@/contentScript/messenger/strict/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { thisTab } from "@/pageEditor/utils";

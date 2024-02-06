@@ -21,8 +21,8 @@ import {
   clearExtensionDebugLogs,
   requestRun,
   sendDeploymentAlert,
-  traces,
 } from "@/background/messenger/api";
+import { traces } from "@/background/messenger/strict/api";
 import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/bricks/errors";

@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getFormDefinition } from "@/contentScript/messenger/api";
+import { getFormDefinition } from "@/contentScript/messenger/strict/api";
 import { render } from "@testing-library/react";
 import React from "react";
 import EphemeralForm from "./EphemeralForm";
 import { screen } from "shadow-dom-testing-library";
 
-jest.mock("@/contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/strict/api");
 
 const getFormDefinitionMock = jest.mocked(getFormDefinition);
 
