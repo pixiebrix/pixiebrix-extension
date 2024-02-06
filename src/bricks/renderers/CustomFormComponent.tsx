@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
 import cx from "classnames";
@@ -56,7 +56,7 @@ const CustomFormComponent: React.FunctionComponent<{
    * Form submission handler.
    * @param values the submitted values
    * @param submissionCount the number of times the form has been submitted (For tracing)
-   * UnkownObject is used instead of JsonObject because strictNullChecks throws
+   * UnknownObject is used instead of JsonObject because strictNullChecks throws
    * `Type instantiation is excessively deep and possibly infinite.`
    */
   onSubmit: (
@@ -77,8 +77,11 @@ const CustomFormComponent: React.FunctionComponent<{
 }) => {
   // Use useRef instead of useState because we don't need/want a re-render when count changes
   const submissionCountRef = useRef(0);
-  // Track values during onChange so we can access it our RjsfSubmitContext submitForm callback
+  // Track values during onChange or prop updates, so we can access it our RjsfSubmitContext submitForm callback
   const valuesRef = useRef<UnknownObject>(formData);
+  useEffect(() => {
+    valuesRef.current = formData ?? {};
+  }, [formData]);
 
   // Custom stylesheets overrides bootstrap themes
   const stylesheetUrls = isEmpty(stylesheets)
