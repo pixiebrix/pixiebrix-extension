@@ -28,7 +28,7 @@ import StylesheetsContext, {
 
 const DocumentView: React.FC<DocumentViewProps> = ({
   body,
-  stylesheets: newStylesheets = [],
+  stylesheets: newStylesheets,
   disableParentStyles,
   options,
   meta,
@@ -45,7 +45,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({
   }
 
   const { stylesheets } = useStylesheetsContextWithDocumentDefault({
-    newStylesheets,
+    newStylesheetgs,
     disableParentStyles,
   });
 

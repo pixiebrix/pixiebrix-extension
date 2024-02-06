@@ -33,7 +33,7 @@ function useStylesheetsContextWithDefaultValues({
   defaultStylesheets,
   disableParentStyles,
 }: {
-  newStylesheets: string[];
+  newStylesheets: string[] | undefined;
   defaultStylesheets: string[];
   disableParentStyles: boolean;
 }): {
@@ -51,7 +51,9 @@ function useStylesheetsContextWithDefaultValues({
     }
   }
 
-  stylesheets.push(...newStylesheets);
+  if (newStylesheets != null) {
+    stylesheets.push(...newStylesheets);
+  }
 
   return { stylesheets };
 }

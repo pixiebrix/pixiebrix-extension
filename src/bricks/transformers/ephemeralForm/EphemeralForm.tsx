@@ -72,7 +72,7 @@ const EphemeralFormContent: React.FC<{
     uiSchema,
     cancelable,
     submitCaption,
-    stylesheets: newStylesheets = [],
+    stylesheets: newStylesheets,
     disableParentStyles,
   } = definition;
 

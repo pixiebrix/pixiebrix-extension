@@ -72,7 +72,7 @@ const CustomFormComponent: React.FunctionComponent<{
   autoSave,
   className,
   onSubmit,
-  stylesheets: newStylesheets = [],
+  stylesheets: newStylesheets,
   disableParentStyles = false,
 }) => {
   // Use useRef instead of useState because we don't need/want a re-render when count changes
