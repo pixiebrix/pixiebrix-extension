@@ -35,8 +35,8 @@ import Loader from "@/components/Loader";
 import Alert from "@/components/Alert";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { collectRecipeOptions } from "@/store/extensionsUtils";
-import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
+import { collectModOptions } from "@/store/extensionsUtils";
+import useAsyncModOptionsValidationSchema from "@/hooks/useAsyncModOptionsValidationSchema";
 import Effect from "@/components/Effect";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { type OptionsArgs } from "@/types/runtimeTypes";
@@ -83,7 +83,7 @@ const ModOptionsValuesContent: React.FC = () => {
     data: validationSchema,
     isLoading: isLoadingSchema,
     error: schemaError,
-  } = useAsyncRecipeOptionsValidationSchema(optionsDefinition?.schema);
+  } = useAsyncModOptionsValidationSchema(optionsDefinition?.schema);
 
   const OptionsFieldGroup = useMemo(
     () =>
@@ -104,7 +104,7 @@ const ModOptionsValuesContent: React.FC = () => {
   );
 
   const initialValues = useMemo(
-    () => modifiedOptionValues ?? collectRecipeOptions(recipeExtensions),
+    () => modifiedOptionValues ?? collectModOptions(recipeExtensions),
     [modifiedOptionValues, recipeExtensions],
   );
 

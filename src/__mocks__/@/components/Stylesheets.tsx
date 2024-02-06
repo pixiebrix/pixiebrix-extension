@@ -16,24 +16,25 @@
  */
 
 import React from "react";
-import { Modal } from "react-bootstrap";
-import { useSelector } from "react-redux";
-import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
-import ActivationLink from "@/activation/ActivationLink";
-import PublishContentLayout from "./PublishContentLayout";
+import { castArray, uniq } from "lodash";
 
-const PublishedContent: React.FunctionComponent = (props) => {
-  const { blueprintId } = useSelector(selectShowPublishContext);
+/**
+ * A mock for Stylesheets, because otherwise you have to use jest fake timers in tests.
+ */
+export const Stylesheets: React.FC<{
+  href: string | string[];
+  mountOnLoad?: boolean;
+}> = ({ href, children }) => {
+  const urls = uniq(castArray(href));
 
   return (
-    <PublishContentLayout title="Published">
-      <Modal.Body>
-        <p>The mod has been published to the Marketplace.</p>
-        <p className="mb-1">Public link to share:</p>
-        <ActivationLink modId={blueprintId} />
-      </Modal.Body>
-    </PublishContentLayout>
+    <>
+      {urls.map((href) => (
+        <link rel="stylesheet" href={href} key={href} />
+      ))}
+      // Unlike the real Stylesheets, this wraps in a div so that we can add a
+      data-testid for testing
+      <div data-testid="Stylesheets">{children}</div>
+    </>
   );
 };
-
-export default PublishedContent;

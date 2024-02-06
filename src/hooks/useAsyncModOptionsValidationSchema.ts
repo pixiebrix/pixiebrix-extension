@@ -55,7 +55,7 @@ export async function getOptionsValidationSchema(
   );
 }
 
-const useAsyncRecipeOptionsValidationSchema = (
+const useAsyncModOptionsValidationSchema = (
   optionsDefinitionSchema: Schema | undefined,
 ): FetchableAsyncState<AnyObjectSchema> =>
   useAsyncState(
@@ -63,4 +63,4 @@ const useAsyncRecipeOptionsValidationSchema = (
     [optionsDefinitionSchema],
   );
 
-export default useAsyncRecipeOptionsValidationSchema;
+export default useAsyncModOptionsValidationSchema;

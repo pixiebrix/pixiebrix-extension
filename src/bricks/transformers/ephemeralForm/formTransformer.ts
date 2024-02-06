@@ -132,6 +132,7 @@ export class FormTransformer extends TransformerABC {
       cancelable = true,
       submitCaption = "Submit",
       location = "modal",
+      stylesheets = [],
     }: BrickArgs<FormDefinition>,
     { logger, abortSignal }: BrickOptions,
   ): Promise<unknown> {
@@ -142,12 +143,14 @@ export class FormTransformer extends TransformerABC {
 
     const formNonce = uuidv4();
 
-    const formDefinition = {
+    // Repackage the definition from the brick input with default values
+    const formDefinition: FormDefinition = {
       schema,
       uiSchema,
       cancelable,
       submitCaption,
       location,
+      stylesheets,
     };
 
     abortSignal?.addEventListener("abort", () => {

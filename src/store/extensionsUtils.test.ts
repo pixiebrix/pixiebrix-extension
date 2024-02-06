@@ -17,7 +17,7 @@
 
 import {
   collectConfiguredIntegrationDependencies,
-  collectRecipeOptions,
+  collectModOptions,
 } from "@/store/extensionsUtils";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -27,15 +27,13 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 describe("inferRecipeOptions", () => {
   it("returns first option", () => {
-    expect(collectRecipeOptions([{ optionsArgs: { foo: 42 } }])).toStrictEqual({
+    expect(collectModOptions([{ optionsArgs: { foo: 42 } }])).toStrictEqual({
       foo: 42,
     });
   });
 
   it("return blank object if not set", () => {
-    expect(collectRecipeOptions([{ optionsArgs: undefined }])).toStrictEqual(
-      {},
-    );
+    expect(collectModOptions([{ optionsArgs: undefined }])).toStrictEqual({});
   });
 });
 
