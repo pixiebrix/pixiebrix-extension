@@ -21,7 +21,7 @@ import React, { useState } from "react";
 import { Button, Card } from "react-bootstrap";
 import { truncate } from "lodash";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
-import useActivateRecipeWizard from "@/activation/useActivateRecipeWizard";
+import useActivateModWizard from "@/activation/useActivateModWizard";
 import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmissionViaEnterIfFirstChild";
 import { useDispatch, useSelector } from "react-redux";
 import { selectRecipeHasAnyExtensionsInstalled } from "@/store/extensionsSelectors";
@@ -58,7 +58,7 @@ const ActivateModCard: React.FC = () => {
     data: wizardState,
     isLoading: isLoadingWizard,
     error: wizardError,
-  } = useActivateRecipeWizard(mod);
+  } = useActivateModWizard(mod);
 
   const activateMod = useActivateRecipe("extensionConsole");
   const [activationError, setActivationError] = useState<unknown>();

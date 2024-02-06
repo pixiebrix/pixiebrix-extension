@@ -190,7 +190,11 @@ export const innerStarterBrickModDefinitionFactory = ({
 export const defaultModDefinitionFactory =
   innerStarterBrickModDefinitionFactory();
 
-export const getModDefinitionWithBuiltInIntegrationConfigs = () => {
+export const getModDefinitionWithBuiltInIntegrationConfigs = ({
+  modId,
+}: {
+  modId?: RegistryId;
+} = {}) => {
   const extensionServices = {
     service1: "@pixiebrix/service1",
     service2: "@pixiebrix/service2",
@@ -203,6 +207,10 @@ export const getModDefinitionWithBuiltInIntegrationConfigs = () => {
   const modDefinition = defaultModDefinitionFactory({
     extensionPoints: [modComponentDefinition],
   });
+
+  if (modId) {
+    (modDefinition.metadata as any).id = modId;
+  }
 
   const builtInIntegrationConfigs = [
     remoteIntegrationConfigurationFactory({

@@ -57,7 +57,7 @@ const EditPublishContent: React.FunctionComponent = () => {
         </p>
 
         <p className="mb-1">Public link to share:</p>
-        <ActivationLink blueprintId={blueprintId} />
+        <ActivationLink modId={blueprintId} />
       </Modal.Body>
       <Modal.Footer>
         <Button variant="danger" onClick={cancelPublish}>

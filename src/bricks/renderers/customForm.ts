@@ -178,7 +178,7 @@ export const CUSTOM_FORM_SCHEMA = {
       },
       title: "CSS Stylesheet URLs",
       description:
-        "Stylesheets will apply to the rendered document in the order listed here",
+        "Stylesheets will apply to the form in the order listed here",
     },
   },
   required: ["schema"],

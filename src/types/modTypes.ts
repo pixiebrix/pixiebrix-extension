@@ -19,6 +19,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Organization } from "@/types/contract";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
+import type { UnknownObject } from "@/types/objectTypes";
 
 /**
  * @deprecated
@@ -72,4 +73,19 @@ export type ModViewItem = {
    * True if the source package is no longer available
    */
   unavailable: boolean;
+};
+
+/**
+ * A mod id with activation configuration.
+ * @since 1.8.8
+ */
+export type ModActivationConfig = {
+  /**
+   * The mod to activate.
+   */
+  modId: RegistryId;
+  /**
+   * Initial activation options. Have not been validated yet.
+   */
+  initialOptions: UnknownObject;
 };

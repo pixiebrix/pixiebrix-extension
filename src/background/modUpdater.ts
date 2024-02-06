@@ -36,7 +36,7 @@ import type {
   ActivatedModComponent,
   UnresolvedModComponent,
 } from "@/types/modComponentTypes";
-import { collectRecipeOptions } from "@/store/extensionsUtils";
+import { collectModOptions } from "@/store/extensionsUtils";
 import type { ModComponentState } from "@/store/extensionsTypes";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
@@ -272,7 +272,7 @@ function updateMod(
     deactivatedModComponents,
   );
 
-  const optionsArgs = collectRecipeOptions(
+  const optionsArgs = collectModOptions(
     deactivatedModComponents.filter((modComponent) => modComponent.optionsArgs),
   );
 

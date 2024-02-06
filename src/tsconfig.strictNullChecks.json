@@ -19,6 +19,7 @@
     "./__mocks__/@/utils/injectStylesheet.ts",
     "./__mocks__/@uipath/robot.ts",
     "./activation/ActivationLink.tsx",
+    "./activation/activationLinkUtils.ts",
     "./activation/WizardValuesModIntegrationsContextAdapter.tsx",
     "./activation/activateLinkClickHandler.ts",
     "./activation/wizardTypes.ts",
