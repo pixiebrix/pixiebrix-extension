@@ -62,7 +62,7 @@ export function useStylesheetsContextWithDocumentDefault({
   newStylesheets,
   disableParentStyles,
 }: {
-  newStylesheets: string[];
+  newStylesheets: string[] | undefined;
   disableParentStyles: boolean;
 }): {
   stylesheets: string[];
@@ -85,7 +85,7 @@ export function useStylesheetsContextWithFormDefault({
   newStylesheets,
   disableParentStyles,
 }: {
-  newStylesheets: string[];
+  newStylesheets: string[] | undefined;
   disableParentStyles: boolean;
 }): {
   stylesheets: string[];
