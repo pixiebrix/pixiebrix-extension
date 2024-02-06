@@ -23,6 +23,7 @@ import {
 } from "@/integrations/integrationTypes";
 import { getRandomString } from "@/vendors/pkce";
 import { setCachedAuthData } from "@/background/auth/authStorage";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function parseResponseParams(url: URL): UnknownObject {
   const hasSearchParams = [...url.searchParams.keys()].length > 0;
@@ -50,6 +51,8 @@ async function implicitGrantFlow(
   const { client_id, authorizeUrl: rawAuthorizeUrl, ...params } = oauth2;
 
   const state = getRandomString(16);
+
+  assertNotNullish(rawAuthorizeUrl, "`authorizeUrl` was not provided");
 
   const authorizeURL = new URL(rawAuthorizeUrl);
 

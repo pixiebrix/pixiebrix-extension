@@ -29,6 +29,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import axios, { type AxiosResponse } from "axios";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { setCachedAuthData } from "@/background/auth/authStorage";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 async function codeGrantFlow(
   auth: IntegrationConfig,
@@ -43,6 +44,9 @@ async function codeGrantFlow(
     tokenUrl: rawTokenUrl,
     ...params
   } = oauth2;
+
+  assertNotNullish(rawAuthorizeUrl, "`authorizeUrl` was not provided");
+  assertNotNullish(rawTokenUrl, "`tokenUrl` was not provided");
 
   const authorizeURL = new URL(rawAuthorizeUrl);
   for (const [key, value] of Object.entries({
