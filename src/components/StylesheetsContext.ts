@@ -28,7 +28,9 @@ const StylesheetsContext = React.createContext<StylesheetsContextType>({
   stylesheets: null,
 });
 
-export function useStylesheetsContextWithDocumentDefault(): StylesheetsContextType {
+export function useStylesheetsContextWithDocumentDefault(): {
+  stylesheets: string[];
+} {
   const { stylesheets } = useContext(StylesheetsContext);
   return {
     stylesheets: stylesheets || [
@@ -42,7 +44,9 @@ export function useStylesheetsContextWithDocumentDefault(): StylesheetsContextTy
   };
 }
 
-export function useStylesheetsContextWithFormDefault(): StylesheetsContextType {
+export function useStylesheetsContextWithFormDefault(): {
+  stylesheets: string[];
+} {
   const { stylesheets } = useContext(StylesheetsContext);
   return {
     stylesheets: stylesheets || [bootstrap, bootstrapOverrides, custom],
