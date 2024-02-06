@@ -21,7 +21,7 @@ import { render } from "@/sidebar/testHelpers";
 import useConnectedTargetUrl from "@/sidebar/hooks/useConnectedTargetUrl";
 
 jest.mock("@/sidebar/hooks/useConnectedTargetUrl");
-jest.mock("@/contentScript/messenger/api", () => ({
+jest.mock("@/contentScript/messenger/strict/api", () => ({
   ensureExtensionPointsInstalled: jest.fn(),
   getReservedSidebarEntries: jest.fn().mockResolvedValue({
     panels: [],

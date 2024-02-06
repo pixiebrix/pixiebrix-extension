@@ -23,7 +23,7 @@ import {
 } from "@/errors/errorHelpers";
 import { isObject } from "@/utils/objectUtils";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
-import { deleteCachedAuthData } from "@/background/messenger/api";
+import { deleteCachedAuthData } from "@/background/messenger/strict/api";
 
 class PermissionsError extends Error {
   override name = "PermissionsError";

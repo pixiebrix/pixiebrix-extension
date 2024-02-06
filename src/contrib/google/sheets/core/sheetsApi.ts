@@ -18,10 +18,8 @@
 import { columnToLetter } from "@/contrib/google/sheets/core/sheetsHelpers";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type AxiosRequestConfig } from "axios";
-import {
-  getCachedAuthData,
-  performConfiguredRequestInBackground,
-} from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
+import { getCachedAuthData } from "@/background/messenger/strict/api";
 import { isEmpty } from "lodash";
 import { handleGoogleRequestRejection } from "@/contrib/google/sheets/core/handleGoogleRequestRejection";
 import {

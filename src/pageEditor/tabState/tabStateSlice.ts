@@ -17,7 +17,7 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { thisTab } from "@/pageEditor/utils";
-import { ensureContentScript } from "@/background/messenger/api";
+import { ensureContentScript } from "@/background/messenger/strict/api";
 import { onContextInvalidated } from "webext-events";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {

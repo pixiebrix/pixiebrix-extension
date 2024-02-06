@@ -22,7 +22,7 @@ import {
   getFormDefinition,
   resolveForm,
   cancelForm,
-} from "@/contentScript/messenger/api";
+} from "@/contentScript/messenger/strict/api";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type Target } from "@/types/messengerTypes";
