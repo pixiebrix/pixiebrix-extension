@@ -40,6 +40,12 @@
   flex-grow: 1.5;
 }
 
+.labelFitContent {
+  flex-grow: 0;
+  flex-basis: auto;
+  min-width: fit-content;
+}
+
 .formField {
   flex-grow: 3;
   flex-basis: 0;

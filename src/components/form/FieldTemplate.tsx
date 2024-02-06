@@ -172,7 +172,13 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
         </div>
       </Collapse>
       {label && (
-        <FormLabel className={styles.label} htmlFor={controlId}>
+        <FormLabel
+          className={cx(styles.label, {
+            [styles.labelWider]: widerLabel,
+            [styles.labelFitContent]: fitLabelWidth,
+          })}
+          htmlFor={controlId}
+        >
           {label}
         </FormLabel>
       )}
