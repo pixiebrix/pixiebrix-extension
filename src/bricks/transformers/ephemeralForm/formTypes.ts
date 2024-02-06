@@ -49,4 +49,10 @@ export type FormDefinition = {
    * @since 1.8.8
    */
   stylesheets?: string[];
+  /**
+   * Disable the default/inherited styling for the rendered form
+   *
+   * @since 1.8.8
+   */
+  disableParentStyles?: boolean;
 };

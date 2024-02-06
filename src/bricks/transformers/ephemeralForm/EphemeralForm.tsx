@@ -19,9 +19,9 @@ import React, { useEffect } from "react";
 import validator from "@/validators/formValidator";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import {
+  cancelForm,
   getFormDefinition,
   resolveForm,
-  cancelForm,
 } from "@/contentScript/messenger/strict/api";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -34,12 +34,13 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import RjsfSelectWidget from "@/components/formBuilder/RjsfSelectWidget";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
-import { cloneDeep, isEmpty } from "lodash";
+import { cloneDeep } from "lodash";
 import useAsyncState from "@/hooks/useAsyncState";
 import { Stylesheets } from "@/components/Stylesheets";
 import EmotionShadowRoot from "react-shadow/emotion";
-import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
-import bootstrapOverrides from "@/pageEditor/sidebar/sidebarBootstrapOverrides.scss?loadAsUrl";
+import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
+import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
+import { type UUID } from "@/types/stringTypes";
 
 const fields = {
   DescriptionField,
@@ -60,6 +61,69 @@ const PanelLayout: React.FC = ({ children }) => (
   <div className="p-3">{children}</div>
 );
 
+const EphemeralFormContent: React.FC<{
+  definition: FormDefinition;
+  target: Target;
+  nonce: UUID;
+  isModal: boolean;
+}> = ({ definition, target, nonce, isModal }) => {
+  const {
+    schema,
+    uiSchema,
+    cancelable,
+    submitCaption,
+    stylesheets: newStylesheets,
+    disableParentStyles,
+  } = definition;
+
+  // Ephemeral form can never be nested, but we use this to pull in
+  // the (boostrap) base themes
+  const { stylesheets } = useStylesheetsContextWithFormDefault({
+    newStylesheets,
+    disableParentStyles,
+  });
+
+  return (
+    <ErrorBoundary>
+      <EmotionShadowRoot.div>
+        <Stylesheets href={stylesheets}>
+          <JsonSchemaForm
+            // Deep clone the schema because otherwise the schema is not extensible, which
+            // breaks validation when @cfworker/json-schema dereferences the schema
+            // See https://github.com/cfworker/cfworker/blob/263260ea661b6f8388116db7b8daa859e0d28b25/packages/json-schema/src/dereference.ts#L115
+            schema={cloneDeep(schema)}
+            uiSchema={uiSchema}
+            fields={fields}
+            widgets={uiWidgets}
+            validator={validator}
+            templates={templates}
+            onSubmit={({ formData: values }) => {
+              void resolveForm(target, nonce, values);
+            }}
+          >
+            <div>
+              <button className="btn btn-primary" type="submit">
+                {submitCaption}
+              </button>
+              {cancelable && isModal && (
+                <button
+                  className="btn btn-link"
+                  type="button"
+                  onClick={() => {
+                    cancelForm(target, nonce);
+                  }}
+                >
+                  Cancel
+                </button>
+              )}
+            </div>
+          </JsonSchemaForm>
+        </Stylesheets>
+      </EmotionShadowRoot.div>
+    </ErrorBoundary>
+  );
+};
+
 /**
  * @see FormTransformer
  */
@@ -79,7 +143,7 @@ const EphemeralForm: React.FC = () => {
   const FormContainer = isModal ? ModalLayout : PanelLayout;
 
   const {
-    data: definition,
+    data: formDefinition,
     isLoading,
     error,
   } = useAsyncState(async () => getFormDefinition(target, nonce), [nonce]);
@@ -122,50 +186,14 @@ const EphemeralForm: React.FC = () => {
     );
   }
 
-  // Custom stylesheets overrides bootstrap themes
-  const stylesheetUrls = isEmpty(definition.stylesheets)
-    ? [bootstrap, bootstrapOverrides]
-    : definition.stylesheets;
-
   return (
     <FormContainer>
-      <ErrorBoundary>
-        <EmotionShadowRoot.div>
-          <Stylesheets href={stylesheetUrls}>
-            <JsonSchemaForm
-              // Deep clone the schema because otherwise the schema is not extensible, which
-              // breaks validation when @cfworker/json-schema dereferences the schema
-              // See https://github.com/cfworker/cfworker/blob/263260ea661b6f8388116db7b8daa859e0d28b25/packages/json-schema/src/dereference.ts#L115
-              schema={cloneDeep(definition.schema)}
-              uiSchema={definition.uiSchema}
-              fields={fields}
-              widgets={uiWidgets}
-              validator={validator}
-              templates={templates}
-              onSubmit={({ formData: values }) => {
-                void resolveForm(target, nonce, values);
-              }}
-            >
-              <div>
-                <button className="btn btn-primary" type="submit">
-                  {definition.submitCaption}
-                </button>
-                {definition.cancelable && isModal && (
-                  <button
-                    className="btn btn-link"
-                    type="button"
-                    onClick={() => {
-                      cancelForm(target, nonce);
-                    }}
-                  >
-                    Cancel
-                  </button>
-                )}
-              </div>
-            </JsonSchemaForm>
-          </Stylesheets>
-        </EmotionShadowRoot.div>
-      </ErrorBoundary>
+      <EphemeralFormContent
+        definition={formDefinition}
+        target={target}
+        nonce={nonce}
+        isModal={isModal}
+      />
     </FormContainer>
   );
 };
