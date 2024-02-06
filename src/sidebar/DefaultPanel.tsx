@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,84 +19,74 @@ import styles from "./DefaultPanel.module.scss";
 
 import React from "react";
 import workshopImage from "@img/workshop.svg";
-import { Col, Container, Row } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import useFlags from "@/hooks/useFlags";
 import { isMac } from "@/utils/browserUtils";
 import { MARKETPLACE_URL } from "@/urlConstants";
 
 const OnboardingContent: React.FunctionComponent = () => (
   <Container className={styles.root}>
-    <Row className={styles.sidebarRow}>
-      <Col>
-        <img src={workshopImage} alt="" width={300} />
-      </Col>
-    </Row>
+    <div className={styles.sidebarRow}>
+      <img src={workshopImage} alt="" width={300} />
+    </div>
 
-    <Row className={styles.sidebarRow}>
-      <Col>
-        <h4 className={styles.callout}>Get started with PixieBrix</h4>
-        <p>
-          Go to the PixieBrix tab via the <strong>Chrome Dev Tools</strong>
-        </p>
-        <p>
-          {isMac() ? (
-            <kbd>&#8984; + Option + C</kbd>
-          ) : (
-            <kbd>Ctrl + Shift + C</kbd>
-          )}
-          or
-          <kbd>F12</kbd>
-        </p>
-      </Col>
-    </Row>
+    <div className={styles.sidebarRow}>
+      <h4 className={styles.callout}>Get started with PixieBrix</h4>
+      <p>
+        Go to the PixieBrix tab via the <strong>Chrome Dev Tools</strong>
+      </p>
+      <p>
+        {isMac() ? (
+          <kbd>&#8984; + Option + C</kbd>
+        ) : (
+          <kbd>Ctrl + Shift + C</kbd>
+        )}
+        or
+        <kbd>F12</kbd>
+      </p>
+    </div>
 
-    <Row className={styles.sidebarRowWithDivider}>
-      <Col>
-        <h4 className={styles.tinyCallout}>Need more help?</h4>
-        <p>
-          Visit the{" "}
-          <a
-            href="https://docs.pixiebrix.com/quick-start"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Quick Start Guide
-          </a>{" "}
-          or ask questions in the{" "}
-          <a
-            href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Slack Community
-          </a>
-          .{" "}
-        </p>
-        <p>
-          Visit the{" "}
-          <a href={MARKETPLACE_URL} target="_blank" rel="noopener noreferrer">
-            PixieBrix Marketplace
-          </a>{" "}
-          for ideas.
-        </p>
-      </Col>
-    </Row>
+    <div className={styles.sidebarRowWithDivider}>
+      <h4 className={styles.tinyCallout}>Need more help?</h4>
+      <p>
+        Visit the{" "}
+        <a
+          href="https://docs.pixiebrix.com/quick-start"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Quick Start Guide
+        </a>{" "}
+        or ask questions in the{" "}
+        <a
+          href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Slack Community
+        </a>
+        .{" "}
+      </p>
+      <p>
+        Visit the{" "}
+        <a href={MARKETPLACE_URL} target="_blank" rel="noopener noreferrer">
+          PixieBrix Marketplace
+        </a>{" "}
+        for ideas.
+      </p>
+    </div>
   </Container>
 );
 
 const NoAvailablePanelsContent: React.FunctionComponent = () => (
   <Container>
-    <Row className="mt-4">
-      <Col className="text-center">
-        <h4 className="display-6">No panels activated for the page</h4>
-      </Col>
-    </Row>
+    <h4 className="text-center mt-4 display-6">
+      No panels activated for the page
+    </h4>
 
-    <Row>
-      <Col className="text-center">
-        <img src={workshopImage} alt="Workshop" width={300} />
-      </Col>
-    </Row>
+    <div className="text-center mt-4">
+      <img src={workshopImage} alt="Workshop" width={300} />
+    </div>
   </Container>
 );
 

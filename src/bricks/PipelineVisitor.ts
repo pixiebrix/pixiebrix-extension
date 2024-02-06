@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -93,7 +93,7 @@ class PipelineVisitor {
     blockConfig: BrickConfig,
     _extra: VisitBlockExtra,
   ): void {
-    if (blockConfig.id === DocumentRenderer.BLOCK_ID) {
+    if (blockConfig.id === DocumentRenderer.BRICK_ID) {
       this.visitDocument(position, blockConfig);
       return;
     }

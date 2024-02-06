@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -708,7 +708,7 @@ export const editorSlice = createSlice({
         (x) => x.uuid === state.activeElementId,
       );
 
-      const pipeline = get(element, pipelinePath);
+      const pipeline: unknown[] | null = get(element, pipelinePath);
       if (pipeline == null) {
         console.error("Invalid pipeline path for element: %s", pipelinePath, {
           block,
@@ -770,7 +770,7 @@ export const editorSlice = createSlice({
       const elementUiState = selectActiveElementUIState({ editor: state });
       const { pipelinePath, index } =
         elementUiState.pipelineMap[nodeIdToRemove];
-      const pipeline = get(element, pipelinePath);
+      const pipeline: BrickConfig[] = get(element, pipelinePath);
 
       // TODO: this fails when the brick is the last in a pipeline, need to select parent node
       const nextActiveNode =
@@ -941,5 +941,5 @@ export const persistEditorConfig = {
   storage: localStorage as StorageInterface,
   version: 2,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
-  blacklist: ["isVarPopoverVisible"],
+  blacklist: ["isVarPopoverVisible", "inserting"],
 };

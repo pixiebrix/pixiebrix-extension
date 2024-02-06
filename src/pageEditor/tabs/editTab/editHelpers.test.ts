@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -108,7 +108,7 @@ describe("getPipelineMap", () => {
     const containerElement = createNewElement("container");
     containerElement.children[0].children[0].children.push(buttonElement);
     const documentBrick = brickConfigFactory({
-      id: DocumentRenderer.BLOCK_ID,
+      id: DocumentRenderer.BRICK_ID,
       config: {
         body: [containerElement],
       },

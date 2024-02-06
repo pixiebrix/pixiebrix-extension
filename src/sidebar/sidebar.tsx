@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,6 +22,7 @@ import "@/utils/layout.scss";
 import "./sidebar.scss";
 
 import "@/extensionContext";
+import "@/development/darkMode.js";
 
 import { initMessengerLogging } from "@/development/messengerLogging";
 import registerMessenger from "@/sidebar/messenger/registration";
@@ -36,7 +37,7 @@ import { initCopilotMessenger } from "@/contrib/automationanywhere/aaFrameProtoc
 import { initPerformanceMonitoring } from "@/telemetry/performance";
 import { initSidePanel } from "./sidePanel";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { sidebarWasLoaded } from "@/contentScript/messenger/api";
+import { sidebarWasLoaded } from "@/contentScript/messenger/strict/api";
 
 async function init(): Promise<void> {
   ReactDOM.render(<App />, document.querySelector("#container"));

@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/consistent-function-scoping -- Keep consistency with other inline functions */
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,6 +17,7 @@
  */
 
 import Overlay from "@/vendors/Overlay";
+import ReactDOM from "react-dom";
 import {
   expandedCssSelector,
   findContainer,
@@ -38,6 +39,7 @@ import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingAction
 import { $safeFind, findSingleElement } from "@/utils/domUtils";
 import inferSingleElementSelector from "@/utils/inference/inferSingleElementSelector";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
+import { onContextInvalidated } from "webext-events";
 
 /**
  * Primary overlay that moved with the user's mouse/selection.
@@ -167,6 +169,7 @@ export async function userSelectElement({
 
       highlightRoots();
       prehiglightItems();
+      onContextInvalidated.addListener(cancel);
     }
 
     function handleDone(target?: HTMLElement) {
@@ -367,14 +370,7 @@ export async function userSelectElement({
     }
 
     function removeInspectingModeStyles() {
-      if (!styleElement) {
-        return;
-      }
-
-      if (styleElement.parentNode) {
-        styleElement.remove();
-      }
-
+      styleElement?.remove();
       styleElement = null;
     }
 
@@ -401,16 +397,11 @@ export async function userSelectElement({
 
     function removeMultiSelectionTool() {
       $(`#${FLOATING_ACTION_BUTTON_CONTAINER_ID}`).show();
-
-      if (!multiSelectionToolElement) {
-        return;
+      if (multiSelectionToolElement) {
+        ReactDOM.unmountComponentAtNode(multiSelectionToolElement);
+        multiSelectionToolElement?.remove();
+        multiSelectionToolElement = null;
       }
-
-      if (multiSelectionToolElement.parentNode) {
-        multiSelectionToolElement.remove();
-      }
-
-      multiSelectionToolElement = null;
     }
 
     startInspectingNative();

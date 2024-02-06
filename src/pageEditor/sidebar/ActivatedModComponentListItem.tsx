@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,11 +30,8 @@ import {
   ExtensionIcon,
   NotAvailableIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
-import {
-  disableOverlay,
-  enableOverlay,
-  updateSidebar,
-} from "@/contentScript/messenger/api";
+import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
+import { updateSidebar } from "@/contentScript/messenger/strict/api";
 import { openSidePanel } from "@/utils/sidePanelUtils";
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";

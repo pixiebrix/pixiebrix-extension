@@ -33,8 +33,8 @@ If applicable, add screenshots/looms to help explain your problem.
 ## Desktop (please complete the following information):
 
 - OS: [e.g. OSX, Windows 10, Windows 11]
-- Browser [e.g. chrome, edge]
-- Extension Version [e.g. 22]
+- Browser: [e.g. chrome, edge]
+- Extension Version: [e.g. 22]
 
 ## Additional context
 

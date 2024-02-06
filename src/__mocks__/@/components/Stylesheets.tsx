@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,15 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.addRow {
-  margin-bottom: 1.5rem;
-}
+import React from "react";
+import { castArray, uniq } from "lodash";
 
-.currentFieldRow {
-  margin-bottom: 1.5rem;
-  align-items: center;
-}
+/**
+ * A mock for Stylesheets, because otherwise you have to use jest fake timers in tests.
+ */
+export const Stylesheets: React.FC<{
+  href: string | string[];
+  mountOnLoad?: boolean;
+}> = ({ href, children }) => {
+  const urls = uniq(castArray(href));
 
-.currentField {
-  margin-top: 0.25rem;
-}
+  return (
+    <>
+      {urls.map((href) => (
+        <link rel="stylesheet" href={href} key={href} />
+      ))}
+      // Unlike the real Stylesheets, this wraps in a div so that we can add a
+      data-testid for testing
+      <div data-testid="Stylesheets">{children}</div>
+    </>
+  );
+};

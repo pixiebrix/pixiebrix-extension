@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -88,7 +88,16 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
   );
 
   const submit = useCallback(
-    async (values: EditorValues & { id: UUID }, { setErrors, resetForm }) => {
+    async (
+      values: EditorValues & { id: UUID },
+      {
+        setErrors,
+        resetForm,
+      }: {
+        setErrors: (errors: unknown) => void;
+        resetForm: (form: { values: EditorValues & { id: UUID } }) => void;
+      },
+    ) => {
       const { config, reactivate: reinstallBlueprint } = values;
 
       const unsavedBrickJson = loadBrickYaml(String(config)) as

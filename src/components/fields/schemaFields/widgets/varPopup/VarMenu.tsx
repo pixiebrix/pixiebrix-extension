@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -40,7 +40,7 @@ import VarMap from "@/analysis/analysisVisitors/varAnalysis/varMap";
 import useKeyboardNavigation from "@/components/fields/schemaFields/widgets/varPopup/useKeyboardNavigation";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import useAsyncState from "@/hooks/useAsyncState";
-import { getPageState } from "@/contentScript/messenger/api";
+import { getPageState } from "@/contentScript/messenger/strict/api";
 import { thisTab } from "@/pageEditor/utils";
 import { isEmpty } from "lodash";
 import { getSelectedLineVirtualElement } from "@/components/fields/schemaFields/widgets/varPopup/utils";
@@ -51,11 +51,17 @@ type VarMenuProps = {
   /**
    * The underlying var or text input element.
    */
-  inputElementRef: React.MutableRefObject<HTMLElement>;
+  inputElementRef: React.MutableRefObject<
+    HTMLTextAreaElement | HTMLInputElement
+  >;
   /**
    * The likely variable the user is interacting with.
    */
   likelyVariable: string | null;
+  /** The start index of the likelyVariable - used to
+   * identify when the menu needs to be repositioned
+   */
+  variablePosition: number | null;
   /**
    * Callback to close the menu.
    */
@@ -69,9 +75,11 @@ type VarMenuProps = {
 function usePositionVarPopup({
   knownVars,
   inputElementRef,
+  variablePosition,
 }: {
   knownVars: VarMap;
   inputElementRef: VarMenuProps["inputElementRef"];
+  variablePosition: number;
 }) {
   const dispatch = useDispatch();
   const rootElementRef = useRef<HTMLDivElement>(null);
@@ -104,9 +112,9 @@ function usePositionVarPopup({
       return;
     }
 
-    // Create a virtual element for the selected line
+    // Virtual element for the selected line
     const selectedLineBorderBox = getSelectedLineVirtualElement(
-      inputElementRef.current as HTMLTextAreaElement,
+      inputElementRef.current,
     );
 
     const position = await computePosition(
@@ -130,9 +138,9 @@ function usePositionVarPopup({
     rootElementRef.current.style.transform = `translate3d(0, ${position.y}px, 0)`;
     setPositioned(true);
 
-    // While the position does not rely on the knownVars or the resize state,
+    // While the menu position does not rely on the knownVars, the resize state or the variable position
     // we need to recompute the position when either of these change.
-  }, [knownVars, dispatch, resize]);
+  }, [knownVars, dispatch, resize, variablePosition]);
 
   return { rootElementRef, positioned };
 }
@@ -142,6 +150,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   onClose,
   onVarSelect,
   likelyVariable,
+  variablePosition,
 }) => {
   const dispatch = useDispatch();
   const activeElement = useSelector(selectActiveElement);
@@ -152,6 +161,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   const { rootElementRef, positioned } = usePositionVarPopup({
     knownVars,
     inputElementRef,
+    variablePosition,
   });
 
   const trace = useSelector(selectActiveNodeTrace);

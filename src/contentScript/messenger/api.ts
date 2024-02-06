@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,17 +18,6 @@
 /* Do not use `registerMethod` in this file */
 import { getMethod, getNotifier } from "webext-messenger";
 
-export const getFormDefinition = getMethod("FORM_GET_DEFINITION");
-export const resolveForm = getMethod("FORM_RESOLVE");
-export const cancelForm = getNotifier("FORM_CANCEL");
-
-export const closeWalkthroughModal = getNotifier("WALKTHROUGH_MODAL_CLOSE");
-export const showWalkthroughModal = getNotifier("WALKTHROUGH_MODAL_SHOW");
-
-export const getPanelDefinition = getMethod("PANEL_GET_DEFINITION");
-export const cancelTemporaryPanel = getNotifier("TEMPORARY_PANEL_CANCEL");
-export const closeTemporaryPanel = getNotifier("TEMPORARY_PANEL_CLOSE");
-export const resolveTemporaryPanel = getNotifier("TEMPORARY_PANEL_RESOLVE");
 export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
 export const navigateTab = getNotifier("NAVIGATE_TAB");
 export const reactivateTab = getNotifier("REACTIVATE_TAB");
@@ -40,23 +29,9 @@ export const removeInstalledExtension = getNotifier(
 );
 export const resetTab = getNotifier("RESET_TAB");
 export const toggleQuickBar = getMethod("TOGGLE_QUICK_BAR");
-export const handleMenuAction = getMethod("HANDLE_MENU_ACTION");
-// Unused, called via local getMethod() due to strictNullChecks
-// export const showSidebar = getMethod("SHOW_SIDEBAR");
-export const hideSidebar = getMethod("HIDE_SIDEBAR");
-export const getReservedSidebarEntries = getMethod(
-  "GET_RESERVED_SIDEBAR_ENTRIES",
-);
-export const updateSidebar = getNotifier("UPDATE_SIDEBAR");
-export const sidebarWasLoaded = getNotifier("SIDEBAR_WAS_LOADED");
-export const reloadSidebar = getMethod("RELOAD_SIDEBAR");
-export const removeSidebars = getMethod("REMOVE_SIDEBARS");
+
 export const insertPanel = getMethod("INSERT_PANEL");
 export const insertButton = getMethod("INSERT_BUTTON");
-
-export const initRobot = getMethod("UIPATH_INIT");
-export const getProcesses = getMethod("UIPATH_GET_PROCESSES");
-
 export const getAttributeExamples = getMethod("GET_ATTRIBUTE_EXAMPLES");
 
 export const runBlock = getMethod("RUN_SINGLE_BLOCK");
@@ -79,18 +54,8 @@ export const runRendererPipeline = getMethod("RUN_RENDERER_PIPELINE");
 export const runHeadlessPipeline = getMethod("RUN_HEADLESS_PIPELINE");
 export const runMapArgs = getMethod("RUN_MAP_ARGS");
 
-export const getPageState = getMethod("GET_PAGE_STATE");
-export const setPageState = getMethod("SET_PAGE_STATE");
-
 export const getCopilotHostData = getMethod("GET_COPILOT_HOST_DATA");
 
 export const reloadMarketplaceEnhancements = getMethod(
   "RELOAD_MARKETPLACE_ENHANCEMENTS",
 );
-
-export const notify = {
-  info: getNotifier("NOTIFY_INFO"),
-  // TODO: Automatically report from api.ts because of https://github.com/pixiebrix/pixiebrix-extension/blob/dce0d5cbb54d5fc1a61d720e43d17383a152df2e/src/background/contextMenus.ts#L92-L95
-  error: getNotifier("NOTIFY_ERROR"),
-  success: getNotifier("NOTIFY_SUCCESS"),
-};

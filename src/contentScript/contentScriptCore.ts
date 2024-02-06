@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,6 +23,7 @@ import "@/extensionContext";
 import { initMessengerLogging } from "@/development/messengerLogging";
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import registerMessenger from "@/contentScript/messenger/registration";
+import registerMessengerStrict from "@/contentScript/messenger/strict/registration";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import brickRegistry from "@/bricks/registry";
@@ -63,6 +64,7 @@ export async function init(): Promise<void> {
 
   void initMessengerLogging();
   registerMessenger();
+  registerMessengerStrict();
   registerExternalMessenger();
   registerBuiltinBricks();
   registerContribBlocks();

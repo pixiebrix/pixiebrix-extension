@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,10 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { assertNotNullish } from "@/utils/nullishUtils";
 import { type MessengerMeta } from "webext-messenger";
 
 export async function captureTab(this: MessengerMeta): Promise<string> {
-  return browser.tabs.captureVisibleTab(this.trace[0].tab.windowId, {
+  const windowId = this.trace[0]?.tab?.windowId;
+  assertNotNullish(windowId, "showMySidePanel can only be called from a tab");
+  return browser.tabs.captureVisibleTab(windowId, {
     format: "png",
   });
 }

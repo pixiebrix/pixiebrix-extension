@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -91,7 +91,7 @@ const TourStepOptions: React.FunctionComponent<BlockOptionProps> = ({
                 await setFieldValue(
                   configName("body"),
                   toExpression("pipeline", [
-                    createNewConfiguredBrick(DocumentRenderer.BLOCK_ID, {
+                    createNewConfiguredBrick(DocumentRenderer.BRICK_ID, {
                       parentBrickId: TourStepTransformer.BRICK_ID,
                     }),
                   ]),

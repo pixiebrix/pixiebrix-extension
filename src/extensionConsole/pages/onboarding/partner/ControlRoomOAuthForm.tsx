@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -170,6 +170,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
         label="Control Room URL"
         type="text"
         description="Your Automation Anywhere Control Room URL, including https://"
+        widerLabel
       />
       {env === AA_STAGING_ENVIRONMENT && (
         <>

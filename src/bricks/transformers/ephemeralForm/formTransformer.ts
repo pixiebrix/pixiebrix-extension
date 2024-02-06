@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,7 +31,7 @@ import {
   sidePanelOnClose,
 } from "@/contentScript/sidebarController";
 import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
-import { getThisFrame } from "webext-messenger";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type BrickConfig } from "@/bricks/types";
 import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
 import { isExpression } from "@/utils/expressionUtils";
@@ -44,7 +44,7 @@ export async function createFrameSource(
   nonce: string,
   mode: Mode,
 ): Promise<URL> {
-  const target = await getThisFrame();
+  const target = await getConnectedTarget();
 
   const frameSource = new URL(browser.runtime.getURL("ephemeralForm.html"));
   frameSource.searchParams.set("nonce", nonce);
@@ -52,6 +52,49 @@ export async function createFrameSource(
   frameSource.searchParams.set("mode", mode);
   return frameSource;
 }
+
+export const MODAL_FORM_SCHEMA: Schema = {
+  type: "object",
+  properties: {
+    schema: {
+      type: "object",
+      description: "The JSON Schema for the form",
+      additionalProperties: true,
+    },
+    uiSchema: {
+      type: "object",
+      description: "The react-jsonschema-form uiSchema for the form",
+      additionalProperties: true,
+    },
+    cancelable: {
+      type: "boolean",
+      description: "Whether or not the user can cancel the form (default=true)",
+      default: true,
+    },
+    submitCaption: {
+      type: "string",
+      description: "The submit button caption (default='Submit')",
+      default: "Submit",
+    },
+    location: {
+      type: "string",
+      enum: ["modal", "sidebar"],
+      description: "The location of the form (default='modal')",
+      default: "modal",
+    },
+    stylesheets: {
+      type: "array",
+      items: {
+        type: "string",
+        format: "uri",
+      },
+      title: "CSS Stylesheet URLs",
+      description:
+        "Stylesheets will apply to the form in the order listed here",
+    },
+  },
+  required: ["schema"],
+};
 
 export class FormTransformer extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/form-modal");
@@ -65,39 +108,7 @@ export class FormTransformer extends TransformerABC {
     );
   }
 
-  inputSchema: Schema = {
-    type: "object",
-    properties: {
-      schema: {
-        type: "object",
-        description: "The JSON Schema for the form",
-        additionalProperties: true,
-      },
-      uiSchema: {
-        type: "object",
-        description: "The react-jsonschema-form uiSchema for the form",
-        additionalProperties: true,
-      },
-      cancelable: {
-        type: "boolean",
-        description:
-          "Whether or not the user can cancel the form (default=true)",
-        default: true,
-      },
-      submitCaption: {
-        type: "string",
-        description: "The submit button caption (default='Submit')",
-        default: "Submit",
-      },
-      location: {
-        type: "string",
-        enum: ["modal", "sidebar"],
-        description: "The location of the form (default='modal')",
-        default: "modal",
-      },
-    },
-    required: ["schema"],
-  };
+  inputSchema = MODAL_FORM_SCHEMA;
 
   override outputSchema: Schema = {
     type: "object",
@@ -121,6 +132,7 @@ export class FormTransformer extends TransformerABC {
       cancelable = true,
       submitCaption = "Submit",
       location = "modal",
+      stylesheets = [],
     }: BrickArgs<FormDefinition>,
     { logger, abortSignal }: BrickOptions,
   ): Promise<unknown> {
@@ -131,12 +143,14 @@ export class FormTransformer extends TransformerABC {
 
     const formNonce = uuidv4();
 
-    const formDefinition = {
+    // Repackage the definition from the brick input with default values
+    const formDefinition: FormDefinition = {
       schema,
       uiSchema,
       cancelable,
       submitCaption,
       location,
+      stylesheets,
     };
 
     abortSignal?.addEventListener("abort", () => {

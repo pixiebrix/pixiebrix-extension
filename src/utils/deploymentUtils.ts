@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -111,12 +111,12 @@ export const makeUpdatedFilter =
  * violation).
  */
 export function checkExtensionUpdateRequired(
-  deployments: Deployment[],
+  deployments: Deployment[] | undefined,
 ): boolean {
   // Check that the user's extension van run the deployment
   const { version: extensionVersion } = browser.runtime.getManifest();
   const versionRanges = compact(
-    deployments.map((x) => x.package.config.metadata.extensionVersion),
+    deployments?.map((x) => x.package.config.metadata.extensionVersion),
   );
 
   console.debug("Checking deployment version requirements", {

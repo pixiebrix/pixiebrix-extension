@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -40,8 +40,12 @@ import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtoco
 import { getSidebarTargetForCurrentTab } from "@/utils/sidePanelUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";
-import { backgroundTarget, getMethod, messenger } from "webext-messenger";
+import { messenger } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
+import { getErrorMessage } from "@/errors/errorHelpers";
+import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { showMySidePanel } from "@/background/messenger/strict/api";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
@@ -125,9 +129,19 @@ let modActivationPanelEntry: ModActivationPanelEntry | null = null;
 export async function showSidebar(): Promise<void> {
   console.debug("sidebarController:showSidebar");
   reportEvent(Events.SIDEBAR_SHOW);
-  if (isMV3()) {
-    // TODO: Import from background/messenger/api.ts after the strictNullChecks migration, drop "SIDEBAR_PING" string
-    await getMethod("SHOW_MY_SIDE_PANEL" as "SIDEBAR_PING", backgroundTarget)();
+  if (isMV3() || isLoadedInIframe()) {
+    try {
+      await showMySidePanel();
+    } catch (error) {
+      if (!getErrorMessage(error).includes("user gesture")) {
+        throw error;
+      }
+
+      await focusCaptureDialog(
+        'Please click "OK" to allow PixieBrix to open the sidebar.',
+      );
+      await showMySidePanel();
+    }
   } else if (!sidebarMv2.isSidebarFrameVisible()) {
     sidebarMv2.insertSidebarFrame();
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,25 +18,21 @@
 @import "@/themes/colors";
 
 .root {
+  flex: 1 1 auto;
   li,
   p {
     font-size: 16px;
   }
 
   kbd {
-    color: $N900;
-    background: $N0;
-    border-radius: 4px;
-    padding: 4.5px 6px;
-    margin: 0 12px;
+    margin-inline: 12px;
   }
 
   a {
     color: $N900;
     font-weight: 500;
-    padding-bottom: 1px;
-    border-bottom: 2px solid $P500;
-    text-decoration: none;
+    text-decoration: underline solid 2px $P500;
+    text-underline-offset: 5px;
   }
 
   .externalLinkIcon {

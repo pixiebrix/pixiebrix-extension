@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -28,14 +28,12 @@ import primeicons from "primeicons/primeicons.css?loadAsUrl";
 const PropertyTree: React.FunctionComponent<{ value: TreeNode[] }> = ({
   value,
 }) => (
-  <React.Fragment>
-    <Stylesheets href={[theme, primereact, primeicons]}>
-      <TreeTable value={value}>
-        <Column field="name" header="Property" expander />
-        <Column field="value" header="Value" />
-      </TreeTable>
-    </Stylesheets>
-  </React.Fragment>
+  <Stylesheets href={[theme, primereact, primeicons]}>
+    <TreeTable value={value}>
+      <Column field="name" header="Property" expander />
+      <Column field="value" header="Value" />
+    </TreeTable>
+  </Stylesheets>
 );
 
 export default PropertyTree;

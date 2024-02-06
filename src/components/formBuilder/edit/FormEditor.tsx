@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -241,13 +241,11 @@ const FormEditor: React.FC<FormEditorProps> = ({
           <hr />
         </>
       )}
-      <Row className={styles.addRow}>
-        <Col>
-          <Button onClick={addProperty} variant="primary" size="sm">
-            <FontAwesomeIcon icon={faPlus} /> Add new field
-          </Button>
-        </Col>
-      </Row>
+      <div className={styles.addRow}>
+        <Button onClick={addProperty} variant="primary" size="sm">
+          <FontAwesomeIcon icon={faPlus} /> Add new field
+        </Button>
+      </div>
 
       <Row className={styles.currentFieldRow}>
         <Col xl="3" className={styles.currentField}>

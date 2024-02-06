@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -60,6 +60,7 @@ if (typeof createLogger === "function") {
   conditionalMiddleware.push(
     createLogger({
       // Do not log polling actions (they happen too often)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- TODO
       predicate: (getState, action) => !action.type.includes("logs/polling"),
     }),
   );

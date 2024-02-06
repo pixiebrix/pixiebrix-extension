@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ import { Button, Modal, Popover } from "react-bootstrap";
 import {
   cancelTemporaryPanel,
   resolveTemporaryPanel,
-} from "@/contentScript/messenger/api";
+} from "@/contentScript/messenger/strict/api";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type Target } from "@/types/messengerTypes";

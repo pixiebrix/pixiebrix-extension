@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -29,7 +29,6 @@ const SMALL_RED_DOT_URI =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
 
 // Clipboard API not available in JSDOM: https://github.com/jsdom/jsdom/issues/1568
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- monkey-patching readonly property
 (navigator as any).clipboard = {
   ...navigator.clipboard,
   write: jest.fn(),

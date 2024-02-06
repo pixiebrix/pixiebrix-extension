@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -83,6 +83,7 @@ const NonScriptablePage: React.FunctionComponent<{ url: string }> = ({
         </Col>
       </Row>
       <Row className={styles.paneRowWithDivider}>
+        {/* <Col> Used to align it with the row above */}
         <Col lg={9}>
           <NeedHelp />
         </Col>

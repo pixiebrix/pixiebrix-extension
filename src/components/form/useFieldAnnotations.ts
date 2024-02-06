@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -44,7 +44,7 @@ function makeFieldActionForAnnotationAction(
     async action() {
       const newValues = produce(formik.values, (draft) => {
         if (action.type === AnalysisAnnotationActionType.AddValueToArray) {
-          const array = get(draft, action.path) ?? [];
+          const array = get(draft, action.path) as unknown[];
           array.push(action.value);
           set(draft, action.path, array);
         }

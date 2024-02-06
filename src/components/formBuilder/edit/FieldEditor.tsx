@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -338,35 +338,31 @@ const FieldEditor: React.FC<{
       )}
 
       {propertySchema.enum && (
-        <>
-          <SchemaField
-            label="Options"
-            name={getFullFieldName("enum")}
-            schema={{
-              type: "array",
-              items: {
-                type: "string",
-              },
-            }}
-            isRequired
-          />
-        </>
+        <SchemaField
+          label="Options"
+          name={getFullFieldName("enum")}
+          schema={{
+            type: "array",
+            items: {
+              type: "string",
+            },
+          }}
+          isRequired
+        />
       )}
 
       {propertySchema.type === "array" && (
-        <>
-          <SchemaField
-            label="Options"
-            name={getFullFieldName("items.enum")}
-            schema={{
-              type: "array",
-              items: {
-                type: "string",
-              },
-            }}
-            isRequired
-          />
-        </>
+        <SchemaField
+          label="Options"
+          name={getFullFieldName("items.enum")}
+          schema={{
+            type: "array",
+            items: {
+              type: "string",
+            },
+          }}
+          isRequired
+        />
       )}
 
       {propertySchema.oneOf && (

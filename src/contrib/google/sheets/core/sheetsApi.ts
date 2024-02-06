@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,10 +18,8 @@
 import { columnToLetter } from "@/contrib/google/sheets/core/sheetsHelpers";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type AxiosRequestConfig } from "axios";
-import {
-  getCachedAuthData,
-  performConfiguredRequestInBackground,
-} from "@/background/messenger/api";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
+import { getCachedAuthData } from "@/background/messenger/strict/api";
 import { isEmpty } from "lodash";
 import { handleGoogleRequestRejection } from "@/contrib/google/sheets/core/handleGoogleRequestRejection";
 import {

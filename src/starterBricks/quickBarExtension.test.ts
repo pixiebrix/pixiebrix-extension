@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -140,7 +140,7 @@ describe("quickBarExtension", () => {
 
     // QuickBar adds another div to the body
     expect(document.body.innerHTML).toBe(
-      '<div id="pixiebrix-quickbar-container"></div><div></div>',
+      '<div class="pixiebrix-quickbar-container"></div><div></div>',
     );
 
     // :shrug: I'm not sure how to get the kbar to show using shortcuts in jsdom, so just toggle manually

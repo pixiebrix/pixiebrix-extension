@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -211,15 +211,11 @@ const createConfig = (env, options) =>
 
         // Required to support sandboxed iframes
         // https://github.com/awesome-webextension/webpack-target-webextension/pull/42
-        background:
-          process.env.MV === "3"
-            ? {
-                // TODO: Restore after https://github.com/awesome-webextension/webpack-target-webextension/issues/43
-                // serviceWorkerEntry: "background",
-              }
-            : {
-                pageEntry: "background",
-              },
+        background: {
+          // Do not use serviceWorkerEntry:
+          // https://github.com/awesome-webextension/webpack-target-webextension/issues/24#issuecomment-1914057083
+          pageEntry: "background",
+        },
       }),
       new webpack.ProvidePlugin({
         $: "jquery",

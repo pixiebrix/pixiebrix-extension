@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,7 +26,10 @@ import {
   type ToastOptions,
 } from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
-import { NOTIFICATIONS_Z_INDEX } from "@/domConstants";
+import {
+  NOTIFICATIONS_Z_INDEX,
+  PIXIEBRIX_NOTIFICATION_CLASS,
+} from "@/domConstants";
 import reportError from "@/telemetry/reportError";
 import { type Except, type RequireAtLeastOne } from "type-fest";
 import { getErrorMessage } from "@/errors/errorHelpers";
@@ -124,6 +127,7 @@ function getMessageDisplayTimeMs(message: string): number {
 
 export function initToaster(): void {
   const root = document.createElement("div");
+  root.className = PIXIEBRIX_NOTIFICATION_CLASS; // Used to visually identify the element in the DOM
   // This style cannot be on containerStyle because it overrides some of its props there
   root.setAttribute("style", "all: initial");
 

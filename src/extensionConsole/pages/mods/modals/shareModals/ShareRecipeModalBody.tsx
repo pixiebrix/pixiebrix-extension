@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -144,8 +144,9 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
           renderStatus={({ status }) => (
             <div className="text-danger p-3">{status}</div>
           )}
-          renderBody={({ values, setFieldValue }) => (
-            <>
+          renderBody={({ values: valuesUntyped, setFieldValue }) => {
+            const values = valuesUntyped as ShareModFormState;
+            return (
               <Modal.Body>
                 <ReactSelect
                   options={organizationsForSelect
@@ -197,8 +198,8 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
                     </div>
                   ))}
               </Modal.Body>
-            </>
-          )}
+            );
+          }}
           renderSubmit={({ isValid, isSubmitting }) => (
             <Modal.Footer>
               <Button variant="link" onClick={closeModal}>
@@ -242,7 +243,7 @@ const ShareRecipeModalBody: React.FunctionComponent = () => {
         <p className="mb-1">
           People with access can activate the mod with this link
         </p>
-        <ActivationLink blueprintId={blueprintId} />
+        <ActivationLink modId={blueprintId} />
       </Modal.Body>
     </>
   );

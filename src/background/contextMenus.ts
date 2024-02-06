@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@ import pTimeout from "p-timeout";
 import { type Menus, type Tabs } from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
 import reportError from "@/telemetry/reportError";
-import { handleMenuAction, notify } from "@/contentScript/messenger/api";
+import { handleMenuAction, notify } from "@/contentScript/messenger/strict/api";
 import { ensureContentScript } from "@/background/contentScript";
 import { expectContext } from "@/utils/expectContext";
 import extensionPointRegistry from "@/starterBricks/registry";

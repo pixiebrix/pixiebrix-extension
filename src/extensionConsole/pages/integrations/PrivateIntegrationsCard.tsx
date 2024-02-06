@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@ import PaginatedTable from "@/components/paginatedTable/PaginatedTable";
 import { type RootState } from "@/store/optionsStore";
 import { faEdit, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { deleteCachedAuthData } from "@/background/messenger/api";
+import { deleteCachedAuthData } from "@/background/messenger/strict/api";
 import notify from "@/utils/notify";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import BrickIcon from "@/components/BrickIcon";
@@ -116,15 +116,12 @@ const columnFactory = ({
   {
     Header: "Label",
     accessor: "label",
-    Cell: ({ value }) => (
-      <>
-        {value ? (
-          <span>{value}</span>
-        ) : (
-          <span className="text-muted">No label provided</span>
-        )}
-      </>
-    ),
+    Cell: ({ value }) =>
+      value ? (
+        <span>{value}</span>
+      ) : (
+        <span className="text-muted">No label provided</span>
+      ),
   },
   {
     Header: "Type",
@@ -233,14 +230,12 @@ const PrivateIntegrationsCard: React.FunctionComponent<OwnProps> = ({
   );
 
   return (
-    <>
-      <PaginatedTable
-        columns={columns}
-        data={data}
-        showSearchFilter
-        forceShowRecord={forceShowRecord}
-      />
-    </>
+    <PaginatedTable
+      columns={columns}
+      data={data}
+      showSearchFilter
+      forceShowRecord={forceShowRecord}
+    />
   );
 };
 

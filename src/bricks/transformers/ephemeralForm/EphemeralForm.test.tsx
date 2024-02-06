@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getFormDefinition } from "@/contentScript/messenger/api";
-import { render, screen } from "@testing-library/react";
+import { getFormDefinition } from "@/contentScript/messenger/strict/api";
+import { render } from "@testing-library/react";
 import React from "react";
 import EphemeralForm from "./EphemeralForm";
+import { screen } from "shadow-dom-testing-library";
 
-jest.mock("@/contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/strict/api");
 
 const getFormDefinitionMock = jest.mocked(getFormDefinition);
 
@@ -46,7 +47,7 @@ describe("EphemeralForm", () => {
     render(<EphemeralForm />);
 
     await expect(
-      screen.findByRole("textbox", { name: /foo/i }),
+      screen.findByShadowRole("textbox", { name: /foo/i }),
     ).resolves.toBeVisible();
   });
 
@@ -72,12 +73,14 @@ describe("EphemeralForm", () => {
     render(<EphemeralForm />);
 
     await expect(
-      screen.findByRole("heading", { level: 5, name: /test form/i }),
+      screen.findByShadowRole("heading", { level: 5, name: /test form/i }),
     ).resolves.toBeInTheDocument();
     expect(
-      screen.getByText((_, element) => element.textContent === "I am bold"),
+      screen.getByShadowText(
+        (_, element) => element.textContent === "I am bold",
+      ),
     ).toBeInTheDocument();
-    expect(screen.getByRole("strong")).toHaveTextContent("bold");
+    expect(screen.getByShadowRole("strong")).toHaveTextContent("bold");
   });
 
   it("supports markdown in form description", async () => {
@@ -97,12 +100,14 @@ describe("EphemeralForm", () => {
     render(<EphemeralForm />);
 
     await expect(
-      screen.findByRole("heading", { level: 5, name: /test form/i }),
+      screen.findByShadowRole("heading", { level: 5, name: /test form/i }),
     ).resolves.toBeInTheDocument();
     expect(
-      screen.getByText((_, element) => element.textContent === "I am bold"),
+      screen.getByShadowText(
+        (_, element) => element.textContent === "I am bold",
+      ),
     ).toBeInTheDocument();
-    expect(screen.getByRole("strong")).toHaveTextContent("bold");
+    expect(screen.getByShadowRole("strong")).toHaveTextContent("bold");
   });
 
   it("renders a text input with inputmode numeric in place of a number input", async () => {
@@ -123,7 +128,7 @@ describe("EphemeralForm", () => {
     render(<EphemeralForm />);
 
     await expect(
-      screen.findByRole("textbox", { name: "Rating", hidden: true }),
+      screen.findByShadowRole("textbox", { name: "Rating", hidden: true }),
     ).resolves.toHaveAttribute("inputmode", "numeric");
 
     expect(screen.queryByRole("spinButton")).not.toBeInTheDocument();

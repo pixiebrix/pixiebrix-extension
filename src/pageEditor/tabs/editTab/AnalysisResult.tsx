@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ import {
   selectAnnotationsForPath,
 } from "@/pageEditor/slices/editorSelectors";
 import React from "react";
-import { Col, Row } from "react-bootstrap";
+
 import { useSelector } from "react-redux";
 
 const AnalysisResult: React.FunctionComponent = () => {
@@ -32,17 +32,15 @@ const AnalysisResult: React.FunctionComponent = () => {
   }
 
   return (
-    <Row className="mb-3">
-      <Col>
-        {annotations.map(({ message, type }, index) => (
-          <FieldAnnotationAlert
-            key={`${type}-${index}`}
-            message={message}
-            type={type}
-          />
-        ))}
-      </Col>
-    </Row>
+    <>
+      {annotations.map(({ message, type }, index) => (
+        <FieldAnnotationAlert
+          key={`${type}-${index}`}
+          message={message}
+          type={type}
+        />
+      ))}
+    </>
   );
 };
 

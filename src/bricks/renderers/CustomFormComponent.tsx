@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -34,7 +34,7 @@ import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { type UnknownObject } from "@/types/objectTypes";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isEmpty } from "lodash";
 
 const FIELDS = {
   DescriptionField,
@@ -64,6 +64,7 @@ const CustomFormComponent: React.FunctionComponent<{
     { submissionCount }: { submissionCount: number },
   ) => Promise<void>;
   className?: string;
+  stylesheets?: string[];
 }> = ({
   schema,
   uiSchema,
@@ -72,11 +73,17 @@ const CustomFormComponent: React.FunctionComponent<{
   autoSave,
   className,
   onSubmit,
+  stylesheets = [],
 }) => {
   // Use useRef instead of useState because we don't need/want a re-render when count changes
   const submissionCountRef = useRef(0);
   // Track values during onChange so we can access it our RjsfSubmitContext submitForm callback
   const valuesRef = useRef<UnknownObject>(formData);
+
+  // Custom stylesheets overrides bootstrap themes
+  const stylesheetUrls = isEmpty(stylesheets)
+    ? [bootstrap, bootstrapOverrides, custom]
+    : stylesheets;
 
   return (
     <div
@@ -87,7 +94,7 @@ const CustomFormComponent: React.FunctionComponent<{
       })}
     >
       <ErrorBoundary>
-        <Stylesheets href={[bootstrap, bootstrapOverrides, custom]}>
+        <Stylesheets href={stylesheetUrls}>
           <RjsfSubmitContext.Provider
             value={{
               async submitForm() {
@@ -127,7 +134,14 @@ const CustomFormComponent: React.FunctionComponent<{
               }}
             >
               {autoSave || uiSchema["ui:submitButtonOptions"]?.norender ? (
-                <div />
+                // XXX: Due to a bug in RJSF, rendering a child react component for the Form will cause infinite
+                //  rerenders in dev mode. To get around this, we return `true` in order to avoid rendering the
+                //  default submitButton. RJSF forces us to provide a non-falsy children prop if we want to render
+                //  our own submit button component. `true` avoids rendering anything to the dom while avoiding
+                //  the infinite rerender bug. See:
+                //  https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/core/src/components/Form.tsx#L919
+                //  https://github.com/rjsf-team/react-jsonschema-form/issues/1693
+                true
               ) : (
                 <div>
                   <button className="btn btn-primary" type="submit">

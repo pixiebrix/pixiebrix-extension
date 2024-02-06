@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -33,7 +33,7 @@ import {
   cancelTemporaryPanel,
   closeTemporaryPanel,
   resolveTemporaryPanel,
-} from "@/contentScript/messenger/api";
+} from "@/contentScript/messenger/strict/api";
 import { partition, remove, sortBy } from "lodash";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type SubmitPanelAction } from "@/bricks/errors";
@@ -231,7 +231,8 @@ const sidebarSlice = createSlice({
           ? eventKeyForEntry(MOD_LAUNCHER)
           : // Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
             // See: https://github.com/immerjs/immer/issues/839
-            // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+            // @ts-ignore-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
             defaultEventKey(state, state.closedTabs);
     },
     selectTab(state, action: PayloadAction<string>) {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- Extensive usage of `any` */
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -325,6 +325,7 @@ function getVariableName(variable: Variable, path = ""): string {
 }
 
 function parseTemplateVariables(template: string): string[] {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- Only used once
   const ast = parser.parse(template, true);
   return traverse(ast)
     .filter((x) => x.parent == null)

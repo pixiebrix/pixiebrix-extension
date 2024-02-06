@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,9 +16,9 @@
  */
 
 import * as redux from "react-redux";
-import useActivateRecipeWizard, {
+import useActivateModWizard, {
   makeDatabasePreviewName,
-} from "@/activation/useActivateRecipeWizard";
+} from "@/activation/useActivateModWizard";
 import { renderHook } from "@testing-library/react-hooks";
 import { propertiesToSchema } from "@/validators/generic";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
@@ -42,7 +42,7 @@ jest.mock("@/hooks/useDatabaseOptions", () => ({
 
 const useDatabaseOptionsMock = jest.mocked(useDatabaseOptions);
 
-jest.mock("@/hooks/useAsyncRecipeOptionsValidationSchema", () => ({
+jest.mock("@/hooks/useAsyncModOptionsValidationSchema", () => ({
   __esModule: true,
   default: jest.fn(() => valueToAsyncState({})),
 }));
@@ -53,7 +53,7 @@ describe("useActivateRecipeWizard", () => {
     spy.mockReturnValue([]);
 
     const { result } = renderHook(() =>
-      useActivateRecipeWizard(
+      useActivateModWizard(
         defaultModDefinitionFactory({
           // Page Editor produces normalized form
           options: {
@@ -79,7 +79,7 @@ describe("useActivateRecipeWizard", () => {
     spy.mockReturnValue([]);
 
     const { result } = renderHook(() =>
-      useActivateRecipeWizard(defaultModDefinitionFactory()),
+      useActivateModWizard(defaultModDefinitionFactory()),
     );
 
     const {
@@ -93,7 +93,7 @@ describe("useActivateRecipeWizard", () => {
     spy.mockReturnValue([]);
 
     const { result } = renderHook(() =>
-      useActivateRecipeWizard(defaultModDefinitionFactory()),
+      useActivateModWizard(defaultModDefinitionFactory()),
     );
 
     const {
@@ -122,7 +122,7 @@ describe("useActivateRecipeWizard", () => {
     useDatabaseOptionsMock.mockReturnValue(
       valueToAsyncState([{ label: "Database2", value: uuidSequence(2) }]),
     );
-    const { result } = renderHook(() => useActivateRecipeWizard(modDefinition));
+    const { result } = renderHook(() => useActivateModWizard(modDefinition));
 
     expect(result.current.data.initialValues.optionsArgs).toEqual({
       [name]: makeDatabasePreviewName(modDefinition, optionSchema, name),
@@ -160,7 +160,7 @@ describe("useActivateRecipeWizard", () => {
         { label: "Database2", value: uuidSequence(2) },
       ]),
     );
-    const { result } = renderHook(() => useActivateRecipeWizard(modDefinition));
+    const { result } = renderHook(() => useActivateModWizard(modDefinition));
 
     expect(result.current.data.initialValues.optionsArgs).toEqual({
       [name]: databaseId,

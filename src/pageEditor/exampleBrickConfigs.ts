@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -94,7 +94,7 @@ export function getExampleBrickConfig(
       };
     }
 
-    case CustomFormRenderer.BLOCK_ID: {
+    case CustomFormRenderer.BRICK_ID: {
       return {
         storage: {
           type: "state",
@@ -188,7 +188,7 @@ export function getExampleBrickConfig(
         title: "Example Info",
         location: "panel",
         body: toExpression("pipeline", [
-          createNewConfiguredBrick(DocumentRenderer.BLOCK_ID),
+          createNewConfiguredBrick(DocumentRenderer.BRICK_ID),
         ]),
         isRootAware: true,
       };
