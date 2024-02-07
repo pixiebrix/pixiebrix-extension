@@ -3,23 +3,23 @@
 exports[`TourStepOptions should render example config 1`] = `
 <DocumentFragment>
   <div
-    class="formGroup form-group row"
+    class="formGroup form-group"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 w-100 collapse"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <label
-      class="label form-label col-form-label col-xl-2 col-lg-3"
+      class="label form-label"
       for="extension.blockPipeline.0.config.title"
     >
       Step Title
     </label>
     <div
-      class="col-xl-10 col-lg-9"
+      class="formField"
     >
       <div
         class="root"
@@ -67,23 +67,23 @@ exports[`TourStepOptions should render example config 1`] = `
     </div>
   </div>
   <div
-    class="formGroup form-group row"
+    class="formGroup form-group"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 w-100 collapse"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <label
-      class="label form-label col-form-label col-xl-2 col-lg-3"
+      class="label form-label"
       for="extension.blockPipeline.0.config.selector"
     >
       Target Selector
     </label>
     <div
-      class="col-xl-10 col-lg-9"
+      class="formField"
     >
       <div
         class="root"
@@ -141,23 +141,23 @@ exports[`TourStepOptions should render example config 1`] = `
       class="card-body"
     >
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="extension.blockPipeline.0.config.body"
         >
           Custom Body
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -194,23 +194,23 @@ exports[`TourStepOptions should render example config 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="extension.blockPipeline.0.config.body"
         >
           Body
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -267,23 +267,23 @@ exports[`TourStepOptions should render example config 1`] = `
       class="card-body"
     >
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="extension.blockPipeline.0.config.appearance.wait"
         >
           Wait for Target
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -320,23 +320,23 @@ exports[`TourStepOptions should render example config 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="extension.blockPipeline.0.config.appearance.wait.maxWaitMillis"
         >
           Max Wait Time (ms)
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -383,23 +383,23 @@ exports[`TourStepOptions should render example config 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="extension.blockPipeline.0.config.appearance.skippable"
         >
           Skippable
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -469,23 +469,23 @@ exports[`TourStepOptions should render example config 1`] = `
       class="card-body"
     >
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="extension.blockPipeline.0.config.onBeforeShow"
         >
           Pre-Step Actions
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -522,23 +522,23 @@ exports[`TourStepOptions should render example config 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="extension.blockPipeline.0.config.onAfterShow"
         >
           Post-Step Actions
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -584,23 +584,23 @@ exports[`TourStepOptions should render example config 1`] = `
       class="card-body"
     >
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="extension.blockPipeline.0.config.appearance.controls.outsideClick"
         >
           Outside Click Behavior
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -647,23 +647,23 @@ exports[`TourStepOptions should render example config 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="extension.blockPipeline.0.config.appearance.controls.closeButton"
         >
           Close Button Behavior
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -710,23 +710,23 @@ exports[`TourStepOptions should render example config 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="extension.blockPipeline.0.config.isLastStep"
         >
           Last Step?
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -773,23 +773,23 @@ exports[`TourStepOptions should render example config 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="extension.blockPipeline.0.config.appearance.controls.actions"
         >
           Actions
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -838,23 +838,23 @@ exports[`TourStepOptions should render example config 1`] = `
       class="card-body"
     >
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="extension.blockPipeline.0.config.appearance.scroll"
         >
           Scroll to Element
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -891,23 +891,23 @@ exports[`TourStepOptions should render example config 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="extension.blockPipeline.0.config.appearance.scroll.behavior"
         >
           Scroll Behavior
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -1047,23 +1047,23 @@ exports[`TourStepOptions should render example config 1`] = `
       class="card-body"
     >
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="extension.blockPipeline.0.config.appearance.highlight.backgroundColor"
         >
           Highlight Color
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -1119,23 +1119,23 @@ exports[`TourStepOptions should render example config 1`] = `
       class="card-body"
     >
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="extension.blockPipeline.0.config.appearance.showOverlay"
         >
           Show Overlay
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -1205,23 +1205,23 @@ exports[`TourStepOptions should render example config 1`] = `
       class="card-body"
     >
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="extension.blockPipeline.0.config.appearance.popover.placement"
         >
           Placement
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"

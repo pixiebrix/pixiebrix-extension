@@ -18,7 +18,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import FieldTemplate, {
-  computeLabelAndColSize,
   type CustomFieldWidget,
   type FieldProps,
 } from "./FieldTemplate";
@@ -80,61 +79,5 @@ describe("FieldTemplate", () => {
 
     expect(onChangeMock).toHaveBeenCalledTimes(1);
     expect(onChangeMock.mock.calls[0][0].target.value).toBe(testValue);
-  });
-});
-
-describe("computeLabelAndColSize", () => {
-  test.each([true, false])("when fitLabelWidth", (widerLabel: boolean) => {
-    const { labelSize, colSize } = computeLabelAndColSize({
-      fitLabelWidth: true,
-      widerLabel,
-      label: "Test label",
-    });
-
-    expect(labelSize).toEqual({ lg: "auto" });
-    expect(colSize).toEqual({ lg: true });
-  });
-
-  test("when not fitLabelWidth, widerLabel, and label", () => {
-    const { labelSize, colSize } = computeLabelAndColSize({
-      fitLabelWidth: false,
-      widerLabel: true,
-      label: "Test label",
-    });
-
-    expect(labelSize).toEqual({ lg: "4", xl: "3" });
-    expect(colSize).toEqual({ lg: "8", xl: "9" });
-  });
-
-  test("when not fitLabelWidth, not widerLabel, and label", () => {
-    const { labelSize, colSize } = computeLabelAndColSize({
-      fitLabelWidth: false,
-      widerLabel: false,
-      label: "Test label",
-    });
-
-    expect(labelSize).toEqual({ lg: "3", xl: "2" });
-    expect(colSize).toEqual({ lg: "9", xl: "10" });
-  });
-
-  test("when not fitLabelWidth, widerLabel, and no label", () => {
-    const { labelSize, colSize } = computeLabelAndColSize({
-      fitLabelWidth: false,
-      widerLabel: true,
-      label: null,
-    });
-
-    expect(labelSize).toEqual({ lg: "4", xl: "3" });
-    expect(colSize).toEqual({ lg: "12", xl: "12" });
-  });
-  test("when not fitLabelWidth, not widerLabel, and no label", () => {
-    const { labelSize, colSize } = computeLabelAndColSize({
-      fitLabelWidth: false,
-      widerLabel: false,
-      label: null,
-    });
-
-    expect(labelSize).toEqual({ lg: "3", xl: "2" });
-    expect(colSize).toEqual({ lg: "12", xl: "12" });
   });
 });

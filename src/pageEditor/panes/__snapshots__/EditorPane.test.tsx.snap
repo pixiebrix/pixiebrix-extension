@@ -602,23 +602,23 @@ exports[`renders an extension with sub pipeline 1`] = `
             class="configPanel"
           >
             <div
-              class="formGroup form-group row"
+              class="formGroup form-group"
             >
               <div
-                class="mb-2 collapse col-12"
+                class="mb-2 w-100 collapse"
               >
                 <div
                   class="annotationPlaceholder"
                 />
               </div>
               <label
-                class="label form-label col-form-label col-xl-2 col-lg-3"
+                class="label form-label"
                 for="label"
               >
                 Name
               </label>
               <div
-                class="col-xl-10 col-lg-9"
+                class="formField"
               >
                 <input
                   class="form-control"
@@ -629,23 +629,23 @@ exports[`renders an extension with sub pipeline 1`] = `
               </div>
             </div>
             <div
-              class="formGroup form-group row"
+              class="formGroup form-group"
             >
               <div
-                class="mb-2 collapse col-12"
+                class="mb-2 w-100 collapse"
               >
                 <div
                   class="annotationPlaceholder"
                 />
               </div>
               <label
-                class="label form-label col-form-label col-xl-2 col-lg-3"
+                class="label form-label"
                 for="extension.heading"
               >
                 Heading
               </label>
               <div
-                class="col-xl-10 col-lg-9"
+                class="formField"
               >
                 <input
                   class="form-control"
@@ -663,17 +663,17 @@ exports[`renders an extension with sub pipeline 1`] = `
               </div>
             </div>
             <div
-              class="formGroup form-group row"
+              class="formGroup form-group"
             >
               <div
-                class="mb-2 collapse col-12"
+                class="mb-2 w-100 collapse"
               >
                 <div
                   class="annotationPlaceholder"
                 />
               </div>
               <label
-                class="label form-label col-form-label col-xl-2 col-lg-3"
+                class="label form-label"
                 for="extensionPoint.definition.containerSelector"
               >
                 <span>
@@ -696,7 +696,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                 </span>
               </label>
               <div
-                class="col-xl-10 col-lg-9"
+                class="formField"
               >
                 <div
                   class="root"
@@ -756,17 +756,17 @@ exports[`renders an extension with sub pipeline 1`] = `
               </div>
             </div>
             <div
-              class="formGroup form-group row"
+              class="formGroup form-group"
             >
               <div
-                class="mb-2 collapse col-12"
+                class="mb-2 w-100 collapse"
               >
                 <div
                   class="annotationPlaceholder"
                 />
               </div>
               <label
-                class="label form-label col-form-label col-xl-2 col-lg-3"
+                class="label form-label"
                 for="extensionPoint.definition.isAvailable.matchPatterns"
               >
                 <span>
@@ -789,7 +789,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                 </span>
               </label>
               <div
-                class="col-xl-10 col-lg-9"
+                class="formField"
               >
                 <ul
                   class="list-group mb-2"
@@ -798,17 +798,17 @@ exports[`renders an extension with sub pipeline 1`] = `
                     class="list-group-item py-1"
                   >
                     <div
-                      class="formGroup mb-0 form-group row"
+                      class="formGroup mb-0 form-group"
                     >
                       <div
-                        class="mb-2 collapse col-12"
+                        class="mb-2 w-100 collapse"
                       >
                         <div
                           class="annotationPlaceholder"
                         />
                       </div>
                       <div
-                        class="col-xl-12 col-lg-12"
+                        class="formField"
                       >
                         <div
                           class="root"
@@ -906,23 +906,23 @@ exports[`renders an extension with sub pipeline 1`] = `
                 class="body collapse"
               >
                 <div
-                  class="formGroup form-group row"
+                  class="formGroup form-group"
                 >
                   <div
-                    class="mb-2 collapse col-12"
+                    class="mb-2 w-100 collapse"
                   >
                     <div
                       class="annotationPlaceholder"
                     />
                   </div>
                   <label
-                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    class="label form-label"
                     for="extension.collapsible"
                   >
                     Collapsible
                   </label>
                   <div
-                    class="col-xl-10 col-lg-9"
+                    class="formField"
                   >
                     <div
                       class="root"
@@ -959,23 +959,23 @@ exports[`renders an extension with sub pipeline 1`] = `
                   </div>
                 </div>
                 <div
-                  class="formGroup form-group row"
+                  class="formGroup form-group"
                 >
                   <div
-                    class="mb-2 collapse col-12"
+                    class="mb-2 w-100 collapse"
                   >
                     <div
                       class="annotationPlaceholder"
                     />
                   </div>
                   <label
-                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    class="label form-label"
                     for="extension.shadowDOM"
                   >
                     Shadow DOM
                   </label>
                   <div
-                    class="col-xl-10 col-lg-9"
+                    class="formField"
                   >
                     <div
                       class="root"
@@ -1012,17 +1012,17 @@ exports[`renders an extension with sub pipeline 1`] = `
                   </div>
                 </div>
                 <div
-                  class="formGroup form-group row"
+                  class="formGroup form-group"
                 >
                   <div
-                    class="mb-2 collapse col-12"
+                    class="mb-2 w-100 collapse"
                   >
                     <div
                       class="annotationPlaceholder"
                     />
                   </div>
                   <label
-                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    class="label form-label"
                     for="extensionPoint.definition.template"
                   >
                     <span>
@@ -1045,7 +1045,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                     </span>
                   </label>
                   <div
-                    class="col-xl-10 col-lg-9"
+                    class="formField"
                   >
                     <div>
                       <textarea
@@ -1097,17 +1097,17 @@ exports[`renders an extension with sub pipeline 1`] = `
                 class="body collapse"
               >
                 <div
-                  class="formGroup form-group row"
+                  class="formGroup form-group"
                 >
                   <div
-                    class="mb-2 collapse col-12"
+                    class="mb-2 w-100 collapse"
                   >
                     <div
                       class="annotationPlaceholder"
                     />
                   </div>
                   <label
-                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    class="label form-label"
                     for="extensionPoint.definition.isAvailable.urlPatterns"
                   >
                     <span>
@@ -1130,7 +1130,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                     </span>
                   </label>
                   <div
-                    class="col-xl-10 col-lg-9"
+                    class="formField"
                   >
                     <ul
                       class="list-group mb-2"
@@ -1159,17 +1159,17 @@ exports[`renders an extension with sub pipeline 1`] = `
                   </div>
                 </div>
                 <div
-                  class="formGroup form-group row"
+                  class="formGroup form-group"
                 >
                   <div
-                    class="mb-2 collapse col-12"
+                    class="mb-2 w-100 collapse"
                   >
                     <div
                       class="annotationPlaceholder"
                     />
                   </div>
                   <label
-                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    class="label form-label"
                     for="extensionPoint.definition.isAvailable.selectors"
                   >
                     <span>
@@ -1192,7 +1192,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                     </span>
                   </label>
                   <div
-                    class="col-xl-10 col-lg-9"
+                    class="formField"
                   >
                     <ul
                       class="list-group mb-2"
@@ -1248,23 +1248,23 @@ exports[`renders an extension with sub pipeline 1`] = `
                 class="body collapse"
               >
                 <div
-                  class="formGroup form-group row"
+                  class="formGroup form-group"
                 >
                   <div
-                    class="mb-2 collapse col-12"
+                    class="mb-2 w-100 collapse"
                   >
                     <div
                       class="annotationPlaceholder"
                     />
                   </div>
                   <label
-                    class="label form-label col-form-label col-xl-2 col-lg-3"
+                    class="label form-label"
                     for="permissions.origins"
                   >
                     Sites/APIs
                   </label>
                   <div
-                    class="col-xl-10 col-lg-9"
+                    class="formField"
                   >
                     <div
                       class="small"
@@ -1452,23 +1452,23 @@ exports[`renders an extension with sub pipeline 1`] = `
                         class="root"
                       >
                         <div
-                          class="formGroup form-group row"
+                          class="formGroup form-group"
                         >
                           <div
-                            class="mb-2 collapse col-12"
+                            class="mb-2 w-100 collapse"
                           >
                             <div
                               class="annotationPlaceholder"
                             />
                           </div>
                           <label
-                            class="label form-label col-form-label col-lg-auto"
+                            class="label labelFitContent form-label"
                             for="traceSearch"
                           >
                             Search
                           </label>
                           <div
-                            class="col-lg"
+                            class="formField"
                           >
                             <input
                               class="form-control"
@@ -2035,23 +2035,23 @@ exports[`renders the first selected node 1`] = `
                 class="col-xl"
               >
                 <div
-                  class="formGroup form-group row"
+                  class="formGroup form-group"
                 >
                   <div
-                    class="mb-2 collapse col-12"
+                    class="mb-2 w-100 collapse"
                   >
                     <div
                       class="annotationPlaceholder"
                     />
                   </div>
                   <label
-                    class="label form-label col-form-label col-lg-auto"
+                    class="label labelFitContent form-label"
                     for="extension.blockPipeline.0.label"
                   >
                     Step Name
                   </label>
                   <div
-                    class="col-lg"
+                    class="formField"
                   >
                     <input
                       class="form-control"
@@ -2067,17 +2067,17 @@ exports[`renders the first selected node 1`] = `
                 class="col-xl"
               >
                 <div
-                  class="formGroup form-group row"
+                  class="formGroup form-group"
                 >
                   <div
-                    class="mb-2 collapse col-12"
+                    class="mb-2 w-100 collapse"
                   >
                     <div
                       class="annotationPlaceholder"
                     />
                   </div>
                   <label
-                    class="label form-label col-form-label col-lg-auto"
+                    class="label labelFitContent form-label"
                     for="extension.blockPipeline.0.outputKey"
                   >
                     <span
@@ -2107,7 +2107,7 @@ exports[`renders the first selected node 1`] = `
                     </span>
                   </label>
                   <div
-                    class="col-lg"
+                    class="formField"
                   >
                     <div
                       class="input-group"
@@ -2133,23 +2133,23 @@ exports[`renders the first selected node 1`] = `
               </div>
             </div>
             <div
-              class="formGroup form-group row"
+              class="formGroup form-group"
             >
               <div
-                class="mb-2 collapse col-12"
+                class="mb-2 w-100 collapse"
               >
                 <div
                   class="annotationPlaceholder"
                 />
               </div>
               <label
-                class="label form-label col-form-label col-xl-2 col-lg-3"
+                class="label form-label"
                 for="extension.blockPipeline.0.config.message"
               >
                 Message
               </label>
               <div
-                class="col-xl-10 col-lg-9"
+                class="formField"
               >
                 <div
                   class="root"

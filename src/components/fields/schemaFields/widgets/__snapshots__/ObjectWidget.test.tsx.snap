@@ -77,17 +77,17 @@ exports[`ObjectWidget renders widget with properties 1`] = `
             </td>
             <td>
               <div
-                class="formGroup mb-0 form-group row"
+                class="formGroup mb-0 form-group"
               >
                 <div
-                  class="mb-2 collapse col-12"
+                  class="mb-2 w-100 collapse"
                 >
                   <div
                     class="annotationPlaceholder"
                   />
                 </div>
                 <div
-                  class="col-xl-12 col-lg-12"
+                  class="formField"
                 >
                   <div
                     class="root"
@@ -140,17 +140,17 @@ exports[`ObjectWidget renders widget with properties 1`] = `
             </td>
             <td>
               <div
-                class="formGroup mb-0 form-group row"
+                class="formGroup mb-0 form-group"
               >
                 <div
-                  class="mb-2 collapse col-12"
+                  class="mb-2 w-100 collapse"
                 >
                   <div
                     class="annotationPlaceholder"
                   />
                 </div>
                 <div
-                  class="col-xl-12 col-lg-12"
+                  class="formField"
                 >
                   <div
                     class="root"
@@ -203,17 +203,17 @@ exports[`ObjectWidget renders widget with properties 1`] = `
             </td>
             <td>
               <div
-                class="formGroup mb-0 form-group row"
+                class="formGroup mb-0 form-group"
               >
                 <div
-                  class="mb-2 collapse col-12"
+                  class="mb-2 w-100 collapse"
                 >
                   <div
                     class="annotationPlaceholder"
                   />
                 </div>
                 <div
-                  class="col-xl-12 col-lg-12"
+                  class="formField"
                 >
                   <div
                     class="root"

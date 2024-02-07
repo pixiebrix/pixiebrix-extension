@@ -3,23 +3,23 @@
 exports[`Marketplace Activate Wizard OptionsBody renders text field 1`] = `
 <DocumentFragment>
   <div
-    class="formGroup form-group row"
+    class="formGroup form-group"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 w-100 collapse"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <label
-      class="label form-label col-form-label col-xl-2 col-lg-3"
+      class="label form-label"
       for="optionsArgs.textField"
     >
       Text Field
     </label>
     <div
-      class="col-xl-10 col-lg-9"
+      class="formField"
     >
       <div
         class="root"

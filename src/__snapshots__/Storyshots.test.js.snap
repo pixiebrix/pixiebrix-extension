@@ -2,24 +2,24 @@
 
 exports[`Storyshots ActivateWizard/OptionsBody Text Field 1`] = `
 <div
-  className="formGroup form-group row"
+  className="formGroup form-group"
 >
   <div
     aria-expanded={null}
-    className="mb-2 collapse col-12"
+    className="mb-2 w-100 collapse"
   >
     <div
       className="annotationPlaceholder"
     />
   </div>
   <label
-    className="label form-label col-form-label col-xl-2 col-lg-3"
+    className="label form-label"
     htmlFor="optionsArgs.textField"
   >
     Text Field
   </label>
   <div
-    className="col-xl-10 col-lg-9"
+    className="formField"
   >
     <div
       className="root"
@@ -1163,24 +1163,24 @@ exports[`Storyshots Components/JsonTree Kitchen Sink 1`] = `
   className="root"
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-lg-auto"
+      className="label labelFitContent form-label"
       htmlFor="traceSearch"
     >
       Search
     </label>
     <div
-      className="col-lg"
+      className="formField"
     >
       <input
         className="form-control"
@@ -1461,24 +1461,24 @@ exports[`Storyshots Components/JsonTree Searchable Tree 1`] = `
   className="root"
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-lg-auto"
+      className="label labelFitContent form-label"
       htmlFor="traceSearch"
     >
       Search
     </label>
     <div
-      className="col-lg"
+      className="formField"
     >
       <input
         className="form-control"
@@ -3633,18 +3633,18 @@ exports[`Storyshots Fields/ChildObjectField Primitive Value 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <div
-      className="col-xl-12 col-lg-12"
+      className="formField"
     >
       <div
         className="card"
@@ -3658,24 +3658,24 @@ exports[`Storyshots Fields/ChildObjectField Primitive Value 1`] = `
           className="card-body"
         >
           <div
-            className="formGroup form-group row"
+            className="formGroup form-group"
           >
             <div
               aria-expanded={null}
-              className="mb-2 collapse col-12"
+              className="mb-2 w-100 collapse"
             >
               <div
                 className="annotationPlaceholder"
               />
             </div>
             <label
-              className="label form-label col-form-label col-xl-2 col-lg-3"
+              className="label form-label"
               htmlFor="childObject.InputValue"
             >
               Input Value
             </label>
             <div
-              className="col-xl-10 col-lg-9"
+              className="formField"
             >
               <div
                 className="root"
@@ -3945,24 +3945,24 @@ exports[`Storyshots Fields/SchemaField Array Items 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="topObj.parentObj.testField"
     >
       Add some array items
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         className="root"
@@ -4024,24 +4024,24 @@ exports[`Storyshots Fields/SchemaField Boolean 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="topObj.parentObj.testBoolean"
     >
       Switch this on or off
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         className="root"
@@ -4117,24 +4117,24 @@ exports[`Storyshots Fields/SchemaField Creatable Select 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="topObj.parentObj.testField"
     >
       Select an option
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         className="root"
@@ -4300,24 +4300,24 @@ exports[`Storyshots Fields/SchemaField Integer 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="topObj.parentObj.testField"
     >
       Enter a whole number
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         className="root"
@@ -4378,24 +4378,24 @@ exports[`Storyshots Fields/SchemaField Multi Schema 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="topObj.parentObj.testField"
     >
       Enter anything
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         className="root"
@@ -4475,24 +4475,24 @@ exports[`Storyshots Fields/SchemaField Normal Text 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="topObj.parentObj.testField"
     >
       Enter some text
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         className="root"
@@ -4554,24 +4554,24 @@ exports[`Storyshots Fields/SchemaField Not Required Text 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="topObj.parentObj.testField"
     >
       Enter some text
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         className="root"
@@ -4633,24 +4633,24 @@ exports[`Storyshots Fields/SchemaField Number 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="topObj.parentObj.testField"
     >
       Enter a number
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         className="root"
@@ -4711,24 +4711,24 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="topObj.parentObj.testField"
     >
       Set the values for this object
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         className="root"
@@ -4768,18 +4768,18 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                   </td>
                   <td>
                     <div
-                      className="formGroup mb-0 form-group row"
+                      className="formGroup mb-0 form-group"
                     >
                       <div
                         aria-expanded={null}
-                        className="mb-2 collapse col-12"
+                        className="mb-2 w-100 collapse"
                       >
                         <div
                           className="annotationPlaceholder"
                         />
                       </div>
                       <div
-                        className="col-xl-12 col-lg-12"
+                        className="formField"
                       >
                         <div
                           className="root"
@@ -4838,18 +4838,18 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                   </td>
                   <td>
                     <div
-                      className="formGroup mb-0 form-group row"
+                      className="formGroup mb-0 form-group"
                     >
                       <div
                         aria-expanded={null}
-                        className="mb-2 collapse col-12"
+                        className="mb-2 w-100 collapse"
                       >
                         <div
                           className="annotationPlaceholder"
                         />
                       </div>
                       <div
-                        className="col-xl-12 col-lg-12"
+                        className="formField"
                       >
                         <div
                           className="root"
@@ -4908,18 +4908,18 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                   </td>
                   <td>
                     <div
-                      className="formGroup mb-0 form-group row"
+                      className="formGroup mb-0 form-group"
                     >
                       <div
                         aria-expanded={null}
-                        className="mb-2 collapse col-12"
+                        className="mb-2 w-100 collapse"
                       >
                         <div
                           className="annotationPlaceholder"
                         />
                       </div>
                       <div
-                        className="col-xl-12 col-lg-12"
+                        className="formField"
                       >
                         <div
                           className="root"
@@ -4978,18 +4978,18 @@ exports[`Storyshots Fields/SchemaField Object Properties 1`] = `
                   </td>
                   <td>
                     <div
-                      className="formGroup mb-0 form-group row"
+                      className="formGroup mb-0 form-group"
                     >
                       <div
                         aria-expanded={null}
-                        className="mb-2 collapse col-12"
+                        className="mb-2 w-100 collapse"
                       >
                         <div
                           className="annotationPlaceholder"
                         />
                       </div>
                       <div
-                        className="col-xl-12 col-lg-12"
+                        className="formField"
                       >
                         <div
                           className="root"
@@ -5081,24 +5081,24 @@ exports[`Storyshots Fields/SchemaField Password 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="topObj.parentObj.testField"
     >
       Enter a secret
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         className="root"
@@ -5201,24 +5201,24 @@ exports[`Storyshots Fields/SchemaField Select From Enum 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="topObj.parentObj.testField"
     >
       Select an option
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         className="root"
@@ -5384,24 +5384,24 @@ exports[`Storyshots Fields/SchemaField Text Area 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="topObj.parentObj.testField"
     >
       Write some text
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         className="root"
@@ -5495,24 +5495,24 @@ exports[`Storyshots Fields/UrlMatchPatternField Default 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="matchPatterns"
     >
       Sites
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         className="small"
@@ -5603,24 +5603,24 @@ exports[`Storyshots Fields/UrlPatternField Default 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="urlsPatterns"
     >
       URL Patterns
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <ul
         className="list-group mb-2"
@@ -5676,24 +5676,24 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
       data-testid="editor"
     >
       <div
-        className="formGroup form-group row"
+        className="formGroup form-group"
       >
         <div
           aria-expanded={null}
-          className="mb-2 collapse col-12"
+          className="mb-2 w-100 collapse"
         >
           <div
             className="annotationPlaceholder"
           />
         </div>
         <label
-          className="label form-label col-form-label col-xl-2 col-lg-3"
+          className="label form-label"
           htmlFor="dynamicForm.schema.title"
         >
           Form Title
         </label>
         <div
-          className="col-xl-10 col-lg-9"
+          className="formField"
         >
           <div
             className="root"
@@ -5749,24 +5749,24 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         </div>
       </div>
       <div
-        className="formGroup form-group row"
+        className="formGroup form-group"
       >
         <div
           aria-expanded={null}
-          className="mb-2 collapse col-12"
+          className="mb-2 w-100 collapse"
         >
           <div
             className="annotationPlaceholder"
           />
         </div>
         <label
-          className="label form-label col-form-label col-xl-2 col-lg-3"
+          className="label form-label"
           htmlFor="dynamicForm.schema.description"
         >
           Form Description
         </label>
         <div
-          className="col-xl-10 col-lg-9"
+          className="formField"
         >
           <div
             className="root"
@@ -5904,24 +5904,24 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         className="root"
       >
         <div
-          className="formGroup form-group row"
+          className="formGroup form-group"
         >
           <div
             aria-expanded={null}
-            className="mb-2 collapse col-12"
+            className="mb-2 w-100 collapse"
           >
             <div
               className="annotationPlaceholder"
             />
           </div>
           <label
-            className="label form-label col-form-label col-xl-2 col-lg-3"
+            className="label form-label"
             htmlFor="dynamicForm.schema.properties.firstName"
           >
             Name
           </label>
           <div
-            className="col-xl-10 col-lg-9"
+            className="formField"
           >
             <input
               className="form-control"
@@ -5946,24 +5946,24 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
           </div>
         </div>
         <div
-          className="formGroup form-group row"
+          className="formGroup form-group"
         >
           <div
             aria-expanded={null}
-            className="mb-2 collapse col-12"
+            className="mb-2 w-100 collapse"
           >
             <div
               className="annotationPlaceholder"
             />
           </div>
           <label
-            className="label form-label col-form-label col-xl-2 col-lg-3"
+            className="label form-label"
             htmlFor="dynamicForm.schema.properties.firstName.title"
           >
             Label
           </label>
           <div
-            className="col-xl-10 col-lg-9"
+            className="formField"
           >
             <div
               className="root"
@@ -6019,24 +6019,24 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
           </div>
         </div>
         <div
-          className="formGroup form-group row"
+          className="formGroup form-group"
         >
           <div
             aria-expanded={null}
-            className="mb-2 collapse col-12"
+            className="mb-2 w-100 collapse"
           >
             <div
               className="annotationPlaceholder"
             />
           </div>
           <label
-            className="label form-label col-form-label col-xl-2 col-lg-3"
+            className="label form-label"
             htmlFor="dynamicForm.schema.properties.firstName.description"
           >
             Field Description
           </label>
           <div
-            className="col-xl-10 col-lg-9"
+            className="formField"
           >
             <div
               className="root"
@@ -6092,24 +6092,24 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
           </div>
         </div>
         <div
-          className="formGroup form-group row"
+          className="formGroup form-group"
         >
           <div
             aria-expanded={null}
-            className="mb-2 collapse col-12"
+            className="mb-2 w-100 collapse"
           >
             <div
               className="annotationPlaceholder"
             />
           </div>
           <label
-            className="label form-label col-form-label col-xl-2 col-lg-3"
+            className="label form-label"
             htmlFor="dynamicForm.schema.properties.firstName.uiType"
           >
             Input Type
           </label>
           <div
-            className="col-xl-10 col-lg-9"
+            className="formField"
           >
             <div
               className=" css-b62m3t-container"
@@ -6236,24 +6236,24 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
           </div>
         </div>
         <div
-          className="formGroup form-group row"
+          className="formGroup form-group"
         >
           <div
             aria-expanded={null}
-            className="mb-2 collapse col-12"
+            className="mb-2 w-100 collapse"
           >
             <div
               className="annotationPlaceholder"
             />
           </div>
           <label
-            className="label form-label col-form-label col-xl-2 col-lg-3"
+            className="label form-label"
             htmlFor="dynamicForm.schema.properties.firstName.default"
           >
             Default Value
           </label>
           <div
-            className="col-xl-10 col-lg-9"
+            className="formField"
           >
             <div
               className="root"
@@ -6298,24 +6298,24 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
           </div>
         </div>
         <div
-          className="formGroup form-group row"
+          className="formGroup form-group"
         >
           <div
             aria-expanded={null}
-            className="mb-2 collapse col-12"
+            className="mb-2 w-100 collapse"
           >
             <div
               className="annotationPlaceholder"
             />
           </div>
           <label
-            className="label form-label col-form-label col-xl-2 col-lg-3"
+            className="label form-label"
             htmlFor="dynamicForm.uiSchema.firstName.ui:placeholder"
           >
             Placeholder
           </label>
           <div
-            className="col-xl-10 col-lg-9"
+            className="formField"
           >
             <div
               className="root"
@@ -6370,24 +6370,24 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
           </div>
         </div>
         <div
-          className="formGroup form-group row"
+          className="formGroup form-group"
         >
           <div
             aria-expanded={null}
-            className="mb-2 collapse col-12"
+            className="mb-2 w-100 collapse"
           >
             <div
               className="annotationPlaceholder"
             />
           </div>
           <label
-            className="label form-label col-form-label col-xl-2 col-lg-3"
+            className="label form-label"
             htmlFor="dynamicForm.schema.required"
           >
             Required Field?
           </label>
           <div
-            className="col-xl-10 col-lg-9"
+            className="formField"
           >
             <div
               className="root"
@@ -6422,24 +6422,24 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
         </div>
       </div>
       <div
-        className="formGroup form-group row"
+        className="formGroup form-group"
       >
         <div
           aria-expanded={null}
-          className="mb-2 collapse col-12"
+          className="mb-2 w-100 collapse"
         >
           <div
             className="annotationPlaceholder"
           />
         </div>
         <label
-          className="label form-label col-form-label col-xl-2 col-lg-3"
+          className="label form-label"
           htmlFor="layoutButtons"
         >
           Field Order
         </label>
         <div
-          className="col-xl-10 col-lg-9"
+          className="formField"
         >
           <div
             className="btn-group"
@@ -6722,24 +6722,24 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
       data-testid="editor"
     >
       <div
-        className="formGroup form-group row"
+        className="formGroup form-group"
       >
         <div
           aria-expanded={null}
-          className="mb-2 collapse col-12"
+          className="mb-2 w-100 collapse"
         >
           <div
             className="annotationPlaceholder"
           />
         </div>
         <label
-          className="label form-label col-form-label col-xl-2 col-lg-3"
+          className="label form-label"
           htmlFor="dynamicForm.schema.title"
         >
           Form Title
         </label>
         <div
-          className="col-xl-10 col-lg-9"
+          className="formField"
         >
           <div
             className="root"
@@ -6794,24 +6794,24 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
         </div>
       </div>
       <div
-        className="formGroup form-group row"
+        className="formGroup form-group"
       >
         <div
           aria-expanded={null}
-          className="mb-2 collapse col-12"
+          className="mb-2 w-100 collapse"
         >
           <div
             className="annotationPlaceholder"
           />
         </div>
         <label
-          className="label form-label col-form-label col-xl-2 col-lg-3"
+          className="label form-label"
           htmlFor="dynamicForm.schema.description"
         >
           Form Description
         </label>
         <div
-          className="col-xl-10 col-lg-9"
+          className="formField"
         >
           <div
             className="root"
@@ -6938,24 +6938,24 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="name"
     >
       Name
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <input
         className="form-control"
@@ -6979,24 +6979,24 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
     </div>
   </div>
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="story"
     >
       Story
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <textarea
         className="form-control"
@@ -7021,24 +7021,24 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
     </div>
   </div>
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="select"
     >
       Select
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         className=" css-b62m3t-container"
@@ -7159,24 +7159,24 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
     </div>
   </div>
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="select-add-new"
     >
       Select with Add New
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         className=" css-b62m3t-container"
@@ -7297,18 +7297,18 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
     </div>
   </div>
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="public"
     >
       <span>
@@ -7333,7 +7333,7 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
       </span>
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         className="root"
@@ -7367,24 +7367,24 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
     </div>
   </div>
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="bsCustomFormControl"
     >
       BS Form Control as Custom Widget
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <div
         style={
@@ -7416,6 +7416,88 @@ exports[`Storyshots Forms/Formik All Fields 1`] = `
       </small>
     </div>
   </div>
+  <div
+    className="formGroup form-group"
+  >
+    <div
+      aria-expanded={null}
+      className="mb-2 w-100 collapse"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
+    <label
+      className="label labelWider form-label"
+      htmlFor="name"
+    >
+      Name
+    </label>
+    <div
+      className="formField"
+    >
+      <input
+        className="form-control"
+        id="name"
+        name="name"
+        onBlur={[Function]}
+        onChange={[Function]}
+        value=""
+      />
+      <small
+        className="text-muted form-text"
+      >
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Field with widerLabel",
+            }
+          }
+        />
+      </small>
+    </div>
+  </div>
+  <div
+    className="formGroup form-group"
+  >
+    <div
+      aria-expanded={null}
+      className="mb-2 w-100 collapse"
+    >
+      <div
+        className="annotationPlaceholder"
+      />
+    </div>
+    <label
+      className="label labelFitContent form-label"
+      htmlFor="name"
+    >
+      Name
+    </label>
+    <div
+      className="formField"
+    >
+      <input
+        className="form-control"
+        id="name"
+        name="name"
+        onBlur={[Function]}
+        onChange={[Function]}
+        value=""
+      />
+      <small
+        className="text-muted form-text"
+      >
+        <span
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Field with fitLabelWidth",
+            }
+          }
+        />
+      </small>
+    </div>
+  </div>
   <button
     className="btn btn-primary"
     disabled={false}
@@ -7433,18 +7515,18 @@ exports[`Storyshots Forms/Formik Custom Submit 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <div
-      className="col-xl-12 col-lg-12"
+      className="formField"
     >
       <input
         className="form-control"
@@ -7458,24 +7540,24 @@ exports[`Storyshots Forms/Formik Custom Submit 1`] = `
     </div>
   </div>
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="name"
     >
       Name
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <input
         className="form-control"
@@ -7499,24 +7581,24 @@ exports[`Storyshots Forms/Formik Custom Submit 1`] = `
     </div>
   </div>
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="age"
     >
       Age
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <input
         className="form-control"
@@ -7554,18 +7636,18 @@ exports[`Storyshots Forms/Formik With FormikField 1`] = `
   onSubmit={[Function]}
 >
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <div
-      className="col-xl-12 col-lg-12"
+      className="formField"
     >
       <input
         className="form-control"
@@ -7579,24 +7661,24 @@ exports[`Storyshots Forms/Formik With FormikField 1`] = `
     </div>
   </div>
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="name"
     >
       Name
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <input
         className="form-control"
@@ -7621,24 +7703,24 @@ exports[`Storyshots Forms/Formik With FormikField 1`] = `
     </div>
   </div>
   <div
-    className="formGroup form-group row"
+    className="formGroup form-group"
   >
     <div
       aria-expanded={null}
-      className="mb-2 collapse col-12"
+      className="mb-2 w-100 collapse"
     >
       <div
         className="annotationPlaceholder"
       />
     </div>
     <label
-      className="label form-label col-form-label col-xl-2 col-lg-3"
+      className="label form-label"
       htmlFor="age"
     >
       Age
     </label>
     <div
-      className="col-xl-10 col-lg-9"
+      className="formField"
     >
       <input
         className="form-control"
@@ -8316,24 +8398,24 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard OAuth2 1`] = `
                   onSubmit={[Function]}
                 >
                   <div
-                    className="formGroup form-group row"
+                    className="formGroup form-group"
                   >
                     <div
                       aria-expanded={null}
-                      className="mb-2 collapse col-12"
+                      className="mb-2 w-100 collapse"
                     >
                       <div
                         className="annotationPlaceholder"
                       />
                     </div>
                     <label
-                      className="label form-label col-form-label col-xl-3 col-lg-4"
+                      className="label labelWider form-label"
                       htmlFor="controlRoomUrl"
                     >
                       Control Room URL
                     </label>
                     <div
-                      className="col-xl-9 col-lg-8"
+                      className="formField"
                     >
                       <input
                         className="form-control"

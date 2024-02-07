@@ -732,23 +732,23 @@ exports[`WorkshopPage require account alias 1`] = `
         novalidate=""
       >
         <div
-          class="formGroup form-group row"
+          class="formGroup form-group"
         >
           <div
-            class="mb-2 collapse col-12"
+            class="mb-2 w-100 collapse"
           >
             <div
               class="annotationPlaceholder"
             />
           </div>
           <label
-            class="label form-label col-form-label col-lg-auto"
+            class="label labelFitContent form-label"
             for="scope"
           >
             Account Alias
           </label>
           <div
-            class="col-lg"
+            class="formField"
           >
             <input
               class="form-control"
