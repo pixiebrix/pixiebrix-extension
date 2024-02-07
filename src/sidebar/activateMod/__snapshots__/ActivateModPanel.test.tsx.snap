@@ -368,23 +368,23 @@ exports[`ActivateModPanel renders with options, permissions info 1`] = `
           class="optionsBody col"
         >
           <div
-            class="formGroup form-group row"
+            class="formGroup form-group"
           >
             <div
-              class="mb-2 collapse col-lg-12"
+              class="mb-2 max-950 collapse"
             >
               <div
                 class="annotationPlaceholder"
               />
             </div>
             <label
-              class="label form-label col-form-label col-xl-3 col-lg-12"
+              class="label form-label"
               for="optionsArgs.testDatabase"
             >
               Test Database
             </label>
             <div
-              class="col"
+              class="formField"
             >
               <div
                 class="root"
@@ -499,23 +499,23 @@ exports[`ActivateModPanel renders with options, permissions info 1`] = `
             </div>
           </div>
           <div
-            class="formGroup form-group row"
+            class="formGroup form-group"
           >
             <div
-              class="mb-2 collapse col-lg-12"
+              class="mb-2 max-950 collapse"
             >
               <div
                 class="annotationPlaceholder"
               />
             </div>
             <label
-              class="label form-label col-form-label col-xl-3 col-lg-12"
+              class="label form-label"
               for="optionsArgs.bar"
             >
               Bar
             </label>
             <div
-              class="col"
+              class="formField"
             >
               <div
                 class="root"
@@ -556,23 +556,23 @@ exports[`ActivateModPanel renders with options, permissions info 1`] = `
             </div>
           </div>
           <div
-            class="formGroup form-group row"
+            class="formGroup form-group"
           >
             <div
-              class="mb-2 collapse col-lg-12"
+              class="mb-2 max-950 collapse"
             >
               <div
                 class="annotationPlaceholder"
               />
             </div>
             <label
-              class="label form-label col-form-label col-xl-3 col-lg-12"
+              class="label form-label"
               for="optionsArgs.foo"
             >
               Foo
             </label>
             <div
-              class="col"
+              class="formField"
             >
               <div
                 class="root"
