@@ -9,7 +9,7 @@ exports[`FormEditor renders empty schema 1`] = `
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -72,7 +72,7 @@ exports[`FormEditor renders empty schema 1`] = `
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -200,7 +200,7 @@ exports[`FormEditor renders simple schema 1`] = `
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -264,7 +264,7 @@ exports[`FormEditor renders simple schema 1`] = `
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -407,7 +407,7 @@ exports[`FormEditor renders simple schema 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -442,7 +442,7 @@ exports[`FormEditor renders simple schema 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -506,7 +506,7 @@ exports[`FormEditor renders simple schema 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -574,7 +574,7 @@ exports[`FormEditor renders simple schema 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -691,7 +691,7 @@ exports[`FormEditor renders simple schema 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -748,7 +748,7 @@ exports[`FormEditor renders simple schema 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -811,7 +811,7 @@ exports[`FormEditor renders simple schema 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -858,7 +858,7 @@ exports[`FormEditor renders simple schema 1`] = `
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -941,7 +941,7 @@ exports[`FormEditor renders unknown field format 1`] = `
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -1005,7 +1005,7 @@ exports[`FormEditor renders unknown field format 1`] = `
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -1148,7 +1148,7 @@ exports[`FormEditor renders unknown field format 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -1183,7 +1183,7 @@ exports[`FormEditor renders unknown field format 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -1247,7 +1247,7 @@ exports[`FormEditor renders unknown field format 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -1315,7 +1315,7 @@ exports[`FormEditor renders unknown field format 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -1417,7 +1417,7 @@ exports[`FormEditor renders unknown field format 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"

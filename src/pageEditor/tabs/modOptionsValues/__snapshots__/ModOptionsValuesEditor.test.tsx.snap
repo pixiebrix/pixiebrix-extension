@@ -24,7 +24,7 @@ exports[`ModOptionsValuesEditor renders blueprint options with additional props 
             class="formGroup form-group"
           >
             <div
-              class="mb-2 max-950 collapse"
+              class="mb-2 w-100 collapse"
             >
               <div
                 class="annotationPlaceholder"
@@ -137,7 +137,7 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
             class="formGroup form-group"
           >
             <div
-              class="mb-2 max-950 collapse"
+              class="mb-2 w-100 collapse"
             >
               <div
                 class="annotationPlaceholder"
@@ -193,7 +193,7 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
             class="formGroup form-group"
           >
             <div
-              class="mb-2 max-950 collapse"
+              class="mb-2 w-100 collapse"
             >
               <div
                 class="annotationPlaceholder"
@@ -249,7 +249,7 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
             class="formGroup form-group"
           >
             <div
-              class="mb-2 max-950 collapse"
+              class="mb-2 w-100 collapse"
             >
               <div
                 class="annotationPlaceholder"
@@ -305,7 +305,7 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
             class="formGroup form-group"
           >
             <div
-              class="mb-2 max-950 collapse"
+              class="mb-2 w-100 collapse"
             >
               <div
                 class="annotationPlaceholder"
@@ -361,7 +361,7 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
             class="formGroup form-group"
           >
             <div
-              class="mb-2 max-950 collapse"
+              class="mb-2 w-100 collapse"
             >
               <div
                 class="annotationPlaceholder"
@@ -417,7 +417,7 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
             class="formGroup form-group"
           >
             <div
-              class="mb-2 max-950 collapse"
+              class="mb-2 w-100 collapse"
             >
               <div
                 class="annotationPlaceholder"
@@ -473,7 +473,7 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
             class="formGroup form-group"
           >
             <div
-              class="mb-2 max-950 collapse"
+              class="mb-2 w-100 collapse"
             >
               <div
                 class="annotationPlaceholder"

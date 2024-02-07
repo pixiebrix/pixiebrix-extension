@@ -605,7 +605,7 @@ exports[`renders an extension with sub pipeline 1`] = `
               class="formGroup form-group"
             >
               <div
-                class="mb-2 max-950 collapse"
+                class="mb-2 w-100 collapse"
               >
                 <div
                   class="annotationPlaceholder"
@@ -632,7 +632,7 @@ exports[`renders an extension with sub pipeline 1`] = `
               class="formGroup form-group"
             >
               <div
-                class="mb-2 max-950 collapse"
+                class="mb-2 w-100 collapse"
               >
                 <div
                   class="annotationPlaceholder"
@@ -666,7 +666,7 @@ exports[`renders an extension with sub pipeline 1`] = `
               class="formGroup form-group"
             >
               <div
-                class="mb-2 max-950 collapse"
+                class="mb-2 w-100 collapse"
               >
                 <div
                   class="annotationPlaceholder"
@@ -759,7 +759,7 @@ exports[`renders an extension with sub pipeline 1`] = `
               class="formGroup form-group"
             >
               <div
-                class="mb-2 max-950 collapse"
+                class="mb-2 w-100 collapse"
               >
                 <div
                   class="annotationPlaceholder"
@@ -801,7 +801,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                       class="formGroup mb-0 form-group"
                     >
                       <div
-                        class="mb-2 max-950 collapse"
+                        class="mb-2 w-100 collapse"
                       >
                         <div
                           class="annotationPlaceholder"
@@ -909,7 +909,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="formGroup form-group"
                 >
                   <div
-                    class="mb-2 max-950 collapse"
+                    class="mb-2 w-100 collapse"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -962,7 +962,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="formGroup form-group"
                 >
                   <div
-                    class="mb-2 max-950 collapse"
+                    class="mb-2 w-100 collapse"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -1015,7 +1015,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="formGroup form-group"
                 >
                   <div
-                    class="mb-2 max-950 collapse"
+                    class="mb-2 w-100 collapse"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -1100,7 +1100,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="formGroup form-group"
                 >
                   <div
-                    class="mb-2 max-950 collapse"
+                    class="mb-2 w-100 collapse"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -1162,7 +1162,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="formGroup form-group"
                 >
                   <div
-                    class="mb-2 max-950 collapse"
+                    class="mb-2 w-100 collapse"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -1251,7 +1251,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   class="formGroup form-group"
                 >
                   <div
-                    class="mb-2 max-950 collapse"
+                    class="mb-2 w-100 collapse"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -1455,7 +1455,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                           class="formGroup form-group"
                         >
                           <div
-                            class="mb-2 max-950 collapse"
+                            class="mb-2 w-100 collapse"
                           >
                             <div
                               class="annotationPlaceholder"
@@ -2038,7 +2038,7 @@ exports[`renders the first selected node 1`] = `
                   class="formGroup form-group"
                 >
                   <div
-                    class="mb-2 max-950 collapse"
+                    class="mb-2 w-100 collapse"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -2070,7 +2070,7 @@ exports[`renders the first selected node 1`] = `
                   class="formGroup form-group"
                 >
                   <div
-                    class="mb-2 max-950 collapse"
+                    class="mb-2 w-100 collapse"
                   >
                     <div
                       class="annotationPlaceholder"
@@ -2136,7 +2136,7 @@ exports[`renders the first selected node 1`] = `
               class="formGroup form-group"
             >
               <div
-                class="mb-2 max-950 collapse"
+                class="mb-2 w-100 collapse"
               >
                 <div
                   class="annotationPlaceholder"
