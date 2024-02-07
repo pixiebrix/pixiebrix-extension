@@ -156,6 +156,19 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
       as={BootstrapFormControlWidget}
       description="You can use a FormControl as a wrapped Widget"
     />
+
+    <ConnectedFieldTemplate
+      widerLabel
+      name="name"
+      label="Name"
+      description="Field with widerLabel"
+    />
+    <ConnectedFieldTemplate
+      fitLabelWidth
+      name="name"
+      label="Name"
+      description="Field with fitLabelWidth"
+    />
   </Form>
 );
 

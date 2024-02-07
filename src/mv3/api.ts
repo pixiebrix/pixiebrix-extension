@@ -20,5 +20,6 @@
 import { type Tabs } from "webextension-polyfill";
 
 export const isMV3 = (): boolean => process.env.MV === "3";
-export const browserAction = chrome.browserAction ?? chrome.action;
+export const browserAction =
+  globalThis.chrome?.browserAction ?? globalThis.chrome?.action;
 export type Tab = Tabs.Tab | chrome.tabs.Tab;

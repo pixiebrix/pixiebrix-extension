@@ -174,8 +174,8 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
       {label && (
         <FormLabel
           className={cx(styles.label, {
-            [styles.labelWider]: widerLabel,
-            [styles.labelFitContent]: fitLabelWidth,
+            [styles.labelWider ?? ""]: widerLabel,
+            [styles.labelFitContent ?? ""]: fitLabelWidth,
           })}
           htmlFor={controlId}
         >
@@ -202,4 +202,4 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   );
 };
 
-export default React.memo(FieldTemplate) as typeof FieldTemplate;
+export default React.memo(FieldTemplate);
