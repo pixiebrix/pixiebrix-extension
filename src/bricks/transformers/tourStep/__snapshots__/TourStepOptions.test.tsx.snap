@@ -6,7 +6,7 @@ exports[`TourStepOptions should render example config 1`] = `
     class="formGroup form-group"
   >
     <div
-      class="mb-2 max-950 collapse"
+      class="mb-2 w-100 collapse"
     >
       <div
         class="annotationPlaceholder"
@@ -70,7 +70,7 @@ exports[`TourStepOptions should render example config 1`] = `
     class="formGroup form-group"
   >
     <div
-      class="mb-2 max-950 collapse"
+      class="mb-2 w-100 collapse"
     >
       <div
         class="annotationPlaceholder"
@@ -144,7 +144,7 @@ exports[`TourStepOptions should render example config 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -197,7 +197,7 @@ exports[`TourStepOptions should render example config 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -270,7 +270,7 @@ exports[`TourStepOptions should render example config 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -323,7 +323,7 @@ exports[`TourStepOptions should render example config 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -386,7 +386,7 @@ exports[`TourStepOptions should render example config 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -472,7 +472,7 @@ exports[`TourStepOptions should render example config 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -525,7 +525,7 @@ exports[`TourStepOptions should render example config 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -587,7 +587,7 @@ exports[`TourStepOptions should render example config 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -650,7 +650,7 @@ exports[`TourStepOptions should render example config 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -713,7 +713,7 @@ exports[`TourStepOptions should render example config 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -776,7 +776,7 @@ exports[`TourStepOptions should render example config 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -841,7 +841,7 @@ exports[`TourStepOptions should render example config 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -894,7 +894,7 @@ exports[`TourStepOptions should render example config 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -1050,7 +1050,7 @@ exports[`TourStepOptions should render example config 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -1122,7 +1122,7 @@ exports[`TourStepOptions should render example config 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
@@ -1208,7 +1208,7 @@ exports[`TourStepOptions should render example config 1`] = `
         class="formGroup form-group"
       >
         <div
-          class="mb-2 max-950 collapse"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"

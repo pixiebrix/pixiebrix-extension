@@ -156,7 +156,7 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
   return (
     <FormGroup className={cx(styles.formGroup, className)}>
       <Collapse in={!isEmpty(annotations)}>
-        <div className="mb-2 max-950">
+        <div className="mb-2 w-100">
           {isEmpty(annotations) ? (
             <div className={styles.annotationPlaceholder} />
           ) : (

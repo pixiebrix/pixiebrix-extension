@@ -9,7 +9,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -123,7 +123,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -289,7 +289,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -338,7 +338,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -412,7 +412,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -465,7 +465,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -518,7 +518,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -571,7 +571,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -627,7 +627,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
               class="formGroup mb-0 form-group"
             >
               <div
-                class="mb-2 max-950 collapse"
+                class="mb-2 w-100 collapse"
               >
                 <div
                   class="annotationPlaceholder"
@@ -706,7 +706,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -755,7 +755,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       class="formGroup form-group"
     >
       <div
-        class="mb-2 max-950 collapse"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
@@ -829,7 +829,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
           class="formGroup form-group"
         >
           <div
-            class="mb-2 max-950 collapse"
+            class="mb-2 w-100 collapse"
           >
             <div
               class="annotationPlaceholder"
@@ -874,7 +874,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
           class="formGroup form-group"
         >
           <div
-            class="mb-2 max-950 collapse"
+            class="mb-2 w-100 collapse"
           >
             <div
               class="annotationPlaceholder"
@@ -946,7 +946,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
           class="formGroup form-group"
         >
           <div
-            class="mb-2 max-950 collapse"
+            class="mb-2 w-100 collapse"
           >
             <div
               class="annotationPlaceholder"
