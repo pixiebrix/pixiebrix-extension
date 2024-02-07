@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// extensionContext needs to be imported before webpack-target-webextension to
-// ensure the webpack path is correct
 // eslint-disable-next-line import/no-unassigned-import -- Automatic registration
 import "webext-inject-on-install";
 import "@/extensionContext";
 import "@/development/errorsBadge";
+// eslint-disable-next-line import/no-unassigned-import -- Automatic registration
+import "@/background/backgroundDomWatcher";
 
 // Required for MV3; Service Workers don't have XMLHttpRequest
 import "@/background/axiosFetch";
