@@ -21,6 +21,7 @@ import {
   normalizeIncomingFormData,
 } from "@/bricks/renderers/customForm";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import React from "react";
 import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
@@ -62,5 +63,70 @@ describe("CustomFormComponent", () => {
     ).toHaveAttribute("inputmode", "numeric");
 
     expect(screen.queryByRole("spinButton")).not.toBeInTheDocument();
+  });
+
+  test("provides a submit handler to widgets via context", async () => {
+    // Testing the RjsfSubmitContext.Provider with the textarea widget which uses it to submit the form on enter
+    const schema: Schema = {
+      type: "object",
+      properties: {
+        prompt: { type: "string", title: "Prompt" },
+      },
+    };
+    const uiSchema = {
+      prompt: {
+        "ui:widget": "textarea",
+        "ui:options": {
+          submitOnEnter: true,
+        },
+      },
+    };
+
+    const submitForm = jest.fn();
+    const { rerender } = render(
+      <CustomFormComponent
+        schema={schema}
+        formData={{ prompt: "" }}
+        uiSchema={uiSchema}
+        submitCaption={""}
+        autoSave={false}
+        onSubmit={submitForm}
+      />,
+    );
+
+    // Hidden:true because Stylesheets component sets hidden unless all stylesheets are loaded
+    const textBox = screen.getByRole("textbox", {
+      name: "Prompt",
+      hidden: true,
+    });
+
+    await userEvent.type(textBox, "Some text");
+    await userEvent.keyboard("{Enter}");
+    expect(submitForm).toHaveBeenCalledWith(
+      { prompt: "Some text" },
+      { submissionCount: 1 },
+    );
+    await userEvent.type(textBox, " Some more text");
+    await userEvent.keyboard("{Enter}");
+    expect(submitForm).toHaveBeenCalledWith(
+      { prompt: "Some text Some more text" },
+      { submissionCount: 2 },
+    );
+    rerender(
+      <CustomFormComponent
+        schema={schema}
+        formData={{ prompt: "Data from rerendered Form" }}
+        uiSchema={uiSchema}
+        submitCaption={""}
+        autoSave={false}
+        onSubmit={submitForm}
+      />,
+    );
+    await userEvent.click(textBox);
+    await userEvent.keyboard("{Enter}");
+    expect(submitForm).toHaveBeenCalledWith(
+      { prompt: "Data from rerendered Form" },
+      { submissionCount: 3 },
+    );
   });
 });

@@ -50,6 +50,12 @@ export const DOCUMENT_SCHEMA: Schema = {
       description:
         "Stylesheets will apply to the rendered document in the order listed here",
     },
+    disableParentStyles: {
+      type: "boolean",
+      title: "Disable Parent Styling",
+      description:
+        "Disable the default/inherited styling for the rendered document. This will apply to nested bricks as well.",
+    },
   },
   required: ["body"],
   definitions: {
@@ -92,10 +98,12 @@ export class DocumentRenderer extends RendererABC {
     {
       body,
       stylesheets = [],
+      disableParentStyles,
     }: BrickArgs<{
       body: DocumentElement[];
       // Stylesheets array is validated to contain URIs in the brick input schema
       stylesheets: string[];
+      disableParentStyles?: boolean;
     }>,
     options: BrickOptions,
   ): Promise<ComponentRef> {
@@ -104,6 +112,7 @@ export class DocumentRenderer extends RendererABC {
       props: {
         body,
         stylesheets,
+        disableParentStyles,
         options,
       },
     };

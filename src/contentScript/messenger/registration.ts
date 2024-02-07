@@ -25,7 +25,6 @@ import {
   reactivateTab,
   removePersistedExtension,
 } from "@/contentScript/lifecycle";
-import { resolveForm } from "@/contentScript/ephemeralFormProtocol";
 import { insertPanel } from "@/contentScript/pageEditor/insertPanel";
 import { insertButton } from "@/contentScript/pageEditor/insertButton";
 import {
@@ -60,8 +59,6 @@ expectContext("contentScript");
 
 declare global {
   interface MessengerMethods {
-    FORM_RESOLVE: typeof resolveForm;
-
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
@@ -101,8 +98,6 @@ declare global {
 
 export default function registerMessenger(): void {
   registerMethods({
-    FORM_RESOLVE: resolveForm,
-
     QUEUE_REACTIVATE_TAB: queueReactivateTab,
     REACTIVATE_TAB: reactivateTab,
     REMOVE_INSTALLED_EXTENSION: removePersistedExtension,

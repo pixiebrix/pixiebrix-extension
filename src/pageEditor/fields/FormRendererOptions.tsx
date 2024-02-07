@@ -275,6 +275,10 @@ const FormRendererOptions: React.FC<{
           name={makeName("stylesheets")}
           schema={CUSTOM_FORM_SCHEMA.properties.stylesheets as Schema}
         />
+        <SchemaField
+          name={makeName("disableParentStyles")}
+          schema={CUSTOM_FORM_SCHEMA.properties.disableParentStyles as Schema}
+        />
       </ConnectedCollapsibleFieldSection>
     </div>
   );
