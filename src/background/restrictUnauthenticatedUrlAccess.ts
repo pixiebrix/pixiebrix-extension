@@ -75,7 +75,7 @@ async function redirectRestrictedTab({
   }
 }
 
-async function handleTabUpdate(
+async function handleRestrictedTab(
   tabId: number,
   changeInfo: Tabs.OnUpdatedChangeInfoType,
   tab: Tabs.Tab,
@@ -115,17 +115,17 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
   }
 
   if (!(await isLinked())) {
-    browser.tabs.onUpdated.addListener(handleTabUpdate);
+    browser.tabs.onUpdated.addListener(handleRestrictedTab);
   }
 
   addAuthListener(async (auth) => {
     if (auth) {
-      browser.tabs.onUpdated.removeListener(handleTabUpdate);
+      browser.tabs.onUpdated.removeListener(handleRestrictedTab);
     } else {
       await forEachTab(async ({ tabId, url }) =>
         redirectRestrictedTab({ tabId, url }),
       );
-      browser.tabs.onUpdated.addListener(handleTabUpdate);
+      browser.tabs.onUpdated.addListener(handleRestrictedTab);
     }
   });
 }
