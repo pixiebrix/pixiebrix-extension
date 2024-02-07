@@ -25,21 +25,16 @@ import type {
   SidebarState,
   StaticPanelEntry,
 } from "@/types/sidebarTypes";
-import {
-  createAsyncThunk,
-  createSlice,
-  type PayloadAction,
-} from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type UUID } from "@/types/stringTypes";
 import { defaultEventKey, eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import {
-  cancelForm,
   cancelTemporaryPanel,
   closeTemporaryPanel,
   resolveTemporaryPanel,
 } from "@/contentScript/messenger/strict/api";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { last, partition, remove, sortBy } from "lodash";
+import { partition, remove, sortBy } from "lodash";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { castDraft } from "immer";
 import { localStorage } from "redux-persist-webextension-storage";
@@ -47,6 +42,7 @@ import { type StorageInterface } from "@/store/StorageInterface";
 import { getVisiblePanelCount } from "@/sidebar/utils";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { extraReducers } from "@/sidebar/thunks";
 
 const emptySidebarState: SidebarState = {
   panels: [],
@@ -57,7 +53,7 @@ const emptySidebarState: SidebarState = {
   activeKey: null,
   pendingActivePanel: null,
   closedTabs: {},
-};
+} as const;
 
 function eventKeyExists(
   state: SidebarState,
@@ -133,11 +129,6 @@ function findNextActiveKey(
   return null;
 }
 
-async function cancelPreexistingForms(forms: UUID[]): Promise<void> {
-  const topLevelFrame = await getConnectedTarget();
-  cancelForm(topLevelFrame, ...forms);
-}
-
 async function cancelPanels(nonces: UUID[]): Promise<void> {
   const topLevelFrame = await getConnectedTarget();
   cancelTemporaryPanel(topLevelFrame, nonces);
@@ -198,33 +189,6 @@ export function fixActiveTabOnRemove(
     }
   }
 }
-
-export const addFormPanel = createAsyncThunk<
-  FormPanelEntry[],
-  { form: FormPanelEntry },
-  { state: SidebarState }
->("sidebar/addFormPanel", async ({ form }, { getState }) => {
-  const state = getState();
-
-  // If the form is already in the sidebar, do nothing
-  if (state.forms.some(({ nonce }) => nonce === form.nonce)) {
-    return;
-  }
-
-  const [thisExtensionForms, otherForms] = partition(
-    state.forms,
-    ({ extensionId }) => extensionId === form.extensionId,
-  );
-
-  // The UUID must be fetched synchronously to ensure the `form` Proxy element doesn't expire
-  await cancelPreexistingForms(thisExtensionForms.map((form) => form.nonce));
-
-  return [
-    ...otherForms,
-    // Unlike panels which are sorted, forms are like a "stack", will show the latest form available
-    form,
-  ];
-});
 
 const sidebarSlice = createSlice({
   initialState: emptySidebarState,
@@ -445,15 +409,7 @@ const sidebarSlice = createSlice({
       state.closedTabs[action.payload] = false;
     },
   },
-  extraReducers(builder) {
-    builder.addCase(addFormPanel.fulfilled, (state, action) => {
-      const forms = action.payload;
-      const newForm = last(forms);
-      if (newForm) {
-        state.activeKey = eventKeyForEntry(newForm);
-      }
-    });
-  },
+  extraReducers,
 });
 
 export const persistSidebarConfig = {

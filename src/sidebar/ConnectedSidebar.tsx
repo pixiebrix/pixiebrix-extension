@@ -30,7 +30,7 @@ import {
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
 import Tabs from "@/sidebar/Tabs";
-import sidebarSlice, { addFormPanel } from "./sidebarSlice";
+import sidebarSlice from "./sidebarSlice";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./SidebarErrorBoundary";
@@ -43,6 +43,7 @@ import { getReservedSidebarEntries } from "@/contentScript/messenger/strict/api"
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import useAsyncEffect from "use-async-effect";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
+import { addFormPanel } from "@/sidebar/thunks";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
