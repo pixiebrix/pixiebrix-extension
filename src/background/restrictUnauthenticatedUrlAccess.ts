@@ -78,9 +78,8 @@ async function redirectRestrictedTab({
 async function handleRestrictedTab(
   tabId: number,
   changeInfo: Tabs.OnUpdatedChangeInfoType,
-  tab: Tabs.Tab,
 ) {
-  if (!changeInfo.url || !tab?.url) {
+  if (!changeInfo.url) {
     return;
   }
 
@@ -122,9 +121,7 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
     if (auth) {
       browser.tabs.onUpdated.removeListener(handleRestrictedTab);
     } else {
-      await forEachTab(async ({ tabId, url }) =>
-        redirectRestrictedTab({ tabId, url }),
-      );
+      await forEachTab(redirectRestrictedTab);
       browser.tabs.onUpdated.addListener(handleRestrictedTab);
     }
   });
