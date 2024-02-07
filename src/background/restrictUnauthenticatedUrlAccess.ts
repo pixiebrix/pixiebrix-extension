@@ -44,6 +44,11 @@ async function getAuthUrlPatterns(organizationId: UUID): Promise<string[]> {
   }
 }
 
+async function isRestrictedUrl(url: string) {
+  const cachedAuthUrlPatterns = await sessionValue.get();
+  return testMatchPatterns(cachedAuthUrlPatterns, url);
+}
+
 function getDefaultAuthUrl(restrictedUrl: string) {
   const errorMessage = `Access is restricted to '${restrictedUrl}'. Log in with PixieBrix to proceed`;
   const defaultUrl = new URL("https://app.pixiebrix.com/login/");
@@ -56,13 +61,14 @@ async function getRedirectUrl(restrictedUrl: string) {
   return ssoUrl ?? getDefaultAuthUrl(restrictedUrl);
 }
 
-async function redirectRestrictedTab(
-  { tabId, url }: { tabId: number; url: string },
-  restrictedUrlPatterns: string[],
-) {
-  const isRestrictedUrl = testMatchPatterns(restrictedUrlPatterns, url);
-
-  if (isRestrictedUrl) {
+async function redirectRestrictedTab({
+  tabId,
+  url,
+}: {
+  tabId: number;
+  url: string;
+}) {
+  if (await isRestrictedUrl(url)) {
     await browser.tabs.update(tabId, {
       url: await getRedirectUrl(url),
     });
@@ -78,16 +84,7 @@ async function handleTabUpdate(
     return;
   }
 
-  const cachedAuthUrlPatterns = await sessionValue.get();
-
-  if (!cachedAuthUrlPatterns) {
-    return;
-  }
-
-  await redirectRestrictedTab(
-    { tabId, url: changeInfo.url },
-    cachedAuthUrlPatterns,
-  );
+  await redirectRestrictedTab({ tabId, url: changeInfo.url });
 }
 
 /**
@@ -125,9 +122,8 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
     if (auth) {
       browser.tabs.onUpdated.removeListener(handleTabUpdate);
     } else {
-      const cachedAuthUrlPatterns = await sessionValue.get();
       await forEachTab(async ({ tabId, url }) =>
-        redirectRestrictedTab({ tabId, url }, cachedAuthUrlPatterns),
+        redirectRestrictedTab({ tabId, url }),
       );
       browser.tabs.onUpdated.addListener(handleTabUpdate);
     }
