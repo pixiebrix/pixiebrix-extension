@@ -29,6 +29,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import axios, { type AxiosResponse } from "axios";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { setCachedAuthData } from "@/background/auth/authStorage";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 async function codeGrantFlow(
   auth: IntegrationConfig,
@@ -44,6 +45,9 @@ async function codeGrantFlow(
     ...params
   } = oauth2;
 
+  assertNotNullish(rawAuthorizeUrl, "`authorizeUrl` was not provided");
+  assertNotNullish(rawTokenUrl, "`tokenUrl` was not provided");
+
   const authorizeURL = new URL(rawAuthorizeUrl);
   for (const [key, value] of Object.entries({
     redirect_uri,
@@ -54,8 +58,8 @@ async function codeGrantFlow(
     authorizeURL.searchParams.set(key, value);
   }
 
-  let code_verifier: string = null;
-  let code_challenge: string = null;
+  let code_verifier: string | null = null;
+  let code_challenge: string | null = null;
 
   const state = getRandomString(16);
   authorizeURL.searchParams.set("state", state);
@@ -101,10 +105,15 @@ async function codeGrantFlow(
 
   const tokenURL = new URL(rawTokenUrl);
 
+  const code = authResponse.searchParams.get("code");
+  if (!code) {
+    throw new Error("OAuth2 code not provided");
+  }
+
   const tokenBody: Record<string, string> = {
     redirect_uri,
     grant_type: "authorization_code",
-    code: authResponse.searchParams.get("code"),
+    code,
     client_id: params.client_id,
   };
 
@@ -116,10 +125,7 @@ async function codeGrantFlow(
     tokenBody.code_verifier = code_verifier;
   }
 
-  const tokenParams = new URLSearchParams();
-  for (const [param, value] of Object.entries(tokenBody)) {
-    tokenParams.set(param, value.toString());
-  }
+  const tokenParams = new URLSearchParams(Object.entries(tokenBody));
 
   let tokenResponse: AxiosResponse;
 
@@ -152,17 +158,22 @@ async function codeGrantFlow(
       );
     }
 
-    if (parsed.get("error")) {
-      throw new Error(parsed.get("error_description") ?? parsed.get("error"));
+    const error = parsed.get("error");
+    if (error) {
+      throw new Error(parsed.get("error_description") ?? error);
     }
 
     const json = Object.fromEntries(parsed.entries());
-    await setCachedAuthData(auth.id, json);
+    // TODO: Fix IntegrationConfig types
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+    await setCachedAuthData(auth.id!, json);
     return json as AuthData;
   }
 
   if (typeof data === "object") {
-    await setCachedAuthData(auth.id, data);
+    // TODO: Fix IntegrationConfig types
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+    await setCachedAuthData(auth.id!, data);
     return data as AuthData;
   }
 

@@ -505,6 +505,8 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
       temporaryPanels: [],
     } as Draft<SidebarState>;
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error -- Flaky error
+    // @ts-ignore-error "Type instantiation is excessively deep and possibly infinite"
     fixActiveTabOnRemove(state, newPanel);
 
     expect(state).toStrictEqual({

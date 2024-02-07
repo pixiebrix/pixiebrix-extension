@@ -27,11 +27,13 @@ import {
 } from "@/types/sidebarTypes";
 import hash from "object-hash";
 import { sortBy } from "lodash";
-import type { Nullishable } from "@/utils/nullishUtils";
+import { type Nullish, type Nullishable } from "@/utils/nullishUtils";
 
-export function eventKeyForEntry(
-  entry: Nullishable<SidebarEntry>,
-): Nullishable<string> {
+function eventKeyForEntry(entry: SidebarEntry): string;
+function eventKeyForEntry(entry: Nullish): null;
+// This duplicate overload is required: https://stackoverflow.com/a/66510061/288906
+function eventKeyForEntry(entry: Nullishable<SidebarEntry>): string | null;
+function eventKeyForEntry(entry: Nullishable<SidebarEntry>): string | null {
   if (entry == null) {
     return null;
   }
@@ -51,6 +53,8 @@ export function eventKeyForEntry(
   // Use nonce to keep eventKeys unique for forms and temporary panels from the same extension
   return `${entry.type}-${entry.nonce}`;
 }
+
+export { eventKeyForEntry };
 
 /**
  * Return the default tab to show.

@@ -69,7 +69,7 @@ export async function handleGoogleRequestRejection(
   }
 
   if (status === 401) {
-    if (googleAccount) {
+    if (googleAccount?.id) {
       await deleteCachedAuthData(googleAccount.id);
       console.debug(
         "Bad Google client PKCE token. Removed the auth token from the cache so the user can re-authenticate",
