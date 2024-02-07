@@ -26,7 +26,7 @@ import { type OutputKey } from "@/types/runtimeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 
 function getIntegrationsFromSchema(services: Schema): IntegrationDependency[] {
-  return Object.entries(services.properties ?? []).flatMap(([key, schema]) => {
+  return Object.entries(services.properties ?? {}).flatMap(([key, schema]) => {
     if (typeof schema === "boolean") {
       return [];
     }
