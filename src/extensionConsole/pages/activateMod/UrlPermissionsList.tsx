@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,9 +16,8 @@
  */
 
 import React, { useMemo } from "react";
-import { isEmpty, uniq } from "lodash";
+import { uniq } from "lodash";
 import { selectOptionalPermissions } from "@/permissions/permissionsUtils";
-import { Col, Row } from "react-bootstrap";
 import useReportError from "@/hooks/useReportError";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type AsyncState } from "@/types/sliceTypes";
@@ -44,7 +43,7 @@ const UrlPermissionsList: React.FunctionComponent<
         // `selectOptionalPermissions` never returns any origins because we request *://*
         permissionsList: uniq([
           ...selectOptionalPermissions(permissions.permissions),
-          ...permissions.origins,
+          ...(permissions.origins ?? []),
         ]),
       }),
     ),
@@ -63,13 +62,11 @@ const UrlPermissionsList: React.FunctionComponent<
       );
     }
 
-    if (permissionsList.length === 0) {
+    if (!permissionsList?.length) {
       return <p>No special permissions required</p>;
     }
 
-    const { hasPermissions } = data;
-
-    if (hasPermissions) {
+    if (data?.hasPermissions) {
       return (
         <p>
           PixieBrix already has the permissions required for the bricks
@@ -88,22 +85,18 @@ const UrlPermissionsList: React.FunctionComponent<
 
   return (
     <>
-      <Row>
-        <Col>{helpText}</Col>
-      </Row>
-      {!isEmpty(permissionsList) && (
+      <p>{helpText}</p>
+      {permissionsList?.length ? (
         // Use Table single column table instead of ListGroup to more closely match style on other wizard tabs
-        <Row>
-          <Col>
-            <h6>URLs</h6>
-            <ul className="list-unstyled">
-              {permissionsList.map((permission) => (
-                <li key={permission}>{permission}</li>
-              ))}
-            </ul>
-          </Col>
-        </Row>
-      )}
+        <>
+          <h6>URLs</h6>
+          <ul className="list-unstyled">
+            {permissionsList.map((permission) => (
+              <li key={permission}>{permission}</li>
+            ))}
+          </ul>
+        </>
+      ) : null}
     </>
   );
 };

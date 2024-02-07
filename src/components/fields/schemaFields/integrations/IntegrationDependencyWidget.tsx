@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -238,7 +238,6 @@ const IntegrationDependencyWidget: React.FC<
       }
 
       await setRootValues(newState);
-      // eslint-disable-next-line unicorn/no-useless-undefined -- need to clear the error
       helpers.setError(undefined);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- formik helpers change on every render

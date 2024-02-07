@@ -6,23 +6,23 @@ exports[`FormEditor renders empty schema 1`] = `
     action="#"
   >
     <div
-      class="formGroup form-group row"
+      class="formGroup form-group"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label"
         for="rjsfSchema.schema.title"
       >
         Form Title
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="formField"
       >
         <div
           class="root"
@@ -69,23 +69,23 @@ exports[`FormEditor renders empty schema 1`] = `
       </div>
     </div>
     <div
-      class="formGroup form-group row"
+      class="formGroup form-group"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label"
         for="rjsfSchema.schema.description"
       >
         Form Description
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="formField"
       >
         <div
           class="root"
@@ -138,33 +138,29 @@ exports[`FormEditor renders empty schema 1`] = `
     </div>
     <hr />
     <div
-      class="addRow row"
+      class="addRow"
     >
-      <div
-        class="col"
+      <button
+        class="btn btn-primary btn-sm"
+        type="button"
       >
-        <button
-          class="btn btn-primary btn-sm"
-          type="button"
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-plus fa-w-14 "
+          data-icon="plus"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 448 512"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <svg
-            aria-hidden="true"
-            class="svg-inline--fa fa-plus fa-w-14 "
-            data-icon="plus"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            viewBox="0 0 448 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-              fill="currentColor"
-            />
-          </svg>
-           Add new field
-        </button>
-      </div>
+          <path
+            d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+            fill="currentColor"
+          />
+        </svg>
+         Add new field
+      </button>
     </div>
     <div
       class="currentFieldRow row"
@@ -201,23 +197,23 @@ exports[`FormEditor renders simple schema 1`] = `
     action="#"
   >
     <div
-      class="formGroup form-group row"
+      class="formGroup form-group"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label"
         for="rjsfSchema.schema.title"
       >
         Form Title
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="formField"
       >
         <div
           class="root"
@@ -265,23 +261,23 @@ exports[`FormEditor renders simple schema 1`] = `
       </div>
     </div>
     <div
-      class="formGroup form-group row"
+      class="formGroup form-group"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label"
         for="rjsfSchema.schema.description"
       >
         Form Description
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="formField"
       >
         <div
           class="root"
@@ -335,33 +331,29 @@ exports[`FormEditor renders simple schema 1`] = `
     </div>
     <hr />
     <div
-      class="addRow row"
+      class="addRow"
     >
-      <div
-        class="col"
+      <button
+        class="btn btn-primary btn-sm"
+        type="button"
       >
-        <button
-          class="btn btn-primary btn-sm"
-          type="button"
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-plus fa-w-14 "
+          data-icon="plus"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 448 512"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <svg
-            aria-hidden="true"
-            class="svg-inline--fa fa-plus fa-w-14 "
-            data-icon="plus"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            viewBox="0 0 448 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-              fill="currentColor"
-            />
-          </svg>
-           Add new field
-        </button>
-      </div>
+          <path
+            d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+            fill="currentColor"
+          />
+        </svg>
+         Add new field
+      </button>
     </div>
     <div
       class="currentFieldRow row"
@@ -412,23 +404,23 @@ exports[`FormEditor renders simple schema 1`] = `
       class="root"
     >
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="rjsfSchema.schema.properties.firstName"
         >
           Name
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <input
             class="form-control"
@@ -447,23 +439,23 @@ exports[`FormEditor renders simple schema 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="rjsfSchema.schema.properties.firstName.title"
         >
           Label
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -511,23 +503,23 @@ exports[`FormEditor renders simple schema 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="rjsfSchema.schema.properties.firstName.description"
         >
           Field Description
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -579,23 +571,23 @@ exports[`FormEditor renders simple schema 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="rjsfSchema.schema.properties.firstName.uiType"
         >
           Input Type
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class=" css-b62m3t-container"
@@ -696,23 +688,23 @@ exports[`FormEditor renders simple schema 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="rjsfSchema.schema.properties.firstName.default"
         >
           Default Value
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -753,23 +745,86 @@ exports[`FormEditor renders simple schema 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
+          for="rjsfSchema.uiSchema.firstName.ui:placeholder"
+        >
+          Placeholder
+        </label>
+        <div
+          class="formField"
+        >
+          <div
+            class="root"
+          >
+            <div
+              class="field"
+            >
+              <input
+                class="form-control"
+                id="rjsfSchema.uiSchema.firstName.ui:placeholder"
+                name="rjsfSchema.uiSchema.firstName.ui:placeholder"
+                readonly=""
+                value=""
+              />
+            </div>
+            <div
+              class="dropdown dropdown"
+              data-test-selected="Exclude"
+              data-testid="toggle-rjsfSchema.uiSchema.firstName.ui:placeholder"
+            >
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                class="dropdown-toggle btn btn-link"
+                type="button"
+              >
+                <span
+                  class="symbol"
+                >
+                  <test-file-stub
+                    classname="root"
+                  />
+                </span>
+              </button>
+            </div>
+          </div>
+          <small
+            class="text-muted form-text"
+          >
+            <span>
+              A short hint displayed in the input field before the user enters a value.
+            </span>
+          </small>
+        </div>
+      </div>
+      <div
+        class="formGroup form-group"
+      >
+        <div
+          class="mb-2 w-100 collapse"
+        >
+          <div
+            class="annotationPlaceholder"
+          />
+        </div>
+        <label
+          class="label form-label"
           for="rjsfSchema.schema.required"
         >
           Required Field?
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -800,23 +855,23 @@ exports[`FormEditor renders simple schema 1`] = `
       </div>
     </div>
     <div
-      class="formGroup form-group row"
+      class="formGroup form-group"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label"
         for="layoutButtons"
       >
         Field Order
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="formField"
       >
         <div
           class="btn-group"
@@ -883,23 +938,23 @@ exports[`FormEditor renders unknown field format 1`] = `
     action="#"
   >
     <div
-      class="formGroup form-group row"
+      class="formGroup form-group"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label"
         for="rjsfSchema.schema.title"
       >
         Form Title
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="formField"
       >
         <div
           class="root"
@@ -947,23 +1002,23 @@ exports[`FormEditor renders unknown field format 1`] = `
       </div>
     </div>
     <div
-      class="formGroup form-group row"
+      class="formGroup form-group"
     >
       <div
-        class="mb-2 collapse col-12"
+        class="mb-2 w-100 collapse"
       >
         <div
           class="annotationPlaceholder"
         />
       </div>
       <label
-        class="label form-label col-form-label col-xl-2 col-lg-3"
+        class="label form-label"
         for="rjsfSchema.schema.description"
       >
         Form Description
       </label>
       <div
-        class="col-xl-10 col-lg-9"
+        class="formField"
       >
         <div
           class="root"
@@ -1017,33 +1072,29 @@ exports[`FormEditor renders unknown field format 1`] = `
     </div>
     <hr />
     <div
-      class="addRow row"
+      class="addRow"
     >
-      <div
-        class="col"
+      <button
+        class="btn btn-primary btn-sm"
+        type="button"
       >
-        <button
-          class="btn btn-primary btn-sm"
-          type="button"
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-plus fa-w-14 "
+          data-icon="plus"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 448 512"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <svg
-            aria-hidden="true"
-            class="svg-inline--fa fa-plus fa-w-14 "
-            data-icon="plus"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            viewBox="0 0 448 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
-              fill="currentColor"
-            />
-          </svg>
-           Add new field
-        </button>
-      </div>
+          <path
+            d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+            fill="currentColor"
+          />
+        </svg>
+         Add new field
+      </button>
     </div>
     <div
       class="currentFieldRow row"
@@ -1094,23 +1145,23 @@ exports[`FormEditor renders unknown field format 1`] = `
       class="root"
     >
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="rjsfSchema.schema.properties.unknown"
         >
           Name
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <input
             class="form-control"
@@ -1129,23 +1180,23 @@ exports[`FormEditor renders unknown field format 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="rjsfSchema.schema.properties.unknown.title"
         >
           Label
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -1193,23 +1244,23 @@ exports[`FormEditor renders unknown field format 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="rjsfSchema.schema.properties.unknown.description"
         >
           Field Description
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"
@@ -1261,23 +1312,23 @@ exports[`FormEditor renders unknown field format 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="rjsfSchema.schema.properties.unknown.uiType"
         >
           Input Type
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class=" css-b62m3t-container"
@@ -1363,23 +1414,23 @@ exports[`FormEditor renders unknown field format 1`] = `
         </div>
       </div>
       <div
-        class="formGroup form-group row"
+        class="formGroup form-group"
       >
         <div
-          class="mb-2 collapse col-12"
+          class="mb-2 w-100 collapse"
         >
           <div
             class="annotationPlaceholder"
           />
         </div>
         <label
-          class="label form-label col-form-label col-xl-2 col-lg-3"
+          class="label form-label"
           for="rjsfSchema.schema.required"
         >
           Required Field?
         </label>
         <div
-          class="col-xl-10 col-lg-9"
+          class="formField"
         >
           <div
             class="root"

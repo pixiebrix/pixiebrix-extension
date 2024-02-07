@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,6 @@ import {
 } from "@/analysis/analysisTypes";
 import { type BrickPosition } from "@/bricks/types";
 import { isMustacheOnly } from "@/components/fields/fieldUtils";
-import { Template } from "nunjucks";
 import PipelineExpressionVisitor from "@/bricks/PipelineExpressionVisitor";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type Expression } from "@/types/runtimeTypes";
@@ -30,6 +29,8 @@ import {
   isNunjucksExpression,
   isTemplateExpression,
 } from "@/utils/expressionUtils";
+import { validateNunjucksTemplate } from "@/sandbox/messenger/api";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 const TEMPLATE_ERROR_MESSAGE =
   "Invalid text template. Read more about text templates: https://docs.pixiebrix.com/developing-mods/developer-concepts/text-template-guide";
@@ -41,6 +42,10 @@ type PushAnnotationArgs = {
 };
 
 class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
+  // XXX: for now we handle asynchronous pipeline traversal by gathering all the promises and awaiting them all
+  // see discussion https://github.com/pixiebrix/pixiebrix-extension/pull/4013#discussion_r944690969
+  private readonly nunjuckValidationPromises: Array<Promise<void>> = [];
+
   get id() {
     return "template";
   }
@@ -50,10 +55,12 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
     return this.annotations;
   }
 
-  run(extension: ModComponentFormState): void {
+  async run(extension: ModComponentFormState): Promise<void> {
     this.visitRootPipeline(extension.extension.blockPipeline, {
       extensionPointType: extension.type,
     });
+
+    await Promise.all(this.nunjuckValidationPromises);
   }
 
   private pushErrorAnnotation({
@@ -74,7 +81,10 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
     position: BrickPosition,
     expression: Expression<unknown>,
   ): void {
-    if (!isTemplateExpression(expression)) {
+    if (
+      !isTemplateExpression(expression) ||
+      expression.__value__.trim() === ""
+    ) {
       return;
     }
 
@@ -90,19 +100,19 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
         expression,
       });
     } else if (isNunjucksExpression(expression)) {
-      try {
-        // eslint-disable-next-line no-new
-        new Template(expression.__value__, undefined, undefined, true);
-      } catch (error) {
-        // @ts-expect-error nunjucks error does have message property
-        const failureCause = (error.message as string)
-          ?.replace("(unknown path)", "")
-          .trim();
-
-        const message = `Invalid template: ${failureCause}.`;
-
-        this.pushErrorAnnotation({ position, message, expression });
-      }
+      this.nunjuckValidationPromises.push(
+        (async () => {
+          try {
+            await validateNunjucksTemplate(expression.__value__);
+          } catch (error) {
+            this.pushErrorAnnotation({
+              position,
+              message: getErrorMessage(error),
+              expression,
+            });
+          }
+        })(),
+      );
     }
   }
 }

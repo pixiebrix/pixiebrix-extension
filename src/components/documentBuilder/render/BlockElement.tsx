@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,7 +26,7 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { serializeError } from "serialize-error";
 import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
-import { getTopLevelFrame } from "webext-messenger";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type PanelContext } from "@/types/sidebarTypes";
 import { type RendererRunPayload } from "@/types/rendererTypes";
 import useAsyncState from "@/hooks/useAsyncState";
@@ -54,7 +54,7 @@ const BlockElement: React.FC<BlockElementProps> = ({ pipeline, tracePath }) => {
     error,
   } = useAsyncState<RendererRunPayload>(async () => {
     // We currently only support associating the sidebar with the content script in the top-level frame (frameId: 0)
-    const topLevelFrame = await getTopLevelFrame();
+    const topLevelFrame = await getConnectedTarget();
 
     return runRendererPipeline(topLevelFrame, {
       nonce: uuidv4(),

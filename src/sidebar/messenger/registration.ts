@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,6 +20,7 @@ import { registerMethods } from "webext-messenger";
 import {
   activatePanel,
   hideActivateMods,
+  closeSelf,
   hideForm,
   hideTemporaryPanel,
   renderPanels,
@@ -40,6 +41,8 @@ declare global {
     SIDEBAR_SHOW_FORM: typeof showForm;
     SIDEBAR_HIDE_FORM: typeof hideForm;
     SIDEBAR_PING: typeof noop;
+    SIDEBAR_CLOSE: typeof closeSelf;
+    SIDEBAR_RELOAD: typeof location.reload;
     SIDEBAR_SHOW_TEMPORARY_PANEL: typeof showTemporaryPanel;
     SIDEBAR_UPDATE_TEMPORARY_PANEL: typeof updateTemporaryPanel;
     SIDEBAR_HIDE_TEMPORARY_PANEL: typeof hideTemporaryPanel;
@@ -54,7 +57,9 @@ export default function registerMessenger(): void {
     SIDEBAR_RENDER_PANELS: renderPanels,
     SIDEBAR_SHOW_FORM: showForm,
     SIDEBAR_HIDE_FORM: hideForm,
+    SIDEBAR_CLOSE: closeSelf,
     SIDEBAR_PING: noop,
+    SIDEBAR_RELOAD: location.reload.bind(location),
     SIDEBAR_SHOW_TEMPORARY_PANEL: showTemporaryPanel,
     SIDEBAR_UPDATE_TEMPORARY_PANEL: updateTemporaryPanel,
     SIDEBAR_HIDE_TEMPORARY_PANEL: hideTemporaryPanel,

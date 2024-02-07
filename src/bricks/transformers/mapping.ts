@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -80,7 +80,7 @@ export class MappingTransformer extends TransformerABC {
       return mapping[key];
     }
 
-    if (missing === "null" || missing === null) {
+    if (missing === "null" || missing == null) {
       return null;
     }
 

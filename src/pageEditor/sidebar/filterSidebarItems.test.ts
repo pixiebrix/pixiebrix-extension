@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -74,7 +74,24 @@ describe("filterSidebarItems", () => {
     expect(
       filterSidebarItems({
         sidebarItems,
-        filterText: "foo",
+        filterText: "fOo",
+        activeModId: null,
+        activeModComponentId: null,
+      }),
+    ).toEqual([sidebarItems[0]]);
+  });
+
+  it("returns sidebar items when filter text matches mod label", () => {
+    const sidebarItems = [
+      modComponentFactory({ label: "fOo" }),
+      modSidebarItemFactory({
+        modMetadata: modMetadataFactory({ name: "Bar" }),
+      }),
+    ];
+    expect(
+      filterSidebarItems({
+        sidebarItems,
+        filterText: "fOo",
         activeModId: null,
         activeModComponentId: null,
       }),
@@ -94,7 +111,7 @@ describe("filterSidebarItems", () => {
     expect(
       filterSidebarItems({
         sidebarItems,
-        filterText: "foo",
+        filterText: "fOo",
         activeModId: null,
         activeModComponentId: null,
       }),

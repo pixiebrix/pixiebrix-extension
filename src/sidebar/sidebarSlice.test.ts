@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@ import {
   cancelForm,
   cancelTemporaryPanel,
   closeTemporaryPanel,
-} from "@/contentScript/messenger/api";
+} from "@/contentScript/messenger/strict/api";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import type { SidebarState } from "@/types/sidebarTypes";
@@ -35,7 +35,7 @@ import { type Draft } from "immer";
 import { waitFor } from "@testing-library/react";
 
 jest.mock("@/sidebar/messenger/api");
-jest.mock("@/contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/strict/api");
 jest.mock("@/bricks/transformers/temporaryInfo/messenger/api");
 
 const cancelTemporaryPanelMock = jest.mocked(cancelTemporaryPanel);
@@ -512,6 +512,8 @@ describe("sidebarSlice.fixActiveTabOnRemove", () => {
       temporaryPanels: [],
     } as Draft<SidebarState>;
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error -- Flaky error
+    // @ts-ignore-error "Type instantiation is excessively deep and possibly infinite"
     fixActiveTabOnRemove(state, newPanel);
 
     expect(state).toStrictEqual({

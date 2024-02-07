@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,22 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useState } from "react";
-import useAsyncEffect from "use-async-effect";
-import {
-  onContextInvalidated,
-  wasContextInvalidated,
-} from "@/errors/contextInvalidated";
+import { useSyncExternalStore } from "use-sync-external-store/shim";
+import { onContextInvalidated, wasContextInvalidated } from "webext-events";
+
+function subscribe(callback: () => void) {
+  const unsubscribe = new AbortController();
+  onContextInvalidated.addListener(callback, { signal: unsubscribe.signal });
+  return unsubscribe.abort.bind(unsubscribe);
+}
 
 export default function useContextInvalidated(): boolean {
-  const [invalidated, setInvalidated] = useState(wasContextInvalidated());
-  useAsyncEffect(async (isMounted) => {
-    await onContextInvalidated();
-
-    if (isMounted()) {
-      setInvalidated(true);
-    }
-  });
-
-  return invalidated;
+  return useSyncExternalStore(subscribe, wasContextInvalidated);
 }

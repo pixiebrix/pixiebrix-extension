@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,14 +25,14 @@ import IntegrationsBody from "@/extensionConsole/pages/activateMod/IntegrationsB
 import PermissionsBody from "@/extensionConsole/pages/activateMod/PermissionsBody";
 import * as Yup from "yup";
 import { type AnyObjectSchema } from "yup";
-import useAsyncRecipeOptionsValidationSchema from "@/hooks/useAsyncRecipeOptionsValidationSchema";
+import useAsyncModOptionsValidationSchema from "@/hooks/useAsyncModOptionsValidationSchema";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type AuthOption } from "@/auth/authTypes";
 import {
   collectConfiguredIntegrationDependencies,
-  collectRecipeOptions,
+  collectModOptions,
 } from "@/store/extensionsUtils";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { type Primitive } from "type-fest";
@@ -45,6 +45,7 @@ import { isPrimitive } from "@/utils/typeUtils";
 import { inputProperties } from "@/utils/schemaUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
+import type { UnknownObject } from "@/types/objectTypes";
 
 const STEPS: WizardStep[] = [
   { key: "services", label: "Integrations", Component: IntegrationsBody },
@@ -84,22 +85,24 @@ export function wizardStateFactory({
   databaseOptions,
   installedExtensions,
   optionsValidationSchema,
+  initialModOptions,
 }: {
   modDefinition: ModDefinition;
   defaultAuthOptions: Record<RegistryId, AuthOption>;
   databaseOptions: Option[];
   installedExtensions: ActivatedModComponent[];
   optionsValidationSchema: AnyObjectSchema;
+  initialModOptions: UnknownObject;
 }): UseActivateRecipeWizardResult {
-  const extensionPoints = modDefinition.extensionPoints ?? [];
+  const modComponentDefinitions = modDefinition.extensionPoints ?? [];
 
-  const installedBlueprintExtensions = installedExtensions?.filter(
+  const activatedModComponents = installedExtensions?.filter(
     (extension) => extension._recipe?.id === modDefinition.metadata.id,
   );
 
-  const installedOptions = collectRecipeOptions(installedBlueprintExtensions);
+  const installedOptions = collectModOptions(activatedModComponents);
   const installedIntegrationConfigs = Object.fromEntries(
-    collectConfiguredIntegrationDependencies(installedBlueprintExtensions).map(
+    collectConfiguredIntegrationDependencies(activatedModComponents).map(
       ({ integrationId, configId }) => [integrationId, configId],
     ),
   );
@@ -136,15 +139,15 @@ export function wizardStateFactory({
   const initialValues: WizardValues = {
     extensions: Object.fromEntries(
       // By default, all extensions in the recipe should be toggled on
-      extensionPoints.map((_, index) => [index, true]),
+      modComponentDefinitions.map((_, index) => [index, true]),
     ),
     integrationDependencies,
     optionsArgs: mapValues(
       modDefinition.options?.schema?.properties ?? {},
       (optionSchema: Schema, name: string) => {
-        const installed = installedOptions[name];
-        if (installed) {
-          return forcePrimitive(installed);
+        const installedValue = installedOptions[name];
+        if (installedValue) {
+          return forcePrimitive(installedValue);
         }
 
         if (
@@ -162,6 +165,10 @@ export function wizardStateFactory({
           return existingDatabaseOption?.value ?? databaseName;
         }
 
+        if (initialModOptions[name] !== undefined) {
+          return forcePrimitive(initialModOptions[name]);
+        }
+
         return forcePrimitive(optionSchema.default);
       },
     ),
@@ -170,7 +177,10 @@ export function wizardStateFactory({
   const validationSchema = Yup.object().shape({
     extensions: Yup.object().shape(
       Object.fromEntries(
-        extensionPoints.map((_, index) => [index, Yup.boolean().required()]),
+        modComponentDefinitions.map((_, index) => [
+          index,
+          Yup.boolean().required(),
+        ]),
       ),
     ),
     integrationDependencies: Yup.array().of(
@@ -193,13 +203,14 @@ export function wizardStateFactory({
   };
 }
 
-function useActivateRecipeWizard(
-  recipe: ModDefinition,
+function useActivateModWizard(
+  modDefinition: ModDefinition,
   defaultAuthOptions: Record<RegistryId, AuthOption> = {},
+  initialOptions: UnknownObject = {},
 ): FetchableAsyncState<UseActivateRecipeWizardResult> {
   const installedExtensions = useSelector(selectExtensions);
-  const optionsValidationSchemaState = useAsyncRecipeOptionsValidationSchema(
-    recipe.options?.schema,
+  const optionsValidationSchemaState = useAsyncModOptionsValidationSchema(
+    modDefinition.options?.schema,
   );
 
   // Force-fetch latest database options
@@ -210,13 +221,14 @@ function useActivateRecipeWizard(
     databaseOptionsState,
     (optionsValidationSchema: AnyObjectSchema, databaseOptions: Option[]) =>
       wizardStateFactory({
-        modDefinition: recipe,
+        modDefinition,
         defaultAuthOptions,
         databaseOptions,
         installedExtensions,
         optionsValidationSchema,
+        initialModOptions: initialOptions,
       }),
   );
 }
 
-export default useActivateRecipeWizard;
+export default useActivateModWizard;

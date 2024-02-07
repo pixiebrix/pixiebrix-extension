@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -69,6 +69,28 @@ import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import pluralize from "@/utils/pluralize";
+import { allSettled } from "@/utils/promiseUtils";
+import batchedFunction from "batched-function";
+import { onContextInvalidated } from "webext-events";
+
+// eslint-disable-next-line local-rules/persistBackgroundData -- Function
+const groupRegistrationErrorNotification = batchedFunction(
+  (errors: unknown[][]): void => {
+    // `batchedFunction` will throttle the calls and coalesce all the errors into a
+    // single notification, even if they come from different extensions
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/7353
+    notify.error({
+      message: `An error occurred adding ${pluralize(
+        errors.flat().length,
+        "$$ context menu item",
+      )}`,
+      reportError: false,
+    });
+  },
+  {
+    delay: 100,
+  },
+);
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
@@ -96,33 +118,26 @@ export type ContextMenuConfig = {
  * The element the user right-clicked on to trigger the context menu
  */
 let clickedElement: HTMLElement = null;
-let selectionHandlerInstalled = false;
-
-const BUTTON_SECONDARY = 2;
 
 function setActiveElement(event: MouseEvent): void {
   // This method can't throw, otherwise I think it breaks event dispatching because we're passing
   // useCapture: true to the event listener
-  clickedElement = null;
-  if (event?.button === BUTTON_SECONDARY) {
-    console.debug("Setting right-clicked element for contextMenu", {
-      target: event.target,
-    });
-    clickedElement = event?.target as HTMLElement;
-  }
+  console.debug("Setting right-clicked element for contextMenu", {
+    target: event.target,
+  });
+  clickedElement = event.target as HTMLElement;
 }
 
 function installMouseHandlerOnce(): void {
-  if (!selectionHandlerInstalled) {
-    selectionHandlerInstalled = true;
-    // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
-    document.addEventListener("mousedown", setActiveElement, {
-      // Handle it first in case a target beneath it cancels the event
-      capture: true,
-      // For performance, indicate we won't call preventDefault
-      passive: true,
-    });
-  }
+  // `addEventListener` natively avoids duplicate listeners
+  document.addEventListener("contextmenu", setActiveElement, {
+    // Handle it first in case a target beneath it cancels the event
+    capture: true,
+    // For performance, indicate we won't call preventDefault
+    passive: true,
+    // Remove after context invalidation
+    signal: onContextInvalidated.signal,
+  });
 }
 
 /**
@@ -173,7 +188,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
   override uninstall({ global = false }: { global?: boolean }): void {
     // NOTE: don't uninstall the mouse/click handler because other context menus need it
-    const extensions = this.modComponents.splice(0, this.modComponents.length);
+    const extensions = this.modComponents.splice(0);
     if (global) {
       for (const extension of extensions) {
         void uninstallContextMenu({ extensionId: extension.id });
@@ -255,32 +270,24 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       "contextMenu starter bricks",
     );
 
-    const results = await Promise.allSettled(
-      this.modComponents.map(async (extension) => {
-        try {
-          await this.registerExtension(extension);
-        } catch (error) {
-          reportError(error, {
-            context: {
-              deploymentId: extension._deployment?.id,
-              extensionPointId: extension.extensionPointId,
-              extensionId: extension.id,
-            },
-          });
-          throw error;
-        }
-      }),
-    );
+    const promises = this.modComponents.map(async (extension) => {
+      try {
+        await this.registerExtension(extension);
+      } catch (error) {
+        reportError(error, {
+          context: {
+            deploymentId: extension._deployment?.id,
+            extensionPointId: extension.extensionPointId,
+            extensionId: extension.id,
+          },
+        });
+        throw error;
+      }
+    });
 
-    const numErrors = results.filter((x) => x.status === "rejected").length;
-    if (numErrors > 0) {
-      notify.error(
-        `An error occurred adding ${pluralize(
-          numErrors,
-          "$$ context menu item",
-        )}`,
-      );
-    }
+    await allSettled(promises, {
+      catch: groupRegistrationErrorNotification,
+    });
   }
 
   decideReaderRoot(target: HTMLElement | Document): HTMLElement | Document {

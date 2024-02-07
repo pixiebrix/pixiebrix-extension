@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,6 +31,7 @@ import { extractAdditionalPermissions } from "webext-permissions";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { revertAll } from "@/store/commonActions";
 import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
+import { allSettled } from "@/utils/promiseUtils";
 
 async function revokeAllAdditionalPermissions() {
   const permissions: Permissions.AnyPermissions =
@@ -83,15 +84,18 @@ const FactoryResetSettings: React.FunctionComponent = () => {
               // Force all open page editors to be reloaded
               dispatch(sessionChangesActions.setSessionChanges({ sessionId }));
 
-              await Promise.allSettled([
-                // Clear persisted editor state directly because it's not attached to the options page store.
-                browser.storage.local.remove("persist:editor"),
-                flushReduxPersistence(),
-                revokeAllAdditionalPermissions(),
-                clearLogs(),
-                browser.contextMenus.removeAll(),
-                clearPackages(),
-              ]);
+              await allSettled(
+                [
+                  // Clear persisted editor state directly because it's not attached to the options page store.
+                  browser.storage.local.remove("persist:editor"),
+                  flushReduxPersistence(),
+                  revokeAllAdditionalPermissions(),
+                  clearLogs(),
+                  browser.contextMenus.removeAll(),
+                  clearPackages(),
+                ],
+                { catch: "ignore" },
+              );
 
               reactivateEveryTab();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,12 +30,12 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { runMapArgs } from "@/contentScript/messenger/api";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { getTopLevelFrame } from "webext-messenger";
 import useAsyncState from "@/hooks/useAsyncState";
 import DelayedRender from "@/components/DelayedRender";
 import { isDeferExpression } from "@/utils/expressionUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinPathParts } from "@/utils/formUtils";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 
 type DocumentListProps = {
   array: UnknownObject[];
@@ -66,7 +66,7 @@ const ListElementInternal: React.FC<DocumentListProps> = ({
     isLoading,
     error,
   } = useAsyncState(async () => {
-    const topLevelFrame = await getTopLevelFrame();
+    const topLevelFrame = await getConnectedTarget();
 
     const elementVariableReference = `@${elementKey}`;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,11 +30,9 @@ import {
   ExtensionIcon,
   NotAvailableIcon,
 } from "@/pageEditor/sidebar/ExtensionIcons";
-import {
-  disableOverlay,
-  enableOverlay,
-  showSidebar,
-} from "@/contentScript/messenger/api";
+import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
+import { updateSidebar } from "@/contentScript/messenger/strict/api";
+import { openSidePanel } from "@/utils/sidePanelUtils";
 import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
@@ -116,7 +114,8 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
         if (type === "actionPanel") {
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
           // frequently between extensions within the same blueprint.
-          void showSidebar(thisTab, {
+          await openSidePanel(chrome.devtools.inspectedWindow.tabId);
+          updateSidebar(thisTab, {
             extensionId: modComponent.id,
             force: true,
             refresh: false,

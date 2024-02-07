@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -28,7 +28,7 @@ import {
   setReadyInThisDocument,
   unsetReadyInThisDocument,
 } from "@/contentScript/ready";
-import { onContextInvalidated } from "@/errors/contextInvalidated";
+import { onContextInvalidated } from "webext-events";
 import { logPromiseDuration } from "@/utils/promiseUtils";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 
@@ -83,8 +83,7 @@ async function initContentScript() {
   await logPromiseDuration("contentScript: ready", init());
   setReadyInThisDocument(uuid);
 
-  // eslint-disable-next-line promise/prefer-await-to-then -- It's an unrelated event listener
-  void onContextInvalidated().then(() => {
+  onContextInvalidated.addListener(() => {
     unsetReadyInThisDocument(uuid);
     console.debug("contentScript: invalidated", uuid);
   });

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,6 +16,7 @@
  */
 
 import {
+  InvalidPathError,
   addPathPart,
   getFieldNamesFromPathString,
   getPathFromArray,
@@ -66,6 +67,27 @@ describe("getPropByPath", () => {
     ],
   ])("can get property accessed by []", (context, path, expected) => {
     expect(getPropByPath(context, path)).toBe(expected);
+  });
+
+  test("throws InvalidPathError if path is missing or invalid", () => {
+    expect(() => getPropByPath({}, "foo.")).toThrowWithMessage(
+      InvalidPathError,
+      "foo. undefined (missing foo)",
+    );
+    expect(() => getPropByPath({ bugs: 1 }, "bugs.length")).toThrowWithMessage(
+      InvalidPathError,
+      "Invalid path bugs.length",
+    );
+    expect(() =>
+      getPropByPath({ bugs: [] }, "bugs[0].title"),
+    ).toThrowWithMessage(
+      InvalidPathError,
+      "bugs[0].title undefined (missing 0)",
+    );
+
+    expect(
+      getPropByPath({ bugs: [{ title: "Bad soup" }] }, "bugs.title"),
+    ).toBeNull();
   });
 });
 

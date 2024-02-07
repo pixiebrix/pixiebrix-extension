@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -66,6 +66,31 @@ const UNKNOWN_OPTION: SelectStringOption = {
   label: "unknown",
   value: null,
 };
+
+function shouldShowPlaceholderText(uiType: UiType): boolean {
+  switch (true) {
+    case uiType.propertyType === "number": {
+      return true;
+    }
+
+    // No need to render placeholder text for anything that isn't propertyType string or number
+    case uiType.propertyType !== "string": {
+      return false;
+    }
+
+    // Single-line text, Paragraph text, Email, and Website fields
+    case uiType.uiWidget === "textarea":
+    case uiType.propertyFormat === "email":
+    case uiType.propertyFormat === "uri":
+    case !uiType.uiWidget && !uiType.propertyFormat: {
+      return true;
+    }
+
+    default: {
+      return false;
+    }
+  }
+}
 
 const FieldEditor: React.FC<{
   name: string;
@@ -226,6 +251,15 @@ const FieldEditor: React.FC<{
     },
     label: "Field Description",
   };
+  const placeholderProps: SchemaFieldProps = {
+    name: `${name}.uiSchema.${propertyName}.ui:placeholder`,
+    schema: {
+      type: "string",
+      description:
+        "A short hint displayed in the input field before the user enters a value.",
+    },
+    label: "Placeholder",
+  };
 
   const uiType: UiType =
     selectedUiTypeOption.value == null
@@ -299,36 +333,36 @@ const FieldEditor: React.FC<{
           <SchemaField {...defaultFieldProps} />
         )}
 
+      {shouldShowPlaceholderText(uiType) && (
+        <SchemaField {...placeholderProps} />
+      )}
+
       {propertySchema.enum && (
-        <>
-          <SchemaField
-            label="Options"
-            name={getFullFieldName("enum")}
-            schema={{
-              type: "array",
-              items: {
-                type: "string",
-              },
-            }}
-            isRequired
-          />
-        </>
+        <SchemaField
+          label="Options"
+          name={getFullFieldName("enum")}
+          schema={{
+            type: "array",
+            items: {
+              type: "string",
+            },
+          }}
+          isRequired
+        />
       )}
 
       {propertySchema.type === "array" && (
-        <>
-          <SchemaField
-            label="Options"
-            name={getFullFieldName("items.enum")}
-            schema={{
-              type: "array",
-              items: {
-                type: "string",
-              },
-            }}
-            isRequired
-          />
-        </>
+        <SchemaField
+          label="Options"
+          name={getFullFieldName("items.enum")}
+          schema={{
+            type: "array",
+            items: {
+              type: "string",
+            },
+          }}
+          isRequired
+        />
       )}
 
       {propertySchema.oneOf && (

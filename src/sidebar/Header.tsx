@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,26 +20,28 @@ import styles from "./ConnectedSidebar.module.scss";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
-import { hideSidebar } from "@/contentScript/messenger/api";
+import { hideSidebar } from "@/contentScript/messenger/strict/api";
 import useTheme, { useGetTheme } from "@/hooks/useTheme";
 import cx from "classnames";
-import useContextInvalidated from "@/hooks/useContextInvalidated";
 import { getTopLevelFrame } from "webext-messenger";
+import { isMV3 } from "@/mv3/api";
 
 const Header: React.FunctionComponent = () => {
   const { logo, showSidebarLogo, customSidebarLogo } = useTheme();
   const theme = useGetTheme();
-  const wasContextInvalidated = useContextInvalidated();
+  /* In MV3, Chrome offers a native Close button */
+  const showCloseButton = !isMV3();
 
   return (
     <div className="d-flex py-2 pl-2 pr-0 justify-content-between align-content-center">
-      {wasContextInvalidated || ( // /* The button doesn't work after invalidation #2359 */
+      {showCloseButton && (
         <Button
           className={cx(
             styles.button,
             theme === "default" ? styles.themeColorOverride : styles.themeColor,
           )}
           onClick={async () => {
+            // This piece of code is MV2-only, it only needs to handle being run in an iframe
             const topLevelFrame = await getTopLevelFrame();
             await hideSidebar(topLevelFrame);
           }}

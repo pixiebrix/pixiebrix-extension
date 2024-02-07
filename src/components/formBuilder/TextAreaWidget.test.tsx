@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,6 +19,7 @@ import React from "react";
 import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import { render, screen } from "@/sidebar/testHelpers";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
+import userEvent from "@testing-library/user-event";
 
 describe("TextAreaWidget", () => {
   const defaultProps = {
@@ -60,5 +61,45 @@ describe("TextAreaWidget", () => {
 
     expect(screen.getByRole("textbox")).toBeInTheDocument();
     expect(screen.queryByLabelText(defaultProps.label)).not.toBeInTheDocument();
+  });
+
+  test("it submits the form when enter key is pressed", async () => {
+    const submitForm = jest.fn();
+    render(
+      <TextAreaWidget {...defaultProps} options={{ submitOnEnter: true }} />,
+      {
+        wrapper: ({ children }) => (
+          <RjsfSubmitContext.Provider value={{ submitForm }}>
+            {children}
+          </RjsfSubmitContext.Provider>
+        ),
+      },
+    );
+
+    const textarea = screen.getByRole("textbox");
+    await userEvent.type(textarea, "Some text");
+    await userEvent.keyboard("{Enter}");
+    expect(submitForm).toHaveBeenCalledOnce();
+  });
+
+  test("it does not submit the form when enter key is pressed alongside a modifier key", async () => {
+    const submitForm = jest.fn();
+    render(
+      <TextAreaWidget {...defaultProps} options={{ submitOnEnter: true }} />,
+      {
+        wrapper: ({ children }) => (
+          <RjsfSubmitContext.Provider value={{ submitForm }}>
+            {children}
+          </RjsfSubmitContext.Provider>
+        ),
+      },
+    );
+
+    const textarea = screen.getByRole("textbox");
+    await userEvent.type(textarea, "Some text");
+    await userEvent.keyboard("{Control>}{Enter}{/Control}");
+    await userEvent.keyboard("{Shift>}{Enter}{/Shift}");
+    await userEvent.keyboard("{Alt>}{Enter}{/Alt}");
+    expect(submitForm).not.toHaveBeenCalled();
   });
 });

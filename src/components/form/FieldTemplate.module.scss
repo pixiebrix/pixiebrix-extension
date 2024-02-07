@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,6 +16,9 @@
  */
 
 .formGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1rem; /* Horizontal gap only */
   align-items: center;
   // Prevents long urls in Field descriptions from overflowing containing element
   // https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
@@ -27,6 +30,28 @@
 .label {
   align-self: stretch;
   font-size: 80%;
+  flex-basis: 0;
+  flex-grow: 1;
+  min-width: 150px;
+  max-width: 300px;
+  padding-block: 15px;
+}
+
+.labelWider {
+  flex-grow: 1.5;
+}
+
+.labelFitContent {
+  flex-grow: 0;
+  flex-basis: auto;
+  min-width: fit-content;
+}
+
+.formField {
+  flex-grow: 3;
+  flex-basis: 0;
+  /* This will cause it to wrap when the available width is less than both `min-width`s */
+  min-width: 200px;
 }
 
 .invalidMessage {

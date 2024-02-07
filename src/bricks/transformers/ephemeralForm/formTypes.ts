@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -43,4 +43,16 @@ export type FormDefinition = {
    * @since 1.7.29
    */
   location: "sidebar" | "modal";
+  /**
+   * URLs for custom stylesheets to use and override base bootstrap theme in the form
+   *
+   * @since 1.8.8
+   */
+  stylesheets?: string[];
+  /**
+   * Disable the default/inherited styling for the rendered form
+   *
+   * @since 1.8.8
+   */
+  disableParentStyles?: boolean;
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -27,7 +27,7 @@ import { type TriggerDefinition } from "@/starterBricks/triggerExtension";
 import type { DynamicDefinition } from "@/contentScript/pageEditor/types";
 import {
   activateExtensionPanel,
-  ensureSidebar,
+  showSidebar,
 } from "@/contentScript/sidebarController";
 import { type TourDefinition } from "@/starterBricks/tourExtension";
 import { type JsonObject } from "type-fest";
@@ -132,7 +132,7 @@ export async function updateDynamicElement({
   await runEditorExtension(extensionConfig.id, starterBrick);
 
   if (starterBrick.kind === "actionPanel") {
-    await ensureSidebar();
+    await showSidebar();
     await activateExtensionPanel(extensionConfig.id);
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -39,7 +39,7 @@ export function isPermissionsStatus(
 ): value is PermissionsStatus {
   return (
     typeof value === "object" &&
-    value !== null &&
+    value != null &&
     "hasPermissions" in value &&
     "permissions" in value
   );

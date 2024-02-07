@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,13 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type JavaScriptPayload, type TemplateRenderPayload } from "./api";
+import {
+  type TemplateValidatePayload,
+  type JavaScriptPayload,
+  type TemplateRenderPayload,
+} from "./api";
 import { isErrorObject } from "@/errors/errorHelpers";
 import {
   BusinessError,
   InvalidTemplateError,
   PropError,
 } from "@/errors/businessErrors";
+import { type JsonObject } from "type-fest";
 
 export async function renderNunjucksTemplate(
   payload: TemplateRenderPayload,
@@ -39,6 +44,27 @@ export async function renderNunjucksTemplate(
   } catch (error) {
     if (isErrorObject(error) && error.name === "Template render error") {
       throw new InvalidTemplateError(error.message, template);
+    }
+
+    throw error;
+  }
+}
+
+export async function validateNunjucksTemplate(
+  template: TemplateValidatePayload,
+): Promise<void> {
+  // Webpack caches the module import, so doesn't need to cache via lodash's `once`
+  const { compile } = await import(
+    /* webpackChunkName: "nunjucks" */ "nunjucks"
+  );
+
+  try {
+    // @ts-expect-error -- The last parameter is not in the types yet
+    compile(template, undefined, undefined, true);
+  } catch (error) {
+    if (isErrorObject(error) && error.name === "Template render error") {
+      const failureCause = error.message?.replace("(unknown path)", "").trim();
+      throw new InvalidTemplateError(failureCause, template);
     }
 
     throw error;
@@ -66,10 +92,10 @@ export async function runUserJs({
   data,
   blockId,
 }: JavaScriptPayload): Promise<string> {
-  let userFunction;
+  let userFunction: (context: JsonObject | undefined) => string;
   try {
     // Returning the user-defined function allows for an anonymous function
-    // eslint-disable-next-line no-new-func -- We're in the sandbox
+    // eslint-disable-next-line no-new-func, @typescript-eslint/no-unsafe-assignment
     userFunction = new Function(`return ${code}`)();
   } catch {
     throw new PropError(

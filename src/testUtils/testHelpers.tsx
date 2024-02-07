@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -91,7 +91,7 @@ type WrapperResult<
   /**
    * Get the current form values
    */
-  getFormState(): FormikValues;
+  getFormState(): FormikValues | null;
 
   /**
    * Update the formik state without interacting with the UI
@@ -125,7 +125,7 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
 
     setupRedux(store.dispatch, { store });
 
-    let formValues: FormikValues = null;
+    let formValues: FormikValues | null = null;
 
     let updateFormState: (
       newValues: React.SetStateAction<FormikValues>,
@@ -155,7 +155,11 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
             </Formik>
           </Provider>
         )
-      : ({ children }) => <Provider store={store}>{children}</Provider>;
+      : ({ children }) => (
+          <Provider store={store}>
+            <ExtraWrapper>{children}</ExtraWrapper>
+          </Provider>
+        );
 
     const utils = render(ui, { wrapper: Wrapper, ...renderOptions });
 
@@ -207,7 +211,7 @@ type HookWrapperResult<
   /**
    * Get the current form values
    */
-  getFormState(): FormikValues;
+  getFormState(): FormikValues | null;
 };
 
 export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
@@ -224,7 +228,7 @@ export function createRenderHookWithWrappers(configureStore: ConfigureStore) {
 
     setupRedux(store.dispatch, { store });
 
-    let formValues: FormikValues = null;
+    let formValues: FormikValues | null = null;
 
     const ExtraWrapper: WrapperComponent<TProps> =
       wrapper ?? (({ children }) => <>{children}</>);

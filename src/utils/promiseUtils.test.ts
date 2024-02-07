@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,6 +16,7 @@
  */
 
 import {
+  allSettled,
   groupPromisesByStatus,
   memoizeUntilSettled,
   retryWithJitter,
@@ -42,6 +43,7 @@ test("groupPromisesByStatus", async () => {
   ];
 
   const { fulfilled, rejected } = groupPromisesByStatus(
+    // eslint-disable-next-line no-restricted-syntax -- Testing
     await Promise.allSettled(promises),
   );
 
@@ -49,6 +51,55 @@ test("groupPromisesByStatus", async () => {
   expect(rejected).toHaveLength(1);
   expect(rejected[0]).toBeInstanceOf(Error);
   expect((rejected[0] as Error).message).toBe("something happened");
+});
+
+describe("allSettled", () => {
+  test("it returns the values of fulfilled promises", async () => {
+    const promises = [Promise.resolve(1), Promise.resolve(2)];
+    // @ts-expect-error TS must error here because the callbacks are missing.
+    // This expectation is part of the test. DO NOT REMOVE
+    const result = await allSettled(promises, {});
+    expect(result).toStrictEqual({ fulfilled: [1, 2], rejected: [] });
+  });
+
+  test("it returns the errors of rejected promises", async () => {
+    const promises = [
+      Promise.reject(new Error("error 1")),
+      Promise.reject(new Error("error 2")),
+    ];
+    const result = await allSettled(promises, {
+      catch: "ignore",
+    });
+    expect(result).toStrictEqual({
+      fulfilled: [],
+      rejected: [new Error("error 1"), new Error("error 2")],
+    });
+  });
+
+  test("it calls the onError callback for all rejected promises", async () => {
+    const promises = [
+      Promise.reject(new Error("error 1")),
+      Promise.reject(new Error("error 2")),
+    ];
+    const onError = jest.fn();
+    await allSettled(promises, {
+      catch: onError,
+    });
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenCalledWith([
+      new Error("error 1"),
+      new Error("error 2"),
+    ]);
+  });
+
+  test("it doesn't call onError if there are no rejections", async () => {
+    const promises = [Promise.resolve(1), Promise.resolve(2)];
+    const onError = jest.fn();
+    await allSettled(promises, {
+      catch: onError,
+    });
+    expect(onError).not.toHaveBeenCalled();
+  });
 });
 
 describe("retryWithJitter", () => {

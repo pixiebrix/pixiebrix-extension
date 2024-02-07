@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,16 +18,30 @@
 import React from "react";
 import ConnectedSidebar from "./ConnectedSidebar";
 import Header from "./Header";
-import ErrorBanner from "./ErrorBanner";
+import RestrictedUrlPopupApp from "@/tinyPages/RestrictedUrlPopupApp";
+import useConnectedTargetUrl from "./hooks/useConnectedTargetUrl";
+import { getReasonByUrl as getRestrictedReasonByUrl } from "@/tinyPages/restrictedUrlPopupUtils";
+
+const SidebarReady: React.FC<{ url: string }> = ({ url }) => {
+  const restricted = getRestrictedReasonByUrl(url);
+
+  return restricted ? (
+    <RestrictedUrlPopupApp reason={restricted} />
+  ) : (
+    <ConnectedSidebar />
+  );
+};
 
 // Include MemoryRouter because some of our authentication-gate hooks use useLocation. However, there's currently no
 // navigation in the SidebarApp
-const SidebarBody: React.FunctionComponent = () => (
-  <>
-    <ErrorBanner />
-    <Header />
-    <ConnectedSidebar />
-  </>
-);
+function SidebarBody() {
+  const url = useConnectedTargetUrl();
+  return (
+    <>
+      <Header />
+      <div className="full-height">{url && <SidebarReady url={url} />}</div>
+    </>
+  );
+}
 
 export default SidebarBody;

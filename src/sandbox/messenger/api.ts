@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -51,6 +51,8 @@ export type TemplateRenderPayload = {
   autoescape: boolean;
 };
 
+export type TemplateValidatePayload = string;
+
 export async function renderNunjucksTemplate(payload: TemplateRenderPayload) {
   return (await isSandboxed())
     ? postMessage({
@@ -59,6 +61,18 @@ export async function renderNunjucksTemplate(payload: TemplateRenderPayload) {
         type: "RENDER_NUNJUCKS",
       })
     : directApi.renderNunjucksTemplate(payload);
+}
+
+export async function validateNunjucksTemplate(
+  payload: TemplateValidatePayload,
+) {
+  return (await isSandboxed())
+    ? postMessage({
+        recipient: await loadSandbox(),
+        payload,
+        type: "VALIDATE_NUNJUCKS",
+      })
+    : directApi.validateNunjucksTemplate(payload);
 }
 
 export async function renderHandlebarsTemplate(payload: TemplateRenderPayload) {

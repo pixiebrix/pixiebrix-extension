@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,18 +17,15 @@
 
 import React from "react";
 import { type LogEntry } from "@/telemetry/logging";
-import { Col, Row } from "react-bootstrap";
 import JsonTree from "@/components/jsonTree/JsonTree";
 
 const OutputDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
   entry,
 }) => (
-  <Row>
-    <Col>
-      {entry.data.outputKey && <code>{entry.data.outputKey}</code>}
-      <JsonTree data={entry.data.output} />
-    </Col>
-  </Row>
+  <>
+    {entry.data.outputKey && <code>{entry.data.outputKey}</code>}
+    <JsonTree data={entry.data.output} />
+  </>
 );
 
 export default OutputDetail;

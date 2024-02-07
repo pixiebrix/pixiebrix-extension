@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,6 @@ import styles from "./GetStartedView.module.scss";
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { Col, Row } from "react-bootstrap";
 import useMilestones from "@/hooks/useMilestones";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import { type RegistryId } from "@/types/registryTypes";
@@ -28,6 +27,7 @@ import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import ModIcon from "@/mods/ModIcon";
 import { isMac } from "@/utils/browserUtils";
 import { MARKETPLACE_URL } from "@/urlConstants";
+import { Card } from "react-bootstrap";
 
 const ExternalLink: React.VoidFunctionComponent<{
   linkText: string;
@@ -68,13 +68,13 @@ const GetStartedView: React.VoidFunctionComponent<{
   const marketplaceUrl = `${homepageUrl}/marketplace/${onboardingModListing?.id}/`;
 
   return (
-    <div
+    <Card
       style={{ height: `${height}px`, width: `${width}px` }}
       className={styles.root}
     >
-      {onboardingModListing && (
-        <Row className={styles.infoRow}>
-          <Col>
+      <Card.Body className="max-950">
+        {onboardingModListing && (
+          <div className={styles.infoRow}>
             <h4>
               Success!{" "}
               {!isFetchingRecipe && (
@@ -102,11 +102,9 @@ const GetStartedView: React.VoidFunctionComponent<{
                 in the Marketplace for more details about how to use this mod.
               </li>
             </ul>
-          </Col>
-        </Row>
-      )}
-      <Row className={styles.infoRow}>
-        <Col>
+          </div>
+        )}
+        <div className={styles.infoRow}>
           <h4>Want to create a new mod?</h4>
           <ul>
             <li>
@@ -128,10 +126,8 @@ const GetStartedView: React.VoidFunctionComponent<{
               personal mod.
             </li>
           </ul>
-        </Col>
-      </Row>
-      <Row className={styles.infoRow}>
-        <Col>
+        </div>
+        <div className={styles.infoRow}>
           <h4>Need more help?</h4>
           <p>
             Visit the{" "}
@@ -155,9 +151,9 @@ const GetStartedView: React.VoidFunctionComponent<{
             />{" "}
             for ideas.
           </p>
-        </Col>
-      </Row>
-    </div>
+        </div>
+      </Card.Body>
+    </Card>
   );
 };
 

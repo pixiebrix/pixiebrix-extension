@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,6 +24,22 @@ import {
   type BrickOptions,
   type ElementReference,
 } from "@/types/runtimeTypes";
+
+const traversalTypes = [
+  "closest",
+  "children",
+  "find",
+  "next",
+  "nextAll",
+  "nextUntil",
+  "parent",
+  "parents",
+  "parentsUntil",
+  "prev",
+  "prevAll",
+  "prevUntil",
+  "siblings",
+];
 
 class TraverseElements extends TransformerABC {
   override async isPure(): Promise<boolean> {
@@ -54,21 +70,7 @@ class TraverseElements extends TransformerABC {
         description:
           "jQuery traversal type: https://api.jquery.com/category/traversing/tree-traversal/",
         default: "find",
-        enum: [
-          "closest",
-          "children",
-          "find",
-          "next",
-          "nextAll",
-          "nextUntil",
-          "parent",
-          "parents",
-          "parentsUntil",
-          "prev",
-          "prevAll",
-          "prevUntil",
-          "siblings",
-        ],
+        enum: traversalTypes,
       },
     },
     ["selector", "traversal"],
@@ -100,7 +102,7 @@ class TraverseElements extends TransformerABC {
       traversal = "find",
     }: BrickArgs<{
       selector: string;
-      traversal: string;
+      traversal: (typeof traversalTypes)[number];
     }>,
     { ctxt, root }: BrickOptions,
   ): Promise<{
@@ -108,7 +110,7 @@ class TraverseElements extends TransformerABC {
     count: number;
   }> {
     // @ts-expect-error -- indexing method of jQuery
-    // eslint-disable-next-line security/detect-object-injection -- input validated
+    // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-unsafe-call -- input validated
     const elements = $(root)[traversal](selector) as JQuery;
     const elementRefs = elements
       .get()

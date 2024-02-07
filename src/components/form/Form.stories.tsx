@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -155,6 +155,19 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
       label="BS Form Control as Custom Widget"
       as={BootstrapFormControlWidget}
       description="You can use a FormControl as a wrapped Widget"
+    />
+
+    <ConnectedFieldTemplate
+      widerLabel
+      name="name"
+      label="Name"
+      description="Field with widerLabel"
+    />
+    <ConnectedFieldTemplate
+      fitLabelWidth
+      name="name"
+      label="Name"
+      description="Field with fitLabelWidth"
     />
   </Form>
 );

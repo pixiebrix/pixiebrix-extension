@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -28,7 +28,6 @@ import {
   parseDefinitionList,
   getAllDefinitionLists,
 } from "@/utils/parseDefinitionList";
-import { lowerCase } from "lodash";
 import { findSingleElement } from "@/utils/domUtils";
 
 const TABLE_READER_ID = validateRegistryId("@pixiebrix/table-reader");
@@ -105,9 +104,7 @@ export class TableReader extends TransformerABC {
     }
 
     throw new TypeError(
-      `Selector does not match a table or definition list (dl) element, found: <${lowerCase(
-        table.nodeName,
-      )}>`,
+      `Selector does not match a table or definition list (dl) element, found: <${table.nodeName.toLowerCase()}>`,
     );
   }
 }

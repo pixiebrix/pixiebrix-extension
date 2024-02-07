@@ -3,23 +3,23 @@
 exports[`UiPath Options Render integration selector 1`] = `
 <DocumentFragment>
   <div
-    class="formGroup form-group row"
+    class="formGroup form-group"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 w-100 collapse"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <label
-      class="label form-label col-form-label col-xl-2 col-lg-3"
+      class="label form-label"
       for="extension.blockPipeline.0.config.uipath"
     >
       Integration
     </label>
     <div
-      class="col-xl-10 col-lg-9"
+      class="formField"
     >
       <div
         class="d-flex"
@@ -170,23 +170,23 @@ exports[`UiPath Options Render integration selector 1`] = `
 exports[`UiPath Options Render with selected dependency 1`] = `
 <DocumentFragment>
   <div
-    class="formGroup form-group row"
+    class="formGroup form-group"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 w-100 collapse"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <label
-      class="label form-label col-form-label col-xl-2 col-lg-3"
+      class="label form-label"
       for="extension.blockPipeline.0.config.uipath"
     >
       Integration
     </label>
     <div
-      class="col-xl-10 col-lg-9"
+      class="formField"
     >
       <div
         class="d-flex"
@@ -332,23 +332,23 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     </div>
   </div>
   <div
-    class="formGroup form-group row"
+    class="formGroup form-group"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 w-100 collapse"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <label
-      class="label form-label col-form-label col-xl-2 col-lg-3"
+      class="label form-label"
       for="extension.blockPipeline.0.config.releaseKey"
     >
       Release
     </label>
     <div
-      class="col-xl-10 col-lg-9"
+      class="formField"
     >
       <div
         class="d-flex"
@@ -396,23 +396,23 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     </div>
   </div>
   <div
-    class="formGroup form-group row"
+    class="formGroup form-group"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 w-100 collapse"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <label
-      class="label form-label col-form-label col-xl-2 col-lg-3"
+      class="label form-label"
       for="extension.blockPipeline.0.config.strategy"
     >
       Strategy
     </label>
     <div
-      class="col-xl-10 col-lg-9"
+      class="formField"
     >
       <div
         class="root"
@@ -526,23 +526,23 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     </div>
   </div>
   <div
-    class="formGroup form-group row"
+    class="formGroup form-group"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 w-100 collapse"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <label
-      class="label form-label col-form-label col-xl-2 col-lg-3"
+      class="label form-label"
       for="extension.blockPipeline.0.config.jobsCount"
     >
       Jobs Count
     </label>
     <div
-      class="col-xl-10 col-lg-9"
+      class="formField"
     >
       <div
         class="root"
@@ -589,23 +589,23 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     </div>
   </div>
   <div
-    class="formGroup form-group row"
+    class="formGroup form-group"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 w-100 collapse"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <label
-      class="label form-label col-form-label col-xl-2 col-lg-3"
+      class="label form-label"
       for="extension.blockPipeline.0.config.awaitResult"
     >
       Await Result
     </label>
     <div
-      class="col-xl-10 col-lg-9"
+      class="formField"
     >
       <div
         class="root"
@@ -666,17 +666,17 @@ exports[`UiPath Options Render with selected dependency 1`] = `
     </div>
   </div>
   <div
-    class="formGroup form-group row"
+    class="formGroup form-group"
   >
     <div
-      class="mb-2 collapse col-12"
+      class="mb-2 w-100 collapse"
     >
       <div
         class="annotationPlaceholder"
       />
     </div>
     <div
-      class="col-xl-12 col-lg-12"
+      class="formField"
     >
       <div
         class="card"

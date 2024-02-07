@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { lowerCase, sortBy } from "lodash";
+import { sortBy } from "lodash";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
@@ -75,7 +75,7 @@ function arrangeSidebarItems({
 
   for (const modSidebarItem of Object.values(modSidebarItems)) {
     modSidebarItem.modComponents.sort((a, b) =>
-      lowerCase(a.label).localeCompare(lowerCase(b.label)),
+      a.label.toLowerCase().localeCompare(b.label.toLowerCase()),
     );
   }
 
@@ -83,8 +83,8 @@ function arrangeSidebarItems({
     [...Object.values(modSidebarItems), ...orphanSidebarItems],
     (item) =>
       isModSidebarItem(item)
-        ? lowerCase(item.modMetadata.name)
-        : lowerCase(item.label),
+        ? item.modMetadata.name.toLowerCase()
+        : item.label.toLowerCase(),
   );
 }
 

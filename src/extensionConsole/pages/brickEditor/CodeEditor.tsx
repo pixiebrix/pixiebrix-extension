@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -63,61 +63,59 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
   }, [openEditor]);
 
   return (
-    <>
-      <Suspense fallback={<div>Loading editor...</div>}>
-        <AceEditor
-          value={value}
-          onChange={setValue}
-          width={(width ?? 400).toString()}
-          mode="yaml"
-          theme="chrome"
-          name="ACE_EDITOR_DIV"
-          editorProps={{ $blockScrolling: true }}
-          commands={[
-            {
-              name: "save", // Name for the key binding.
-              bindKey: { win: "Ctrl-S", mac: "Command-S" }, // Key combination used for the command.
-              exec() {
-                void submitForm();
-              },
+    <Suspense fallback={<div>Loading editor...</div>}>
+      <AceEditor
+        value={value}
+        onChange={setValue}
+        width={(width ?? 400).toString()}
+        mode="yaml"
+        theme="chrome"
+        name="ACE_EDITOR_DIV"
+        editorProps={{ $blockScrolling: true }}
+        commands={[
+          {
+            name: "save", // Name for the key binding.
+            bindKey: { win: "Ctrl-S", mac: "Command-S" }, // Key combination used for the command.
+            exec() {
+              void submitForm();
             },
-            {
-              name: "openEditor",
-              bindKey: { win: "Ctrl-O", mac: "Command-O" },
-              exec(editor) {
-                const id = getCurrentTokenId(editor);
-                if (!isEmpty(id)) {
-                  openEditorRef.current(id);
-                }
-              },
+          },
+          {
+            name: "openEditor",
+            bindKey: { win: "Ctrl-O", mac: "Command-O" },
+            exec(editor) {
+              const id = getCurrentTokenId(editor);
+              if (!isEmpty(id)) {
+                openEditorRef.current(id);
+              }
             },
-            {
-              name: "openDefinition",
-              bindKey: { win: "Ctrl-B", mac: "Command-B" },
-              exec(editor) {
-                const id = getCurrentTokenId(editor);
-                if (!isEmpty(id)) {
-                  openDefinitionRef.current(id);
-                }
-              },
+          },
+          {
+            name: "openDefinition",
+            bindKey: { win: "Ctrl-B", mac: "Command-B" },
+            exec(editor) {
+              const id = getCurrentTokenId(editor);
+              if (!isEmpty(id)) {
+                openDefinitionRef.current(id);
+              }
             },
-          ]}
-        />
-        {meta.error && (
-          <ListGroup>
-            {castArray(meta.error).map((error) => (
-              <ListGroup.Item
-                key={error}
-                className="text-danger"
-                style={{ borderRadius: 0 }}
-              >
-                {error}
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
-        )}
-      </Suspense>
-    </>
+          },
+        ]}
+      />
+      {meta.error && (
+        <ListGroup>
+          {castArray(meta.error).map((error) => (
+            <ListGroup.Item
+              key={error}
+              className="text-danger"
+              style={{ borderRadius: 0 }}
+            >
+              {error}
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      )}
+    </Suspense>
   );
 };
 

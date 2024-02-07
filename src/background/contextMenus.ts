@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@ import pTimeout from "p-timeout";
 import { type Menus, type Tabs } from "webextension-polyfill";
 import chromeP from "webext-polyfill-kinda";
 import reportError from "@/telemetry/reportError";
-import { handleMenuAction, notify } from "@/contentScript/messenger/api";
+import { handleMenuAction, notify } from "@/contentScript/messenger/strict/api";
 import { ensureContentScript } from "@/background/contentScript";
 import { expectContext } from "@/utils/expectContext";
 import extensionPointRegistry from "@/starterBricks/registry";
@@ -34,7 +34,7 @@ import {
   type ModComponentBase,
   type ResolvedModComponent,
 } from "@/types/modComponentTypes";
-import { allSettledValues, memoizeUntilSettled } from "@/utils/promiseUtils";
+import { allSettled, memoizeUntilSettled } from "@/utils/promiseUtils";
 
 const MENU_PREFIX = "pixiebrix-";
 
@@ -68,7 +68,7 @@ async function dispatchMenu(
 ): Promise<void> {
   expectContext("background");
 
-  const target = { frameId: info.frameId, tabId: tab.id };
+  const target = { frameId: info.frameId ?? 0, tabId: tab.id };
 
   if (typeof info.menuItemId !== "string") {
     throw new TypeError(`Not a PixieBrix menu item: ${info.menuItemId}`);
@@ -184,28 +184,28 @@ export async function preloadContextMenus(
   extensions: ModComponentBase[],
 ): Promise<void> {
   expectContext("background");
-  await Promise.allSettled(
-    extensions.map(async (definition) => {
-      const resolved = await resolveExtensionInnerDefinitions(definition);
+  const promises = extensions.map(async (definition) => {
+    const resolved = await resolveExtensionInnerDefinitions(definition);
 
-      const extensionPoint = await extensionPointRegistry.lookup(
-        resolved.extensionPointId,
+    const extensionPoint = await extensionPointRegistry.lookup(
+      resolved.extensionPointId,
+    );
+    if (extensionPoint instanceof ContextMenuStarterBrickABC) {
+      await extensionPoint.ensureMenu(
+        definition as unknown as ResolvedModComponent<ContextMenuConfig>,
       );
-      if (extensionPoint instanceof ContextMenuStarterBrickABC) {
-        await extensionPoint.ensureMenu(
-          definition as unknown as ResolvedModComponent<ContextMenuConfig>,
-        );
-      }
-    }),
-  );
+    }
+  });
+  await allSettled(promises, { catch: "ignore" });
 }
 
 async function preloadAllContextMenus(): Promise<void> {
   const { extensions } = await getModComponentState();
-  const resolved = await allSettledValues(
+  const { fulfilled } = await allSettled(
     extensions.map(async (x) => resolveExtensionInnerDefinitions(x)),
+    { catch: "ignore" },
   );
-  await preloadContextMenus(resolved);
+  await preloadContextMenus(fulfilled);
 }
 
 export default function initContextMenus(): void {

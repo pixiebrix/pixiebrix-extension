@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,7 +25,7 @@ import reportError from "@/telemetry/reportError";
 import { compact, debounce, groupBy, intersection, uniq } from "lodash";
 import oneEvent from "one-event";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { traces } from "@/background/messenger/api";
+import { traces } from "@/background/messenger/strict/api";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { getThisFrame } from "webext-messenger";
@@ -39,9 +39,13 @@ import {
   getReloadOnNextNavigate,
   setReloadOnNextNavigate,
 } from "@/contentScript/ready";
-import { logPromiseDuration, pollUntilTruthy } from "@/utils/promiseUtils";
+import {
+  allSettled,
+  logPromiseDuration,
+  pollUntilTruthy,
+} from "@/utils/promiseUtils";
 import { $safeFind } from "@/utils/domUtils";
-import { invalidatedContextSignal } from "@/errors/contextInvalidated";
+import { onContextInvalidated } from "webext-events";
 
 /**
  * True if handling the initial page load.
@@ -197,8 +201,9 @@ export async function ensureInstalled(): Promise<void> {
   console.debug("lifecycle:ensureInstalled", {
     sidebarExtensionPoints,
   });
-  await Promise.allSettled(
+  await allSettled(
     sidebarExtensionPoints.map(async (x) => x.install()),
+    { catch: "ignore" },
   );
 }
 
@@ -640,7 +645,7 @@ async function onNavigate(event: NavigateEvent): Promise<void> {
     // Ignore navigations to external pages
     !event.destination.url.startsWith(location.origin) ||
     // Ignore <a download> links
-    event.downloadRequest !== null // Specifically `null` and not `''`
+    event.downloadRequest != null // Specifically `null` and not `''`
   ) {
     return;
   }
@@ -669,6 +674,6 @@ export async function initNavigation() {
       trailing: true,
       maxWait: 1000,
     }),
-    { signal: invalidatedContextSignal },
+    { signal: onContextInvalidated.signal },
   );
 }

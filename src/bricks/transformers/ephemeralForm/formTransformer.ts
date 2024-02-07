@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,13 +25,13 @@ import {
 } from "@/contentScript/ephemeralFormProtocol";
 import { expectContext } from "@/utils/expectContext";
 import {
-  ensureSidebar,
+  showSidebar,
   hideSidebarForm,
-  HIDE_SIDEBAR_EVENT_NAME,
   showSidebarForm,
+  sidePanelOnClose,
 } from "@/contentScript/sidebarController";
 import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
-import { getThisFrame } from "webext-messenger";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type BrickConfig } from "@/bricks/types";
 import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
 import { isExpression } from "@/utils/expressionUtils";
@@ -44,7 +44,7 @@ export async function createFrameSource(
   nonce: string,
   mode: Mode,
 ): Promise<URL> {
-  const target = await getThisFrame();
+  const target = await getConnectedTarget();
 
   const frameSource = new URL(browser.runtime.getURL("ephemeralForm.html"));
   frameSource.searchParams.set("nonce", nonce);
@@ -52,6 +52,55 @@ export async function createFrameSource(
   frameSource.searchParams.set("mode", mode);
   return frameSource;
 }
+
+export const MODAL_FORM_SCHEMA: Schema = {
+  type: "object",
+  properties: {
+    schema: {
+      type: "object",
+      description: "The JSON Schema for the form",
+      additionalProperties: true,
+    },
+    uiSchema: {
+      type: "object",
+      description: "The react-jsonschema-form uiSchema for the form",
+      additionalProperties: true,
+    },
+    cancelable: {
+      type: "boolean",
+      description: "Whether or not the user can cancel the form (default=true)",
+      default: true,
+    },
+    submitCaption: {
+      type: "string",
+      description: "The submit button caption (default='Submit')",
+      default: "Submit",
+    },
+    location: {
+      type: "string",
+      enum: ["modal", "sidebar"],
+      description: "The location of the form (default='modal')",
+      default: "modal",
+    },
+    stylesheets: {
+      type: "array",
+      items: {
+        type: "string",
+        format: "uri",
+      },
+      title: "CSS Stylesheet URLs",
+      description:
+        "Stylesheets will apply to the form in the order listed here",
+    },
+    disableParentStyles: {
+      type: "boolean",
+      title: "Disable Parent Styling",
+      description:
+        "Disable the default/inherited styling for the rendered form",
+    },
+  },
+  required: ["schema"],
+};
 
 export class FormTransformer extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/form-modal");
@@ -65,39 +114,7 @@ export class FormTransformer extends TransformerABC {
     );
   }
 
-  inputSchema: Schema = {
-    type: "object",
-    properties: {
-      schema: {
-        type: "object",
-        description: "The JSON Schema for the form",
-        additionalProperties: true,
-      },
-      uiSchema: {
-        type: "object",
-        description: "The react-jsonschema-form uiSchema for the form",
-        additionalProperties: true,
-      },
-      cancelable: {
-        type: "boolean",
-        description:
-          "Whether or not the user can cancel the form (default=true)",
-        default: true,
-      },
-      submitCaption: {
-        type: "string",
-        description: "The submit button caption (default='Submit')",
-        default: "Submit",
-      },
-      location: {
-        type: "string",
-        enum: ["modal", "sidebar"],
-        description: "The location of the form (default='modal')",
-        default: "modal",
-      },
-    },
-    required: ["schema"],
-  };
+  inputSchema = MODAL_FORM_SCHEMA;
 
   override outputSchema: Schema = {
     type: "object",
@@ -121,6 +138,8 @@ export class FormTransformer extends TransformerABC {
       cancelable = true,
       submitCaption = "Submit",
       location = "modal",
+      stylesheets = [],
+      disableParentStyles = false,
     }: BrickArgs<FormDefinition>,
     { logger, abortSignal }: BrickOptions,
   ): Promise<unknown> {
@@ -131,12 +150,15 @@ export class FormTransformer extends TransformerABC {
 
     const formNonce = uuidv4();
 
-    const formDefinition = {
+    // Repackage the definition from the brick input with default values
+    const formDefinition: FormDefinition = {
       schema,
       uiSchema,
       cancelable,
       submitCaption,
       location,
+      stylesheets,
+      disableParentStyles,
     };
 
     abortSignal?.addEventListener("abort", () => {
@@ -149,7 +171,8 @@ export class FormTransformer extends TransformerABC {
     // Pre-registering the form also allows the sidebar to know a form will be shown in computing the default
     // tab to show during sidebar initialization.
     const formPromise = registerForm({
-      extensionId: logger.context.extensionId,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Review MessageContext types/usage
+      extensionId: logger.context.extensionId!,
       nonce: formNonce,
       definition: formDefinition,
       blueprintId: logger.context.blueprintId,
@@ -157,33 +180,24 @@ export class FormTransformer extends TransformerABC {
 
     if (location === "sidebar") {
       // Ensure the sidebar is visible (which may also be showing persistent panels)
-      await ensureSidebar();
+      await showSidebar();
 
-      showSidebarForm({
-        extensionId: logger.context.extensionId,
+      await showSidebarForm({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Review MessageContext types/usage
+        extensionId: logger.context.extensionId!,
         blueprintId: logger.context.blueprintId,
         nonce: formNonce,
         form: formDefinition,
       });
 
       // Two-way binding between sidebar and form. Listen for the user (or an action) closing the sidebar
-      window.addEventListener(
-        HIDE_SIDEBAR_EVENT_NAME,
-        () => {
-          controller.abort();
-        },
-        {
-          // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
-          // The listener will be removed when the given AbortSignal object's abort() method is called.
-          signal: controller.signal,
-        },
-      );
+      sidePanelOnClose(controller.abort.bind(controller));
 
       controller.signal.addEventListener("abort", () => {
         // NOTE: we're not hiding the side panel here to avoid closing the sidebar if the user already had it open.
         // In the future we might creating/sending a closeIfEmpty message to the sidebar, so that it would close
         // if this form was the only entry in the panel
-        hideSidebarForm(formNonce);
+        void hideSidebarForm(formNonce);
         void cancelForm(formNonce);
       });
     } else {

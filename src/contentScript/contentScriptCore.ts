@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,6 +23,7 @@ import "@/extensionContext";
 import { initMessengerLogging } from "@/development/messengerLogging";
 import registerExternalMessenger from "@/background/messenger/external/registration";
 import registerMessenger from "@/contentScript/messenger/registration";
+import registerMessengerStrict from "@/contentScript/messenger/strict/registration";
 import registerBuiltinBricks from "@/bricks/registerBuiltinBricks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import brickRegistry from "@/bricks/registry";
@@ -40,6 +41,13 @@ import initFloatingActions from "@/components/floatingActions/initFloatingAction
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
 import { initRuntime } from "@/runtime/reducePipeline";
+import { renderPanelsIfVisible } from "./sidebarController";
+import {
+  isSidebarFrameVisible,
+  removeSidebarFrame,
+} from "./sidebarDomControllerLite";
+import { isMV3 } from "@/mv3/api";
+import { onContextInvalidated } from "webext-events";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -56,6 +64,7 @@ export async function init(): Promise<void> {
 
   void initMessengerLogging();
   registerMessenger();
+  registerMessengerStrict();
   registerExternalMessenger();
   registerBuiltinBricks();
   registerContribBlocks();
@@ -69,12 +78,28 @@ export async function init(): Promise<void> {
 
   void initSidebarActivation();
 
-  // Inform `ensureContentScript`
+  // Notify `ensureContentScript`
   void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
+
+  // Update `sidePanel`
+  // TODO: VERIFY: This replaces the old "sidebarController:showSidebar emitting sidebarShowEvents" in `showSidebar` right?
+  void renderPanelsIfVisible();
 
   // Let the partner page know
   initPartnerIntegrations();
   void initFloatingActions();
 
   void initPerformanceMonitoring();
+
+  onContextInvalidated.addListener(() => {
+    // The sidebar breaks when the context is invalidated, so it's best to close it
+    // In MV3, this happens automatically
+    if (!isMV3() && isSidebarFrameVisible()) {
+      removeSidebarFrame();
+      // TODO: Also notify closure in MV3.
+      // There it's more complicated to show this message ONLY if the sidebar was open
+      // because the sidebar is closed before this listener is called.
+      void notifyContextInvalidated();
+    }
+  });
 }

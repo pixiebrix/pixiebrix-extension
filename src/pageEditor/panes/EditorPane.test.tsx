@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -117,7 +117,7 @@ beforeAll(async () => {
     (listing, index) =>
       ({
         id: uuidSequence(index),
-        name: listing.id,
+        name: listing.package.name,
       }) as EditablePackageMetadata,
   );
 
@@ -820,30 +820,25 @@ describe("validation", () => {
         config: defaultBrickConfig(disallowedBlock.inputSchema),
       });
 
-      const { container } = render(
-        <>
-          <EditorPane />
-        </>,
-        {
-          setupRedux(dispatch) {
-            dispatch(editorActions.addElement(formState));
-            dispatch(editorActions.selectElement(formState.uuid));
-            // Adding the node will invoke validation (can't add with UI because of UI validation rules)
-            dispatch(
-              editorActions.addNode({
-                block: disallowedBlockConfig,
-                pipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
-                pipelineIndex: 0,
-              }),
-            );
-            dispatch(
-              editorActions.setElementActiveNodeId(
-                disallowedBlockConfig.instanceId,
-              ),
-            );
-          },
+      const { container } = render(<EditorPane />, {
+        setupRedux(dispatch) {
+          dispatch(editorActions.addElement(formState));
+          dispatch(editorActions.selectElement(formState.uuid));
+          // Adding the node will invoke validation (can't add with UI because of UI validation rules)
+          dispatch(
+            editorActions.addNode({
+              block: disallowedBlockConfig,
+              pipelinePath: PIPELINE_BLOCKS_FIELD_NAME,
+              pipelineIndex: 0,
+            }),
+          );
+          dispatch(
+            editorActions.setElementActiveNodeId(
+              disallowedBlockConfig.instanceId,
+            ),
+          );
         },
-      );
+      });
 
       await tickAsyncEffects();
 

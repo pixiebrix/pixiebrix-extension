@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,6 +24,7 @@ import {
   type CustomAction,
   type GeneratorArgs,
 } from "@/components/quickBar/quickbarTypes";
+import { allSettled } from "@/utils/promiseUtils";
 
 class QuickBarRegistry {
   /**
@@ -197,8 +198,9 @@ class QuickBarRegistry {
     // Run all generators in parallel
     this.generatorAbortController = new AbortController();
     const abortSignal = this.generatorAbortController.signal;
-    await Promise.allSettled(
+    await allSettled(
       this.actionGenerators.map(async (x) => x({ ...args, abortSignal })),
+      { catch: "ignore" },
     );
   }
 }

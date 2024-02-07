@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -43,7 +43,11 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
 
   const onKeyPress = useCallback<KeyboardEventHandler<HTMLTextAreaElement>>(
     async (event) => {
-      if (options.submitOnEnter && event.key === "Enter" && !event.shiftKey) {
+      if (
+        options.submitOnEnter &&
+        event.key === "Enter" &&
+        !(event.shiftKey || event.altKey || event.ctrlKey) // Do not submit on enter when a modifier key is held
+      ) {
         event.preventDefault();
         event.stopPropagation();
         // Can submit directly without calling onChange because prior key-presses would already be synced

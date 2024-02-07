@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,17 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type RegistryId } from "@/types/registryTypes";
-import { isRegistryId } from "@/types/helpers";
 import {
-  ensureSidebar,
-  HIDE_SIDEBAR_EVENT_NAME,
   hideModActivationInSidebar,
   showModActivationInSidebar,
+  showSidebar,
+  sidePanelOnClose,
 } from "@/contentScript/sidebarController";
 import { isLinked } from "@/auth/token";
 import {
-  getActivatingModIds,
+  getActivatingMods,
   setActivatingMods,
 } from "@/background/messenger/external/_implementation";
 import reportEvent from "@/telemetry/reportEvent";
@@ -33,63 +31,37 @@ import { Events } from "@/telemetry/events";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getActivatedModIds } from "@/store/extensionsStorage";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import { allSettled } from "@/utils/promiseUtils";
+import type { ModActivationConfig } from "@/types/modTypes";
+import {
+  getNextUrlFromActivateUrl,
+  parseModActivationUrlSearchParams,
+} from "@/activation/activationLinkUtils";
+import {
+  type ACTIVATE_EVENT_DETAIL,
+  ACTIVATE_EVENT_TYPE,
+} from "@/contentScript/activationConstants";
 
 let listener: EventListener | null;
 
-/**
- * Returns mod ids that are currently being activated, or null if there are none.
- *
- * Same as getActivatingBlueprints, but filters out any mod ids that are not syntactically valid.
- *
- * @see getActivatingModIds
- */
-async function getInProgressModActivation(): Promise<RegistryId[] | null> {
-  const modIds = (await getActivatingModIds()) ?? [];
-
-  // Defensive validation
-  const valid = modIds.filter((x: string) => isRegistryId(x));
-
-  return valid.length > 0 ? valid : null;
-}
-
 async function showSidebarActivationForMods(
-  modIds: RegistryId[],
+  mods: ModActivationConfig[],
 ): Promise<void> {
-  const controller = new AbortController();
-
-  await ensureSidebar();
-  showModActivationInSidebar({
-    modIds,
+  await showSidebar();
+  await showModActivationInSidebar({
+    mods,
     heading: "Activating",
   });
-  window.addEventListener(
-    HIDE_SIDEBAR_EVENT_NAME,
-    () => {
-      controller.abort();
-    },
-    {
-      signal: controller.signal,
-    },
-  );
-  controller.signal.addEventListener("abort", () => {
-    hideModActivationInSidebar();
-  });
-}
 
-function getNextUrlFromActivateUrl(activateUrl: string): string | null {
-  const url = new URL(activateUrl);
-  const searchParams = new URLSearchParams(url.search);
-  return searchParams.get("nextUrl");
+  sidePanelOnClose(hideModActivationInSidebar);
 }
 
 function addActivateModsListener(): void {
   // Prevent duplicating listener
-  window.removeEventListener("ActivateMods", listener);
+  window.removeEventListener(ACTIVATE_EVENT_TYPE, listener);
 
-  listener = async (
-    event: CustomEvent<{ modIds: RegistryId[]; activateUrl: string }>,
-  ) => {
-    const { modIds, activateUrl } = event.detail;
+  listener = async (event: CustomEvent<ACTIVATE_EVENT_DETAIL>) => {
+    const { activateUrl } = event.detail;
     const nextUrl = getNextUrlFromActivateUrl(activateUrl);
 
     if (!(await isLinked())) {
@@ -98,26 +70,32 @@ function addActivateModsListener(): void {
       return;
     }
 
+    const mods = parseModActivationUrlSearchParams(
+      new URL(activateUrl).searchParams,
+    );
+
     if (nextUrl) {
-      await setActivatingMods({ blueprintId: modIds });
+      await setActivatingMods({ mods });
       window.location.assign(nextUrl);
       return;
     }
 
     const activatedModIds = await getActivatedModIds();
 
+    const modIds = mods.map((x) => x.modId);
+
     reportEvent(Events.START_MOD_ACTIVATE, {
       // For legacy, report the first mod id
-      blueprintId: modIds[0],
+      blueprintId: modIds,
       modIds,
       screen: "marketplace",
       reinstall: modIds.some((x) => activatedModIds.has(x)),
     });
 
-    await showSidebarActivationForMods(modIds);
+    await showSidebarActivationForMods(mods);
   };
 
-  window.addEventListener("ActivateMods", listener);
+  window.addEventListener(ACTIVATE_EVENT_TYPE, listener);
 }
 
 export async function initSidebarActivation(): Promise<void> {
@@ -127,18 +105,21 @@ export async function initSidebarActivation(): Promise<void> {
     return;
   }
 
-  const modIds = await getInProgressModActivation();
+  const mods = await getActivatingMods();
 
   // Do not try to show sidebar activation inside an iframe or in the Admin Console
   if (
-    modIds &&
+    mods.length > 0 &&
     !isLoadedInIframe() &&
     !document.location.href.includes(DEFAULT_SERVICE_URL)
   ) {
-    await Promise.allSettled([
-      // Clear out local storage
-      setActivatingMods({ blueprintId: null }),
-      showSidebarActivationForMods(modIds),
-    ]);
+    await allSettled(
+      [
+        // Clear out local storage
+        setActivatingMods(null),
+        showSidebarActivationForMods(mods),
+      ],
+      { catch: "ignore" },
+    );
   }
 }

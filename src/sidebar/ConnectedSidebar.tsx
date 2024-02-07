@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -38,11 +38,9 @@ import { selectIsSidebarEmpty } from "@/sidebar/sidebarSelectors";
 import DelayedRender from "@/components/DelayedRender";
 import DefaultPanel from "@/sidebar/DefaultPanel";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
-import {
-  ensureExtensionPointsInstalled,
-  getReservedSidebarEntries,
-} from "@/contentScript/messenger/api";
-import { getTopLevelFrame } from "webext-messenger";
+import { ensureExtensionPointsInstalled } from "@/contentScript/messenger/api";
+import { getReservedSidebarEntries } from "@/contentScript/messenger/strict/api";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import useAsyncEffect from "use-async-effect";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
 
@@ -98,7 +96,7 @@ const ConnectedSidebar: React.VFC = () => {
   // We could instead consider moving the initial panel logic to SidebarApp.tsx and pass the entries as the
   // initial state to the sidebarSlice reducer.
   useAsyncEffect(async () => {
-    const topFrame = await getTopLevelFrame();
+    const topFrame = await getConnectedTarget();
 
     // Ensure persistent sidebar extension points have been installed to have reserve their panels for the sidebar
     await ensureExtensionPointsInstalled(topFrame);
@@ -153,23 +151,21 @@ const ConnectedSidebar: React.VFC = () => {
   }, []);
 
   return (
-    <div className="full-height">
-      <ErrorBoundary>
-        <RequireAuth
-          LoginPage={LoginPanel}
-          // Use ignoreApiError to avoid showing error on intermittent network issues or PixieBrix API degradation
-          ignoreApiError
-        >
-          {sidebarIsEmpty ? (
-            <DelayedRender millis={300}>
-              <DefaultPanel />
-            </DelayedRender>
-          ) : (
-            <Tabs />
-          )}
-        </RequireAuth>
-      </ErrorBoundary>
-    </div>
+    <ErrorBoundary>
+      <RequireAuth
+        LoginPage={LoginPanel}
+        // Use ignoreApiError to avoid showing error on intermittent network issues or PixieBrix API degradation
+        ignoreApiError
+      >
+        {sidebarIsEmpty ? (
+          <DelayedRender millis={300}>
+            <DefaultPanel />
+          </DelayedRender>
+        ) : (
+          <Tabs />
+        )}
+      </RequireAuth>
+    </ErrorBoundary>
   );
 };
 

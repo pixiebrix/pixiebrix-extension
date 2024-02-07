@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,6 @@ import NodePolyfillPlugin from "node-polyfill-webpack-plugin";
 import WebpackBuildNotifierPlugin from "webpack-build-notifier";
 import TerserPlugin from "terser-webpack-plugin";
 import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
-import RemovePlugin from "remove-files-webpack-plugin";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import CopyPlugin from "copy-webpack-plugin";
 import { compact } from "lodash-es";
@@ -32,6 +31,7 @@ import mergeWithShared from "./webpack.sharedConfig.js";
 import { parseEnv, loadEnv } from "./scripts/env.mjs";
 import customizeManifest from "./scripts/manifest.mjs";
 import { createRequire } from "node:module";
+import DiscardFilePlugin from "./scripts/DiscardFilePlugin.mjs";
 
 const require = createRequire(import.meta.url);
 
@@ -97,6 +97,7 @@ const createConfig = (env, options) =>
       path: path.resolve("dist"),
       chunkFilename: "bundles/[name].bundle.js",
       environment: {
+        // https://github.com/awesome-webextension/webpack-target-webextension#code-splitting
         dynamicImport: true,
       },
     },
@@ -201,11 +202,20 @@ const createConfig = (env, options) =>
         }),
 
       new NodePolyfillPlugin({
-        // Specify the least amount of polyfills because by default it event polyfills `console`
+        // Specify the least amount of polyfills.
+        // By default it polyfills even `console`
         includeAliases: ["buffer", "Buffer", "http", "https"],
       }),
       new WebExtensionTarget({
         weakRuntimeCheck: true,
+
+        // Required to support sandboxed iframes
+        // https://github.com/awesome-webextension/webpack-target-webextension/pull/42
+        background: {
+          // Do not use serviceWorkerEntry:
+          // https://github.com/awesome-webextension/webpack-target-webextension/issues/24#issuecomment-1914057083
+          pageEntry: "background",
+        },
       }),
       new webpack.ProvidePlugin({
         $: "jquery",
@@ -266,11 +276,7 @@ const createConfig = (env, options) =>
           "static",
         ],
       }),
-      new RemovePlugin({
-        after: {
-          include: ["dist/DocumentView.js"],
-        },
-      }),
+      new DiscardFilePlugin(),
     ]),
     module: {
       rules: [

@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -151,9 +151,9 @@ const DataPanel: React.FC = () => {
   const { data: previewInfo } = usePreviewInfo(brickId);
 
   const showFormPreview =
-    brickId === CustomFormRenderer.BLOCK_ID ||
+    brickId === CustomFormRenderer.BRICK_ID ||
     brickId === FormTransformer.BRICK_ID;
-  const showDocumentPreview = brickId === DocumentRenderer.BLOCK_ID;
+  const showDocumentPreview = brickId === DocumentRenderer.BRICK_ID;
   const showBrickPreview = record || previewInfo?.traceOptional;
 
   const [activeTabKey, onSelectTab] = useDataPanelActiveTabKey(

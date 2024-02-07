@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -30,6 +30,7 @@ import styles from "./ActionMenu.module.scss";
 import EllipsisMenu, {
   type EllipsisMenuItem,
 } from "@/components/ellipsisMenu/EllipsisMenu";
+import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 
 type ActionMenuProps = {
   onSave: () => Promise<void>;
@@ -43,6 +44,17 @@ type ActionMenuProps = {
   disabled?: boolean;
 };
 
+const Title: React.FC<{
+  icon: IconProp;
+  text: string;
+  iconClassName?: string;
+}> = ({ icon, text, iconClassName }) => (
+  <>
+    <FontAwesomeIcon icon={icon} fixedWidth className={iconClassName} />
+    {` ${text}`}
+  </>
+);
+
 const ActionMenu: React.FC<ActionMenuProps> = ({
   onSave,
   onDelete,
@@ -55,82 +67,49 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
   disabled,
 }) => {
   const menuItems: EllipsisMenuItem[] = [
-    {
-      title: (
-        <>
-          <FontAwesomeIcon icon={faHistory} fixedWidth /> Reset
-        </>
-      ),
-      hide: !onReset,
+    onReset && {
+      title: <Title icon={faHistory} text="Reset" />,
       action: onReset,
       disabled: !isDirty || disabled,
     },
-    {
+    onAddToRecipe && {
       title: (
-        <>
-          <FontAwesomeIcon
-            icon={faFileImport}
-            fixedWidth
-            className={styles.addIcon}
-          />{" "}
-          Add to mod
-        </>
+        <Title
+          icon={faFileImport}
+          iconClassName={styles.addIcon}
+          text="Add to mod"
+        />
       ),
-      hide: !onAddToRecipe,
       action: onAddToRecipe,
       disabled,
     },
-    {
+    onRemoveFromRecipe && {
       title: (
-        <>
-          <FontAwesomeIcon
-            icon={faFileExport}
-            fixedWidth
-            className={styles.removeIcon}
-          />{" "}
-          Move from mod
-        </>
+        <Title
+          icon={faFileExport}
+          iconClassName={styles.removeIcon}
+          text="Move from mod"
+        />
       ),
-      hide: !onRemoveFromRecipe,
       action: onRemoveFromRecipe,
       disabled,
     },
     {
-      title: (
-        <>
-          <FontAwesomeIcon icon={faClone} fixedWidth /> Make a copy
-        </>
-      ),
+      title: <Title icon={faClone} text="Make a copy" />,
       action: onClone,
       disabled,
     },
-    ...(onDelete
-      ? [
-          {
-            title: (
-              <>
-                <FontAwesomeIcon icon={faTrash} fixedWidth /> Delete
-              </>
-            ),
-            action: onDelete,
-            disabled,
-          },
-        ]
-      : []),
-    ...(onDeactivate
-      ? [
-          {
-            title: (
-              <>
-                <FontAwesomeIcon icon={faTimes} fixedWidth /> Deactivate
-              </>
-            ),
-            action: onDeactivate,
-            disabled,
-          },
-        ]
-      : []),
-  ];
+    onDelete && {
+      title: <Title icon={faTrash} text="Delete" />,
+      action: onDelete,
+      disabled,
+    },
+    onDeactivate && {
+      title: <Title icon={faTimes} text="Deactivate" />,
+      action: onDeactivate,
+      disabled,
+    },
+  ].filter(Boolean);
 
   return (
     <div className={styles.root}>

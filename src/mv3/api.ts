@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,5 +20,6 @@
 import { type Tabs } from "webextension-polyfill";
 
 export const isMV3 = (): boolean => process.env.MV === "3";
-export const browserAction = chrome.browserAction ?? chrome.action;
+export const browserAction =
+  globalThis.chrome?.browserAction ?? globalThis.chrome?.action;
 export type Tab = Tabs.Tab | chrome.tabs.Tab;

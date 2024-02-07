@@ -64,73 +64,78 @@ exports[`SidebarBody it renders 1`] = `
       class="container"
     >
       <div
-        class="mt-4 row"
+        class="text-center mt-4"
       >
-        <div
-          class="text-center col"
+        <h4
+          class="display-6"
         >
-          <h4
-            class="display-6"
+          Connect PixieBrix Account
+        </h4>
+        <p>
+          Register/log-in to PixieBrix to access your personal and team bricks
+        </p>
+        <a
+          class="mt-4 btn btn-primary"
+          href="https://app.pixiebrix.com"
+          target="_blank"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-sign-in-alt fa-w-16 "
+            data-icon="sign-in-alt"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            Connect PixieBrix Account
-          </h4>
-          <p>
-            Register/log-in to PixieBrix to access your personal and team bricks
-          </p>
-          <a
-            class="mt-4 btn btn-primary"
-            href="https://app.pixiebrix.com"
-            target="_blank"
-          >
-            <svg
-              aria-hidden="true"
-              class="svg-inline--fa fa-sign-in-alt fa-w-16 "
-              data-icon="sign-in-alt"
-              data-prefix="fas"
-              focusable="false"
-              role="img"
-              viewBox="0 0 512 512"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M416 448h-84c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h84c17.7 0 32-14.3 32-32V160c0-17.7-14.3-32-32-32h-84c-6.6 0-12-5.4-12-12V76c0-6.6 5.4-12 12-12h84c53 0 96 43 96 96v192c0 53-43 96-96 96zm-47-201L201 79c-15-15-41-4.5-41 17v96H24c-13.3 0-24 10.7-24 24v96c0 13.3 10.7 24 24 24h136v96c0 21.5 26 32 41 17l168-168c9.3-9.4 9.3-24.6 0-34z"
-                fill="currentColor"
-              />
-            </svg>
-             Connect Account
-          </a>
-        </div>
+            <path
+              d="M416 448h-84c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h84c17.7 0 32-14.3 32-32V160c0-17.7-14.3-32-32-32h-84c-6.6 0-12-5.4-12-12V76c0-6.6 5.4-12 12-12h84c53 0 96 43 96 96v192c0 53-43 96-96 96zm-47-201L201 79c-15-15-41-4.5-41 17v96H24c-13.3 0-24 10.7-24 24v96c0 13.3 10.7 24 24 24h136v96c0 21.5 26 32 41 17l168-168c9.3-9.4 9.3-24.6 0-34z"
+              fill="currentColor"
+            />
+          </svg>
+           Connect Account
+        </a>
       </div>
       <div
-        class="row"
+        class="text-center mt-4"
       >
-        <div
-          class="text-center col"
-        >
-          <img
-            alt="Marketplace"
-            src="test-file-stub"
-            width="300"
-          />
-        </div>
+        <img
+          alt="Marketplace"
+          src="test-file-stub"
+          width="300"
+        />
       </div>
     </div>
   </div>
 </DocumentFragment>
 `;
 
-exports[`SidebarBody it renders error when context is invalidated 1`] = `
+exports[`SidebarBody it renders error when URL is restricted 1`] = `
 <DocumentFragment>
-  <div
-    class="p-3 alert-danger"
-  >
-    PixieBrix was updated or restarted. 
-    <br />
-    Close and reopen the sidebar to continue.
-  </div>
   <div
     class="d-flex py-2 pl-2 pr-0 justify-content-between align-content-center"
   >
+    <button
+      class="button themeColorOverride btn btn-link btn-sm"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="svg-inline--fa fa-angle-double-right fa-w-14 fa-lg"
+        data-icon="angle-double-right"
+        data-prefix="fas"
+        focusable="false"
+        role="img"
+        viewBox="0 0 448 512"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34zm192-34l-136-136c-9.4-9.4-24.6-9.4-33.9 0l-22.6 22.6c-9.4 9.4-9.4 24.6 0 33.9l96.4 96.4-96.4 96.4c-9.4 9.4-9.4 24.6 0 33.9l22.6 22.6c9.4 9.4 24.6 9.4 33.9 0l136-136c9.4-9.2 9.4-24.4 0-33.8z"
+          fill="currentColor"
+        />
+      </svg>
+    </button>
     <div
       class="align-self-center"
     >
@@ -167,58 +172,43 @@ exports[`SidebarBody it renders error when context is invalidated 1`] = `
     class="full-height"
   >
     <div
-      class="container"
+      class="p-3"
     >
       <div
-        class="mt-4 row"
+        class="font-weight-bold"
       >
-        <div
-          class="text-center col"
-        >
-          <h4
-            class="display-6"
-          >
-            Connect PixieBrix Account
-          </h4>
-          <p>
-            Register/log-in to PixieBrix to access your personal and team bricks
-          </p>
-          <a
-            class="mt-4 btn btn-primary"
-            href="https://app.pixiebrix.com"
-            target="_blank"
-          >
-            <svg
-              aria-hidden="true"
-              class="svg-inline--fa fa-sign-in-alt fa-w-16 "
-              data-icon="sign-in-alt"
-              data-prefix="fas"
-              focusable="false"
-              role="img"
-              viewBox="0 0 512 512"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M416 448h-84c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h84c17.7 0 32-14.3 32-32V160c0-17.7-14.3-32-32-32h-84c-6.6 0-12-5.4-12-12V76c0-6.6 5.4-12 12-12h84c53 0 96 43 96 96v192c0 53-43 96-96 96zm-47-201L201 79c-15-15-41-4.5-41 17v96H24c-13.3 0-24 10.7-24 24v96c0 13.3 10.7 24 24 24h136v96c0 21.5 26 32 41 17l168-168c9.3-9.4 9.3-24.6 0-34z"
-                fill="currentColor"
-              />
-            </svg>
-             Connect Account
-          </a>
-        </div>
+        This is a restricted browser page.
       </div>
       <div
-        class="row"
+        class="mt-2"
       >
-        <div
-          class="text-center col"
+        PixieBrix cannot access this page.
+      </div>
+      <div
+        class="mt-2"
+      >
+        To open the PixieBrix Sidebar, navigate to a website and then click the PixieBrix toolbar icon again.
+      </div>
+      <hr />
+      <div
+        class="mt-2"
+      >
+        Looking for the Extension Console? 
+        <a
+          href="chrome-extension://abcxyz/options.html"
         >
-          <img
-            alt="Marketplace"
-            src="test-file-stub"
-            width="300"
-          />
-        </div>
+          Open the Extension Console
+        </a>
+      </div>
+      <div
+        class="mt-2"
+      >
+        Looking for the Page Editor? 
+        <a
+          href="https://www.pixiebrix.com/developers-welcome"
+        >
+          View the Developer Welcome Page
+        </a>
       </div>
     </div>
   </div>

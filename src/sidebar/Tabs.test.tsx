@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,14 +24,17 @@ import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
-import * as messengerApi from "@/contentScript/messenger/api";
+import * as messengerApi from "@/contentScript/messenger/strict/api";
+import * as sidebarController from "@/sidebar/protocol";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { mockAllApiEndpoints } from "@/testUtils/appApiMock";
 
 mockAllApiEndpoints();
 
+jest.mock("@/sidebar/protocol");
+
 const cancelFormSpy = jest.spyOn(messengerApi, "cancelForm");
-const hideSidebarSpy = jest.spyOn(messengerApi, "hideSidebar");
+const hideSidebarSpy = jest.spyOn(sidebarController, "closeSelf");
 
 async function setupPanelsAndRender(options: {
   sidebarEntries?: Partial<SidebarEntries>;
@@ -78,8 +81,8 @@ async function setupPanelsAndRender(options: {
   return utils;
 }
 
-jest.mock("@/contentScript/messenger/api", () => ({
-  ...jest.requireActual("@/contentScript/messenger/api"),
+jest.mock("@/contentScript/messenger/strict/api", () => ({
+  ...jest.requireActual("@/contentScript/messenger/strict/api"),
   getReservedSidebarEntries: jest.fn(),
 }));
 

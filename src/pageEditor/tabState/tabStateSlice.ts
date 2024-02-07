@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,8 +17,8 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { thisTab } from "@/pageEditor/utils";
-import { ensureContentScript } from "@/background/messenger/api";
-import { onContextInvalidated } from "@/errors/contextInvalidated";
+import { ensureContentScript } from "@/background/messenger/strict/api";
+import { onContextInvalidated } from "webext-events";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   type FrameConnectionState,
@@ -57,7 +57,7 @@ const awaitContextInvalidated = createAsyncThunk<
   void,
   { state: TabStateRootState }
 >("tabState/awaitContextInvalidated", async () => {
-  await onContextInvalidated();
+  await onContextInvalidated.promise;
 });
 
 const connectToContentScript = createAsyncThunk<

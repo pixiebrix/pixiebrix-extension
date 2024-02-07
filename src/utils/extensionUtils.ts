@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,8 +20,6 @@ import { foreverPendingPromise } from "@/utils/promiseUtils";
 import { type Promisable } from "type-fest";
 import { isScriptableUrl } from "webext-content-scripts";
 import { type Runtime } from "webextension-polyfill";
-
-type TabId = number;
 
 export const SHORTCUTS_URL = "chrome://extensions/shortcuts";
 type Command = "toggle-quick-bar";
@@ -92,13 +90,21 @@ export class RuntimeNotFoundError extends Error {
   override name = "RuntimeNotFoundError";
 }
 
-export async function getTabsWithAccess(): Promise<TabId[]> {
+export async function getTabsWithAccess(): Promise<
+  Array<{ tabId: number; url: string }>
+> {
   const tabs = await browser.tabs.query({
     url: ["*://*/*"],
     discarded: false,
   });
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- The type isn't tight enough for tabs.query()
-  return tabs.filter((tab) => isScriptableUrl(tab.url!)).map((tab) => tab.id!);
+  return (
+    tabs
+      // The type isn't tight enough for tabs.query()
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+      .filter((tab) => isScriptableUrl(tab.url!))
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+      .map((tab) => ({ tabId: tab.id!, url: tab.url! }))
+  );
 }
 
 /**
@@ -117,7 +123,11 @@ export async function forEachTab<
   }
 
   const promises = tabs
-    .filter((tabId) => tabId !== options?.exclude)
-    .map((tabId) => callback({ tabId }));
+    .filter(({ tabId }) => tabId !== options?.exclude)
+    .map(({ tabId }) => callback({ tabId }));
+
+  // TODO: Probably integrate `allSettled` error handling into
+  // `forEachTab` to preserve its ease of use and the warning.
+  // eslint-disable-next-line no-restricted-syntax -- Allowed for now
   return Promise.allSettled(promises);
 }

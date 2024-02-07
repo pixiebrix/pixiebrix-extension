@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -51,6 +51,16 @@ function updateManifestToV3(manifestV2) {
   const { permissions, origins } = normalizeManifestPermissions(manifest);
   manifest.permissions = [...permissions, "scripting"];
   manifest.host_permissions = origins;
+  // Sidebar Panel open() is only available in Chrome 116+
+  // https://developer.chrome.com/docs/extensions/reference/api/sidePanel#method-open
+  manifest.minimum_chrome_version = "116.0";
+
+  // Add sidePanel
+  manifest.permissions.push("sidePanel");
+
+  manifest.side_panel = {
+    default_path: "sidebar.html",
+  };
 
   // Update format
   manifest.web_accessible_resources = [
@@ -79,6 +89,7 @@ function updateManifestToV3(manifestV2) {
   // Replace background script
   manifest.background = {
     service_worker: "background.worker.js",
+    type: "module",
   };
 
   return manifest;

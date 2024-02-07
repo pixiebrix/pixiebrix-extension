@@ -5,88 +5,80 @@ exports[`ModOptionsValuesEditor renders blueprint options with additional props 
   <div
     class="pt-3 container-fluid"
   >
-    <div
-      class="row"
+    <form
+      class=""
+      novalidate=""
     >
       <div
-        class="col"
+        class="card"
       >
-        <form
-          class=""
-          novalidate=""
+        <div
+          class="card-header"
+        >
+          Mod Input Options
+        </div>
+        <div
+          class="card-body"
         >
           <div
-            class="card"
+            class="formGroup form-group"
           >
             <div
-              class="card-header"
-            >
-              Mod Input Options
-            </div>
-            <div
-              class="card-body"
+              class="mb-2 w-100 collapse"
             >
               <div
-                class="formGroup form-group row"
+                class="annotationPlaceholder"
+              />
+            </div>
+            <label
+              class="label form-label"
+              for="additionalProperties"
+            >
+              Additional Properties
+            </label>
+            <div
+              class="formField"
+            >
+              <div
+                class="root"
               >
                 <div
-                  class="mb-2 collapse col-12"
+                  class="field"
                 >
-                  <div
-                    class="annotationPlaceholder"
+                  <input
+                    class="form-control"
+                    id="additionalProperties"
+                    name="additionalProperties"
+                    readonly=""
+                    value=""
                   />
                 </div>
-                <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
-                  for="additionalProperties"
-                >
-                  Additional Properties
-                </label>
                 <div
-                  class="col-xl-10 col-lg-9"
+                  class="dropdown dropdown"
+                  data-test-selected="Exclude"
+                  data-testid="toggle-additionalProperties"
                 >
-                  <div
-                    class="root"
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="dropdown-toggle btn btn-link"
+                    type="button"
                   >
-                    <div
-                      class="field"
+                    <span
+                      class="symbol"
                     >
-                      <input
-                        class="form-control"
-                        id="additionalProperties"
-                        name="additionalProperties"
-                        readonly=""
-                        value=""
+                      <test-file-stub
+                        classname="root"
                       />
-                    </div>
-                    <div
-                      class="dropdown dropdown"
-                      data-test-selected="Exclude"
-                      data-testid="toggle-additionalProperties"
-                    >
-                      <button
-                        aria-expanded="false"
-                        aria-haspopup="true"
-                        class="dropdown-toggle btn btn-link"
-                        type="button"
-                      >
-                        <span
-                          class="symbol"
-                        >
-                          <test-file-stub
-                            classname="root"
-                          />
-                        </span>
-                      </button>
-                    </div>
-                  </div>
+                    </span>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-        </form>
+        </div>
       </div>
-    </div>
+    </form>
   </div>
 </DocumentFragment>
 `;
@@ -96,35 +88,27 @@ exports[`ModOptionsValuesEditor renders empty options 1`] = `
   <div
     class="pt-3 container-fluid"
   >
-    <div
-      class="row"
+    <form
+      class=""
+      novalidate=""
     >
       <div
-        class="col"
+        class="card"
       >
-        <form
-          class=""
-          novalidate=""
+        <div
+          class="card-header"
         >
-          <div
-            class="card"
-          >
-            <div
-              class="card-header"
-            >
-              Mod Input Options
-            </div>
-            <div
-              class="card-body"
-            >
-              <div>
-                This mod does not require any configuration
-              </div>
-            </div>
+          Mod Input Options
+        </div>
+        <div
+          class="card-body"
+        >
+          <div>
+            This mod does not require any configuration
           </div>
-        </form>
+        </div>
       </div>
-    </div>
+    </form>
   </div>
 </DocumentFragment>
 `;
@@ -134,424 +118,416 @@ exports[`ModOptionsValuesEditor renders mod options 1`] = `
   <div
     class="pt-3 container-fluid"
   >
-    <div
-      class="row"
+    <form
+      class=""
+      novalidate=""
     >
       <div
-        class="col"
+        class="card"
       >
-        <form
-          class=""
-          novalidate=""
+        <div
+          class="card-header"
+        >
+          Mod Input Options
+        </div>
+        <div
+          class="card-body"
         >
           <div
-            class="card"
+            class="formGroup form-group"
           >
             <div
-              class="card-header"
+              class="mb-2 w-100 collapse"
             >
-              Mod Input Options
+              <div
+                class="annotationPlaceholder"
+              />
             </div>
+            <label
+              class="label form-label"
+              for="myDatabase"
+            >
+              My Database
+            </label>
             <div
-              class="card-body"
+              class="formField"
             >
               <div
-                class="formGroup form-group row"
+                class="root"
               >
                 <div
-                  class="mb-2 collapse col-12"
+                  class="field"
                 >
-                  <div
-                    class="annotationPlaceholder"
+                  <input
+                    class="form-control"
+                    id="myDatabase"
+                    name="myDatabase"
+                    readonly=""
+                    value=""
                   />
                 </div>
-                <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
-                  for="myDatabase"
-                >
-                  My Database
-                </label>
                 <div
-                  class="col-xl-10 col-lg-9"
+                  class="dropdown dropdown"
+                  data-test-selected="Exclude"
+                  data-testid="toggle-myDatabase"
                 >
-                  <div
-                    class="root"
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="dropdown-toggle btn btn-link"
+                    type="button"
                   >
-                    <div
-                      class="field"
+                    <span
+                      class="symbol"
                     >
-                      <input
-                        class="form-control"
-                        id="myDatabase"
-                        name="myDatabase"
-                        readonly=""
-                        value=""
+                      <test-file-stub
+                        classname="root"
                       />
-                    </div>
-                    <div
-                      class="dropdown dropdown"
-                      data-test-selected="Exclude"
-                      data-testid="toggle-myDatabase"
-                    >
-                      <button
-                        aria-expanded="false"
-                        aria-haspopup="true"
-                        class="dropdown-toggle btn btn-link"
-                        type="button"
-                      >
-                        <span
-                          class="symbol"
-                        >
-                          <test-file-stub
-                            classname="root"
-                          />
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="formGroup form-group row"
-              >
-                <div
-                  class="mb-2 collapse col-12"
-                >
-                  <div
-                    class="annotationPlaceholder"
-                  />
-                </div>
-                <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
-                  for="myBool"
-                >
-                  My Bool
-                </label>
-                <div
-                  class="col-xl-10 col-lg-9"
-                >
-                  <div
-                    class="root"
-                  >
-                    <div
-                      class="field"
-                    >
-                      <input
-                        class="form-control"
-                        id="myBool"
-                        name="myBool"
-                        readonly=""
-                        value=""
-                      />
-                    </div>
-                    <div
-                      class="dropdown dropdown"
-                      data-test-selected="Exclude"
-                      data-testid="toggle-myBool"
-                    >
-                      <button
-                        aria-expanded="false"
-                        aria-haspopup="true"
-                        class="dropdown-toggle btn btn-link"
-                        type="button"
-                      >
-                        <span
-                          class="symbol"
-                        >
-                          <test-file-stub
-                            classname="root"
-                          />
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="formGroup form-group row"
-              >
-                <div
-                  class="mb-2 collapse col-12"
-                >
-                  <div
-                    class="annotationPlaceholder"
-                  />
-                </div>
-                <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
-                  for="myNum"
-                >
-                  My Num
-                </label>
-                <div
-                  class="col-xl-10 col-lg-9"
-                >
-                  <div
-                    class="root"
-                  >
-                    <div
-                      class="field"
-                    >
-                      <input
-                        class="form-control"
-                        id="myNum"
-                        name="myNum"
-                        readonly=""
-                        value=""
-                      />
-                    </div>
-                    <div
-                      class="dropdown dropdown"
-                      data-test-selected="Exclude"
-                      data-testid="toggle-myNum"
-                    >
-                      <button
-                        aria-expanded="false"
-                        aria-haspopup="true"
-                        class="dropdown-toggle btn btn-link"
-                        type="button"
-                      >
-                        <span
-                          class="symbol"
-                        >
-                          <test-file-stub
-                            classname="root"
-                          />
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="formGroup form-group row"
-              >
-                <div
-                  class="mb-2 collapse col-12"
-                >
-                  <div
-                    class="annotationPlaceholder"
-                  />
-                </div>
-                <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
-                  for="myArray"
-                >
-                  My Array
-                </label>
-                <div
-                  class="col-xl-10 col-lg-9"
-                >
-                  <div
-                    class="root"
-                  >
-                    <div
-                      class="field"
-                    >
-                      <input
-                        class="form-control"
-                        id="myArray"
-                        name="myArray"
-                        readonly=""
-                        value=""
-                      />
-                    </div>
-                    <div
-                      class="dropdown dropdown"
-                      data-test-selected="Exclude"
-                      data-testid="toggle-myArray"
-                    >
-                      <button
-                        aria-expanded="false"
-                        aria-haspopup="true"
-                        class="dropdown-toggle btn btn-link"
-                        type="button"
-                      >
-                        <span
-                          class="symbol"
-                        >
-                          <test-file-stub
-                            classname="root"
-                          />
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="formGroup form-group row"
-              >
-                <div
-                  class="mb-2 collapse col-12"
-                >
-                  <div
-                    class="annotationPlaceholder"
-                  />
-                </div>
-                <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
-                  for="myGoogleSheet"
-                >
-                  My Google Sheet
-                </label>
-                <div
-                  class="col-xl-10 col-lg-9"
-                >
-                  <div
-                    class="root"
-                  >
-                    <div
-                      class="field"
-                    >
-                      <input
-                        class="form-control"
-                        id="myGoogleSheet"
-                        name="myGoogleSheet"
-                        readonly=""
-                        value=""
-                      />
-                    </div>
-                    <div
-                      class="dropdown dropdown"
-                      data-test-selected="Exclude"
-                      data-testid="toggle-myGoogleSheet"
-                    >
-                      <button
-                        aria-expanded="false"
-                        aria-haspopup="true"
-                        class="dropdown-toggle btn btn-link"
-                        type="button"
-                      >
-                        <span
-                          class="symbol"
-                        >
-                          <test-file-stub
-                            classname="root"
-                          />
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="formGroup form-group row"
-              >
-                <div
-                  class="mb-2 collapse col-12"
-                >
-                  <div
-                    class="annotationPlaceholder"
-                  />
-                </div>
-                <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
-                  for="myObject"
-                >
-                  My Object
-                </label>
-                <div
-                  class="col-xl-10 col-lg-9"
-                >
-                  <div
-                    class="root"
-                  >
-                    <div
-                      class="field"
-                    >
-                      <input
-                        class="form-control"
-                        id="myObject"
-                        name="myObject"
-                        readonly=""
-                        value=""
-                      />
-                    </div>
-                    <div
-                      class="dropdown dropdown"
-                      data-test-selected="Exclude"
-                      data-testid="toggle-myObject"
-                    >
-                      <button
-                        aria-expanded="false"
-                        aria-haspopup="true"
-                        class="dropdown-toggle btn btn-link"
-                        type="button"
-                      >
-                        <span
-                          class="symbol"
-                        >
-                          <test-file-stub
-                            classname="root"
-                          />
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="formGroup form-group row"
-              >
-                <div
-                  class="mb-2 collapse col-12"
-                >
-                  <div
-                    class="annotationPlaceholder"
-                  />
-                </div>
-                <label
-                  class="label form-label col-form-label col-xl-2 col-lg-3"
-                  for="myStr"
-                >
-                  My Str
-                </label>
-                <div
-                  class="col-xl-10 col-lg-9"
-                >
-                  <div
-                    class="root"
-                  >
-                    <div
-                      class="field"
-                    >
-                      <input
-                        class="form-control"
-                        id="myStr"
-                        name="myStr"
-                        readonly=""
-                        value=""
-                      />
-                    </div>
-                    <div
-                      class="dropdown dropdown"
-                      data-test-selected="Exclude"
-                      data-testid="toggle-myStr"
-                    >
-                      <button
-                        aria-expanded="false"
-                        aria-haspopup="true"
-                        class="dropdown-toggle btn btn-link"
-                        type="button"
-                      >
-                        <span
-                          class="symbol"
-                        >
-                          <test-file-stub
-                            classname="root"
-                          />
-                        </span>
-                      </button>
-                    </div>
-                  </div>
+                    </span>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-        </form>
+          <div
+            class="formGroup form-group"
+          >
+            <div
+              class="mb-2 w-100 collapse"
+            >
+              <div
+                class="annotationPlaceholder"
+              />
+            </div>
+            <label
+              class="label form-label"
+              for="myBool"
+            >
+              My Bool
+            </label>
+            <div
+              class="formField"
+            >
+              <div
+                class="root"
+              >
+                <div
+                  class="field"
+                >
+                  <input
+                    class="form-control"
+                    id="myBool"
+                    name="myBool"
+                    readonly=""
+                    value=""
+                  />
+                </div>
+                <div
+                  class="dropdown dropdown"
+                  data-test-selected="Exclude"
+                  data-testid="toggle-myBool"
+                >
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="dropdown-toggle btn btn-link"
+                    type="button"
+                  >
+                    <span
+                      class="symbol"
+                    >
+                      <test-file-stub
+                        classname="root"
+                      />
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="formGroup form-group"
+          >
+            <div
+              class="mb-2 w-100 collapse"
+            >
+              <div
+                class="annotationPlaceholder"
+              />
+            </div>
+            <label
+              class="label form-label"
+              for="myNum"
+            >
+              My Num
+            </label>
+            <div
+              class="formField"
+            >
+              <div
+                class="root"
+              >
+                <div
+                  class="field"
+                >
+                  <input
+                    class="form-control"
+                    id="myNum"
+                    name="myNum"
+                    readonly=""
+                    value=""
+                  />
+                </div>
+                <div
+                  class="dropdown dropdown"
+                  data-test-selected="Exclude"
+                  data-testid="toggle-myNum"
+                >
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="dropdown-toggle btn btn-link"
+                    type="button"
+                  >
+                    <span
+                      class="symbol"
+                    >
+                      <test-file-stub
+                        classname="root"
+                      />
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="formGroup form-group"
+          >
+            <div
+              class="mb-2 w-100 collapse"
+            >
+              <div
+                class="annotationPlaceholder"
+              />
+            </div>
+            <label
+              class="label form-label"
+              for="myArray"
+            >
+              My Array
+            </label>
+            <div
+              class="formField"
+            >
+              <div
+                class="root"
+              >
+                <div
+                  class="field"
+                >
+                  <input
+                    class="form-control"
+                    id="myArray"
+                    name="myArray"
+                    readonly=""
+                    value=""
+                  />
+                </div>
+                <div
+                  class="dropdown dropdown"
+                  data-test-selected="Exclude"
+                  data-testid="toggle-myArray"
+                >
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="dropdown-toggle btn btn-link"
+                    type="button"
+                  >
+                    <span
+                      class="symbol"
+                    >
+                      <test-file-stub
+                        classname="root"
+                      />
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="formGroup form-group"
+          >
+            <div
+              class="mb-2 w-100 collapse"
+            >
+              <div
+                class="annotationPlaceholder"
+              />
+            </div>
+            <label
+              class="label form-label"
+              for="myGoogleSheet"
+            >
+              My Google Sheet
+            </label>
+            <div
+              class="formField"
+            >
+              <div
+                class="root"
+              >
+                <div
+                  class="field"
+                >
+                  <input
+                    class="form-control"
+                    id="myGoogleSheet"
+                    name="myGoogleSheet"
+                    readonly=""
+                    value=""
+                  />
+                </div>
+                <div
+                  class="dropdown dropdown"
+                  data-test-selected="Exclude"
+                  data-testid="toggle-myGoogleSheet"
+                >
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="dropdown-toggle btn btn-link"
+                    type="button"
+                  >
+                    <span
+                      class="symbol"
+                    >
+                      <test-file-stub
+                        classname="root"
+                      />
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="formGroup form-group"
+          >
+            <div
+              class="mb-2 w-100 collapse"
+            >
+              <div
+                class="annotationPlaceholder"
+              />
+            </div>
+            <label
+              class="label form-label"
+              for="myObject"
+            >
+              My Object
+            </label>
+            <div
+              class="formField"
+            >
+              <div
+                class="root"
+              >
+                <div
+                  class="field"
+                >
+                  <input
+                    class="form-control"
+                    id="myObject"
+                    name="myObject"
+                    readonly=""
+                    value=""
+                  />
+                </div>
+                <div
+                  class="dropdown dropdown"
+                  data-test-selected="Exclude"
+                  data-testid="toggle-myObject"
+                >
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="dropdown-toggle btn btn-link"
+                    type="button"
+                  >
+                    <span
+                      class="symbol"
+                    >
+                      <test-file-stub
+                        classname="root"
+                      />
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="formGroup form-group"
+          >
+            <div
+              class="mb-2 w-100 collapse"
+            >
+              <div
+                class="annotationPlaceholder"
+              />
+            </div>
+            <label
+              class="label form-label"
+              for="myStr"
+            >
+              My Str
+            </label>
+            <div
+              class="formField"
+            >
+              <div
+                class="root"
+              >
+                <div
+                  class="field"
+                >
+                  <input
+                    class="form-control"
+                    id="myStr"
+                    name="myStr"
+                    readonly=""
+                    value=""
+                  />
+                </div>
+                <div
+                  class="dropdown dropdown"
+                  data-test-selected="Exclude"
+                  data-testid="toggle-myStr"
+                >
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="dropdown-toggle btn btn-link"
+                    type="button"
+                  >
+                    <span
+                      class="symbol"
+                    >
+                      <test-file-stub
+                        classname="root"
+                      />
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </form>
   </div>
 </DocumentFragment>
 `;

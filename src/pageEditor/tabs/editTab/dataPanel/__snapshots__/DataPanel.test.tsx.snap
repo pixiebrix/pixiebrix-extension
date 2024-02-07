@@ -103,23 +103,23 @@ exports[`DataPanel it renders with form state and trace data 1`] = `
             class="root"
           >
             <div
-              class="formGroup form-group row"
+              class="formGroup form-group"
             >
               <div
-                class="mb-2 collapse col-12"
+                class="mb-2 w-100 collapse"
               >
                 <div
                   class="annotationPlaceholder"
                 />
               </div>
               <label
-                class="label form-label col-form-label col-lg-auto"
+                class="label labelFitContent form-label"
                 for="traceSearch"
               >
                 Search
               </label>
               <div
-                class="col-lg"
+                class="formField"
               >
                 <input
                   class="form-control"

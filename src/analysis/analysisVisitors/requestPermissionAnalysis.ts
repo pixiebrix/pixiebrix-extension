@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,6 +31,7 @@ import {
   isVarExpression,
 } from "@/utils/expressionUtils";
 import { isAbsoluteUrl } from "@/utils/urlUtils";
+import { allSettled } from "@/utils/promiseUtils";
 
 /**
  * Checks permission for RemoteMethod and GetAPITransformer bricks to make a remote call
@@ -105,13 +106,12 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
 
       const permissionsValue = `${parsedURL.origin}/*`;
 
-      const permissionCheckPromise = browser.permissions
-        .contains({
-          origins: [parsedURL.href],
-        })
-        // eslint-disable-next-line promise/prefer-await-to-then -- need the complete Promise
-        .then((hasPermission) => {
-          if (!hasPermission) {
+      this.permissionCheckPromises.push(
+        (async () => {
+          const hasPermissions = await browser.permissions.contains({
+            origins: [parsedURL.href],
+          });
+          if (!hasPermissions) {
             this.annotations.push({
               position: nestedPosition(position, "config.url"),
               message:
@@ -133,9 +133,8 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
               ],
             });
           }
-        });
-
-      this.permissionCheckPromises.push(permissionCheckPromise);
+        })(),
+      );
     }
   }
 
@@ -143,7 +142,9 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
     super.run(extension);
 
     // Use allSettled because `browser.permissions.contains` errors out for certain cases, e.g., malformed URLs
-    await Promise.allSettled(this.permissionCheckPromises);
+    await allSettled(this.permissionCheckPromises, {
+      catch: "ignore",
+    });
   }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,11 +18,10 @@
 import React from "react";
 import SidebarBody from "@/sidebar/SidebarBody";
 import { render } from "@/sidebar/testHelpers";
-import useContextInvalidated from "@/hooks/useContextInvalidated";
+import useConnectedTargetUrl from "@/sidebar/hooks/useConnectedTargetUrl";
 
-jest.mock("@/hooks/useContextInvalidated");
-
-jest.mock("@/contentScript/messenger/api", () => ({
+jest.mock("@/sidebar/hooks/useConnectedTargetUrl");
+jest.mock("@/contentScript/messenger/strict/api", () => ({
   ensureExtensionPointsInstalled: jest.fn(),
   getReservedSidebarEntries: jest.fn().mockResolvedValue({
     panels: [],
@@ -32,13 +31,18 @@ jest.mock("@/contentScript/messenger/api", () => ({
 }));
 
 describe("SidebarBody", () => {
-  test("it renders", () => {
+  test("it renders", async () => {
+    jest
+      .mocked(useConnectedTargetUrl)
+      .mockReturnValueOnce("https://www.example.com");
     const { asFragment } = render(<SidebarBody />);
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test("it renders error when context is invalidated", () => {
-    jest.mocked(useContextInvalidated).mockReturnValue(true);
+  test("it renders error when URL is restricted", async () => {
+    jest
+      .mocked(useConnectedTargetUrl)
+      .mockReturnValueOnce("chrome://extensions");
     const { asFragment } = render(<SidebarBody />);
     expect(asFragment()).toMatchSnapshot();
   });

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,17 +26,13 @@ import type { RemoteResponse } from "@/types/contract";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
 export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
-export const ensureContentScript = getMethod("INJECT_SCRIPT", bg);
 export const getUID = getMethod("GET_UID", bg);
-export const activatePartnerTheme = getMethod("ACTIVATE_PARTNER_THEME", bg);
 export const getPartnerPrincipals = getMethod("GET_PARTNER_PRINCIPALS", bg);
 export const launchAuthIntegration = getMethod("LAUNCH_AUTH_INTEGRATION", bg);
 export const setPartnerCopilotData = getNotifier(
   "SET_PARTNER_COPILOT_DATA",
   bg,
 );
-
-export const setToolbarBadge = getMethod("SET_TOOLBAR_BADGE", bg);
 
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
 export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
@@ -46,8 +42,6 @@ export const removeExtensionForEveryTab = getNotifier(
 );
 
 export const closeTab = getMethod("CLOSE_TAB", bg);
-export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
-export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 
 export const sheets = {
@@ -73,11 +67,6 @@ export const registry = {
   getByKinds: getMethod("REGISTRY_GET_BY_KINDS", bg),
   find: getMethod("REGISTRY_FIND", bg),
   clear: getMethod("REGISTRY_CLEAR", bg),
-};
-
-export const dataStore = {
-  get: getMethod("GET_DATA_STORE", bg),
-  set: getMethod("SET_DATA_STORE", bg),
 };
 
 export const requestRun = {
@@ -121,17 +110,8 @@ export const clearExtensionDebugLogs = getMethod(
   bg,
 );
 
-export const traces = {
-  addEntry: getNotifier("ADD_TRACE_ENTRY", bg),
-  addExit: getNotifier("ADD_TRACE_EXIT", bg),
-  clear: getMethod("CLEAR_TRACES", bg),
-  clearAll: getNotifier("CLEAR_ALL_TRACES", bg),
-};
-
 export const initTelemetry = getNotifier("INIT_TELEMETRY", bg);
 export const sendDeploymentAlert = getNotifier("SEND_DEPLOYMENT_ALERT", bg);
-
-export const captureTab = getMethod("CAPTURE_TAB", bg);
 
 export const getUserData = getMethod("GET_USER_DATA", bg);
 

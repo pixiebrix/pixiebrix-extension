@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -29,7 +29,7 @@ import type { RunBrickRequest } from "@/contentScript/messenger/runBrickTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { canAccessTab } from "@/permissions/permissionsUtils";
 import { SessionMap } from "@/mv3/SessionStorage";
-import { groupPromisesByStatus } from "@/utils/promiseUtils";
+import { allSettled } from "@/utils/promiseUtils";
 import { TOP_LEVEL_FRAME_ID } from "@/domConstants";
 import { forEachTab } from "@/utils/extensionUtils";
 import reportEvent from "@/telemetry/reportEvent";
@@ -164,13 +164,13 @@ export async function requestRunInOtherTabs(
     });
   }
 
-  const { rejected, fulfilled } = groupPromisesByStatus(results);
-
-  if (rejected.length > 0) {
-    console.warn(`Broadcast rejected for ${rejected.length} tabs`, {
-      rejected,
-    });
-  }
+  const { fulfilled } = await allSettled(results, {
+    catch(errors) {
+      console.warn(`Broadcast rejected for ${errors.length} tabs`, {
+        errors,
+      });
+    },
+  });
 
   return fulfilled;
 }
@@ -186,19 +186,17 @@ export async function requestRunInAllFrames(
     tabId: sourceTabId,
   });
 
-  const results = await Promise.allSettled(
-    frames.map(async ({ frameId }) =>
-      safelyRunBrick({ tabId: sourceTabId, frameId }, subRequest),
-    ),
+  const promises = frames.map(async ({ frameId }) =>
+    safelyRunBrick({ tabId: sourceTabId, frameId }, subRequest),
   );
 
-  const { rejected, fulfilled } = groupPromisesByStatus(results);
-
-  if (rejected.length > 0) {
-    console.warn(`Broadcast rejected for ${rejected.length} frame`, {
-      rejected,
-    });
-  }
+  const { fulfilled } = await allSettled(promises, {
+    catch(errors) {
+      console.warn(`Broadcast rejected for ${errors.length} tabs`, {
+        errors,
+      });
+    },
+  });
 
   return fulfilled;
 }

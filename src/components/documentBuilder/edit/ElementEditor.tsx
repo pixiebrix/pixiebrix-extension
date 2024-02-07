@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./DocumentEditor.module.scss";
+import styles from "./DocumentOptions.module.scss";
 
 import { useField } from "formik";
 import React from "react";
@@ -61,27 +61,17 @@ const ElementEditor: React.FC<ElementEditorProps> = ({ documentBodyName }) => {
         </Col>
       </Row>
 
-      <Row>
-        <Col>
-          <ElementOptions />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <MoveElement documentBodyName={documentBodyName} />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <ConnectedCollapsibleFieldSection title="Advanced: Layout">
-            <CssSpacingField
-              name={joinName(elementName, "config", "className")}
-              schema={{ type: "string" }}
-              label="Spacing"
-            />
-          </ConnectedCollapsibleFieldSection>
-        </Col>
-      </Row>
+      <div>
+        <ElementOptions />
+      </div>
+      <MoveElement documentBodyName={documentBodyName} />
+      <ConnectedCollapsibleFieldSection title="Advanced: Layout">
+        <CssSpacingField
+          name={joinName(elementName, "config", "className")}
+          schema={{ type: "string" }}
+          label="Spacing"
+        />
+      </ConnectedCollapsibleFieldSection>
     </>
   );
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,27 +16,27 @@
  */
 
 import { type VirtualElement } from "@floating-ui/dom";
-import { getTextareaCaretCoordinates } from "@/utils/textAreaUtils";
-
+import { getCaretCoordinates } from "@/utils/textAreaUtils";
 /**
  * Get a virtual element for the line that the caret is on.
  * Essentially a box that has the same position and dimensions as the line that the caret is on.
  * Used to position the floating UI menu.
  */
 export function getSelectedLineVirtualElement(
-  textarea: HTMLTextAreaElement,
+  textarea: HTMLTextAreaElement | HTMLInputElement,
 ): VirtualElement {
   const inputRect = textarea.getBoundingClientRect();
 
-  const caretOffset = getTextareaCaretCoordinates(
+  const { top: caretOffset, height: lineHeight } = getCaretCoordinates(
     textarea,
-    textarea.selectionEnd,
-  ).top;
-
-  const lineHeight = Number.parseInt(
-    getComputedStyle(textarea).getPropertyValue("line-height"),
-    10,
+    textarea.selectionEnd ?? 0,
   );
+
+  // The top margin + border space
+  const computed = window.getComputedStyle(textarea);
+  const topOffset =
+    Number.parseInt(computed.borderTopWidth, 10) +
+    Number.parseInt(computed.paddingTop, 10);
 
   const lineTop = caretOffset;
   const lineBottom = caretOffset + lineHeight;
@@ -47,12 +47,12 @@ export function getSelectedLineVirtualElement(
     getBoundingClientRect: () => ({
       width: inputRect.width,
       height: lineHeight,
-      top: lineTop + inputRect.top - textarea.scrollTop,
+      top: lineTop + inputRect.top - topOffset,
       right: inputRect.right,
-      bottom: lineBottom + inputRect.top - textarea.scrollTop,
+      bottom: lineBottom + inputRect.top,
       left: inputRect.left,
       x: inputRect.left,
-      y: lineTop + inputRect.top - textarea.scrollTop,
+      y: lineTop + inputRect.top - topOffset,
     }),
   };
 }

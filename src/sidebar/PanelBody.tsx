@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -46,7 +46,7 @@ import DelayedRender from "@/components/DelayedRender";
 import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import { uuidv4 } from "@/types/helpers";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
-import { getTopLevelFrame } from "webext-messenger";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
 
@@ -205,7 +205,7 @@ const PanelBody: React.FunctionComponent<{
               );
             }
 
-            const topLevelFrame = await getTopLevelFrame();
+            const topLevelFrame = await getConnectedTarget();
 
             await runHeadlessPipeline(topLevelFrame, {
               nonce: uuidv4(),

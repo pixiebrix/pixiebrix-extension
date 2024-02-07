@@ -1,6 +1,6 @@
-/* eslint-disable max-nested-callbacks,@typescript-eslint/no-unsafe-member-access -- copied from RJSF test suite */
+/* eslint-disable max-nested-callbacks -- copied from RJSF test suite */
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by

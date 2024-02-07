@@ -50,11 +50,12 @@ export async function getOptionsValidationSchema(
   // "this field is required" error unless we allow null values for required fields
   // @see FieldTemplate.tsx for context as to why fields are null instead of undefined
   return yupSchema.shape(
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access -- TODO
     mapValues(yupSchema.fields, (value) => value.nullable()),
   );
 }
 
-const useAsyncRecipeOptionsValidationSchema = (
+const useAsyncModOptionsValidationSchema = (
   optionsDefinitionSchema: Schema | undefined,
 ): FetchableAsyncState<AnyObjectSchema> =>
   useAsyncState(
@@ -62,4 +63,4 @@ const useAsyncRecipeOptionsValidationSchema = (
     [optionsDefinitionSchema],
   );
 
-export default useAsyncRecipeOptionsValidationSchema;
+export default useAsyncModOptionsValidationSchema;

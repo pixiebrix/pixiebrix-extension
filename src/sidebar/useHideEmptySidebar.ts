@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,11 +16,9 @@
  */
 
 import useAsyncEffect from "use-async-effect";
-import { getTopLevelFrame } from "webext-messenger";
-import {
-  getReservedSidebarEntries,
-  hideSidebar,
-} from "@/contentScript/messenger/api";
+import { getReservedSidebarEntries } from "@/contentScript/messenger/strict/api";
+import { closeSelf } from "@/sidebar/protocol";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { useSelector } from "react-redux";
 import {
   selectClosedTabs,
@@ -37,7 +35,7 @@ export const useHideEmptySidebar = () => {
 
   useAsyncEffect(
     async (isMounted) => {
-      const topFrame = await getTopLevelFrame();
+      const topFrame = await getConnectedTarget();
       const reservedPanelEntries = await getReservedSidebarEntries(topFrame);
 
       // We don't want to hide the Sidebar if there are any open reserved panels.
@@ -50,12 +48,11 @@ export const useHideEmptySidebar = () => {
       ].filter((panel) => panel && !closedTabs[eventKeyForEntry(panel)]);
 
       if (
-        isMounted &&
+        isMounted() &&
         visiblePanelCount === 0 &&
         openReservedPanels.length === 0
       ) {
-        const topLevelFrame = await getTopLevelFrame();
-        void hideSidebar(topLevelFrame);
+        await closeSelf();
       }
     },
     [visiblePanelCount],

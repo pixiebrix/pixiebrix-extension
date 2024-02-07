@@ -4,7 +4,7 @@ const config = configFactory(process.env, {});
 
 // https://knip.dev/overview/configuration#customize
 const knipConfig = {
-  $schema: "https://unpkg.com/knip@3/schema.json",
+  $schema: "https://unpkg.com/knip@4/schema.json",
   webpack: {
     config: ["webpack.config.mjs", ".storybook/main.js"],
   },
@@ -12,7 +12,6 @@ const knipConfig = {
     ...Object.values(config.entry).map((x) =>
       `${x}.{ts,tsx,js,jsx}`.replace("./", ""),
     ),
-    "src/development/headers.ts",
     // App messenger and common storage
     "src/contentScript/externalProtocol.ts",
     "src/background/messenger/external/api.ts",
@@ -51,6 +50,8 @@ const knipConfig = {
     "src/vendors/page-metadata-parser/**",
     // False positive - dynamically imported in initRobot
     "src/contrib/uipath/UiPathRobot.ts",
+    // Unused, but we'll likely need this again in the future
+    "src/hooks/useContextInvalidated.ts",
   ],
   ignoreDependencies: [
     // Browser environment types
@@ -67,6 +68,12 @@ const knipConfig = {
     // Not getting detected by webpack plugin for .storybook/main.js
     "style-loader",
     "@storybook/react-webpack5",
+    // Used by src/contrib/google/sheets/core/types.ts
+    "@types/gapi.client",
+    "@types/gapi.client.drive-v3",
+    "@types/gapi.client.oauth2-v2",
+    // Used by Code Editor so format on save matches pre-commit behavior
+    "prettier",
   ],
   rules: {
     // Issue Type reference: https://knip.dev/reference/issue-types/

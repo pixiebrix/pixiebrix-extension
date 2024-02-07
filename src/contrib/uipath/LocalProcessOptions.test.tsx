@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,7 +18,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
-import * as contentScriptApi from "@/contentScript/messenger/api";
+import * as contentScriptApi from "@/contentScript/messenger/strict/api";
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Formik } from "formik";
 import RunLocalProcess from "@/contrib/uipath/localProcess";
@@ -45,7 +45,7 @@ const useSanitizedIntegrationConfigFormikAdapterMock = jest.mocked(
 jest.mock("@/hooks/auth");
 jest.mock("@/contrib/uipath/uipathHooks");
 jest.mock("@/hooks/auth");
-jest.mock("@/contentScript/messenger/api");
+jest.mock("@/contentScript/messenger/strict/api");
 jest.mock("@/contrib/uipath/uipathHooks", () => {
   const mock = jest.requireActual("@/contrib/uipath/uipathHooks");
   return {

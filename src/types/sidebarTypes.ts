@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -27,6 +27,8 @@ import { type MessageContext } from "@/types/loggerTypes";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import { isObject } from "@/utils/objectUtils";
 import { type RunMetadata } from "@/types/runtimeTypes";
+import type { ModActivationConfig } from "@/types/modTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Entry types supported by the sidebar.
@@ -228,13 +230,16 @@ export function isFormPanelEntry(panel: unknown): panel is FormPanelEntry {
  * Panel entry for activating one or more mods.
  *
  * @since 1.7.35 supports activating multiple mods if all mods don't require configuration
+ * @since 1.8.8 supports providing initial options for each mod
  */
 export type ModActivationPanelEntry = BasePanelEntry & {
   type: "activateMods";
+
   /**
    * One or more mod id(s) to activate. If providing multiple mod ids, none of the mods may require configuration.
    */
-  modIds: RegistryId[];
+  mods: ModActivationConfig[];
+
   /**
    * Heading for tab name in the sidebar
    */
@@ -324,7 +329,7 @@ export type ActivatePanelOptions = {
 export type PanelRunMeta = Pick<RunMetadata, "runId" | "extensionId">;
 
 export type SidebarState = SidebarEntries & {
-  activeKey: string;
+  activeKey: Nullishable<string>;
 
   /**
    * Pending panel activation request.

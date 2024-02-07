@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -65,7 +65,8 @@ type ApplyJqPayload = {
 async function applyJq(payload: ApplyJqPayload) {
   const { input, filter } = payload;
   const { default: jq } = await import(
-    /* webpackChunkName: "jq-web" */ "@pixiebrix/jq-web"
+    /* webpackChunkName: "jq-web" */
+    "@pixiebrix/jq-web"
   );
 
   return jq.promised.json(input, filter);

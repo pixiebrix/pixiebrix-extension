@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -199,7 +199,7 @@ export async function runRendererBlock({
     }
 
     if (location === "panel") {
-      showTemporarySidebarPanel({
+      await showTemporarySidebarPanel({
         // Pass extension id so previous run is cancelled
         extensionId,
         blueprintId,

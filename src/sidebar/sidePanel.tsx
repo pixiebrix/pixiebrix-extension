@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.addRow {
-  margin-bottom: 1.5rem;
-}
+/** @file This file defines the internal API for the sidePanel, only meant to be run in the sidePanel itself */
 
-.currentFieldRow {
-  margin-bottom: 1.5rem;
-  align-items: center;
-}
+import { expectContext } from "@/utils/expectContext";
+import { isMV3 } from "@/mv3/api";
 
-.currentField {
-  margin-top: 0.25rem;
+expectContext("sidebar");
+
+export function initSidePanel() {
+  if (isMV3()) {
+    // Just a placeholder for now
+  }
 }

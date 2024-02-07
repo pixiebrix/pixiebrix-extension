@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -23,6 +23,7 @@ import {
 } from "@/integrations/integrationTypes";
 import { getRandomString } from "@/vendors/pkce";
 import { setCachedAuthData } from "@/background/auth/authStorage";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 function parseResponseParams(url: URL): UnknownObject {
   const hasSearchParams = [...url.searchParams.keys()].length > 0;
@@ -50,6 +51,8 @@ async function implicitGrantFlow(
   const { client_id, authorizeUrl: rawAuthorizeUrl, ...params } = oauth2;
 
   const state = getRandomString(16);
+
+  assertNotNullish(rawAuthorizeUrl, "`authorizeUrl` was not provided");
 
   const authorizeURL = new URL(rawAuthorizeUrl);
 
@@ -96,7 +99,9 @@ async function implicitGrantFlow(
   }
 
   const data: AuthData = { access_token, ...rest } as unknown as AuthData;
-  await setCachedAuthData(auth.id, data);
+  // TODO: Fix IntegrationConfig types
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+  await setCachedAuthData(auth.id!, data);
   return data;
 }
 

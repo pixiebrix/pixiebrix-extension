@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -66,6 +66,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { Events } from "@/telemetry/events";
+import { allSettled } from "@/utils/promiseUtils";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
@@ -119,8 +120,9 @@ async function uninstallExtensionsAndSaveState(
     editorState = result.editor;
   }
 
-  await Promise.allSettled(
+  await allSettled(
     toUninstall.map(async ({ id }) => removeExtensionForEveryTab(id)),
+    { catch: "ignore" },
   );
 
   await setExtensionsState(optionsState);

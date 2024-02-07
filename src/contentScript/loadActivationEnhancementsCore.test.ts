@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,7 +22,7 @@ import { getDocument } from "@/starterBricks/starterBrickTestUtils";
 import { validateRegistryId } from "@/types/helpers";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { getActivatingModIds } from "@/background/messenger/external/_implementation";
+import { getActivatingMods } from "@/background/messenger/external/_implementation";
 import {
   modComponentFactory,
   modMetadataFactory,
@@ -36,7 +36,11 @@ import { isLinked } from "@/auth/token";
 import { array } from "cooky-cutter";
 import { MARKETPLACE_URL } from "@/urlConstants";
 
-jest.mock("@/contentScript/sidebarController");
+jest.mock("@/contentScript/sidebarController", () => ({
+  ...jest.requireActual("@/contentScript/sidebarController"),
+  showSidebar: jest.fn(),
+  showModActivationInSidebar: jest.fn(),
+}));
 
 jest.mock("@/auth/token", () => ({
   isLinked: jest.fn().mockResolvedValue(true),
@@ -48,27 +52,24 @@ jest.mock("@/contentScript/ready", () => ({
   isReadyInThisDocument: jest.fn(() => true),
 }));
 
-jest.mock("@/store/extensionsStorage", () => ({
-  getActivatedModIds: jest.fn().mockResolvedValue([]),
-}));
-
+jest.mock("@/store/extensionsStorage");
 jest.mock("@/background/messenger/external/_implementation");
 jest.mock("@/sidebar/store");
 
 const showSidebarMock = jest.mocked(showModActivationInSidebar);
 const getActivatedModIdsMock = jest.mocked(getActivatedModIds);
-const getActivatingModIdsMock = jest.mocked(getActivatingModIds);
+const getActivatingModsMock = jest.mocked(getActivatingMods);
 
-const recipeId1 = validateRegistryId("@pixies/misc/comment-and-vote");
-const recipeId2 = validateRegistryId("@pixies/github/github-notifications");
+const modId1 = validateRegistryId("@pixies/misc/comment-and-vote");
+const modId2 = validateRegistryId("@pixies/github/github-notifications");
 
 const activateButtonsHtml = `
 <div>
     <a class="btn btn-primary" data-activate-button href="https://app.pixiebrix.com/activate?id=${encodeURIComponent(
-      recipeId1,
+      modId1,
     )}&utm_source=marketplace&utm_campaign=activate_blueprint" target="_blank" rel="noreferrer noopener"><i class="fas fa-plus-circle"></i> Activate</a>
     <a class="btn btn-primary" data-activate-button href="https://app.pixiebrix.com/activate?id=${encodeURIComponent(
-      recipeId2,
+      modId2,
     )}&utm_source=marketplace&utm_campaign=activate_blueprint" target="_blank" rel="noreferrer noopener"><i class="fas fa-plus-circle"></i> Activate</a>
 </div>
 `;
@@ -79,6 +80,7 @@ describe("marketplace enhancements", () => {
     document.body.innerHTML = getDocument(activateButtonsHtml).body.innerHTML;
     jest.mocked(isReadyInThisDocument).mockImplementation(() => true);
     getActivatedModIdsMock.mockResolvedValue(new Set());
+    getActivatingModsMock.mockResolvedValue([]);
   });
 
   afterEach(async () => {
@@ -93,7 +95,7 @@ describe("marketplace enhancements", () => {
     // Recipe 1 is installed, recipe 2 is not
     const modComponent1 = modComponentFactory({
       _recipe: modMetadataFactory({
-        id: recipeId1,
+        id: modId1,
       }),
     }) as ActivatedModComponent;
     const modComponent2 = modComponentFactory() as ActivatedModComponent;
@@ -152,7 +154,7 @@ describe("marketplace enhancements", () => {
     // The show-sidebar function should be called
     expect(showSidebarMock).toHaveBeenCalledExactlyOnceWith({
       heading: "Activating",
-      modIds,
+      mods: modIds.map((id) => ({ modId: id, initialOptions: {} })),
     });
   });
 
@@ -186,7 +188,7 @@ describe("marketplace enhancements", () => {
     expect(getActivatedModIdsMock).not.toHaveBeenCalled();
     // The marketplace script should not resume in-progress blueprint
     // activation when the user is not logged in
-    expect(getActivatingModIdsMock).not.toHaveBeenCalled();
+    expect(getActivatingModsMock).not.toHaveBeenCalled();
   });
 
   test("given user is not logged in, when loaded, should change button text", async () => {
@@ -195,7 +197,7 @@ describe("marketplace enhancements", () => {
     // Recipe 1 is installed, recipe 2 is not
     const modComponent1 = modComponentFactory({
       _recipe: modMetadataFactory({
-        id: recipeId1,
+        id: modId1,
       }),
     }) as ActivatedModComponent;
     const modComponent2 = modComponentFactory() as ActivatedModComponent;
@@ -218,7 +220,7 @@ describe("marketplace enhancements", () => {
     // Recipe 1 is installed, recipe 2 is not
     const modComponent1 = modComponentFactory({
       _recipe: modMetadataFactory({
-        id: recipeId1,
+        id: modId1,
       }),
     }) as ActivatedModComponent;
     const modComponent2 = modComponentFactory() as ActivatedModComponent;
@@ -249,6 +251,6 @@ describe("marketplace enhancements", () => {
     expect(getActivatedModIdsMock).toHaveBeenCalledOnce();
     // The marketplace script should resume in-progress blueprint
     // activation when the user is logged in
-    expect(getActivatingModIdsMock).toHaveBeenCalledOnce();
+    expect(getActivatingModsMock).toHaveBeenCalledOnce();
   });
 });

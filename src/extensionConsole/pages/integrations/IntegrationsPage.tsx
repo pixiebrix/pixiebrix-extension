@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,7 +21,7 @@ import React, { useCallback, useContext, useReducer } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import integrationsSlice from "@/integrations/store/integrationsSlice";
 import Page from "@/layout/Page";
-import { Card, Col, Row } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import { push } from "connected-react-router";
 import IntegrationConfigEditorModal from "@/components/integrations/IntegrationConfigEditorModal";
 import PrivateIntegrationsCard from "./PrivateIntegrationsCard";
@@ -420,25 +420,15 @@ const IntegrationsPage: React.VFC = () => {
           localState.isCreateNew ? undefined : onDeleteIntegrationConfig
         }
       />
-      <Row>
-        <Col>
-          <ConnectExtensionCard />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <Card>
-            <Card.Header>Personal Integrations</Card.Header>
-            <PrivateIntegrationsCard
-              navigate={navigate}
-              integrations={localState.integrations}
-              forceShowIntegrationConfigId={
-                localState.createdIntegrationConfigId
-              }
-            />
-          </Card>
-        </Col>
-      </Row>
+      <ConnectExtensionCard />
+      <Card>
+        <Card.Header>Personal Integrations</Card.Header>
+        <PrivateIntegrationsCard
+          navigate={navigate}
+          integrations={localState.integrations}
+          forceShowIntegrationConfigId={localState.createdIntegrationConfigId}
+        />
+      </Card>
     </Page>
   );
 };

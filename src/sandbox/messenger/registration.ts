@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -21,11 +21,13 @@ import { addPostMessageListener } from "@/utils/postMessage";
 import {
   renderHandlebarsTemplate,
   renderNunjucksTemplate,
+  validateNunjucksTemplate,
   runUserJs,
 } from "./executor";
 
 export default function registerMessenger(): void {
   addPostMessageListener("RENDER_NUNJUCKS", renderNunjucksTemplate);
+  addPostMessageListener("VALIDATE_NUNJUCKS", validateNunjucksTemplate);
   addPostMessageListener("RENDER_HANDLEBARS", renderHandlebarsTemplate);
   addPostMessageListener("RUN_USER_JS", runUserJs);
   addPostMessageListener("SANDBOX_PING", async (payload) => "pong");

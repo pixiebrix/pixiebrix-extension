@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -57,8 +57,8 @@ import { selectEventData } from "@/telemetry/deployments";
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { TemporaryPanelTabPane } from "./TemporaryPanelTabPane";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
-import { getTopLevelFrame } from "webext-messenger";
-import { cancelForm } from "@/contentScript/messenger/api";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
+import { cancelForm } from "@/contentScript/messenger/strict/api";
 import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
 
 const ActivateModPanel = lazy(
@@ -167,7 +167,7 @@ const Tabs: React.FC = () => {
     if (isTemporaryPanelEntry(panel)) {
       dispatch(sidebarSlice.actions.removeTemporaryPanel(panel.nonce));
     } else if (isFormPanelEntry(panel)) {
-      const frame = await getTopLevelFrame();
+      const frame = await getConnectedTarget();
       cancelForm(frame, panel.nonce);
     } else if (isModActivationPanelEntry(panel)) {
       dispatch(sidebarSlice.actions.hideModActivationPanel());
@@ -374,18 +374,16 @@ const Tabs: React.FC = () => {
                     reportEvent(Events.VIEW_ERROR, {
                       panelType: "activate",
                       // For backward compatability, provide a single modId to the recipeToActivate property
-                      recipeToActivate: modActivationPanel.modIds[0],
-                      modCount: modActivationPanel.modIds.length,
-                      modIds: modActivationPanel.modIds,
+                      recipeToActivate: modActivationPanel.mods[0].modId,
+                      modCount: modActivationPanel.mods.length,
+                      modIds: modActivationPanel.mods.map((x) => x.modId),
                     });
                   }}
                 >
-                  {modActivationPanel.modIds.length === 1 ? (
-                    <ActivateModPanel modId={modActivationPanel.modIds[0]} />
+                  {modActivationPanel.mods.length === 1 ? (
+                    <ActivateModPanel mod={modActivationPanel.mods[0]} />
                   ) : (
-                    <ActivateMultipleModsPanel
-                      modIds={modActivationPanel.modIds}
-                    />
+                    <ActivateMultipleModsPanel mods={modActivationPanel.mods} />
                   )}
                 </ErrorBoundary>
               </Suspense>
@@ -399,7 +397,7 @@ const Tabs: React.FC = () => {
               mountOnEnter
               // Allow the user to quickly switch back to the panel
               unmountOnExit={false}
-              className={cx("h-100", styles.paneOverrides)}
+              className={cx("full-height", styles.paneOverrides)}
               key={staticPanel.key}
               eventKey={eventKeyForEntry(staticPanel)}
             >

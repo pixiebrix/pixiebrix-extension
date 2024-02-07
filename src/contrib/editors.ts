@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -29,9 +29,7 @@ import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/Run
 import FormModalOptions, {
   FORM_MODAL_ID,
 } from "@/pageEditor/fields/FormModalOptions";
-import FormRendererOptions, {
-  FORM_RENDERER_ID,
-} from "@/pageEditor/fields/FormRendererOptions";
+import FormRendererOptions from "@/pageEditor/fields/FormRendererOptions";
 import { GOOGLE_SHEETS_LOOKUP_ID } from "@/contrib/google/sheets/bricks/lookup";
 import LookupSpreadsheetOptions from "@/contrib/google/sheets/ui/LookupSpreadsheetOptions";
 import DatabaseGetOptions, {
@@ -40,9 +38,7 @@ import DatabaseGetOptions, {
 import DatabasePutOptions, {
   DATABASE_PUT_ID,
 } from "@/pageEditor/fields/DatabasePutOptions";
-import DocumentOptions, {
-  DOCUMENT_ID,
-} from "@/pageEditor/fields/DocumentOptions";
+import DocumentOptions from "@/components/documentBuilder/edit/DocumentOptions";
 import RemoteMethodOptions, {
   REMOTE_METHOD_ID,
 } from "@/pageEditor/fields/RemoteMethodOptions";
@@ -58,6 +54,8 @@ import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import IdentityTransformerOptions from "@/bricks/transformers/IdentityTransformerOptions";
 import CommentEffect from "@/bricks/effects/comment";
 import CommentOptions from "@/bricks/effects/CommentOptions";
+import { DocumentRenderer } from "@/bricks/renderers/document";
+import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 
 /**
  * Custom BlockConfiguration pageEditor components.
@@ -73,11 +71,11 @@ export default function registerEditors() {
   optionsRegistry.set(GOOGLE_SHEETS_LOOKUP_ID, LookupSpreadsheetOptions);
   optionsRegistry.set(AUTOMATION_ANYWHERE_RUN_BOT_ID, BotOptions);
   optionsRegistry.set(FORM_MODAL_ID, FormModalOptions);
-  optionsRegistry.set(FORM_RENDERER_ID, FormRendererOptions);
+  optionsRegistry.set(CustomFormRenderer.BRICK_ID, FormRendererOptions);
   optionsRegistry.set(DATABASE_GET_ID, DatabaseGetOptions);
   optionsRegistry.set(DATABASE_PUT_ID, DatabasePutOptions);
   optionsRegistry.set(REMOTE_METHOD_ID, RemoteMethodOptions);
-  optionsRegistry.set(DOCUMENT_ID, DocumentOptions);
+  optionsRegistry.set(DocumentRenderer.BRICK_ID, DocumentOptions);
   optionsRegistry.set(TourStepTransformer.BRICK_ID, TourStepOptions);
   optionsRegistry.set(ALERT_EFFECT_ID, AlertOptions);
   optionsRegistry.set(JQueryReader.BRICK_ID, JQueryReaderOptions);

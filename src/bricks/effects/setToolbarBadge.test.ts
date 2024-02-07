@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,7 @@ import SetToolbarBadge from "@/bricks/effects/setToolbarBadge";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
-import { setToolbarBadge } from "@/background/messenger/api";
+import { setToolbarBadge } from "@/background/messenger/strict/api";
 
 const brick = new SetToolbarBadge();
 jest.mock("@/utils/iframeUtils", () => ({

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -323,7 +323,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     const menus = [...this.menus.values()];
 
     // Clear so they don't get re-added by the onNodeRemoved mechanism
-    const extensions = this.modComponents.splice(0, this.modComponents.length);
+    const extensions = this.modComponents.splice(0);
     this.menus.clear();
 
     if (extensions.length === 0) {

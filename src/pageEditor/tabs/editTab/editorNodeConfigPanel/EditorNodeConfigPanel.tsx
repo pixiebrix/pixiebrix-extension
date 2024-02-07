@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -57,7 +57,7 @@ const EditorNodeConfigPanel: React.FC = () => {
     listings[brickId] ?? {};
 
   const isOutputDisabled = !(
-    brickInfo === null || showOutputKey(brickInfo?.type)
+    brickInfo == null || showOutputKey(brickInfo?.type)
   );
   const outputDescription = isOutputDisabled
     ? "Effect and renderer bricks do not produce outputs"
@@ -75,7 +75,9 @@ const EditorNodeConfigPanel: React.FC = () => {
 
   return (
     <>
-      <AnalysisResult />
+      <div className="mb-3">
+        <AnalysisResult />
+      </div>
       <Row className={cx(styles.brickInfo, "justify-content-between")}>
         <Col>
           <p>{brickInfo?.block.name}</p>

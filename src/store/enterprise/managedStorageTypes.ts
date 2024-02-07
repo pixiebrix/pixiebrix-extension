@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -26,6 +26,14 @@ export type ManagedStorageState = {
    * PixieBrix organization ID the extension should link to
    */
   managedOrganizationId?: string;
+  /**
+   * If true, the Extension will restrict access to certain urls for unauthenticated users. Url match patterns are
+   * stored on the server per `managedOrganizationId`.
+   *
+   * @since 1.8.8
+   * @see restrictUnauthenticatedUrlAccess.ts
+   */
+  enforceAuthentication?: boolean;
   /**
    * PixieBrix partner ID
    */

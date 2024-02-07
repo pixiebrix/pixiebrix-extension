@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,7 +22,6 @@ import React, {
   useReducer,
   useRef,
 } from "react";
-import { type RegistryId } from "@/types/registryTypes";
 import Loader from "@/components/Loader";
 import activationCompleteImage from "@img/blueprint-activation-complete.png";
 import styles from "./ActivateModPanel.module.scss";
@@ -30,7 +29,7 @@ import AsyncButton from "@/components/AsyncButton";
 import { useDispatch } from "react-redux";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { reloadMarketplaceEnhancements as reloadMarketplaceEnhancementsInContentScript } from "@/contentScript/messenger/api";
-import { getTopLevelFrame } from "webext-messenger";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import cx from "classnames";
 import { isEmpty } from "lodash";
 import ActivateModInputs from "@/sidebar/activateMod/ActivateModInputs";
@@ -39,9 +38,9 @@ import { Button } from "react-bootstrap";
 import useActivateRecipe from "@/activation/useActivateRecipe";
 import { type WizardValues } from "@/activation/wizardTypes";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import useActivateRecipeWizard, {
+import useActivateModWizard, {
   type UseActivateRecipeWizardResult,
-} from "@/activation/useActivateRecipeWizard";
+} from "@/activation/useActivateModWizard";
 import RequireMods, {
   type RequiredModDefinition,
 } from "@/sidebar/activateMod/RequireMods";
@@ -49,10 +48,10 @@ import { persistor } from "@/sidebar/store";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import AsyncStateGate from "@/components/AsyncStateGate";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-
 import { openShortcutsTab, SHORTCUTS_URL } from "@/utils/extensionUtils";
 import Markdown from "@/components/Markdown";
 import { getModActivationInstructions } from "@/utils/modUtils";
+import type { ModActivationConfig } from "@/types/modTypes";
 
 const { actions } = sidebarSlice;
 
@@ -109,7 +108,7 @@ const { setNeedsPermissions, activateStart, activateSuccess, activateError } =
   activationSlice.actions;
 
 async function reloadMarketplaceEnhancements() {
-  const topFrame = await getTopLevelFrame();
+  const topFrame = await getConnectedTarget();
   // Make sure the content script has the most recent state of the store before reloading.
   // Prevents race condition where the content script reloads before the store is persisted.
   await persistor.flush();
@@ -368,9 +367,10 @@ const ActivateModPanelContent: React.FC<
 };
 
 const ActivateModWizardPanel: React.FC<RequiredModDefinition> = (modState) => {
-  const wizardState = useActivateRecipeWizard(
+  const wizardState = useActivateModWizard(
     modState.modDefinition,
     modState.defaultAuthOptions,
+    modState.initialOptions,
   );
   return (
     <AsyncStateGate state={wizardState}>
@@ -385,12 +385,12 @@ const ActivateModWizardPanel: React.FC<RequiredModDefinition> = (modState) => {
  * React Component Panel for activating a single mod, which may require end-user configuration.
  * @param modId the mod id
  */
-const ActivateModPanel: React.FC<{ modId: RegistryId }> = ({ modId }) => {
+const ActivateModPanel: React.FC<{ mod: ModActivationConfig }> = ({ mod }) => {
   // Memoize to array reference doesn't change on re-render
-  const modIds = useMemo(() => [modId], [modId]);
+  const memoizedMods = useMemo(() => [mod], [mod]);
 
   return (
-    <RequireMods modIds={modIds}>
+    <RequireMods mods={memoizedMods}>
       {(modDefinitions) => <ActivateModWizardPanel {...modDefinitions[0]} />}
     </RequireMods>
   );

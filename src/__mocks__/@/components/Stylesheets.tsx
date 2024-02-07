@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -16,23 +16,25 @@
  */
 
 import React from "react";
-import useContextInvalidated from "@/hooks/useContextInvalidated";
+import { castArray, uniq } from "lodash";
 
-// Note, it's currently impossible to have a "Reload sidebar" button because it can
-// only be done from the content script + contact to the outside world is lost after
-// context invalidation (chrome.runtime and chrome.tabs become undefined)
-const ErrorBanner: React.VFC = () => {
-  const wasContextInvalidated = useContextInvalidated();
-  if (!wasContextInvalidated) {
-    return null;
-  }
+/**
+ * A mock for Stylesheets, because otherwise you have to use jest fake timers in tests.
+ */
+export const Stylesheets: React.FC<{
+  href: string | string[];
+  mountOnLoad?: boolean;
+}> = ({ href, children }) => {
+  const urls = uniq(castArray(href));
 
   return (
-    <div className="p-3 alert-danger">
-      PixieBrix was updated or restarted. <br />
-      Close and reopen the sidebar to continue.
-    </div>
+    <>
+      {urls.map((href) => (
+        <link rel="stylesheet" href={href} key={href} />
+      ))}
+      // Unlike the real Stylesheets, this wraps in a div so that we can add a
+      data-testid for testing
+      <div data-testid="Stylesheets">{children}</div>
+    </>
   );
 };
-
-export default ErrorBanner;

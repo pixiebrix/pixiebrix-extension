@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useCallback } from "react";
 import { actions as extensionActions } from "@/store/extensionsSlice";
-import { collectRecipeOptions } from "@/store/extensionsUtils";
+import { collectModOptions } from "@/store/extensionsUtils";
 import { uninstallRecipe } from "@/store/uninstallUtils";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 
@@ -41,7 +41,7 @@ function useReinstall(): Reinstall {
         throw new Error(`No bricks to re-activate for ${modId}`);
       }
 
-      const currentOptions = collectRecipeOptions(activatedModComponents);
+      const currentOptions = collectModOptions(activatedModComponents);
 
       const configuredDependencies =
         collectExistingConfiguredDependenciesForMod(

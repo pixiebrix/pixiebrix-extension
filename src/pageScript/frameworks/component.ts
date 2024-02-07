@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -24,7 +24,7 @@ export function traverse<T = unknown>(
   source: T,
   count: number,
 ): T | null {
-  let current = source;
+  let current: T | null = source;
   for (let i = 0; i < count && current; i++) {
     current = next(current);
   }

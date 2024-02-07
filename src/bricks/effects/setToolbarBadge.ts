@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { BusinessError } from "@/errors/businessErrors";
 import type { BrickArgs } from "@/types/runtimeTypes";
-import { setToolbarBadge } from "@/background/messenger/api";
+import { setToolbarBadge } from "@/background/messenger/strict/api";
 
 class SetToolbarBadge extends EffectABC {
   constructor() {

@@ -46,23 +46,23 @@ exports[`it renders default state 1`] = `
           class="modal-body"
         >
           <div
-            class="formGroup form-group row"
+            class="formGroup form-group"
           >
             <div
-              class="mb-2 collapse col-12"
+              class="mb-2 w-100 collapse"
             >
               <div
                 class="annotationPlaceholder"
               />
             </div>
             <label
-              class="label form-label col-form-label col-xl-2 col-lg-3"
+              class="label form-label"
               for="blueprintId"
             >
               Mod ID
             </label>
             <div
-              class="col-xl-10 col-lg-9"
+              class="formField"
             >
               <div
                 class="root"
@@ -165,23 +165,23 @@ exports[`it renders default state 1`] = `
             </div>
           </div>
           <div
-            class="formGroup form-group row"
+            class="formGroup form-group"
           >
             <div
-              class="mb-2 collapse col-12"
+              class="mb-2 w-100 collapse"
             >
               <div
                 class="annotationPlaceholder"
               />
             </div>
             <label
-              class="label form-label col-form-label col-xl-2 col-lg-3"
+              class="label form-label"
               for="name"
             >
               Name
             </label>
             <div
-              class="col-xl-10 col-lg-9"
+              class="formField"
             >
               <input
                 class="form-control"
@@ -199,23 +199,23 @@ exports[`it renders default state 1`] = `
             </div>
           </div>
           <div
-            class="formGroup form-group row"
+            class="formGroup form-group"
           >
             <div
-              class="mb-2 collapse col-12"
+              class="mb-2 w-100 collapse"
             >
               <div
                 class="annotationPlaceholder"
               />
             </div>
             <label
-              class="label form-label col-form-label col-xl-2 col-lg-3"
+              class="label form-label"
               for="version"
             >
               Version
             </label>
             <div
-              class="col-xl-10 col-lg-9"
+              class="formField"
             >
               <input
                 class="form-control"
@@ -233,23 +233,23 @@ exports[`it renders default state 1`] = `
             </div>
           </div>
           <div
-            class="formGroup form-group row"
+            class="formGroup form-group"
           >
             <div
-              class="mb-2 collapse col-12"
+              class="mb-2 w-100 collapse"
             >
               <div
                 class="annotationPlaceholder"
               />
             </div>
             <label
-              class="label form-label col-form-label col-xl-2 col-lg-3"
+              class="label form-label"
               for="description"
             >
               Description
             </label>
             <div
-              class="col-xl-10 col-lg-9"
+              class="formField"
             >
               <input
                 class="form-control"
@@ -389,23 +389,23 @@ exports[`it renders requires user scope 1`] = `
             novalidate=""
           >
             <div
-              class="formGroup form-group row"
+              class="formGroup form-group"
             >
               <div
-                class="mb-2 collapse col-12"
+                class="mb-2 w-100 collapse"
               >
                 <div
                   class="annotationPlaceholder"
                 />
               </div>
               <label
-                class="label form-label col-form-label col-lg-auto"
+                class="label labelFitContent form-label"
                 for="scope"
               >
                 Account Alias
               </label>
               <div
-                class="col-lg"
+                class="formField"
               >
                 <input
                   class="form-control"

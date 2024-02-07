@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -37,15 +37,16 @@ import {
   cancelTemporaryPanel,
   closeTemporaryPanel,
   resolveTemporaryPanel,
-} from "@/contentScript/messenger/api";
+} from "@/contentScript/messenger/strict/api";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { last, partition, remove, sortBy } from "lodash";
-import { getTopLevelFrame } from "webext-messenger";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { castDraft } from "immer";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { getVisiblePanelCount } from "@/sidebar/utils";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 const emptySidebarState: SidebarState = {
   panels: [],
@@ -58,7 +59,10 @@ const emptySidebarState: SidebarState = {
   closedTabs: {},
 };
 
-function eventKeyExists(state: SidebarState, query: string | null): boolean {
+function eventKeyExists(
+  state: SidebarState,
+  query: Nullishable<string>,
+): boolean {
   if (query == null) {
     return false;
   }
@@ -75,7 +79,7 @@ function eventKeyExists(state: SidebarState, query: string | null): boolean {
 function findNextActiveKey(
   state: SidebarState,
   { extensionId, blueprintId, panelHeading }: ActivatePanelOptions,
-): string {
+): string | null {
   // Try matching on extension
   if (extensionId) {
     // Prefer form to panel -- however, it would be unusual to target an ephemeral form when reshowing the sidebar
@@ -122,7 +126,7 @@ function findNextActiveKey(
   }
 
   // Return the first static panel, if it exists
-  if (state.staticPanels.length > 0) {
+  if (state.staticPanels[0]) {
     return eventKeyForEntry(state.staticPanels[0]);
   }
 
@@ -130,12 +134,12 @@ function findNextActiveKey(
 }
 
 async function cancelPreexistingForms(forms: UUID[]): Promise<void> {
-  const topLevelFrame = await getTopLevelFrame();
+  const topLevelFrame = await getConnectedTarget();
   cancelForm(topLevelFrame, ...forms);
 }
 
 async function cancelPanels(nonces: UUID[]): Promise<void> {
-  const topLevelFrame = await getTopLevelFrame();
+  const topLevelFrame = await getConnectedTarget();
   cancelTemporaryPanel(topLevelFrame, nonces);
 }
 
@@ -144,7 +148,7 @@ async function cancelPanels(nonces: UUID[]): Promise<void> {
  * @param nonces panel nonces
  */
 async function closePanels(nonces: UUID[]): Promise<void> {
-  const topLevelFrame = await getTopLevelFrame();
+  const topLevelFrame = await getConnectedTarget();
   closeTemporaryPanel(topLevelFrame, nonces);
 }
 
@@ -157,13 +161,13 @@ async function resolvePanel(
   nonce: UUID,
   action: Pick<SubmitPanelAction, "type" | "detail">,
 ): Promise<void> {
-  const topLevelFrame = await getTopLevelFrame();
+  const topLevelFrame = await getConnectedTarget();
   resolveTemporaryPanel(topLevelFrame, nonce, action);
 }
 
 export function fixActiveTabOnRemove(
   state: SidebarState,
-  removedEntry: SidebarEntry | null,
+  removedEntry: Nullishable<SidebarEntry>,
 ) {
   // Only update the active panel if the panel needs to change
   if (removedEntry && state.activeKey === eventKeyForEntry(removedEntry)) {
@@ -262,7 +266,8 @@ const sidebarSlice = createSlice({
           ? eventKeyForEntry(MOD_LAUNCHER)
           : // Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
             // See: https://github.com/immerjs/immer/issues/839
-            // @ts-expect-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+            // @ts-ignore-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
             defaultEventKey(state, state.closedTabs);
     },
     selectTab(state, action: PayloadAction<string>) {

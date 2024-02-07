@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -27,6 +27,9 @@ import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTyp
 import { type UUID, type TimedSequence } from "@/types/stringTypes";
 import { sortBy } from "lodash";
 import { getTimedSequence } from "@/types/helpers";
+import { getTopLevelFrame } from "webext-messenger";
+import { isMV3 } from "@/mv3/api";
+import { hideSidebar } from "@/contentScript/messenger/strict/api";
 
 let lastMessageSeen = getTimedSequence();
 // Track activate messages separately. The Sidebar App Redux state has special handling for these messages to account
@@ -216,4 +219,13 @@ export async function showActivateMods(
 
 export async function hideActivateMods(sequence: TimedSequence): Promise<void> {
   runListeners("onHideActivateRecipe", sequence);
+}
+
+export async function closeSelf(): Promise<void> {
+  if (isMV3()) {
+    window.close();
+  } else {
+    const topLevelFrame = await getTopLevelFrame();
+    await hideSidebar(topLevelFrame);
+  }
 }
