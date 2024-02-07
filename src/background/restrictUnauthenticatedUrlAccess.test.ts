@@ -21,9 +21,17 @@ import axios from "axios";
 import { uuidv4 } from "@/types/helpers";
 import { INTERNAL_reset } from "@/store/enterprise/managedStorage";
 import reportError from "@/telemetry/reportError";
+import { isLinked } from "@/auth/token";
+
+jest.mock("@/auth/token", () => ({
+  __esModule: true,
+  ...jest.requireActual("@/auth/token"),
+  isLinked: jest.fn(),
+}));
 
 const axiosMock = new MockAdapter(axios);
 const reportErrorMock = jest.mocked(reportError);
+const isLinkedMock = jest.mocked(isLinked);
 
 const expectedManageOrganizationId = uuidv4();
 const expectedAuthUrlPatterns = [
@@ -61,6 +69,8 @@ describe("enforceAuthentication", () => {
       managedOrganizationId: expectedManageOrganizationId,
       enforceAuthentication: true,
     });
+
+    isLinkedMock.mockResolvedValue(false);
 
     await initRestrictUnauthenticatedUrlAccess();
     expect(axiosMock.history.get).toHaveLength(1);

@@ -18,12 +18,14 @@
 import { fetch } from "@/hooks/fetch";
 import { type OrganizationAuthUrlPattern } from "@/types/contract";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
-import { isLinked } from "@/auth/token";
+import { addListener as addAuthListener, isLinked } from "@/auth/token";
 import { validateUUID } from "@/types/helpers";
 import { type UUID } from "@/types/stringTypes";
 import { testMatchPatterns } from "@/bricks/available";
 import { SessionValue } from "@/mv3/SessionStorage";
 import reportError from "@/telemetry/reportError";
+import type { Tabs } from "webextension-polyfill";
+import { forEachTab } from "@/utils/extensionUtils";
 
 const sessionValue = new SessionValue<string[]>(
   "authUrlPatterns",
@@ -49,12 +51,51 @@ function getDefaultAuthUrl(restrictedUrl: string) {
   return defaultUrl.href;
 }
 
+async function getRedirectUrl(restrictedUrl: string) {
+  const { ssoUrl } = await readManagedStorage();
+  return ssoUrl ?? getDefaultAuthUrl(restrictedUrl);
+}
+
+async function redirectRestrictedTab(
+  { tabId, url }: { tabId: number; url: string },
+  restrictedUrlPatterns: string[],
+) {
+  const isRestrictedUrl = testMatchPatterns(restrictedUrlPatterns, url);
+
+  if (isRestrictedUrl) {
+    await browser.tabs.update(tabId, {
+      url: await getRedirectUrl(url),
+    });
+  }
+}
+
+async function handleTabUpdate(
+  tabId: number,
+  changeInfo: Tabs.OnUpdatedChangeInfoType,
+  tab: Tabs.Tab,
+) {
+  if (!changeInfo.url || !tab?.url) {
+    return;
+  }
+
+  const cachedAuthUrlPatterns = await sessionValue.get();
+
+  if (!cachedAuthUrlPatterns) {
+    return;
+  }
+
+  await redirectRestrictedTab(
+    { tabId, url: changeInfo.url },
+    cachedAuthUrlPatterns,
+  );
+}
+
 /**
  * Browser administrators can restrict access to certain urls for unauthenticated PixieBrix users via managed storage
  * `enforceAuthentication` and `managedOrganizationId` settings. Policies for specified urls are stored on the server.
  */
 async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
-  const { managedOrganizationId, enforceAuthentication, ssoUrl } =
+  const { managedOrganizationId, enforceAuthentication } =
     await readManagedStorage();
 
   if (!enforceAuthentication || !managedOrganizationId) {
@@ -76,26 +117,19 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
     reportError(error);
   }
 
-  browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-    if (!changeInfo.url || !tab?.url) {
-      return;
-    }
+  if (!(await isLinked())) {
+    browser.tabs.onUpdated.addListener(handleTabUpdate);
+  }
 
-    const [linked, cachedAuthUrlPatterns] = await Promise.all([
-      isLinked(),
-      sessionValue.get(),
-    ]);
-
-    if (linked || !cachedAuthUrlPatterns) {
-      return;
-    }
-
-    const isRestrictedUrl = testMatchPatterns(cachedAuthUrlPatterns, tab.url);
-
-    if (isRestrictedUrl) {
-      await browser.tabs.update(tabId, {
-        url: ssoUrl ?? getDefaultAuthUrl(tab.url),
-      });
+  addAuthListener(async (auth) => {
+    if (auth) {
+      browser.tabs.onUpdated.removeListener(handleTabUpdate);
+    } else {
+      const cachedAuthUrlPatterns = await sessionValue.get();
+      await forEachTab(async ({ tabId, url }) =>
+        redirectRestrictedTab({ tabId, url }, cachedAuthUrlPatterns),
+      );
+      browser.tabs.onUpdated.addListener(handleTabUpdate);
     }
   });
 }
