@@ -22,7 +22,7 @@ import cx from "classnames";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import type { RequireExactlyOne } from "type-fest";
 import styles from "./EllipsisMenu.module.scss";
-import { ButtonVariant } from "react-bootstrap/types";
+import { type ButtonVariant } from "react-bootstrap/types";
 
 type EllipsisMenuItemInternal = {
   /**
