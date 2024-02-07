@@ -15,15 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
 import cx from "classnames";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Stylesheets } from "@/components/Stylesheets";
-import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
-import bootstrapOverrides from "@/pageEditor/sidebar/sidebarBootstrapOverrides.scss?loadAsUrl";
-import custom from "@/bricks/renderers/customForm.css?loadAsUrl";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import validator from "@/validators/formValidator";
 import { type IChangeEvent } from "@rjsf/core";
@@ -34,7 +31,8 @@ import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { type UnknownObject } from "@/types/objectTypes";
-import { cloneDeep, isEmpty } from "lodash";
+import { cloneDeep } from "lodash";
+import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
 
 const FIELDS = {
   DescriptionField,
@@ -56,7 +54,7 @@ const CustomFormComponent: React.FunctionComponent<{
    * Form submission handler.
    * @param values the submitted values
    * @param submissionCount the number of times the form has been submitted (For tracing)
-   * UnkownObject is used instead of JsonObject because strictNullChecks throws
+   * UnknownObject is used instead of JsonObject because strictNullChecks throws
    * `Type instantiation is excessively deep and possibly infinite.`
    */
   onSubmit: (
@@ -65,6 +63,7 @@ const CustomFormComponent: React.FunctionComponent<{
   ) => Promise<void>;
   className?: string;
   stylesheets?: string[];
+  disableParentStyles?: boolean;
 }> = ({
   schema,
   uiSchema,
@@ -73,17 +72,21 @@ const CustomFormComponent: React.FunctionComponent<{
   autoSave,
   className,
   onSubmit,
-  stylesheets = [],
+  stylesheets: newStylesheets,
+  disableParentStyles = false,
 }) => {
   // Use useRef instead of useState because we don't need/want a re-render when count changes
   const submissionCountRef = useRef(0);
-  // Track values during onChange so we can access it our RjsfSubmitContext submitForm callback
+  // Track values during onChange or prop updates, so we can access it our RjsfSubmitContext submitForm callback
   const valuesRef = useRef<UnknownObject>(formData);
+  useEffect(() => {
+    valuesRef.current = formData ?? {};
+  }, [formData]);
 
-  // Custom stylesheets overrides bootstrap themes
-  const stylesheetUrls = isEmpty(stylesheets)
-    ? [bootstrap, bootstrapOverrides, custom]
-    : stylesheets;
+  const { stylesheets } = useStylesheetsContextWithFormDefault({
+    newStylesheets,
+    disableParentStyles,
+  });
 
   return (
     <div
@@ -94,7 +97,7 @@ const CustomFormComponent: React.FunctionComponent<{
       })}
     >
       <ErrorBoundary>
-        <Stylesheets href={stylesheetUrls}>
+        <Stylesheets href={stylesheets}>
           <RjsfSubmitContext.Provider
             value={{
               async submitForm() {

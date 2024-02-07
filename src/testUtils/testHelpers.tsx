@@ -155,7 +155,11 @@ export function createRenderWithWrappers(configureStore: ConfigureStore) {
             </Formik>
           </Provider>
         )
-      : ({ children }) => <Provider store={store}>{children}</Provider>;
+      : ({ children }) => (
+          <Provider store={store}>
+            <ExtraWrapper>{children}</ExtraWrapper>
+          </Provider>
+        );
 
     const utils = render(ui, { wrapper: Wrapper, ...renderOptions });
 

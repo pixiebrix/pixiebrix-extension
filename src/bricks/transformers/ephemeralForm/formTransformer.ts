@@ -92,6 +92,12 @@ export const MODAL_FORM_SCHEMA: Schema = {
       description:
         "Stylesheets will apply to the form in the order listed here",
     },
+    disableParentStyles: {
+      type: "boolean",
+      title: "Disable Parent Styling",
+      description:
+        "Disable the default/inherited styling for the rendered form",
+    },
   },
   required: ["schema"],
 };
@@ -133,6 +139,7 @@ export class FormTransformer extends TransformerABC {
       submitCaption = "Submit",
       location = "modal",
       stylesheets = [],
+      disableParentStyles = false,
     }: BrickArgs<FormDefinition>,
     { logger, abortSignal }: BrickOptions,
   ): Promise<unknown> {
@@ -151,6 +158,7 @@ export class FormTransformer extends TransformerABC {
       submitCaption,
       location,
       stylesheets,
+      disableParentStyles,
     };
 
     abortSignal?.addEventListener("abort", () => {
