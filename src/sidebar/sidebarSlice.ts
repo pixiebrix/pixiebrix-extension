@@ -25,7 +25,11 @@ import type {
   SidebarState,
   StaticPanelEntry,
 } from "@/types/sidebarTypes";
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  type ActionReducerMapBuilder,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import { type UUID } from "@/types/stringTypes";
 import { defaultEventKey, eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import {
@@ -34,7 +38,7 @@ import {
   resolveTemporaryPanel,
 } from "@/contentScript/messenger/strict/api";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { partition, remove, sortBy } from "lodash";
+import { last, partition, remove, sortBy } from "lodash";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { castDraft } from "immer";
 import { localStorage } from "redux-persist-webextension-storage";
@@ -42,7 +46,7 @@ import { type StorageInterface } from "@/store/StorageInterface";
 import { getVisiblePanelCount } from "@/sidebar/utils";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { type Nullishable } from "@/utils/nullishUtils";
-import { extraReducers } from "@/sidebar/thunks";
+import { addFormPanel } from "@/sidebar/thunks";
 
 const emptySidebarState: SidebarState = {
   panels: [],
@@ -409,7 +413,18 @@ const sidebarSlice = createSlice({
       state.closedTabs[action.payload] = false;
     },
   },
-  extraReducers,
+  extraReducers(builder: ActionReducerMapBuilder<SidebarState>) {
+    builder.addCase(addFormPanel.fulfilled, (state, action) => {
+      const forms = action.payload;
+      const newForm = last(forms);
+
+      state.forms = castDraft(forms);
+
+      if (newForm) {
+        state.activeKey = eventKeyForEntry(newForm);
+      }
+    });
+  },
 });
 
 export const persistSidebarConfig = {

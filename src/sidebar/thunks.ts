@@ -17,15 +17,10 @@
 
 import { cancelForm } from "@/contentScript/messenger/strict/api";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { type FormPanelEntry, type SidebarState } from "@/types/sidebarTypes";
 import { type UUID } from "@/types/stringTypes";
-import {
-  type ActionReducerMapBuilder,
-  createAsyncThunk,
-} from "@reduxjs/toolkit";
-import { castDraft } from "immer";
-import { last, partition } from "lodash";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { partition } from "lodash";
 
 async function cancelPreexistingForms(forms: UUID[]): Promise<void> {
   const topLevelFrame = await getConnectedTarget();
@@ -58,16 +53,3 @@ export const addFormPanel = createAsyncThunk<
     form,
   ];
 });
-
-export function extraReducers(builder: ActionReducerMapBuilder<SidebarState>) {
-  builder.addCase(addFormPanel.fulfilled, (state, action) => {
-    const forms = action.payload;
-    const newForm = last(forms);
-
-    state.forms = castDraft(forms);
-
-    if (newForm) {
-      state.activeKey = eventKeyForEntry(newForm);
-    }
-  });
-}
