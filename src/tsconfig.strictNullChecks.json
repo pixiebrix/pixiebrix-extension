@@ -35,6 +35,7 @@
     "./background/auth/codeGrantFlow.ts",
     "./background/auth/implicitGrantFlow.ts",
     "./background/axiosFetch.ts",
+    "./background/backgroundDomWatcher.ts",
     "./background/capture.ts",
     "./background/contentScript.ts",
     "./background/dataStore.ts",
