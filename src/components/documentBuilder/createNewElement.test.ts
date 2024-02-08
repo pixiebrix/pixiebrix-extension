@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import validUuidRegex from "@/vendors/validateUuid";
 import { createNewElement } from "./createNewElement";
 import { DOCUMENT_ELEMENT_TYPES } from "./documentBuilderTypes";
 import { type BrickPipeline } from "@/bricks/types";
@@ -112,6 +113,9 @@ test("sets padding to zero for form", () => {
   expect(actual.type).toBe("pipeline");
   expect((actual.config as any).pipeline.__value__[0].id).toBe(
     "@pixiebrix/form",
+  );
+  expect((actual.config as any).pipeline.__value__[0].instanceId).toMatch(
+    validUuidRegex,
   );
   expect((actual.config as any).pipeline.__value__[0].config.className).toBe(
     "p-0",
