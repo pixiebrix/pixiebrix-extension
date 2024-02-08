@@ -142,7 +142,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
       <Dropdown.Toggle
         className={cx(styles.toggle, toggleClassName)}
         variant={variant}
-        size={size === "md" ? null : size}
+        size={size === "md" ? undefined : size}
       >
         <FontAwesomeIcon icon={faEllipsisV} />
       </Dropdown.Toggle>
