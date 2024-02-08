@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { type SubmitPanelAction } from "@/bricks/errors";
 import {
   cancelForm,
   cancelTemporaryPanel,
   closeTemporaryPanel,
+  resolveTemporaryPanel as resolveTemporaryPanelMessenger,
 } from "@/contentScript/messenger/strict/api";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
@@ -50,17 +52,32 @@ async function closePanels(nonces: UUID[]): Promise<void> {
   closeTemporaryPanel(topLevelFrame, nonces);
 }
 
-type AddFormPanelReturn = {
-  forms: SidebarState["forms"];
-  newForm: SidebarState["forms"][number];
-} | void;
+/**
+ * Resolve a panel with an action and optional detail
+ * @param nonce the panel nonce
+ * @param action the action to resolve the panel with
+ */
+async function resolvePanel(
+  nonce: UUID,
+  action: Pick<SubmitPanelAction, "type" | "detail">,
+): Promise<void> {
+  const topLevelFrame = await getConnectedTarget();
+  resolveTemporaryPanelMessenger(topLevelFrame, nonce, action);
+}
+
+type AddFormPanelReturn =
+  | {
+      forms: SidebarState["forms"];
+      newForm: SidebarState["forms"][number];
+    }
+  | undefined;
 
 export const addFormPanel = createAsyncThunk<
   AddFormPanelReturn,
   { form: FormPanelEntry },
-  { state: SidebarState }
+  { state: { sidebar: SidebarState } }
 >("sidebar/addFormPanel", async ({ form }, { getState }) => {
-  const { forms } = getState();
+  const { forms } = getState().sidebar;
 
   // If the form is already in the sidebar, do nothing
   if (forms.some(({ nonce }) => nonce === form.nonce)) {
@@ -93,9 +110,9 @@ type AddTemporaryPanelReturn = {
 export const addTemporaryPanel = createAsyncThunk<
   AddTemporaryPanelReturn,
   { panel: TemporaryPanelEntry },
-  { state: SidebarState }
+  { state: { sidebar: SidebarState } }
 >("sidebar/addTemporaryPanel", async ({ panel }, { getState }) => {
-  const { temporaryPanels } = getState();
+  const { temporaryPanels } = getState().sidebar;
 
   const [existingExtensionTemporaryPanels, otherTemporaryPanels] = partition(
     temporaryPanels,
@@ -115,27 +132,67 @@ export const addTemporaryPanel = createAsyncThunk<
   };
 });
 
-type RemoveTemporaryPanelReturn = {
-  removedEntry?: SidebarState["temporaryPanels"][number];
-  temporaryPanels: SidebarState["temporaryPanels"];
-};
+type RemoveTemporaryPanelReturn =
+  | {
+      removedEntry: SidebarState["temporaryPanels"][number];
+      temporaryPanels: SidebarState["temporaryPanels"];
+    }
+  | undefined;
 
 export const removeTemporaryPanel = createAsyncThunk<
   RemoveTemporaryPanelReturn,
   UUID,
-  { state: SidebarState }
+  { state: { sidebar: SidebarState } }
 >("sidebar/removeTemporaryPanel", async (nonce, { getState }) => {
-  const { temporaryPanels } = getState();
+  const { temporaryPanels } = getState().sidebar;
 
-  const [removedEntries = [], otherTemporaryPanels = []] = partition(
+  console.log({ temporaryPanels, state: getState() });
+
+  const [[removedEntry], otherTemporaryPanels] = partition(
     temporaryPanels,
     (panel) => panel.nonce === nonce,
   );
 
+  if (!removedEntry) {
+    return;
+  }
+
   await closePanels([nonce]);
 
   return {
-    removedEntry: removedEntries[0],
+    removedEntry,
+    temporaryPanels: otherTemporaryPanels,
+  };
+});
+
+type ResolveTemporaryPanelReturn =
+  | {
+      resolvedEntry: SidebarState["temporaryPanels"][number];
+      temporaryPanels: SidebarState["temporaryPanels"];
+    }
+  | undefined;
+
+export const resolveTemporaryPanel = createAsyncThunk<
+  ResolveTemporaryPanelReturn,
+  { nonce: UUID; action: SubmitPanelAction },
+  { state: { sidebar: SidebarState } }
+>("sidebar/resolveTemporaryPanel", async ({ nonce, action }, { getState }) => {
+  console.log("resolveTemporaryPanel", { nonce, action });
+  const { temporaryPanels } = getState().sidebar;
+
+  const [[resolvedEntry], otherTemporaryPanels] = partition(
+    temporaryPanels,
+    (panel) => panel.nonce === nonce,
+  );
+
+  if (!resolvedEntry) {
+    return;
+  }
+
+  await resolvePanel(nonce, action);
+
+  return {
+    resolvedEntry,
     temporaryPanels: otherTemporaryPanels,
   };
 });

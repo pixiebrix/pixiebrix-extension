@@ -16,7 +16,10 @@
  */
 
 import React, { useCallback } from "react";
-import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
+import {
+  type SidebarState,
+  type TemporaryPanelEntry,
+} from "@/types/sidebarTypes";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -26,19 +29,24 @@ import styles from "./Tabs.module.scss";
 import cx from "classnames";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { useDispatch } from "react-redux";
-import sidebarSlice from "@/sidebar/sidebarSlice";
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
+import { resolveTemporaryPanel } from "@/sidebar/thunks";
+import { type ThunkDispatch, type AnyAction } from "@reduxjs/toolkit";
 
 // Need to memoize this to make sure it doesn't rerender unless its entry actually changes
 // This was part of the fix for issue: https://github.com/pixiebrix/pixiebrix-extension/issues/5646
 export const TemporaryPanelTabPane: React.FC<{
   panel: TemporaryPanelEntry;
 }> = React.memo(({ panel }) => {
-  const dispatch = useDispatch();
+  const dispatch =
+    useDispatch<
+      ThunkDispatch<{ sidebar: SidebarState }, undefined, AnyAction>
+    >();
+
   const onAction = useCallback(
-    (action: SubmitPanelAction) => {
-      dispatch(
-        sidebarSlice.actions.resolveTemporaryPanel({
+    async (action: SubmitPanelAction) => {
+      await dispatch(
+        resolveTemporaryPanel({
           nonce: panel.nonce,
           action,
         }),

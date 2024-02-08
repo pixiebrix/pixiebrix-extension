@@ -32,10 +32,7 @@ import {
 } from "@reduxjs/toolkit";
 import { type UUID } from "@/types/stringTypes";
 import { defaultEventKey, eventKeyForEntry } from "@/sidebar/eventKeyUtils";
-import { resolveTemporaryPanel } from "@/contentScript/messenger/strict/api";
-import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { remove, sortBy } from "lodash";
-import { type SubmitPanelAction } from "@/bricks/errors";
 import { castDraft } from "immer";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
@@ -46,6 +43,7 @@ import {
   addFormPanel,
   addTemporaryPanel,
   removeTemporaryPanel,
+  resolveTemporaryPanel,
 } from "@/sidebar/thunks";
 
 const emptySidebarState: SidebarState = {
@@ -131,19 +129,6 @@ function findNextActiveKey(
   }
 
   return null;
-}
-
-/**
- * Resolve a panel with an action and optional detail
- * @param nonce the panel nonce
- * @param action the action to resolve the panel with
- */
-async function resolvePanel(
-  nonce: UUID,
-  action: Pick<SubmitPanelAction, "type" | "detail">,
-): Promise<void> {
-  const topLevelFrame = await getConnectedTarget();
-  resolveTemporaryPanel(topLevelFrame, nonce, action);
 }
 
 export function fixActiveTabOnRemove(
@@ -257,21 +242,6 @@ const sidebarSlice = createSlice({
       }
     },
 
-    resolveTemporaryPanel(
-      state,
-      action: PayloadAction<{ nonce: UUID; action: SubmitPanelAction }>,
-    ) {
-      const { nonce, action: panelAction } = action.payload;
-
-      const entry = remove(
-        state.temporaryPanels,
-        (panel) => panel.nonce === nonce,
-      )[0];
-
-      void resolvePanel(nonce, panelAction);
-
-      fixActiveTabOnRemove(state, entry);
-    },
     // In the future, we might want to have ActivatePanelOptions support a "enqueue" prop for controlling whether the
     // or not a miss here is queued. We added pendingActivePanel to handle race condition on the initial sidebar
     // loading. If we always set pendingActivePanel though, can hit a weird corner cases where a panel is activated
@@ -384,10 +354,21 @@ const sidebarSlice = createSlice({
     });
 
     builder.addCase(removeTemporaryPanel.fulfilled, (state, action) => {
-      const { removedEntry, temporaryPanels } = action.payload;
+      if (action.payload) {
+        const { removedEntry, temporaryPanels } = action.payload;
 
-      state.temporaryPanels = castDraft(temporaryPanels);
-      fixActiveTabOnRemove(state, removedEntry);
+        state.temporaryPanels = castDraft(temporaryPanels);
+        fixActiveTabOnRemove(state, removedEntry);
+      }
+    });
+
+    builder.addCase(resolveTemporaryPanel.fulfilled, (state, action) => {
+      if (action.payload) {
+        const { resolvedEntry, temporaryPanels } = action.payload;
+
+        state.temporaryPanels = castDraft(temporaryPanels);
+        fixActiveTabOnRemove(state, resolvedEntry);
+      }
     });
   },
 });
