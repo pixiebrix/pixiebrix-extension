@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { type ReactNode, type SyntheticEvent } from "react";
+import React, { type ReactElement, type SyntheticEvent } from "react";
 import { Dropdown } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
@@ -27,7 +27,9 @@ type EllipsisMenuItemInternal = {
   /**
    * User-visible display for the item, generally text of some sort
    */
-  title: ReactNode;
+  title: string;
+
+  icon?: ReactElement;
 
   /**
    * The "on select" action for the item
@@ -140,10 +142,10 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
       <Dropdown.Menu popperConfig={dropdownMenuOptions} alignRight={alignRight}>
         {items
           .filter((x) => !x.hide)
-          .map((item, index) =>
+          .map((item) =>
             item.href ? (
               <Dropdown.Item
-                key={index}
+                key={item.title}
                 href={item.href}
                 className={item.className}
                 disabled={item.disabled}
@@ -152,16 +154,16 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {item.title}
+                {item.icon} {item.title}
               </Dropdown.Item>
             ) : (
               <Dropdown.Item
-                key={index}
+                key={item.title}
                 onClick={item.action}
                 className={item.className}
                 disabled={item.disabled}
               >
-                {item.title}
+                {item.icon} {item.title}
               </Dropdown.Item>
             ),
           )}

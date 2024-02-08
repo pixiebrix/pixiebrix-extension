@@ -65,12 +65,8 @@ const items = [
     action: action("Another ation"),
   },
   {
-    title: (
-      <>
-        <FontAwesomeIcon icon={faTimes} />
-        &nbsp; Something dangerous
-      </>
-    ),
+    title: "Something dangerous",
+    icon: <FontAwesomeIcon icon={faTimes} />,
     action: action("Something dangerous"),
     className: "text-danger",
   },
