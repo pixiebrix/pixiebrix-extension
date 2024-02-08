@@ -81,8 +81,8 @@ export function createNewElement(
       element.config.pipeline = toExpression("pipeline", [
         {
           id: validateRegistryId("@pixiebrix/form"),
-          // Assign instanceId. All bricks in Page Editor are expected to have a unique instanceId because they're used as the
-          // React key and for correlating traces
+          // Assign instanceId. All bricks in Page Editor are expected to have a unique
+          // instanceId because they're used as the React key and for correlating traces
           instanceId: uuidv4(),
           config: {
             storage: {
