@@ -91,18 +91,21 @@ const ArrayWidget: React.VFC<ArrayWidgetProps> = ({
       {({ push }) => (
         <>
           <ul className="list-group mb-2">
-            {(field.value ?? []).map((item: unknown, index: number) => (
-              <li className="list-group-item py-1" key={index}>
-                <SchemaField
-                  key={index}
-                  name={joinName(name, String(index))}
-                  schema={schemaItems}
-                  validationSchema={validationSchema}
-                  hideLabel
-                  isArrayItem
-                />
-              </li>
-            ))}
+            {(field.value ?? []).map((item: unknown, index: number) => {
+              // `react/no-array-index-key` -- They have no other unique identifier
+              const key = joinName(name, String(index));
+              return (
+                <li className="list-group-item py-1" key={key}>
+                  <SchemaField
+                    name={key}
+                    schema={schemaItems}
+                    validationSchema={validationSchema}
+                    hideLabel
+                    isArrayItem
+                  />
+                </li>
+              );
+            })}
           </ul>
           <Button
             variant="link"
