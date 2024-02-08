@@ -28,10 +28,11 @@ import {
   isModDefinition,
   isUnavailableMod,
 } from "@/utils/modUtils";
-import MarketplaceListingModIcon from "@/components/MarketplaceListingModIcon";
+import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 import { DEFAULT_TEXT_ICON_COLOR } from "@/icons/constants";
+import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 
-function getDefaultModIcon(mod: Mod) {
+function getDefaultModIcon(mod: Mod): IconProp {
   if (isUnavailableMod(mod)) {
     return faExclamationCircle;
   }
@@ -46,7 +47,7 @@ function getDefaultModIcon(mod: Mod) {
 const ModIcon: React.FunctionComponent<{
   mod: Mod;
   size?: "1x" | "2x";
-}> = ({ mod, size = "1x" }) => {
+}> = ({ mod, size }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps -- only load default icon once
   const defaultIcon = useMemo(() => getDefaultModIcon(mod), []);
   const modId = getPackageId(mod);
@@ -63,8 +64,8 @@ const ModIcon: React.FunctionComponent<{
   }
 
   return (
-    <MarketplaceListingModIcon
-      modId={modId}
+    <MarketplaceListingIcon
+      packageId={modId}
       defaultIcon={defaultIcon}
       size={size}
     />

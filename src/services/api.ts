@@ -170,6 +170,22 @@ export const appApi = createApi({
         [organizationId]: baseQueryReturnValue,
       }),
     }),
+    getMarketplaceListing: builder.query<
+      MarketplaceListing,
+      { packageId: RegistryId }
+    >({
+      query: (params) => ({
+        url: "/api/marketplace/listings/",
+        method: "get",
+        // Returns public marketplace
+        requireLinked: false,
+        params: {
+          package__name: params.packageId,
+        },
+      }),
+      transformResponse: (baseQueryReturnValue: MarketplaceListing[]) =>
+        baseQueryReturnValue[0],
+    }),
     getMarketplaceListings: builder.query<
       Record<RegistryId, MarketplaceListing>,
       { package__name?: RegistryId } | void
@@ -422,6 +438,7 @@ export const {
   useAddDatabaseToGroupMutation,
   useGetIntegrationsQuery,
   useGetIntegrationAuthsQuery,
+  useGetMarketplaceListingQuery,
   useGetMarketplaceListingsQuery,
   useGetMarketplaceTagsQuery,
   useGetOrganizationsQuery,
