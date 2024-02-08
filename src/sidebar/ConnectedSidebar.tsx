@@ -43,7 +43,11 @@ import { getReservedSidebarEntries } from "@/contentScript/messenger/strict/api"
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import useAsyncEffect from "use-async-effect";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
-import { addFormPanel, addTemporaryPanel } from "@/sidebar/thunks";
+import {
+  addFormPanel,
+  addTemporaryPanel,
+  removeTemporaryPanel,
+} from "@/sidebar/thunks";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
@@ -71,7 +75,7 @@ function useConnectedListener(): SidebarListener {
         dispatch(addTemporaryPanel({ panel }));
       },
       onHideTemporaryPanel({ nonce }) {
-        dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
+        dispatch(removeTemporaryPanel(nonce));
       },
       onShowActivateRecipe(modActivationPanel: ModActivationPanelEntry) {
         dispatch(

@@ -60,6 +60,7 @@ import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { cancelForm } from "@/contentScript/messenger/strict/api";
 import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
+import { removeTemporaryPanel } from "@/sidebar/thunks";
 
 const ActivateModPanel = lazy(
   async () =>
@@ -165,7 +166,7 @@ const Tabs: React.FC = () => {
     event.stopPropagation();
     reportEvent(Events.SIDEBAR_TAB_CLOSE, { panel: JSON.stringify(panel) });
     if (isTemporaryPanelEntry(panel)) {
-      dispatch(sidebarSlice.actions.removeTemporaryPanel(panel.nonce));
+      dispatch(removeTemporaryPanel(panel.nonce));
     } else if (isFormPanelEntry(panel)) {
       const frame = await getConnectedTarget();
       cancelForm(frame, panel.nonce);

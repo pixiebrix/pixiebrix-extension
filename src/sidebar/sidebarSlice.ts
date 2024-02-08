@@ -32,10 +32,7 @@ import {
 } from "@reduxjs/toolkit";
 import { type UUID } from "@/types/stringTypes";
 import { defaultEventKey, eventKeyForEntry } from "@/sidebar/eventKeyUtils";
-import {
-  closeTemporaryPanel,
-  resolveTemporaryPanel,
-} from "@/contentScript/messenger/strict/api";
+import { resolveTemporaryPanel } from "@/contentScript/messenger/strict/api";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { remove, sortBy } from "lodash";
 import { type SubmitPanelAction } from "@/bricks/errors";
@@ -45,7 +42,11 @@ import { type StorageInterface } from "@/store/StorageInterface";
 import { getVisiblePanelCount } from "@/sidebar/utils";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { type Nullishable } from "@/utils/nullishUtils";
-import { addFormPanel, addTemporaryPanel } from "@/sidebar/thunks";
+import {
+  addFormPanel,
+  addTemporaryPanel,
+  removeTemporaryPanel,
+} from "@/sidebar/thunks";
 
 const emptySidebarState: SidebarState = {
   panels: [],
@@ -130,15 +131,6 @@ function findNextActiveKey(
   }
 
   return null;
-}
-
-/**
- * Resolve panels without action/data.
- * @param nonces panel nonces
- */
-async function closePanels(nonces: UUID[]): Promise<void> {
-  const topLevelFrame = await getConnectedTarget();
-  closeTemporaryPanel(topLevelFrame, nonces);
 }
 
 /**
@@ -264,18 +256,7 @@ const sidebarSlice = createSlice({
         state.temporaryPanels[index] = castDraft(panel);
       }
     },
-    removeTemporaryPanel(state, action: PayloadAction<UUID>) {
-      const nonce = action.payload;
 
-      const entry = remove(
-        state.temporaryPanels,
-        (panel) => panel.nonce === nonce,
-      )[0];
-
-      void closePanels([nonce]);
-
-      fixActiveTabOnRemove(state, entry);
-    },
     resolveTemporaryPanel(
       state,
       action: PayloadAction<{ nonce: UUID; action: SubmitPanelAction }>,
@@ -400,6 +381,13 @@ const sidebarSlice = createSlice({
       state.temporaryPanels = castDraft(temporaryPanels);
       state.activeKey = activeKey;
       state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = true;
+    });
+
+    builder.addCase(removeTemporaryPanel.fulfilled, (state, action) => {
+      const { removedEntry, temporaryPanels } = action.payload;
+
+      state.temporaryPanels = castDraft(temporaryPanels);
+      fixActiveTabOnRemove(state, removedEntry);
     });
   },
 });

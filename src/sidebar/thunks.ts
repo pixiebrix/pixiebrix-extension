@@ -18,6 +18,7 @@
 import {
   cancelForm,
   cancelTemporaryPanel,
+  closeTemporaryPanel,
 } from "@/contentScript/messenger/strict/api";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
@@ -35,6 +36,20 @@ async function cancelPreexistingForms(forms: UUID[]): Promise<void> {
   cancelForm(topLevelFrame, ...forms);
 }
 
+async function cancelPanels(nonces: UUID[]): Promise<void> {
+  const topLevelFrame = await getConnectedTarget();
+  cancelTemporaryPanel(topLevelFrame, nonces);
+}
+
+/**
+ * Resolve panels without action/data.
+ * @param nonces panel nonces
+ */
+async function closePanels(nonces: UUID[]): Promise<void> {
+  const topLevelFrame = await getConnectedTarget();
+  closeTemporaryPanel(topLevelFrame, nonces);
+}
+
 type AddFormPanelReturn = {
   forms: SidebarState["forms"];
   newForm: SidebarState["forms"][number];
@@ -45,15 +60,15 @@ export const addFormPanel = createAsyncThunk<
   { form: FormPanelEntry },
   { state: SidebarState }
 >("sidebar/addFormPanel", async ({ form }, { getState }) => {
-  const state = getState();
+  const { forms } = getState();
 
   // If the form is already in the sidebar, do nothing
-  if (state.forms.some(({ nonce }) => nonce === form.nonce)) {
+  if (forms.some(({ nonce }) => nonce === form.nonce)) {
     return;
   }
 
   const [thisExtensionForms, otherForms] = partition(
-    state.forms,
+    forms,
     ({ extensionId }) => extensionId === form.extensionId,
   );
 
@@ -70,11 +85,6 @@ export const addFormPanel = createAsyncThunk<
   };
 });
 
-async function cancelPanels(nonces: UUID[]): Promise<void> {
-  const topLevelFrame = await getConnectedTarget();
-  cancelTemporaryPanel(topLevelFrame, nonces);
-}
-
 type AddTemporaryPanelReturn = {
   temporaryPanels: SidebarState["temporaryPanels"];
   activeKey: SidebarState["activeKey"];
@@ -85,10 +95,10 @@ export const addTemporaryPanel = createAsyncThunk<
   { panel: TemporaryPanelEntry },
   { state: SidebarState }
 >("sidebar/addTemporaryPanel", async ({ panel }, { getState }) => {
-  const state = getState();
+  const { temporaryPanels } = getState();
 
   const [existingExtensionTemporaryPanels, otherTemporaryPanels] = partition(
-    state.temporaryPanels,
+    temporaryPanels,
     (x) => x.extensionId === panel.extensionId,
   );
 
@@ -102,5 +112,30 @@ export const addTemporaryPanel = createAsyncThunk<
   return {
     temporaryPanels: [...otherTemporaryPanels, panel],
     activeKey: eventKeyForEntry(panel),
+  };
+});
+
+type RemoveTemporaryPanelReturn = {
+  removedEntry?: SidebarState["temporaryPanels"][number];
+  temporaryPanels: SidebarState["temporaryPanels"];
+};
+
+export const removeTemporaryPanel = createAsyncThunk<
+  RemoveTemporaryPanelReturn,
+  UUID,
+  { state: SidebarState }
+>("sidebar/removeTemporaryPanel", async (nonce, { getState }) => {
+  const { temporaryPanels } = getState();
+
+  const [removedEntries = [], otherTemporaryPanels = []] = partition(
+    temporaryPanels,
+    (panel) => panel.nonce === nonce,
+  );
+
+  await closePanels([nonce]);
+
+  return {
+    removedEntry: removedEntries[0],
+    temporaryPanels: otherTemporaryPanels,
   };
 });

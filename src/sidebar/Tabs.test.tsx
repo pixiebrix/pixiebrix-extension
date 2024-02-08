@@ -331,9 +331,11 @@ describe("Tabs", () => {
         .getByRole("button", { name: "Close" })
         .click();
 
-      expect(
-        screen.queryByRole("tab", { name: /temporary panel test 1/i }),
-      ).not.toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          screen.queryByRole("tab", { name: /temporary panel test 1/i }),
+        ).not.toBeInTheDocument();
+      });
     });
 
     test("can close a tempoarary panel when mod launcher is unavailable", async () => {
@@ -345,9 +347,11 @@ describe("Tabs", () => {
         .getByRole("button", { name: "Close" })
         .click();
 
-      expect(
-        screen.queryByRole("tab", { name: /temporary panel test 1/i }),
-      ).not.toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          screen.queryByRole("tab", { name: /temporary panel test 1/i }),
+        ).not.toBeInTheDocument();
+      });
     });
 
     test("cannot re-open a closed temporary panel with the mod launcher", async () => {
@@ -362,9 +366,11 @@ describe("Tabs", () => {
         .getByRole("button", { name: "Close" })
         .click();
 
-      expect(
-        screen.queryByRole("tab", { name: /temporary panel test 1/i }),
-      ).not.toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          screen.queryByRole("tab", { name: /temporary panel test 1/i }),
+        ).not.toBeInTheDocument();
+      });
 
       expect(
         screen.queryByRole("heading", { name: /temporary panel test 1/i }),

@@ -22,13 +22,16 @@ import {
   cancelTemporaryPanel,
   closeTemporaryPanel,
 } from "@/contentScript/messenger/strict/api";
-import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import type { SidebarState } from "@/types/sidebarTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { type Draft } from "immer";
-import { addFormPanel, addTemporaryPanel } from "@/sidebar/thunks";
+import {
+  addFormPanel,
+  addTemporaryPanel,
+  removeTemporaryPanel,
+} from "@/sidebar/thunks";
 import { configureStore } from "@reduxjs/toolkit";
 
 jest.mock("@/sidebar/messenger/api");
@@ -159,22 +162,24 @@ describe("sidebarSlice.removeTemporaryPanel", () => {
     const activePanel = sidebarEntryFactory("temporaryPanel");
     const otherPanel = sidebarEntryFactory("temporaryPanel");
 
-    const state = {
+    const initialState: SidebarState = {
       ...sidebarSlice.getInitialState(),
       temporaryPanels: [activePanel, otherPanel],
       activeKey: eventKeyForEntry(activePanel),
-    } as SidebarState;
+    };
 
-    const newState = sidebarSlice.reducer(
-      state,
-      sidebarSlice.actions.removeTemporaryPanel(activePanel.nonce),
-    );
+    const store = configureStore({
+      reducer: sidebarSlice.reducer,
+      preloadedState: initialState,
+    });
 
-    expect(newState.activeKey).toBe(eventKeyForEntry(otherPanel));
+    await store.dispatch(removeTemporaryPanel(activePanel.nonce));
 
-    // Wait for the async call to be processed
-    await tick();
+    const { activeKey, temporaryPanels } = store.getState();
 
+    expect(activeKey).toBe(eventKeyForEntry(otherPanel));
+    expect(temporaryPanels).toHaveLength(1);
+    expect(temporaryPanels).toStrictEqual([otherPanel]);
     expect(closeTemporaryPanelMock).toHaveBeenCalledWith(
       {
         frameId: 0,
@@ -208,13 +213,10 @@ describe("sidebarSlice.removeTemporaryPanel", () => {
     });
 
     await store.dispatch(addTemporaryPanel({ panel: newPanel }));
+    await store.dispatch(removeTemporaryPanel(newPanel.nonce));
 
-    const newState = sidebarSlice.reducer(
-      store.getState(),
-      sidebarSlice.actions.removeTemporaryPanel(newPanel.nonce),
-    );
-
-    expect(newState.activeKey).toBe(eventKeyForEntry(originalPanel));
+    const { activeKey } = store.getState();
+    expect(activeKey).toBe(eventKeyForEntry(originalPanel));
   });
 });
 
