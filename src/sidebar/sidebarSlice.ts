@@ -33,12 +33,11 @@ import {
 import { type UUID } from "@/types/stringTypes";
 import { defaultEventKey, eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import {
-  cancelTemporaryPanel,
   closeTemporaryPanel,
   resolveTemporaryPanel,
 } from "@/contentScript/messenger/strict/api";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { last, partition, remove, sortBy } from "lodash";
+import { last, remove, sortBy } from "lodash";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { castDraft } from "immer";
 import { localStorage } from "redux-persist-webextension-storage";
@@ -46,7 +45,7 @@ import { type StorageInterface } from "@/store/StorageInterface";
 import { getVisiblePanelCount } from "@/sidebar/utils";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { type Nullishable } from "@/utils/nullishUtils";
-import { addFormPanel } from "@/sidebar/thunks";
+import { addFormPanel, addTemporaryPanel } from "@/sidebar/thunks";
 
 const emptySidebarState: SidebarState = {
   panels: [],
@@ -131,11 +130,6 @@ function findNextActiveKey(
   }
 
   return null;
-}
-
-async function cancelPanels(nonces: UUID[]): Promise<void> {
-  const topLevelFrame = await getConnectedTarget();
-  cancelTemporaryPanel(topLevelFrame, nonces);
 }
 
 /**
@@ -270,29 +264,6 @@ const sidebarSlice = createSlice({
         state.temporaryPanels[index] = castDraft(panel);
       }
     },
-    addTemporaryPanel(
-      state,
-      action: PayloadAction<{ panel: TemporaryPanelEntry }>,
-    ) {
-      const { panel } = action.payload;
-
-      const [existingExtensionTemporaryPanels, otherTemporaryPanels] =
-        partition(
-          state.temporaryPanels,
-          (x) => x.extensionId === panel.extensionId,
-        );
-
-      // Cancel all panels for the extension, except if there's a placeholder that was added in setInitialPanels
-      void cancelPanels(
-        existingExtensionTemporaryPanels
-          .filter((x) => x.nonce !== panel.nonce)
-          .map(({ nonce }) => nonce),
-      );
-
-      state.temporaryPanels = castDraft([...otherTemporaryPanels, panel]);
-      state.activeKey = eventKeyForEntry(panel);
-      state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = true;
-    },
     removeTemporaryPanel(state, action: PayloadAction<UUID>) {
       const nonce = action.payload;
 
@@ -415,14 +386,20 @@ const sidebarSlice = createSlice({
   },
   extraReducers(builder: ActionReducerMapBuilder<SidebarState>) {
     builder.addCase(addFormPanel.fulfilled, (state, action) => {
-      const forms = action.payload;
-      const newForm = last(forms);
+      if (action.payload) {
+        const { forms, newForm } = action.payload;
 
-      state.forms = castDraft(forms);
-
-      if (newForm) {
+        state.forms = castDraft(forms);
         state.activeKey = eventKeyForEntry(newForm);
       }
+    });
+
+    builder.addCase(addTemporaryPanel.fulfilled, (state, action) => {
+      const { temporaryPanels, activeKey } = action.payload;
+
+      state.temporaryPanels = castDraft(temporaryPanels);
+      state.activeKey = activeKey;
+      state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = true;
     });
   },
 });
