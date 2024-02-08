@@ -25,7 +25,7 @@ import { Form, ListGroup } from "react-bootstrap";
 import { DescriptionField } from "./DescriptionField";
 import { type SetActiveField } from "@/components/formBuilder/formBuilderTypes";
 import { UI_SCHEMA_ACTIVE } from "@/components/formBuilder/schemaFieldNames";
-import { noop } from "lodash";
+import { noop, uniq } from "lodash";
 
 interface FormPreviewFieldTemplateProps extends FieldTemplateProps {
   // Only used in the FormPreview
@@ -46,6 +46,9 @@ const FieldTemplate = ({
   setActiveField = noop,
   schema: { title },
 }: FormPreviewFieldTemplateProps) => {
+  // Required in order to be used as a `key`
+  rawErrors = uniq(rawErrors);
+
   // eslint-disable-next-line security/detect-object-injection -- is a constant
   const isActive = Boolean(uiSchema?.[UI_SCHEMA_ACTIVE]);
 
@@ -86,12 +89,8 @@ const FieldTemplate = ({
       )}
       {rawErrors.length > 0 && (
         <ListGroup as="ul">
-          {rawErrors.map((error, index) => (
-            <ListGroup.Item
-              as="li"
-              key={`${error}-${index}`}
-              className="border-0 m-0 p-0"
-            >
+          {rawErrors.map((error) => (
+            <ListGroup.Item as="li" key={error} className="border-0 m-0 p-0">
               <small className="m-0 text-danger">{error}</small>
             </ListGroup.Item>
           ))}

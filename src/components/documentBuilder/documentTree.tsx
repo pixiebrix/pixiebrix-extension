@@ -87,6 +87,7 @@ export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
       }
 
       const { Component, props } = branch;
+      // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
       return <Component key={index} {...props} />;
     });
   }

@@ -185,6 +185,7 @@ const WalkthroughModalApp: React.FunctionComponent = () => {
         indicators={false}
       >
         {steps.map((step, index) => (
+          // eslint-disable-next-line react/no-array-index-key -- The key *is* the index
           <Carousel.Item key={index}>
             <Modal.Body className="show-grid">
               <Container>{step.body}</Container>
@@ -216,6 +217,7 @@ const WalkthroughModalApp: React.FunctionComponent = () => {
               {steps.map((_, index) => (
                 // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions -- Navigation can be done via prev/next buttons
                 <li
+                  // eslint-disable-next-line react/no-array-index-key -- The key *is* the index
                   key={index}
                   className={cx({ active: index === stepIndex })}
                   onClick={() => {

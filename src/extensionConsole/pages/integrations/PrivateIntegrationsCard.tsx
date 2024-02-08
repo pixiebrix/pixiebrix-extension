@@ -81,21 +81,15 @@ const Actions: React.VoidFunctionComponent<{
     <EllipsisMenu
       items={[
         {
-          title: (
-            <>
-              <FontAwesomeIcon fixedWidth icon={faEdit} /> Configure
-            </>
-          ),
+          title: "Configure",
+          icon: <FontAwesomeIcon fixedWidth icon={faEdit} />,
           action() {
             navigate(`/services/${encodeURIComponent(id)}`);
           },
         },
         {
-          title: (
-            <>
-              <FontAwesomeIcon fixedWidth icon={faSignOutAlt} /> Reset Token
-            </>
-          ),
+          title: "Reset Token",
+          icon: <FontAwesomeIcon fixedWidth icon={faSignOutAlt} />,
           action: async () => resetAuth(id),
           hide:
             !row.original.integration.isOAuth2 &&

@@ -30,7 +30,6 @@ import styles from "./ActionMenu.module.scss";
 import EllipsisMenu, {
   type EllipsisMenuItem,
 } from "@/components/ellipsisMenu/EllipsisMenu";
-import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 
 type ActionMenuProps = {
   onSave: () => Promise<void>;
@@ -43,17 +42,6 @@ type ActionMenuProps = {
   onRemoveFromRecipe?: () => Promise<void>;
   disabled?: boolean;
 };
-
-const Title: React.FC<{
-  icon: IconProp;
-  text: string;
-  iconClassName?: string;
-}> = ({ icon, text, iconClassName }) => (
-  <>
-    <FontAwesomeIcon icon={icon} fixedWidth className={iconClassName} />
-    {` ${text}`}
-  </>
-);
 
 const ActionMenu: React.FC<ActionMenuProps> = ({
   onSave,
@@ -68,44 +56,50 @@ const ActionMenu: React.FC<ActionMenuProps> = ({
 }) => {
   const menuItems: EllipsisMenuItem[] = [
     onReset && {
-      title: <Title icon={faHistory} text="Reset" />,
+      title: "Reset",
+      icon: <FontAwesomeIcon icon={faHistory} fixedWidth />,
       action: onReset,
       disabled: !isDirty || disabled,
     },
     onAddToRecipe && {
-      title: (
-        <Title
+      title: "Add to mod",
+      icon: (
+        <FontAwesomeIcon
           icon={faFileImport}
-          iconClassName={styles.addIcon}
-          text="Add to mod"
+          fixedWidth
+          className={styles.addIcon}
         />
       ),
       action: onAddToRecipe,
       disabled,
     },
     onRemoveFromRecipe && {
-      title: (
-        <Title
+      title: "Move from mod",
+      icon: (
+        <FontAwesomeIcon
           icon={faFileExport}
-          iconClassName={styles.removeIcon}
-          text="Move from mod"
+          fixedWidth
+          className={styles.removeIcon}
         />
       ),
       action: onRemoveFromRecipe,
       disabled,
     },
     {
-      title: <Title icon={faClone} text="Make a copy" />,
+      title: "Make a copy",
+      icon: <FontAwesomeIcon icon={faClone} fixedWidth />,
       action: onClone,
       disabled,
     },
     onDelete && {
-      title: <Title icon={faTrash} text="Delete" />,
+      title: "Delete",
+      icon: <FontAwesomeIcon icon={faTrash} fixedWidth />,
       action: onDelete,
       disabled,
     },
     onDeactivate && {
-      title: <Title icon={faTimes} text="Deactivate" />,
+      title: "Deactivate",
+      icon: <FontAwesomeIcon icon={faTimes} fixedWidth />,
       action: onDeactivate,
       disabled,
     },
