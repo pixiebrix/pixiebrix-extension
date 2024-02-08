@@ -37,7 +37,7 @@ import {
   resolveTemporaryPanel,
 } from "@/contentScript/messenger/strict/api";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { last, remove, sortBy } from "lodash";
+import { remove, sortBy } from "lodash";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { castDraft } from "immer";
 import { localStorage } from "redux-persist-webextension-storage";

@@ -25,12 +25,10 @@ import {
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import type { SidebarState } from "@/types/sidebarTypes";
-import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { type Draft } from "immer";
-import { waitFor } from "@testing-library/react";
-import { addFormPanel } from "@/sidebar/thunks";
+import { addFormPanel, addTemporaryPanel } from "@/sidebar/thunks";
 import { configureStore } from "@reduxjs/toolkit";
 
 jest.mock("@/sidebar/messenger/api");
@@ -102,21 +100,23 @@ describe("sidebarSlice.addTemporaryPanel", () => {
       extensionId: existingPanel.extensionId,
     });
 
-    const state = {
+    const initialState: SidebarState = {
       ...sidebarSlice.getInitialState(),
       temporaryPanels: [existingPanel, otherExistingPanel],
-    } as SidebarState;
+    };
 
-    const newState = sidebarSlice.reducer(
-      state,
-      sidebarSlice.actions.addTemporaryPanel({ panel: newPanel }),
-    );
+    const store = configureStore({
+      reducer: sidebarSlice.reducer,
+      preloadedState: initialState,
+    });
 
-    expect(newState.activeKey).toBe(eventKeyForEntry(newPanel));
+    await store.dispatch(addTemporaryPanel({ panel: newPanel }));
 
-    // Wait for the async call to be processed
-    await tick();
+    const { temporaryPanels, activeKey } = store.getState();
 
+    expect(temporaryPanels).toHaveLength(2);
+    expect(temporaryPanels).toStrictEqual([otherExistingPanel, newPanel]);
+    expect(activeKey).toBe(eventKeyForEntry(newPanel));
     expect(cancelTemporaryPanelMock).toHaveBeenCalledWith(
       {
         frameId: 0,
@@ -130,22 +130,25 @@ describe("sidebarSlice.addTemporaryPanel", () => {
   it("closes the mod launcher if it is open", async () => {
     const newPanel = sidebarEntryFactory("temporaryPanel");
 
-    const state = {
+    const initialState: SidebarState = {
       ...sidebarSlice.getInitialState(),
       temporaryPanels: [],
       staticPanels: [MOD_LAUNCHER],
-    } as SidebarState;
+    };
 
-    expect(state.closedTabs).toStrictEqual({});
+    const store = configureStore({
+      reducer: sidebarSlice.reducer,
+      preloadedState: initialState,
+    });
 
-    const newState = sidebarSlice.reducer(
-      state,
-      sidebarSlice.actions.addTemporaryPanel({ panel: newPanel }),
-    );
+    expect(store.getState().closedTabs).toStrictEqual({});
 
-    expect(newState.activeKey).toBe(eventKeyForEntry(newPanel));
+    await store.dispatch(addTemporaryPanel({ panel: newPanel }));
 
-    expect(newState.closedTabs).toStrictEqual({
+    const { activeKey, closedTabs } = store.getState();
+
+    expect(activeKey).toBe(eventKeyForEntry(newPanel));
+    expect(closedTabs).toStrictEqual({
       [eventKeyForEntry(MOD_LAUNCHER)]: true,
     });
   });
@@ -181,7 +184,7 @@ describe("sidebarSlice.removeTemporaryPanel", () => {
     );
   });
 
-  it("sets activeKey to a panel with the same extensionId if it exists", () => {
+  it("sets activeKey to a panel with the same extensionId if it exists", async () => {
     const originalPanel = sidebarEntryFactory("panel", {
       extensionId: uuidv4(),
     });
@@ -192,20 +195,22 @@ describe("sidebarSlice.removeTemporaryPanel", () => {
       extensionId: originalPanel.extensionId,
     });
 
-    const state = {
+    const initialState: SidebarState = {
       ...sidebarSlice.getInitialState(),
       forms: [otherExistingPanel],
       panels: [originalPanel],
       temporaryPanels: [],
-    } as SidebarState;
+    };
 
-    const intermediateState = sidebarSlice.reducer(
-      state,
-      sidebarSlice.actions.addTemporaryPanel({ panel: newPanel }),
-    );
+    const store = configureStore({
+      reducer: sidebarSlice.reducer,
+      preloadedState: initialState,
+    });
+
+    await store.dispatch(addTemporaryPanel({ panel: newPanel }));
 
     const newState = sidebarSlice.reducer(
-      intermediateState,
+      store.getState(),
       sidebarSlice.actions.removeTemporaryPanel(newPanel.nonce),
     );
 
@@ -219,31 +224,15 @@ describe("sidebar thunk addFormPanel", () => {
       reducer: sidebarSlice.reducer,
     });
 
-    const extensionId = autoUUIDSequence();
+    const form = sidebarEntryFactory("form");
 
-    await store.dispatch(
-      addFormPanel({
-        form: {
-          type: "form",
-          extensionId,
-          blueprintId: validateRegistryId("test/123"),
-          nonce: autoUUIDSequence(),
-          form: {
-            schema: {
-              title: "Form Title",
-            },
-            uiSchema: {},
-            cancelable: false,
-            submitCaption: "Submit",
-            location: "sidebar",
-          },
-        },
-      }),
-    );
+    await store.dispatch(addFormPanel({ form }));
 
-    await waitFor(() => {
-      expect(store.getState().forms).toHaveLength(1);
-    });
+    const { forms, activeKey } = store.getState();
+
+    expect(forms).toHaveLength(1);
+    expect(forms).toStrictEqual([form]);
+    expect(activeKey).toBe(eventKeyForEntry(form));
     expect(cancelFormMock).toHaveBeenCalledExactlyOnceWith({
       frameId: 0,
       tabId: 1,
