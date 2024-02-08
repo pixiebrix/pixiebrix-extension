@@ -54,7 +54,7 @@ const LockedExtensionPointLabel: React.FC<{
     >
       {({ ref, ...rest }) => (
         <span {...rest}>
-          {label} <FontAwesomeIcon forwardedRef={ref} icon={faLock} />
+          {label} <FontAwesomeIcon ref={ref} icon={faLock} />
         </span>
       )}
     </OverlayTrigger>
