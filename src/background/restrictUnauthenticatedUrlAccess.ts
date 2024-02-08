@@ -18,12 +18,14 @@
 import { fetch } from "@/hooks/fetch";
 import { type OrganizationAuthUrlPattern } from "@/types/contract";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
-import { isLinked } from "@/auth/token";
+import { addListener as addAuthListener, isLinked } from "@/auth/token";
 import { validateUUID } from "@/types/helpers";
 import { type UUID } from "@/types/stringTypes";
 import { testMatchPatterns } from "@/bricks/available";
 import { SessionValue } from "@/mv3/SessionStorage";
 import reportError from "@/telemetry/reportError";
+import type { Tabs } from "webextension-polyfill";
+import { forEachTab } from "@/utils/extensionUtils";
 
 const sessionValue = new SessionValue<string[]>(
   "authUrlPatterns",
@@ -42,6 +44,11 @@ async function getAuthUrlPatterns(organizationId: UUID): Promise<string[]> {
   }
 }
 
+async function isRestrictedUrl(url: string) {
+  const cachedAuthUrlPatterns = await sessionValue.get();
+  return testMatchPatterns(cachedAuthUrlPatterns, url);
+}
+
 function getDefaultAuthUrl(restrictedUrl: string) {
   const errorMessage = `Access is restricted to '${restrictedUrl}'. Log in with PixieBrix to proceed`;
   const defaultUrl = new URL("https://app.pixiebrix.com/login/");
@@ -49,12 +56,42 @@ function getDefaultAuthUrl(restrictedUrl: string) {
   return defaultUrl.href;
 }
 
+async function getRedirectUrl(restrictedUrl: string) {
+  const { ssoUrl } = await readManagedStorage();
+  return ssoUrl ?? getDefaultAuthUrl(restrictedUrl);
+}
+
+async function redirectRestrictedTab({
+  tabId,
+  url,
+}: {
+  tabId: number;
+  url: string;
+}) {
+  if (await isRestrictedUrl(url)) {
+    await browser.tabs.update(tabId, {
+      url: await getRedirectUrl(url),
+    });
+  }
+}
+
+async function handleRestrictedTab(
+  tabId: number,
+  changeInfo: Tabs.OnUpdatedChangeInfoType,
+) {
+  if (!changeInfo.url) {
+    return;
+  }
+
+  await redirectRestrictedTab({ tabId, url: changeInfo.url });
+}
+
 /**
  * Browser administrators can restrict access to certain urls for unauthenticated PixieBrix users via managed storage
  * `enforceAuthentication` and `managedOrganizationId` settings. Policies for specified urls are stored on the server.
  */
 async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
-  const { managedOrganizationId, enforceAuthentication, ssoUrl } =
+  const { managedOrganizationId, enforceAuthentication } =
     await readManagedStorage();
 
   if (!enforceAuthentication || !managedOrganizationId) {
@@ -76,26 +113,16 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
     reportError(error);
   }
 
-  browser.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-    if (!changeInfo.url || !tab?.url) {
-      return;
-    }
+  if (!(await isLinked())) {
+    browser.tabs.onUpdated.addListener(handleRestrictedTab);
+  }
 
-    const [linked, cachedAuthUrlPatterns] = await Promise.all([
-      isLinked(),
-      sessionValue.get(),
-    ]);
-
-    if (linked || !cachedAuthUrlPatterns) {
-      return;
-    }
-
-    const isRestrictedUrl = testMatchPatterns(cachedAuthUrlPatterns, tab.url);
-
-    if (isRestrictedUrl) {
-      await browser.tabs.update(tabId, {
-        url: ssoUrl ?? getDefaultAuthUrl(tab.url),
-      });
+  addAuthListener(async (auth) => {
+    if (auth) {
+      browser.tabs.onUpdated.removeListener(handleRestrictedTab);
+    } else {
+      await forEachTab(redirectRestrictedTab);
+      browser.tabs.onUpdated.addListener(handleRestrictedTab);
     }
   });
 }
