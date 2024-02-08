@@ -36,7 +36,7 @@
     "@atlaskit/tree": "^8.8.7",
     "@cfworker/json-schema": "^1.12.8",
     "@datadog/browser-logs": "^5.9.0",
-    "@datadog/browser-rum": "^5.8.0",
+    "@datadog/browser-rum": "^5.9.0",
     "@floating-ui/dom": "^1.6.1",
     "@fortawesome/fontawesome-svg-core": "1.2.36",
     "@fortawesome/free-brands-svg-icons": "^5.15.4",
