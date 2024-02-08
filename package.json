@@ -39,7 +39,7 @@
     "@datadog/browser-rum": "^5.8.0",
     "@floating-ui/dom": "^1.6.1",
     "@fortawesome/fontawesome-svg-core": "1.2.36",
-    "@fortawesome/free-brands-svg-icons": "^5.15.4",
+    "@fortawesome/free-brands-svg-icons": "^6.5.1",
     "@fortawesome/free-regular-svg-icons": "^5.15.4",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.2.0",
