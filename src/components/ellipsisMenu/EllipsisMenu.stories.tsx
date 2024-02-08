@@ -61,8 +61,8 @@ const items = [
     action: action("Action"),
   },
   {
-    title: "Another ation",
-    action: action("Another ation"),
+    title: "Another action",
+    action: action("Another action"),
   },
   {
     title: (

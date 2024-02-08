@@ -19,7 +19,7 @@ import {
   type DocumentElement,
   type DocumentElementType,
 } from "./documentBuilderTypes";
-import { validateRegistryId } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type DeferExpression } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 
@@ -81,6 +81,9 @@ export function createNewElement(
       element.config.pipeline = toExpression("pipeline", [
         {
           id: validateRegistryId("@pixiebrix/form"),
+          // Assign instanceId. All bricks in Page Editor are expected to have a unique
+          // instanceId because they're used as the React key and for correlating traces
+          instanceId: uuidv4(),
           config: {
             storage: {
               type: "state",

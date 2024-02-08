@@ -22,6 +22,7 @@ import cx from "classnames";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import type { RequireExactlyOne } from "type-fest";
 import styles from "./EllipsisMenu.module.scss";
+import { type ButtonVariant } from "react-bootstrap/types";
 
 type EllipsisMenuItemInternal = {
   /**
@@ -62,7 +63,14 @@ type EllipsisMenuProps = {
   /**
    * The bootstrap button variant for the toggle
    */
-  variant?: string;
+  variant?: ButtonVariant;
+
+  /**
+   * The bootstrap button size for the toggle. Note that
+   * "md" is the bootstrap style for when neither the "btn-sm"
+   * nor the "btn-lg" class is present.
+   */
+  size?: "sm" | "md" | "lg";
 
   /**
    * The dropdown menu options
@@ -86,6 +94,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
   className,
   toggleClassName,
   variant = "light",
+  size = "sm",
   items,
   menuBoundary,
   alignRight,
@@ -133,7 +142,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
       <Dropdown.Toggle
         className={cx(styles.toggle, toggleClassName)}
         variant={variant}
-        size="sm"
+        size={size === "md" ? undefined : size}
       >
         <FontAwesomeIcon icon={faEllipsisV} />
       </Dropdown.Toggle>
