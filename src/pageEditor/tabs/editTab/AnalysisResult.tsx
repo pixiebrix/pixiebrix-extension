@@ -35,7 +35,8 @@ const AnalysisResult: React.FunctionComponent = () => {
     <>
       {annotations.map(({ message, type }, index) => (
         <FieldAnnotationAlert
-          key={`${type}-${index}`}
+          // eslint-disable-next-line react/no-array-index-key -- Requires a refactor of the `FieldAnnotation` component to require specifying a key
+          key={index}
           message={message}
           type={type}
         />
