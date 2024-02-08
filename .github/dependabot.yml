@@ -27,6 +27,9 @@ updates:
       fontawesome:
         patterns:
           - "@fortawesome/*"
+      datadog:
+        patterns:
+          - "@datadog/*"
   - package-ecosystem: github-actions
     directory: /
     schedule:
