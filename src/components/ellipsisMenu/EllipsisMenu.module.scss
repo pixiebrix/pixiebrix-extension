@@ -19,9 +19,9 @@
   display: none;
 }
 
-// btn-lg is too wide for the ellipsis menu! override and make it narrower to keep
-// the same proportions as the small size.
-.toggle:global(.btn-lg) {
+// the md and lg size are too wide for the ellipsis menu! override and make it narrower
+// when it is not the small button size.
+.toggle:not(:global(.btn-sm)) {
   padding-left: 15px;
   padding-right: 15px;
 }

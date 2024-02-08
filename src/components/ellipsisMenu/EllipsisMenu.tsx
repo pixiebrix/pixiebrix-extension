@@ -66,9 +66,11 @@ type EllipsisMenuProps = {
   variant?: ButtonVariant;
 
   /**
-   * The bootstrap button size for the toggle
+   * The bootstrap button size for the toggle. Note that
+   * "md" is the bootstrap style for when neither the "btn-sm"
+   * nor the "btn-lg" class is present.
    */
-  size?: "sm" | "lg";
+  size?: "sm" | "md" | "lg";
 
   /**
    * The dropdown menu options
@@ -140,7 +142,7 @@ const EllipsisMenu: React.FunctionComponent<EllipsisMenuProps> = ({
       <Dropdown.Toggle
         className={cx(styles.toggle, toggleClassName)}
         variant={variant}
-        size={size}
+        size={size === "md" ? undefined : size}
       >
         <FontAwesomeIcon icon={faEllipsisV} />
       </Dropdown.Toggle>
