@@ -21,12 +21,21 @@ import axios from "axios";
 import { uuidv4 } from "@/types/helpers";
 import { INTERNAL_reset } from "@/store/enterprise/managedStorage";
 import reportError from "@/telemetry/reportError";
-import { isLinked } from "@/auth/token";
+import {
+  isLinked,
+  TEST_clearListeners,
+  TEST_triggerListeners,
+} from "@/auth/token";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 jest.mock("@/auth/token", () => ({
   __esModule: true,
   ...jest.requireActual("@/auth/token"),
   isLinked: jest.fn(),
+}));
+
+jest.mock("@/utils/extensionUtils", () => ({
+  forEachTab: jest.fn(),
 }));
 
 const axiosMock = new MockAdapter(axios);
@@ -41,6 +50,7 @@ const expectedAuthUrlPatterns = [
 ];
 
 const addListenerSpy = jest.spyOn(browser.tabs.onUpdated, "addListener");
+const removeListenerSpy = jest.spyOn(browser.tabs.onUpdated, "removeListener");
 
 describe("enforceAuthentication", () => {
   beforeEach(async () => {
@@ -57,6 +67,8 @@ describe("enforceAuthentication", () => {
     await browser.storage.managed.clear();
     axiosMock.reset();
     jest.clearAllMocks();
+    // eslint-disable-next-line new-cap -- used for testing
+    TEST_clearListeners();
   });
 
   it("does nothing if managed storage values are not configured", async () => {
@@ -93,5 +105,30 @@ describe("enforceAuthentication", () => {
     expect(axiosMock.history.get).toHaveLength(1);
     expect(addListenerSpy).toHaveBeenCalledTimes(0);
     expect(reportErrorMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("adds and remove tabs.onUpdated listener if auth listeners are triggered with and without auth respectively", async () => {
+    await browser.storage.managed.set({
+      managedOrganizationId: expectedManageOrganizationId,
+      enforceAuthentication: true,
+    });
+
+    isLinkedMock.mockResolvedValue(false);
+
+    await initRestrictUnauthenticatedUrlAccess();
+    expect(axiosMock.history.get).toHaveLength(1);
+    expect(addListenerSpy).toHaveBeenCalledTimes(1);
+    expect(removeListenerSpy).toHaveBeenCalledTimes(0);
+
+    // eslint-disable-next-line new-cap -- used for testing
+    TEST_triggerListeners({ token: "foo" });
+
+    expect(removeListenerSpy).toHaveBeenCalledTimes(1);
+    addListenerSpy.mockClear();
+
+    // eslint-disable-next-line new-cap -- used for testing
+    TEST_triggerListeners(undefined);
+    await waitForEffect();
+    expect(addListenerSpy).toHaveBeenCalledTimes(1);
   });
 });
