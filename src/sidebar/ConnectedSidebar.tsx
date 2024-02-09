@@ -28,7 +28,6 @@ import {
   type FormPanelEntry,
   type PanelEntry,
   type TemporaryPanelEntry,
-  type SidebarState,
 } from "@/types/sidebarTypes";
 import Tabs from "@/sidebar/Tabs";
 import sidebarSlice from "./sidebarSlice";
@@ -45,22 +44,16 @@ import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import useAsyncEffect from "use-async-effect";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
 
-import {
-  type AnyAction,
-  type Dispatch,
-  type ThunkDispatch,
-} from "@reduxjs/toolkit";
 import addFormPanel from "@/sidebar/thunks/addFormPanel";
 import addTemporaryPanel from "@/sidebar/thunks/addTemporaryPanel";
 import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
+import { type AsyncDispatch } from "@/sidebar/store";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
  */
 function useConnectedListener(): SidebarListener {
-  const dispatch = useDispatch<
-    Dispatch & ThunkDispatch<{ sidebar: SidebarState }, undefined, AnyAction>
-  >();
+  const dispatch = useDispatch<AsyncDispatch>();
 
   return useMemo(
     () => ({

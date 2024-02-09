@@ -20,7 +20,6 @@ import {
   isFormPanelEntry,
   isModActivationPanelEntry,
   isTemporaryPanelEntry,
-  type SidebarState,
   type PanelEntry,
   type SidebarEntry,
 } from "@/types/sidebarTypes";
@@ -61,12 +60,8 @@ import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { cancelForm } from "@/contentScript/messenger/strict/api";
 import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
-import {
-  type ThunkDispatch,
-  type AnyAction,
-  type Dispatch,
-} from "@reduxjs/toolkit";
 import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
+import { type AsyncDispatch } from "@/sidebar/store";
 
 const ActivateModPanel = lazy(
   async () =>
@@ -124,9 +119,7 @@ const TabWithDivider = ({
 };
 
 const Tabs: React.FC = () => {
-  const dispatch = useDispatch<
-    Dispatch & ThunkDispatch<{ sidebar: SidebarState }, undefined, AnyAction>
-  >();
+  const dispatch = useDispatch<AsyncDispatch>();
   const activeKey = useSelector(selectSidebarActiveTabKey);
   const panels = useSelector(selectSidebarPanels);
   const forms = useSelector(selectSidebarForms);
