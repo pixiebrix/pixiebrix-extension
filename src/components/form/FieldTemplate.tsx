@@ -162,7 +162,8 @@ const FieldTemplate: <As extends React.ElementType, T = Element>(
           ) : (
             annotations?.map(({ message, type, actions }, index) => (
               <FieldAnnotationAlert
-                key={`${index}-${type}`}
+                // eslint-disable-next-line react/no-array-index-key -- Requires a refactor of the `FieldAnnotation` component to require specifying a key
+                key={index}
                 message={message}
                 type={type}
                 actions={actions}

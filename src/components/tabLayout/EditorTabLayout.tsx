@@ -80,7 +80,7 @@ const EditorTabLayout: React.FC<{
                     index,
                   ) => (
                     <Button
-                      key={index} // Action buttons shouldn't normally be changing order
+                      key={caption}
                       size="sm"
                       variant={variant}
                       disabled={disabled}

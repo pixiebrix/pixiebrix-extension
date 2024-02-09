@@ -60,6 +60,14 @@ function triggerListeners(
   }
 }
 
+export function TEST_triggerListeners(auth: Partial<TokenAuthData>): void {
+  triggerListeners(auth);
+}
+
+export function TEST_clearListeners(): void {
+  listeners.clear();
+}
+
 /**
  * Read cached PixieBrix authentication data from local storage.
  */

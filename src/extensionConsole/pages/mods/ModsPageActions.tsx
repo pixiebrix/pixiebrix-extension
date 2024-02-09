@@ -42,72 +42,47 @@ const ModsPageActions: React.FunctionComponent<{
   const actionItems = useMemo(
     (): EllipsisMenuItem[] => [
       {
-        title: (
-          <>
-            {/* Applying the same classes which <FontAwesomeIcon/> applies */}
-            <PublishIcon className="svg-inline--fa fa-w-16 fa-fw" /> Publish to
-            Marketplace
-          </>
-        ),
+        title: "Publish to Marketplace",
+        // Applying the same classes which <FontAwesomeIcon/> applies
+        icon: <PublishIcon className="svg-inline--fa fa-w-16 fa-fw" />,
         action: actions.viewPublish,
         hide: !actions.viewPublish,
       },
       {
-        title: (
-          <>
-            <FontAwesomeIcon fixedWidth icon={faStore} /> View Mod Details
-          </>
-        ),
+        title: "View Mod Details",
+        icon: <FontAwesomeIcon fixedWidth icon={faStore} />,
         href: actions.viewInMarketplaceHref,
         hide: !actions.viewInMarketplaceHref,
       },
       {
-        title: (
-          <>
-            <FontAwesomeIcon fixedWidth icon={faShare} /> Share with Teams
-          </>
-        ),
+        title: "Share with Teams",
+        icon: <FontAwesomeIcon fixedWidth icon={faShare} />,
         action: actions.viewShare,
         hide: !actions.viewShare,
       },
       {
-        title: (
-          <>
-            <FontAwesomeIcon fixedWidth icon={faList} /> View Logs
-          </>
-        ),
+        title: "View Logs",
+        icon: <FontAwesomeIcon fixedWidth icon={faList} />,
         action: actions.viewLogs,
         hide: !actions.viewLogs,
       },
       {
-        title: hasUpdate ? (
-          <span className="text-info">
-            <FontAwesomeIcon fixedWidth icon={faSyncAlt} /> Update
-          </span>
-        ) : (
-          <>
-            <FontAwesomeIcon fixedWidth icon={faSyncAlt} /> Reactivate
-          </>
-        ),
+        title: hasUpdate ? "Update" : "Reactivate",
+        icon: <FontAwesomeIcon fixedWidth icon={faSyncAlt} />,
         action: actions.reactivate,
         hide: !actions.reactivate,
+        className: "text-info",
       },
       {
-        title: (
-          <>
-            <FontAwesomeIcon fixedWidth icon={faTimes} /> Deactivate
-          </>
-        ),
+        title: "Deactivate",
+        icon: <FontAwesomeIcon fixedWidth icon={faTimes} />,
         action: actions.deactivate,
         hide: !actions.deactivate,
         className: "text-danger",
       },
       {
-        title: (
-          <span className="text-danger">
-            <FontAwesomeIcon fixedWidth icon={faTrash} /> Delete
-          </span>
-        ),
+        title: "Delete",
+        icon: <FontAwesomeIcon fixedWidth icon={faTrash} />,
         action: actions.deleteExtension,
         hide: !actions.deleteExtension,
         className: "text-danger",

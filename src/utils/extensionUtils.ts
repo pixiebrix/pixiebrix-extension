@@ -111,7 +111,10 @@ export async function getTabsWithAccess(): Promise<
  * Runs a callback for each tab the extension has access to
  */
 export async function forEachTab<
-  TCallback extends (target: { tabId: number }) => Promisable<unknown>,
+  TCallback extends (target: {
+    tabId: number;
+    url: string;
+  }) => Promisable<unknown>,
 >(
   callback: TCallback,
   options?: { exclude: number },
@@ -124,7 +127,7 @@ export async function forEachTab<
 
   const promises = tabs
     .filter(({ tabId }) => tabId !== options?.exclude)
-    .map(({ tabId }) => callback({ tabId }));
+    .map(({ tabId, url }) => callback({ tabId, url }));
 
   // TODO: Probably integrate `allSettled` error handling into
   // `forEachTab` to preserve its ease of use and the warning.
