@@ -1,41 +1,6 @@
 const { readFileSync } = require("fs");
 const { resolve } = require("path");
 
-const restrictedZones = [
-  "background",
-  "contentScript",
-  "pageEditor",
-  "extensionConsole",
-  "sidebar",
-  "pageScript",
-].map((exporter) => ({
-  // All of these files cannot import `from` (exclude self-imports)
-  target:
-    exporter === "contentScript"
-      ? `./src/!(${exporter}|bricks|starterBricks)/**/*` // Temporary: Bricks and starterBricks are implicitly run from CS
-      : `./src/!(${exporter})/**/*`,
-
-  // The files above cannot import `from` this folder
-  from: `./src/${exporter}`,
-
-  // These can be imported from anywhere
-  except: [
-    `../${exporter}/messenger`,
-    `../${exporter}/types.ts`,
-    // `../${exporter}/**/*Types.ts`, // TODO: Globs don't seem to work
-    `../${exporter}/pageEditor/types.ts`,
-    `../${exporter}/pageEditorTypes.ts`,
-    `../${exporter}/runBlockTypes.ts`,
-    `../${exporter}/extensionPoints/formStateTypes.ts`,
-    `../${exporter}/tabs/editTab/dataPanel/dataPanelTypes.ts`,
-  ],
-
-  message: `Cross-context imports break expectations. Shared components should be in shared folders.
-  Solution 1: Keep both importing and imported modules in the same context (shared or @/${exporter}).
-  Solution 2: Use the Messenger if they are in the correct context.
-  Solution 3: Propose a clearly-shared component within the context, like we do for Messenger and *Types files.`,
-}));
-
 module.exports = {
   root: true,
   extends: [
@@ -54,10 +19,18 @@ module.exports = {
     "local-rules/notBothLabelAndLockableProps": "error",
     "local-rules/preferNullish": "warn",
     "local-rules/preferNullishable": "warn",
-    "import/no-restricted-paths": [
+    "local-rules/noCrossBoundaryImports": [
       "warn",
       {
-        zones: restrictedZones,
+        boundaries: [
+          "background",
+          "contentScript",
+          "pageEditor",
+          "extensionConsole",
+          "sidebar",
+          "pageScript",
+        ],
+        allowedGlobs: ["**/messenger/**", "**/*.scss*"],
       },
     ],
 
@@ -131,11 +104,16 @@ module.exports = {
   },
   overrides: [
     {
-      files: ["webpack.*.js", "*.config.js", "scripts/*"],
+      files: [
+        "webpack.*.js",
+        "*.config.js",
+        "scripts/*",
+        "eslint-local-rules/*",
+      ],
       // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/development.js
       extends: ["pixiebrix/development"],
       rules: {
-        "import/no-restricted-paths": "off",
+        "local-rules/noCrossBoundaryImports": "off",
       },
     },
     {
@@ -152,6 +130,7 @@ module.exports = {
       extends: ["pixiebrix/development", "pixiebrix/tests"],
       rules: {
         "unicorn/prefer-spread": "off",
+        "local-rules/noCrossBoundaryImports": "off",
       },
     },
     {
