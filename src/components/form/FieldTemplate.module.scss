@@ -34,7 +34,9 @@
   flex-grow: 1;
   min-width: 150px;
   max-width: 300px;
-  padding-block: 15px;
+  // Visually align the label to the baseline of the text field.
+  // It also helps space the fields out out when stacked vertically.
+  padding-top: 10px;
 }
 
 .labelWider {
