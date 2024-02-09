@@ -29,11 +29,6 @@ const restrictedZones = [
     `../${exporter}/extensionPoints/formStateTypes.ts`,
     `../${exporter}/tabs/editTab/dataPanel/dataPanelTypes.ts`,
   ],
-
-  message: `Cross-context imports break expectations. Shared components should be in shared folders.
-  Solution 1: Keep both importing and imported modules in the same context (shared or @/${exporter}).
-  Solution 2: Use the Messenger if they are in the correct context.
-  Solution 3: Propose a clearly-shared component within the context, like we do for Messenger and *Types files.`,
 }));
 
 module.exports = {
@@ -54,8 +49,15 @@ module.exports = {
     "local-rules/notBothLabelAndLockableProps": "error",
     "local-rules/preferNullish": "warn",
     "local-rules/preferNullishable": "warn",
+    "local-rules/noCrossBoundaryImports": [
+      "error",
+      {
+        forbiddenFolders: ["background", "contentScript"],
+        allowedFiles: ["*/messenger/api", "*/messenger/strict/api", "*Types"],
+      },
+    ],
     "import/no-restricted-paths": [
-      "warn",
+      "error",
       {
         zones: restrictedZones,
       },
