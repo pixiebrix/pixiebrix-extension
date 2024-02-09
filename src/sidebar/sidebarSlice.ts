@@ -336,40 +336,38 @@ const sidebarSlice = createSlice({
     },
   },
   extraReducers(builder: ActionReducerMapBuilder<SidebarState>) {
-    builder.addCase(addFormPanel.fulfilled, (state, action) => {
-      if (action.payload) {
-        const { forms, newForm } = action.payload;
+    builder
+      .addCase(addFormPanel.fulfilled, (state, action) => {
+        if (action.payload) {
+          const { forms, newForm } = action.payload;
 
-        state.forms = castDraft(forms);
-        state.activeKey = eventKeyForEntry(newForm);
-      }
-    });
-
-    builder.addCase(addTemporaryPanel.fulfilled, (state, action) => {
-      const { temporaryPanels, activeKey } = action.payload;
-
-      state.temporaryPanels = castDraft(temporaryPanels);
-      state.activeKey = activeKey;
-      state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = true;
-    });
-
-    builder.addCase(removeTemporaryPanel.fulfilled, (state, action) => {
-      if (action.payload) {
-        const { removedEntry, temporaryPanels } = action.payload;
+          state.forms = castDraft(forms);
+          state.activeKey = eventKeyForEntry(newForm);
+        }
+      })
+      .addCase(addTemporaryPanel.fulfilled, (state, action) => {
+        const { temporaryPanels, activeKey } = action.payload;
 
         state.temporaryPanels = castDraft(temporaryPanels);
-        fixActiveTabOnRemove(state, removedEntry);
-      }
-    });
+        state.activeKey = activeKey;
+        state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = true;
+      })
+      .addCase(removeTemporaryPanel.fulfilled, (state, action) => {
+        if (action.payload) {
+          const { removedEntry, temporaryPanels } = action.payload;
 
-    builder.addCase(resolveTemporaryPanel.fulfilled, (state, action) => {
-      if (action.payload) {
-        const { resolvedEntry, temporaryPanels } = action.payload;
+          state.temporaryPanels = castDraft(temporaryPanels);
+          fixActiveTabOnRemove(state, removedEntry);
+        }
+      })
+      .addCase(resolveTemporaryPanel.fulfilled, (state, action) => {
+        if (action.payload) {
+          const { resolvedEntry, temporaryPanels } = action.payload;
 
-        state.temporaryPanels = castDraft(temporaryPanels);
-        fixActiveTabOnRemove(state, resolvedEntry);
-      }
-    });
+          state.temporaryPanels = castDraft(temporaryPanels);
+          fixActiveTabOnRemove(state, resolvedEntry);
+        }
+      });
   },
 });
 
