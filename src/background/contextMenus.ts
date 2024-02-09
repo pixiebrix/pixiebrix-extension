@@ -155,7 +155,9 @@ async function _ensureContextMenu({
   const updateProperties = {
     type: "normal",
     title,
-    contexts,
+    // At least one context type must be specified
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/7100
+    contexts: contexts?.length ? contexts : ["all"],
     documentUrlPatterns,
   } satisfies Menus.UpdateUpdatePropertiesType;
 
