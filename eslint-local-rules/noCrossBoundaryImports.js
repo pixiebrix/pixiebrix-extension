@@ -18,6 +18,40 @@
 const path = require("node:path");
 const multimatch = require("multimatch");
 
+function validateNode({ node, context, boundaries, allowedGlobs }) {
+  const importPath = node.source.value;
+  if (!importPath) {
+    // Ignore `import(`something/${variable}`)`
+    return;
+  }
+
+  const [alias, importedFolder] = importPath.split("/");
+  if (alias !== "@" || !boundaries.includes(importedFolder)) {
+    // Ignore `import 'react'`
+    // Ignore `import '@/utils'`
+    return;
+  }
+
+  const thisFileFolder = path
+    .relative(path.join(context.cwd, "src"), context.getFilename())
+    .split("/")[0];
+  if (importedFolder === thisFileFolder) {
+    // Ignore `import '@/background'` when in `@/background`
+    return;
+  }
+
+  const isAllowedFile = multimatch(importPath, allowedGlobs).length > 0;
+  if (isAllowedFile) {
+    // Ignore whitelisted globs like the messenger
+    return;
+  }
+
+  context.report({
+    node,
+    message: `"${importPath}" cannot be imported from "${thisFileFolder}" folder. Info on https://github.com/pixiebrix/pixiebrix-extension/wiki/Contexts#eslint`,
+  });
+}
+
 module.exports = {
   meta: {
     type: "problem",
@@ -57,6 +91,9 @@ module.exports = {
     }
 
     return {
+      ImportExpression(node) {
+        validateNode({ node, context, boundaries, allowedGlobs });
+      },
       ImportDeclaration(node) {
         if (node.importKind === "type") {
           // Ignore `import type Default`
@@ -72,32 +109,7 @@ module.exports = {
           return;
         }
 
-        const importPath = node.source.value;
-        const [alias, importedFolder] = importPath.split("/");
-        if (alias !== "@" || !boundaries.includes(importedFolder)) {
-          // Ignore `import 'react'`
-          // Ignore `import '@/utils'`
-          return;
-        }
-
-        const thisFileFolder = path
-          .relative(path.join(context.cwd, "src"), context.getFilename())
-          .split("/")[0];
-        if (importedFolder === thisFileFolder) {
-          // Ignore `import '@/background'` when in `@/background`
-          return;
-        }
-
-        const isAllowedFile = multimatch(importPath, allowedGlobs).length > 0;
-        if (isAllowedFile) {
-          // Ignore whitelisted globs like the messenger
-          return;
-        }
-
-        context.report({
-          node,
-          message: `"${importPath}" cannot be imported from "${thisFileFolder}" folder. Info on https://github.com/pixiebrix/pixiebrix-extension/wiki/Contexts#eslint`,
-        });
+        validateNode({ node, context, boundaries, allowedGlobs });
       },
     };
   },

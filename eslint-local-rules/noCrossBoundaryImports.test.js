@@ -1,6 +1,3 @@
-/* eslint-disable unicorn/prefer-module */
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable @typescript-eslint/no-require-imports */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
@@ -92,6 +89,25 @@ ruleTester.run("noCrossBoundaryImports", noCrossBoundaryImports, {
       filename: "src/sidebar/bar.ts",
       options,
     },
+    {
+      // In-boundary import expression
+      code: 'import("@/background/foo");',
+      filename: "src/background/bar.ts",
+      options,
+    },
+    {
+      // Shared code import expression
+      code: 'import("@/utils");',
+      filename: "src/background/bar.ts",
+      options,
+    },
+    {
+      // Dynamic import expressions are ignored
+      // eslint-disable-next-line no-template-curly-in-string
+      code: "import(`@/dynamic/${import}`);",
+      filename: "src/background/bar.ts",
+      options,
+    },
   ],
   invalid: [
     {
@@ -107,6 +123,18 @@ ruleTester.run("noCrossBoundaryImports", noCrossBoundaryImports, {
       filename: "src/sidebar/bar.ts",
       options,
       errors,
+    },
+    {
+      // Cross-boundary import expression
+      code: 'import("@/background/foo");',
+      filename: "src/sidebar/bar.ts",
+      options,
+      errors: [
+        {
+          message: /cannot be imported/,
+          type: "ImportExpression",
+        },
+      ],
     },
   ],
 });
