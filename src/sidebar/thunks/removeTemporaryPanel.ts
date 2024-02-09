@@ -36,8 +36,6 @@ const removeTemporaryPanel = createAsyncThunk<
 >("sidebar/removeTemporaryPanel", async (nonce, { getState }) => {
   const { temporaryPanels } = getState().sidebar;
 
-  console.log({ temporaryPanels, state: getState() });
-
   const [[removedEntry], otherTemporaryPanels] = partition(
     temporaryPanels,
     (panel) => panel.nonce === nonce,

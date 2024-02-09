@@ -242,7 +242,7 @@ describe("sidebar thunk addFormPanel", () => {
   });
 });
 
-describe("sidebarSlice.showActivationPanel", () => {
+describe("sidebarSlice.showModActivationPanel", () => {
   it("closes the mod launcher if it is open", async () => {
     const newPanel = sidebarEntryFactory("activateMods");
 
@@ -262,6 +262,56 @@ describe("sidebarSlice.showActivationPanel", () => {
 
     expect(newState.closedTabs).toStrictEqual({
       [eventKeyForEntry(MOD_LAUNCHER)]: true,
+    });
+  });
+});
+
+describe("sidebarSlice.hideModActivationPanel", () => {
+  it("switches the active panel", async () => {
+    const modActivationPanel = sidebarEntryFactory("activateMods");
+    const nextPanel = sidebarEntryFactory("panel");
+
+    const state = {
+      ...sidebarSlice.getInitialState(),
+      staticPanels: [MOD_LAUNCHER],
+      panels: [nextPanel],
+      modActivationPanel,
+      closedTabs: { [eventKeyForEntry(MOD_LAUNCHER)]: true },
+      activeKey: eventKeyForEntry(modActivationPanel),
+    } as SidebarState;
+
+    const newState = sidebarSlice.reducer(
+      state,
+      sidebarSlice.actions.hideModActivationPanel(),
+    );
+
+    expect(newState.activeKey).toBe(eventKeyForEntry(nextPanel));
+
+    expect(newState.closedTabs).toStrictEqual({
+      [eventKeyForEntry(MOD_LAUNCHER)]: true,
+    });
+  });
+
+  it("switches to the mod launcher if there are no other visible panels", async () => {
+    const modActivationPanel = sidebarEntryFactory("activateMods");
+
+    const state = {
+      ...sidebarSlice.getInitialState(),
+      staticPanels: [MOD_LAUNCHER],
+      modActivationPanel,
+      closedTabs: { [eventKeyForEntry(MOD_LAUNCHER)]: true },
+      activeKey: eventKeyForEntry(modActivationPanel),
+    } as SidebarState;
+
+    const newState = sidebarSlice.reducer(
+      state,
+      sidebarSlice.actions.hideModActivationPanel(),
+    );
+
+    expect(newState.activeKey).toBe(eventKeyForEntry(MOD_LAUNCHER));
+
+    expect(newState.closedTabs).toStrictEqual({
+      [eventKeyForEntry(MOD_LAUNCHER)]: false,
     });
   });
 });
