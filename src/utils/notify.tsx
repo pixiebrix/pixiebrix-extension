@@ -36,7 +36,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { merge, truncate } from "lodash";
 
 // While correct, the `sidebarDomControllerLite` name implies that it's a small, pure module and it's unlikely to cause issues
-// eslint-disable-next-line import/no-restricted-paths
+// eslint-disable-next-line local-rules/noCrossBoundaryImports
 import { SIDEBAR_WIDTH_CSS_PROPERTY } from "@/contentScript/sidebarDomControllerLite";
 import ErrorIcon from "@/icons/error.svg?loadAsComponent";
 import WarningIcon from "@/icons/warning.svg?loadAsComponent";

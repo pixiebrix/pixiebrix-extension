@@ -29,7 +29,6 @@ import { recreateDB as recreateBrickDB } from "@/registry/packageRegistry";
 import {
   recreateDB as recreateEventDB,
   clear as clearEvents,
-  // eslint-disable-next-line import/no-restricted-paths -- safe import because IDB is shared resource
 } from "@/background/telemetry";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
