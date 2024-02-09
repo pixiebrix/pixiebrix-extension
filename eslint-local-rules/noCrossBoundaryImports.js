@@ -18,7 +18,6 @@
 const path = require("node:path");
 const multimatch = require("multimatch");
 
-// eslint-disable-next-line unicorn/prefer-module
 module.exports = {
   meta: {
     type: "problem",

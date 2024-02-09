@@ -104,11 +104,15 @@ module.exports = {
   },
   overrides: [
     {
-      files: ["webpack.*.js", "*.config.js", "scripts/*"],
+      files: [
+        "webpack.*.js",
+        "*.config.js",
+        "scripts/*",
+        "eslint-local-rules/*",
+      ],
       // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/development.js
       extends: ["pixiebrix/development"],
       rules: {
-        "import/no-restricted-paths": "off",
         "local-rules/noCrossBoundaryImports": "off",
       },
     },
