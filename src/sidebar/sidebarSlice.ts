@@ -25,24 +25,24 @@ import type {
   SidebarState,
   StaticPanelEntry,
 } from "@/types/sidebarTypes";
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  type ActionReducerMapBuilder,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import { type UUID } from "@/types/stringTypes";
 import { defaultEventKey, eventKeyForEntry } from "@/sidebar/eventKeyUtils";
-import {
-  cancelForm,
-  cancelTemporaryPanel,
-  closeTemporaryPanel,
-  resolveTemporaryPanel,
-} from "@/contentScript/messenger/strict/api";
-import { partition, remove, sortBy } from "lodash";
-import { getConnectedTarget } from "@/sidebar/connectedTarget";
-import { type SubmitPanelAction } from "@/bricks/errors";
-import { castDraft, type Draft } from "immer";
+import { remove, sortBy } from "lodash";
+import { castDraft } from "immer";
 import { localStorage } from "redux-persist-webextension-storage";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { getVisiblePanelCount } from "@/sidebar/utils";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { type Nullishable } from "@/utils/nullishUtils";
+import addFormPanel from "@/sidebar/thunks/addFormPanel";
+import addTemporaryPanel from "@/sidebar/thunks/addTemporaryPanel";
+import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
+import resolveTemporaryPanel from "@/sidebar/thunks/resolveTemporaryPanel";
 
 const emptySidebarState: SidebarState = {
   panels: [],
@@ -53,7 +53,7 @@ const emptySidebarState: SidebarState = {
   activeKey: null,
   pendingActivePanel: null,
   closedTabs: {},
-};
+} as const;
 
 function eventKeyExists(
   state: SidebarState,
@@ -127,38 +127,6 @@ function findNextActiveKey(
   }
 
   return null;
-}
-
-async function cancelPreexistingForms(forms: UUID[]): Promise<void> {
-  const topLevelFrame = await getConnectedTarget();
-  cancelForm(topLevelFrame, ...forms);
-}
-
-async function cancelPanels(nonces: UUID[]): Promise<void> {
-  const topLevelFrame = await getConnectedTarget();
-  cancelTemporaryPanel(topLevelFrame, nonces);
-}
-
-/**
- * Resolve panels without action/data.
- * @param nonces panel nonces
- */
-async function closePanels(nonces: UUID[]): Promise<void> {
-  const topLevelFrame = await getConnectedTarget();
-  closeTemporaryPanel(topLevelFrame, nonces);
-}
-
-/**
- * Resolve a panel with an action and optional detail
- * @param nonce the panel nonce
- * @param action the action to resolve the panel with
- */
-async function resolvePanel(
-  nonce: UUID,
-  action: Pick<SubmitPanelAction, "type" | "detail">,
-): Promise<void> {
-  const topLevelFrame = await getConnectedTarget();
-  resolveTemporaryPanel(topLevelFrame, nonce, action);
 }
 
 export function fixActiveTabOnRemove(
@@ -250,31 +218,6 @@ const sidebarSlice = createSlice({
       // User manually selected a panel, so cancel any pending automatic panel activation
       state.pendingActivePanel = null;
     },
-    addForm(state, action: PayloadAction<{ form: FormPanelEntry }>) {
-      const { form } = action.payload as Draft<typeof action.payload>;
-
-      if (state.forms.some((x) => x.nonce === form.nonce)) {
-        // Panel is already in the sidebar, do nothing as form definitions can't be updated. (There's no placeholder
-        // loading state for forms.)
-        return;
-      }
-
-      const [thisExtensionForms, otherForms] = partition(
-        state.forms,
-        (x) => x.extensionId === form.extensionId,
-      );
-
-      // The UUID must be fetched synchronously to ensure the `form` Proxy element doesn't expire
-      void cancelPreexistingForms(thisExtensionForms.map((form) => form.nonce));
-
-      state.forms = [
-        ...otherForms,
-        // Unlike panels which are sorted, forms are like a "stack", will show the latest form available
-        form,
-      ];
-
-      state.activeKey = eventKeyForEntry(form);
-    },
     removeForm(state, action: PayloadAction<UUID>) {
       const nonce = action.payload;
 
@@ -296,56 +239,7 @@ const sidebarSlice = createSlice({
         state.temporaryPanels[index] = castDraft(panel);
       }
     },
-    addTemporaryPanel(
-      state,
-      action: PayloadAction<{ panel: TemporaryPanelEntry }>,
-    ) {
-      const { panel } = action.payload;
 
-      const [existingExtensionTemporaryPanels, otherTemporaryPanels] =
-        partition(
-          state.temporaryPanels,
-          (x) => x.extensionId === panel.extensionId,
-        );
-
-      // Cancel all panels for the extension, except if there's a placeholder that was added in setInitialPanels
-      void cancelPanels(
-        existingExtensionTemporaryPanels
-          .filter((x) => x.nonce !== panel.nonce)
-          .map(({ nonce }) => nonce),
-      );
-
-      state.temporaryPanels = castDraft([...otherTemporaryPanels, panel]);
-      state.activeKey = eventKeyForEntry(panel);
-      state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = true;
-    },
-    removeTemporaryPanel(state, action: PayloadAction<UUID>) {
-      const nonce = action.payload;
-
-      const entry = remove(
-        state.temporaryPanels,
-        (panel) => panel.nonce === nonce,
-      )[0];
-
-      void closePanels([nonce]);
-
-      fixActiveTabOnRemove(state, entry);
-    },
-    resolveTemporaryPanel(
-      state,
-      action: PayloadAction<{ nonce: UUID; action: SubmitPanelAction }>,
-    ) {
-      const { nonce, action: panelAction } = action.payload;
-
-      const entry = remove(
-        state.temporaryPanels,
-        (panel) => panel.nonce === nonce,
-      )[0];
-
-      void resolvePanel(nonce, panelAction);
-
-      fixActiveTabOnRemove(state, entry);
-    },
     // In the future, we might want to have ActivatePanelOptions support a "enqueue" prop for controlling whether the
     // or not a miss here is queued. We added pendingActivePanel to handle race condition on the initial sidebar
     // loading. If we always set pendingActivePanel though, can hit a weird corner cases where a panel is activated
@@ -438,6 +332,40 @@ const sidebarSlice = createSlice({
     openTab(state, action: PayloadAction<string>) {
       state.closedTabs[action.payload] = false;
     },
+  },
+  extraReducers(builder: ActionReducerMapBuilder<SidebarState>) {
+    builder
+      .addCase(addFormPanel.fulfilled, (state, action) => {
+        if (action.payload) {
+          const { forms, newForm } = action.payload;
+
+          state.forms = castDraft(forms);
+          state.activeKey = eventKeyForEntry(newForm);
+        }
+      })
+      .addCase(addTemporaryPanel.fulfilled, (state, action) => {
+        const { temporaryPanels, activeKey } = action.payload;
+
+        state.temporaryPanels = castDraft(temporaryPanels);
+        state.activeKey = activeKey;
+        state.closedTabs[eventKeyForEntry(MOD_LAUNCHER)] = true;
+      })
+      .addCase(removeTemporaryPanel.fulfilled, (state, action) => {
+        if (action.payload) {
+          const { removedEntry, temporaryPanels } = action.payload;
+
+          state.temporaryPanels = castDraft(temporaryPanels);
+          fixActiveTabOnRemove(state, removedEntry);
+        }
+      })
+      .addCase(resolveTemporaryPanel.fulfilled, (state, action) => {
+        if (action.payload) {
+          const { resolvedEntry, temporaryPanels } = action.payload;
+
+          state.temporaryPanels = castDraft(temporaryPanels);
+          fixActiveTabOnRemove(state, resolvedEntry);
+        }
+      });
   },
 });
 

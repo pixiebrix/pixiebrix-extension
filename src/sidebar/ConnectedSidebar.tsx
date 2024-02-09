@@ -44,18 +44,24 @@ import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import useAsyncEffect from "use-async-effect";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
 
+import addFormPanel from "@/sidebar/thunks/addFormPanel";
+import addTemporaryPanel from "@/sidebar/thunks/addTemporaryPanel";
+import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
+import { type AsyncDispatch } from "@/sidebar/store";
+
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
  */
 function useConnectedListener(): SidebarListener {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AsyncDispatch>();
+
   return useMemo(
     () => ({
       onRenderPanels(panels: PanelEntry[]) {
         dispatch(sidebarSlice.actions.setPanels({ panels }));
       },
-      onShowForm(form: FormPanelEntry) {
-        dispatch(sidebarSlice.actions.addForm({ form }));
+      async onShowForm(form: FormPanelEntry) {
+        await dispatch(addFormPanel({ form }));
       },
       onHideForm({ nonce }: Partial<FormPanelEntry>) {
         dispatch(sidebarSlice.actions.removeForm(nonce));
@@ -66,11 +72,11 @@ function useConnectedListener(): SidebarListener {
       onUpdateTemporaryPanel(panel: TemporaryPanelEntry) {
         dispatch(sidebarSlice.actions.updateTemporaryPanel({ panel }));
       },
-      onShowTemporaryPanel(panel: TemporaryPanelEntry) {
-        dispatch(sidebarSlice.actions.addTemporaryPanel({ panel }));
+      async onShowTemporaryPanel(panel: TemporaryPanelEntry) {
+        await dispatch(addTemporaryPanel({ panel }));
       },
-      onHideTemporaryPanel({ nonce }) {
-        dispatch(sidebarSlice.actions.removeTemporaryPanel(nonce));
+      async onHideTemporaryPanel({ nonce }) {
+        await dispatch(removeTemporaryPanel(nonce));
       },
       onShowActivateRecipe(modActivationPanel: ModActivationPanelEntry) {
         dispatch(

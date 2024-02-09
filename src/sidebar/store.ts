@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { configureStore, type Middleware } from "@reduxjs/toolkit";
+import {
+  configureStore,
+  type Dispatch,
+  type ThunkDispatch,
+  type Middleware,
+  type AnyAction,
+} from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import { createLogger } from "redux-logger";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
@@ -27,6 +33,7 @@ import settingsSlice from "@/store/settings/settingsSlice";
 import { appApi } from "@/services/api";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import integrationsSlice, {
+  type IntegrationsState,
   persistIntegrationsConfig,
 } from "@/integrations/store/integrationsSlice";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
@@ -42,6 +49,12 @@ import {
   sessionChangesStateSyncActions,
 } from "@/store/sessionChanges/sessionChangesSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
+import { type AuthState } from "@/auth/authTypes";
+import { type ModDefinitionsState } from "@/modDefinitions/modDefinitionsTypes";
+import { type SessionState } from "@/pageEditor/slices/sessionSliceTypes";
+import { type SessionChangesState } from "@/store/sessionChanges/sessionChangesTypes";
+import { type SettingsState } from "@/store/settings/settingsTypes";
+import { type SidebarState } from "@/types/sidebarTypes";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -97,5 +110,20 @@ export const persistor = persistStore(store);
 // Optional, but required for refetchOnFocus/refetchOnReconnect behaviors see `setupListeners` docs - takes an optional
 // callback as the 2nd arg for customization
 setupListeners(store.dispatch);
+
+type State = {
+  auth: AuthState;
+  options: ReturnType<typeof extensionsSlice.reducer>;
+  sidebar: SidebarState;
+  settings: SettingsState;
+  integrations: IntegrationsState;
+  session: SessionState;
+  sessionChanges: SessionChangesState;
+  modDefinitions: ModDefinitionsState;
+  [appApi.reducerPath]: ReturnType<typeof appApi.reducer>;
+};
+
+export type AsyncDispatch = Dispatch &
+  ThunkDispatch<State, undefined, AnyAction>;
 
 export default store;
