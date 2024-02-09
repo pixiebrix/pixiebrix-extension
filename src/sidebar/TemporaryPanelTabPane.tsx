@@ -16,10 +16,7 @@
  */
 
 import React, { useCallback } from "react";
-import {
-  type SidebarState,
-  type TemporaryPanelEntry,
-} from "@/types/sidebarTypes";
+import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
 import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
