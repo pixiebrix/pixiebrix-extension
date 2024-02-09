@@ -582,6 +582,9 @@
     "./vendors/reactPerformanceTesting/utils/shouldTrack.ts",
     "./vendors/reactPerformanceTesting/utils/symbols.ts",
     "./vendors/validateUuid.ts",
-    "./sidebar/thunks.ts"
+    "./sidebar/thunks/addFormPanel.ts",
+    "./sidebar/thunks/addTemporaryPanel.ts",
+    "./sidebar/thunks/removeTemporaryPanel.ts",
+    "./sidebar/thunks/resolveTemporaryPanel.ts"
   ]
 }

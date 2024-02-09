@@ -39,12 +39,10 @@ import { type StorageInterface } from "@/store/StorageInterface";
 import { getVisiblePanelCount } from "@/sidebar/utils";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { type Nullishable } from "@/utils/nullishUtils";
-import {
-  addFormPanel,
-  addTemporaryPanel,
-  removeTemporaryPanel,
-  resolveTemporaryPanel,
-} from "@/sidebar/thunks";
+import addFormPanel from "@/sidebar/thunks/addFormPanel";
+import addTemporaryPanel from "@/sidebar/thunks/addTemporaryPanel";
+import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
+import resolveTemporaryPanel from "@/sidebar/thunks/resolveTemporaryPanel";
 
 const emptySidebarState: SidebarState = {
   panels: [],

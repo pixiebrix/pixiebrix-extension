@@ -30,8 +30,8 @@ import cx from "classnames";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { useDispatch } from "react-redux";
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
-import { resolveTemporaryPanel } from "@/sidebar/thunks";
 import { type ThunkDispatch, type AnyAction } from "@reduxjs/toolkit";
+import resolveTemporaryPanel from "@/sidebar/thunks/resolveTemporaryPanel";
 
 // Need to memoize this to make sure it doesn't rerender unless its entry actually changes
 // This was part of the fix for issue: https://github.com/pixiebrix/pixiebrix-extension/issues/5646

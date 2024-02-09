@@ -61,12 +61,12 @@ import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { cancelForm } from "@/contentScript/messenger/strict/api";
 import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
-import { removeTemporaryPanel } from "@/sidebar/thunks";
 import {
   type ThunkDispatch,
   type AnyAction,
   type Dispatch,
 } from "@reduxjs/toolkit";
+import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
 
 const ActivateModPanel = lazy(
   async () =>

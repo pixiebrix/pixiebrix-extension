@@ -27,12 +27,11 @@ import type { SidebarState } from "@/types/sidebarTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { type Draft } from "immer";
-import {
-  addFormPanel,
-  addTemporaryPanel,
-  removeTemporaryPanel,
-} from "@/sidebar/thunks";
+
 import { configureStore } from "@reduxjs/toolkit";
+import addFormPanel from "@/sidebar/thunks/addFormPanel";
+import addTemporaryPanel from "@/sidebar/thunks/addTemporaryPanel";
+import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
 
 jest.mock("@/sidebar/messenger/api");
 jest.mock("@/contentScript/messenger/strict/api");

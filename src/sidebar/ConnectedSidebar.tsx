@@ -44,16 +44,15 @@ import { getReservedSidebarEntries } from "@/contentScript/messenger/strict/api"
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import useAsyncEffect from "use-async-effect";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
-import {
-  addFormPanel,
-  addTemporaryPanel,
-  removeTemporaryPanel,
-} from "@/sidebar/thunks";
+
 import {
   type AnyAction,
   type Dispatch,
   type ThunkDispatch,
 } from "@reduxjs/toolkit";
+import addFormPanel from "@/sidebar/thunks/addFormPanel";
+import addTemporaryPanel from "@/sidebar/thunks/addTemporaryPanel";
+import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
 
 /**
  * Listeners to update the Sidebar's Redux state upon receiving messages from the contentScript.
