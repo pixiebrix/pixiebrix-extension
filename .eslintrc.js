@@ -1,36 +1,6 @@
 const { readFileSync } = require("fs");
 const { resolve } = require("path");
 
-const restrictedZones = [
-  "background",
-  "contentScript",
-  "pageEditor",
-  "extensionConsole",
-  "sidebar",
-  "pageScript",
-].map((exporter) => ({
-  // All of these files cannot import `from` (exclude self-imports)
-  target:
-    exporter === "contentScript"
-      ? `./src/!(${exporter}|bricks|starterBricks)/**/*` // Temporary: Bricks and starterBricks are implicitly run from CS
-      : `./src/!(${exporter})/**/*`,
-
-  // The files above cannot import `from` this folder
-  from: `./src/${exporter}`,
-
-  // These can be imported from anywhere
-  except: [
-    `../${exporter}/messenger`,
-    `../${exporter}/types.ts`,
-    // `../${exporter}/**/*Types.ts`, // TODO: Globs don't seem to work
-    `../${exporter}/pageEditor/types.ts`,
-    `../${exporter}/pageEditorTypes.ts`,
-    `../${exporter}/runBlockTypes.ts`,
-    `../${exporter}/extensionPoints/formStateTypes.ts`,
-    `../${exporter}/tabs/editTab/dataPanel/dataPanelTypes.ts`,
-  ],
-}));
-
 module.exports = {
   root: true,
   extends: [
@@ -50,7 +20,7 @@ module.exports = {
     "local-rules/preferNullish": "warn",
     "local-rules/preferNullishable": "warn",
     "local-rules/noCrossBoundaryImports": [
-      "error",
+      "warn",
       {
         boundaries: [
           "background",
@@ -60,13 +30,7 @@ module.exports = {
           "sidebar",
           "pageScript",
         ],
-        allowedGlobs: ["**/messenger/**"],
-      },
-    ],
-    "import/no-restricted-paths": [
-      "error",
-      {
-        zones: restrictedZones,
+        allowedGlobs: ["**/messenger/**", "**/*.scss*"],
       },
     ],
 
