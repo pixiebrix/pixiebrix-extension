@@ -75,7 +75,7 @@ const knipConfig = {
     // Used by Code Editor so format on save matches pre-commit behavior
     "prettier",
     // Used by eslint-local-rules/noCrossBoundaryImports.js
-    "minimatch",
+    "multimatch",
   ],
   rules: {
     // Issue Type reference: https://knip.dev/reference/issue-types/
