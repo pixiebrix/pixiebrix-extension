@@ -104,7 +104,7 @@ ruleTester.run("noCrossBoundaryImports", noCrossBoundaryImports, {
     {
       // Dynamic import expressions are ignored
       // eslint-disable-next-line no-template-curly-in-string
-      code: "import(`@/dynamic/${import}`);",
+      code: "import(`@/dynamic/${'import'}`);",
       filename: "src/background/bar.ts",
       options,
     },
