@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const path = require("path");
-const minimatch = require("minimatch");
+const path = require("node:path");
+const multimatch = require("multimatch");
 
 // eslint-disable-next-line unicorn/prefer-module
 module.exports = {
@@ -32,14 +32,14 @@ module.exports = {
       {
         type: "object",
         properties: {
-          forbiddenFolders: {
+          boundaries: {
             type: "array",
             items: {
               type: "string",
             },
             uniqueItems: true,
           },
-          allowedFiles: {
+          allowedGlobs: {
             type: "array",
             items: {
               type: "string",
@@ -52,43 +52,53 @@ module.exports = {
     ],
   },
   create(context) {
-    const options = context.options[0] || {};
-    const forbiddenFolders = options.forbiddenFolders || [];
-    const allowedFiles = options.allowedFiles || [];
-
-    function isFileUnderForbiddenFolder(importPath, currentFilePath) {
-      if (!importPath.startsWith("@/")) {
-        return false;
-      }
-
-      const aliasedCurrentFilePath = path
-        .relative(process.cwd(), currentFilePath)
-        .replace("src/", "@/");
-      return forbiddenFolders.some(
-        (folder) =>
-          importPath.startsWith(`@/${folder}`) &&
-          !aliasedCurrentFilePath.startsWith(`@/${folder}`),
-      );
-    }
-
-    function isFileWhitelisted(importPath) {
-      return allowedFiles.some((pattern) => minimatch(importPath, pattern));
+    const { boundaries = [], allowedGlobs = [] } = context.options[0] ?? {};
+    if (boundaries.length === 0) {
+      throw new Error("No boundaries specified");
     }
 
     return {
       ImportDeclaration(node) {
-        const importPath = node.source.value;
-        const currentFilePath = context.getFilename();
+        if (node.importKind === "type") {
+          // Ignore `import type Default`
+          return;
+        }
 
         if (
-          isFileUnderForbiddenFolder(importPath, currentFilePath) &&
-          !isFileWhitelisted(importPath)
+          node.specifiers.length > 0 &&
+          node.specifiers.every((specifier) => specifier.importKind === "type")
         ) {
-          context.report({
-            node,
-            message: `Unexpected path "${importPath}" imported in restricted zone.`,
-          });
+          // Ignore `import {type X, type Y}`
+          // The length check handles empty arrays
+          return;
         }
+
+        const importPath = node.source.value;
+        const [alias, importedFolder] = importPath.split("/");
+        if (alias !== "@" || !boundaries.includes(importedFolder)) {
+          // Ignore `import 'react'`
+          // Ignore `import '@/utils'`
+          return;
+        }
+
+        const thisFileFolder = path
+          .relative(path.join(context.cwd, "src"), context.getFilename())
+          .split("/")[0];
+        if (importedFolder === thisFileFolder) {
+          // Ignore `import '@/background'` when in `@/background`
+          return;
+        }
+
+        const isAllowedFile = multimatch(importPath, allowedGlobs).length > 0;
+        if (isAllowedFile) {
+          // Ignore whitelisted globs like the messenger
+          return;
+        }
+
+        context.report({
+          node,
+          message: `"${importPath}" cannot be imported from "${thisFileFolder}" folder. Info on https://github.com/pixiebrix/pixiebrix-extension/wiki/Contexts#eslint`,
+        });
       },
     };
   },

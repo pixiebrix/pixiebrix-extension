@@ -52,8 +52,15 @@ module.exports = {
     "local-rules/noCrossBoundaryImports": [
       "error",
       {
-        forbiddenFolders: ["background", "contentScript"],
-        allowedFiles: ["*/messenger/api", "*/messenger/strict/api", "*Types"],
+        boundaries: [
+          "background",
+          "contentScript",
+          "pageEditor",
+          "extensionConsole",
+          "sidebar",
+          "pageScript",
+        ],
+        allowedGlobs: ["**/messenger/**"],
       },
     ],
     "import/no-restricted-paths": [
@@ -138,6 +145,7 @@ module.exports = {
       extends: ["pixiebrix/development"],
       rules: {
         "import/no-restricted-paths": "off",
+        "local-rules/noCrossBoundaryImports": "off",
       },
     },
     {
@@ -154,6 +162,7 @@ module.exports = {
       extends: ["pixiebrix/development", "pixiebrix/tests"],
       rules: {
         "unicorn/prefer-spread": "off",
+        "local-rules/noCrossBoundaryImports": "off",
       },
     },
     {
