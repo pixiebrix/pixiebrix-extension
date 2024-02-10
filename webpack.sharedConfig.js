@@ -69,8 +69,7 @@ const shared = {
         options: {
           transpileOnly: true,
           ...(isProd || {
-            getCustomTransformers: () => {
-              console.log(ReactRefreshTypeScript);
+            getCustomTransformers() {
               return {
                 before: [ReactRefreshTypeScript()],
               };
