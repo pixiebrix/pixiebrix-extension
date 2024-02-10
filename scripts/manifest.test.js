@@ -33,6 +33,7 @@ describe("customizeManifest", () => {
     expect(
       cleanCustomize(manifest, {
         env: process.env,
+        isProduction: true,
       }),
     ).toMatchSnapshot();
   });
@@ -40,6 +41,7 @@ describe("customizeManifest", () => {
     expect(
       cleanCustomize(manifest, {
         env: process.env,
+        isProduction: true,
         manifestVersion: 3,
       }),
     ).toMatchSnapshot();
