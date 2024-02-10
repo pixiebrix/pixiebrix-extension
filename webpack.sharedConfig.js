@@ -19,6 +19,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const JSON5 = require("json5");
 const { merge } = require("webpack-merge");
+const ReactRefreshTypeScript = require("react-refresh-typescript");
 
 const tsconfig = JSON5.parse(fs.readFileSync("./tsconfig.json", "utf8"));
 
@@ -68,9 +69,12 @@ const shared = {
         options: {
           transpileOnly: true,
           ...(isProd || {
-            getCustomTransformers: () => ({
-              before: [require("react-refresh-typescript")()],
-            }),
+            getCustomTransformers: () => {
+              console.log(ReactRefreshTypeScript);
+              return {
+                before: [ReactRefreshTypeScript()],
+              };
+            },
           }),
         },
       },

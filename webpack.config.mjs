@@ -32,6 +32,7 @@ import { parseEnv, loadEnv } from "./scripts/env.mjs";
 import customizeManifest from "./scripts/manifest.mjs";
 import { createRequire } from "node:module";
 import DiscardFilePlugin from "./scripts/DiscardFilePlugin.mjs";
+import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 
 const require = createRequire(import.meta.url);
 
@@ -177,7 +178,7 @@ const createConfig = (env, options) =>
 
     // Enable HMR
     devServer: {
-      hot: "only",
+      hot: true,
     },
     plugins: compact([
       produceSourcemap &&
@@ -282,6 +283,7 @@ const createConfig = (env, options) =>
         ],
       }),
       new DiscardFilePlugin(),
+      new ReactRefreshWebpackPlugin(),
     ]),
     module: {
       rules: [
