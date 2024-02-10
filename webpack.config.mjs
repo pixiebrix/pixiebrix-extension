@@ -174,6 +174,11 @@ const createConfig = (env, options) =>
       maxEntrypointSize: 15_120_000,
       maxAssetSize: 15_120_000,
     },
+
+    // Enable HMR
+    devServer: {
+      hot: "only",
+    },
     plugins: compact([
       produceSourcemap &&
         new webpack.SourceMapDevToolPlugin({

@@ -168,6 +168,11 @@ function customizeManifest(manifestV2, options = {}) {
 
   addInternalUrlsToContentScripts(manifest, internal);
 
+  // HMR support
+  if (!isProduction) {
+    manifest.web_accessible_resources.push("*.json");
+  }
+
   if (manifestVersion === 3) {
     return updateManifestToV3(manifest);
   }

@@ -22,11 +22,13 @@ const { merge } = require("webpack-merge");
 
 const tsconfig = JSON5.parse(fs.readFileSync("./tsconfig.json", "utf8"));
 
+const isProd = process.argv.includes("production");
+
 /** @type import("webpack").Configuration */
 const shared = {
   stats: {
     preset: "errors-warnings",
-    entrypoints: process.argv.includes("production"),
+    entrypoints: isProd,
     timings: true,
   },
   watchOptions: {
@@ -65,6 +67,11 @@ const shared = {
         exclude: /node_modules\/(?!@pixiebrix)/,
         options: {
           transpileOnly: true,
+          ...(isProd || {
+            getCustomTransformers: () => ({
+              before: [require("react-refresh-typescript")()],
+            }),
+          }),
         },
       },
       {
