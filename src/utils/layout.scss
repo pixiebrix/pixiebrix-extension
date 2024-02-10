@@ -27,6 +27,23 @@
   max-width: 950px;
 }
 
+/* Gap utility classes matching Bootstrap `.m-` classes and their sizes */
+.gap-1 {
+  gap: 0.25rem !important;
+}
+
+.gap-2 {
+  gap: 0.5rem !important;
+}
+
+.gap-3 {
+  gap: 1rem !important;
+}
+
+.gap-4 {
+  gap: 1.5rem !important;
+}
+
 /**
  * App-like layout component that to define scrollable areas in a specific viewport,
  * without relying on hardcoded heights. Not yet compatible with layouts that have

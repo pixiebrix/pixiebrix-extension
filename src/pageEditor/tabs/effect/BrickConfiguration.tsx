@@ -156,59 +156,57 @@ const BrickConfiguration: React.FunctionComponent<{
     <>
       <AdvancedLinks name={name} scrollToRef={advancedOptionsRef} />
 
-      <>
-        <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
-          {brickErrors?.id && (
-            <div className="invalid-feedback d-block mb-4">
-              Unknown brick: {brickId}
-            </div>
-          )}
-          {BrickOptions ? (
-            <BrickOptions name={name} configKey="config" />
-          ) : error ? (
-            <div className="invalid-feedback d-block mb-4">{error}</div>
-          ) : (
-            <Loader />
-          )}
-        </SchemaFieldContext.Provider>
+      <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
+        {brickErrors?.id && (
+          <div className="invalid-feedback d-block mb-4">
+            Unknown brick: {brickId}
+          </div>
+        )}
+        {BrickOptions ? (
+          <BrickOptions name={name} configKey="config" />
+        ) : error ? (
+          <div className="invalid-feedback d-block mb-4">{error}</div>
+        ) : (
+          <Loader />
+        )}
+      </SchemaFieldContext.Provider>
 
-        <ConnectedCollapsibleFieldSection
-          title="Advanced Options"
-          bodyRef={advancedOptionsRef}
-        >
-          {showIfAndTarget && <SchemaField {...ifSchemaProps} omitIfEmpty />}
+      <ConnectedCollapsibleFieldSection
+        title="Advanced Options"
+        bodyRef={advancedOptionsRef}
+      >
+        {showIfAndTarget && <SchemaField {...ifSchemaProps} omitIfEmpty />}
 
-          {showRootMode && (
-            <ConnectedFieldTemplate
-              name={configName("rootMode")}
-              label="Target Root Mode"
-              as={SelectWidget}
-              options={rootModeOptions}
-              blankValue="inherit"
-              description="The Root Mode controls the page element the brick targets. PixieBrix evaluates selectors relative to the root document/element"
-            />
-          )}
+        {showRootMode && (
+          <ConnectedFieldTemplate
+            name={configName("rootMode")}
+            label="Target Root Mode"
+            as={SelectWidget}
+            options={rootModeOptions}
+            blankValue="inherit"
+            description="The Root Mode controls the page element the brick targets. PixieBrix evaluates selectors relative to the root document/element"
+          />
+        )}
 
-          {config.value.rootMode === "element" && (
-            <SchemaField {...rootElementSchema} omitIfEmpty />
-          )}
+        {config.value.rootMode === "element" && (
+          <SchemaField {...rootElementSchema} omitIfEmpty />
+        )}
 
-          {showIfAndTarget && (
-            <ConnectedFieldTemplate
-              name={configName("window")}
-              label="Target Tab/Frame"
-              as={SelectWidget}
-              options={windowOptions}
-              blankValue={DEFAULT_WINDOW_VALUE}
-              description="The tab/frame to run the brick. To ensure PixieBrix has permission to run on the tab, add an Extra Permissions pattern that matches the target tab URL"
-            />
-          )}
+        {showIfAndTarget && (
+          <ConnectedFieldTemplate
+            name={configName("window")}
+            label="Target Tab/Frame"
+            as={SelectWidget}
+            options={windowOptions}
+            blankValue={DEFAULT_WINDOW_VALUE}
+            description="The tab/frame to run the brick. To ensure PixieBrix has permission to run on the tab, add an Extra Permissions pattern that matches the target tab URL"
+          />
+        )}
 
-          {noAdvancedOptions && (
-            <small className="text-muted font-italic">No options to show</small>
-          )}
-        </ConnectedCollapsibleFieldSection>
-      </>
+        {noAdvancedOptions && (
+          <small className="text-muted font-italic">No options to show</small>
+        )}
+      </ConnectedCollapsibleFieldSection>
     </>
   );
 };
