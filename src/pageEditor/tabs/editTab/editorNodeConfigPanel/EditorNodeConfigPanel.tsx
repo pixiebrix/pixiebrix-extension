@@ -84,7 +84,7 @@ const EditorNodeConfigPanel: React.FC = () => {
         )}
       </h6>
 
-      <div className="mb-3 d-flex flex-wrap gap-4">
+      <div className="mb-3 d-flex flex-wrap gap-column-4">
         <ConnectedFieldTemplate
           name={`${brickFieldName}.label`}
           label="Step Name"

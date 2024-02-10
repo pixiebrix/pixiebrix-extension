@@ -28,17 +28,21 @@ function showErrors(errorEvent) {
   logger.textContent = ""; // Drop loading or previous errors
   const wrapper = document.createElement("div");
 
-  const error = document.createElement("p");
+  const error = document.createElement("pre");
   error.textContent = String(errorEvent.error);
-  error.style.fontFamily = "monospace";
   error.style.whiteSpace = "pre-wrap";
+  error.style.margin = "1em 0";
+
+  // Due to the flexbox container, if the error is too long, its top will be cut off
+  error.style.maxHeight = "80vh";
+  error.style.overflow = "auto";
 
   const reloadButton = document.createElement("button");
   reloadButton.textContent = "Retry";
   reloadButton.classList.add("btn", "btn-sm", "btn-primary");
   reloadButton.addEventListener("click", location.reload.bind(location));
 
-  wrapper.append(error, document.createElement("br"), reloadButton);
+  wrapper.append(error, reloadButton);
   logger.append(wrapper);
 }
 

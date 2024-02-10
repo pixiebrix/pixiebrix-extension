@@ -32,16 +32,32 @@
   gap: 0.25rem !important;
 }
 
+.gap-column-1 {
+  column-gap: 0.25rem !important;
+}
+
 .gap-2 {
   gap: 0.5rem !important;
+}
+
+.gap-column-2 {
+  column-gap: 0.5rem !important;
 }
 
 .gap-3 {
   gap: 1rem !important;
 }
 
+.gap-column-3 {
+  column-gap: 1rem !important;
+}
+
 .gap-4 {
   gap: 1.5rem !important;
+}
+
+.gap-column-4 {
+  column-gap: 1.5rem !important;
 }
 
 /**
