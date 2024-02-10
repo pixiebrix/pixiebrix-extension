@@ -18,7 +18,6 @@
 import { uuidv4 } from "@/types/helpers";
 import { thisTab } from "@/pageEditor/utils";
 import { ensureContentScript } from "@/background/messenger/strict/api";
-import { onContextInvalidated } from "webext-events";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   type FrameConnectionState,
@@ -30,7 +29,6 @@ import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { canAccessTab } from "@/permissions/permissionsUtils";
 import { serializeError } from "serialize-error";
-import { BusinessError } from "@/errors/businessErrors";
 import reportError from "@/telemetry/reportError";
 
 const defaultFrameState: FrameConnectionState = {
@@ -44,21 +42,6 @@ const initialTabState: TabState = {
   frameState: defaultFrameState,
   error: null,
 };
-
-export const CONTEXT_INVALIDATED_MESSAGE =
-  "PixieBrix was updated or restarted. Please reload 1) the Browser Tab, and then 2) the Page Editor to continue.";
-
-/**
- * This thunk is long-running. It waits for the page's chrome runtime context
- * to be invalidated, and then resolves with an error.
- */
-const awaitContextInvalidated = createAsyncThunk<
-  void,
-  void,
-  { state: TabStateRootState }
->("tabState/awaitContextInvalidated", async () => {
-  await onContextInvalidated.promise;
-});
 
 const connectToContentScript = createAsyncThunk<
   FrameConnectionState,
@@ -78,7 +61,6 @@ const connectToContentScript = createAsyncThunk<
   console.debug("connectToContentScript: ensuring contentScript");
   await ensureContentScript(thisTab, 4500);
 
-  void thunkAPI.dispatch(awaitContextInvalidated());
   void thunkAPI.dispatch(actions.checkAvailableDynamicElements());
   void thunkAPI.dispatch(actions.checkAvailableInstalledExtensions());
 
@@ -113,12 +95,6 @@ export const tabStateSlice = createSlice({
         state.frameState = defaultFrameState;
         state.error = serializeError(error);
         reportError(error);
-      })
-      .addCase(awaitContextInvalidated.fulfilled, (state) => {
-        state.isConnecting = false;
-        state.frameState = defaultFrameState;
-        const error = new BusinessError(CONTEXT_INVALIDATED_MESSAGE);
-        state.error = serializeError(error);
       });
   },
 });

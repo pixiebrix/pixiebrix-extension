@@ -19,9 +19,6 @@ import React from "react";
 import Centered from "@/components/Centered";
 import { parse as parseDomain } from "psl";
 import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
-import { useSelector } from "react-redux";
-import { selectIsContextInvalidated } from "@/pageEditor/tabState/tabStateSelectors";
-import { CONTEXT_INVALIDATED_MESSAGE } from "@/pageEditor/tabState/tabStateSlice";
 import { safeParseUrl } from "@/utils/urlUtils";
 
 function getPageLabel(url: string): string {
@@ -36,25 +33,12 @@ function getPageLabel(url: string): string {
  * Panel the shows that PixieBrix does not have access to the page. Now that all URLs are included in the manifest's
  * required permissions, this can occur in three cases:
  * 1. The browser extension was restarted while page was open
- * 2. The extension context was invalidated in tab
- * 3. Permissions are blocked via runtime_blocked_hosts
+ * 2. Permissions are blocked via runtime_blocked_hosts
  * @constructor
  */
 const NoTabAccessPane: React.FunctionComponent = () => {
   const url = useCurrentUrl();
   const siteLabel = (url && getPageLabel(url)) || "this page";
-
-  const isContextInvalidated = useSelector(selectIsContextInvalidated);
-
-  if (isContextInvalidated) {
-    // Ideally, if the context was invalidated, we'd also provide a button to automatically reload the inspected tab.
-    // However, because the context is invalidated, we can't send the message to reload it.
-    return (
-      <Centered vertically>
-        <p>{CONTEXT_INVALIDATED_MESSAGE}</p>
-      </Centered>
-    );
-  }
 
   return (
     <Centered vertically>

@@ -31,6 +31,7 @@ import { watchNavigation } from "@/pageEditor/protocol";
 import { initToaster } from "@/utils/notify";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
+import InvalidatedContextGate from "@/components/InvalidatedContextGate";
 
 void initMessengerLogging();
 void initRuntimeLogging();
@@ -38,4 +39,9 @@ void initPerformanceMonitoring();
 watchNavigation();
 initToaster();
 
-ReactDOM.render(<Panel />, document.querySelector("#container"));
+ReactDOM.render(
+  <InvalidatedContextGate contextNameTitleCase="Page Editor">
+    <Panel />
+  </InvalidatedContextGate>,
+  document.querySelector("#container"),
+);
