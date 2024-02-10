@@ -88,6 +88,7 @@ jobs:
         run: |
           ./rainforest run \
           --fail-fast \
+          --automation-max-retries 1 \
           --description "pixiebrix-extension - ${{ github.ref_name }} ${{ github.job }}" \
           --run-group $RUN_GROUP \
           --release "${{ github.sha }}" \
