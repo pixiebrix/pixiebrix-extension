@@ -19,7 +19,7 @@ import { type Permissions } from "webextension-polyfill";
 import { remove } from "lodash";
 
 // Permissions from the manifest.json
-const initialPermissions: Permissions.AnyPermissions = {
+const initialPermissions = {
   origins: ["https://*.pixiebrix.com/*"],
   permissions: [
     "activeTab",
@@ -29,9 +29,9 @@ const initialPermissions: Permissions.AnyPermissions = {
     "webNavigation",
     "contextMenus",
   ],
-};
+} satisfies Permissions.AnyPermissions;
 
-let extensionPermissions: Permissions.AnyPermissions = initialPermissions;
+let extensionPermissions = structuredClone(initialPermissions);
 const addListeners = new Set<() => void>();
 const removeListeners = new Set<() => void>();
 
@@ -77,12 +77,14 @@ browser.permissions = {
   remove: jest
     .fn()
     .mockImplementation(async (toRemove: Permissions.AnyPermissions) => {
-      remove(extensionPermissions.permissions, (permission) =>
-        toRemove.permissions.includes(permission),
+      remove(
+        extensionPermissions.permissions,
+        (permission) => toRemove.permissions?.includes(permission),
       );
       // XXX: only handles exact matches
-      remove(extensionPermissions.origins, (permission) =>
-        toRemove.origins.includes(permission),
+      remove(
+        extensionPermissions.origins,
+        (permission) => toRemove.origins?.includes(permission),
       );
 
       for (const listener of removeListeners) {
@@ -92,8 +94,8 @@ browser.permissions = {
   request: jest
     .fn()
     .mockImplementation(async (permissions: Permissions.AnyPermissions) => {
-      permissions.permissions.push(...(permissions.permissions ?? []));
-      permissions.origins.push(...(permissions.origins ?? []));
+      extensionPermissions.permissions.push(...(permissions.permissions ?? []));
+      extensionPermissions.origins.push(...(permissions.origins ?? []));
 
       for (const listener of addListeners) {
         listener();
@@ -106,7 +108,7 @@ browser.permissions = {
 export function setPermissions(
   newPermissions: Permissions.AnyPermissions,
 ): void {
-  extensionPermissions = newPermissions;
+  extensionPermissions = { origins: [], permissions: [], ...newPermissions };
 }
 
 jest.mock("@/modDefinitions/modDefinitionPermissionsHelpers", () => {
