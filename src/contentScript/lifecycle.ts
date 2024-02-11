@@ -679,12 +679,16 @@ export async function initNavigation() {
   );
 
   onContextInvalidated.addListener(() => {
-    for (const [extensionId, extensionPoint] of _persistedExtensions) {
+    for (const [extensionId, extensionPoint] of [
+      ..._persistedExtensions,
+      ..._editorExtensions,
+    ]) {
       if (!(extensionPoint instanceof ContextMenuStarterBrickABC)) {
         extensionPoint.removeModComponent(extensionId);
       }
     }
 
     _persistedExtensions.clear();
+    _editorExtensions.clear();
   });
 }
