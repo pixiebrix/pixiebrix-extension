@@ -683,6 +683,8 @@ export async function initNavigation() {
       ..._persistedExtensions,
       ..._editorExtensions,
     ]) {
+      // Exclude context menu extensions because they try to contact the (non-connectable) background page.
+      // They're already removed by the browser anyway.
       if (!(extensionPoint instanceof ContextMenuStarterBrickABC)) {
         extensionPoint.removeModComponent(extensionId);
       }
