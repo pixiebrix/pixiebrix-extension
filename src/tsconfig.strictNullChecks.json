@@ -111,6 +111,7 @@
     "./components/DelayedRender.tsx",
     "./components/Effect.tsx",
     "./components/ErrorBoundary.tsx",
+    "./components/InvalidatedContextGate.tsx",
     "./components/LayoutWidget.tsx",
     "./components/LinkButton.tsx",
     "./components/Loader.tsx",

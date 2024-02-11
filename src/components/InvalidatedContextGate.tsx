@@ -20,7 +20,7 @@ import { Button } from "react-bootstrap";
 import useContextInvalidated from "@/hooks/useContextInvalidated";
 
 const InvalidatedContextGate: React.FunctionComponent<{
-  contextNameTitleCase?: string;
+  contextNameTitleCase: string;
 }> = ({ children, contextNameTitleCase }) => {
   const wasContextInvalidated = useContextInvalidated();
   return wasContextInvalidated ? (
