@@ -15,28 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./Sidebar.module.scss";
-
 import React from "react";
-import { CSSTransition } from "react-transition-group";
-import { type CSSTransitionProps } from "react-transition-group/CSSTransition";
-import SidebarCollapsed from "./SidebarCollapsed";
 import SidebarExpanded from "./SidebarExpanded";
 import { useDispatch, useSelector } from "react-redux";
 import { selectModuleListExpanded } from "@/pageEditor/slices/editorSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
-
-const transitionProps: CSSTransitionProps = {
-  classNames: {
-    enter: styles.enter,
-    enterActive: styles.enterActive,
-    exit: styles.exit,
-    exitActive: styles.exitActive,
-  },
-  timeout: 500,
-  unmountOnExit: true,
-  mountOnEnter: true,
-};
+import { Button, Collapse } from "react-bootstrap";
+import SidebarCollapsed from "./SidebarCollapsed";
 
 const Sidebar: React.VFC = () => {
   const dispatch = useDispatch();
@@ -45,7 +30,7 @@ const Sidebar: React.VFC = () => {
 
   return (
     <>
-      <CSSTransition {...transitionProps} in={!expanded}>
+      {
         <SidebarCollapsed
           expandSidebar={() => {
             dispatch(
@@ -55,18 +40,27 @@ const Sidebar: React.VFC = () => {
             );
           }}
         />
-      </CSSTransition>
-      <CSSTransition {...transitionProps} in={expanded}>
-        <SidebarExpanded
-          collapseSidebar={() => {
-            dispatch(
-              actions.setModListExpanded({
-                isExpanded: false,
-              }),
-            );
-          }}
-        />
-      </CSSTransition>
+      }
+      <Collapse
+        dimension="width"
+        in={expanded}
+        unmountOnExit={true}
+        mountOnEnter={true}
+      >
+        <div>
+          <div id="example-collapse-text" style={{ width: "270px" }}>
+            <SidebarExpanded
+              collapseSidebar={() => {
+                dispatch(
+                  actions.setModListExpanded({
+                    isExpanded: false,
+                  }),
+                );
+              }}
+            />
+          </div>
+        </div>
+      </Collapse>
     </>
   );
 };

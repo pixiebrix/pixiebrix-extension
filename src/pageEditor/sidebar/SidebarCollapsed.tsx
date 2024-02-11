@@ -35,7 +35,7 @@ const SidebarCollapsed: React.VoidFunctionComponent<{
     flagOn("page-editor-developer");
 
   return (
-    <div className={cx(styles.root, styles.collapsed)}>
+    <div className={cx(styles.root, "flex-shrink-0")}>
       <HomeButton />
       <Button
         variant="light"

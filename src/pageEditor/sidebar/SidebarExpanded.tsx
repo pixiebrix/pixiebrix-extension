@@ -153,7 +153,7 @@ const SidebarExpanded: React.FunctionComponent<{
   });
 
   return (
-    <div className={cx(styles.root, styles.expanded)}>
+    <div className={cx(styles.root, styles.expanded, "flex-shrink-0")}>
       <div className={styles.header}>
         <div className={styles.actions}>
           <div className={styles.actionsLeft}>

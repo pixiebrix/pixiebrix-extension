@@ -7,33 +7,12 @@
   height: 100%;
   background: white;
   box-shadow: 1px 2px 8px #00000030;
+  overflow-x: hidden;
+  overflow-y: scroll;
 
-  &.collapsed {
-    align-items: stretch;
-    z-index: 999; // Always on top of the content, but below expanded one
-  }
   &.expanded {
-    flex: 0 0 270px;
     width: 270px; // Preserve width during the transition
     z-index: 1000; // Always on top of the collapsed one *and* of the content
-    &.enter,
-    &.exit.exitActive {
-      // Both `exit` and `exitActive` are needed
-      clip-path: inset(0 100% 0 0);
-    }
-    &.exitActive,
-    &.enterActive {
-      transition: clip-path 400ms;
-    }
-    &.enterActive,
-    &.exit {
-      clip-path: inset(0 0 0 0);
-    }
-  }
-
-  &.exitActive {
-    position: absolute; // Take out of the flow during the transition
-    height: 100vh !important;
   }
 
   label {
