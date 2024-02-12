@@ -15,20 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file This is a standalone background entry point that must run independently of the rest of extension */
+/**
+ * @file This is a standalone background entry point that must run independently of the rest of extension.
+ * It can be used to detect and handle build errors and background loading errors.
+ */
 
 if (chrome.runtime.getManifest === undefined) {
   throw new Error(
     "Chrome bug: The extension was loaded as MV2, but Chrome is still running the worker. Unregister the loader from chrome://serviceworker-internals/",
   );
 }
-
-const { icons } = chrome.runtime.getManifest();
-const inactiveIcons = {};
-for (const [size, path] of Object.entries(icons)) {
-  // eslint-disable-next-line security/detect-object-injection -- Safe
-  inactiveIcons[size] = path.replace("icons", "icons/inactive");
-}
-
-(chrome.browserAction ?? chrome.action).setIcon({ path: inactiveIcons });
-/* `activateBrowserActionIcon()` will later fix the icon if the file runs */

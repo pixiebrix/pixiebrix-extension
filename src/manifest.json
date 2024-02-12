@@ -98,7 +98,7 @@
     }
   },
   "background": {
-    "scripts": ["grayIconWhileLoading.js", "background.js"]
+    "scripts": ["backgroundCanary.js", "background.js"]
   },
   "options_ui": {
     "page": "options.html",
