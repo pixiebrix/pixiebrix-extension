@@ -46,6 +46,7 @@ import {
 } from "@/utils/promiseUtils";
 import { $safeFind } from "@/utils/domUtils";
 import { onContextInvalidated } from "webext-events";
+import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu";
 
 /**
  * True if handling the initial page load.
@@ -676,4 +677,20 @@ export async function initNavigation() {
     }),
     { signal: onContextInvalidated.signal },
   );
+
+  onContextInvalidated.addListener(() => {
+    for (const [extensionId, extensionPoint] of [
+      ..._persistedExtensions,
+      ..._editorExtensions,
+    ]) {
+      // Exclude context menu extensions because they try to contact the (non-connectable) background page.
+      // They're already removed by the browser anyway.
+      if (!(extensionPoint instanceof ContextMenuStarterBrickABC)) {
+        extensionPoint.removeModComponent(extensionId);
+      }
+    }
+
+    _persistedExtensions.clear();
+    _editorExtensions.clear();
+  });
 }
