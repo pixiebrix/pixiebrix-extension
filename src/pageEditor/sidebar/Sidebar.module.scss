@@ -6,9 +6,11 @@
   justify-content: flex-start;
   height: 100%;
   background: white;
-  box-shadow: 1px 2px 8px #00000030;
   overflow-x: hidden;
   overflow-y: scroll;
+
+  box-shadow: 1px 2px 8px #00000030;
+  z-index: 999; // Always on top of the content, so that the shadow is applied correctly
 
   label {
     font-size: 0.875rem;
@@ -34,12 +36,9 @@
 
 .actions {
   display: flex;
-  justify-content: space-between;
 
   button {
     border-radius: 0;
-    margin-right: 0;
-    margin-left: 0;
   }
 
   :global(.badge) {
@@ -64,6 +63,7 @@
   border-radius: 0 !important;
   padding: 0 !important;
   background: transparent !important;
+  margin-left: auto;
 
   svg {
     margin: 5px;

@@ -21,7 +21,6 @@ import {
   Accordion,
   Button,
   Collapse,
-  Fade,
   FormControl,
   InputGroup,
   ListGroup,
@@ -47,6 +46,7 @@ import {
   selectExtensionAvailability,
   selectNotDeletedElements,
   selectNotDeletedExtensions,
+  selectModuleListExpanded,
 } from "@/pageEditor/slices/editorSelectors";
 import { useDispatch, useSelector } from "react-redux";
 import useSaveMod from "@/pageEditor/hooks/useSaveMod";
@@ -59,7 +59,6 @@ import ModComponentListItem from "./ModComponentListItem";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useDebounce } from "use-debounce";
 import filterSidebarItems from "@/pageEditor/sidebar/filterSidebarItems";
-import { selectModuleListExpanded } from "@/pageEditor/slices/editorSelectors";
 
 const SidebarExpanded: React.FunctionComponent<{
   collapseSidebar: () => void;
@@ -197,17 +196,21 @@ const SidebarExpanded: React.FunctionComponent<{
       </div>
 
       <Collapse in={!expanded} unmountOnExit={true} mountOnEnter={true}>
-        <Button
-          variant="light"
-          className={cx(styles.toggle, "flex-shrink-0")}
-          type="button"
-          onClick={collapseSidebar}
-        >
-          <FontAwesomeIcon icon={faAngleDoubleRight} fixedWidth />
-        </Button>
+        <div className="d-flex flex-column">
+          <Button
+            variant="light"
+            className={cx(styles.toggle, "flex-shrink-0")}
+            type="button"
+            onClick={collapseSidebar}
+          >
+            <FontAwesomeIcon icon={faAngleDoubleRight} fixedWidth />
+          </Button>
+          {showDeveloperUI && <ReloadButton className="flex-shrink-0" />}
+        </div>
       </Collapse>
       <Collapse
         dimension="width"
+        timeout={5000}
         in={expanded}
         unmountOnExit={true}
         mountOnEnter={true}

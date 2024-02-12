@@ -20,6 +20,7 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { sleep } from "@/utils/timeUtils";
+import cx from "classnames";
 
 const onReload = async (event: MouseEvent<HTMLElement>) => {
   if (event.shiftKey) {
@@ -35,13 +36,15 @@ const onReload = async (event: MouseEvent<HTMLElement>) => {
   location.reload();
 };
 
-const ReloadButton: React.FunctionComponent = () => (
+const ReloadButton: React.FunctionComponent<{ className?: string }> = ({
+  className,
+}) => (
   <Button
     type="button"
     size="sm"
     variant="light"
     title="Shift-click to attempt to reload all contexts (in 2 seconds)"
-    className="mt-auto"
+    className={cx("mt-auto", className)}
     onClick={onReload}
   >
     <FontAwesomeIcon icon={faSync} fixedWidth />
