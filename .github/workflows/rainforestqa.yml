@@ -103,3 +103,14 @@ jobs:
           RAINFOREST_API_TOKEN: ${{ secrets.RAINFORESTQA_TOKEN }}
           # The run group for tests to run during CI, now has start URL built-in
           RUN_GROUP: ${{ env.RUN_GROUP }}
+
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        with:
+          status: ${{ job.status }}
+          notify_when: "failure"
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: rainforest-notifications
+          SLACK_MESSAGE: "Rainforest run failed"
+          SLACK_COLOR: ${{ job.status }}
