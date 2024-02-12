@@ -1,5 +1,11 @@
 name: Rainforest QA Run
 
+# There's only one Rainforest server, so this workflow must wait for the previous run to end.
+# The queue length is 1, so with multiple PRs merged at once, this workflow will only be run twice in total.
+# See https://github.com/pixiebrix/pixiebrix-extension/pull/7562#discussion_r1485159972
+concurrency:
+  group: one-rainforest-server
+
 # For now, we'll manually trigger the run. We might consider the pull_request review_requested or push to main
 # event triggers in the future. These will require potentially cleanly dealing with concurrent runs
 # https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows
