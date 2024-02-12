@@ -10,11 +10,6 @@
   overflow-x: hidden;
   overflow-y: scroll;
 
-  &.expanded {
-    width: 270px; // Preserve width during the transition
-    z-index: 1000; // Always on top of the collapsed one *and* of the content
-  }
-
   label {
     font-size: 0.875rem;
   }

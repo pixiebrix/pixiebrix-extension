@@ -21,6 +21,7 @@ import {
   Accordion,
   Button,
   Collapse,
+  Fade,
   FormControl,
   InputGroup,
   ListGroup,
@@ -31,7 +32,10 @@ import {
   isModSidebarItem,
   type SidebarItem,
 } from "@/pageEditor/sidebar/common";
-import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAngleDoubleLeft,
+  faAngleDoubleRight,
+} from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import ModListItem from "@/pageEditor/sidebar/ModListItem";
 import useFlags from "@/hooks/useFlags";
@@ -157,65 +161,91 @@ const SidebarExpanded: React.FunctionComponent<{
   });
 
   return (
-    <div className={cx(styles.root, styles.expanded, "flex-shrink-0")}>
+    <div className={cx(styles.root, "flex-shrink-0")}>
       <div className={styles.header}>
         <div className={styles.actions}>
-          <div className={styles.actionsLeft}>
-            <HomeButton />
-
-            <AddStarterBrickButton />
-
-            {showDeveloperUI && <ReloadButton />}
-          </div>
-          <Button
-            variant="light"
-            className={styles.toggle}
-            type="button"
-            onClick={collapseSidebar}
+          {" "}
+          <HomeButton />
+          <Collapse
+            dimension="width"
+            in={expanded}
+            unmountOnExit={true}
+            mountOnEnter={true}
           >
-            <FontAwesomeIcon icon={faAngleDoubleLeft} fixedWidth />
-          </Button>
+            <div className={styles.actionsLeft}>
+              <AddStarterBrickButton />
+
+              {showDeveloperUI && <ReloadButton />}
+            </div>
+          </Collapse>
+          <Collapse
+            dimension="width"
+            in={expanded}
+            unmountOnExit={true}
+            mountOnEnter={true}
+          >
+            <Button
+              variant="light"
+              className={styles.toggle}
+              type="button"
+              onClick={collapseSidebar}
+            >
+              <FontAwesomeIcon icon={faAngleDoubleLeft} fixedWidth />
+            </Button>
+          </Collapse>
         </div>
       </div>
 
+      <Collapse in={!expanded} unmountOnExit={true} mountOnEnter={true}>
+        <Button
+          variant="light"
+          className={cx(styles.toggle, "flex-shrink-0")}
+          type="button"
+          onClick={collapseSidebar}
+        >
+          <FontAwesomeIcon icon={faAngleDoubleRight} fixedWidth />
+        </Button>
+      </Collapse>
       <Collapse
         dimension="width"
         in={expanded}
         unmountOnExit={true}
         mountOnEnter={true}
       >
-        <div id="example-collapse-text" style={{ width: "270px" }}>
-          {/* Quick Filter */}
-          <div className={styles.searchWrapper}>
-            <div className={styles.searchContainer}>
-              <InputGroup>
-                <FormControl
-                  placeholder="Quick filter"
-                  value={filterQuery}
-                  onChange={({ target }) => {
-                    setFilterQuery(target.value);
-                  }}
-                />
-              </InputGroup>
-              {filterQuery.length > 0 ? (
-                <Button
-                  variant="link"
-                  size="sm"
-                  onClick={() => {
-                    setFilterQuery("");
-                  }}
-                >
-                  Clear
-                </Button>
-              ) : null}
+        <div style={{ width: "270px" }}>
+          <div style={{ width: "270px" }}>
+            {/* Quick Filter */}
+            <div className={styles.searchWrapper}>
+              <div className={styles.searchContainer}>
+                <InputGroup>
+                  <FormControl
+                    placeholder="Quick filter"
+                    value={filterQuery}
+                    onChange={({ target }) => {
+                      setFilterQuery(target.value);
+                    }}
+                  />
+                </InputGroup>
+                {filterQuery.length > 0 ? (
+                  <Button
+                    variant="link"
+                    size="sm"
+                    onClick={() => {
+                      setFilterQuery("");
+                    }}
+                  >
+                    Clear
+                  </Button>
+                ) : null}
+              </div>
             </div>
-          </div>
 
-          {/* Extension List */}
-          <div className={styles.extensions}>
-            <Accordion activeKey={expandedModId}>
-              <ListGroup>{listItems}</ListGroup>
-            </Accordion>
+            {/* Extension List */}
+            <div className={styles.extensions}>
+              <Accordion activeKey={expandedModId}>
+                <ListGroup>{listItems}</ListGroup>
+              </Accordion>
+            </div>
           </div>
         </div>
       </Collapse>
