@@ -20,6 +20,7 @@ import React, { useMemo, useState } from "react";
 import {
   Accordion,
   Button,
+  Collapse,
   FormControl,
   InputGroup,
   ListGroup,
@@ -54,6 +55,7 @@ import ModComponentListItem from "./ModComponentListItem";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useDebounce } from "use-debounce";
 import filterSidebarItems from "@/pageEditor/sidebar/filterSidebarItems";
+import { selectModuleListExpanded } from "@/pageEditor/slices/editorSelectors";
 
 const SidebarExpanded: React.FunctionComponent<{
   collapseSidebar: () => void;
@@ -67,6 +69,8 @@ const SidebarExpanded: React.FunctionComponent<{
   const { availableInstalledIds, availableDynamicIds } = useSelector(
     selectExtensionAvailability,
   );
+
+  const expanded = useSelector(selectModuleListExpanded);
 
   const { flagOn } = useFlags();
   const showDeveloperUI =
@@ -174,38 +178,47 @@ const SidebarExpanded: React.FunctionComponent<{
         </div>
       </div>
 
-      {/* Quick Filter */}
-      <div className={styles.searchWrapper}>
-        <div className={styles.searchContainer}>
-          <InputGroup>
-            <FormControl
-              placeholder="Quick filter"
-              value={filterQuery}
-              onChange={({ target }) => {
-                setFilterQuery(target.value);
-              }}
-            />
-          </InputGroup>
-          {filterQuery.length > 0 ? (
-            <Button
-              variant="link"
-              size="sm"
-              onClick={() => {
-                setFilterQuery("");
-              }}
-            >
-              Clear
-            </Button>
-          ) : null}
-        </div>
-      </div>
+      <Collapse
+        dimension="width"
+        in={expanded}
+        unmountOnExit={true}
+        mountOnEnter={true}
+      >
+        <div id="example-collapse-text" style={{ width: "270px" }}>
+          {/* Quick Filter */}
+          <div className={styles.searchWrapper}>
+            <div className={styles.searchContainer}>
+              <InputGroup>
+                <FormControl
+                  placeholder="Quick filter"
+                  value={filterQuery}
+                  onChange={({ target }) => {
+                    setFilterQuery(target.value);
+                  }}
+                />
+              </InputGroup>
+              {filterQuery.length > 0 ? (
+                <Button
+                  variant="link"
+                  size="sm"
+                  onClick={() => {
+                    setFilterQuery("");
+                  }}
+                >
+                  Clear
+                </Button>
+              ) : null}
+            </div>
+          </div>
 
-      {/* Extension List */}
-      <div className={styles.extensions}>
-        <Accordion activeKey={expandedModId}>
-          <ListGroup>{listItems}</ListGroup>
-        </Accordion>
-      </div>
+          {/* Extension List */}
+          <div className={styles.extensions}>
+            <Accordion activeKey={expandedModId}>
+              <ListGroup>{listItems}</ListGroup>
+            </Accordion>
+          </div>
+        </div>
+      </Collapse>
     </div>
   );
 };

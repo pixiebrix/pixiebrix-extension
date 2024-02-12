@@ -20,8 +20,6 @@ import SidebarExpanded from "./SidebarExpanded";
 import { useDispatch, useSelector } from "react-redux";
 import { selectModuleListExpanded } from "@/pageEditor/slices/editorSelectors";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { Button, Collapse } from "react-bootstrap";
-import SidebarCollapsed from "./SidebarCollapsed";
 
 const Sidebar: React.VFC = () => {
   const dispatch = useDispatch();
@@ -29,39 +27,15 @@ const Sidebar: React.VFC = () => {
   const expanded = useSelector(selectModuleListExpanded);
 
   return (
-    <>
-      {
-        <SidebarCollapsed
-          expandSidebar={() => {
-            dispatch(
-              actions.setModListExpanded({
-                isExpanded: true,
-              }),
-            );
-          }}
-        />
-      }
-      <Collapse
-        dimension="width"
-        in={expanded}
-        unmountOnExit={true}
-        mountOnEnter={true}
-      >
-        <div>
-          <div id="example-collapse-text" style={{ width: "270px" }}>
-            <SidebarExpanded
-              collapseSidebar={() => {
-                dispatch(
-                  actions.setModListExpanded({
-                    isExpanded: false,
-                  }),
-                );
-              }}
-            />
-          </div>
-        </div>
-      </Collapse>
-    </>
+    <SidebarExpanded
+      collapseSidebar={() => {
+        dispatch(
+          actions.setModListExpanded({
+            isExpanded: !expanded,
+          }),
+        );
+      }}
+    />
   );
 };
 
