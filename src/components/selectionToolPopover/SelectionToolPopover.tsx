@@ -17,7 +17,7 @@
 
 import React, { type ChangeEvent, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
+import bootstrap from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
 import Draggable from "react-draggable";
 import EmotionShadowRoot from "react-shadow/emotion";
 import SwitchButtonWidget, {
