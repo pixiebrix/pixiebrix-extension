@@ -19,11 +19,9 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0 1rem; /* Horizontal gap only */
-  align-items: center;
   // Prevents long urls in Field descriptions from overflowing containing element
   // https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
   overflow-wrap: break-word;
-  -webkit-hyphens: auto;
   hyphens: auto;
 }
 
@@ -34,7 +32,9 @@
   flex-grow: 1;
   min-width: 150px;
   max-width: 300px;
-  padding-block: 15px;
+  // Visually align the label to the baseline of the text field.
+  // It also helps space the fields out out when stacked vertically.
+  padding-top: 10px;
 }
 
 .labelWider {

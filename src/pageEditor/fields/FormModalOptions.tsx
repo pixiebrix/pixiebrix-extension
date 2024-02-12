@@ -69,7 +69,7 @@ const FormModalOptions: React.FC<{
   );
 
   return (
-    <div>
+    <>
       <ConnectedCollapsibleFieldSection
         title="Form Title/Description"
         initialExpanded
@@ -123,7 +123,7 @@ const FormModalOptions: React.FC<{
           schema={MODAL_FORM_SCHEMA.properties.disableParentStyles as Schema}
         />
       </ConnectedCollapsibleFieldSection>
-    </div>
+    </>
   );
 };
 
