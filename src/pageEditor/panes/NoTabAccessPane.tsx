@@ -31,7 +31,7 @@ function getPageLabel(url: string): string {
 
 /**
  * Panel the shows that PixieBrix does not have access to the page. Now that all URLs are included in the manifest's
- * required permissions, this can occur in three cases:
+ * required permissions, this can occur in two cases:
  * 1. The browser extension was restarted while page was open
  * 2. Permissions are blocked via runtime_blocked_hosts
  * @constructor
