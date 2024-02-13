@@ -54,8 +54,10 @@ const Header: React.FunctionComponent = () => {
       {showSidebarLogo && (
         <div
           className={cx({
+            // Flexbox centering works because there's a button to the left of the logo
             "align-self-center": showCloseButton,
-            "mr-auto ml-auto": !showCloseButton,
+            // Use mx-auto because the button is removed in MV3
+            "mx-auto": !showCloseButton,
           })}
         >
           <img
