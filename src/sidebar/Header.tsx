@@ -52,7 +52,12 @@ const Header: React.FunctionComponent = () => {
         </Button>
       )}
       {showSidebarLogo && (
-        <div className="align-self-center">
+        <div
+          className={cx({
+            "align-self-center": showCloseButton,
+            "mr-auto ml-auto": !showCloseButton,
+          })}
+        >
           <img
             src={customSidebarLogo ?? logo.regular}
             alt={customSidebarLogo ? "Custom logo" : "PixieBrix logo"}
