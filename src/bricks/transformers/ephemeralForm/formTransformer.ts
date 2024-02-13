@@ -201,9 +201,9 @@ export class FormTransformer extends TransformerABC {
         void cancelForm(formNonce);
       });
     } else {
-      const frameSource = await createFrameSource(formNonce, location);
+      const target = await getConnectedTarget();
 
-      showModal({ url: frameSource, controller });
+      showModal({ nonce: formNonce, opener: target, controller });
     }
 
     try {
