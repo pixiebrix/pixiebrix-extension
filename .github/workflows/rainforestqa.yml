@@ -105,6 +105,7 @@ jobs:
           RUN_GROUP: ${{ env.RUN_GROUP }}
 
       - name: Slack Notification
+        if: failure()
         uses: rtCamp/action-slack-notify@v2
         with:
           status: ${{ job.status }}
