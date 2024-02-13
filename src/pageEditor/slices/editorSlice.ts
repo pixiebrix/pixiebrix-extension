@@ -32,16 +32,7 @@ import {
   type ModMetadataFormState,
 } from "@/pageEditor/pageEditorTypes";
 import { uuidv4 } from "@/types/helpers";
-import {
-  cloneDeep,
-  compact,
-  differenceBy,
-  get,
-  intersection,
-  isEmpty,
-  pull,
-  uniq,
-} from "lodash";
+import { cloneDeep, compact, get, isEmpty, pull, uniq } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import { type TreeExpandedState } from "@/components/jsonTree/JsonTree";
 import { getInvalidPath } from "@/utils/debugUtils";
@@ -81,7 +72,6 @@ import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
 import { testMatchPatterns } from "@/bricks/available";
 import { BusinessError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
-import { isModComponentBase } from "@/pageEditor/sidebar/common";
 import { type StorageInterface } from "@/store/StorageInterface";
 import { localStorage } from "redux-persist-webextension-storage";
 import { removeUnusedDependencies } from "@/components/fields/schemaFields/integrations/integrationDependencyFieldUtils";
@@ -153,7 +143,6 @@ const cloneActiveExtension = createAsyncThunk<
 
 type AvailableInstalled = {
   availableInstalledIds: UUID[];
-  unavailableCount: number;
 };
 
 const checkAvailableInstalledExtensions = createAsyncThunk<
@@ -203,10 +192,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
     .filter((x) => availableExtensionPointIds.includes(x.id))
     .map((x) => x.id);
 
-  const unavailableCount =
-    notDynamicInstalled.length - availableInstalledIds.length;
-
-  return { availableInstalledIds, unavailableCount };
+  return { availableInstalledIds };
 });
 
 async function isElementAvailable(
@@ -229,7 +215,6 @@ async function isElementAvailable(
 
 type AvailableDynamic = {
   availableDynamicIds: UUID[];
-  unavailableCount: number;
 };
 
 const checkAvailableDynamicElements = createAsyncThunk<
@@ -251,28 +236,19 @@ const checkAvailableDynamicElements = createAsyncThunk<
   );
 
   const availableDynamicIds = uniq(compact(availableElementIds));
-  const unavailableCount = elements.length - availableDynamicIds.length;
 
-  return { availableDynamicIds, unavailableCount };
+  return { availableDynamicIds };
 });
 
 const checkActiveElementAvailability = createAsyncThunk<
   {
     availableDynamicIds: UUID[];
-    unavailableInstalledCount: number;
-    unavailableDynamicCount: number;
   },
   void,
   { state: EditorRootState & ModComponentsRootState }
 >("editor/checkDynamicElementAvailability", async (arg, thunkAPI) => {
   const tabUrl = await getCurrentURL();
   const state = thunkAPI.getState();
-  // Clean (saved, persisted) extensions
-  const installedExtensions = selectNotDeletedExtensions(state);
-  // Dynamic form state elements for extensions that have been selected in the page editor
-  const dynamicElements = selectNotDeletedElements(state);
-  // Previously calculated availability for clean extensions
-  const { availableInstalledIds } = state.editor;
   // The currently selected element in the page editor
   const activeElement = selectActiveElement(state);
   // Calculate new availability for the active element
@@ -292,38 +268,8 @@ const checkActiveElementAvailability = createAsyncThunk<
     pull(availableDynamicIds, activeElement.uuid);
   }
 
-  // Calculate the count of unavailable dynamic elements
-  const unavailableDynamicCount =
-    dynamicElements.length - availableDynamicIds.length;
-  // Find installed extensions that have not been selected yet, i.e. do
-  // not have matching dynamic elements -- we need to filter here so that
-  // unavailable extensions are not tracked twice in the counts as both an
-  // installed extension and a dynamic form element
-  const installedNotDynamicIds = differenceBy(
-    installedExtensions,
-    dynamicElements,
-    (extensionOrElement) => {
-      if (isModComponentBase(extensionOrElement)) {
-        return extensionOrElement.id;
-      }
-
-      return extensionOrElement.uuid;
-    },
-  ).map((extension) => extension.id);
-  // Match the filtered installed extensions with their previously calculated availability
-  const availableInstalledNotDynamicIds = intersection(
-    availableInstalledIds,
-    installedNotDynamicIds,
-  );
-  // Calculate the count of unavailable installed extensions that do not
-  // have matching dynamic elements
-  const unavailableInstalledCount =
-    installedNotDynamicIds.length - availableInstalledNotDynamicIds.length;
-
   return {
     availableDynamicIds,
-    unavailableInstalledCount,
-    unavailableDynamicCount,
   };
 });
 
@@ -875,7 +821,7 @@ export const editorSlice = createSlice({
       })
       .addCase(
         checkAvailableInstalledExtensions.fulfilled,
-        (state, { payload: { availableInstalledIds, unavailableCount } }) => {
+        (state, { payload: { availableInstalledIds } }) => {
           state.isPendingInstalledExtensions = false;
           state.availableInstalledIds = availableInstalledIds;
         },
@@ -894,7 +840,7 @@ export const editorSlice = createSlice({
       })
       .addCase(
         checkAvailableDynamicElements.fulfilled,
-        (state, { payload: { availableDynamicIds, unavailableCount } }) => {
+        (state, { payload: { availableDynamicIds } }) => {
           state.isPendingDynamicExtensions = false;
           state.availableDynamicIds = availableDynamicIds;
         },
@@ -906,20 +852,9 @@ export const editorSlice = createSlice({
       })
       .addCase(
         checkActiveElementAvailability.fulfilled,
-        (
-          state,
-          {
-            payload: {
-              availableDynamicIds,
-              unavailableDynamicCount,
-              unavailableInstalledCount,
-            },
-          },
-        ) => ({
+        (state, { payload: { availableDynamicIds } }) => ({
           ...state,
           availableDynamicIds,
-          unavailableDynamicCount,
-          unavailableInstalledCount,
         }),
       );
   },
