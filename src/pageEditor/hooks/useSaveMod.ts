@@ -44,6 +44,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import type { EditablePackageMetadata } from "@/types/contract";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
+import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -82,6 +83,7 @@ function useSaveMod(): ModSaver {
   const deletedComponentsByModId = useSelector(selectDeletedElements);
   const { showConfirmation } = useModals();
   const [isSaving, setIsSaving] = useState(false);
+  const compareModComponentsToModDefinition = useCompareModComponentCounts();
 
   /**
    * Save a mod's components, options, and metadata
@@ -148,6 +150,9 @@ function useSaveMod(): ModSaver {
     // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
     const dirtyModMetadata = allDirtyModMetadatas[modId];
 
+    // TODO: Add a check in buildNewMod to prevent modComponents from being
+    //  included that lack both an inner definition and a registry id for their starter brick
+    // TODO: Drop excess extensionPoints
     const newMod = buildNewMod({
       sourceMod: modDefinition,
       cleanModComponents,
@@ -155,6 +160,8 @@ function useSaveMod(): ModSaver {
       dirtyModOptions,
       dirtyModMetadata,
     });
+
+    compareModComponentsToModDefinition(newMod);
 
     const packageId = editablePackages.find(
       // Bricks endpoint uses "name" instead of id
