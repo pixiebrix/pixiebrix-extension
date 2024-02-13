@@ -28,7 +28,7 @@ import {
 } from "@/utils/asyncStateUtils";
 import { type UUID } from "@/types/stringTypes";
 
-type ValueFactory<T> = Promise<T> | (() => Promise<T>);
+type ValueFactory<T> = Promise<T> | (() => Promise<T>) | (() => T);
 
 const warnUndefinedValueOnce = once(() => {
   // This will warn once per module -- not once per instance of useAsyncState. We might want to track in the slice

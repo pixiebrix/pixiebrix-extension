@@ -127,10 +127,13 @@ const EphemeralFormContent: React.FC<{
 /**
  * @see FormTransformer
  */
-const EphemeralForm: React.FC = () => {
+const EphemeralForm: React.FC<{ nonce?: UUID; opener?: Target }> = ({
+  nonce,
+  opener,
+}) => {
   const params = new URLSearchParams(location.search);
-  const nonce = validateUUID(params.get("nonce"));
-  const opener = JSON.parse(params.get("opener")) as Target;
+  nonce ??= validateUUID(params.get("nonce"));
+  opener ??= JSON.parse(params.get("opener")) as Target;
   const mode = params.get("mode") ?? "modal";
 
   const isModal = mode === "modal";

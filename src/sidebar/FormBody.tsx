@@ -19,8 +19,8 @@ import React from "react";
 import { type FormPanelEntry } from "@/types/sidebarTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import Loader from "@/components/Loader";
-import { getErrorMessage } from "@/errors/errorHelpers";
-import { createFrameSource } from "@/bricks/transformers/ephemeralForm/formTransformer";
+import EphemeralForm from "@/bricks/transformers/ephemeralForm/EphemeralForm";
+import { getConnectedTarget } from "./connectedTarget";
 
 type FormBodyProps = {
   form: FormPanelEntry;
@@ -32,16 +32,8 @@ type FormBodyProps = {
  * @constructor
  */
 const FormBody: React.FunctionComponent<FormBodyProps> = ({ form }) => {
-  const {
-    data: sourceURL,
-    isLoading,
-    error,
-  } = useAsyncState(
-    async () => createFrameSource(form.nonce, "panel"),
-    [form.nonce],
-  );
-
-  if (isLoading) {
+  const { data: target } = useAsyncState(getConnectedTarget, []);
+  if (!form.nonce || !target) {
     return (
       <div>
         <Loader />
@@ -49,24 +41,7 @@ const FormBody: React.FunctionComponent<FormBodyProps> = ({ form }) => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="text-danger">
-        Error getting information for form: {getErrorMessage(error)}
-      </div>
-    );
-  }
-
-  return (
-    <iframe
-      title={form.nonce}
-      height="100%"
-      width="100%"
-      src={sourceURL.toString()}
-      style={{ border: "none" }}
-      allowFullScreen={false}
-    />
-  );
+  return <EphemeralForm nonce={form.nonce} opener={target} />;
 };
 
 export default FormBody;
