@@ -83,7 +83,8 @@ function useSaveMod(): ModSaver {
   const deletedComponentsByModId = useSelector(selectDeletedElements);
   const { showConfirmation } = useModals();
   const [isSaving, setIsSaving] = useState(false);
-  const compareModComponentsToModDefinition = useCompareModComponentCounts();
+  const compareModComponentCountsToModDefinition =
+    useCompareModComponentCounts();
 
   /**
    * Save a mod's components, options, and metadata
@@ -150,8 +151,6 @@ function useSaveMod(): ModSaver {
     // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
     const dirtyModMetadata = allDirtyModMetadatas[modId];
 
-    // TODO: Add a check in buildNewMod to prevent modComponents from being
-    //  included that lack both an inner definition and a registry id for their starter brick
     // TODO: Drop excess extensionPoints
     const newMod = buildNewMod({
       sourceMod: modDefinition,
@@ -161,7 +160,18 @@ function useSaveMod(): ModSaver {
       dirtyModMetadata,
     });
 
-    compareModComponentsToModDefinition(newMod);
+    if (!compareModComponentCountsToModDefinition(newMod)) {
+      // TODO: Add a modal here to tell the user about the error, with an option to download a "dump" of data, and
+      //      contact PB support
+      //        * Data is probably form state plus redux state, in a json file
+      notify.error({
+        message: "The mod's components do not match the mod definition",
+      });
+      return false;
+    }
+
+    // TODO: Add a check in buildNewMod to prevent modComponents from being
+    //  included that lack both an inner definition and a registry id for their starter brick
 
     const packageId = editablePackages.find(
       // Bricks endpoint uses "name" instead of id

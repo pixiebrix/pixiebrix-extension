@@ -15,29 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
+import {
+  ModDefinition,
+  type UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
+import { useCallback } from "react";
 import { useSelector } from "react-redux";
 import {
   selectDeletedElements,
   selectDirty,
   selectElements,
 } from "@/pageEditor/slices/editorSelectors";
-import { useCallback } from "react";
 import { selectExtensions } from "@/store/extensionsSelectors";
 
-/**
- * @returns {function} - A function that compares the number of mod components in the redux state and the mod definition
- */
-function useCompareModComponentCounts(): (
-  modDefinition: UnsavedModDefinition,
-) => boolean {
+function useEnsureModComponentStarterBricks(): (
+  modDefinition: ModDefinition,
+) => Promise<boolean> {
   const modComponentFormStates = useSelector(selectElements);
   const deletedModComponentsById = useSelector(selectDeletedElements);
   const isDirtyByModComponentId = useSelector(selectDirty);
   const activatedModComponents = useSelector(selectExtensions);
 
   return useCallback(
-    (modDefinition: UnsavedModDefinition) => {
+    async (modDefinition: UnsavedModDefinition) => {
       const modId = modDefinition.metadata.id;
       const deletedModComponentFormStates =
         // eslint-disable-next-line security/detect-object-injection -- RegistryId
@@ -45,6 +45,8 @@ function useCompareModComponentCounts(): (
       const deletedModComponentIds = new Set(
         deletedModComponentFormStates.map(({ uuid }) => uuid),
       );
+
+      const extensionPointIdsFromState: string[] = [];
 
       // TODO: Extract to selectors and test clean/dirty separation behavior
       // And reuse the same selectors in useSaveMod
@@ -54,6 +56,19 @@ function useCompareModComponentCounts(): (
           isDirtyByModComponentId[modComponentFormState.uuid] &&
           !deletedModComponentIds.has(modComponentFormState.uuid),
       );
+
+      // Ensure each starter brick for dirty components is present in the mod definition extension points
+      for (const formState of dirtyModComponentFormStates) {
+        extensionPointIdsFromState.push(formState.extensionPoint.metadata.id);
+        if (
+          !modDefinition.extensionPoints.some(
+            (extensionPoint) =>
+              extensionPoint.id === formState.extensionPoint.metadata.id,
+          )
+        ) {
+          return false;
+        }
+      }
 
       const cleanModComponentsExcludingDirtyFormStates =
         activatedModComponents.filter(
@@ -66,16 +81,20 @@ function useCompareModComponentCounts(): (
             !deletedModComponentIds.has(modComponent.id),
         );
 
-      const totalNumberModComponentsFromState =
-        dirtyModComponentFormStates.length +
-        cleanModComponentsExcludingDirtyFormStates.length;
-      const totalNumberModComponentsFromDefinition =
-        modDefinition.extensionPoints.length;
+      // Ensure each starter brick for clean components is present in the mod definition extension points
+      for (const modComponent of cleanModComponentsExcludingDirtyFormStates) {
+        extensionPointIdsFromState.push(modComponent.extensionPointId);
+        if (
+          !modDefinition.extensionPoints.some(
+            (extensionPoint) =>
+              extensionPoint.id === modComponent.extensionPointId,
+          )
+        ) {
+          return false;
+        }
+      }
 
-      return (
-        totalNumberModComponentsFromState ===
-        totalNumberModComponentsFromDefinition
-      );
+      return true;
     },
     [
       activatedModComponents,
@@ -86,4 +105,4 @@ function useCompareModComponentCounts(): (
   );
 }
 
-export default useCompareModComponentCounts;
+export default useEnsureModComponentStarterBricks;
