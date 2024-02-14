@@ -19,7 +19,6 @@ import activateBrowserActionIcon, {
   blobToImageData,
   getImageData,
 } from "@/background/activateBrowserActionIcon";
-import { waitFor } from "@testing-library/react";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { browserAction } from "@/mv3/api";
@@ -103,10 +102,7 @@ describe("activateBrowserActionIcon", () => {
 
   describe("blobToImageData", () => {
     it("should return ImageData from a Blob", async () => {
-      // Create a new Blob
       const blob = new Blob(["test"], { type: "image/svg+xml" });
-
-      // Mock Image and OffscreenCanvas
 
       const result = await blobToImageData(blob);
 
