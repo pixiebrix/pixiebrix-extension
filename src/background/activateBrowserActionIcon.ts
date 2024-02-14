@@ -40,6 +40,11 @@ export async function blobToImageData(blob: Blob): Promise<ImageData> {
   // Paint on canvas and return
   const canvas = new OffscreenCanvas(16, 16);
   const context = canvas.getContext("2d");
+
+  if (!context) {
+    throw new Error("Failed to get 2d context for canvas");
+  }
+
   context.drawImage(img, 0, 0);
   return context.getImageData(0, 0, 16, 16);
 }
@@ -53,9 +58,10 @@ export async function getImageData(url?: string): Promise<ImageData | null> {
     const { data } = await axios.get<Blob>(url, { responseType: "blob" });
 
     return await blobToImageData(data);
-  } catch {
+  } catch (error) {
     console.warn("Failed to load image data for browser action icon.", {
       url,
+      error,
     });
     return null;
   }
