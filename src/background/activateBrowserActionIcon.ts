@@ -46,7 +46,11 @@ async function blobToImageData(blob: Blob) {
 }
 
 async function getImageData(url: string) {
-  const { data } = await axios.get<Blob>(url, { responseType: "blob" });
+  try {
+    const { data } = await axios.get<Blob>(url, { responseType: "blob" });
 
-  return blobToImageData(data);
+    return await blobToImageData(data);
+  } catch {
+    return null;
+  }
 }
