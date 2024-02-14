@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fetch } from "@/hooks/fetch";
 import { type OrganizationAuthUrlPattern } from "@/types/contract";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { addListener as addAuthListener, isLinked } from "@/auth/token";
@@ -26,6 +25,7 @@ import { SessionValue } from "@/mv3/SessionStorage";
 import reportError from "@/telemetry/reportError";
 import type { Tabs } from "webextension-polyfill";
 import { forEachTab } from "@/utils/extensionUtils";
+import { getApiClient } from "@/services/apiClient";
 
 const sessionValue = new SessionValue<string[]>(
   "authUrlPatterns",
@@ -34,9 +34,11 @@ const sessionValue = new SessionValue<string[]>(
 
 async function getAuthUrlPatterns(organizationId: UUID): Promise<string[]> {
   try {
-    const authUrlPatterns = await fetch<OrganizationAuthUrlPattern[]>(
-      `/api/organizations/${organizationId}/auth-url-patterns/`,
-    );
+    // Is an unauthenticated endpoint
+    const client = await getApiClient();
+    const { data: authUrlPatterns } = await client.get<
+      OrganizationAuthUrlPattern[]
+    >(`/api/organizations/${organizationId}/auth-url-patterns/`);
     return authUrlPatterns.map(({ url_pattern }) => url_pattern);
   } catch (error) {
     reportError(error);

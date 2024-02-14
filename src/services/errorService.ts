@@ -25,7 +25,7 @@ import { allowsTrack } from "@/telemetry/dnt";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
 import { getUserData } from "@/auth/token";
 import {
-  isAppRequest,
+  isAppRequestError,
   selectAbsoluteUrl,
   selectAxiosError,
 } from "@/services/requestErrorUtils";
@@ -86,7 +86,8 @@ export async function selectExtraContext(
 
   if (
     axiosError &&
-    ((await flagOn("enterprise-telemetry")) || (await isAppRequest(axiosError)))
+    ((await flagOn("enterprise-telemetry")) ||
+      (await isAppRequestError(axiosError)))
   ) {
     extraContext.url = selectAbsoluteUrl(axiosError.config);
   }

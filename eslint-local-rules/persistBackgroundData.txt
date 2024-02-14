@@ -131,7 +131,6 @@
 ./src/extensionContext.ts
 ./src/hooks/auth.ts
 ./src/hooks/common.ts
-./src/hooks/fetch.ts
 ./src/hooks/useAsyncState.ts
 ./src/hooks/useDebouncedEffect.ts
 ./src/hooks/useEventListener.ts
