@@ -50,7 +50,7 @@ AxiosRequestConfig): string {
 /**
  * Return true iff the error corresponds to a request to PixieBrix API.
  */
-export async function isAppRequest(
+export async function isAppRequestError(
   error: SerializableAxiosError,
 ): Promise<boolean> {
   const baseURL = await getBaseURL();
