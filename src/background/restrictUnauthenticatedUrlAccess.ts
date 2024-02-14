@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import extensionClientGet from "@/services/extensionClientGet";
 import { type OrganizationAuthUrlPattern } from "@/types/contract";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { addListener as addAuthListener, isLinked } from "@/auth/token";
