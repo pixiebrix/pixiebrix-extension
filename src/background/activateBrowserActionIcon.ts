@@ -19,7 +19,7 @@ import { browserAction } from "@/mv3/api";
 import axios from "axios";
 
 export default async function activateBrowserActionIcon(url?: string) {
-  const imageData = await getImageData(url);
+  const imageData = await getImageData();
 
   if (imageData) {
     browserAction.setIcon({ imageData });
@@ -54,6 +54,9 @@ export async function getImageData(url?: string): Promise<ImageData | null> {
 
     return await blobToImageData(data);
   } catch {
+    console.warn("Failed to load image data for browser action icon.", {
+      url,
+    });
     return null;
   }
 }
