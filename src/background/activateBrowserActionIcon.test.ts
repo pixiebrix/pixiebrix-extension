@@ -31,7 +31,7 @@ jest.mock("@/mv3/api", () => ({
 
 describe("activateBrowserActionIcon", () => {
   const mock = new MockAdapter(axios);
-  const url = "http://test.com/image.png";
+  const url = "http://test.com/image.svg";
 
   const drawImageMock = jest.fn();
   const getImageDataMock = jest.fn().mockReturnValue("image data");
