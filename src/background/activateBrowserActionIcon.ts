@@ -30,6 +30,18 @@ export default async function activateBrowserActionIcon(url?: string) {
   }
 }
 
+/**
+ * Converts a Blob object into ImageData.
+ *
+ * This function creates an Image object from a Blob, decodes the image,
+ * draws it on an offscreen canvas, and then returns the image data from the canvas.
+ *
+ * @param {Blob} blob - The Blob object to convert into ImageData.
+ * @returns {Promise<ImageData>} A promise that resolves to the ImageData of the Blob.
+ * @throws {Error} Throws an error if it fails to get the 2D context for the canvas.
+ *
+ * @todo Add MV3 support: https://github.com/pixiebrix/pixiebrix-extension/issues/7622
+ */
 export async function blobToImageData(blob: Blob): Promise<ImageData> {
   // TODO: Add MV3 support: https://github.com/pixiebrix/pixiebrix-extension/issues/7622
 
