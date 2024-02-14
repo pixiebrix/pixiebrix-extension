@@ -30,7 +30,7 @@ async function setToolbarIcon(): Promise<void> {
   const activeTheme = await getActiveTheme();
 
   if (activeTheme === DEFAULT_THEME) {
-    activateBrowserActionIcon();
+    await activateBrowserActionIcon();
     return;
   }
 

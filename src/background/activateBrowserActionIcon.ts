@@ -16,9 +16,37 @@
  */
 
 import { browserAction } from "@/mv3/api";
+import axios from "axios";
 
-export default function activateBrowserActionIcon() {
-  // This re-sets the colored manifest icons
-  const { icons: path } = browser.runtime.getManifest();
-  browserAction.setIcon({ path });
+export default async function activateBrowserActionIcon() {
+  const imageData = await getImageData(
+    "https://simpleicons.org/icons/1001tracklists.svg",
+  );
+
+  if (imageData) {
+    browserAction.setIcon({ imageData });
+  } else {
+    // This re-sets the colored manifest icons
+    const { icons: path } = browser.runtime.getManifest();
+    browserAction.setIcon({ path });
+  }
+}
+
+async function blobToImageData(blob: Blob) {
+  // Load into image (NOTE: does not work in MV3)
+  const img = new Image();
+  img.src = URL.createObjectURL(blob);
+  await img.decode();
+
+  // Paint on canvas and return
+  const canvas = new OffscreenCanvas(16, 16);
+  const context = canvas.getContext("2d");
+  context.drawImage(img, 0, 0);
+  return context.getImageData(0, 0, 16, 16);
+}
+
+async function getImageData(url: string) {
+  const { data } = await axios.get<Blob>(url, { responseType: "blob" });
+
+  return blobToImageData(data);
 }
