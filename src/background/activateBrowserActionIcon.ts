@@ -31,7 +31,7 @@ export default async function activateBrowserActionIcon(url?: string) {
 }
 
 export async function blobToImageData(blob: Blob): Promise<ImageData> {
-  // Load into image (NOTE: does not work in MV3)
+  // TODO: Add MV3 support: https://github.com/pixiebrix/pixiebrix-extension/issues/7622
 
   const img = new Image();
   img.src = URL.createObjectURL(blob);
