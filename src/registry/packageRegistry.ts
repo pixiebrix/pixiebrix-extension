@@ -18,12 +18,12 @@
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { flatten, groupBy, sortBy } from "lodash";
 import { type RegistryPackage } from "@/types/contract";
-import { fetch } from "@/hooks/fetch";
 import { type Except } from "type-fest";
 import { deleteDatabase } from "@/utils/idbUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import { type UnknownObject } from "@/types/objectTypes";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { getApiClient } from "@/services/apiClient";
 
 const DATABASE_NAME = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
@@ -163,8 +163,9 @@ export const syncPackages = memoizeUntilSettled(async () => {
   // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
   const timestamp = new Date();
 
+  const client = await getApiClient();
   // In the future, use the paginated endpoint?
-  const data = await fetch<RegistryPackage[]>("/api/registry/bricks/");
+  const { data } = await client.get<RegistryPackage[]>("/api/registry/bricks/");
 
   const packages = data.map((x) => ({
     ...parsePackage(x),

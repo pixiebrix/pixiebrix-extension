@@ -20,7 +20,6 @@ import { isEmpty, sortBy } from "lodash";
 import servicesRegistry, {
   readRawConfigurations,
 } from "@/integrations/registry";
-import { fetch } from "@/hooks/fetch";
 import { validateRegistryId } from "@/types/helpers";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
@@ -40,6 +39,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { sanitizeIntegrationConfig } from "@/integrations/sanitizeIntegrationConfig";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import { getLinkedApiClient } from "@/services/apiClient";
 
 enum Visibility {
   Private = 0,
@@ -128,11 +128,12 @@ class LazyLocatorFactory {
       // As of https://github.com/pixiebrix/pixiebrix-app/issues/562, the API gracefully handles unauthenticated calls
       // to this endpoint. However, there's no need to pull the built-in services because the user can't call them
       // without being authenticated
-      this.remote = await fetch<RemoteIntegrationConfig[]>(
+      const client = await getLinkedApiClient();
+      const { data } = await client.get<RemoteIntegrationConfig[]>(
         // Fetch full configurations, including credentials for configurations with pushdown
         "/api/services/shared/",
-        { requireLinked: true },
       );
+      this.remote = data;
       console.debug(`Fetched ${this.remote.length} remote service auth(s)`);
     } catch (error) {
       if (error instanceof ExtensionNotLinkedError) {
