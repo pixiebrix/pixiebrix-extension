@@ -18,10 +18,8 @@
 import { browserAction } from "@/mv3/api";
 import axios from "axios";
 
-export default async function activateBrowserActionIcon() {
-  const imageData = await getImageData(
-    "https://simpleicons.org/icons/1001tracklists.svg",
-  );
+export default async function activateBrowserActionIcon(url?: string) {
+  const imageData = await getImageData(url);
 
   if (imageData) {
     browserAction.setIcon({ imageData });
@@ -32,8 +30,9 @@ export default async function activateBrowserActionIcon() {
   }
 }
 
-async function blobToImageData(blob: Blob) {
+export async function blobToImageData(blob: Blob): Promise<ImageData> {
   // Load into image (NOTE: does not work in MV3)
+
   const img = new Image();
   img.src = URL.createObjectURL(blob);
   await img.decode();
@@ -45,7 +44,11 @@ async function blobToImageData(blob: Blob) {
   return context.getImageData(0, 0, 16, 16);
 }
 
-async function getImageData(url: string) {
+export async function getImageData(url?: string): Promise<ImageData | null> {
+  if (!url) {
+    return null;
+  }
+
   try {
     const { data } = await axios.get<Blob>(url, { responseType: "blob" });
 
