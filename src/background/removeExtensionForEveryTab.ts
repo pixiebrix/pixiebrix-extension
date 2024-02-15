@@ -14,10 +14,11 @@ export async function removeExtensionForEveryTab(
 ): Promise<void> {
   console.debug("Remove extension for all tabs", { extensionId });
 
-  await forEachTab(async (tab) => {
-    removeInstalledExtension(tab, extensionId);
-    await clearDynamicElements(tab, { uuid: extensionId });
-    await removeSidebars(tab, [extensionId]);
+  await forEachTab(async ({ tabId }) => {
+    const allFrames = { tabId, frameId: "allFrames" } as const;
+    removeInstalledExtension(allFrames, extensionId);
+    clearDynamicElements(allFrames, { uuid: extensionId });
+    await removeSidebars({ tabId }, [extensionId]);
   });
   await uninstallContextMenu({ extensionId });
   await clearExtensionTraces(extensionId);

@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
 import { useAsyncEffect } from "use-async-effect";
-import { getCurrentURL, thisTab } from "@/pageEditor/utils";
+import { getCurrentURL, allFramesInThisTab } from "@/pageEditor/utils";
 import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { getExampleBrickPipeline } from "@/pageEditor/exampleStarterBrickConfigs";
@@ -47,7 +47,10 @@ function useAutoInsert(type: StarterBrickType): void {
 
       // Don't auto-run tours on selection in Page Editor
       if (config.elementType !== "tour") {
-        await updateDynamicElement(thisTab, config.asDynamicElement(formState));
+        updateDynamicElement(
+          allFramesInThisTab,
+          config.asDynamicElement(formState),
+        );
       }
 
       // TODO: report if created new, or using existing foundation

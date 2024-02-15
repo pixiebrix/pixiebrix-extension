@@ -32,7 +32,7 @@ import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 import { expectContext } from "@/utils/expectContext";
 import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
-import { type Target } from "@/types/messengerTypes";
+import { type Target } from "webext-messenger";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -59,12 +59,17 @@ export async function getCurrentURL(): Promise<string> {
  *
  * The Page Editor only supports editing the top-level frame.
  */
-export const thisTab: Target = {
+export const thisTab = {
   // This code might end up (unused) in non-dev bundles, so use `?.` to avoid errors from undefined values
   tabId: globalThis.chrome?.devtools?.inspectedWindow?.tabId ?? 0,
   // The top-level frame
   frameId: 0,
-};
+} satisfies Target;
+
+export const allFramesInThisTab = {
+  tabId: thisTab.tabId,
+  frameId: "allFrames",
+} satisfies Target;
 
 export function getIdForElement(
   element: ModComponentBase | ModComponentFormState,
