@@ -50,7 +50,7 @@ let _availableVersion: string | null = null;
 async function isEndUserInstall(): Promise<boolean> {
   // Query existing app/CWS tabs: https://developer.chrome.com/docs/extensions/reference/api/tabs#method-query
   // `browser.tabs.query` supports https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns
-  const onboardingTabs = await browser.tabs.query({
+  const likelyOnboardingTabs = await browser.tabs.query({
     // Can't use SERVICE_URL directly because it contains a port number during development, resulting in an
     // invalid URL match pattern
     url: [
@@ -64,7 +64,7 @@ async function isEndUserInstall(): Promise<boolean> {
   });
 
   // The CWS install URL differs based on the extension listing slug. So instead, only match on the runtime id.
-  return onboardingTabs.some(
+  return likelyOnboardingTabs.some(
     (tab) =>
       tab.url.includes(DEFAULT_SERVICE_URL) ||
       tab.url.includes(browser.runtime.id),
