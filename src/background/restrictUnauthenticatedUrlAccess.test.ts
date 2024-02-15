@@ -54,12 +54,6 @@ const addListenerSpy = jest.spyOn(browser.tabs.onUpdated, "addListener");
 const removeListenerSpy = jest.spyOn(browser.tabs.onUpdated, "removeListener");
 const updateTabSpy = jest.spyOn(browser.tabs, "update");
 
-// `jest-webextension-mock` is missing mocks for onRemoved: https://github.com/clarkbw/jest-webextension-mock/pull/180
-(browser.tabs.onRemoved as any) = {
-  addListener: jest.fn(),
-  removeListener: jest.fn(),
-};
-
 describe("enforceAuthentication", () => {
   beforeEach(async () => {
     axiosMock
