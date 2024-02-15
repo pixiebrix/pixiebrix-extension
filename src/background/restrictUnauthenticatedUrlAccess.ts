@@ -119,12 +119,13 @@ async function openLatestRestrictedUrl(): Promise<void> {
 
   const appTabs = await browser.tabs.query({
     url: [`${new URL(DEFAULT_SERVICE_URL).href}/*`],
+    active: true,
   });
 
-  // Redirect the Admin Console tab to the restricted URL
+  // Redirect the active Admin Console tab to the restricted URL. That will be the tab that linked the extension
   // Open redirection is considered a vulnerability. However, this isn't a case of open redirection because:
   // 1) the user already accessed the URL, and 2) the restricted URL list is maintained by the team admin
-  const activeAppTab = appTabs.find((tab) => tab.active);
+  const activeAppTab = appTabs[0];
   if (activeAppTab) {
     await browser.tabs.update(activeAppTab.id, {
       url: redirectUrl,
@@ -169,7 +170,6 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
   addAuthListener(async (auth) => {
     if (auth) {
       // Be sure to remove the listener before accessing the URL again because the listener doesn't check isLinked
-      debugger;
       browser.tabs.onUpdated.removeListener(handleRestrictedTab);
       await openLatestRestrictedUrl();
     } else {
