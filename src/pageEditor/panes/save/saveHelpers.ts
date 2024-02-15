@@ -330,7 +330,7 @@ export function replaceModComponent(
   });
 }
 
-function selectExtensionPointConfig(
+export function selectModComponentDefinition(
   modComponent: ModComponentBase,
 ): ModComponentDefinition {
   const extensionPoint: ModComponentDefinition = {
@@ -433,15 +433,15 @@ export function buildNewMod({
     }
 
     const unsavedModComponents: ModComponentBase[] =
-      dirtyModComponentFormStates.map((modComponentFormStates) => {
+      dirtyModComponentFormStates.map((modComponentFormState) => {
         const { selectExtension, selectExtensionPointConfig } = ADAPTERS.get(
-          modComponentFormStates.type,
+          modComponentFormState.type,
         );
-        const unsavedModComponent = selectExtension(modComponentFormStates);
+        const unsavedModComponent = selectExtension(modComponentFormState);
 
         if (isInnerDefinitionRegistryId(unsavedModComponent.extensionPointId)) {
           const extensionPointConfig = selectExtensionPointConfig(
-            modComponentFormStates,
+            modComponentFormState,
           );
           unsavedModComponent.definitions = {
             [unsavedModComponent.extensionPointId]: {
@@ -554,7 +554,7 @@ function buildExtensionPoints(
     }
 
     // Construct the modComponent point config from the modComponent
-    const extensionPoint = selectExtensionPointConfig(modComponent);
+    const extensionPoint = selectModComponentDefinition(modComponent);
 
     // Add the extensionPoint, replacing the id with our updated
     // extensionPointId, if we've tracked a change in newExtensionPointId

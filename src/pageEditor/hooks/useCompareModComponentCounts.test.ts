@@ -15,11 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Bad
- * 3 clean 2 matching & 1 unmatching -- not 4 definition
- * */
-
 import { renderHook } from "@/pageEditor/testHelpers";
 import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";

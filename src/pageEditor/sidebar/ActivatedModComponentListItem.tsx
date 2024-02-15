@@ -20,7 +20,7 @@ import styles from "./Entry.module.scss";
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  extensionToFormState,
+  modComponentToFormState,
   selectType,
 } from "@/pageEditor/starterBricks/adapter";
 import { actions } from "@/pageEditor/slices/editorSlice";
@@ -84,7 +84,8 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           extensionId: modComponent.id,
         });
 
-        const modComponentFormState = await extensionToFormState(modComponent);
+        const modComponentFormState =
+          await modComponentToFormState(modComponent);
 
         // Initialize mod options schema if needed
         if (modComponent._recipe) {

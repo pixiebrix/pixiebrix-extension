@@ -16,54 +16,66 @@
  */
 
 import {
-  ModDefinition,
+  type ModDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
 import {
-  selectDeletedElements,
   selectDirty,
-  selectElements,
+  selectNotDeletedElements,
+  selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { isEqual } from "lodash";
+import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
+import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 function useEnsureModComponentStarterBricks(): (
   modDefinition: ModDefinition,
 ) => Promise<boolean> {
-  const modComponentFormStates = useSelector(selectElements);
-  const deletedModComponentsById = useSelector(selectDeletedElements);
+  const modComponentFormStates = useSelector(selectNotDeletedElements);
+  const activatedModComponents = useSelector(selectNotDeletedExtensions);
   const isDirtyByModComponentId = useSelector(selectDirty);
-  const activatedModComponents = useSelector(selectExtensions);
 
+  /**
+   * Checks the following invariants:
+   *  - For each clean mod component, every entry in definitions should exist
+   *    in the {modDefinition.definitions} object
+   *  - For each dirty mod component with @internal extensionPoint definition,
+   *    formState.extensionPoint.definition should exist in the
+   *    {modDefinition.definitions} object, but the key may be different,
+   *    e.g. "extensionPoint" vs. "extensionPoint3" in the modDefinition,
+   *    also need to run it through the adapter because of some cleanup logic
+   */
   return useCallback(
     async (modDefinition: UnsavedModDefinition) => {
       const modId = modDefinition.metadata.id;
-      const deletedModComponentFormStates =
-        // eslint-disable-next-line security/detect-object-injection -- RegistryId
-        deletedModComponentsById[modId] ?? [];
-      const deletedModComponentIds = new Set(
-        deletedModComponentFormStates.map(({ uuid }) => uuid),
-      );
-
-      const extensionPointIdsFromState: string[] = [];
+      const definitionsFromMod = Object.values(modDefinition.definitions);
 
       // TODO: Extract to selectors and test clean/dirty separation behavior
-      // And reuse the same selectors in useSaveMod
+      //        And reuse the same selectors in useSaveMod
+
       const dirtyModComponentFormStates = modComponentFormStates.filter(
         (modComponentFormState) =>
           modComponentFormState.recipe?.id === modId &&
-          isDirtyByModComponentId[modComponentFormState.uuid] &&
-          !deletedModComponentIds.has(modComponentFormState.uuid),
+          isDirtyByModComponentId[modComponentFormState.uuid],
       );
 
-      // Ensure each starter brick for dirty components is present in the mod definition extension points
       for (const formState of dirtyModComponentFormStates) {
-        extensionPointIdsFromState.push(formState.extensionPoint.metadata.id);
         if (
-          !modDefinition.extensionPoints.some(
-            (extensionPoint) =>
-              extensionPoint.id === formState.extensionPoint.metadata.id,
+          !isInnerDefinitionRegistryId(formState.extensionPoint.metadata.id)
+        ) {
+          continue;
+        }
+
+        const { selectExtensionPointConfig } = ADAPTERS.get(formState.type);
+        const definitionFromComponent = {
+          kind: "extensionPoint",
+          definition: selectExtensionPointConfig(formState).definition,
+        };
+        if (
+          !definitionsFromMod.some((definitionFromMod) =>
+            isEqual(definitionFromComponent, definitionFromMod),
           )
         ) {
           return false;
@@ -77,17 +89,16 @@ function useEnsureModComponentStarterBricks(): (
             !dirtyModComponentFormStates.some(
               (modComponentFormState) =>
                 modComponentFormState.uuid === modComponent.id,
-            ) &&
-            !deletedModComponentIds.has(modComponent.id),
+            ),
         );
 
-      // Ensure each starter brick for clean components is present in the mod definition extension points
-      for (const modComponent of cleanModComponentsExcludingDirtyFormStates) {
-        extensionPointIdsFromState.push(modComponent.extensionPointId);
+      for (const cleanModComponent of cleanModComponentsExcludingDirtyFormStates) {
         if (
-          !modDefinition.extensionPoints.some(
-            (extensionPoint) =>
-              extensionPoint.id === modComponent.extensionPointId,
+          Object.values(cleanModComponent.definitions).some(
+            (definitionFromComponent) =>
+              !definitionsFromMod.some((definitionFromMod) =>
+                isEqual(definitionFromComponent, definitionFromMod),
+              ),
           )
         ) {
           return false;
@@ -96,12 +107,7 @@ function useEnsureModComponentStarterBricks(): (
 
       return true;
     },
-    [
-      activatedModComponents,
-      deletedModComponentsById,
-      isDirtyByModComponentId,
-      modComponentFormStates,
-    ],
+    [activatedModComponents, isDirtyByModComponentId, modComponentFormStates],
   );
 }
 
