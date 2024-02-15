@@ -48,6 +48,8 @@ let _availableVersion: string | null = null;
  * authenticated so the extension can be linked.
  */
 async function isEndUserInstall(): Promise<boolean> {
+  // Query existing app/CWS tabs: https://developer.chrome.com/docs/extensions/reference/api/tabs#method-query
+  // `browser.tabs.query` supports https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns
   const onboardingTabs = await browser.tabs.query({
     // Can't use SERVICE_URL directly because it contains a port number during development, resulting in an
     // invalid URL match pattern
@@ -56,12 +58,17 @@ async function isEndUserInstall(): Promise<boolean> {
       new URL("setup", DEFAULT_SERVICE_URL).href,
       DEFAULT_SERVICE_URL,
       // Known CWS URLs: https://docs.pixiebrix.com/enterprise-it-setup/network-email-firewall-configuration
-      "https://chromewebstore.google.com/detail/pixiebrix/mpjjildhmpddojocokjkgmlkkkfjnepo",
-      "https://chrome.google.com/webstore/detail/pixiebrix-webapp-integrat/mpjjildhmpddojocokjkgmlkkkfjnepo",
+      "https://chromewebstore.google.com/*",
+      "https://chrome.google.com/webstore/*",
     ],
   });
 
-  return onboardingTabs.length > 0;
+  // The CWS install URL differs based on the extension listing slug. So instead, only match on the runtime id.
+  return onboardingTabs.some(
+    (tab) =>
+      tab.url.includes(DEFAULT_SERVICE_URL) ||
+      tab.url.includes(browser.runtime.id),
+  );
 }
 
 /**
