@@ -100,7 +100,7 @@ async function readPopulatedManagedStorage(): Promise<
 export async function watchStorageInitialization(): Promise<void> {
   const values = await readPopulatedManagedStorage();
 
-  if (values) {
+  if (values != null) {
     // Already initialized
     return;
   }
