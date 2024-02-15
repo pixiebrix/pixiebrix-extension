@@ -15,29 +15,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file A wrapper around the browser.storage.managed that tries to smooth over its initialization quirks and provide
+ * an interface for React's useExternalStore
+ */
+
 import { type ManagedStorageState } from "@/store/enterprise/managedStorageTypes";
 import { isEmpty, once } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import pMemoize, { pMemoizeClear } from "p-memoize";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
+import type { Nullishable } from "@/utils/nullishUtils";
 
-const MAX_MANAGED_STORAGE_WAIT_MILLIS = 2000;
+// 2024-02-15: bumped to 3.5s because 2s was too short: https://github.com/pixiebrix/pixiebrix-extension/issues/7618
+//   Privacy Badger uses 4.5s timeout, but thinks policy should generally be available within 2.5s
+const MAX_MANAGED_STORAGE_WAIT_MILLIS = 3500;
+
+/**
+ * Interval for checking managed storage initialization that takes longer than MAX_MANAGED_STORAGE_WAIT_MILLIS seconds.
+ */
+let initializationInterval: Nullishable<ReturnType<typeof setTimeout>>;
 
 /**
  * The managedStorageState, or undefined if it hasn't been initialized yet.
  */
-let managedStorageState: ManagedStorageState | undefined;
+let managedStorageSnapshot: Nullishable<ManagedStorageState>;
 
-// TODO: Use `SimpleEventTarget` instead
+type ChangeListener = (state: ManagedStorageState) => void;
+
+// TODO: Use `SimpleEventTarget` instead -- need to add functionality to clear all listeners for INTERNAL_reset
 // eslint-disable-next-line local-rules/persistBackgroundData -- Functions
-const listeners = new Set<(state: ManagedStorageState) => void>();
+const changeListeners = new Set<ChangeListener>();
 
-function notifyAll(managedStorageState: ManagedStorageState): void {
-  for (const listener of listeners) {
-    listener(managedStorageState);
+function notifyAllChangeListeners(
+  managedStorageState: ManagedStorageState,
+): void {
+  for (const listener of changeListeners) {
+    try {
+      listener(managedStorageState);
+    } catch {
+      // NOP - don't let a single listener error prevent others from being notified
+    }
   }
 }
 
+/**
+ * Read managed storage immediately, returns {} if managed storage is unavailable/uninitialized.
+ */
 async function readManagedStorageImmediately(): Promise<ManagedStorageState> {
   try {
     // Get all managed storage values
@@ -49,7 +73,44 @@ async function readManagedStorageImmediately(): Promise<ManagedStorageState> {
   }
 }
 
+/**
+ * Read managed storage immediately, returning undefined if not initialized or no policy is set.
+ * @see readManagedStorageImmediately
+ */
+async function readPopulatedManagedStorage(): Promise<
+  Nullishable<ManagedStorageState>
+> {
+  const values = await readManagedStorageImmediately();
+  if (typeof values === "object" && !isEmpty(values)) {
+    return values;
+  }
+}
+
+/**
+ * Watch for managed storage initialization that occurs after waitForInitialManagedStorage
+ *
+ * We can't use `browser.storage.onChanged` because it doesn't fire on initialization.
+ *
+ * @see waitForInitialManagedStorage
+ */
+function watchStorageInitialization(): void {
+  initializationInterval = setInterval(
+    async () => {
+      const values = await readPopulatedManagedStorage();
+      if (values != null) {
+        managedStorageSnapshot = values;
+        clearInterval(initializationInterval);
+        initializationInterval = undefined;
+        notifyAllChangeListeners(managedStorageSnapshot);
+      }
+    },
+    // Most likely there's no policy. So only check once every 2 seconds to not consume resources
+    2000,
+  );
+}
+
 // It's possible that managed storage is not available on the initial install event
+
 // Privacy Badger does a looping check for managed storage
 // - https://github.com/EFForg/privacybadger/blob/aeed0539603356a2825e7ce8472f6478abdc85fb/src/js/storage.js
 // - https://github.com/EFForg/privacybadger/issues/2770#issuecomment-853329201
@@ -57,47 +118,52 @@ async function readManagedStorageImmediately(): Promise<ManagedStorageState> {
 // uBlock (still) contains a workaround to automatically reload the extension on initial install
 // - https://github.com/gorhill/uBlock/commit/32bd47f05368557044dd3441dcaa414b7b009b39
 const waitForInitialManagedStorage = pMemoize(async () => {
-  managedStorageState = await pollUntilTruthy<ManagedStorageState | undefined>(
-    async () => {
-      const values = await readManagedStorageImmediately();
-      if (typeof values === "object" && !isEmpty(values)) {
-        return values;
-      }
-    },
+  // Returns undefined if the promise times out
+  managedStorageSnapshot = await pollUntilTruthy<ManagedStorageState>(
+    readPopulatedManagedStorage,
     {
       maxWaitMillis: MAX_MANAGED_STORAGE_WAIT_MILLIS,
     },
   );
 
-  if (managedStorageState) {
-    notifyAll(managedStorageState);
-
-    console.info("Read managed storage settings", {
-      managedStorageState,
-    });
-  } else {
-    console.info("No manual storage settings found", {
-      managedStorageState,
-    });
+  if (managedStorageSnapshot == null) {
+    // Watch for delayed initialization
+    watchStorageInitialization();
   }
 
-  return managedStorageState;
+  console.info("Found managed storage settings", {
+    managedStorageState: managedStorageSnapshot,
+  });
+
+  // After timeout, assume there's no policy set, so assign an empty value
+  managedStorageSnapshot ??= {};
+
+  notifyAllChangeListeners(managedStorageSnapshot);
+
+  return managedStorageSnapshot;
 });
 
 /**
- * Initialize the managed storage state and listen for changes. Safe to call multiple times.
+ * Initialize the managed storage state once and listen for changes. Safe to call multiple times.
  */
 export const initManagedStorage = once(() => {
   expectContext("extension");
 
   try {
     // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/onChanged
+    // `onChanged` is only called when the policy changes, not on initialization
     // `browser.storage.managed.onChanged` might also exist, but it's not available in testing
     // See: https://github.com/clarkbw/jest-webextension-mock/issues/170
     browser.storage.onChanged.addListener(async (changes, area) => {
       if (area === "managed") {
-        managedStorageState = await readManagedStorageImmediately();
-        notifyAll(managedStorageState);
+        // If browser.storage.onChanged fires, it means storage must already be initialized
+        if (initializationInterval) {
+          clearInterval(initializationInterval);
+          initializationInterval = undefined;
+        }
+
+        managedStorageSnapshot = await readManagedStorageImmediately();
+        notifyAllChangeListeners(managedStorageSnapshot);
       }
     });
   } catch (error) {
@@ -114,8 +180,7 @@ export const initManagedStorage = once(() => {
 /**
  * Read a single-value from enterprise managed storage.
  *
- * If managed storage has not been initialized yet, reads from the managed storage API. Waits up to
- * MAX_MANAGED_STORAGE_WAIT_MILLIS for the data to be available.
+ * If managed storage has not been initialized yet, waits up to MAX_MANAGED_STORAGE_WAIT_MILLIS for the data to be available.
  *
  * @param key the key to read.
  * @see MAX_MANAGED_STORAGE_WAIT_MILLIS
@@ -125,13 +190,14 @@ export async function readManagedStorageByKey<
 >(key: K): Promise<ManagedStorageState[K]> {
   expectContext("extension");
 
-  if (managedStorageState != null) {
+  if (managedStorageSnapshot != null) {
+    // Safe to read snapshot because snapshot is updated via change handler
     // eslint-disable-next-line security/detect-object-injection -- type-checked key
-    return managedStorageState[key];
+    return managedStorageSnapshot[key];
   }
 
   initManagedStorage();
-  const storage = (await waitForInitialManagedStorage()) ?? {};
+  const storage = await waitForInitialManagedStorage();
   // eslint-disable-next-line security/detect-object-injection -- type-checked key
   return storage[key];
 }
@@ -139,20 +205,20 @@ export async function readManagedStorageByKey<
 /**
  * Read a managed storage state from enterprise managed storage.
  *
- * If managed storage has not been initialized yet, reads from the managed storage API. Waits up to
- * MAX_MANAGED_STORAGE_WAIT_MILLIS for the data to be available.
+ * If managed storage has not been initialized yet, waits up to MAX_MANAGED_STORAGE_WAIT_MILLIS for the data to
+ * be available.
  *
  * @see MAX_MANAGED_STORAGE_WAIT_MILLIS
  */
 export async function readManagedStorage(): Promise<ManagedStorageState> {
   expectContext("extension");
 
-  if (managedStorageState != null) {
-    return managedStorageState;
+  if (managedStorageSnapshot != null) {
+    return managedStorageSnapshot;
   }
 
   initManagedStorage();
-  return (await waitForInitialManagedStorage()) ?? {};
+  return waitForInitialManagedStorage();
 }
 
 /**
@@ -160,15 +226,15 @@ export async function readManagedStorage(): Promise<ManagedStorageState> {
  * @see useManagedStorageState
  * @see readManagedStorage
  */
-export function getSnapshot(): ManagedStorageState | undefined {
+export function getSnapshot(): Nullishable<ManagedStorageState> {
   expectContext("extension");
 
-  return managedStorageState;
+  return managedStorageSnapshot;
 }
 
 /**
- * Subscribe to changes in the managed storage state. In practice, this should only fire once because managed
- * storage is not mutable.
+ * Subscribe to changes in the managed storage state.
+ *
  * @param callback to receive the updated state.
  * @see useManagedStorageState
  */
@@ -177,10 +243,10 @@ export function subscribe(
 ): () => void {
   expectContext("extension");
 
-  listeners.add(callback);
+  changeListeners.add(callback);
 
   return () => {
-    listeners.delete(callback);
+    changeListeners.delete(callback);
   };
 }
 
@@ -188,7 +254,9 @@ export function subscribe(
  * Helper method for resetting the module for testing.
  */
 export function INTERNAL_reset(): void {
-  managedStorageState = undefined;
-  listeners.clear();
+  managedStorageSnapshot = undefined;
+  changeListeners.clear();
+  clearInterval(initializationInterval);
+  initializationInterval = undefined;
   pMemoizeClear(waitForInitialManagedStorage);
 }
