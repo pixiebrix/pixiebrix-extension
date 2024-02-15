@@ -27,7 +27,6 @@ import type { Tabs } from "webextension-polyfill";
 import { forEachTab } from "@/utils/extensionUtils";
 import { getApiClient } from "@/services/apiClient";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
-import type { Nullishable } from "@/utils/nullishUtils";
 import { StorageItem } from "webext-storage";
 
 const authUrlPatternCache = new SessionValue<string[]>(
@@ -51,12 +50,8 @@ type RestrictedNavigationMetadata = {
 // becoming unlinked. But storing a single tab/URL is sufficient for the more common use case of a URL being restricted
 // in a fresh environment prior to the SSO login.
 // NOTE: can't use SessionValue because the extension reloads on extension linking
-const lastRestrictedNavigationStorage = new StorageItem(
-  "lastRestrictedNavigation",
-  {
-    defaultValue: null as Nullishable<RestrictedNavigationMetadata>,
-  },
-);
+const lastRestrictedNavigationStorage =
+  new StorageItem<RestrictedNavigationMetadata>("lastRestrictedNavigation");
 
 async function getAuthUrlPatterns(organizationId: UUID): Promise<string[]> {
   try {
