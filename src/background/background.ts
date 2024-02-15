@@ -48,6 +48,7 @@ import { initRuntimeLogging } from "@/development/runtimeLogging";
 import initWalkthroughModalTrigger from "@/background/walkthroughModalTrigger";
 import { initSidePanel } from "./sidePanel";
 import initRestrictUnauthenticatedUrlAccess from "@/background/restrictUnauthenticatedUrlAccess";
+import { initManagedStorage } from "@/store/enterprise/managedStorage";
 
 void initLocator();
 void initMessengerLogging();
@@ -64,6 +65,7 @@ initContextMenus();
 initContentScriptReadyListener();
 initBrowserCommands();
 initDeploymentUpdater();
+initManagedStorage();
 void activateBrowserActionIcon();
 initPartnerTheme();
 initStarterMods();

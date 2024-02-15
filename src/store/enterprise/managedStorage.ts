@@ -226,6 +226,14 @@ export async function readManagedStorage(): Promise<ManagedStorageState> {
 }
 
 /**
+ * Returns true if managed storage has been initialized.
+ * @see waitForInitialManagedStorage
+ */
+export function isInitialized(): boolean {
+  return managedStorageSnapshot != null;
+}
+
+/**
  * Get a _synchronous_ snapshot of the managed storage state.
  * @see useManagedStorageState
  * @see readManagedStorage

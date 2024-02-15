@@ -27,7 +27,10 @@ import { getExtensionToken, getUserData, isLinked } from "@/auth/token";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import { isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
-import { readManagedStorage } from "@/store/enterprise/managedStorage";
+import {
+  readManagedStorage,
+  isInitialized as isManagedStorageInitialized,
+} from "@/store/enterprise/managedStorage";
 import { Events } from "@/telemetry/events";
 
 import { DEFAULT_SERVICE_URL, UNINSTALL_URL } from "@/urlConstants";
@@ -222,7 +225,7 @@ export async function handleInstall({
     if (!(await isLinked())) {
       // If an end-user appears to be installing, jump to linking directly vs. waiting for readManagedStorage because
       // readManagedStorage will wait until a timeout for managed storage to be available.
-      if (await isEndUserInstall()) {
+      if (!isManagedStorageInitialized() && (await isEndUserInstall())) {
         await openInstallPage();
         return;
       }
