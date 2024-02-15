@@ -158,7 +158,7 @@ export async function openInstallPage() {
       active: true,
     });
   } else {
-    // Case 3: there's no Admin Console onboarding tab open
+    // Case 3: there's no Admin Console onboarding tab open.
     //
     // Open a new Admin Console tab which will automatically "links" the extension (by passing the native PixieBrix
     // token to the extension).
@@ -240,16 +240,21 @@ export async function handleInstall({
       }
 
       // Reminder: readManagedStorageByKey waits up to 4.5 seconds for managed storage to be available
-      const { ssoUrl, partnerId, controlRoomUrl, disableLoginTab } =
-        await readManagedStorage();
+      const {
+        ssoUrl,
+        partnerId,
+        controlRoomUrl,
+        disableLoginTab,
+        managedOrganizationId,
+      } = await readManagedStorage();
 
       if (disableLoginTab) {
         // IT manager has disabled the login tab
         return;
       }
 
-      if (ssoUrl) {
-        // Don't launch the SSO page automatically. The SSO flow will be launched by deploymentUpdater.ts:updateDeployments
+      if (ssoUrl || managedOrganizationId) {
+        // Don't launch the page automatically. The SSO flow will be launched by deploymentUpdater.ts:updateDeployments
         return;
       }
 
