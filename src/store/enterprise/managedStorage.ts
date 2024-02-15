@@ -27,9 +27,10 @@ import pMemoize, { pMemoizeClear } from "p-memoize";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
 import type { Nullishable } from "@/utils/nullishUtils";
 
-// 2024-02-15: bumped to 3.5s because 2s was too short: https://github.com/pixiebrix/pixiebrix-extension/issues/7618
-//   Privacy Badger uses 4.5s timeout, but thinks policy should generally be available within 2.5s
-const MAX_MANAGED_STORAGE_WAIT_MILLIS = 3500;
+// 2024-02-15: bumped to 4.5s because 2s was too short: https://github.com/pixiebrix/pixiebrix-extension/issues/7618
+//   Privacy Badger uses 4.5s timeout, but thinks policy should generally be available within 2.5s. In installer.ts,
+//   we check for app tabs to skip the linking wait if the user appears to be installing from the web store.
+const MAX_MANAGED_STORAGE_WAIT_MILLIS = 4500;
 
 /**
  * Interval for checking managed storage initialization that takes longer than MAX_MANAGED_STORAGE_WAIT_MILLIS seconds.
@@ -87,9 +88,12 @@ async function readPopulatedManagedStorage(): Promise<
 }
 
 /**
- * Watch for managed storage initialization that occurs after waitForInitialManagedStorage
+ * Watch for managed storage initialization that occurs after waitForInitialManagedStorage.
  *
  * We can't use `browser.storage.onChanged` because it doesn't fire on initialization.
+ *
+ * Required because other modules are using the values in managedStorageSnapshot vs. calling browser.storage.managed.get
+ * directly.
  *
  * @see waitForInitialManagedStorage
  */

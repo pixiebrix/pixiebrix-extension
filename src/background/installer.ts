@@ -41,6 +41,27 @@ import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 let _availableVersion: string | null = null;
 
 /**
+ * Returns true if this appears to be a Chrome Web Store install and/or the user has an app URL where they're
+ * authenticated so the extension can be linked.
+ */
+async function isEndUserInstall(): Promise<boolean> {
+  const onboardingTabs = await browser.tabs.query({
+    // Can't use SERVICE_URL directly because it contains a port number during development, resulting in an
+    // invalid URL match pattern
+    url: [
+      // App Setup / Authenticated URLs
+      new URL("setup", DEFAULT_SERVICE_URL).href,
+      DEFAULT_SERVICE_URL,
+      // Known CWS URLs: https://docs.pixiebrix.com/enterprise-it-setup/network-email-firewall-configuration
+      "https://chromewebstore.google.com/detail/pixiebrix/mpjjildhmpddojocokjkgmlkkkfjnepo",
+      "https://chrome.google.com/webstore/detail/pixiebrix-webapp-integrat/mpjjildhmpddojocokjkgmlkkkfjnepo",
+    ],
+  });
+
+  return onboardingTabs.length > 0;
+}
+
+/**
  * Install handler to complete authentication configuration for the extension.
  */
 export async function openInstallPage() {
@@ -199,8 +220,14 @@ export async function handleInstall({
     // XXX: under what conditions could onInstalled fire, but the extension is already linked? Is this the case during
     // development/loading an update of the extension from the file system?
     if (!(await isLinked())) {
-      // PERFORMANCE: readManagedStorageByKey waits up to 2 seconds for managed storage to be available. Shouldn't be
-      // notice-able for end-user relative to the extension download/install time
+      // If an end-user appears to be installing, jump to linking directly vs. waiting for readManagedStorage because
+      // readManagedStorage will wait until a timeout for managed storage to be available.
+      if (await isEndUserInstall()) {
+        await openInstallPage();
+        return;
+      }
+
+      // Reminder: readManagedStorageByKey waits up to 4.5 seconds for managed storage to be available
       const { ssoUrl, partnerId, controlRoomUrl, disableLoginTab } =
         await readManagedStorage();
 
