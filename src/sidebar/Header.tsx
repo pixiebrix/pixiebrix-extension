@@ -33,7 +33,7 @@ const Header: React.FunctionComponent = () => {
   const showCloseButton = !isMV3();
 
   return (
-    <div className="d-flex py-2 pl-2 pr-0 justify-content-between align-content-center">
+    <div className="d-flex py-2 pl-2 pr-0 align-items-center">
       {showCloseButton && (
         <Button
           className={cx(
@@ -52,14 +52,8 @@ const Header: React.FunctionComponent = () => {
         </Button>
       )}
       {showSidebarLogo && (
-        <div
-          className={cx({
-            // Flexbox centering works because there's a button to the left of the logo
-            "align-self-center": showCloseButton,
-            // Use mx-auto because the button is removed in MV3
-            "mx-auto": !showCloseButton,
-          })}
-        >
+        // `mx-auto` centers the logo
+        <div className="mx-auto">
           <img
             src={customSidebarLogo ?? logo.regular}
             alt={customSidebarLogo ? "Custom logo" : "PixieBrix logo"}
