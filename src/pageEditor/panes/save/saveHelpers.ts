@@ -330,7 +330,7 @@ export function replaceModComponent(
   });
 }
 
-export function selectModComponentDefinition(
+function selectModComponentDefinition(
   modComponent: ModComponentBase,
 ): ModComponentDefinition {
   const extensionPoint: ModComponentDefinition = {
