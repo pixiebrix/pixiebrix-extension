@@ -45,6 +45,7 @@ import { Events } from "@/telemetry/events";
 import type { EditablePackageMetadata } from "@/types/contract";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
+import useEnsureModComponentStarterBricks from "@/pageEditor/hooks/useEnsureModComponentStarterBricks";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -85,6 +86,7 @@ function useSaveMod(): ModSaver {
   const [isSaving, setIsSaving] = useState(false);
   const compareModComponentCountsToModDefinition =
     useCompareModComponentCounts();
+  const ensureModComponentStarterBricks = useEnsureModComponentStarterBricks();
 
   /**
    * Save a mod's components, options, and metadata
@@ -160,7 +162,12 @@ function useSaveMod(): ModSaver {
       dirtyModMetadata,
     });
 
-    if (!compareModComponentCountsToModDefinition(newMod)) {
+    const modComponentDefinitionCountsMatch =
+      compareModComponentCountsToModDefinition(newMod);
+    const modComponentStarterBricksMatch =
+      await ensureModComponentStarterBricks(newMod);
+
+    if (!modComponentDefinitionCountsMatch || !modComponentStarterBricksMatch) {
       // TODO: Add a modal here to tell the user about the error, with an option to download a "dump" of data, and
       //      contact PB support
       //        * Data is probably form state plus redux state, in a json file

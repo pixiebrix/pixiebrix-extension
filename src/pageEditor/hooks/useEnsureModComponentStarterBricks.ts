@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type ModDefinition,
-  type UnsavedModDefinition,
-} from "@/types/modDefinitionTypes";
+import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -31,7 +28,7 @@ import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 
 function useEnsureModComponentStarterBricks(): (
-  modDefinition: ModDefinition,
+  modDefinition: UnsavedModDefinition,
 ) => Promise<boolean> {
   const modComponentFormStates = useSelector(selectNotDeletedElements);
   const activatedModComponents = useSelector(selectNotDeletedExtensions);

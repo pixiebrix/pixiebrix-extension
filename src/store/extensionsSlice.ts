@@ -141,13 +141,14 @@ const extensionsSlice = createSlice({
           throw new Error("sharing is required");
         }
 
-        const activatedModComponent = getActivatedModComponentFromDefinition({
-          modComponentDefinition,
-          modDefinition,
-          deployment,
-          optionsArgs,
-          integrationDependencies: configuredDependencies ?? [],
-        });
+        const activatedModComponent: ActivatedModComponent =
+          getActivatedModComponentFromDefinition({
+            modComponentDefinition,
+            modDefinition,
+            deployment,
+            optionsArgs,
+            integrationDependencies: configuredDependencies ?? [],
+          });
 
         assertModComponentNotResolved(activatedModComponent);
 
