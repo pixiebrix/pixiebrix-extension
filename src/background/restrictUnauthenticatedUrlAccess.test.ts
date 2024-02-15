@@ -27,6 +27,7 @@ import {
   TEST_triggerListeners,
 } from "@/auth/token";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 jest.mock("@/auth/token", () => ({
   __esModule: true,
@@ -51,6 +52,8 @@ const expectedAuthUrlPatterns = [
 
 const addListenerSpy = jest.spyOn(browser.tabs.onUpdated, "addListener");
 const removeListenerSpy = jest.spyOn(browser.tabs.onUpdated, "removeListener");
+const createTabSpy = jest.spyOn(browser.tabs, "create");
+const updateTabSpy = jest.spyOn(browser.tabs, "update");
 
 describe("enforceAuthentication", () => {
   beforeEach(async () => {
@@ -65,6 +68,7 @@ describe("enforceAuthentication", () => {
     // eslint-disable-next-line new-cap -- used for testing
     INTERNAL_reset();
     await browser.storage.managed.clear();
+    await browser.storage.local.clear();
     axiosMock.reset();
     jest.clearAllMocks();
     // eslint-disable-next-line new-cap -- used for testing
@@ -130,5 +134,91 @@ describe("enforceAuthentication", () => {
     TEST_triggerListeners(undefined);
     await waitForEffect();
     expect(addListenerSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("open latest restricted URL on authentication in new tab", async () => {
+    await browser.storage.managed.set({
+      managedOrganizationId: expectedManageOrganizationId,
+      enforceAuthentication: true,
+    });
+
+    // Pretend there's not app tabs open, so create a new tab on authentication
+    jest.mocked(browser.tabs.query).mockResolvedValue([]);
+
+    isLinkedMock.mockResolvedValue(false);
+
+    await initRestrictUnauthenticatedUrlAccess();
+
+    // We're using a mock, not a fake which doesn't implement onUpdated events, so we can't use that to simulate
+    // the user visiting a page. Instead, just set the storage directly
+    await browser.storage.local.set({ lastRestrictedUrl: "https://foo.com" });
+
+    await expect(
+      browser.storage.local.get("lastRestrictedUrl"),
+    ).resolves.toEqual({
+      lastRestrictedUrl: "https://foo.com",
+    });
+
+    // eslint-disable-next-line new-cap -- used for testing
+    TEST_triggerListeners({ token: "foo" });
+
+    await waitForEffect();
+
+    expect(createTabSpy).toHaveBeenCalledExactlyOnceWith({
+      url: "https://foo.com",
+      active: true,
+    });
+
+    await expect(
+      browser.storage.local.get("lastRestrictedUrl"),
+    ).resolves.toEqual({});
+  });
+
+  it("redirect app tab on authentication", async () => {
+    await browser.storage.managed.set({
+      managedOrganizationId: expectedManageOrganizationId,
+      enforceAuthentication: true,
+    });
+
+    // Pretend there's not app tabs open, so create a new tab on authentication
+    jest.mocked(browser.tabs.query).mockResolvedValue([
+      {
+        url: DEFAULT_SERVICE_URL,
+        active: true,
+        index: 0,
+        highlighted: false,
+        pinned: false,
+        incognito: false,
+      },
+    ]);
+
+    isLinkedMock.mockResolvedValue(false);
+
+    await initRestrictUnauthenticatedUrlAccess();
+
+    // We're using a mock, not a fake which doesn't implement onUpdated events, so we can't use that to simulate
+    // the user visiting a page. Instead, just set the storage directly
+    await browser.storage.local.set({ lastRestrictedUrl: "https://foo.com" });
+
+    await expect(
+      browser.storage.local.get("lastRestrictedUrl"),
+    ).resolves.toEqual({
+      lastRestrictedUrl: "https://foo.com",
+    });
+
+    // eslint-disable-next-line new-cap -- used for testing
+    TEST_triggerListeners({ token: "foo" });
+
+    await waitForEffect();
+
+    expect(createTabSpy).not.toHaveBeenCalled();
+    expect(updateTabSpy).toHaveBeenCalledExactlyOnceWith(undefined, {
+      url: "https://foo.com",
+      active: true,
+    });
+
+    await expect(
+      browser.storage.local.get("lastRestrictedUrl"),
+    ).resolves.toEqual({});
   });
 });

@@ -168,6 +168,8 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
 
   addAuthListener(async (auth) => {
     if (auth) {
+      // Be sure to remove the listener before accessing the URL again because the listener doesn't check isLinked
+      debugger;
       browser.tabs.onUpdated.removeListener(handleRestrictedTab);
       await openLatestRestrictedUrl();
     } else {
