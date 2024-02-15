@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -45,6 +45,7 @@ import {
 import { closeWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
 import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughModal";
 import { registerMethods } from "webext-messenger";
+import { nonInteractivelyWriteToClipboard } from "@/utils/clipboardUtils";
 
 declare global {
   interface MessengerMethods {
@@ -73,6 +74,7 @@ declare global {
     PANEL_GET_DEFINITION: typeof getPanelDefinition;
     WALKTHROUGH_MODAL_CLOSE: typeof closeWalkthroughModal;
     WALKTHROUGH_MODAL_SHOW: typeof showWalkthroughModal;
+    WRITE_TO_CLIPBOARD: typeof nonInteractivelyWriteToClipboard;
   }
 }
 export default function registerMessenger(): void {
@@ -102,5 +104,6 @@ export default function registerMessenger(): void {
     PANEL_GET_DEFINITION: getPanelDefinition,
     WALKTHROUGH_MODAL_CLOSE: closeWalkthroughModal,
     WALKTHROUGH_MODAL_SHOW: showWalkthroughModal,
+    WRITE_TO_CLIPBOARD: nonInteractivelyWriteToClipboard,
   });
 }

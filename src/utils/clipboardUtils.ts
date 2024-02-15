@@ -19,8 +19,16 @@ import { BusinessError } from "@/errors/businessErrors";
 import legacyCopyText from "copy-text-to-clipboard";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
+import { isPromiseFulfilled } from "./promiseUtils";
+import { writeToClipboardInFocusedDocument } from "@/background/messenger/strict/api";
 
 export type ContentType = "infer" | "text" | "image";
+
+/** Serializable ClipboardItem-like object */
+export type ClipboardText = {
+  text: string;
+  html?: string;
+};
 
 export function detectContentType(content: unknown): "text" | "image" {
   if (typeof content === "string" && content.startsWith("data:image/")) {
@@ -41,6 +49,23 @@ function isDocumentFocusError(error: unknown): boolean {
 
 function isPermissionError(error: unknown): boolean {
   return getErrorMessage(error).toLowerCase().includes("has been blocked");
+}
+
+export async function nonInteractivelyWriteToClipboard({
+  text,
+  html,
+}: ClipboardText): Promise<boolean> {
+  const items: Record<string, Blob> = {
+    "text/plain": new Blob([text], { type: "text/plain" }),
+  };
+
+  if (html) {
+    items["text/html"] = new Blob([html], { type: "text/html" });
+  }
+
+  return isPromiseFulfilled(
+    navigator.clipboard.write([new ClipboardItem(items)]),
+  );
 }
 
 /**
@@ -76,10 +101,17 @@ async function interactiveWriteToClipboard(
 export async function writeTextToClipboard({
   text,
   html,
-}: {
-  text: string;
-  html?: string;
-}): Promise<void> {
+}: ClipboardText): Promise<boolean> {
+  // Attempt to write to the clipboard in the last focused document
+  if (
+    !document.hasFocus() &&
+    (await writeToClipboardInFocusedDocument({ text, html }))
+  ) {
+    return true;
+  }
+
+  // If the document is focused, or the last focused document is not available, continue here interactively
+
   try {
     // https://stackoverflow.com/a/74216984/402560
     const items: Record<string, Blob> = {
@@ -108,11 +140,13 @@ export async function writeTextToClipboard({
         });
       }
 
-      return;
+      return true;
     }
 
     throw error;
   }
+
+  return true;
 }
 
 /**

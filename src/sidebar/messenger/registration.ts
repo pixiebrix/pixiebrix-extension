@@ -31,6 +31,7 @@ import {
 } from "@/sidebar/protocol";
 import { expectContext } from "@/utils/expectContext";
 import { noop } from "lodash";
+import { writeTextToClipboard } from "@/utils/clipboardUtils";
 
 expectContext("sidebar");
 
@@ -48,6 +49,7 @@ declare global {
     SIDEBAR_HIDE_TEMPORARY_PANEL: typeof hideTemporaryPanel;
     SIDEBAR_SHOW_ACTIVATE_RECIPE: typeof showActivateMods;
     SIDEBAR_HIDE_ACTIVATE_RECIPE: typeof hideActivateMods;
+    WRITE_TO_CLIPBOARD: typeof writeTextToClipboard;
   }
 }
 
@@ -65,5 +67,8 @@ export default function registerMessenger(): void {
     SIDEBAR_HIDE_TEMPORARY_PANEL: hideTemporaryPanel,
     SIDEBAR_SHOW_ACTIVATE_RECIPE: showActivateMods,
     SIDEBAR_HIDE_ACTIVATE_RECIPE: hideActivateMods,
+
+    // Register it in the sidebar because it might be targeted by `writeToClipboardInFocusedContext`
+    WRITE_TO_CLIPBOARD: writeTextToClipboard,
   });
 }

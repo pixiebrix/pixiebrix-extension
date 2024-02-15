@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -42,3 +42,10 @@ export const captureTab = getMethod("CAPTURE_TAB", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 export const setToolbarBadge = getMethod("SET_TOOLBAR_BADGE", bg);
+export const documentReceivedFocus = getNotifier("DOCUMENT_RECEIVED_FOCUS", bg);
+
+// This method is registered in multiple contexts, they deal with according to their capabilities
+export const writeToClipboardInFocusedDocument = getMethod(
+  "WRITE_TO_CLIPBOARD",
+  bg,
+);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -47,6 +47,9 @@ export const resolveTemporaryPanel = getNotifier("TEMPORARY_PANEL_RESOLVE");
 
 export const getPageState = getMethod("GET_PAGE_STATE");
 export const setPageState = getMethod("SET_PAGE_STATE");
+
+// This method is registered in multiple contexts, they deal with according to their capabilities
+export const writeToClipboard = getMethod("WRITE_TO_CLIPBOARD");
 
 export const notify = {
   info: getNotifier("NOTIFY_INFO"),

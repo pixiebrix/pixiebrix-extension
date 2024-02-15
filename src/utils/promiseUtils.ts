@@ -239,3 +239,15 @@ export async function allSettled<T>(
 
   return { fulfilled, rejected };
 }
+
+/** Utility to await promises where you only care whether they throw or not */
+export async function isPromiseFulfilled(
+  promise: Promise<unknown>,
+): Promise<boolean> {
+  try {
+    await promise;
+    return true;
+  } catch {
+    return false;
+  }
+}

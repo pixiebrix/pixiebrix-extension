@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -35,6 +35,8 @@ import {
   getCachedAuthData,
 } from "@/background/auth/authStorage";
 import { setToolbarBadge } from "@/background/toolbarBadge";
+import { rememberFocus } from "@/utils/focusTracker";
+import writeToClipboard from "@/background/clipboard";
 
 expectContext("background");
 
@@ -53,6 +55,8 @@ declare global {
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
     GET_CACHED_AUTH: typeof getCachedAuthData;
     SET_TOOLBAR_BADGE: typeof setToolbarBadge;
+    DOCUMENT_RECEIVED_FOCUS: typeof rememberFocus;
+    WRITE_TO_CLIPBOARD: typeof writeToClipboard;
   }
 }
 
@@ -71,5 +75,7 @@ export default function registerMessenger(): void {
     DELETE_CACHED_AUTH: deleteCachedAuthData,
     GET_CACHED_AUTH: getCachedAuthData,
     SET_TOOLBAR_BADGE: setToolbarBadge,
+    DOCUMENT_RECEIVED_FOCUS: rememberFocus,
+    WRITE_TO_CLIPBOARD: writeToClipboard,
   });
 }

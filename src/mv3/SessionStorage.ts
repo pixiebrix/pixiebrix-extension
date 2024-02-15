@@ -23,7 +23,7 @@
  */
 
 import { expectContext } from "@/utils/expectContext";
-import { type JsonValue } from "type-fest";
+import { OmitIndexSignature, type JsonValue } from "type-fest";
 import { type ManualStorageKey } from "@/utils/storageUtils";
 
 // Just like chrome.storage.session, this must be "global"
@@ -86,7 +86,8 @@ export class SessionMap<Value extends JsonValue> {
  * MV3-compatible single-value storage.
  * This helps transition to chrome.storage.session and provide some type safety.
  */
-export class SessionValue<Value extends JsonValue> {
+// "OmitIndexSignature" is because of https://github.com/sindresorhus/type-fest/issues/815
+export class SessionValue<Value extends OmitIndexSignature<JsonValue>> {
   private readonly map: SessionMap<Value>;
 
   constructor(key: string, url: ImportMeta["url"]) {
