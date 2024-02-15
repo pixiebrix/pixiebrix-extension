@@ -26,9 +26,23 @@ import reportError from "@/telemetry/reportError";
 import type { Tabs } from "webextension-polyfill";
 import { forEachTab } from "@/utils/extensionUtils";
 import { getApiClient } from "@/services/apiClient";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import type { Nullishable } from "@/utils/nullishUtils";
 
-const sessionValue = new SessionValue<string[]>(
+const authUrlPatternCache = new SessionValue<string[]>(
   "authUrlPatterns",
+  import.meta.url,
+);
+
+/**
+ * Most recent restricted URL to allow redirecting to the same URL once authenticated.
+ * @since 1.8.9
+ */
+// Storing on a per-tab basis might be useful for cases where multiple tabs are redirected due to the extension
+// becoming unlinked. But storing a single URL is sufficient for the more common use case of a URL being restricted
+// in a fresh environment prior to the SSO login.
+const lastRestrictedUrl = new SessionValue<Nullishable<string>>(
+  "latestRestrictedUrl",
   import.meta.url,
 );
 
@@ -46,8 +60,8 @@ async function getAuthUrlPatterns(organizationId: UUID): Promise<string[]> {
   }
 }
 
-async function isRestrictedUrl(url: string) {
-  const cachedAuthUrlPatterns = await sessionValue.get();
+async function isRestrictedUrl(url: string): Promise<boolean> {
+  const cachedAuthUrlPatterns = await authUrlPatternCache.get();
   return testMatchPatterns(cachedAuthUrlPatterns, url);
 }
 
@@ -71,6 +85,8 @@ async function redirectRestrictedTab({
   url: string;
 }) {
   if (await isRestrictedUrl(url)) {
+    await lastRestrictedUrl.set(url);
+
     await browser.tabs.update(tabId, {
       url: await getRedirectUrl(url),
     });
@@ -86,6 +102,36 @@ async function handleRestrictedTab(
   }
 
   await redirectRestrictedTab({ tabId, url: changeInfo.url });
+}
+
+/**
+ * Open the restricted URL that was most recently accessed causing the user to be redirected to a login page, if any.
+ */
+async function openLatestRestrictedUrl(): Promise<void> {
+  const redirectUrl = await lastRestrictedUrl.get();
+
+  if (!redirectUrl) {
+    return;
+  }
+
+  await lastRestrictedUrl.set(null);
+
+  const appTabs = await browser.tabs.query({
+    url: [`${new URL(DEFAULT_SERVICE_URL).href}/*`],
+  });
+
+  // Redirect the Admin Console tab to the restricted URL
+  // Open redirection is considered a vulnerability. However, this isn't a case of open redirection because:
+  // 1) the user already accessed the URL, and 2) the restricted URL list is maintained by the team admin
+  const activeAppTab = appTabs.find((tab) => tab.active);
+  if (activeAppTab) {
+    await browser.tabs.update(activeAppTab.id, {
+      url: redirectUrl,
+      active: true,
+    });
+  } else {
+    await browser.tabs.create({ url: redirectUrl, active: true });
+  }
 }
 
 /**
@@ -110,7 +156,7 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
       return;
     }
 
-    await sessionValue.set(authUrlPatterns);
+    await authUrlPatternCache.set(authUrlPatterns);
   } catch (error) {
     reportError(error);
   }
@@ -122,6 +168,7 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
   addAuthListener(async (auth) => {
     if (auth) {
       browser.tabs.onUpdated.removeListener(handleRestrictedTab);
+      await openLatestRestrictedUrl();
     } else {
       await forEachTab(redirectRestrictedTab);
       browser.tabs.onUpdated.addListener(handleRestrictedTab);
