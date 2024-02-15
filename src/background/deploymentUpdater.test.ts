@@ -185,6 +185,24 @@ describe("updateDeployments", () => {
     });
   });
 
+  test("do not launch sso flow if disableLoginTab", async () => {
+    readAuthDataMock.mockResolvedValue({
+      organizationId: null,
+    });
+
+    browserManagedStorageMock.mockResolvedValue({
+      ssoUrl: "https://sso.example.com",
+      disableLoginTab: true,
+    });
+
+    isLinkedMock.mockResolvedValue(false);
+
+    await updateDeployments();
+
+    expect(openOptionsPageMock).not.toHaveBeenCalled();
+    expect(browser.tabs.create).not.toHaveBeenCalled();
+  });
+
   test("opens options page if enterprise customer becomes unlinked", async () => {
     // `readAuthDataMock` already has organizationId "00000000-00000000-00000000-00000000"
     isLinkedMock.mockResolvedValue(false);
