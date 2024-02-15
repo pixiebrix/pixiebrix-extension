@@ -68,7 +68,7 @@ async function isRestrictedUrl(url: string): Promise<boolean> {
 
 function getDefaultAuthUrl(restrictedUrl: string) {
   const errorMessage = `Access is restricted to '${restrictedUrl}'. Log in with PixieBrix to proceed`;
-  const defaultUrl = new URL("https://app.pixiebrix.com/login/");
+  const defaultUrl = new URL("login", DEFAULT_SERVICE_URL);
   defaultUrl.searchParams.set("error", errorMessage);
   return defaultUrl.href;
 }
