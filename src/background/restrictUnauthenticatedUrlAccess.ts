@@ -28,6 +28,7 @@ import { forEachTab } from "@/utils/extensionUtils";
 import { getApiClient } from "@/services/apiClient";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import type { Nullishable } from "@/utils/nullishUtils";
+import { StorageItem } from "webext-storage";
 
 const authUrlPatternCache = new SessionValue<string[]>(
   "authUrlPatterns",
@@ -41,10 +42,10 @@ const authUrlPatternCache = new SessionValue<string[]>(
 // Storing on a per-tab basis might be useful for cases where multiple tabs are redirected due to the extension
 // becoming unlinked. But storing a single URL is sufficient for the more common use case of a URL being restricted
 // in a fresh environment prior to the SSO login.
-const lastRestrictedUrl = new SessionValue<Nullishable<string>>(
-  "latestRestrictedUrl",
-  import.meta.url,
-);
+// NOTE: can't use SessionValue because the background worker reloads on extension linking
+const lastRestrictedUrlStorage = new StorageItem("lastRestrictedUrl", {
+  defaultValue: null as Nullishable<string>,
+});
 
 async function getAuthUrlPatterns(organizationId: UUID): Promise<string[]> {
   try {
@@ -85,7 +86,7 @@ async function redirectRestrictedTab({
   url: string;
 }) {
   if (await isRestrictedUrl(url)) {
-    await lastRestrictedUrl.set(url);
+    await lastRestrictedUrlStorage.set(url);
 
     await browser.tabs.update(tabId, {
       url: await getRedirectUrl(url),
@@ -108,13 +109,13 @@ async function handleRestrictedTab(
  * Open the restricted URL that was most recently accessed causing the user to be redirected to a login page, if any.
  */
 async function openLatestRestrictedUrl(): Promise<void> {
-  const redirectUrl = await lastRestrictedUrl.get();
+  const redirectUrl = await lastRestrictedUrlStorage.get();
 
   if (!redirectUrl) {
     return;
   }
 
-  await lastRestrictedUrl.set(null);
+  await lastRestrictedUrlStorage.remove();
 
   const appTabs = await browser.tabs.query({
     url: [`${new URL(DEFAULT_SERVICE_URL).href}/*`],
