@@ -42,7 +42,7 @@ export default function getModDefinitionIntegrationIds(
       }
 
       return isSchemaServicesFormat(services)
-        ? Object.entries(services.properties)
+        ? Object.entries(services.properties ?? {})
             .filter(
               ([key]) => !requiredOnly || services.required?.includes(key),
             )
