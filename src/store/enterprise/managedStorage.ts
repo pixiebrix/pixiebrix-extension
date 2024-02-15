@@ -27,7 +27,7 @@ import pMemoize, { pMemoizeClear } from "p-memoize";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
 import type { Nullishable } from "@/utils/nullishUtils";
 
-// 2024-02-15: bumped to 4.5s because 2s was too short: https://github.com/pixiebrix/pixiebrix-extension/issues/7618
+// 1.8.9: bumped to 4.5s because 2s was too short: https://github.com/pixiebrix/pixiebrix-extension/issues/7618
 //   Privacy Badger uses 4.5s timeout, but thinks policy should generally be available within 2.5s. In installer.ts,
 //   skip waiting for managed storage before linking the Extension if the user appears to be installing from the CWS.
 const MAX_MANAGED_STORAGE_WAIT_MILLIS = 4500;
