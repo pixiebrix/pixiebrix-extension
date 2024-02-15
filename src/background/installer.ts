@@ -181,10 +181,11 @@ export async function requirePartnerAuth(): Promise<void> {
   }
 }
 
-async function install({
+// Exported for testing
+export async function handleInstall({
   reason,
   previousVersion,
-}: Runtime.OnInstalledDetailsType) {
+}: Runtime.OnInstalledDetailsType): Promise<void> {
   // https://developer.chrome.com/docs/extensions/reference/runtime/#event-onInstalled
   // https://developer.chrome.com/docs/extensions/reference/runtime/#type-OnInstalledReason
   console.debug("onInstalled", { reason, previousVersion });
@@ -200,18 +201,25 @@ async function install({
     if (!(await isLinked())) {
       // PERFORMANCE: readManagedStorageByKey waits up to 2 seconds for managed storage to be available. Shouldn't be
       // notice-able for end-user relative to the extension download/install time
-      const { ssoUrl, partnerId, controlRoomUrl } = await readManagedStorage();
+      const { ssoUrl, partnerId, controlRoomUrl, disableLoginTab } =
+        await readManagedStorage();
+
+      if (disableLoginTab) {
+        // IT manager has disabled the login tab
+        return;
+      }
+
       if (ssoUrl) {
         // Don't launch the SSO page automatically. The SSO flow will be launched by deploymentUpdater.ts:updateDeployments
         return;
       }
 
       if (partnerId === "automation-anywhere" && isEmpty(controlRoomUrl)) {
-        // Don't launch the install page automatically if only the partner id is specified
+        // Don't launch the installation page automatically if only the partner id is specified
         return;
       }
 
-      void openInstallPage();
+      await openInstallPage();
     }
   } else if (reason === "update") {
     // `update` is also triggered on browser.runtime.reload() and manually reloading from the extensions page
@@ -261,7 +269,7 @@ async function setUninstallURL(): Promise<void> {
 
 function initInstaller() {
   browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
-  browser.runtime.onInstalled.addListener(install);
+  browser.runtime.onInstalled.addListener(handleInstall);
   browser.runtime.onStartup.addListener(initTelemetry);
   dntConfig.onChanged(() => {
     void setUninstallURL();
