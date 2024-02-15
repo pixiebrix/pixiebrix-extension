@@ -54,9 +54,10 @@ async function isEndUserInstall(): Promise<boolean> {
     // Can't use SERVICE_URL directly because it contains a port number during development, resulting in an
     // invalid URL match pattern
     url: [
-      // App Setup / Authenticated URLs
+      // Setup page is page before sending user to the CWS
       new URL("setup", DEFAULT_SERVICE_URL).href,
-      DEFAULT_SERVICE_URL,
+      // Base page is extension linking page. Needs path to be a valid URL match pattern
+      new URL("", DEFAULT_SERVICE_URL).href,
       // Known CWS URLs: https://docs.pixiebrix.com/enterprise-it-setup/network-email-firewall-configuration
       "https://chromewebstore.google.com/*",
       "https://chrome.google.com/webstore/*",
