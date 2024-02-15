@@ -177,9 +177,6 @@ function useSaveMod(): ModSaver {
       return false;
     }
 
-    // TODO: Add a check in buildNewMod to prevent modComponents from being
-    //  included that lack both an inner definition and a registry id for their starter brick
-
     const packageId = editablePackages.find(
       // Bricks endpoint uses "name" instead of id
       (x) => x.name === newMod.metadata.id,
