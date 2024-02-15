@@ -185,7 +185,7 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
   }
 
   // Clean up the lastRestrictedNavigationStorage when its tab is closed.
-  // Could just rely on tab existing in openLatestRestrictedUrl, but this is more robust to tab id reuse.
+  // Could just rely on tab existing in openLatestRestrictedUrl, but explicitly clearing is more robust to tab id reuse.
   browser.tabs.onRemoved.addListener(async (tabId) => {
     const lastRestrictedNavigation =
       await lastRestrictedNavigationStorage.get();
