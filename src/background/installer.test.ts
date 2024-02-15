@@ -15,10 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { requirePartnerAuth, openInstallPage } from "@/background/installer";
+import {
+  requirePartnerAuth,
+  openInstallPage,
+  handleInstall,
+} from "@/background/installer";
 import * as auth from "@/auth/token";
 import { locator } from "@/background/locator";
 import { uuidv4 } from "@/types/helpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
+import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
 
 const APP_BASE_URL = "https://app.pixiebrix.com";
 
@@ -50,9 +56,11 @@ const isLinkedMock = jest.mocked(auth.isLinked);
 const getExtensionTokenMock = jest.mocked(auth.getExtensionToken);
 const getUserData = jest.mocked(auth.getUserData);
 const locateAllForServiceMock = jest.mocked(locator.locateAllForService);
+const browserManagedStorageMock = jest.mocked(browser.storage.managed.get);
 
-beforeEach(() => {
+afterEach(() => {
   jest.clearAllMocks();
+  resetManagedStorage();
 });
 
 describe("openInstallPage", () => {
@@ -216,5 +224,45 @@ describe("checkPartnerAuth", () => {
 
     expect(createTabMock.mock.calls).toHaveLength(0);
     expect(updateTabMock.mock.calls).toHaveLength(0);
+  });
+});
+
+describe("handleInstall", () => {
+  test("it opens extension console if not linked on CWS install", async () => {
+    // App setup tab isn't open
+    queryTabsMock.mockResolvedValue([]);
+    isLinkedMock.mockResolvedValue(false);
+    await handleInstall({
+      reason: "install",
+      previousVersion: undefined,
+      temporary: false,
+    });
+    await waitForEffect();
+    expect(createTabMock).toHaveBeenCalledWith({ url: APP_BASE_URL });
+  });
+
+  test("don't open tab on install if linked", async () => {
+    // App setup tab isn't open
+    queryTabsMock.mockResolvedValue([]);
+    isLinkedMock.mockResolvedValue(true);
+    await handleInstall({
+      reason: "install",
+      previousVersion: undefined,
+      temporary: false,
+    });
+    expect(createTabMock).not.toHaveBeenCalled();
+  });
+
+  test("don't open tab on install if disableLoginTab is set", async () => {
+    // App setup tab isn't open
+    browserManagedStorageMock.mockResolvedValue({ disableLoginTab: true });
+    queryTabsMock.mockResolvedValue([]);
+    isLinkedMock.mockResolvedValue(false);
+    await handleInstall({
+      reason: "install",
+      previousVersion: undefined,
+      temporary: false,
+    });
+    expect(createTabMock).not.toHaveBeenCalled();
   });
 });

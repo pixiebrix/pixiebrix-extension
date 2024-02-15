@@ -181,10 +181,11 @@ export async function requirePartnerAuth(): Promise<void> {
   }
 }
 
-async function install({
+// Exported for testing
+export async function handleInstall({
   reason,
   previousVersion,
-}: Runtime.OnInstalledDetailsType) {
+}: Runtime.OnInstalledDetailsType): Promise<void> {
   // https://developer.chrome.com/docs/extensions/reference/runtime/#event-onInstalled
   // https://developer.chrome.com/docs/extensions/reference/runtime/#type-OnInstalledReason
   console.debug("onInstalled", { reason, previousVersion });
@@ -218,7 +219,7 @@ async function install({
         return;
       }
 
-      void openInstallPage();
+      await openInstallPage();
     }
   } else if (reason === "update") {
     // `update` is also triggered on browser.runtime.reload() and manually reloading from the extensions page
@@ -268,7 +269,7 @@ async function setUninstallURL(): Promise<void> {
 
 function initInstaller() {
   browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
-  browser.runtime.onInstalled.addListener(install);
+  browser.runtime.onInstalled.addListener(handleInstall);
   browser.runtime.onStartup.addListener(initTelemetry);
   dntConfig.onChanged(() => {
     void setUninstallURL();
