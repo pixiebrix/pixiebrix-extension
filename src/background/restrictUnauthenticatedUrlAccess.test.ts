@@ -151,10 +151,12 @@ describe("enforceAuthentication", () => {
 
     // We're using a mock, not a fake which doesn't implement onUpdated events, so we can't use that to simulate
     // the user visiting a page. Instead, just set the storage directly
-    await browser.storage.local.set({ lastRestrictedUrl: "https://foo.com" });
+    await browser.storage.local.set({
+      lastRestrictedNavigation: "https://foo.com",
+    });
 
     await expect(
-      browser.storage.local.get("lastRestrictedUrl"),
+      browser.storage.local.get("lastRestrictedNavigation"),
     ).resolves.toEqual({
       lastRestrictedUrl: "https://foo.com",
     });
@@ -170,7 +172,7 @@ describe("enforceAuthentication", () => {
     });
 
     await expect(
-      browser.storage.local.get("lastRestrictedUrl"),
+      browser.storage.local.get("lastRestrictedNavigation"),
     ).resolves.toEqual({});
   });
 
@@ -198,10 +200,12 @@ describe("enforceAuthentication", () => {
 
     // We're using a mock, not a fake which doesn't implement onUpdated events, so we can't use that to simulate
     // the user visiting a page. Instead, just set the storage directly
-    await browser.storage.local.set({ lastRestrictedUrl: "https://foo.com" });
+    await browser.storage.local.set({
+      lastRestrictedNavigation: "https://foo.com",
+    });
 
     await expect(
-      browser.storage.local.get("lastRestrictedUrl"),
+      browser.storage.local.get("lastRestrictedNavigation"),
     ).resolves.toEqual({
       lastRestrictedUrl: "https://foo.com",
     });
@@ -218,7 +222,7 @@ describe("enforceAuthentication", () => {
     });
 
     await expect(
-      browser.storage.local.get("lastRestrictedUrl"),
+      browser.storage.local.get("lastRestrictedNavigation"),
     ).resolves.toEqual({});
   });
 });

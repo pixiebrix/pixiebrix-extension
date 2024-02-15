@@ -36,16 +36,27 @@ const authUrlPatternCache = new SessionValue<string[]>(
 );
 
 /**
+ * A tab that had its navigation restricted.
+ */
+type RestrictedNavigationMetadata = {
+  tabId: number;
+  url: string;
+};
+
+/**
  * Most recent restricted URL to allow redirecting to the same URL once authenticated.
  * @since 1.8.9
  */
 // Storing on a per-tab basis might be useful for cases where multiple tabs are redirected due to the extension
-// becoming unlinked. But storing a single URL is sufficient for the more common use case of a URL being restricted
+// becoming unlinked. But storing a single tab/URL is sufficient for the more common use case of a URL being restricted
 // in a fresh environment prior to the SSO login.
 // NOTE: can't use SessionValue because the background worker reloads on extension linking
-const lastRestrictedUrlStorage = new StorageItem("lastRestrictedUrl", {
-  defaultValue: null as Nullishable<string>,
-});
+const lastRestrictedNavigationStorage = new StorageItem(
+  "lastRestrictedNavigation",
+  {
+    defaultValue: null as Nullishable<RestrictedNavigationMetadata>,
+  },
+);
 
 async function getAuthUrlPatterns(organizationId: UUID): Promise<string[]> {
   try {
@@ -78,7 +89,7 @@ async function getRedirectUrl(restrictedUrl: string) {
   return ssoUrl ?? getDefaultAuthUrl(restrictedUrl);
 }
 
-async function redirectRestrictedTab({
+async function redirectTabIfRestrictedUrl({
   tabId,
   url,
 }: {
@@ -86,12 +97,25 @@ async function redirectRestrictedTab({
   url: string;
 }) {
   if (await isRestrictedUrl(url)) {
-    await lastRestrictedUrlStorage.set(url);
+    await lastRestrictedNavigationStorage.set({
+      tabId,
+      url,
+    });
 
     await browser.tabs.update(tabId, {
       url: await getRedirectUrl(url),
     });
   }
+
+  // There's post-login redirection corner case for lastRestrictedNavigationStorage in the following unusual sequence:
+  // 1. User visits restricted URL
+  // 2. They're redirected to the app login page
+  // 3. User manually changes URL to visit an unrestricted URL
+  // 4. User manually visits app login page manually and logs in
+  // 5. User will be automatically redirected to original restricted URL
+
+  // You could consider resetting lastRestrictedNavigationStorage on step 3. However, the problem though is that for
+  // SSO flows, the user will necessarily be redirected to an unrestricted URL.
 }
 
 async function handleRestrictedTab(
@@ -102,37 +126,30 @@ async function handleRestrictedTab(
     return;
   }
 
-  await redirectRestrictedTab({ tabId, url: changeInfo.url });
+  await redirectTabIfRestrictedUrl({ tabId, url: changeInfo.url });
 }
 
 /**
  * Open the restricted URL that was most recently accessed causing the user to be redirected to a login page, if any.
  */
 async function openLatestRestrictedUrl(): Promise<void> {
-  const redirectUrl = await lastRestrictedUrlStorage.get();
+  const restrictedNavigation = await lastRestrictedNavigationStorage.get();
 
-  if (!redirectUrl) {
+  if (!restrictedNavigation) {
     return;
   }
 
-  await lastRestrictedUrlStorage.remove();
+  await lastRestrictedNavigationStorage.remove();
 
-  const appTabs = await browser.tabs.query({
-    url: [`${new URL(DEFAULT_SERVICE_URL).href}/*`],
-    active: true,
-  });
+  const { tabId, url } = restrictedNavigation;
 
-  // Redirect the active Admin Console tab to the restricted URL. That will be the tab that linked the extension
-  // Open redirection is considered a vulnerability. However, this isn't a case of open redirection because:
-  // 1) the user already accessed the URL, and 2) the restricted URL list is maintained by the team admin
-  const activeAppTab = appTabs[0];
-  if (activeAppTab) {
-    await browser.tabs.update(activeAppTab.id, {
-      url: redirectUrl,
+  // Double-check the tab still exists
+  const tab = await browser.tabs.get(tabId);
+  if (tab) {
+    await browser.tabs.update(tabId, {
+      url,
       active: true,
     });
-  } else {
-    await browser.tabs.create({ url: redirectUrl, active: true });
   }
 }
 
@@ -167,13 +184,23 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
     browser.tabs.onUpdated.addListener(handleRestrictedTab);
   }
 
+  // Clean up the lastRestrictedNavigationStorage when its tab is closed.
+  // Could just rely on tab existing in openLatestRestrictedUrl, but this is more robust to tab id reuse.
+  browser.tabs.onRemoved.addListener(async (tabId) => {
+    const lastRestrictedNavigation =
+      await lastRestrictedNavigationStorage.get();
+    if (lastRestrictedNavigation?.tabId === tabId) {
+      await lastRestrictedNavigationStorage.remove();
+    }
+  });
+
   addAuthListener(async (auth) => {
     if (auth) {
       // Be sure to remove the listener before accessing the URL again because the listener doesn't check isLinked
       browser.tabs.onUpdated.removeListener(handleRestrictedTab);
       await openLatestRestrictedUrl();
     } else {
-      await forEachTab(redirectRestrictedTab);
+      await forEachTab(redirectTabIfRestrictedUrl);
       browser.tabs.onUpdated.addListener(handleRestrictedTab);
     }
   });
