@@ -50,7 +50,7 @@ type RestrictedNavigationMetadata = {
 // Storing on a per-tab basis might be useful for cases where multiple tabs are redirected due to the extension
 // becoming unlinked. But storing a single tab/URL is sufficient for the more common use case of a URL being restricted
 // in a fresh environment prior to the SSO login.
-// NOTE: can't use SessionValue because the background worker reloads on extension linking
+// NOTE: can't use SessionValue because the extension reloads on extension linking
 const lastRestrictedNavigationStorage = new StorageItem(
   "lastRestrictedNavigation",
   {
