@@ -464,6 +464,7 @@
     "./telemetry/traceHelpers.ts",
     "./testUtils/appApiMock.ts",
     "./testUtils/detectPageMock.ts",
+    "./testUtils/factories/browserFactories.ts",
     "./testUtils/factories/databaseFactories.ts",
     "./testUtils/factories/messengerFactories.ts",
     "./testUtils/factories/metadataFactory.ts",
