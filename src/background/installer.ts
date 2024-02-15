@@ -233,6 +233,8 @@ export async function handleInstall({
       // If an end-user appears to be installing, jump to linking directly vs. waiting for readManagedStorage because
       // readManagedStorage will wait until a timeout for managed storage to be available.
       if (!isManagedStorageInitialized() && (await isEndUserInstall())) {
+        console.debug("Skipping readManagedStorage for end-user install");
+
         await openInstallPage();
         return;
       }

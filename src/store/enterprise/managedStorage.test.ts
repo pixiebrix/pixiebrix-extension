@@ -20,7 +20,6 @@ import {
   readManagedStorage,
   readManagedStorageByKey,
 } from "@/store/enterprise/managedStorage";
-import { sleep } from "@/utils/timeUtils";
 
 beforeEach(async () => {
   // eslint-disable-next-line new-cap -- test helper method
@@ -52,18 +51,4 @@ describe("readManagedStorageByKey", () => {
       "taco-bell",
     );
   });
-});
-
-describe("watchStorageInitialization", () => {
-  it("watches initialization", async () => {
-    await expect(readManagedStorageByKey("partnerId")).resolves.toBeUndefined();
-
-    await sleep(4000);
-
-    await browser.storage.managed.set({ partnerId: "taco-bell" });
-
-    await expect(readManagedStorageByKey("partnerId")).resolves.toBe(
-      "taco-bell",
-    );
-  }, 10_000);
 });

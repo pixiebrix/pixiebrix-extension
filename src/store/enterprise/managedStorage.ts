@@ -103,8 +103,12 @@ function watchStorageInitialization(): void {
       const values = await readPopulatedManagedStorage();
       if (values != null) {
         managedStorageSnapshot = values;
-        clearInterval(initializationInterval);
-        initializationInterval = undefined;
+
+        if (initializationInterval) {
+          clearInterval(initializationInterval);
+          initializationInterval = undefined;
+        }
+
         notifyAllChangeListeners(managedStorageSnapshot);
       }
     },
@@ -123,12 +127,11 @@ function watchStorageInitialization(): void {
 // - https://github.com/gorhill/uBlock/commit/32bd47f05368557044dd3441dcaa414b7b009b39
 const waitForInitialManagedStorage = pMemoize(async () => {
   // Returns undefined if the promise times out
-  managedStorageSnapshot = await pollUntilTruthy<ManagedStorageState>(
-    readPopulatedManagedStorage,
-    {
-      maxWaitMillis: MAX_MANAGED_STORAGE_WAIT_MILLIS,
-    },
-  );
+  managedStorageSnapshot = await pollUntilTruthy<
+    Nullishable<ManagedStorageState>
+  >(readPopulatedManagedStorage, {
+    maxWaitMillis: MAX_MANAGED_STORAGE_WAIT_MILLIS,
+  });
 
   if (managedStorageSnapshot == null) {
     // Watch for delayed initialization
@@ -268,7 +271,11 @@ export function subscribe(
 export function INTERNAL_reset(): void {
   managedStorageSnapshot = undefined;
   changeListeners.clear();
-  clearInterval(initializationInterval);
-  initializationInterval = undefined;
+
+  if (initializationInterval != null) {
+    clearInterval(initializationInterval);
+    initializationInterval = undefined;
+  }
+
   pMemoizeClear(waitForInitialManagedStorage);
 }
