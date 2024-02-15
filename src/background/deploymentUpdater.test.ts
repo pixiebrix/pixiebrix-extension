@@ -186,23 +186,25 @@ describe("updateDeployments", () => {
     });
   });
 
-  test("do not launch sso flow if disableLoginTab", async () => {
-    readAuthDataMock.mockResolvedValue({
-      organizationId: null,
-    });
+  test.each([null, uuidv4()])(
+    "do not launch sso flow if disableLoginTab, with cached organization id: %s",
+    async (organizationId) => {
+      isLinkedMock.mockResolvedValue(false);
+      // The organizationId doesn't currently impact the logic. Vary it to catch regressions
+      readAuthDataMock.mockResolvedValue({
+        organizationId,
+      });
+      browserManagedStorageMock.mockResolvedValue({
+        ssoUrl: "https://sso.example.com",
+        disableLoginTab: true,
+      });
 
-    browserManagedStorageMock.mockResolvedValue({
-      ssoUrl: "https://sso.example.com",
-      disableLoginTab: true,
-    });
+      await updateDeployments();
 
-    isLinkedMock.mockResolvedValue(false);
-
-    await updateDeployments();
-
-    expect(openOptionsPageMock).not.toHaveBeenCalled();
-    expect(browser.tabs.create).not.toHaveBeenCalled();
-  });
+      expect(openOptionsPageMock).not.toHaveBeenCalled();
+      expect(browser.tabs.create).not.toHaveBeenCalled();
+    },
+  );
 
   test("opens options page if enterprise customer becomes unlinked", async () => {
     // `readAuthDataMock` already has organizationId "00000000-00000000-00000000-00000000"
