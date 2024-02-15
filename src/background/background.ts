@@ -50,6 +50,9 @@ import { initSidePanel } from "./sidePanel";
 import initRestrictUnauthenticatedUrlAccess from "@/background/restrictUnauthenticatedUrlAccess";
 import { initManagedStorage } from "@/store/enterprise/managedStorage";
 
+// Try to initialize managed storage as early as possible because it impacts background behavior
+initManagedStorage();
+
 void initLocator();
 void initMessengerLogging();
 void initRuntimeLogging();
@@ -65,7 +68,6 @@ initContextMenus();
 initContentScriptReadyListener();
 initBrowserCommands();
 initDeploymentUpdater();
-initManagedStorage();
 void activateBrowserActionIcon();
 initPartnerTheme();
 initStarterMods();
