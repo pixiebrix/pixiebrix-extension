@@ -16,9 +16,64 @@
  */
 
 import { browserAction } from "@/mv3/api";
+import axios from "axios";
 
-export default function activateBrowserActionIcon() {
-  // This re-sets the colored manifest icons
-  const { icons: path } = browser.runtime.getManifest();
-  browserAction.setIcon({ path });
+export default async function activateBrowserActionIcon(url?: string) {
+  const imageData = await getImageData(url);
+
+  if (imageData) {
+    browserAction.setIcon({ imageData });
+  } else {
+    // This re-sets the colored manifest icons
+    const { icons: path } = browser.runtime.getManifest();
+    browserAction.setIcon({ path });
+  }
+}
+
+/**
+ * Converts a Blob object into ImageData.
+ *
+ * This function creates an Image object from a Blob, decodes the image,
+ * draws it on an offscreen canvas, and then returns the image data from the canvas.
+ *
+ * @param {Blob} blob - The Blob object to convert into ImageData.
+ * @returns {Promise<ImageData>} A promise that resolves to the ImageData of the Blob.
+ * @throws {Error} Throws an error if it fails to get the 2D context for the canvas.
+ *
+ * @todo Add MV3 support: https://github.com/pixiebrix/pixiebrix-extension/issues/7622
+ */
+export async function blobToImageData(blob: Blob): Promise<ImageData> {
+  // TODO: Add MV3 support: https://github.com/pixiebrix/pixiebrix-extension/issues/7622
+
+  const img = new Image();
+  img.src = URL.createObjectURL(blob);
+  await img.decode();
+
+  // Paint on canvas and return
+  const canvas = new OffscreenCanvas(16, 16);
+  const context = canvas.getContext("2d");
+
+  if (!context) {
+    throw new Error("Failed to get 2d context for canvas");
+  }
+
+  context.drawImage(img, 0, 0);
+  return context.getImageData(0, 0, 16, 16);
+}
+
+export async function getImageData(url?: string): Promise<ImageData | null> {
+  if (!url) {
+    return null;
+  }
+
+  try {
+    const { data } = await axios.get<Blob>(url, { responseType: "blob" });
+    return await blobToImageData(data);
+  } catch (error) {
+    console.warn("Failed to load image data for browser action icon.", {
+      url,
+      error,
+    });
+    return null;
+  }
 }
