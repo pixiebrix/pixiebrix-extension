@@ -253,16 +253,21 @@ describe("handleInstall", () => {
     expect(createTabMock).not.toHaveBeenCalled();
   });
 
-  test("don't open tab on install if disableLoginTab is set", async () => {
-    // App setup tab isn't open
-    browserManagedStorageMock.mockResolvedValue({ disableLoginTab: true });
-    queryTabsMock.mockResolvedValue([]);
-    isLinkedMock.mockResolvedValue(false);
-    await handleInstall({
-      reason: "install",
-      previousVersion: undefined,
-      temporary: false,
-    });
-    expect(createTabMock).not.toHaveBeenCalled();
-  });
+  test.each([undefined, "https://sso.com"])(
+    "don't open tab on install if disableLoginTab is set: %s",
+    async (ssoUrl) => {
+      browserManagedStorageMock.mockResolvedValue({
+        disableLoginTab: true,
+        ssoUrl,
+      });
+      queryTabsMock.mockResolvedValue([]);
+      isLinkedMock.mockResolvedValue(false);
+      await handleInstall({
+        reason: "install",
+        previousVersion: undefined,
+        temporary: false,
+      });
+      expect(createTabMock).not.toHaveBeenCalled();
+    },
+  );
 });
