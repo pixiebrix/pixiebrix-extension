@@ -254,7 +254,7 @@ describe("handleInstall", () => {
   });
 
   test.each([undefined, "https://sso.com"])(
-    "don't open tab on install if disableLoginTab is set: %s",
+    "don't open tab on install if disableLoginTab is set and ssoUrl is %s",
     async (ssoUrl) => {
       browserManagedStorageMock.mockResolvedValue({
         disableLoginTab: true,
