@@ -123,6 +123,7 @@ beforeEach(async () => {
   } as any);
 
   browserManagedStorageMock.mockResolvedValue({});
+  jest.mocked(browser.tabs.create).mockClear();
 
   readAuthDataMock.mockResolvedValue({
     organizationId: "00000000-00000000-00000000-00000000",
