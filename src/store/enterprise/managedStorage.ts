@@ -105,6 +105,8 @@ export async function watchDelayedStorageInitialization(): Promise<void> {
     return;
   }
 
+  // Use setInterval instead of pollUntilTruthy to clear on browser.storage.onChanged. pollUntilTruthy doesn't
+  // currently directly support an abort signal.
   initializationInterval = setInterval(
     async () => {
       const values = await readPopulatedManagedStorage();
