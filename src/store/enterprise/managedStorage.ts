@@ -97,7 +97,7 @@ async function readPopulatedManagedStorage(): Promise<
  *
  * @see waitForInitialManagedStorage
  */
-export async function watchStorageInitialization(): Promise<void> {
+export async function watchDelayedStorageInitialization(): Promise<void> {
   const values = await readPopulatedManagedStorage();
 
   if (values != null) {

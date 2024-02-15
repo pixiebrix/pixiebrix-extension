@@ -50,12 +50,14 @@ import { initSidePanel } from "./sidePanel";
 import initRestrictUnauthenticatedUrlAccess from "@/background/restrictUnauthenticatedUrlAccess";
 import {
   initManagedStorage,
-  watchStorageInitialization,
+  watchDelayedStorageInitialization,
 } from "@/store/enterprise/managedStorage";
 
 // Try to initialize managed storage as early as possible because it impacts background behavior
-// Call watchStorageInitialization to handle case where storage is not immediately available within timeout
-void initManagedStorage().then(async () => watchStorageInitialization());
+// Call watchDelayedStorageInitialization to handle case where storage is not immediately available within timeout.
+// We might consider putting watchStorageInitialization in initManagedStorage, but having a non-terminating
+// interval complicates testing.
+void initManagedStorage().then(async () => watchDelayedStorageInitialization());
 
 void initLocator();
 void initMessengerLogging();
