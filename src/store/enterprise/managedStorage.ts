@@ -97,7 +97,14 @@ async function readPopulatedManagedStorage(): Promise<
  *
  * @see waitForInitialManagedStorage
  */
-function watchStorageInitialization(): void {
+export async function watchStorageInitialization(): Promise<void> {
+  const values = await readPopulatedManagedStorage();
+
+  if (values) {
+    // Already initialized
+    return;
+  }
+
   initializationInterval = setInterval(
     async () => {
       const values = await readPopulatedManagedStorage();
@@ -117,7 +124,7 @@ function watchStorageInitialization(): void {
   );
 }
 
-// It's possible that managed storage is not available on the initial install event
+// It's possible that managed storage is not available on the initial installation event
 
 // Privacy Badger does a looping check for managed storage
 // - https://github.com/EFForg/privacybadger/blob/aeed0539603356a2825e7ce8472f6478abdc85fb/src/js/storage.js
@@ -132,11 +139,6 @@ const waitForInitialManagedStorage = pMemoize(async () => {
   >(readPopulatedManagedStorage, {
     maxWaitMillis: MAX_MANAGED_STORAGE_WAIT_MILLIS,
   });
-
-  if (managedStorageSnapshot == null) {
-    // Watch for delayed initialization
-    watchStorageInitialization();
-  }
 
   console.info("Found managed storage settings", {
     managedStorageState: managedStorageSnapshot,
@@ -153,7 +155,7 @@ const waitForInitialManagedStorage = pMemoize(async () => {
 /**
  * Initialize the managed storage state once and listen for changes. Safe to call multiple times.
  */
-export const initManagedStorage = once(() => {
+export const initManagedStorage = once(async () => {
   expectContext("extension");
 
   try {
@@ -181,7 +183,7 @@ export const initManagedStorage = once(() => {
     );
   }
 
-  void waitForInitialManagedStorage();
+  await waitForInitialManagedStorage();
 });
 
 /**
@@ -203,7 +205,7 @@ export async function readManagedStorageByKey<
     return managedStorageSnapshot[key];
   }
 
-  initManagedStorage();
+  void initManagedStorage();
   const storage = await waitForInitialManagedStorage();
   // eslint-disable-next-line security/detect-object-injection -- type-checked key
   return storage[key];
@@ -224,7 +226,7 @@ export async function readManagedStorage(): Promise<ManagedStorageState> {
     return managedStorageSnapshot;
   }
 
-  initManagedStorage();
+  void initManagedStorage();
   return waitForInitialManagedStorage();
 }
 

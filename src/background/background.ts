@@ -48,10 +48,14 @@ import { initRuntimeLogging } from "@/development/runtimeLogging";
 import initWalkthroughModalTrigger from "@/background/walkthroughModalTrigger";
 import { initSidePanel } from "./sidePanel";
 import initRestrictUnauthenticatedUrlAccess from "@/background/restrictUnauthenticatedUrlAccess";
-import { initManagedStorage } from "@/store/enterprise/managedStorage";
+import {
+  initManagedStorage,
+  watchStorageInitialization,
+} from "@/store/enterprise/managedStorage";
 
 // Try to initialize managed storage as early as possible because it impacts background behavior
-initManagedStorage();
+// Call watchStorageInitialization to handle case where storage is not immediately available within timeout
+void initManagedStorage().then(async () => watchStorageInitialization());
 
 void initLocator();
 void initMessengerLogging();

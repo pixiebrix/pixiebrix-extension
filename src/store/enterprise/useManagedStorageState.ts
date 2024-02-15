@@ -35,7 +35,7 @@ type HookState = {
  */
 function useManagedStorageState(): HookState {
   useEffect(() => {
-    initManagedStorage();
+    void initManagedStorage();
   }, []);
 
   const data = useSyncExternalStore(subscribe, getSnapshot);
