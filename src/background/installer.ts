@@ -47,7 +47,7 @@ let _availableVersion: string | null = null;
  * Returns true if this appears to be a Chrome Web Store install and/or the user has an app URL where they're
  * authenticated so the extension can be linked.
  */
-async function isEndUserInstall(): Promise<boolean> {
+async function isLikelyEndUserInstall(): Promise<boolean> {
   // Query existing app/CWS tabs: https://developer.chrome.com/docs/extensions/reference/api/tabs#method-query
   // `browser.tabs.query` supports https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns
   const likelyOnboardingTabs = await browser.tabs.query({
@@ -233,14 +233,14 @@ export async function handleInstall({
     if (!(await isLinked())) {
       // If an end-user appears to be installing, jump to linking directly vs. waiting for readManagedStorage because
       // readManagedStorage will wait until a timeout for managed storage to be available.
-      if (!isManagedStorageInitialized() && (await isEndUserInstall())) {
+      if (!isManagedStorageInitialized() && (await isLikelyEndUserInstall())) {
         console.debug("Skipping readManagedStorage for end-user install");
 
         await openInstallPage();
         return;
       }
 
-      // Reminder: readManagedStorageByKey waits up to 4.5 seconds for managed storage to be available
+      // Reminder: readManagedStorage waits up to 4.5 seconds for managed storage to be available
       const {
         ssoUrl,
         partnerId,
