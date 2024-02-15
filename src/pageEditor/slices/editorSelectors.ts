@@ -213,6 +213,8 @@ export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
     editor.visibleModalKey === ModalKey.SAVE_AS_NEW_RECIPE,
   isCreateRecipeModalVisible: editor.visibleModalKey === ModalKey.CREATE_RECIPE,
   isAddBlockModalVisible: editor.visibleModalKey === ModalKey.ADD_BLOCK,
+  isSaveDataIntegrityErrorModalVisible:
+    editor.visibleModalKey === ModalKey.SAVE_DATA_INTEGRITY_ERROR,
 });
 
 export const selectInstalledRecipeMetadatas = createSelector(

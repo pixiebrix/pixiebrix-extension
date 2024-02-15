@@ -153,7 +153,6 @@ function useSaveMod(): ModSaver {
     // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
     const dirtyModMetadata = allDirtyModMetadatas[modId];
 
-    // TODO: Drop excess extensionPoints
     const newMod = buildNewMod({
       sourceMod: modDefinition,
       cleanModComponents,
@@ -168,12 +167,7 @@ function useSaveMod(): ModSaver {
       await ensureModComponentStarterBricks(newMod);
 
     if (!modComponentDefinitionCountsMatch || !modComponentStarterBricksMatch) {
-      // TODO: Add a modal here to tell the user about the error, with an option to download a "dump" of data, and
-      //      contact PB support
-      //        * Data is probably form state plus redux state, in a json file
-      notify.error({
-        message: "The mod's components do not match the mod definition",
-      });
+      dispatch(editorActions.showSaveDataIntegrityErrorModal());
       return false;
     }
 
