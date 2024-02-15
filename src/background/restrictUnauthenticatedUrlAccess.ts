@@ -43,13 +43,14 @@ type RestrictedNavigationMetadata = {
 };
 
 /**
- * Most recent restricted URL to allow redirecting to the same URL once authenticated.
+ * Most recent restricted URL and tab id to allow redirecting to the same URL once authenticated.
  * @since 1.8.9
  */
 // Storing on a per-tab basis might be useful for cases where multiple tabs are redirected due to the extension
 // becoming unlinked. But storing a single tab/URL is sufficient for the more common use case of a URL being restricted
 // in a fresh environment prior to the SSO login.
-// NOTE: can't use SessionValue because the extension reloads on extension linking
+// NOTE: can't use SessionValue because the extension reloads on extension linking, so SessionValue is reset.
+// StorageItem uses local storage, so persists across extension reloads
 const lastRestrictedNavigationStorage =
   new StorageItem<RestrictedNavigationMetadata>("lastRestrictedNavigation");
 
@@ -106,11 +107,13 @@ async function redirectTabIfRestrictedUrl({
   // 1. User visits restricted URL
   // 2. They're redirected to the app login page
   // 3. User manually changes URL to visit an unrestricted URL
-  // 4. User manually visits app login page manually and logs in
+  // 4. User manually visits app login page and logs in
   // 5. User will be automatically redirected to original restricted URL
 
   // You could consider resetting lastRestrictedNavigationStorage on step 3. However, the problem though is that for
-  // SSO flows, the user will necessarily be redirected to an unrestricted URL.
+  // SSO flows, the user will visit one or more unrestricted URLs. It's non-trivial to distinguish navigation events
+  // that are part of an SSO/OpenID flow vs. the user deciding to "abort" the login flow.
+  // For more discussion, see https://github.com/pixiebrix/pixiebrix-extension/pull/7625#discussion_r1491407499
 }
 
 async function handleRestrictedTab(
@@ -128,15 +131,15 @@ async function handleRestrictedTab(
  * Open the restricted URL that was most recently accessed causing the user to be redirected to a login page, if any.
  */
 async function openLatestRestrictedUrl(): Promise<void> {
-  const restrictedNavigation = await lastRestrictedNavigationStorage.get();
+  const lastRestrictedNavigation = await lastRestrictedNavigationStorage.get();
 
-  if (!restrictedNavigation) {
+  if (!lastRestrictedNavigation) {
     return;
   }
 
   await lastRestrictedNavigationStorage.remove();
 
-  const { tabId, url } = restrictedNavigation;
+  const { tabId, url } = lastRestrictedNavigation;
 
   // Double-check the tab still exists
   const tab = await browser.tabs.get(tabId);
