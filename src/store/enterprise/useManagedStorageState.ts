@@ -22,10 +22,11 @@ import {
   subscribe,
 } from "@/store/enterprise/managedStorage";
 import { useEffect } from "react";
-import { type ManagedStorageState } from "@/store/enterprise/managedStorageTypes";
+import type { ManagedStorageState } from "@/store/enterprise/managedStorageTypes";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 type HookState = {
-  data: ManagedStorageState | undefined;
+  data: Nullishable<ManagedStorageState>;
   isLoading: boolean;
 };
 
@@ -34,7 +35,7 @@ type HookState = {
  */
 function useManagedStorageState(): HookState {
   useEffect(() => {
-    initManagedStorage();
+    void initManagedStorage();
   }, []);
 
   const data = useSyncExternalStore(subscribe, getSnapshot);

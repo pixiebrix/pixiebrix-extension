@@ -105,6 +105,12 @@ export async function awaitValue<T>(
   throw new TimeoutError(`Value not found after ${waitMillis} milliseconds`);
 }
 
+/**
+ * Poll until the looper returns a truthy value. If the timeout is reached, return undefined.
+ * @param looper the value generator
+ * @param maxWaitMillis maximium time to wait for the value
+ * @param intervalMillis time between each call to looper
+ */
 export async function pollUntilTruthy<T>(
   looper: (...args: unknown[]) => Promise<T> | T,
   { maxWaitMillis = Number.MAX_SAFE_INTEGER, intervalMillis = 100 },

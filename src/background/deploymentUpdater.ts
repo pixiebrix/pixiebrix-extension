@@ -421,7 +421,7 @@ export async function updateDeployments(): Promise<void> {
         sso: false,
       });
 
-      void browser.runtime.openOptionsPage();
+      await browser.runtime.openOptionsPage();
 
       return;
     }
