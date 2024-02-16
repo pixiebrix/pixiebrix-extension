@@ -23,7 +23,6 @@ import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
 import { uuidv4 } from "@/types/helpers";
 import { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { RegistryId } from "@/types/registryTypes";
 
 // Bypass auto-mocks
 export * from "../../../../background/messenger/api";
