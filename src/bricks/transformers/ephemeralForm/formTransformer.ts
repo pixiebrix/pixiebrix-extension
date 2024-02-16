@@ -35,8 +35,10 @@ import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type BrickConfig } from "@/bricks/types";
 import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
 import { isExpression } from "@/utils/expressionUtils";
+import { getThisFrame } from "webext-messenger";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
 
-// The modes for createFrameSrc are different than the location argument for FormTransformer. The mode for the frame
+// The modes for createFrameSource are different from the location argument for FormTransformer. The mode for the frame
 // just determines the layout container of the form
 type Mode = "modal" | "panel";
 
@@ -44,7 +46,9 @@ export async function createFrameSource(
   nonce: string,
   mode: Mode,
 ): Promise<URL> {
-  const target = await getConnectedTarget();
+  // Match the frame where the form is being shown
+  const target =
+    mode === "modal" ? await getThisFrame() : await getConnectedTarget();
 
   const frameSource = new URL(browser.runtime.getURL("ephemeralForm.html"));
   frameSource.searchParams.set("nonce", nonce);
@@ -179,6 +183,12 @@ export class FormTransformer extends TransformerABC {
     });
 
     if (location === "sidebar") {
+      if (isLoadedInIframe()) {
+        throw new Error(
+          "Cannot show sidebar in a frame. To use the sidebar, set the target to Top-level Frame",
+        );
+      }
+
       // Ensure the sidebar is visible (which may also be showing persistent panels)
       await showSidebar();
 
