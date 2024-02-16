@@ -157,12 +157,6 @@ export type SettingsStateV3 = SettingsStateV2 & {
    * @since 1.8.6 SettingsStateV3 makes varAutosuggest required
    */
   varAutosuggest: boolean;
-
-  /**
-   * Custom toolbarIcon to use as the browser extension toolbar action icon -
-   * defined by the organization theme.
-   */
-  toolbarIcon: string | null;
 };
 
 export type SettingsState = SettingsStateV3;

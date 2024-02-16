@@ -24,7 +24,7 @@ import {
 import reportError from "@/telemetry/reportError";
 import { isEmpty, once } from "lodash";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
-import { isValidTheme } from "@/themes/themeUtils";
+import { isValidThemeName } from "@/themes/themeUtils";
 import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import { revertAll } from "@/store/commonActions";
@@ -49,7 +49,6 @@ export const initialSettingsState: SettingsState = {
   authMethod: null,
   authIntegrationId: null,
   theme: DEFAULT_THEME,
-  toolbarIcon: null,
   updatePromptTimestamp: null,
 };
 
@@ -120,7 +119,7 @@ const settingsSlice = createSlice({
       state.updatePromptTimestamp = null;
     },
     setTheme(state, { payload: { theme } }: { payload: { theme: string } }) {
-      if (isValidTheme(theme)) {
+      if (isValidThemeName(theme)) {
         state.theme = theme;
         return;
       }
@@ -130,12 +129,6 @@ const settingsSlice = createSlice({
       once(() => {
         reportError(new Error(`Selected theme "${theme}" doesn't exist.`));
       });
-    },
-    setToolbarIcon(
-      state,
-      { payload: { toolbarIcon } }: { payload: { toolbarIcon: string } },
-    ) {
-      state.toolbarIcon = toolbarIcon;
     },
   },
   extraReducers(builder) {

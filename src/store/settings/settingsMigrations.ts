@@ -46,7 +46,6 @@ function migrateSettingsStateV2({
   ...state
 }: SettingsStateV2 & PersistedState): SettingsStateV3 & PersistedState {
   return {
-    toolbarIcon: null,
     ...state,
     // @since 1.8.6 - Migrate all users to True for this setting, make setting required
     varAutosuggest: true,

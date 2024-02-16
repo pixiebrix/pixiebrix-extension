@@ -29,13 +29,11 @@ import { getActiveTheme } from "@/themes/themeStore";
 async function setToolbarIcon(): Promise<void> {
   const { themeName: activeThemeName, toolbarIcon } = await getActiveTheme();
 
-  if (activeThemeName !== DEFAULT_THEME) {
-    const themeLogo = getThemeLogo(activeThemeName);
-    browserAction.setIcon({ path: themeLogo.small });
-  } else if (toolbarIcon) {
+  if (activeThemeName === DEFAULT_THEME) {
     await activateBrowserActionIcon(toolbarIcon);
   } else {
-    await activateBrowserActionIcon();
+    const themeLogo = getThemeLogo(activeThemeName);
+    browserAction.setIcon({ path: themeLogo.small });
   }
 }
 

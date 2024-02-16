@@ -45,4 +45,12 @@ describe("getActiveTheme", () => {
       toolbarIcon: null,
     });
   });
+
+  it.todo(
+    "fetches organization theme from the organization theme endpoint if set in managed storage",
+  );
+
+  it.todo(
+    "fetches organization theme from the me endpoint if no managed storage organization",
+  );
 });

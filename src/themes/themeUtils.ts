@@ -25,7 +25,7 @@ import logoSmall from "@img/logo-small.svg";
 import aaLogo from "@img/aa-logo.svg";
 import aaLogoSmall from "@img/aa-logo-small.svg";
 
-export const isValidTheme = (themeName: string): themeName is ThemeName =>
+export const isValidThemeName = (themeName: string): themeName is ThemeName =>
   THEME_NAMES.includes(themeName);
 
 export type ThemeLogo = {
@@ -51,7 +51,7 @@ export const THEME_LOGOS: ThemeLogoMap = {
 // Note: this function is re-used in the app. Should not reference
 // anything unavailable in the app environment, e.g. the background page
 export const getThemeLogo = (themeName: string): ThemeLogo => {
-  if (isValidTheme(themeName)) {
+  if (isValidThemeName(themeName)) {
     // eslint-disable-next-line security/detect-object-injection -- themeName is type ThemeName, a union type of string literal
     return THEME_LOGOS[themeName];
   }

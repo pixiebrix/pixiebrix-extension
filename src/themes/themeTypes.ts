@@ -19,7 +19,7 @@ export const DEFAULT_THEME = "default";
 export const THEME_NAMES = [DEFAULT_THEME, "automation-anywhere"] as const;
 
 /**
- * A list of theme names that are built into the extension. These correspond to theme values in THEME_LOGOS
+ * A list of theme names that are built into the extension. These are mapped to logos in THEME_LOGOS
  * @see THEME_LOGOS
  */
 export type ThemeName = (typeof THEME_NAMES)[number];

@@ -32,7 +32,6 @@ import {
   userFactory,
   userOrganizationFactory,
 } from "@/testUtils/factories/authFactories";
-import { type SettingsState } from "@/store/settings/settingsTypes";
 
 describe("useGetThemeName", () => {
   test("has no partner", () => {
@@ -148,7 +147,6 @@ describe("useGetOrganizationTheme", () => {
 
     const {
       result: { current: organizationTheme },
-      getReduxStore,
     } = renderHook(() => useGetOrganizationTheme(), {
       setupRedux(dispatch) {
         dispatch(
@@ -172,10 +170,6 @@ describe("useGetOrganizationTheme", () => {
     expect(organizationTheme.showSidebarLogo).toBe(true);
     expect(organizationTheme.customSidebarLogo).toBe(customTestLogoUrl);
     expect(organizationTheme.toolbarIcon).toBe("someOldOne.svg");
-    // Verify the toolbarIcon is persisted into the settings state
-    expect(
-      (getReduxStore().getState().settings as SettingsState).toolbarIcon,
-    ).toBe("someOldOne.svg");
   });
 
   test("new organization theme trumps cached organization theme", () => {

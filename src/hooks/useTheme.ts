@@ -24,7 +24,7 @@ import { activateTheme } from "@/background/messenger/strict/api";
 import {
   addThemeClassToDocumentRoot,
   getThemeLogo,
-  isValidTheme,
+  isValidThemeName,
   setThemeFavicon,
   type ThemeLogo,
 } from "@/themes/themeUtils";
@@ -59,11 +59,11 @@ export function useGetThemeName(): ThemeName {
   const partnerTheme = useMemo(() => {
     if (!isEmpty(me)) {
       const meTheme = me.partner?.theme;
-      return isValidTheme(meTheme) ? meTheme : null;
+      return isValidThemeName(meTheme) ? meTheme : null;
     }
 
     const cachedTheme = cachedPartner?.theme;
-    return isValidTheme(cachedTheme) ? cachedTheme : null;
+    return isValidThemeName(cachedTheme) ? cachedTheme : null;
   }, [me, cachedPartner?.theme]);
 
   const { data: managedState, isLoading: managedPartnerIdIsLoading } =
@@ -99,24 +99,12 @@ export function useGetOrganizationTheme(): {
   toolbarIcon: string;
 } {
   const { data: me } = appApi.endpoints.getMe.useQueryState();
-  const dispatch = useDispatch();
   const { organization: cachedOrganization } = useSelector(selectAuth);
 
   const organizationTheme = useMemo(
     () => (me ? me.organization?.theme : cachedOrganization?.theme),
     [cachedOrganization, me],
   );
-
-  useEffect(() => {
-    if (organizationTheme?.toolbar_icon) {
-      // Update persisted Redux slice
-      dispatch(
-        settingsSlice.actions.setToolbarIcon({
-          toolbarIcon: organizationTheme?.toolbar_icon,
-        }),
-      );
-    }
-  }, [dispatch, organizationTheme]);
 
   return {
     showSidebarLogo: organizationTheme
