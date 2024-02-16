@@ -47,7 +47,6 @@ function newExtensionPointId(): InnerDefinitionRef {
 describe("useCheckModStarterBrickInvariants", () => {
   test.each`
     cleanCount | dirtyCount | newCount | modCleanCount | modDirtyCount | modNewCount | expectedResult
-    // Valid cases
     ${1}       | ${0}       | ${0}     | ${1}          | ${0}          | ${0}        | ${true}
     ${0}       | ${1}       | ${0}     | ${0}          | ${1}          | ${0}        | ${true}
     ${0}       | ${0}       | ${1}     | ${0}          | ${0}          | ${1}        | ${true}
