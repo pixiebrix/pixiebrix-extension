@@ -227,9 +227,9 @@ describe("useCheckModStarterBrickInvariants", () => {
         },
       });
 
-      const ensureModComponentStarterBricks = result.current;
+      const checkModStarterBrickInvariants = result.current;
       const actualResult =
-        await ensureModComponentStarterBricks(resultModDefinition);
+        await checkModStarterBrickInvariants(resultModDefinition);
       expect(actualResult).toBe(expectedResult);
     },
   );

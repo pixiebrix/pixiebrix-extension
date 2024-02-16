@@ -86,7 +86,7 @@ function useSaveMod(): ModSaver {
   const [isSaving, setIsSaving] = useState(false);
   const compareModComponentCountsToModDefinition =
     useCompareModComponentCounts();
-  const ensureModComponentStarterBricks = useCheckModStarterBrickInvariants();
+  const checkModStarterBrickInvariants = useCheckModStarterBrickInvariants();
 
   /**
    * Save a mod's components, options, and metadata
@@ -144,7 +144,7 @@ function useSaveMod(): ModSaver {
     const modComponentDefinitionCountsMatch =
       compareModComponentCountsToModDefinition(newMod);
     const modComponentStarterBricksMatch =
-      await ensureModComponentStarterBricks(newMod);
+      await checkModStarterBrickInvariants(newMod);
 
     if (!modComponentDefinitionCountsMatch || !modComponentStarterBricksMatch) {
       reportEvent(Events.PAGE_EDITOR_MOD_SAVE_ERROR, {
