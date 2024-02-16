@@ -236,7 +236,7 @@ export function parsePackage(
     .split(".")
     .map((x) => Number.parseInt(x, 10));
 
-  if (!major || !minor || !patch)
+  if (major == null || minor == null || patch == null)
     throw new Error("Invalid version: " + version);
 
   const match = PACKAGE_REGEX.exec(id);
