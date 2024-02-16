@@ -591,6 +591,7 @@
     "./sidebar/thunks/removeTemporaryPanel.ts",
     "./sidebar/thunks/resolveTemporaryPanel.ts",
     "./background/activateBrowserActionIcon.test.ts",
-    "./services/apiClient.ts"
+    "./services/apiClient.ts",
+    "./__mocks__/@/background/messenger/strict/api.ts"
   ]
 }
