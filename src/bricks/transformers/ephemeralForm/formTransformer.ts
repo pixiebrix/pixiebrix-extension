@@ -191,12 +191,6 @@ export class FormTransformer extends TransformerABC {
     });
 
     if (location === "sidebar") {
-      if (isLoadedInIframe()) {
-        throw new BusinessError(
-          "Cannot show sidebar in a frame. To use the sidebar, set the target to Top-level Frame",
-        );
-      }
-
       // Ensure the sidebar is visible (which may also be showing persistent panels)
       await showSidebar();
 
