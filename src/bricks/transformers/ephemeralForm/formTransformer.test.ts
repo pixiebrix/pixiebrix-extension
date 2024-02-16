@@ -24,9 +24,11 @@ import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
 import { TEST_cancelAll } from "@/contentScript/ephemeralFormProtocol";
+import * as messenger from "webext-messenger";
 
 jest.mock("@/utils/iframeUtils");
 jest.mock("@/bricks/transformers/ephemeralForm/modalUtils");
+
 const showModalMock = jest.mocked(showModal);
 
 const brick = new FormTransformer();
@@ -86,6 +88,8 @@ describe("FormTransformer", () => {
   });
 
   it("shows modal in top-level", async () => {
+    // Exposed via __mocks__/webext-messenger
+    (messenger as any).setFrameId(0);
     jest.mocked(isLoadedInIframe).mockReturnValue(false);
     showModalMock.mockReturnValue(null);
 
@@ -109,5 +113,43 @@ describe("FormTransformer", () => {
       // Why is any(String) now working here?
       url: expect.anything(),
     });
+
+    const opener = new URL(showModalMock.mock.calls[0][0].url).searchParams.get(
+      "opener",
+    );
+    expect(JSON.parse(opener)).toStrictEqual({ tabId: 1, frameId: 0 });
+  });
+
+  it("shows modal in sub-frame", async () => {
+    // Exposed via __mocks__/webext-messenger
+    (messenger as any).setFrameId(1);
+    jest.mocked(isLoadedInIframe).mockReturnValue(true);
+    showModalMock.mockReturnValue(null);
+
+    const brickPromise = brick.run(
+      unsafeAssumeValidArg({
+        location: "modal",
+        schema: {
+          tile: "Hello, World",
+        },
+      }),
+      brickOptionsFactory(),
+    );
+
+    // eslint-disable-next-line new-cap -- test method
+    await TEST_cancelAll();
+
+    await expect(brickPromise).rejects.toThrow(CancelError);
+
+    expect(showModalMock).toHaveBeenCalledExactlyOnceWith({
+      controller: expect.any(AbortController),
+      // Why is any(String) now working here?
+      url: expect.anything(),
+    });
+
+    const opener = new URL(showModalMock.mock.calls[0][0].url).searchParams.get(
+      "opener",
+    );
+    expect(JSON.parse(opener)).toStrictEqual({ tabId: 1, frameId: 1 });
   });
 });
