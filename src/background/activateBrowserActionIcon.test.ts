@@ -15,13 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import activateBrowserActionIcon, {
-  blobToImageData,
-  loadImageData,
-} from "@/background/activateBrowserActionIcon";
-import axios from "axios";
+import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
+import axios, { AxiosError } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { browserAction } from "@/mv3/api";
+import { blobToImageData, loadImageData } from "@/utils/canvasUtils";
 
 jest.mock("@/mv3/api", () => ({
   browserAction: {
@@ -41,24 +39,16 @@ describe("activateBrowserActionIcon", () => {
   });
 
   // @ts-expect-error -- No need to mock the whole class for the test
-  global.browser = {
-    runtime: {
-      getManifest: () => ({ icons: "path to icons" }),
-    },
-  };
+  jest
+    .mocked(browser.runtime.getManifest)
+    .mockReturnValue({ icons: "path to icons" });
+
+  globalThis.createImageBitmap = jest.fn().mockResolvedValue("image bitmap");
 
   // @ts-expect-error -- No need to mock the whole class for the test
-  global.Image = class {
-    src = "";
-    // eslint-disable-next-line no-restricted-syntax
-    decode = jest.fn().mockResolvedValue(undefined);
-  };
-  // @ts-expect-error -- No need to mock the whole class for the test
-  global.OffscreenCanvas = class {
+  globalThis.OffscreenCanvas = class {
     getContext = getContextmock;
   };
-
-  URL.createObjectURL = jest.fn();
 
   beforeEach(() => {
     mock.reset();
@@ -108,7 +98,7 @@ describe("activateBrowserActionIcon", () => {
 
       expect(result).toBe("image data");
       expect(getContextmock).toHaveBeenCalledWith("2d");
-      expect(drawImageMock).toHaveBeenCalledWith(expect.any(Image), 0, 0);
+      expect(drawImageMock).toHaveBeenCalledWith("image bitmap", 0, 0);
       expect(getImageDataMock).toHaveBeenCalledWith(0, 0, 32, 32);
     });
   });
@@ -118,17 +108,18 @@ describe("activateBrowserActionIcon", () => {
       const blob = new Blob(["test"], { type: "image/svg+xml" });
       mock.onGet(url).reply(200, blob);
 
-      const result = await loadImageData(url);
+      const result = await loadImageData(url, 32, 32);
 
       expect(result).toBe("image data");
     });
 
-    it("should return null when the request fails", async () => {
+    it("should throw when the request fails", async () => {
       mock.onGet(url).reply(500);
 
-      const result = await loadImageData(url);
-
-      expect(result).toBeNull();
+      await expect(loadImageData(url, 32, 32)).rejects.toThrowWithMessage(
+        AxiosError,
+        "Request failed with status code 500",
+      );
     });
   });
 });

@@ -18,7 +18,6 @@
 import { getThemeLogo } from "@/themes/themeUtils";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
-import { browserAction } from "@/mv3/api";
 import { expectContext } from "@/utils/expectContext";
 import { getActiveTheme } from "@/themes/themeStore";
 
@@ -30,12 +29,12 @@ async function setToolbarIcon(): Promise<void> {
   const activeTheme = await getActiveTheme();
 
   if (activeTheme === DEFAULT_THEME) {
-    await activateBrowserActionIcon();
+    // Not necessary. If the theme is ever unset, just reload the extension to reset the icon.
     return;
   }
 
   const themeLogo = getThemeLogo(activeTheme);
-  browserAction.setIcon({ path: themeLogo.small });
+  await activateBrowserActionIcon(themeLogo.small);
 }
 
 export default function initPartnerTheme() {
