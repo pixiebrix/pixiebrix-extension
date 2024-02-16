@@ -25,6 +25,7 @@ import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import JSZip from "jszip";
+import download from "downloadjs";
 
 const DataDumpButton: React.FC = () => {
   const activatedModComponents = useSelector(selectExtensions);
@@ -47,14 +48,7 @@ const DataDumpButton: React.FC = () => {
     const fileNameWithoutExtension = `pixiebrix_error_dump_${Date.now()}`;
     zip.file(`${fileNameWithoutExtension}.json`, blob);
     const content = await zip.generateAsync({ type: "blob" });
-    const url = URL.createObjectURL(content);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${fileNameWithoutExtension}.zip`;
-    document.body.append(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    a.remove();
+    download(content, `${fileNameWithoutExtension}.zip`, "application/zip");
   }, [data]);
 
   return (
