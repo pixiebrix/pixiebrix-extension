@@ -28,7 +28,7 @@ export const authSlice = createSlice({
   initialState: anonAuth,
   reducers: {
     setAuth(state, { payload }: PayloadAction<AuthState>) {
-      // console.debug("authSlice:setAuth", payload);
+      console.debug("authSlice:setAuth", payload);
 
       return {
         ...payload,

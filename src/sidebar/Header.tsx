@@ -32,8 +32,6 @@ const Header: React.FunctionComponent = () => {
   /* In MV3, Chrome offers a native Close button */
   const showCloseButton = !isMV3();
 
-  console.log("Header theme", theme);
-
   return (
     <div className="d-flex py-2 pl-2 pr-0 align-items-center">
       {showCloseButton && (
