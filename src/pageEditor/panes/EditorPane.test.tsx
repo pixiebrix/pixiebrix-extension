@@ -909,7 +909,7 @@ describe("brick validation in Add Brick Modal UI", () => {
   );
 
   test("hides UiPath bricks for AA users", async () => {
-    mockAuthenticatedUser(partnerUserFactory());
+    await mockAuthenticatedUser(partnerUserFactory());
     const formState = formStateFactory();
     render(
       <>

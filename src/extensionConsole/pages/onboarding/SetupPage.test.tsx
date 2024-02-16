@@ -88,7 +88,7 @@ describe("SetupPage", () => {
   });
 
   test("OAuth2 partner user with required service id in settings", async () => {
-    mockAuthenticatedUser(partnerUserFactory());
+    await mockAuthenticatedUser(partnerUserFactory());
 
     render(
       <MemoryRouter>
@@ -179,7 +179,7 @@ describe("SetupPage", () => {
   });
 
   test("Start URL with Community Edition hostname if authenticated", async () => {
-    mockAuthenticatedUser(partnerUserFactory());
+    await mockAuthenticatedUser(partnerUserFactory());
     const history = createHashHistory();
 
     // Hostname comes as hostname, not URL

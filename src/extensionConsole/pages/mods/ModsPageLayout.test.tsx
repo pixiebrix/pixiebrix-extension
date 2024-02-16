@@ -105,7 +105,7 @@ describe("ModsPageLayout", () => {
   });
 
   test("does not show 'Get Started' tab for enterprise users", async () => {
-    mockAuthenticatedUser(
+    await mockAuthenticatedUser(
       userFactory({
         organization: userOrganizationFactory(),
       }),

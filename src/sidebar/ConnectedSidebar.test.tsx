@@ -75,7 +75,7 @@ describe("SidebarApp", () => {
 
   test("renders not connected partner view", async () => {
     // Is this a real state? The use in meQueryState couldn't be set if hasToken is `false`
-    mockAuthenticatedUser(partnerUserFactory());
+    await mockAuthenticatedUser(partnerUserFactory());
     useLinkStateMock.mockReturnValue({
       hasToken: false,
       tokenLoading: false,
@@ -93,7 +93,7 @@ describe("SidebarApp", () => {
   });
 
   test("renders", async () => {
-    mockAuthenticatedUser(userFactory());
+    await mockAuthenticatedUser(userFactory());
 
     const { asFragment } = render(
       <MemoryRouter>
