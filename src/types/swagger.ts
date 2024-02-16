@@ -225,7 +225,7 @@ export interface paths {
   };
   "/api/me/token/": {
     /** @description Return the token for the current user. */
-    get: operations["retrieveMeToken"];
+    get: operations["retrieveAuthToken"];
   };
   "/api/memberships/{id}/": {
     /** @description Detail view for an organization's memberships. */
@@ -316,6 +316,9 @@ export interface paths {
   };
   "/api/organizations/{organization_id}/auth-url-patterns/": {
     get: operations["listOrganizationAuthUrlPatterns"];
+  };
+  "/api/organizations/{organization_id}/theme/": {
+    get: operations["retrieveOrganizationTheme"];
   };
   "/api/control-rooms/": {
     get: operations["retrieveControlRoom"];
@@ -728,7 +731,7 @@ export interface components {
       num_records?: number;
       groups?: readonly {
         /** Format: uuid */
-        id?: UUID;
+        id: UUID;
         name: string;
       }[];
     };
@@ -836,14 +839,14 @@ export interface components {
           label?: string | null;
         };
       }[];
-      package_version: string;
-      services: {
-        auth: string;
-      }[];
       active?: boolean;
       options_config?: {
         [key: string]: unknown;
       };
+      package_version: string;
+      services: {
+        auth: string;
+      }[];
     };
     DependencyTree: {
       name: string;
@@ -1210,6 +1213,11 @@ export interface components {
            * @description The image url of a custom logo. Image format must be svg or png.
            */
           readonly logo?: string | null;
+          /**
+           * Format: uri
+           * @description The image url of the icon displayed in the browser toolbar. Image format must be svg.
+           */
+          readonly toolbar_icon?: string | null;
         };
       };
       telemetry_organization?: {
@@ -1233,6 +1241,11 @@ export interface components {
            * @description The image url of a custom logo. Image format must be svg or png.
            */
           readonly logo?: string | null;
+          /**
+           * Format: uri
+           * @description The image url of the icon displayed in the browser toolbar. Image format must be svg.
+           */
+          readonly toolbar_icon?: string | null;
         };
       };
       organization_memberships?: readonly {
@@ -1269,7 +1282,7 @@ export interface components {
         control_room_url?: string;
       }[];
       is_onboarded?: boolean;
-      milestones: {
+      milestones?: readonly {
         key: string;
         /** @description Optional additional information to provide context about the Milestone. */
         metadata?: {
@@ -1290,7 +1303,7 @@ export interface components {
       };
       enforce_update_millis?: number;
     };
-    MeToken: {
+    AuthToken: {
       token?: string;
     };
     Membership: {
@@ -1336,7 +1349,7 @@ export interface components {
         role: 1 | 2 | 3 | 4 | 5;
         groups?: {
           /** Format: uuid */
-          id?: UUID;
+          id: UUID;
           name: string;
         }[];
       }[];
@@ -1374,6 +1387,11 @@ export interface components {
          * @description The image url of a custom logo. Image format must be svg or png.
          */
         logo?: string | null;
+        /**
+         * Format: uri
+         * @description The image url of the icon displayed in the browser toolbar. Image format must be svg.
+         */
+        toolbar_icon?: string | null;
       };
     };
     UserDetail: {
@@ -1483,6 +1501,19 @@ export interface components {
       /** @description A chrome-style url match pattern, see https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns */
       url_pattern: string;
     };
+    OrganizationTheme: {
+      show_sidebar_logo?: boolean;
+      /**
+       * Format: uri
+       * @description The image url of a custom logo. Image format must be svg or png.
+       */
+      logo?: string | null;
+      /**
+       * Format: uri
+       * @description The image url of the icon displayed in the browser toolbar. Image format must be svg.
+       */
+      toolbar_icon?: string | null;
+    };
     ControlRoom: {
       /** Format: uuid */
       id?: UUID;
@@ -1552,26 +1583,22 @@ export interface components {
     Settings: {
       scope?: string | null;
     };
-    SupportUser: {
-      /** Format: uuid */
-      id?: UUID;
-      /** Format: email */
-      email?: string;
-      first_name?: string;
-      last_name?: string;
-    };
     SupportUserDetail: {
       /** Format: uuid */
       id?: UUID;
-      /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
-      username: string;
-      first_name?: string;
-      last_name?: string;
+      name?: string;
       /** Format: email */
       email?: string;
-      organizations?: string;
+      service_account?: boolean;
       /** Format: date-time */
       date_joined?: Timestamp;
+      /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
+      username: string;
+      organizations: {
+        /** Format: uuid */
+        id?: UUID;
+        name: string;
+      }[];
     };
     SupportUserEvent: {
       name: string;
@@ -3832,13 +3859,13 @@ export interface operations {
     };
   };
   /** @description Return the token for the current user. */
-  retrieveMeToken: {
+  retrieveAuthToken: {
     responses: {
       200: {
         headers: {};
         content: {
-          "application/json; version=1.0": components["schemas"]["MeToken"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["MeToken"];
+          "application/json; version=1.0": components["schemas"]["AuthToken"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["AuthToken"];
         };
       };
     };
@@ -4700,6 +4727,22 @@ export interface operations {
       };
     };
   };
+  retrieveOrganizationTheme: {
+    parameters: {
+      path: {
+        organization_id: string;
+      };
+    };
+    responses: {
+      200: {
+        headers: {};
+        content: {
+          "application/json; version=1.0": components["schemas"]["OrganizationTheme"];
+          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["OrganizationTheme"];
+        };
+      };
+    };
+  };
   retrieveControlRoom: {
     responses: {
       200: {
@@ -5004,18 +5047,38 @@ export interface operations {
     };
   };
   listSupportUsers: {
+    parameters: {
+      query?: {
+        /** @description A page number within the paginated result set. */
+        page?: number;
+        /** @description Number of results to return per page. */
+        page_size?: number;
+        /** @description A search term. */
+        q?: string;
+      };
+    };
     responses: {
       200: {
-        headers: {};
+        headers: {
+          /**
+           * @description See https://datatracker.ietf.org/doc/html/rfc8288 for more information.
+           * @example &lt;https://app.pixiebrix.com/api/support/users/&gt;; rel=&quot;first&quot;, &lt;https://app.pixiebrix.com/api/support/users/?page=3&gt;; rel=&quot;prev&quot;, &lt;https://app.pixiebrix.com/api/support/users/?page=5&gt;; rel=&quot;next&quot;, &lt;https://app.pixiebrix.com/api/support/users/?page=11&gt;; rel=&quot;last&quot;
+           */
+          Link?: unknown;
+        };
         content: {
-          "application/json; version=1.0": components["schemas"]["SupportUser"][];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["SupportUser"][];
+          "application/json; version=2.0": components["schemas"]["SupportUserDetail"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["SupportUserDetail"][];
         };
       };
     };
   };
   retrieveSupportUsers: {
     parameters: {
+      query?: {
+        /** @description A search term. */
+        q?: string;
+      };
       path: {
         id: string;
       };
@@ -5024,8 +5087,8 @@ export interface operations {
       200: {
         headers: {};
         content: {
-          "application/json; version=1.0": components["schemas"]["SupportUserDetail"];
-          "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["SupportUserDetail"];
+          "application/json; version=2.0": components["schemas"]["SupportUserDetail"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["SupportUserDetail"];
         };
       };
     };

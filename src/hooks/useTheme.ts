@@ -19,12 +19,12 @@ import { useContext, useEffect, useMemo } from "react";
 import { selectSettings } from "@/store/settings/settingsSelectors";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { DEFAULT_THEME, type Theme } from "@/themes/themeTypes";
-import { activatePartnerTheme } from "@/background/messenger/strict/api";
+import { DEFAULT_THEME, type ThemeName } from "@/themes/themeTypes";
+import { activateTheme } from "@/background/messenger/strict/api";
 import {
   addThemeClassToDocumentRoot,
   getThemeLogo,
-  isValidTheme,
+  isValidThemeName,
   setThemeFavicon,
   type ThemeLogo,
 } from "@/themes/themeUtils";
@@ -39,7 +39,7 @@ async function activateBackgroundTheme(
 ): Promise<void> {
   // Flush the Redux state to localStorage to ensure the background page sees the latest state
   await flush();
-  await activatePartnerTheme();
+  await activateTheme();
 }
 
 /**
@@ -48,9 +48,9 @@ async function activateBackgroundTheme(
  * If not in a React context, use getActiveTheme instead.
  *
  * @see getActiveTheme
- * @returns the active theme
+ * @returns the active theme name
  */
-export function useGetTheme(): Theme {
+export function useGetThemeName(): ThemeName {
   const { theme, partnerId } = useSelector(selectSettings);
   const { partner: cachedPartner } = useSelector(selectAuth);
   const { data: me } = appApi.endpoints.getMe.useQueryState();
@@ -59,11 +59,11 @@ export function useGetTheme(): Theme {
   const partnerTheme = useMemo(() => {
     if (!isEmpty(me)) {
       const meTheme = me.partner?.theme;
-      return isValidTheme(meTheme) ? meTheme : null;
+      return isValidThemeName(meTheme) ? meTheme : null;
     }
 
     const cachedTheme = cachedPartner?.theme;
-    return isValidTheme(cachedTheme) ? cachedTheme : null;
+    return isValidThemeName(cachedTheme) ? cachedTheme : null;
   }, [me, cachedPartner?.theme]);
 
   const { data: managedState, isLoading: managedPartnerIdIsLoading } =
@@ -96,43 +96,47 @@ export function useGetTheme(): Theme {
 export function useGetOrganizationTheme(): {
   showSidebarLogo: boolean;
   customSidebarLogo: string;
+  toolbarIcon: string;
 } {
   const { data: me } = appApi.endpoints.getMe.useQueryState();
   const { organization: cachedOrganization } = useSelector(selectAuth);
 
-  const organizationTheme = me
-    ? me.organization?.theme
-    : cachedOrganization?.theme;
+  const organizationTheme = useMemo(
+    () => (me ? me.organization?.theme : cachedOrganization?.theme),
+    [cachedOrganization, me],
+  );
 
   return {
     showSidebarLogo: organizationTheme
       ? Boolean(organizationTheme.show_sidebar_logo)
       : true,
     customSidebarLogo: organizationTheme?.logo || null,
+    toolbarIcon: organizationTheme?.toolbar_icon || null,
   };
 }
 
 type ThemeAssets = {
   logo: ThemeLogo;
   showSidebarLogo: boolean;
-  customSidebarLogo: string;
+  customSidebarLogo: string | null;
+  toolbarIcon: string | null;
 };
 
 /**
  * Hook to activate the PixieBrix or partner theme.
- * @param theme the theme to use, or nullish to automatically determine the theme.
+ * @param themeName the themeName to use, or nullish to automatically determine the theme.
  */
-function useTheme(theme?: Theme): ThemeAssets {
+function useTheme(themeName?: ThemeName): ThemeAssets {
   const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
-  const inferredTheme = useGetTheme();
+  const inferredTheme = useGetThemeName();
   const organizationTheme = useGetOrganizationTheme();
-  const themeLogo = getThemeLogo(theme ?? inferredTheme);
+  const themeLogo = getThemeLogo(themeName ?? inferredTheme);
 
   useEffect(() => {
     void activateBackgroundTheme(flushReduxPersistence);
-    addThemeClassToDocumentRoot(theme ?? inferredTheme);
-    setThemeFavicon(theme ?? inferredTheme);
-  }, [theme, inferredTheme, flushReduxPersistence]);
+    addThemeClassToDocumentRoot(themeName ?? inferredTheme);
+    setThemeFavicon(themeName ?? inferredTheme);
+  }, [themeName, inferredTheme, flushReduxPersistence]);
 
   return {
     logo: themeLogo,
