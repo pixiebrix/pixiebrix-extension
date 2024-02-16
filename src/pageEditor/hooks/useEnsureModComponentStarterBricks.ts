@@ -18,21 +18,17 @@
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
-import {
-  selectDirty,
-  selectNotDeletedElements,
-  selectNotDeletedExtensions,
-} from "@/pageEditor/slices/editorSelectors";
 import { isEqual } from "lodash";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 
 function useEnsureModComponentStarterBricks(): (
   modDefinition: UnsavedModDefinition,
 ) => Promise<boolean> {
-  const modComponentFormStates = useSelector(selectNotDeletedElements);
-  const activatedModComponents = useSelector(selectNotDeletedExtensions);
-  const isDirtyByModComponentId = useSelector(selectDirty);
+  const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
+    selectGetCleanComponentsAndDirtyFormStatesForMod,
+  );
 
   /**
    * Checks the following invariants:
@@ -49,14 +45,8 @@ function useEnsureModComponentStarterBricks(): (
       const modId = modDefinition.metadata.id;
       const definitionsFromMod = Object.values(modDefinition.definitions);
 
-      // TODO: Extract to selectors and test clean/dirty separation behavior
-      //        And reuse the same selectors in useSaveMod
-
-      const dirtyModComponentFormStates = modComponentFormStates.filter(
-        (modComponentFormState) =>
-          modComponentFormState.recipe?.id === modId &&
-          isDirtyByModComponentId[modComponentFormState.uuid],
-      );
+      const { cleanModComponents, dirtyModComponentFormStates } =
+        getCleanComponentsAndDirtyFormStatesForMod(modId);
 
       for (const formState of dirtyModComponentFormStates) {
         if (
@@ -79,17 +69,7 @@ function useEnsureModComponentStarterBricks(): (
         }
       }
 
-      const cleanModComponentsExcludingDirtyFormStates =
-        activatedModComponents.filter(
-          (modComponent) =>
-            modComponent._recipe?.id === modId &&
-            !dirtyModComponentFormStates.some(
-              (modComponentFormState) =>
-                modComponentFormState.uuid === modComponent.id,
-            ),
-        );
-
-      for (const cleanModComponent of cleanModComponentsExcludingDirtyFormStates) {
+      for (const cleanModComponent of cleanModComponents) {
         if (
           Object.values(cleanModComponent.definitions).some(
             (definitionFromComponent) =>
@@ -104,7 +84,7 @@ function useEnsureModComponentStarterBricks(): (
 
       return true;
     },
-    [activatedModComponents, isDirtyByModComponentId, modComponentFormStates],
+    [getCleanComponentsAndDirtyFormStatesForMod],
   );
 }
 

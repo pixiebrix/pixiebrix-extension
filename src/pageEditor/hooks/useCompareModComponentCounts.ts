@@ -17,13 +17,8 @@
 
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import { useSelector } from "react-redux";
-import {
-  selectDeletedElements,
-  selectDirty,
-  selectElements,
-} from "@/pageEditor/slices/editorSelectors";
 import { useCallback } from "react";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 
 /**
  * @returns {function} - A function that compares the number of mod components in the redux state and the mod definition
@@ -31,44 +26,18 @@ import { selectExtensions } from "@/store/extensionsSelectors";
 function useCompareModComponentCounts(): (
   modDefinition: UnsavedModDefinition,
 ) => boolean {
-  const modComponentFormStates = useSelector(selectElements);
-  const deletedModComponentsById = useSelector(selectDeletedElements);
-  const isDirtyByModComponentId = useSelector(selectDirty);
-  const activatedModComponents = useSelector(selectExtensions);
+  const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
+    selectGetCleanComponentsAndDirtyFormStatesForMod,
+  );
 
   return useCallback(
     (modDefinition: UnsavedModDefinition) => {
       const modId = modDefinition.metadata.id;
-      const deletedModComponentFormStates =
-        // eslint-disable-next-line security/detect-object-injection -- RegistryId
-        deletedModComponentsById[modId] ?? [];
-      const deletedModComponentIds = new Set(
-        deletedModComponentFormStates.map(({ uuid }) => uuid),
-      );
-
-      // TODO: Extract to selectors and test clean/dirty separation behavior
-      // And reuse the same selectors in useSaveMod
-      const dirtyModComponentFormStates = modComponentFormStates.filter(
-        (modComponentFormState) =>
-          modComponentFormState.recipe?.id === modId &&
-          isDirtyByModComponentId[modComponentFormState.uuid] &&
-          !deletedModComponentIds.has(modComponentFormState.uuid),
-      );
-
-      const cleanModComponentsExcludingDirtyFormStates =
-        activatedModComponents.filter(
-          (modComponent) =>
-            modComponent._recipe?.id === modId &&
-            !dirtyModComponentFormStates.some(
-              (modComponentFormState) =>
-                modComponentFormState.uuid === modComponent.id,
-            ) &&
-            !deletedModComponentIds.has(modComponent.id),
-        );
+      const { cleanModComponents, dirtyModComponentFormStates } =
+        getCleanComponentsAndDirtyFormStatesForMod(modId);
 
       const totalNumberModComponentsFromState =
-        dirtyModComponentFormStates.length +
-        cleanModComponentsExcludingDirtyFormStates.length;
+        cleanModComponents.length + dirtyModComponentFormStates.length;
       const totalNumberModComponentsFromDefinition =
         modDefinition.extensionPoints.length;
 
@@ -77,12 +46,7 @@ function useCompareModComponentCounts(): (
         totalNumberModComponentsFromDefinition
       );
     },
-    [
-      activatedModComponents,
-      deletedModComponentsById,
-      isDirtyByModComponentId,
-      modComponentFormStates,
-    ],
+    [getCleanComponentsAndDirtyFormStatesForMod],
   );
 }
 

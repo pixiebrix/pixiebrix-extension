@@ -18,11 +18,9 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  selectDeletedElements,
-  selectDirty,
   selectDirtyRecipeMetadata,
   selectDirtyRecipeOptionDefinitions,
-  selectElements,
+  selectGetDeletedComponentIdsForMod,
 } from "@/pageEditor/slices/editorSelectors";
 import {
   useGetEditablePackagesQuery,
@@ -31,7 +29,6 @@ import {
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
-import { selectExtensions } from "@/store/extensionsSelectors";
 import { buildNewMod } from "@/pageEditor/panes/save/saveHelpers";
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
@@ -46,6 +43,7 @@ import type { EditablePackageMetadata } from "@/types/contract";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
 import useEnsureModComponentStarterBricks from "@/pageEditor/hooks/useEnsureModComponentStarterBricks";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -76,12 +74,14 @@ function useSaveMod(): ModSaver {
   const { data: editablePackages, isLoading: isEditablePackagesLoading } =
     useGetEditablePackagesQuery();
   const [updateMod] = useUpdateRecipeMutation();
-  const modComponentFormStates = useSelector(selectElements);
-  const isDirtyByModComponentId = useSelector(selectDirty);
-  const activatedModComponents = useSelector(selectExtensions);
+  const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
+    selectGetCleanComponentsAndDirtyFormStatesForMod,
+  );
+  const getDeletedComponentIdsForMod = useSelector(
+    selectGetDeletedComponentIdsForMod,
+  );
   const allDirtyModOptions = useSelector(selectDirtyRecipeOptionDefinitions);
   const allDirtyModMetadatas = useSelector(selectDirtyRecipeMetadata);
-  const deletedComponentsByModId = useSelector(selectDeletedElements);
   const { showConfirmation } = useModals();
   const [isSaving, setIsSaving] = useState(false);
   const compareModComponentCountsToModDefinition =
@@ -119,33 +119,13 @@ function useSaveMod(): ModSaver {
       return false;
     }
 
-    // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
-    const deletedModComponentFormStates = deletedComponentsByModId[modId] ?? [];
-    const deletedModComponentIds = new Set(
-      deletedModComponentFormStates.map(({ uuid }) => uuid),
-    );
-
-    const dirtyModComponentFormStates = modComponentFormStates.filter(
-      (modComponentFormState) =>
-        modComponentFormState.recipe?.id === modId &&
-        isDirtyByModComponentId[modComponentFormState.uuid] &&
-        !deletedModComponentIds.has(modComponentFormState.uuid),
-    );
+    const { cleanModComponents, dirtyModComponentFormStates } =
+      getCleanComponentsAndDirtyFormStatesForMod(modId);
 
     // XXX: this might need to come before the confirmation modal in order to avoid timout if the user takes too
     // long to confirm?
     // Check permissions as early as possible
     void ensureElementPermissionsFromUserGesture(dirtyModComponentFormStates);
-
-    const cleanModComponents = activatedModComponents.filter(
-      (modComponent) =>
-        modComponent._recipe?.id === modId &&
-        !dirtyModComponentFormStates.some(
-          (modComponentFormState) =>
-            modComponentFormState.uuid === modComponent.id,
-        ) &&
-        !deletedModComponentIds.has(modComponent.id),
-    );
 
     // Dirty options/metadata or null if there are no staged changes.
     // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
@@ -208,7 +188,7 @@ function useSaveMod(): ModSaver {
     dispatch(editorActions.updateRecipeMetadataForElements(newModMetadata));
 
     // Remove any deleted mod component form states from the extensions slice
-    for (const modComponentId of deletedModComponentIds) {
+    for (const modComponentId of getDeletedComponentIdsForMod(modId)) {
       dispatch(optionsActions.removeExtension({ extensionId: modComponentId }));
     }
 
