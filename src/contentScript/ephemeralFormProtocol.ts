@@ -93,7 +93,7 @@ export async function registerForm({
 /**
  * Helper method to unregister the deferred promise for the form.
  */
-function unregisterForm(formNonce: UUID) {
+function unregisterForm(formNonce: UUID): void {
   expectContext("contentScript");
 
   forms.delete(formNonce);
@@ -139,4 +139,8 @@ export async function cancelForm(...formNonces: UUID[]): Promise<void> {
     form?.registration.reject(new CancelError("User cancelled the action"));
     unregisterForm(formNonce);
   }
+}
+
+export async function TEST_cancelAll(): Promise<void> {
+  await cancelForm(...forms.keys());
 }

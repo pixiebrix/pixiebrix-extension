@@ -37,6 +37,7 @@ import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTyp
 import { isExpression } from "@/utils/expressionUtils";
 import { getThisFrame } from "webext-messenger";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { BusinessError } from "@/errors/businessErrors";
 
 // The modes for createFrameSource are different from the location argument for FormTransformer. The mode for the frame
 // just determines the layout container of the form
@@ -149,6 +150,13 @@ export class FormTransformer extends TransformerABC {
   ): Promise<unknown> {
     expectContext("contentScript");
 
+    if (location === "sidebar" && isLoadedInIframe()) {
+      // Validate before registerForm to avoid an uncaught promise rejection
+      throw new BusinessError(
+        "Cannot show sidebar in a frame. To use the sidebar, set the target to Top-level Frame",
+      );
+    }
+
     // Future improvements:
     // - Support draggable modals. This will require showing the modal header on the host page so there's a drag handle?
 
@@ -184,7 +192,7 @@ export class FormTransformer extends TransformerABC {
 
     if (location === "sidebar") {
       if (isLoadedInIframe()) {
-        throw new Error(
+        throw new BusinessError(
           "Cannot show sidebar in a frame. To use the sidebar, set the target to Top-level Frame",
         );
       }

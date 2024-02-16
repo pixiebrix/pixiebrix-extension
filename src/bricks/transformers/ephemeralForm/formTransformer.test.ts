@@ -18,8 +18,24 @@
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
 
 import { toExpression } from "@/utils/expressionUtils";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
+import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
+import { TEST_cancelAll } from "@/contentScript/ephemeralFormProtocol";
+
+jest.mock("@/utils/iframeUtils");
+jest.mock("@/bricks/transformers/ephemeralForm/modalUtils");
+const showModalMock = jest.mocked(showModal);
 
 const brick = new FormTransformer();
+
+afterEach(async () => {
+  // eslint-disable-next-line new-cap -- test method
+  await TEST_cancelAll();
+  jest.clearAllMocks();
+});
 
 describe("FormTransformer", () => {
   it("returns form schema for output schema", () => {
@@ -49,5 +65,49 @@ describe("FormTransformer", () => {
     });
 
     expect(outputSchema).toEqual(brick.outputSchema);
+  });
+
+  it("throws BusinessError if targeting sidebar from frame", async () => {
+    jest.mocked(isLoadedInIframe).mockReturnValue(true);
+
+    await expect(
+      brick.run(
+        unsafeAssumeValidArg({
+          location: "sidebar",
+          schema: {
+            tile: "Hello, World",
+          },
+        }),
+        brickOptionsFactory(),
+      ),
+    ).rejects.toThrow(BusinessError);
+
+    expect(showModalMock).not.toHaveBeenCalled();
+  });
+
+  it("shows modal in top-level", async () => {
+    jest.mocked(isLoadedInIframe).mockReturnValue(false);
+    showModalMock.mockReturnValue(null);
+
+    const brickPromise = brick.run(
+      unsafeAssumeValidArg({
+        location: "modal",
+        schema: {
+          tile: "Hello, World",
+        },
+      }),
+      brickOptionsFactory(),
+    );
+
+    // eslint-disable-next-line new-cap -- test method
+    await TEST_cancelAll();
+
+    await expect(brickPromise).rejects.toThrow(CancelError);
+
+    expect(showModalMock).toHaveBeenCalledExactlyOnceWith({
+      controller: expect.any(AbortController),
+      // Why is any(String) now working here?
+      url: expect.anything(),
+    });
   });
 });
