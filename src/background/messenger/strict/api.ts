@@ -42,3 +42,10 @@ export const captureTab = getMethod("CAPTURE_TAB", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 export const setToolbarBadge = getMethod("SET_TOOLBAR_BADGE", bg);
+
+export const registry = {
+  syncRemote: getMethod("REGISTRY_SYNC", bg),
+  getByKinds: getMethod("REGISTRY_GET_BY_KINDS", bg),
+  find: getMethod("REGISTRY_FIND", bg),
+  clear: getMethod("REGISTRY_CLEAR", bg),
+};

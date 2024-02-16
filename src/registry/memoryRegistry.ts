@@ -16,7 +16,7 @@
  */
 
 import { type Kind } from "@/registry/packageRegistry";
-import { registry as backgroundRegistry } from "@/background/messenger/api";
+import { registry as backgroundRegistry } from "@/background/messenger/strict/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
 import { type RegistryId } from "@/types/registryTypes";
@@ -132,7 +132,7 @@ class MemoryRegistry<
 
   public readonly kinds: Set<Kind>;
 
-  private deserialize: (raw: unknown) => Item;
+  private deserialize: ((raw: unknown) => Item) | null;
 
   private listeners: RegistryChangeListener[] = [];
 
@@ -282,7 +282,7 @@ class MemoryRegistry<
 
     const remoteItems: Item[] = [];
     for (const raw of packages) {
-      const item = this.parse(raw.config);
+      const item = this.parse(raw?.config);
       if (item) {
         remoteItems.push(item);
       }
