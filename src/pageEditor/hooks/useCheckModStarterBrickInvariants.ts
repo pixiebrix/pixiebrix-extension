@@ -23,7 +23,7 @@ import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 
-function useEnsureModComponentStarterBricks(): (
+function useCheckModStarterBrickInvariants(): (
   modDefinition: UnsavedModDefinition,
 ) => Promise<boolean> {
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
@@ -88,4 +88,4 @@ function useEnsureModComponentStarterBricks(): (
   );
 }
 
-export default useEnsureModComponentStarterBricks;
+export default useCheckModStarterBrickInvariants;

@@ -42,7 +42,7 @@ import { Events } from "@/telemetry/events";
 import type { EditablePackageMetadata } from "@/types/contract";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
-import useEnsureModComponentStarterBricks from "@/pageEditor/hooks/useEnsureModComponentStarterBricks";
+import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 
 const { actions: optionsActions } = extensionsSlice;
@@ -86,7 +86,7 @@ function useSaveMod(): ModSaver {
   const [isSaving, setIsSaving] = useState(false);
   const compareModComponentCountsToModDefinition =
     useCompareModComponentCounts();
-  const ensureModComponentStarterBricks = useEnsureModComponentStarterBricks();
+  const ensureModComponentStarterBricks = useCheckModStarterBrickInvariants();
 
   /**
    * Save a mod's components, options, and metadata
@@ -147,6 +147,12 @@ function useSaveMod(): ModSaver {
       await ensureModComponentStarterBricks(newMod);
 
     if (!modComponentDefinitionCountsMatch || !modComponentStarterBricksMatch) {
+      reportEvent(Events.PAGE_EDITOR_MOD_SAVE_ERROR, {
+        modId: newMod.metadata.id,
+        modComponentDefinitionCountsMatch,
+        modComponentStarterBricksMatch,
+        modDefinition: JSON.stringify(modDefinition, null, 2),
+      });
       dispatch(editorActions.showSaveDataIntegrityErrorModal());
       return false;
     }

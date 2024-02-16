@@ -30,7 +30,7 @@ import { getActivatedModComponentFromDefinition } from "@/activation/getActivate
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { take } from "lodash";
 import { renderHook } from "@/pageEditor/testHelpers";
-import useEnsureModComponentStarterBricks from "@/pageEditor/hooks/useEnsureModComponentStarterBricks";
+import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
 import { actions as extensionsActions } from "@/store/extensionsSlice";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import {
@@ -44,7 +44,7 @@ function newExtensionPointId(): InnerDefinitionRef {
   return `extensionPoint${extensionPointCount++ ?? ""}` as InnerDefinitionRef;
 }
 
-describe("useEnsureModComponentStarterBricks", () => {
+describe("useCheckModStarterBrickInvariants", () => {
   test.each`
     cleanCount | dirtyCount | newCount | modCleanCount | modDirtyCount | modNewCount | expectedResult
     // Valid cases
@@ -204,31 +204,28 @@ describe("useEnsureModComponentStarterBricks", () => {
         definitions,
       });
 
-      const { result } = renderHook(
-        () => useEnsureModComponentStarterBricks(),
-        {
-          setupRedux(dispatch) {
-            if (installedModDefinition) {
-              dispatch(
-                extensionsActions.installMod({
-                  modDefinition: installedModDefinition,
-                  screen: "pageEditor",
-                  isReinstall: false,
-                }),
-              );
-            }
+      const { result } = renderHook(() => useCheckModStarterBrickInvariants(), {
+        setupRedux(dispatch) {
+          if (installedModDefinition) {
+            dispatch(
+              extensionsActions.installMod({
+                modDefinition: installedModDefinition,
+                screen: "pageEditor",
+                isReinstall: false,
+              }),
+            );
+          }
 
-            for (const formState of installedFormStates) {
-              dispatch(editorActions.selectInstalled(formState));
-              dispatch(editorActions.editElement(formState));
-            }
+          for (const formState of installedFormStates) {
+            dispatch(editorActions.selectInstalled(formState));
+            dispatch(editorActions.editElement(formState));
+          }
 
-            for (const formState of newFormStates) {
-              dispatch(editorActions.addElement(formState));
-            }
-          },
+          for (const formState of newFormStates) {
+            dispatch(editorActions.addElement(formState));
+          }
         },
-      );
+      });
 
       const ensureModComponentStarterBricks = result.current;
       const actualResult =

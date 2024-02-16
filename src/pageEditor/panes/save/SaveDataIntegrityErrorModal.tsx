@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { selectEditorModalVisibilities } from "@/pageEditor/slices/editorSelectors";
@@ -27,21 +27,17 @@ import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import JSZip from "jszip";
 import download from "downloadjs";
 
-const DataDumpButton: React.FC = () => {
+const DiagnosticDataButton: React.FC = () => {
   const activatedModComponents = useSelector(selectExtensions);
   const currentEditorState = useSelector(
     (state: EditorRootState) => state.editor,
   );
 
-  const data = useMemo(
-    () => ({
+  async function onClickDownload(): Promise<void> {
+    const data = {
       activatedModComponents,
       currentEditorState,
-    }),
-    [activatedModComponents, currentEditorState],
-  );
-
-  const onClickDownload = useCallback(async () => {
+    };
     const jsonString = JSON.stringify(data, null, 2);
     const blob = new Blob([jsonString], { type: "application/json" });
     const zip = new JSZip();
@@ -49,11 +45,11 @@ const DataDumpButton: React.FC = () => {
     zip.file(`${fileNameWithoutExtension}.json`, blob);
     const content = await zip.generateAsync({ type: "blob" });
     download(content, `${fileNameWithoutExtension}.zip`, "application/zip");
-  }, [data]);
+  }
 
   return (
     <Button variant="primary" onClick={onClickDownload}>
-      Download Data Dump <FontAwesomeIcon icon={faDownload} />
+      Download Diagnostic Data <FontAwesomeIcon icon={faDownload} />
     </Button>
   );
 };
@@ -70,27 +66,26 @@ const SaveDataIntegrityErrorModal: React.FC = () => {
   }, [dispatch]);
 
   return (
+    // Disable the backdrop click handler to prevent the user from closing
+    // the modal accidentally without downloading the diagnostic data
     <Modal show={show} onBackdropClick={() => {}}>
       <Modal.Header>
-        <Modal.Title>Save Data Integrity Error</Modal.Title>
+        <Modal.Title>Save Error</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>
-          There was an error saving your changes, data corruption was detected.
-          We need to clear changes in the page editor to prevent further
-          corruption. Please use the button below to download a snapshot of the
-          (corrupted) data from the page editor. If you contact PixieBrix
-          support and send along this data dump, we may be able to help you
-          recover your work.
+          A data integrity error was detected, and PixieBrix must reset the Page
+          Editor state. To recover your unsaved changes, click the Download
+          Diagnostic Data button and email support@pixiebrix.com
         </p>
       </Modal.Body>
       <Modal.Footer>
         {show && (
-          // Don't load the data dump if the modal is not visible
-          <DataDumpButton />
+          // Don't load the diagnostic data if the modal is not visible
+          <DiagnosticDataButton />
         )}
         <Button variant="outline-primary" onClick={hideModal}>
-          Ok
+          Reset Page Editor
         </Button>
       </Modal.Footer>
     </Modal>
