@@ -18,6 +18,8 @@
 import { RegistryId } from "@/types/registryTypes";
 import { getMethod, backgroundTarget as bg } from "webext-messenger";
 
+export * from "../../../../../background/messenger/strict/api";
+
 export const registry = {
   syncRemote: jest.fn(),
   getByKinds: jest.fn().mockResolvedValue([]),
