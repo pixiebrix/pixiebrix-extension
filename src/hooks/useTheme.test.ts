@@ -32,7 +32,7 @@ import {
   userFactory,
   userOrganizationFactory,
 } from "@/testUtils/factories/authFactories";
-import { SettingsState } from "@/store/settings/settingsTypes";
+import { type SettingsState } from "@/store/settings/settingsTypes";
 
 describe("useGetThemeName", () => {
   test("has no partner", () => {
