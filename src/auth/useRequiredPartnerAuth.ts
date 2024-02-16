@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { appApi } from "@/services/api";
+import { useGetMeQuery } from "@/services/api";
 import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
 import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
@@ -120,7 +120,11 @@ function decidePartnerIntegrationIds({
  */
 function useRequiredPartnerAuth(): RequiredPartnerState {
   // Prefer the most recent /api/me/ data from the server
-  const { isLoading, data: me, error } = appApi.endpoints.getMe.useQueryState();
+  const {
+    isLoading,
+    data: me,
+    error,
+  } = useGetMeQuery(undefined, { refetchOnMountOrArgChange: true });
   const localAuth = useSelector(selectAuth);
   const {
     authIntegrationId: authIntegrationIdOverride,

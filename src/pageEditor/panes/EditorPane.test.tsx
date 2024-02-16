@@ -52,7 +52,7 @@ import { act } from "react-dom/test-utils";
 import * as sinonTimers from "@sinonjs/fake-timers";
 import { array } from "cooky-cutter";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { mockCachedUser } from "@/testUtils/userMock";
+import { mockAuthenticatedUser } from "@/testUtils/userMock";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   formStateFactory,
@@ -909,7 +909,7 @@ describe("brick validation in Add Brick Modal UI", () => {
   );
 
   test("hides UiPath bricks for AA users", async () => {
-    mockCachedUser(partnerUserFactory());
+    mockAuthenticatedUser(partnerUserFactory());
     const formState = formStateFactory();
     render(
       <>

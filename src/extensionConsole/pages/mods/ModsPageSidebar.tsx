@@ -20,7 +20,7 @@ import {
 import { type TableInstance } from "react-table";
 import { type ModViewItem } from "@/types/modTypes";
 import useFlags from "@/hooks/useFlags";
-import { appApi, useGetStarterBlueprintsQuery } from "@/services/api";
+import { useGetMeQuery, useGetStarterBlueprintsQuery } from "@/services/api";
 import { kebabCase } from "lodash";
 import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 
@@ -105,7 +105,7 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
     data: me,
     isLoading: isMeLoading,
     isFetching: isMeFetching,
-  } = appApi.endpoints.getMe.useQueryState();
+  } = useGetMeQuery();
   const { getMilestone } = useMilestones();
 
   const onboardingModId = getMilestone("first_time_public_blueprint_install")

@@ -28,7 +28,7 @@ import {
   setThemeFavicon,
   type ThemeLogo,
 } from "@/themes/themeUtils";
-import { appApi } from "@/services/api";
+import { useGetMeQuery } from "@/services/api";
 import { selectAuth } from "@/auth/authSelectors";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import { isEmpty } from "lodash";
@@ -53,7 +53,7 @@ async function activateBackgroundTheme(
 export function useGetTheme(): Theme {
   const { theme, partnerId } = useSelector(selectSettings);
   const { partner: cachedPartner } = useSelector(selectAuth);
-  const { data: me } = appApi.endpoints.getMe.useQueryState();
+  const { data: me } = useGetMeQuery();
   const dispatch = useDispatch();
 
   const partnerTheme = useMemo(() => {
@@ -97,7 +97,7 @@ export function useGetOrganizationTheme(): {
   showSidebarLogo: boolean;
   customSidebarLogo: string;
 } {
-  const { data: me } = appApi.endpoints.getMe.useQueryState();
+  const { data: me } = useGetMeQuery();
   const { organization: cachedOrganization } = useSelector(selectAuth);
 
   const organizationTheme = me

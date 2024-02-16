@@ -29,7 +29,7 @@ import {
 } from "@/store/enterprise/managedStorage";
 import { render } from "@/extensionConsole/testHelpers";
 import settingsSlice from "@/store/settings/settingsSlice";
-import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
+import { mockAnonymousUser, mockAuthenticatedUser } from "@/testUtils/userMock";
 import { partnerUserFactory } from "@/testUtils/factories/authFactories";
 import notify from "@/utils/notify";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
@@ -88,7 +88,7 @@ describe("SetupPage", () => {
   });
 
   test("OAuth2 partner user with required service id in settings", async () => {
-    mockCachedUser(partnerUserFactory());
+    mockAuthenticatedUser(partnerUserFactory());
 
     render(
       <MemoryRouter>
@@ -179,7 +179,7 @@ describe("SetupPage", () => {
   });
 
   test("Start URL with Community Edition hostname if authenticated", async () => {
-    mockCachedUser(partnerUserFactory());
+    mockAuthenticatedUser(partnerUserFactory());
     const history = createHashHistory();
 
     // Hostname comes as hostname, not URL

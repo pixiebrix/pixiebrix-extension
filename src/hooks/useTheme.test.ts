@@ -17,35 +17,33 @@
 
 import { useGetOrganizationTheme, useGetTheme } from "@/hooks/useTheme";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
-import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
-import { renderHook } from "@/testUtils/renderWithCommonStore";
+import { mockAnonymousUser, mockAuthenticatedUser } from "@/testUtils/userMock";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { uuidv4 } from "@/types/helpers";
-import { authSlice } from "@/auth/authSlice";
+import { authActions, authSlice } from "@/auth/authSlice";
 import {
   authStateFactory,
   partnerUserFactory,
   userFactory,
   userOrganizationFactory,
 } from "@/testUtils/factories/authFactories";
+import { renderHook } from "@/pageEditor/testHelpers";
 
 describe("useGetTheme", () => {
-  test("has no partner", () => {
-    mockCachedUser(userFactory());
+  test("has no partner", async () => {
+    await mockAuthenticatedUser(userFactory());
 
-    const {
-      result: { current: theme },
-    } = renderHook(() => useGetTheme());
+    const { result: themeResult, waitFor } = renderHook(() => useGetTheme());
 
-    expect(theme).toBe(DEFAULT_THEME);
+    await waitFor(() => {
+      expect(themeResult.current).toBe(DEFAULT_THEME);
+    });
   });
 
-  test("has partnerId and no me partner", () => {
-    mockCachedUser(userFactory());
+  test("has partnerId and no me partner", async () => {
+    await mockAuthenticatedUser(userFactory());
 
-    const {
-      result: { current: theme },
-    } = renderHook(() => useGetTheme(), {
+    const { result: themeResult, waitFor } = renderHook(() => useGetTheme(), {
       setupRedux(dispatch) {
         dispatch(
           settingsSlice.actions.setPartnerId({
@@ -55,15 +53,15 @@ describe("useGetTheme", () => {
       },
     });
 
-    expect(theme).toBe("automation-anywhere");
+    await waitFor(() => {
+      expect(themeResult.current).toBe("automation-anywhere");
+    });
   });
 
-  test("has theme, but no partnerId and no me partner", () => {
+  test("has theme, but no partnerId and no me partner", async () => {
     mockAnonymousUser();
 
-    const {
-      result: { current: theme },
-    } = renderHook(() => useGetTheme(), {
+    const { result: themeResult, waitFor } = renderHook(() => useGetTheme(), {
       setupRedux(dispatch) {
         dispatch(
           settingsSlice.actions.setTheme({ theme: "automation-anywhere" }),
@@ -71,15 +69,15 @@ describe("useGetTheme", () => {
       },
     });
 
-    expect(theme).toBe(DEFAULT_THEME);
+    await waitFor(() => {
+      expect(themeResult.current).toBe(DEFAULT_THEME);
+    });
   });
 
-  test("has cached partner, but no me partner", () => {
+  test("has cached partner, but no me partner", async () => {
     mockAnonymousUser();
 
-    const {
-      result: { current: theme },
-    } = renderHook(() => useGetTheme(), {
+    const { result: themeResult, waitFor } = renderHook(() => useGetTheme(), {
       setupRedux(dispatch) {
         dispatch(
           authSlice.actions.setAuth(
@@ -94,50 +92,56 @@ describe("useGetTheme", () => {
       },
     });
 
-    expect(theme).toBe("automation-anywhere");
+    await waitFor(() => {
+      expect(themeResult.current).toBe("automation-anywhere");
+    });
   });
 
-  test("has partnerId, and me partner", () => {
-    mockCachedUser(partnerUserFactory());
+  test("has partnerId, and me partner", async () => {
+    await mockAuthenticatedUser(partnerUserFactory());
 
-    const {
-      result: { current: theme },
-    } = renderHook(() => useGetTheme(), {
+    const { result: themeResult, waitFor } = renderHook(() => useGetTheme(), {
       setupRedux(dispatch) {
         dispatch(settingsSlice.actions.setPartnerId({ partnerId: "default" }));
       },
     });
 
-    expect(theme).toBe("automation-anywhere");
+    await waitFor(() => {
+      expect(themeResult.current).toBe("automation-anywhere");
+    });
   });
 
-  test("has me partner, and different cached partner", () => {
-    mockCachedUser(partnerUserFactory());
+  test("has me partner, and different cached partner", async () => {
+    await mockAuthenticatedUser(partnerUserFactory());
 
-    const {
-      result: { current: theme },
-    } = renderHook(() => useGetTheme(), {
+    const { result: themeResult, waitFor } = renderHook(() => useGetTheme(), {
       setupRedux(dispatch) {
-        authStateFactory({
-          partner: {
-            name: "PixieBrix",
-            theme: "default",
-          },
-        });
+        dispatch(
+          authActions.setAuth(
+            authStateFactory({
+              partner: {
+                name: "PixieBrix",
+                theme: "default",
+              },
+            }),
+          ),
+        );
       },
     });
 
-    expect(theme).toBe("automation-anywhere");
+    await waitFor(() => {
+      expect(themeResult.current).toBe("automation-anywhere");
+    });
   });
 });
 
 describe("useGetOrganizationTheme", () => {
   const customTestLogoUrl = "https://test-logo.svg";
 
-  test("new organization theme trumps cached organization theme", () => {
+  test("new organization theme trumps cached organization theme", async () => {
     const newTestLogoUrl = "https://new-test-logo.svg";
 
-    mockCachedUser(
+    await mockAuthenticatedUser(
       userFactory({
         organization: userOrganizationFactory({
           theme: {
@@ -148,24 +152,29 @@ describe("useGetOrganizationTheme", () => {
       }),
     );
 
-    const {
-      result: { current: organizationTheme },
-    } = renderHook(() => useGetOrganizationTheme(), {
-      setupRedux(dispatch) {
-        authStateFactory({
-          organization: {
-            id: uuidv4(),
-            name: "Cached Organization",
-            theme: {
-              show_sidebar_logo: true,
-              logo: customTestLogoUrl,
+    const { result: organizationThemeResult, waitFor } = renderHook(
+      () => useGetOrganizationTheme(),
+      {
+        setupRedux(dispatch) {
+          authStateFactory({
+            organization: {
+              id: uuidv4(),
+              name: "Cached Organization",
+              theme: {
+                show_sidebar_logo: true,
+                logo: customTestLogoUrl,
+              },
             },
-          },
-        });
+          });
+        },
       },
-    });
+    );
 
-    expect(organizationTheme.showSidebarLogo).toBe(false);
-    expect(organizationTheme.customSidebarLogo).toBe(newTestLogoUrl);
+    await waitFor(() => {
+      expect(organizationThemeResult.current.showSidebarLogo).toBe(false);
+    });
+    expect(organizationThemeResult.current.customSidebarLogo).toBe(
+      newTestLogoUrl,
+    );
   });
 });

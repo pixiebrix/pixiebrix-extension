@@ -23,7 +23,7 @@ import {
 import useAsyncState from "@/hooks/useAsyncState";
 import { useEffect } from "react";
 
-type LinkState = {
+export type LinkState = {
   hasToken: boolean | undefined;
   tokenLoading: boolean;
   tokenError: unknown;

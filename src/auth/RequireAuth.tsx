@@ -165,6 +165,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
     (requiresIntegration && !hasConfiguredIntegration)
   ) {
     console.debug("Showing login page", {
+      isStartPage,
       isAccountUnlinked,
       requiresIntegration,
       hasConfiguredIntegration,
