@@ -590,6 +590,7 @@
     "./sidebar/thunks/addTemporaryPanel.ts",
     "./sidebar/thunks/removeTemporaryPanel.ts",
     "./sidebar/thunks/resolveTemporaryPanel.ts",
-    "./background/activateBrowserActionIcon.test.ts"
+    "./background/activateBrowserActionIcon.test.ts",
+    "./services/apiClient.ts"
   ]
 }

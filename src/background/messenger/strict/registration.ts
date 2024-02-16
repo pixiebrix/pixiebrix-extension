@@ -35,6 +35,7 @@ import {
   getCachedAuthData,
 } from "@/background/auth/authStorage";
 import { setToolbarBadge } from "@/background/toolbarBadge";
+import * as registry from "@/registry/packageRegistry";
 
 expectContext("background");
 
@@ -53,6 +54,10 @@ declare global {
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
     GET_CACHED_AUTH: typeof getCachedAuthData;
     SET_TOOLBAR_BADGE: typeof setToolbarBadge;
+    REGISTRY_SYNC: typeof registry.syncPackages;
+    REGISTRY_CLEAR: typeof registry.clear;
+    REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
+    REGISTRY_FIND: typeof registry.find;
   }
 }
 
@@ -71,5 +76,9 @@ export default function registerMessenger(): void {
     DELETE_CACHED_AUTH: deleteCachedAuthData,
     GET_CACHED_AUTH: getCachedAuthData,
     SET_TOOLBAR_BADGE: setToolbarBadge,
+    REGISTRY_SYNC: registry.syncPackages,
+    REGISTRY_CLEAR: registry.clear,
+    REGISTRY_GET_BY_KINDS: registry.getByKinds,
+    REGISTRY_FIND: registry.find,
   });
 }

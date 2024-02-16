@@ -62,13 +62,6 @@ export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU", bg);
 export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU", bg);
 export const openTab = getMethod("OPEN_TAB", bg);
 
-export const registry = {
-  syncRemote: getMethod("REGISTRY_SYNC", bg),
-  getByKinds: getMethod("REGISTRY_GET_BY_KINDS", bg),
-  find: getMethod("REGISTRY_FIND", bg),
-  clear: getMethod("REGISTRY_CLEAR", bg),
-};
-
 export const requestRun = {
   inOpener: getMethod("REQUEST_RUN_IN_OPENER", bg),
   inTarget: getMethod("REQUEST_RUN_IN_TARGET", bg),
