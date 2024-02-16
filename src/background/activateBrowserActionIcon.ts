@@ -31,10 +31,11 @@ export default async function activateBrowserActionIcon(url?: string) {
   }
 
   try {
-    if (url.startsWith("http")) {
+    if (url.startsWith("http") || url.endsWith(".svg")) {
       // External URLs must be loaded first
       browserAction.setIcon({ imageData: await loadImageData(url, 32, 32) });
     } else {
+      // Pointing to a file in the extension's zip
       browserAction.setIcon({ path: url });
     }
   } catch (error) {

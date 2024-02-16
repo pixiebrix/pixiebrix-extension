@@ -16,7 +16,7 @@
  */
 
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { browserAction } from "@/mv3/api";
 import { blobToImageData, loadImageData } from "@/utils/canvasUtils";
@@ -38,9 +38,9 @@ describe("activateBrowserActionIcon", () => {
     getImageData: getImageDataMock,
   });
 
-  // @ts-expect-error -- No need to mock the whole class for the test
   jest
     .mocked(browser.runtime.getManifest)
+    // @ts-expect-error -- No need to mock the whole class for the test
     .mockReturnValue({ icons: "path to icons" });
 
   globalThis.createImageBitmap = jest.fn().mockResolvedValue("image bitmap");
@@ -116,8 +116,7 @@ describe("activateBrowserActionIcon", () => {
     it("should throw when the request fails", async () => {
       mock.onGet(url).reply(500);
 
-      await expect(loadImageData(url, 32, 32)).rejects.toThrowWithMessage(
-        AxiosError,
+      await expect(loadImageData(url, 32, 32)).rejects.toThrow(
         "Request failed with status code 500",
       );
     });
