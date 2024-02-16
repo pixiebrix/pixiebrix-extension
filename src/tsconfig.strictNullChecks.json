@@ -42,7 +42,7 @@
     "./background/externalProtocol.ts",
     "./background/messenger/strict/api.ts",
     "./background/messenger/strict/registration.ts",
-    "./background/partnerTheme.ts",
+    "./background/initTheme.ts",
     "./background/setToolbarBadge.test.ts",
     "./background/sidePanel.ts",
     "./background/toolbarBadge.ts",

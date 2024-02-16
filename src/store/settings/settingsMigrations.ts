@@ -49,5 +49,6 @@ function migrateSettingsStateV2({
     ...state,
     // @since 1.8.6 - Migrate all users to True for this setting, make setting required
     varAutosuggest: true,
+    // TODO: figure out if a default value is needed here for toolbarIcon.
   };
 }

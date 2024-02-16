@@ -20,12 +20,12 @@ import { MemoryRouter } from "react-router";
 import Navbar from "@/extensionConsole/Navbar";
 import { render } from "@/extensionConsole/testHelpers";
 import { THEME_LOGOS } from "@/themes/themeUtils";
-import { type Theme } from "@/themes/themeTypes";
+import { type ThemeName } from "@/themes/themeTypes";
 
 const renderNavbar = () => {
   // There doesn't seem to be significant testable differences between
   // different Theme logos. We'll test with the default PixieBrix logos for now.
-  const logo = THEME_LOGOS["default" as Theme];
+  const logo = THEME_LOGOS["default" as ThemeName];
   return render(
     <MemoryRouter>
       <Navbar logo={logo} />

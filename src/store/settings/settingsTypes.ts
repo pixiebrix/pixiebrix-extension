@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Theme } from "@/themes/themeTypes";
+import { type ThemeName } from "@/themes/themeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Except } from "type-fest";
 
@@ -127,7 +127,7 @@ export type SettingsStateV1 = SkunkworksSettingsFlags &
     /**
      * Theme name for the extension
      */
-    theme: Theme;
+    theme: ThemeName;
   };
 
 /**
@@ -157,6 +157,12 @@ export type SettingsStateV3 = SettingsStateV2 & {
    * @since 1.8.6 SettingsStateV3 makes varAutosuggest required
    */
   varAutosuggest: boolean;
+
+  /**
+   * Custom toolbarIcon to use as the browser extension toolbar action icon -
+   * defined by the organization theme.
+   */
+  toolbarIcon: string | null;
 };
 
 export type SettingsState = SettingsStateV3;

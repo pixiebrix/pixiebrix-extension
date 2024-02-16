@@ -29,7 +29,7 @@ export const dataStore = {
   get: getMethod("GET_DATA_STORE", bg),
   set: getMethod("SET_DATA_STORE", bg),
 };
-export const activatePartnerTheme = getMethod("ACTIVATE_PARTNER_THEME", bg);
+export const activateTheme = getMethod("ACTIVATE_THEME", bg);
 
 export const traces = {
   addEntry: getNotifier("ADD_TRACE_ENTRY", bg),

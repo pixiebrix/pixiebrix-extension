@@ -22,7 +22,7 @@ import { expectContext } from "@/utils/expectContext";
 import { showMySidePanel } from "@/background/sidePanel";
 import { ensureContentScript } from "@/background/contentScript";
 import { getRecord, setRecord } from "@/background/dataStore";
-import initPartnerTheme from "@/background/partnerTheme";
+import initTheme from "@/background/initTheme";
 import {
   addTraceEntry,
   addTraceExit,
@@ -44,7 +44,7 @@ declare global {
     INJECT_SCRIPT: typeof ensureContentScript;
     GET_DATA_STORE: typeof getRecord;
     SET_DATA_STORE: typeof setRecord;
-    ACTIVATE_PARTNER_THEME: typeof initPartnerTheme;
+    ACTIVATE_THEME: typeof initTheme;
     ADD_TRACE_ENTRY: typeof addTraceEntry;
     ADD_TRACE_EXIT: typeof addTraceExit;
     CLEAR_TRACES: typeof clearExtensionTraces;
@@ -62,7 +62,7 @@ export default function registerMessenger(): void {
     INJECT_SCRIPT: ensureContentScript,
     GET_DATA_STORE: getRecord,
     SET_DATA_STORE: setRecord,
-    ACTIVATE_PARTNER_THEME: initPartnerTheme,
+    ACTIVATE_THEME: initTheme,
     ADD_TRACE_ENTRY: addTraceEntry,
     ADD_TRACE_EXIT: addTraceExit,
     CLEAR_TRACES: clearExtensionTraces,

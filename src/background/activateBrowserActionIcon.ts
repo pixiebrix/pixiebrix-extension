@@ -34,7 +34,7 @@ export default async function activateBrowserActionIcon(url?: string) {
  * Converts a Blob object into ImageData.
  *
  * This function creates an Image object from a Blob, decodes the image,
- * draws it on an offscreen canvas, and then returns the image data from the canvas.
+ * draws it in 16x6 on an offscreen canvas, and then returns the image data from the canvas.
  *
  * @param {Blob} blob - The Blob object to convert into ImageData.
  * @returns {Promise<ImageData>} A promise that resolves to the ImageData of the Blob.
@@ -57,7 +57,7 @@ export async function blobToImageData(blob: Blob): Promise<ImageData> {
     throw new Error("Failed to get 2d context for canvas");
   }
 
-  context.drawImage(img, 0, 0);
+  context.drawImage(img, 0, 0, 16, 16);
   return context.getImageData(0, 0, 16, 16);
 }
 

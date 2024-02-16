@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useGetOrganizationTheme, useGetTheme } from "@/hooks/useTheme";
+import { useGetOrganizationTheme, useGetThemeName } from "@/hooks/useTheme";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
 import { renderHook } from "@/testUtils/renderWithCommonStore";
@@ -35,7 +35,7 @@ describe("useGetTheme", () => {
 
     const {
       result: { current: theme },
-    } = renderHook(() => useGetTheme());
+    } = renderHook(() => useGetThemeName());
 
     expect(theme).toBe(DEFAULT_THEME);
   });
@@ -45,7 +45,7 @@ describe("useGetTheme", () => {
 
     const {
       result: { current: theme },
-    } = renderHook(() => useGetTheme(), {
+    } = renderHook(() => useGetThemeName(), {
       setupRedux(dispatch) {
         dispatch(
           settingsSlice.actions.setPartnerId({
@@ -63,7 +63,7 @@ describe("useGetTheme", () => {
 
     const {
       result: { current: theme },
-    } = renderHook(() => useGetTheme(), {
+    } = renderHook(() => useGetThemeName(), {
       setupRedux(dispatch) {
         dispatch(
           settingsSlice.actions.setTheme({ theme: "automation-anywhere" }),
@@ -79,7 +79,7 @@ describe("useGetTheme", () => {
 
     const {
       result: { current: theme },
-    } = renderHook(() => useGetTheme(), {
+    } = renderHook(() => useGetThemeName(), {
       setupRedux(dispatch) {
         dispatch(
           authSlice.actions.setAuth(
@@ -102,7 +102,7 @@ describe("useGetTheme", () => {
 
     const {
       result: { current: theme },
-    } = renderHook(() => useGetTheme(), {
+    } = renderHook(() => useGetThemeName(), {
       setupRedux(dispatch) {
         dispatch(settingsSlice.actions.setPartnerId({ partnerId: "default" }));
       },
@@ -116,7 +116,7 @@ describe("useGetTheme", () => {
 
     const {
       result: { current: theme },
-    } = renderHook(() => useGetTheme(), {
+    } = renderHook(() => useGetThemeName(), {
       setupRedux(dispatch) {
         authStateFactory({
           partner: {

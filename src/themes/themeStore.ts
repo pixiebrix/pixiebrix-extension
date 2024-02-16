@@ -18,22 +18,27 @@
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { expectContext } from "@/utils/expectContext";
-import { DEFAULT_THEME, type Theme } from "@/themes/themeTypes";
+import { DEFAULT_THEME, type ThemeName } from "@/themes/themeTypes";
 import { isValidTheme } from "@/themes/themeUtils";
 
 /**
- * Returns the active theme. In React, prefer useGetTheme.
- * @see useGetTheme
+ * Returns the active theme settings. In React, prefer useTheme.
+ * @see useTheme
  */
-export async function getActiveTheme(): Promise<Theme> {
+export async function getActiveTheme(): Promise<{
+  themeName: ThemeName;
+  toolbarIcon: string | null;
+}> {
   expectContext("extension");
 
-  // The theme property is initialized/set via an effect in useGetTheme
-  const { theme } = await getSettingsState();
+  // The theme property is initialized/set via an effect in useGetThemeName
+  const { theme, toolbarIcon } = await getSettingsState();
   const { partnerId: managedPartnerId } = await readManagedStorage();
 
   // Enterprise managed storage, if provided, always takes precedence over the user's theme settings
   const active = managedPartnerId ?? theme;
 
-  return isValidTheme(active) ? active : DEFAULT_THEME;
+  const activeTheme = isValidTheme(active) ? active : DEFAULT_THEME;
+
+  return { themeName: activeTheme, toolbarIcon };
 }

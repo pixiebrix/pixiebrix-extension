@@ -49,6 +49,7 @@ export const initialSettingsState: SettingsState = {
   authMethod: null,
   authIntegrationId: null,
   theme: DEFAULT_THEME,
+  toolbarIcon: null,
   updatePromptTimestamp: null,
 };
 
@@ -129,6 +130,12 @@ const settingsSlice = createSlice({
       once(() => {
         reportError(new Error(`Selected theme "${theme}" doesn't exist.`));
       });
+    },
+    setToolbarIcon(
+      state,
+      { payload: { toolbarIcon } }: { payload: { toolbarIcon: string } },
+    ) {
+      state.toolbarIcon = toolbarIcon;
     },
   },
   extraReducers(builder) {

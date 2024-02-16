@@ -23,22 +23,23 @@ import { expectContext } from "@/utils/expectContext";
 import { getActiveTheme } from "@/themes/themeStore";
 
 /**
- * Set the toolbar icon based on the current theme.
+ * Set the toolbar icon based on the current theme settings.
  * @see useGetTheme
  */
 async function setToolbarIcon(): Promise<void> {
-  const activeTheme = await getActiveTheme();
+  const { themeName: activeThemeName, toolbarIcon } = await getActiveTheme();
 
-  if (activeTheme === DEFAULT_THEME) {
+  if (activeThemeName !== DEFAULT_THEME) {
+    const themeLogo = getThemeLogo(activeThemeName);
+    browserAction.setIcon({ path: themeLogo.small });
+  } else if (toolbarIcon) {
+    await activateBrowserActionIcon(toolbarIcon);
+  } else {
     await activateBrowserActionIcon();
-    return;
   }
-
-  const themeLogo = getThemeLogo(activeTheme);
-  browserAction.setIcon({ path: themeLogo.small });
 }
 
-export default function initPartnerTheme() {
+export default function initTheme() {
   expectContext("background");
 
   void setToolbarIcon();
