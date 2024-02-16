@@ -41,7 +41,7 @@ const DiagnosticDataButton: React.FC = () => {
     const jsonString = JSON.stringify(data, null, 2);
     const blob = new Blob([jsonString], { type: "application/json" });
     const zip = new JSZip();
-    const fileNameWithoutExtension = `pixiebrix_error_dump_${Date.now()}`;
+    const fileNameWithoutExtension = `pixiebrix_diagnostic_data_${Date.now()}`;
     zip.file(`${fileNameWithoutExtension}.json`, blob);
     const content = await zip.generateAsync({ type: "blob" });
     download(content, `${fileNameWithoutExtension}.zip`, "application/zip");
