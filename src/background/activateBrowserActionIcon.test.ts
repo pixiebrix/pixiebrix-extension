@@ -17,7 +17,7 @@
 
 import activateBrowserActionIcon, {
   blobToImageData,
-  getImageData,
+  loadImageData,
 } from "@/background/activateBrowserActionIcon";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
@@ -104,12 +104,12 @@ describe("activateBrowserActionIcon", () => {
     it("should return ImageData from a Blob", async () => {
       const blob = new Blob(["test"], { type: "image/svg+xml" });
 
-      const result = await blobToImageData(blob);
+      const result = await blobToImageData(blob, 32, 32);
 
       expect(result).toBe("image data");
       expect(getContextmock).toHaveBeenCalledWith("2d");
       expect(drawImageMock).toHaveBeenCalledWith(expect.any(Image), 0, 0);
-      expect(getImageDataMock).toHaveBeenCalledWith(0, 0, 16, 16);
+      expect(getImageDataMock).toHaveBeenCalledWith(0, 0, 32, 32);
     });
   });
 
@@ -118,7 +118,7 @@ describe("activateBrowserActionIcon", () => {
       const blob = new Blob(["test"], { type: "image/svg+xml" });
       mock.onGet(url).reply(200, blob);
 
-      const result = await getImageData(url);
+      const result = await loadImageData(url);
 
       expect(result).toBe("image data");
     });
@@ -126,7 +126,7 @@ describe("activateBrowserActionIcon", () => {
     it("should return null when the request fails", async () => {
       mock.onGet(url).reply(500);
 
-      const result = await getImageData(url);
+      const result = await loadImageData(url);
 
       expect(result).toBeNull();
     });

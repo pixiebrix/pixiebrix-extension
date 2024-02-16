@@ -16,10 +16,11 @@
  */
 
 import { browserAction } from "@/mv3/api";
+import { assertNotNullish } from "@/utils/nullishUtils";
 import axios from "axios";
 
 export default async function activateBrowserActionIcon(url?: string) {
-  const imageData = await getImageData(url);
+  const imageData = await loadImageData(url);
 
   if (imageData) {
     browserAction.setIcon({ imageData });
@@ -35,40 +36,32 @@ export default async function activateBrowserActionIcon(url?: string) {
  *
  * This function creates an Image object from a Blob, decodes the image,
  * draws it on an offscreen canvas, and then returns the image data from the canvas.
- *
- * @param {Blob} blob - The Blob object to convert into ImageData.
- * @returns {Promise<ImageData>} A promise that resolves to the ImageData of the Blob.
- * @throws {Error} Throws an error if it fails to get the 2D context for the canvas.
- *
- * @todo Add MV3 support: https://github.com/pixiebrix/pixiebrix-extension/issues/7622
  */
-export async function blobToImageData(blob: Blob): Promise<ImageData> {
-  // TODO: Add MV3 support: https://github.com/pixiebrix/pixiebrix-extension/issues/7622
+export async function blobToImageData(
+  blob: Blob,
+  width: number,
+  height: number,
+): Promise<ImageData> {
+  const imageBitmap = await createImageBitmap(blob);
 
-  const img = new Image();
-  img.src = URL.createObjectURL(blob);
-  await img.decode();
+  const context = new OffscreenCanvas(width, height).getContext("2d");
+  assertNotNullish(context, "Failed to get 2D context for canvas"); // Impossible
 
-  // Paint on canvas and return
-  const canvas = new OffscreenCanvas(16, 16);
-  const context = canvas.getContext("2d");
-
-  if (!context) {
-    throw new Error("Failed to get 2d context for canvas");
-  }
-
-  context.drawImage(img, 0, 0);
-  return context.getImageData(0, 0, 16, 16);
+  // Note: Images that are not square will be stretched to fit the canvas, unless
+  // they're SVGs and the preserveAspectRatio attribute is set.
+  // This could be implemented via https://github.com/fregante/intrinsic-scale
+  context.drawImage(imageBitmap, 0, 0);
+  return context.getImageData(0, 0, width, height);
 }
 
-export async function getImageData(url?: string): Promise<ImageData | null> {
+export async function loadImageData(url?: string): Promise<ImageData | null> {
   if (!url) {
     return null;
   }
 
   try {
     const { data } = await axios.get<Blob>(url, { responseType: "blob" });
-    return await blobToImageData(data);
+    return await blobToImageData(data, 32, 32);
   } catch (error) {
     console.warn("Failed to load image data for browser action icon.", {
       url,
