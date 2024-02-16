@@ -40,6 +40,9 @@ describe("getActiveTheme", () => {
 
     await saveSettingsState(initialSettingsState);
 
-    await expect(getActiveTheme()).resolves.toBe("automation-anywhere");
+    await expect(getActiveTheme()).resolves.toStrictEqual({
+      themeName: "automation-anywhere",
+      toolbarIcon: null,
+    });
   });
 });

@@ -98,17 +98,17 @@ export function useGetOrganizationTheme(): {
   customSidebarLogo: string;
   toolbarIcon: string;
 } {
-  const { data: me, isLoading: meIsLoading } =
-    appApi.endpoints.getMe.useQueryState();
+  const { data: me } = appApi.endpoints.getMe.useQueryState();
   const dispatch = useDispatch();
   const { organization: cachedOrganization } = useSelector(selectAuth);
 
-  const organizationTheme = useMemo(() => {
-    return me ? me.organization?.theme : cachedOrganization?.theme;
-  }, [cachedOrganization, me]);
+  const organizationTheme = useMemo(
+    () => (me ? me.organization?.theme : cachedOrganization?.theme),
+    [cachedOrganization, me],
+  );
 
   useEffect(() => {
-    if (organizationTheme?.toolbar_icon && !meIsLoading) {
+    if (organizationTheme?.toolbar_icon) {
       // Update persisted Redux slice
       dispatch(
         settingsSlice.actions.setToolbarIcon({
@@ -116,7 +116,7 @@ export function useGetOrganizationTheme(): {
         }),
       );
     }
-  }, [dispatch, organizationTheme, meIsLoading]);
+  }, [dispatch, organizationTheme]);
 
   return {
     showSidebarLogo: organizationTheme

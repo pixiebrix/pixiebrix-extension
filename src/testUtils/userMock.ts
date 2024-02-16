@@ -17,7 +17,10 @@
 
 import { type Me } from "@/types/contract";
 import { appApi } from "@/services/api";
-import { querySuccessFactory } from "@/testUtils/rtkQueryFactories";
+import {
+  queryLoadingFactory,
+  querySuccessFactory,
+} from "@/testUtils/rtkQueryFactories";
 
 import { userFactory } from "@/testUtils/factories/authFactories";
 
@@ -40,5 +43,11 @@ export function mockAnonymousUser(): void {
 export function mockCachedUser(me?: Me): void {
   (appApi.endpoints.getMe as any).useQueryState = jest.fn(() =>
     querySuccessFactory(me ?? userFactory()),
+  );
+}
+
+export function mockLoadingCachedUser(): void {
+  (appApi.endpoints.getMe as any).useQueryState = jest.fn(() =>
+    queryLoadingFactory(),
   );
 }
