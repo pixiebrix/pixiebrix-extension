@@ -15,16 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const getMethod = jest.fn(() => jest.fn());
-export const getNotifier = jest.fn(() => jest.fn());
-export const backgroundTarget = { page: "background" };
+import { define } from "cooky-cutter";
+import type { Tabs } from "webextension-polyfill";
 
-let frameId = 0;
-
-export const getTopLevelFrame = async () => ({ tabId: 1, frameId });
-
-export const getThisFrame = getTopLevelFrame;
-
-export function setFrameId(newFrameId) {
-  frameId = newFrameId;
-}
+export const tabFactory = define<Tabs.Tab>({
+  url: () => "https://example.com",
+  id: (x: number) => x,
+  index: (x: number) => x,
+  active: true,
+  pinned: false,
+  highlighted: false,
+  incognito: false,
+});

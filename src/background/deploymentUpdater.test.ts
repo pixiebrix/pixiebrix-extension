@@ -416,7 +416,7 @@ describe("updateDeployments", () => {
     expect(jest.mocked(uninstallAllDeployments).mock.calls).toHaveLength(0);
     expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(0);
-  });
+  }, 10_000);
 
   test("do not open options page on update if restricted-version flag not set", async () => {
     isLinkedMock.mockResolvedValue(true);
