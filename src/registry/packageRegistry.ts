@@ -109,7 +109,7 @@ async function openRegistryDB() {
 }
 
 function latestVersion(
-  versions: Array<Nullishable<PackageVersion>>,
+  versions: PackageVersion[],
 ): Nullishable<PackageVersion> {
   return versions.length > 0
     ? sortBy(
