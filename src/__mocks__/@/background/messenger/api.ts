@@ -47,18 +47,6 @@ export const sheets = {
   appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS", bg),
 };
 
-export const registry = {
-  fetch: jest.fn().mockResolvedValue(true),
-  syncRemote: jest.fn(),
-  getByKinds: jest.fn().mockResolvedValue([]),
-  find: jest.fn().mockImplementation(async (id: RegistryId) => {
-    throw new Error(
-      `Find not implemented in registry mock (looking up "${id}"). See __mocks__/background/messenger/api for more information.`,
-    );
-  }),
-  clear: getMethod("REGISTRY_CLEAR", bg),
-};
-
 export const dataStore = {
   get: jest.fn().mockRejectedValue(new Error("Not implemented in mock")),
   set: getMethod("SET_DATA_STORE", bg),
