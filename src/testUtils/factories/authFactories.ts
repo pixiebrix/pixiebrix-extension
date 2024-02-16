@@ -27,7 +27,7 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type Me, type Milestone, UserRole } from "@/types/contract";
 import { type AuthData } from "@/integrations/integrationTypes";
 
-export function emailFactory(n: number): string {
+function emailFactory(n: number): string {
   return `user${n}@test.com`;
 }
 
@@ -143,12 +143,6 @@ export const authDataFactory = define<AuthData>({
   username: "test_user",
   password: "test_pwd",
 });
-
-export function userAuthStateFactory(me: Partial<Me> = {}): AuthState {
-  return authStateFactory({
-    ...me,
-  });
-}
 
 export const tokenAuthDataFactory = define<TokenAuthData>({
   email: emailFactory,

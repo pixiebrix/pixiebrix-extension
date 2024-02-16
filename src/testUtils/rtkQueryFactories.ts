@@ -39,8 +39,11 @@ export function queryLoadingFactory(): UseQueryHookResult<
 
 /**
  * Factory to create an RTK Query success state.
+ *
+ * @since 1.8.9 - Not used, but kept for future reference in case it's needed
  */
-export function querySuccessFactory<T>(
+/*
+function querySuccessFactory<T>(
   data: T,
   { isFetching }: { isFetching?: boolean } = {},
 ): UseQueryHookResult<QueryDefinition<any, any, any, T>> {
@@ -70,6 +73,7 @@ export function querySuccessFactory<T>(
     fulfilledTimeStamp: Date.now(),
   };
 }
+ */
 
 /**
  * Factory to create an RTK Query errors state.
