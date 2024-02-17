@@ -61,6 +61,22 @@ function isFieldElement(element: HTMLElement): boolean {
   );
 }
 
+/**
+ * DraftJS doesn't handle `insertText` correctly in some cases, but it can handle this
+ * event. Note that this event doesn't do anything in regular contentEditable fields.
+ */
+function dispatchPasteForDraftJs(field: FieldElement, value: string) {
+  const data = new DataTransfer();
+  data.setData("text/plain", value);
+  field.dispatchEvent(
+    new ClipboardEvent("paste", {
+      clipboardData: data,
+      bubbles: true,
+      cancelable: true,
+    }),
+  );
+}
+
 async function setFieldValue(
   field: FieldElement,
   value: unknown,
@@ -83,8 +99,14 @@ async function setFieldValue(
     // `insertText` acts as a "paste", so if no text is selected it's just appended
     document.execCommand("selectAll");
 
-    // It automatically triggers an `input` event
-    document.execCommand("insertText", false, String(value));
+    if (field.textContent === "" && field.closest(".DraftEditor-root")) {
+      // Special handling for DraftJS if the field is empty
+      // https://github.com/pixiebrix/pixiebrix-extension/issues/7630
+      dispatchPasteForDraftJs(field, String(value));
+    } else {
+      // It automatically triggers an `input` event
+      document.execCommand("insertText", false, String(value));
+    }
 
     return;
   }
