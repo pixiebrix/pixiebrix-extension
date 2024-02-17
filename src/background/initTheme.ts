@@ -29,7 +29,7 @@ import { getActiveTheme } from "@/themes/themeStore";
 async function setToolbarIcon(): Promise<void> {
   const { themeName: activeThemeName, toolbarIcon } = await getActiveTheme();
 
-  if (activeThemeName === DEFAULT_THEME) {
+  if (toolbarIcon || activeThemeName === DEFAULT_THEME) {
     await activateBrowserActionIcon(toolbarIcon);
   } else {
     const themeLogo = getThemeLogo(activeThemeName);
