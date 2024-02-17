@@ -93,11 +93,6 @@ describe("Tabs", () => {
   test("renders", () => {
     render(<Tabs />);
     expect(screen.getByRole("tablist")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", {
-        name: /open mod launcher/i,
-      }),
-    ).toBeInTheDocument();
   });
 
   test("renders with panels", async () => {
@@ -179,25 +174,17 @@ describe("Tabs", () => {
         },
       });
 
-      await userEvent.click(
-        screen.getByRole("button", { name: "open mod launcher" }),
-      );
-
-      expect(screen.getByText("Mods")).toBeInTheDocument();
-    });
-
-    test("clicking open the mod launcher multiple times does not open multiple mod launchers", async () => {
-      await setupPanelsAndRender({
-        sidebarEntries: { staticPanels: [MOD_LAUNCHER] },
+      const modLauncherButton = screen.getByRole("button", {
+        name: "open mod launcher",
       });
 
+      await userEvent.click(modLauncherButton);
+
       expect(screen.getByText("Mods")).toBeInTheDocument();
 
-      await userEvent.click(
-        screen.getByRole("button", { name: "open mod launcher" }),
-      );
-
-      expect(screen.getAllByText("Mods")).toHaveLength(1);
+      // The + button should be not be visible until the mod launcher can be opened multiple times.
+      // https://github.com/pixiebrix/pixiebrix-extension/issues/6549
+      expect(modLauncherButton).not.toBeInTheDocument();
     });
 
     test("opening a panel from the mod launcher closes the mod launcher", async () => {
