@@ -20,13 +20,13 @@ import { Button, Col, Container, Row } from "react-bootstrap";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { navigateTab } from "@/contentScript/messenger/api";
-import { thisTab } from "@/pageEditor/utils";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import paintbrush from "@img/paintbrush.svg";
 import bgIllustration from "@img/home-pane-bg-illustration.png";
 
 import styles from "@/pageEditor/panes/HomePane.module.scss";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 const TEMPLATE_TELEMETRY_SOURCE = "home_pane";
 
@@ -70,7 +70,7 @@ const HomePane: React.FunctionComponent = () => {
                     sessionId,
                     source: TEMPLATE_TELEMETRY_SOURCE,
                   });
-                  navigateTab(thisTab, {
+                  navigateTab(inspectedTab, {
                     url: `https://www.pixiebrix.com/templates-gallery?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=${TEMPLATE_TELEMETRY_SOURCE}`,
                   });
                 }}
