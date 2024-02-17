@@ -44,8 +44,7 @@ import {
   registerEmptyTemporaryPanel,
   updatePanelDefinition,
   waitForTemporaryPanel,
-} from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
+} from "@/platform/panels/panelController";
 import { uuidv4 } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
@@ -56,12 +55,9 @@ import { setState } from "@/platform/state/pageState";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { unary } from "lodash";
 import { toExpression } from "@/utils/expressionUtils";
+import { showModal } from "@/contentScript/modalDOM";
 
-(browser.runtime as any).getURL = jest.fn(
-  (path) => `chrome-extension://abc/${path}`,
-);
-
-jest.mock("@/bricks/transformers/ephemeralForm/modalUtils");
+jest.mock("@/contentScript/modalDOM");
 const showModalMock = jest.mocked(showModal);
 
 jest.mock("@/contentScript/sidebarController");
@@ -70,7 +66,7 @@ const updateTemporarySidebarPanelMock = jest.mocked(
   updateTemporarySidebarPanel,
 );
 
-jest.mock("@/bricks/transformers/temporaryInfo/temporaryPanelProtocol");
+jest.mock("@/platform/panels/panelController");
 const registerEmptyTemporaryPanelMock = jest.mocked(
   registerEmptyTemporaryPanel,
 );

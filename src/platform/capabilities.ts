@@ -27,9 +27,9 @@ export const platformCapabilities = [
   "contentScript",
   // Show a blocking alert/prompt to the user
   "alert",
-  // Show a blocking dialog to the user
-  "dialog",
-  // Show a non-blocking panel, e.g., in the Chromium side panel
+  // Show a form to a user
+  "form",
+  // Show a panel to a user
   "panel",
   // Show a non-blocking notification/toast
   "toast",
@@ -47,6 +47,8 @@ export const platformCapabilities = [
   "state",
   // Make API requests
   "http",
+  // Render a template
+  "template",
 ] as const;
 
 export type PlatformCapability = (typeof platformCapabilities)[number];

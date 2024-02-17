@@ -35,8 +35,8 @@ import type {
   PanelPayload,
   TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
-import { getTemporaryPanelSidebarEntries } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
-import { getFormPanelSidebarEntries } from "@/contentScript/ephemeralFormProtocol";
+import { getTemporaryPanelSidebarEntries } from "@/platform/panels/panelController";
+import { getFormPanelSidebarEntries } from "@/platform/forms/formController";
 import { getSidebarTargetForCurrentTab } from "@/utils/sidePanelUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getTimedSequence } from "@/types/helpers";

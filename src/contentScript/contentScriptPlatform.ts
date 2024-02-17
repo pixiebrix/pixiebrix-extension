@@ -26,6 +26,8 @@ import { expectContext } from "@/utils/expectContext";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { performConfiguredRequestInBackground } from "@/background/messenger/api";
+import { ephemeralForm } from "@/contentScript/ephemeralForm";
+import { ephemeralPanel } from "@/contentScript/ephemeralPanel";
 
 async function playSound(sound: string): Promise<void> {
   const audio = new Audio(browser.runtime.getURL(`audio/${sound}.mp3`));
@@ -52,7 +54,7 @@ class ContentScriptPlatform extends PlatformABC {
     "alert",
     "toast",
     "sandbox",
-    "dialog",
+    "form",
     "clipboardWrite",
     "audio",
     "state",
@@ -75,6 +77,10 @@ class ContentScriptPlatform extends PlatformABC {
   // Perform requests via the background so 1/ the host pages CSP doesn't conflict, and 2/ credentials aren't
   // passed to the content script
   override request = performConfiguredRequestInBackground;
+
+  override form = ephemeralForm;
+
+  override panel = ephemeralPanel;
 
   override get state() {
     // Double-check already in contentScript because the calls don't go through the messenger

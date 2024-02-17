@@ -28,6 +28,11 @@ import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
 import type { Nullishable } from "@/utils/nullishUtils";
+import type { FormDefinition } from "@/platform/forms/formTypes";
+import type { UUID } from "@/types/stringTypes";
+import type { RegistryId } from "@/types/registryTypes";
+import type { JsonObject } from "type-fest";
+import type { TemporaryPanelDefinition } from "@/platform/panels/panelTypes";
 
 function notAvailable(capability: PlatformCapability): () => never {
   return () => {
@@ -82,9 +87,31 @@ export interface PlatformProtocol {
   notify: typeof showNotification;
 
   /**
+   * Show a form.
+   */
+  form: (
+    definition: FormDefinition,
+    controller: AbortController,
+    context: { componentId: UUID; modId?: RegistryId },
+  ) => Promise<unknown>;
+
+  panel: (definition: TemporaryPanelDefinition) => Promise<JsonObject>;
+
+  /**
    * Set the badge text for the platform, e.g., the browser extension icon badge or tab favicon badge.
    */
   setBadgeText: (text: string) => void;
+
+  /**
+   * Render a template. Uses a sandbox, if available.
+   * @param args
+   */
+  renderTemplate: (args: {
+    engine: "nunjucks" | "handlebars";
+    template: string;
+    context: JsonObject;
+    autoescape: boolean;
+  }) => Promise<string>;
 
   /**
    * Run sandboxed Javascript. Does not have access to the DOM.
@@ -146,6 +173,12 @@ export class PlatformABC implements PlatformProtocol {
     notAvailable("contentScript");
 
   request: PlatformProtocol["request"] = notAvailable("http");
+
+  form: PlatformProtocol["form"] = notAvailable("form");
+
+  panel: PlatformProtocol["panel"] = notAvailable("panel");
+
+  renderTemplate: PlatformProtocol["renderTemplate"] = notAvailable("template");
 
   get state(): State {
     throw new PlatformCapabilityNotAvailable("state");

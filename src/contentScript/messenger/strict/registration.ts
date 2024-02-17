@@ -31,7 +31,7 @@ import {
   getFormDefinition,
   resolveForm,
   cancelForm,
-} from "@/contentScript/ephemeralFormProtocol";
+} from "@/platform/forms/formController";
 import { getProcesses, initRobot } from "@/contentScript/uipath";
 import { checkAvailable } from "@/bricks/available";
 import notify from "@/utils/notify";
@@ -41,7 +41,7 @@ import {
   getPanelDefinition,
   resolveTemporaryPanel,
   stopWaitingForTemporaryPanels,
-} from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
+} from "@/platform/panels/panelController";
 import { closeWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
 import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughModal";
 import { registerMethods } from "webext-messenger";

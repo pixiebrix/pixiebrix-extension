@@ -31,7 +31,10 @@ export const platformMock: PlatformProtocol = {
   playSound: jest.fn(),
   userSelectElementRefs: jest.fn(),
   request: jest.fn(),
+  renderTemplate: jest.fn(),
   runSandboxedJavascript: jest.fn(),
+  form: jest.fn(),
+  panel: jest.fn(),
   quickBarRegistry: {
     addAction: jest.fn(),
     knownGeneratorRootIds: new Set<string>(),

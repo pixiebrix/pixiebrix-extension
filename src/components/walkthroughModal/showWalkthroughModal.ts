@@ -18,9 +18,9 @@
 import { expectContext } from "@/utils/expectContext";
 import { getThisFrame } from "webext-messenger";
 import { registerWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
-import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
+import { showModal } from "@/contentScript/modalDOM";
 
 const showWalkthroughModal = async () => {
   expectContext("contentScript");

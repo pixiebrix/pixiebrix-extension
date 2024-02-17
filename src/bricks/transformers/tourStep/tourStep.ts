@@ -31,19 +31,24 @@ import {
 import { validateRegistryId } from "@/types/helpers";
 import { isEmpty, noop } from "lodash";
 import { awaitElement } from "@/bricks/effects/wait";
-import {
-  displayTemporaryInfo,
-  type RefreshTrigger,
-  type TemporaryDisplayInputs,
-  type TemporaryPanelEntryMetadata,
-} from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { type PanelButton } from "@/types/sidebarTypes";
 import { getCurrentTour, markTourStep } from "@/starterBricks/tourController";
 import { addOverlay } from "@/bricks/transformers/tourStep/overlay";
-import { cancelTemporaryPanels } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
+import * as UNSAFE_panelController from "@/platform/panels/panelController";
 import { AbortPanelAction } from "@/bricks/errors";
 import { $safeFind } from "@/utils/domUtils";
 import { toExpression } from "@/utils/expressionUtils";
+import type {
+  RefreshTrigger,
+  TemporaryPanelDefinition,
+  TemporaryPanelEntryMetadata,
+} from "@/platform/panels/panelTypes";
+import type { BrickConfig } from "@/bricks/types";
+import {
+  CONTENT_SCRIPT_CAPABILITIES,
+  type PlatformCapability,
+} from "@/platform/capabilities";
+import { expectContext } from "@/utils/expectContext";
 
 export type StepInputs = {
   title: string;
@@ -309,6 +314,12 @@ class TourStepTransformer extends TransformerABC {
     return false;
   }
 
+  override async getRequiredCapabilities(
+    _config: BrickConfig,
+  ): Promise<PlatformCapability[]> {
+    return [...CONTENT_SCRIPT_CAPABILITIES, "panel"];
+  }
+
   async displayStep(
     element: HTMLElement | Document,
     { appearance = {}, title, body, isLastStep }: StepInputs,
@@ -317,9 +328,14 @@ class TourStepTransformer extends TransformerABC {
       logger: {
         context: { extensionId, blueprintId },
       },
+      platform,
       runRendererPipeline,
     }: BrickOptions,
   ): Promise<unknown> {
+    // Currently only contentScript context is supported. This method needs to be re-worked to not call
+    // the panel controller directly via the UNSAFE_panelController reference.
+    expectContext("contentScript");
+
     let counter = 0;
 
     const location = element === document ? "modal" : "popover";
@@ -364,19 +380,22 @@ class TourStepTransformer extends TransformerABC {
     };
 
     // Outside click handler
-    let onOutsideClick: TemporaryDisplayInputs["onOutsideClick"] = noop;
+    let onOutsideClick: TemporaryPanelDefinition["onOutsideClick"] = noop;
     if (appearance.controls?.outsideClick === "cancel") {
       onOutsideClick = async (nonce) => {
-        await cancelTemporaryPanels([nonce], new AbortPanelAction());
+        await UNSAFE_panelController.cancelTemporaryPanels(
+          [nonce],
+          new AbortPanelAction(),
+        );
       };
     } else if (appearance.controls?.outsideClick === "submit") {
       onOutsideClick = async (nonce) => {
-        await cancelTemporaryPanels([nonce]);
+        await UNSAFE_panelController.cancelTemporaryPanels([nonce]);
       };
     }
 
     // Close button handler
-    let onCloseClick: TemporaryDisplayInputs["onCloseClick"] = null;
+    let onCloseClick: TemporaryPanelDefinition["onCloseClick"] = null;
     if (appearance.controls?.closeButton === "cancel") {
       onCloseClick = () => {
         throw new AbortPanelAction("User closed the panel");
@@ -387,7 +406,7 @@ class TourStepTransformer extends TransformerABC {
     }
 
     try {
-      return await displayTemporaryInfo({
+      return await platform.panel({
         panelEntryMetadata,
         getPayload,
         target: element,

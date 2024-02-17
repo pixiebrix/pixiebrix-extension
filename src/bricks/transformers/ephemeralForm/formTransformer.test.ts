@@ -16,18 +16,18 @@
  */
 
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
-
 import { toExpression } from "@/utils/expressionUtils";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
-import { TEST_cancelAll } from "@/contentScript/ephemeralFormProtocol";
+import { TEST_cancelAll } from "@/platform/forms/formController";
 import * as messenger from "webext-messenger";
+import { showModal } from "@/contentScript/modalDOM";
 
 jest.mock("@/utils/iframeUtils");
-jest.mock("@/bricks/transformers/ephemeralForm/modalUtils");
+jest.mock("@/contentScript/modalDOM");
+jest.mock("@/contentScript/sidebarDomControllerLite");
 
 const showModalMock = jest.mocked(showModal);
 
@@ -36,7 +36,6 @@ const brick = new FormTransformer();
 afterEach(async () => {
   // eslint-disable-next-line new-cap -- test method
   await TEST_cancelAll();
-  jest.clearAllMocks();
 });
 
 describe("FormTransformer", () => {

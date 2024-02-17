@@ -72,7 +72,7 @@
 ./src/contentScript/context.ts
 ./src/contentScript/contextMenus.ts
 ./src/contentScript/elementReference.ts
-./src/contentScript/ephemeralFormProtocol.ts
+./src/contentScript/formController.ts
 ./src/contentScript/ephemeralPanelController.tsx
 ./src/contentScript/lifecycle.ts
 ./src/contentScript/messenger/api.ts

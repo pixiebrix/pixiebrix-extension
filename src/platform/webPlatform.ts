@@ -26,8 +26,7 @@ class WebPlatform extends PlatformABC {
     "alert",
     "sandbox",
     "toast",
-    "dialog",
-    "panel",
+    "form",
     "clipboardWrite",
     "state",
   ];

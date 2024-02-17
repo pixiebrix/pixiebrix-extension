@@ -17,6 +17,8 @@
 
 import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
+import type { BrickConfig } from "@/bricks/types";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 class TimestampReader extends ReaderABC {
   override defaultOutputKey = "instant";
@@ -40,6 +42,12 @@ class TimestampReader extends ReaderABC {
 
   override async isRootAware(): Promise<boolean> {
     return false;
+  }
+
+  override async getRequiredCapabilities(
+    _config: BrickConfig,
+  ): Promise<PlatformCapability[]> {
+    return [];
   }
 
   override outputSchema: Schema = {

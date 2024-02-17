@@ -23,10 +23,10 @@ import { type BrickOptions } from "@/types/runtimeTypes";
 import { cancelAllTours, markTourStart } from "@/starterBricks/tourController";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { MultipleElementsFoundError } from "@/errors/businessErrors";
-import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
 import { showPopover } from "@/bricks/transformers/temporaryInfo/popoverUtils";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { showModal } from "@/contentScript/modalDOM";
 
 beforeAll(() => {
   requestIdleCallback.mock();
