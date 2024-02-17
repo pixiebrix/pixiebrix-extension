@@ -21,8 +21,6 @@ import {
   selectActiveRecipeId,
   selectDirtyOptionDefinitionsForRecipeId,
   selectDirtyOptionValuesForRecipeId,
-  selectNotDeletedElements,
-  selectNotDeletedExtensions,
 } from "@/pageEditor/slices/editorSelectors";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
@@ -44,6 +42,7 @@ import { DEFAULT_RUNTIME_API_VERSION } from "@/runtime/apiVersionOptions";
 import ModIntegrationsContext from "@/mods/ModIntegrationsContext";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { uniqBy } from "lodash";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 
 const OPTIONS_FIELD_RUNTIME_CONTEXT: RuntimeContext = {
   apiVersion: DEFAULT_RUNTIME_API_VERSION,
@@ -68,8 +67,11 @@ const ModOptionsValuesContent: React.FC = () => {
   const modifiedOptionValues = useSelector(
     selectDirtyOptionValuesForRecipeId(recipeId),
   );
-  const installedExtensions = useSelector(selectNotDeletedExtensions);
-  const dirtyElements = useSelector(selectNotDeletedElements);
+  const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
+    selectGetCleanComponentsAndDirtyFormStatesForMod,
+  );
+  const { cleanModComponents, dirtyModComponentFormStates } =
+    getCleanComponentsAndDirtyFormStatesForMod(recipeId);
 
   const optionsDefinition = useMemo(() => {
     if (dirtyRecipeOptions) {
@@ -95,33 +97,25 @@ const ModOptionsValuesContent: React.FC = () => {
     [optionsDefinition],
   );
 
-  const recipeExtensions = useMemo(
-    () =>
-      installedExtensions.filter(
-        (extension) => extension._recipe?.id === recipeId,
-      ),
-    [installedExtensions, recipeId],
-  );
-
   const initialValues = useMemo(
-    () => modifiedOptionValues ?? collectModOptions(recipeExtensions),
-    [modifiedOptionValues, recipeExtensions],
-  );
-
-  const recipeElements = useMemo(
-    () => dirtyElements.filter((element) => element.recipe?.id === recipeId),
-    [dirtyElements, recipeId],
+    () =>
+      modifiedOptionValues ??
+      collectModOptions([
+        ...cleanModComponents,
+        ...dirtyModComponentFormStates,
+      ]),
+    [cleanModComponents, dirtyModComponentFormStates, modifiedOptionValues],
   );
 
   const integrationDependencies = useMemo(
     () =>
       uniqBy(
-        [...recipeExtensions, ...recipeElements].flatMap(
+        [...cleanModComponents, ...dirtyModComponentFormStates].flatMap(
           ({ integrationDependencies }) => integrationDependencies ?? [],
         ),
         ({ integrationId }) => integrationId,
       ),
-    [recipeExtensions, recipeElements],
+    [cleanModComponents, dirtyModComponentFormStates],
   );
 
   const updateRedux = useCallback(

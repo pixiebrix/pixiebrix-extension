@@ -65,6 +65,7 @@ export enum ModalKey {
   SAVE_AS_NEW_RECIPE,
   CREATE_RECIPE,
   ADD_BLOCK,
+  SAVE_DATA_INTEGRITY_ERROR,
 }
 
 export type ModMetadataFormState = Pick<
