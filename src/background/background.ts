@@ -74,7 +74,7 @@ initContextMenus();
 initContentScriptReadyListener();
 initBrowserCommands();
 initDeploymentUpdater();
-void activateBrowserActionIcon();
+void activateBrowserActionIcon(); // Keep here #7645
 initTheme();
 initStarterMods();
 initPartnerTokenRefresh();
