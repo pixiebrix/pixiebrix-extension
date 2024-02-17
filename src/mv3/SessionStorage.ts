@@ -23,7 +23,7 @@
  */
 
 import { expectContext } from "@/utils/expectContext";
-import { OmitIndexSignature, type JsonValue } from "type-fest";
+import { type OmitIndexSignature, type JsonValue } from "type-fest";
 import { type ManualStorageKey } from "@/utils/storageUtils";
 
 // Just like chrome.storage.session, this must be "global"

@@ -18,7 +18,7 @@
 import { lastFocusedTarget } from "@/utils/focusTracker";
 import { writeToClipboard } from "@/contentScript/messenger/strict/api";
 import { type Sender, type Target, type PageTarget } from "webext-messenger";
-import { ClipboardText } from "@/utils/clipboardUtils";
+import { type ClipboardText } from "@/utils/clipboardUtils";
 
 function extractTargetFromSender(
   sender: Sender,

@@ -31,11 +31,13 @@ import { watchNavigation } from "@/pageEditor/protocol";
 import { initToaster } from "@/utils/notify";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
+import { markContextAsFocusableByUser } from "@/utils/focusTracker";
 
 void initMessengerLogging();
 void initRuntimeLogging();
 void initPerformanceMonitoring();
 watchNavigation();
 initToaster();
+markContextAsFocusableByUser();
 
 ReactDOM.render(<Panel />, document.querySelector("#container"));
