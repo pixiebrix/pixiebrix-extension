@@ -26,6 +26,9 @@ import {
 } from "@/components/quickBar/quickbarTypes";
 import { allSettled } from "@/utils/promiseUtils";
 
+/**
+ * Public interface for the Quick Bar registry.
+ */
 export interface QuickBarRegistryProtocol {
   addAction(action: CustomAction): void;
   knownGeneratorRootIds: Set<string>;

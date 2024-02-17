@@ -16,9 +16,8 @@
  */
 
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { type BrickArgs, BrickOptions } from "@/types/runtimeTypes";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-
 import { boolean } from "@/utils/typeUtils";
 import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";

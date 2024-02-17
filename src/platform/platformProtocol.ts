@@ -130,14 +130,21 @@ export class PlatformABC implements PlatformProtocol {
   readonly capabilities: readonly PlatformCapability[] = [];
 
   alert: PlatformProtocol["alert"] = notAvailable("alert");
+
   prompt: PlatformProtocol["prompt"] = notAvailable("alert");
+
   notify: PlatformProtocol["notify"] = notAvailable("toast");
+
   runSandboxedJavascript: PlatformProtocol["runSandboxedJavascript"] =
     notAvailable("sandbox");
+
   playSound: PlatformProtocol["playSound"] = notAvailable("audio");
+
   setBadgeText: PlatformProtocol["setBadgeText"] = notAvailable("icon");
+
   userSelectElementRefs: PlatformProtocol["userSelectElementRefs"] =
     notAvailable("contentScript");
+
   request: PlatformProtocol["request"] = notAvailable("http");
 
   get state(): State {

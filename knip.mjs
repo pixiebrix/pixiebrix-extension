@@ -52,6 +52,8 @@ const knipConfig = {
     "src/contrib/uipath/UiPathRobot.ts",
     // Unused, but we'll likely need this again in the future
     "src/hooks/useContextInvalidated.ts",
+    // Unused, but using to work through protocol design
+    "src/platforms/webPlatform.ts",
   ],
   ignoreDependencies: [
     // Browser environment types
