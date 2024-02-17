@@ -84,7 +84,10 @@ export async function setFieldsValue(
 export async function setFieldValue(
   field: FieldElement,
   value: unknown,
-  { dispatchEvent, isOption }: { dispatchEvent: boolean; isOption: boolean },
+  {
+    dispatchEvent,
+    isOption,
+  }: { dispatchEvent?: boolean; isOption?: boolean } = {},
 ): Promise<void> {
   // For performance, use the contentScript-based call to determine if the element has the classname associate with
   // CKEditor 5 instances. If it does, set the data (will error if it's not actually a CKEditor 5 instance).

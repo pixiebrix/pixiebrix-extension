@@ -525,6 +525,7 @@
     "./utils/debugUtils.ts",
     "./utils/detectRandomString.ts",
     "./utils/domFieldUtils.ts",
+    "./utils/domFieldUtils.test.ts",
     "./utils/domUtils.ts",
     "./utils/enrichAxiosErrors.ts",
     "./utils/expectContext.ts",
