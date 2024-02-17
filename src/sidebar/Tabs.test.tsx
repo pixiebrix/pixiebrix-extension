@@ -152,7 +152,7 @@ describe("Tabs", () => {
       });
 
       await userEvent.click(
-        screen.getByRole("button", { name: "open mod launcher" }),
+        screen.getByRole("button", { name: "Open Mod Launcher" }),
       );
 
       expect(screen.getByText("Mods")).toBeInTheDocument();
@@ -175,7 +175,7 @@ describe("Tabs", () => {
       });
 
       const modLauncherButton = screen.getByRole("button", {
-        name: "open mod launcher",
+        name: "Open Mod Launcher",
       });
 
       await userEvent.click(modLauncherButton);
@@ -196,7 +196,7 @@ describe("Tabs", () => {
       });
 
       await userEvent.click(
-        screen.getByRole("button", { name: "open mod launcher" }),
+        screen.getByRole("button", { name: "Open Mod Launcher" }),
       );
 
       await userEvent.click(
@@ -264,7 +264,7 @@ describe("Tabs", () => {
       ).not.toBeInTheDocument();
 
       await userEvent.click(
-        screen.getByRole("button", { name: "open mod launcher" }),
+        screen.getByRole("button", { name: "Open Mod Launcher" }),
       );
 
       await userEvent.click(
