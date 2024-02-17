@@ -51,6 +51,7 @@ import {
   initManagedStorage,
   watchDelayedStorageInitialization,
 } from "@/store/enterprise/managedStorage";
+import activateBrowserActionIcon from "./activateBrowserActionIcon";
 
 // Try to initialize managed storage as early as possible because it impacts background behavior
 // Call watchDelayedStorageInitialization to handle case where storage is not immediately available within timeout.
@@ -73,6 +74,7 @@ initContextMenus();
 initContentScriptReadyListener();
 initBrowserCommands();
 initDeploymentUpdater();
+void activateBrowserActionIcon();
 initTheme();
 initStarterMods();
 initPartnerTokenRefresh();
