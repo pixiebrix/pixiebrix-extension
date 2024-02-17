@@ -26,7 +26,7 @@ const TOP_LEVEL_FRAME_ID = 0;
 /**
  * Error thrown when the Page Editor is not pointed to a tab.
  */
-export class NotInspectingTabError extends Error {
+class NotInspectingTabError extends Error {
   override name = "NotInspectingTabError";
 }
 
