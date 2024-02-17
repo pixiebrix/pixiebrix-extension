@@ -36,7 +36,7 @@ import {
   selectTabHasPermissions,
   selectTabIsConnectingToContentScript,
 } from "@/pageEditor/tabState/tabStateSelectors";
-import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
+import useCurrentInspectedUrl from "@/pageEditor/hooks/useCurrentInspectedUrl";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { selectPageEditorDimensions } from "@/pageEditor/utils";
 import { DefaultErrorComponent } from "@/components/ErrorBoundary";
@@ -53,7 +53,7 @@ const EditorContent: React.FC = () => {
   const { isPendingInstalledExtensions, isPendingDynamicExtensions } =
     useSelector(selectExtensionAvailability);
 
-  const url = useCurrentUrl();
+  const url = useCurrentInspectedUrl();
 
   useEffect(() => {
     console.debug("EditorContent debug effect", {

@@ -24,8 +24,9 @@ import {
   getCurrentInspectedURL,
   isCurrentTopFrame,
 } from "@/pageEditor/context/connection";
+import type { Nullishable } from "@/utils/nullishUtils";
 
-let tabUrl: string;
+let tabUrl: Nullishable<string>;
 
 const urlChanges = new SimpleEventTarget<string>();
 
@@ -44,7 +45,10 @@ const startWatching = once(async () => {
   urlChanges.emit(tabUrl);
 });
 
-export default function useCurrentUrl(): string {
+/**
+ * Returns the current URL of the inspected tab, or nullish if value is not initialized yet.
+ */
+export default function useCurrentInspectedUrl(): Nullishable<string> {
   expectContext("pageEditor");
 
   const [url, setUrl] = useState(tabUrl);

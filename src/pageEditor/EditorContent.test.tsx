@@ -39,7 +39,7 @@ jest.mock("@/pageEditor/context/connection", () => {
   };
 });
 
-jest.mock("@/pageEditor/hooks/useCurrentUrl");
+jest.mock("@/pageEditor/hooks/useCurrentInspectedUrl");
 
 jest.mock("@/contentScript/messenger/api");
 
