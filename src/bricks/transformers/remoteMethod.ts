@@ -16,14 +16,15 @@
  */
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
-import { type BrickArgs } from "@/types/runtimeTypes";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type AxiosRequestConfig } from "axios";
 import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import type { BrickConfig } from "@/bricks/types";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export const inputProperties: Record<string, Schema> = {
   url: {
@@ -79,25 +80,33 @@ export class RemoteMethod extends TransformerABC {
 
   inputSchema: Schema = propertiesToSchema(inputProperties, ["url"]);
 
-  async transform({
-    service,
-    ...requestConfig
-  }: BrickArgs<{
-    service: SanitizedIntegrationConfig;
-    requestConfig: AxiosRequestConfig;
-    _blockArgBrand: never;
-  }>): Promise<unknown> {
-    if (service && typeof service !== "object") {
+  override async getRequiredCapabilities(
+    _config: BrickConfig,
+  ): Promise<PlatformCapability[]> {
+    return ["http"];
+  }
+
+  async transform(
+    {
+      service: integrationConfig,
+      ...requestConfig
+    }: BrickArgs<{
+      service: SanitizedIntegrationConfig;
+      requestConfig: AxiosRequestConfig;
+    }>,
+    { platform }: BrickOptions,
+  ): Promise<unknown> {
+    if (integrationConfig && typeof integrationConfig !== "object") {
       throw new PropError(
         "Expected configured service",
         this.id,
         "service",
-        service,
+        integrationConfig,
       );
     }
 
-    const { data } = await performConfiguredRequestInBackground(
-      service,
+    const { data } = await platform.request(
+      integrationConfig,
       requestConfig as AxiosRequestConfig,
     );
     return data;

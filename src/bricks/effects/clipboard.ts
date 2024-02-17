@@ -27,6 +27,8 @@ import {
   writeItemsToClipboard,
 } from "@/utils/clipboardUtils";
 import { convertDataUrl } from "@/utils/parseDataUrl";
+import type { BrickConfig } from "@/bricks/types";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export class CopyToClipboard extends EffectABC {
   constructor() {
@@ -40,6 +42,12 @@ export class CopyToClipboard extends EffectABC {
   override permissions: Permissions.Permissions = {
     permissions: ["clipboardWrite"],
   };
+
+  override async getRequiredCapabilities(
+    _config: BrickConfig,
+  ): Promise<PlatformCapability[]> {
+    return ["clipboardWrite"];
+  }
 
   inputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",

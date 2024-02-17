@@ -52,7 +52,7 @@ import { tick } from "@/starterBricks/starterBrickTestUtils";
 import pDefer from "p-defer";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { type RendererErrorPayload } from "@/types/rendererTypes";
-import { setPageState } from "@/contentScript/pageState";
+import { setState } from "@/platform/state/pageState";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { unary } from "lodash";
 import { toExpression } from "@/utils/expressionUtils";
@@ -366,7 +366,7 @@ describe("DisplayTemporaryInfo", () => {
     ).toStrictEqual([{ "@input": {}, "@mod": {}, "@options": {} }]);
     expect(showTemporarySidebarPanelMock).toHaveBeenCalled();
 
-    setPageState({
+    setState({
       namespace: "blueprint",
       data: { foo: 42 },
       mergeStrategy: "replace",

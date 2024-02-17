@@ -18,7 +18,12 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { getReferenceForElement } from "@/contentScript/elementReference";
+import type { BrickConfig } from "@/bricks/types";
+import {
+  CONTENT_SCRIPT_CAPABILITIES,
+  type PlatformCapability,
+} from "@/platform/capabilities";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 
 export class SelectElement extends TransformerABC {
   constructor() {
@@ -52,21 +57,18 @@ export class SelectElement extends TransformerABC {
     ["elements"],
   );
 
-  async transform(): Promise<unknown> {
-    // The picker uses `bootstrap-switch-button`, which does a `window` check on load and breaks
-    // the MV3 background worker. Lazy-loading it keeps the background worker from breaking.
-    const { userSelectElement } = await import(
-      /* webpackChunkName: "editorContentScript" */ "@/contentScript/pageEditor/elementPicker"
-    );
+  override async getRequiredCapabilities(
+    _config: BrickConfig,
+  ): Promise<PlatformCapability[]> {
+    return CONTENT_SCRIPT_CAPABILITIES;
+  }
 
-    const { elements } = await userSelectElement();
-
-    const elementRefs = elements.map((element) =>
-      getReferenceForElement(element),
-    );
-
+  async transform(
+    _args: BrickArgs,
+    { platform }: BrickOptions,
+  ): Promise<unknown> {
     return {
-      elements: elementRefs,
+      elements: await platform.userSelectElementRefs(),
     };
   }
 }

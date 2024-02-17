@@ -19,7 +19,7 @@ import extendModVariableContext, {
   contextAsPlainObject,
   isModVariableContext,
 } from "@/runtime/extendModVariableContext";
-import { setPageState } from "@/contentScript/pageState";
+import { setState } from "@/platform/state/pageState";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { type UnknownObject } from "@/types/objectTypes";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
@@ -27,7 +27,7 @@ import { type ApiVersion } from "@/types/runtimeTypes";
 
 describe("createModVariableProxy", () => {
   beforeEach(() => {
-    setPageState({
+    setState({
       namespace: "blueprint",
       data: {},
       extensionId: autoUUIDSequence(),
@@ -45,7 +45,7 @@ describe("createModVariableProxy", () => {
   });
 
   it("reads from page state", () => {
-    setPageState({
+    setState({
       namespace: "blueprint",
       data: { foo: 42 },
       extensionId: autoUUIDSequence(),
@@ -101,7 +101,7 @@ describe("createModVariableProxy", () => {
       { blueprintId: null, options: apiVersionOptions("v3") },
     );
 
-    setPageState({
+    setState({
       namespace: "blueprint",
       data: { foo: 42 },
       extensionId: autoUUIDSequence(),
@@ -123,7 +123,7 @@ describe("createModVariableProxy", () => {
       { blueprintId: null, options: apiVersionOptions("v3") },
     );
 
-    setPageState({
+    setState({
       namespace: "blueprint",
       data: { foo: 42 },
       extensionId: autoUUIDSequence(),

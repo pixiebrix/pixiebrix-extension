@@ -19,6 +19,8 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
+import type { BrickConfig } from "@/bricks/types";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export class SoundEffect extends EffectABC {
   constructor() {
@@ -40,6 +42,12 @@ export class SoundEffect extends EffectABC {
     },
     ["sound"],
   );
+
+  override async getRequiredCapabilities(
+    _config: BrickConfig,
+  ): Promise<PlatformCapability[]> {
+    return ["audio"];
+  }
 
   async effect({ sound }: BrickArgs<{ sound: string }>): Promise<void> {
     const audio = new Audio(browser.runtime.getURL(`audio/${sound}.mp3`));

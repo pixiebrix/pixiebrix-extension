@@ -22,16 +22,14 @@ import { BusinessError } from "@/errors/businessErrors";
 import { expectContext } from "@/utils/expectContext";
 import { type JsonObject } from "type-fest";
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
-const extensionState = new Map<UUID, JsonObject>();
-
 type MergeStrategy = "shallow" | "replace" | "deep";
+
+const privateState = new Map<UUID, JsonObject>();
 
 /**
  * The blueprint page state, or null for shared state
  */
-// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
-const blueprintState = new Map<RegistryId | null, JsonObject>();
+const modState = new Map<RegistryId | null, JsonObject>();
 
 function mergeState(
   previous: JsonObject,
@@ -89,7 +87,7 @@ function dispatchStageChangeEventOnChange({
   }
 }
 
-export function setPageState({
+export function setState({
   namespace,
   data,
   mergeStrategy,
@@ -103,8 +101,6 @@ export function setPageState({
   extensionId: UUID;
   blueprintId: RegistryId | null;
 }) {
-  expectContext("contentScript");
-
   if (extensionId == null) {
     throw new Error("extensionId is required");
   }
@@ -121,25 +117,25 @@ export function setPageState({
 
   switch (namespace) {
     case "shared": {
-      const previous = blueprintState.get(null) ?? {};
+      const previous = modState.get(null) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
-      blueprintState.set(null, next);
+      modState.set(null, next);
       notifyOnChange(previous, next);
       return next;
     }
 
     case "blueprint": {
-      const previous = blueprintState.get(blueprintId) ?? {};
+      const previous = modState.get(blueprintId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
-      blueprintState.set(blueprintId, next);
+      modState.set(blueprintId, next);
       notifyOnChange(previous, next);
       return next;
     }
 
     case "extension": {
-      const previous = extensionState.get(extensionId) ?? {};
+      const previous = privateState.get(extensionId) ?? {};
       const next = mergeState(previous, data, mergeStrategy);
-      extensionState.set(extensionId, next);
+      privateState.set(extensionId, next);
       notifyOnChange(previous, next);
       return next;
     }
@@ -150,7 +146,7 @@ export function setPageState({
   }
 }
 
-export function getPageState({
+export function getState({
   namespace,
   extensionId,
   // Normalize undefined to null for lookup
@@ -164,11 +160,11 @@ export function getPageState({
 
   switch (namespace) {
     case "shared": {
-      return blueprintState.get(null) ?? {};
+      return modState.get(null) ?? {};
     }
 
     case "blueprint": {
-      return blueprintState.get(blueprintId) ?? {};
+      return modState.get(blueprintId) ?? {};
     }
 
     case "extension": {
@@ -176,7 +172,7 @@ export function getPageState({
         throw new Error("Invalid context: extensionId not found");
       }
 
-      return extensionState.get(extensionId) ?? {};
+      return privateState.get(extensionId) ?? {};
     }
 
     default: {

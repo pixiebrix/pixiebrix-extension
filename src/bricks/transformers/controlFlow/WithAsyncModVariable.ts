@@ -19,7 +19,7 @@ import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { getPageState, setPageState } from "@/contentScript/pageState";
+import { getState, setState } from "@/platform/state/pageState";
 import {
   type BrickArgs,
   type BrickOptions,
@@ -189,7 +189,7 @@ export class WithAsyncModVariable extends TransformerABC {
     const isCurrentNonce = () => modVariableNonces.get(stateKey) === requestId;
 
     const setModVariable = (data: JsonObject, strategy: "put" | "patch") => {
-      setPageState({
+      setState({
         // Store as Mod Variable
         namespace: "blueprint",
         data: {
@@ -206,7 +206,7 @@ export class WithAsyncModVariable extends TransformerABC {
     modVariableNonces.set(stateKey, requestId);
 
     // Get/set page state calls are synchronous from the content script, so safe to call sequentially
-    const currentState = getPageState({
+    const currentState = getState({
       namespace: "blueprint",
       extensionId,
       blueprintId,

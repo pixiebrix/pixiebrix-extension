@@ -20,6 +20,8 @@ import { type JsonObject } from "type-fest";
 import { type UiSchema, type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { validateRegistryId } from "@/types/helpers";
+import type { BrickConfig } from "@/bricks/types";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 class CustomEventEffect extends EffectABC {
   public static BRICK_ID = validateRegistryId("@pixiebrix/event");
@@ -56,6 +58,13 @@ class CustomEventEffect extends EffectABC {
 
   override async isRootAware(): Promise<boolean> {
     return true;
+  }
+
+  override async getRequiredCapabilities(
+    _config: BrickConfig,
+  ): Promise<PlatformCapability[]> {
+    // Supports both contentScript and standalone webapps
+    return ["dom"];
   }
 
   async effect(

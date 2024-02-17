@@ -16,11 +16,12 @@
  */
 
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { partial } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Schema } from "@/types/schemaTypes";
-import { type BrickArgs } from "@/types/runtimeTypes";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
+import type { BrickConfig } from "@/bricks/types";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 function makeProperties(
   obj: Record<string, unknown>,
@@ -92,15 +93,17 @@ export class AddUpdateContact extends EffectABC {
     additionalProperties: { type: "string" },
   };
 
-  async effect({
-    service,
-    email,
-    firstname,
-    lastname,
-    company,
-    ...otherValues
-  }: BrickArgs): Promise<void> {
-    const proxyHubspot = partial(performConfiguredRequestInBackground, service);
+  override async getRequiredCapabilities(
+    _config: BrickConfig,
+  ): Promise<PlatformCapability[]> {
+    return ["http"];
+  }
+
+  async effect(
+    { service, email, firstname, lastname, company, ...otherValues }: BrickArgs,
+    { platform }: BrickOptions,
+  ): Promise<void> {
+    const proxyHubspot = partial(platform.request, service);
 
     const properties = makeProperties({
       ...otherValues,
@@ -186,10 +189,16 @@ export class AddUpdateCompany extends EffectABC {
     required: ["website"],
   };
 
-  async effect(config: BrickArgs): Promise<void> {
+  override async getRequiredCapabilities(
+    _config: BrickConfig,
+  ): Promise<PlatformCapability[]> {
+    return ["http"];
+  }
+
+  async effect(config: BrickArgs, { platform }: BrickOptions): Promise<void> {
     const { hubspot, website } = config;
 
-    const proxyHubspot = partial(performConfiguredRequestInBackground, hubspot);
+    const proxyHubspot = partial(platform.request, hubspot);
 
     if (!website) {
       console.error("Website is required", config);

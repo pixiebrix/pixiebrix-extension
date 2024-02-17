@@ -16,12 +16,14 @@
  */
 
 import { isEmpty } from "lodash";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type BrickArgs } from "@/types/runtimeTypes";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
+import type { BrickConfig } from "@/bricks/types";
+import type { PlatformCapability } from "@/platform/capabilities";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
 
 interface GeocodedAddress {
   state?: string;
@@ -64,6 +66,7 @@ interface GeocodeData {
 }
 
 async function geocodeAddress(
+  platform: PlatformProtocol,
   service: SanitizedIntegrationConfig,
   address: string,
 ): Promise<GeocodedAddress> {
@@ -71,13 +74,10 @@ async function geocodeAddress(
     return {};
   }
 
-  const { data } = await performConfiguredRequestInBackground<GeocodeData>(
-    service,
-    {
-      url: "https://maps.googleapis.com/maps/api/geocode/json",
-      params: { address },
-    },
-  );
+  const { data } = await platform.request<GeocodeData>(service, {
+    url: "https://maps.googleapis.com/maps/api/geocode/json",
+    params: { address },
+  });
 
   const { results } = data;
 
@@ -124,13 +124,22 @@ export class GeocodeTransformer extends TransformerABC {
     ["service", "address"],
   );
 
-  async transform({
-    service,
-    address,
-  }: BrickArgs<{
-    address: string;
-    service: SanitizedIntegrationConfig;
-  }>): Promise<GeocodedAddress> {
-    return geocodeAddress(service, address);
+  override async getRequiredCapabilities(
+    _config: BrickConfig,
+  ): Promise<PlatformCapability[]> {
+    return ["http"];
+  }
+
+  async transform(
+    {
+      service,
+      address,
+    }: BrickArgs<{
+      address: string;
+      service: SanitizedIntegrationConfig;
+    }>,
+    { platform }: BrickOptions,
+  ): Promise<GeocodedAddress> {
+    return geocodeAddress(platform, service, address);
   }
 }

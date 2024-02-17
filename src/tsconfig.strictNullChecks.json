@@ -218,7 +218,7 @@
     "./contentScript/messenger/strict/api.ts",
     "./contentScript/messenger/strict/registration.ts",
     "./contentScript/pageEditor/beautify.ts",
-    "./contentScript/pageState.ts",
+    "./platform/state/pageState.ts",
     "./contentScript/ready.ts",
     "./contentScript/setExtensionIdInApp.ts",
     "./contentScript/sidebarController.tsx",

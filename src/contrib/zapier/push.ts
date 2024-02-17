@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import { getBaseURL } from "@/services/baseService";
 import { validateInput } from "@/validators/generic";
@@ -27,6 +26,8 @@ import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import type { BrickConfig } from "@/bricks/types";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export const ZAPIER_ID = validateRegistryId("@pixiebrix/zapier/push-data");
 
@@ -63,11 +64,17 @@ export class PushZap extends EffectABC {
    */
   override permissions: Permissions.Permissions = ZAPIER_PERMISSIONS;
 
+  override async getRequiredCapabilities(
+    _config: BrickConfig,
+  ): Promise<PlatformCapability[]> {
+    return ["http"];
+  }
+
   async effect(
     { pushKey, data }: BrickArgs<{ pushKey: string; data: UnknownObject }>,
     options: BrickOptions,
   ): Promise<void> {
-    const { data: webhooks } = await performConfiguredRequestInBackground<{
+    const { data: webhooks } = await options.platform.request<{
       new_push_fields: Webhook[];
     }>(await pixiebrixConfigurationFactory(), {
       baseURL: await getBaseURL(),
@@ -89,7 +96,7 @@ export class PushZap extends EffectABC {
       options.logger.warn("Invalid data for Zapier effect");
     }
 
-    await performConfiguredRequestInBackground(null, {
+    await options.platform.request(null, {
       url: webhook.url,
       method: "post",
       data: {

@@ -48,6 +48,7 @@ import {
 } from "./sidebarDomControllerLite";
 import { isMV3 } from "@/mv3/api";
 import { onContextInvalidated } from "webext-events";
+import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -69,7 +70,8 @@ export async function init(): Promise<void> {
   registerBuiltinBricks();
   registerContribBlocks();
   // Since 1.8.2, the brick registry was de-coupled from the runtime to avoid circular dependencies
-  initRuntime(brickRegistry);
+  // Since 1.8.10, we inject the platform into the runtime
+  initRuntime(contentScriptPlatform, brickRegistry);
 
   initTelemetry();
   initToaster();

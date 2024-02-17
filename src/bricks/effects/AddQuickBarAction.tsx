@@ -17,7 +17,6 @@
 
 import { validateRegistryId } from "@/types/helpers";
 import { propertiesToSchema } from "@/validators/generic";
-import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
 import React from "react";
 import {
@@ -29,6 +28,9 @@ import { type CustomAction } from "@/components/quickBar/quickbarTypes";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
+import type { BrickConfig } from "@/bricks/types";
+import type { PlatformCapability } from "@/platform/capabilities";
+import { uniq } from "lodash";
 
 type ActionConfig = {
   /**
@@ -85,6 +87,15 @@ class AddQuickBarAction extends EffectABC {
     return true;
   }
 
+  override async getRequiredCapabilities(
+    _config: BrickConfig,
+  ): Promise<PlatformCapability[]> {
+    return uniq([
+      ...(await super.getRequiredCapabilities(_config)),
+      "quickBar",
+    ]);
+  }
+
   inputSchema: Schema = propertiesToSchema(
     {
       title: {
@@ -126,8 +137,10 @@ class AddQuickBarAction extends EffectABC {
       // Be explicit about the default priority if non is provided
       priority = DEFAULT_PRIORITY,
     }: BrickArgs<ActionConfig>,
-    { root, logger, runPipeline, abortSignal }: BrickOptions,
+    { root, logger, runPipeline, abortSignal, platform }: BrickOptions,
   ): Promise<void> {
+    const { quickBarRegistry } = platform;
+
     // The runtime checks the abortSignal for each brick. But check here too to avoid flickering in the Quick Bar
     if (abortSignal.aborted) {
       return;

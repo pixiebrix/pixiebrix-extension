@@ -21,12 +21,20 @@ import {
   type BrickOptions,
   type RendererOutput,
 } from "@/types/runtimeTypes";
+import type { BrickConfig } from "@/bricks/types";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export abstract class RendererABC extends BrickABC {
   abstract render(
     inputs: BrickArgs,
     options: BrickOptions,
   ): Promise<RendererOutput>;
+
+  override async getRequiredCapabilities(
+    _config: BrickConfig,
+  ): Promise<PlatformCapability[]> {
+    return ["dom"];
+  }
 
   override async isRootAware(): Promise<boolean> {
     // Most renderers don't use the root, so have them opt-in

@@ -15,17 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { PlatformABC } from "@/platform/platformProtocol";
+import { showNotification } from "@/utils/notify";
+import type { PlatformCapability } from "@/platform/capabilities";
+
 /**
- * @file Test utilities for injecting registries into the runtime.
- * @since 1.8.2 used to de-couple the brick registry from the runtime
+ * Sidebar platform capabilities. In general, brick execution occurs in the context of the host page.
  */
+class SidebarPlatform extends PlatformABC {
+  override capabilities: PlatformCapability[] = ["dom", "alert", "toast"];
 
-import brickRegistry from "@/bricks/registry";
-import { initRuntime } from "@/runtime/reducePipeline";
-import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
-import { setPlatform } from "@/platform/platformContext";
+  override alert = window.alert;
+  override prompt = window.prompt;
+  override notify = showNotification;
+}
 
-// Since 1.8.2, the runtime is decoupled from the brick registry.
-// Since 1.8.10, we inject the platform.
-setPlatform(contentScriptPlatform);
-initRuntime(contentScriptPlatform, brickRegistry);
+const sidebarPlatform = new SidebarPlatform();
+export default sidebarPlatform;

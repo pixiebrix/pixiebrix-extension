@@ -15,17 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file Test utilities for injecting registries into the runtime.
- * @since 1.8.2 used to de-couple the brick registry from the runtime
- */
+import {
+  type PlatformProtocol,
+  unavailablePlatform,
+} from "@/platform/platformProtocol";
 
-import brickRegistry from "@/bricks/registry";
-import { initRuntime } from "@/runtime/reducePipeline";
-import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
-import { setPlatform } from "@/platform/platformContext";
+export let platform: PlatformProtocol = unavailablePlatform;
 
-// Since 1.8.2, the runtime is decoupled from the brick registry.
-// Since 1.8.10, we inject the platform.
-setPlatform(contentScriptPlatform);
-initRuntime(contentScriptPlatform, brickRegistry);
+export function setPlatform(platformProtocol: PlatformProtocol): void {
+  platform = platformProtocol;
+}

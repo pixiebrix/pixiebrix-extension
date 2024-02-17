@@ -49,6 +49,7 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type DynamicPath } from "@/components/documentBuilder/documentBuilderTypes";
 import { mapPathToTraceBranches } from "@/components/documentBuilder/utils";
+import { platform } from "@/platform/platformContext";
 
 // Used for the loading message
 // import cx from "classnames";
@@ -190,6 +191,7 @@ const PanelBody: React.FunctionComponent<{
         const branches = tracePath ? mapPathToTraceBranches(tracePath) : [];
 
         const body = await block.run(unsafeAssumeValidArg(args), {
+          platform,
           ctxt: brickArgsContext,
           root: null,
           meta: {

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { setPageState } from "@/contentScript/pageState";
+import { setState } from "@/platform/state/pageState";
 import { uuidv4 } from "@/types/helpers";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 
@@ -27,7 +27,7 @@ describe("pageState", () => {
 
     const blueprintId = registryIdFactory();
 
-    setPageState({
+    setState({
       namespace: "blueprint",
       data: { foo: { bar: "baz" } },
       mergeStrategy: "deep",
@@ -46,7 +46,7 @@ describe("pageState", () => {
     const blueprintId = registryIdFactory();
     const extensionId = uuidv4();
 
-    setPageState({
+    setState({
       namespace: "blueprint",
       data: {
         asyncState: { isFetching: false, data: "foo", currentData: "foo" },
@@ -56,7 +56,7 @@ describe("pageState", () => {
       blueprintId,
     });
 
-    const updatedState = setPageState({
+    const updatedState = setState({
       namespace: "blueprint",
       data: { asyncState: { isFetching: true, currentData: null } },
       mergeStrategy: "deep",
