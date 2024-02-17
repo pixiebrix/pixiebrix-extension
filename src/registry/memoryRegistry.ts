@@ -281,8 +281,8 @@ class MemoryRegistry<
     ]);
 
     const remoteItems: Item[] = [];
-    for (const raw of packages) {
-      const item = this.parse(raw?.config);
+    for (const packageVersion of packages) {
+      const item = this.parse(packageVersion.config);
       if (item) {
         remoteItems.push(item);
       }

@@ -51,9 +51,10 @@ type PackageVersion = {
   id: string;
   version: Version;
   kind: Kind;
-  scope?: string;
+  scope: Nullishable<string>;
   config: UnknownObject;
-  rawConfig: string | null;
+  // `rawConfig` is the YAML configuration. Only available for user-defined packages
+  rawConfig: Nullishable<string>;
   timestamp: Date;
 };
 
@@ -125,9 +126,7 @@ function latestVersion(
  * Return all packages for the given kinds
  * @param kinds kinds of bricks
  */
-export async function getByKinds(
-  kinds: Kind[],
-): Promise<Array<Nullishable<PackageVersion>>> {
+export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
   const db = await openRegistryDB();
 
   try {
@@ -139,8 +138,10 @@ export async function getByKinds(
       ),
     );
 
-    return Object.entries(groupBy(bricks, (x) => x.id)).map(([, versions]) =>
-      latestVersion(versions),
+    return Object.entries(groupBy(bricks, (x) => x.id)).map(
+      ([, versions]) =>
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- there's at least one element per group
+        latestVersion(versions)!,
     );
   } finally {
     db.close();
@@ -236,8 +237,9 @@ export function parsePackage(
     .split(".")
     .map((x) => Number.parseInt(x, 10));
 
-  if (major == null || minor == null || patch == null)
-    throw new Error("Invalid version: " + version);
+  if (major == null || minor == null || patch == null) {
+    throw new Error(`Invalid version: ${version}`);
+  }
 
   const match = PACKAGE_REGEX.exec(id);
 
