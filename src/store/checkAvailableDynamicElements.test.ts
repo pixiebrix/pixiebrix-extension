@@ -33,7 +33,7 @@ import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 
 jest.mock("@/contentScript/messenger/api");
 
-jest.mock("@/pageEditor/utils");
+jest.mock("@/pageEditor/context/connection");
 
 const { reducer: extensionsReducer } = extensionsSlice;
 

@@ -31,11 +31,11 @@ jest.mock("@/permissions/extensionPermissionsHelpers", () => ({
 // Mock to support hook usage in the subtree, not relevant to UI tests here
 jest.mock("@/hooks/useRefreshRegistries");
 
-jest.mock("@/pageEditor/utils", () => {
-  const actual = jest.requireActual("@/pageEditor/utils");
+jest.mock("@/pageEditor/context/connection", () => {
+  const actual = jest.requireActual("@/pageEditor/context/connection");
   return {
     ...actual,
-    getCurrentURL: jest.fn(),
+    getCurrentInspectedURL: jest.fn(),
   };
 });
 

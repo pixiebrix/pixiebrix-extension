@@ -12,7 +12,7 @@ import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import notify from "@/utils/notify";
 import {
-  allFramesInThisTab,
+  allFramesInInspectedTab,
   getCurrentInspectedURL,
   inspectedTab,
 } from "@/pageEditor/context/connection";
@@ -52,7 +52,7 @@ function useAutoInsert(type: StarterBrickType): void {
       // Don't auto-run tours on selection in Page Editor
       if (config.elementType !== "tour") {
         updateDynamicElement(
-          allFramesInThisTab,
+          allFramesInInspectedTab,
           config.asDynamicElement(formState),
         );
       }

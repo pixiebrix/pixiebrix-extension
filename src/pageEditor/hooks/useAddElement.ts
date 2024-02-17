@@ -30,7 +30,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { CancelError } from "@/errors/businessErrors";
 import {
-  allFramesInThisTab,
+  allFramesInInspectedTab,
   getCurrentInspectedURL,
   inspectedTab,
 } from "@/pageEditor/context/connection";
@@ -70,7 +70,7 @@ function useAddElement(): AddElement {
         const initialState = config.fromNativeElement(url, metadata, element);
 
         updateDynamicElement(
-          allFramesInThisTab,
+          allFramesInInspectedTab,
           config.asDynamicElement(initialState),
         );
 

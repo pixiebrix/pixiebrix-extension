@@ -25,6 +25,11 @@ import { queryTabs } from "@/background/messenger/strict/api";
 import { Button } from "react-bootstrap";
 import { getErrorMessage } from "@/errors/errorHelpers";
 
+/**
+ * Tab inspection selection component.
+ * @param onSelect
+ * @constructor
+ */
 const TabSelector: React.FC<{ onSelect: (tabId: number) => void }> = ({
   onSelect,
 }) => {
@@ -41,27 +46,42 @@ const TabSelector: React.FC<{ onSelect: (tabId: number) => void }> = ({
   }
 
   return (
-    <div>
+    <div className="p-3">
       <div>Select Tab to Inspect</div>
-      {data?.map((tab) => (
-        <div key={tab.id}>
-          <Button
-            variant="link"
-            onClick={() => {
-              onSelect(tab.id);
-            }}
-          >
-            {tab.url}
-          </Button>
-        </div>
-      ))}
+      {// Exclude tabs without an id, e.g., devtools and app tabs
+      data
+        ?.filter((tab) => tab.id != null)
+        .map((tab) => (
+          <div key={tab.id}>
+            <Button
+              data-testid={`tab-${tab.url}`}
+              variant="link"
+              onClick={() => {
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion, @typescript-eslint/no-non-null-assertion -- checked above
+                onSelect(tab.id!);
+              }}
+            >
+              {tab.title} - {tab.url}
+            </Button>
+          </div>
+        ))}
     </div>
   );
 };
 
+/**
+ * A gate that ensure the Page Editor is pointed to a tab. Introduced to enable running the Page Editor outside
+ * the devtools, e.g., in E2E tests.
+ *
+ * - Does not check if the tab exists
+ * - Does not check that PixieBrix has access to the tab
+ * - Does not watch for the tab closing.
+ *
+ * @since 1.8.10
+ * @param children
+ * @constructor
+ */
 const TabInspectionGate: React.FC = ({ children }) => {
-  // TODO: handle case where the tab is closed
-
   const [showTabSelector, setShowTabSelector] = useState(false);
 
   useEffect(() => {

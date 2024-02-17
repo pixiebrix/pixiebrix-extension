@@ -27,7 +27,7 @@ import { Events } from "@/telemetry/events";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import useKeyboardShortcut from "@/hooks/useKeyboardShortcut";
-import { allFramesInThisTab } from "@/pageEditor/context/connection";
+import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
@@ -97,7 +97,7 @@ const ReloadToolbar: React.FunctionComponent<{
 
   const run = useCallback(async () => {
     const { asDynamicElement: factory } = ADAPTERS.get(element.type);
-    updateDynamicElement(allFramesInThisTab, factory(element));
+    updateDynamicElement(allFramesInInspectedTab, factory(element));
   }, [element]);
 
   const manualRun = async () => {

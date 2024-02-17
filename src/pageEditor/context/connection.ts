@@ -19,7 +19,16 @@ import type { Target } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import type { Nullishable } from "@/utils/nullishUtils";
 
+// This is true enough for Page Editor purposes because we're editing the rendered frame:
+// https://developer.chrome.com/blog/extension-instantnav
 const TOP_LEVEL_FRAME_ID = 0;
+
+/**
+ * Error thrown when the Page Editor is not pointed to a tab.
+ */
+export class NotInspectingTabError extends Error {
+  override name = "NotInspectingTabError";
+}
 
 function getUrlParamTabId(): Nullishable<number> {
   const tabIdParam: Nullishable<string> = new URLSearchParams(
@@ -28,17 +37,19 @@ function getUrlParamTabId(): Nullishable<number> {
   return tabIdParam ? Number.parseInt(tabIdParam, 10) : null;
 }
 
-// This code might end up (unused) in non-dev bundles, so use `?.` to avoid errors from undefined values
 let currentTabId: Nullishable<number> =
+  // This code might end up (unused) in non-devtools bundles, so use `?.` to avoid errors from undefined values
   globalThis.chrome?.devtools?.inspectedWindow?.tabId ?? getUrlParamTabId();
 
-// The pageEditor only cares for the top frame
+/**
+ * Check if the given frame is being edited by the Page Editor. Currently, the Page Editor only supports
+ * editing the top-level frame.
+ * @param tabId the query tab id
+ * @param frameId the query frame id
+ */
 export function isCurrentTopFrame({ tabId, frameId }: Target): boolean {
+  // The pageEditor only cares for the top frame
   return frameId === TOP_LEVEL_FRAME_ID && tabId === currentTabId;
-}
-
-export class NotInspectingTabError extends Error {
-  override name = "NotInspectingTabError";
 }
 
 /**
@@ -53,11 +64,16 @@ export async function getCurrentInspectedURL(): Promise<string> {
   }
 
   const tab = await browser.tabs.get(currentTabId);
+
+  if (!tab.url) {
+    throw new Error("PixieBrix does not have access to the inspected tab");
+  }
+
   return tab.url;
 }
 
 /**
- * Message target for the tab being inspected by the devtools.
+ * Message target for the tab being edited by the Page Editor.
  *
  * The Page Editor only supports editing the top-level frame.
  */
@@ -67,13 +83,20 @@ export const inspectedTab = {
   frameId: 0,
 } satisfies Target;
 
-export const allFramesInThisTab = {
+/**
+ * Messenger target for all frames on the tab being edited by the Page Editor.
+ */
+export const allFramesInInspectedTab = {
   tabId: inspectedTab.tabId,
   frameId: "allFrames",
 } satisfies Target;
 
+/**
+ * Setter for updated the tab being inspected by the Page Editor. Does not verify the tab exists/is valid.
+ * @param tabId the new tab id
+ */
 export function setInspectedTabId(tabId: number): void {
   currentTabId = tabId;
   inspectedTab.tabId = tabId;
-  allFramesInThisTab.tabId = tabId;
+  allFramesInInspectedTab.tabId = tabId;
 }

@@ -30,7 +30,7 @@ import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { actions as extensionsActions } from "@/store/extensionsSlice";
 import { clearDynamicElements } from "@/contentScript/messenger/api";
 import { removeExtensionsFromAllTabs } from "@/store/uninstallUtils";
-import { allFramesInThisTab } from "@/pageEditor/context/connection";
+import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 
 type Config = {
   extensionId: UUID;
@@ -108,7 +108,7 @@ export function useRemoveModComponentFromStorage(): (
 
         // Remove from the host page
         try {
-          clearDynamicElements(allFramesInThisTab, {
+          clearDynamicElements(allFramesInInspectedTab, {
             uuid: extensionId,
           });
         } catch (error) {
