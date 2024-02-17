@@ -3,7 +3,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { propertiesToSchema } from "@/validators/generic";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type JsonObject, type JsonPrimitive } from "type-fest";
-import { setState } from "@/platform/state/pageState";
+import { setState } from "@/platform/state/stateController";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";

@@ -17,7 +17,7 @@
 
 import { PlatformABC } from "@/platform/platformProtocol";
 import { showNotification } from "@/utils/notify";
-import { getState, setState } from "@/platform/state/pageState";
+import { getState, setState } from "@/platform/state/stateController";
 import type { PlatformCapability } from "@/platform/capabilities";
 
 class WebPlatform extends PlatformABC {

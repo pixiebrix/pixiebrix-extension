@@ -17,7 +17,7 @@
 
 import { type UnknownObject } from "@/types/objectTypes";
 import { expectContext } from "@/utils/expectContext";
-import { getState } from "@/platform/state/pageState";
+import { getState } from "@/platform/state/stateController";
 import { type RegistryId } from "@/types/registryTypes";
 import apiVersionOptions, {
   type ApiVersionOptions,

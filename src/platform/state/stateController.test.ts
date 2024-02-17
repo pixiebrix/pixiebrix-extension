@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { setState } from "@/platform/state/pageState";
+import { setState } from "@/platform/state/stateController";
 import { uuidv4 } from "@/types/helpers";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 

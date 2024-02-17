@@ -19,7 +19,7 @@ import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import { getState, setState } from "@/platform/state/pageState";
+import { getState, setState } from "@/platform/state/stateController";
 import {
   type BrickArgs,
   type BrickOptions,

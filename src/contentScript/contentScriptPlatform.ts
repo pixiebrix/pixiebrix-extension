@@ -18,7 +18,7 @@
 import { PlatformABC } from "@/platform/platformProtocol";
 import { showNotification } from "@/utils/notify";
 import { setToolbarBadge } from "@/background/messenger/strict/api";
-import { getState, setState } from "@/platform/state/pageState";
+import { getState, setState } from "@/platform/state/stateController";
 import quickBarRegistry, {
   type QuickBarRegistryProtocol,
 } from "@/components/quickBar/quickBarRegistry";

@@ -25,7 +25,7 @@ import {
 import { reducePipeline } from "@/runtime/reducePipeline";
 import brickRegistry from "@/bricks/registry";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { getState, setState } from "@/platform/state/pageState";
+import { getState, setState } from "@/platform/state/stateController";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { type Brick } from "@/types/brickTypes";

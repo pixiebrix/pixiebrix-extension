@@ -19,7 +19,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { validateRegistryId } from "@/types/helpers";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { getState, setState } from "@/platform/state/pageState";
+import { getState, setState } from "@/platform/state/stateController";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { validateInput } from "@/validators/generic";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";

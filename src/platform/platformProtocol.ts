@@ -21,7 +21,7 @@ import {
   type PlatformCapability,
   PlatformCapabilityNotAvailable,
 } from "@/platform/capabilities";
-import type { getState, setState } from "@/platform/state/pageState";
+import type { getState, setState } from "@/platform/state/stateController";
 import type { QuickBarRegistryProtocol } from "@/components/quickBar/quickBarRegistry";
 import type { ElementReference } from "@/types/runtimeTypes";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
@@ -87,7 +87,7 @@ export interface PlatformProtocol {
   notify: typeof showNotification;
 
   /**
-   * Show a form.
+   * Show an ephemeral form.
    */
   form: (
     definition: FormDefinition,
@@ -95,6 +95,10 @@ export interface PlatformProtocol {
     context: { componentId: UUID; modId?: RegistryId },
   ) => Promise<unknown>;
 
+  /**
+   * Show an ephemeral panel.
+   * @param definition
+   */
   panel: (definition: TemporaryPanelDefinition) => Promise<JsonObject>;
 
   /**

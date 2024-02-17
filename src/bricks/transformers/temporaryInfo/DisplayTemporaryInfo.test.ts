@@ -51,7 +51,7 @@ import { tick } from "@/starterBricks/starterBrickTestUtils";
 import pDefer from "p-defer";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { type RendererErrorPayload } from "@/types/rendererTypes";
-import { setState } from "@/platform/state/pageState";
+import { setState } from "@/platform/state/stateController";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { unary } from "lodash";
 import { toExpression } from "@/utils/expressionUtils";

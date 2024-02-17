@@ -19,7 +19,7 @@ import extendModVariableContext, {
   contextAsPlainObject,
   isModVariableContext,
 } from "@/runtime/extendModVariableContext";
-import { setState } from "@/platform/state/pageState";
+import { setState } from "@/platform/state/stateController";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { type UnknownObject } from "@/types/objectTypes";
 import apiVersionOptions from "@/runtime/apiVersionOptions";

@@ -79,7 +79,7 @@
 ./src/contentScript/messenger/runBrickTypes.ts
 ./src/contentScript/pageEditor/elementPicker.ts
 ./src/contentScript/pageEditor/types.ts
-./src/contentScript/pageState.ts
+./src/contentScript/stateController.ts
 ./src/contentScript/performanceMonitoring.ts
 ./src/contentScript/ready.ts
 ./src/contentScript/sidebarController.tsx

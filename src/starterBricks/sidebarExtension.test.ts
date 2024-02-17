@@ -37,7 +37,7 @@ import {
   getReservedPanelEntries,
   sidebarShowEvents,
 } from "@/contentScript/sidebarController";
-import { setState } from "@/platform/state/pageState";
+import { setState } from "@/platform/state/stateController";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { PANEL_FRAME_ID } from "@/domConstants";
 import brickRegistry from "@/bricks/registry";
