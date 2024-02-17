@@ -33,7 +33,6 @@ import { isEmpty } from "lodash";
 import { type TraceRecord } from "@/telemetry/trace";
 import { removeEmptyValues } from "@/pageEditor/starterBricks/base";
 import { runBlock } from "@/contentScript/messenger/api";
-import { thisTab } from "@/pageEditor/utils";
 import { useField, useFormikContext } from "formik";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import getType from "@/runtime/getType";
@@ -49,6 +48,7 @@ import { type BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import type { FetchableAsyncState } from "@/types/sliceTypes";
 import useAsyncState from "@/hooks/useAsyncState";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 /**
  * Bricks to preview even if there's no trace.
@@ -171,7 +171,7 @@ const BrickPreview: React.FunctionComponent<{
       const { outputKey } = brickConfig;
 
       try {
-        const output = await runBlock(thisTab, {
+        const output = await runBlock(inspectedTab, {
           apiVersion,
           blockConfig: {
             ...removeEmptyValues(brickConfig),

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getCurrentURL } from "@/pageEditor/utils";
 import { render, screen } from "@/pageEditor/testHelpers";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -23,6 +22,7 @@ import React from "react";
 import EditorContent from "@/pageEditor/EditorContent";
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 
 jest.mock("@/permissions/extensionPermissionsHelpers", () => ({
   collectExtensionPermissions: jest.fn().mockResolvedValue({}),
@@ -46,7 +46,7 @@ jest.mock("@/contentScript/messenger/api");
 describe("error alerting in the UI", () => {
   test("shows error when checkAvailableDynamicElements fails", async () => {
     const message = "testing error";
-    jest.mocked(getCurrentURL).mockImplementation(() => {
+    jest.mocked(getCurrentInspectedURL).mockImplementation(() => {
       throw new Error(message);
     });
 

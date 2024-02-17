@@ -28,7 +28,6 @@ import LoginCard from "@/pageEditor/components/LoginCard";
 import EditorLayout from "@/pageEditor/EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
 import { logActions } from "@/components/logViewer/logSlice";
-import { allFramesInThisTab } from "@/pageEditor/utils";
 import {
   removeInstalledExtension,
   updateDynamicElement,
@@ -42,6 +41,7 @@ import ReduxPersistenceContext, {
 import type { StarterBrickType } from "@/types/starterBrickTypes";
 import type { EditorState } from "@/pageEditor/pageEditorTypes";
 import DimensionGate from "@/pageEditor/components/DimensionGate";
+import { allFramesInThisTab } from "@/pageEditor/context/connection";
 
 const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
   "actionPanel",

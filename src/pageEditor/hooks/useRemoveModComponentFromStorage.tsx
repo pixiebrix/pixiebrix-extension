@@ -29,8 +29,8 @@ import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { actions as extensionsActions } from "@/store/extensionsSlice";
 import { clearDynamicElements } from "@/contentScript/messenger/api";
-import { allFramesInThisTab } from "@/pageEditor/utils";
 import { removeExtensionsFromAllTabs } from "@/store/uninstallUtils";
+import { allFramesInThisTab } from "@/pageEditor/context/connection";
 
 type Config = {
   extensionId: UUID;

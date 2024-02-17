@@ -16,19 +16,12 @@
  */
 
 import { resetTab } from "@/contentScript/messenger/api";
-import { allFramesInThisTab } from "./utils";
 import { type Target } from "@/types/messengerTypes";
 import { updatePageEditor } from "./events";
-
-const TOP_LEVEL_FRAME_ID = 0;
-
-// The pageEditor only cares for the top frame
-function isCurrentTopFrame({ tabId, frameId }: Target) {
-  return (
-    frameId === TOP_LEVEL_FRAME_ID &&
-    tabId === browser.devtools.inspectedWindow.tabId
-  );
-}
+import {
+  allFramesInThisTab,
+  isCurrentTopFrame,
+} from "@/pageEditor/context/connection";
 
 // TODO: Migrate to useCurrentUrl()
 async function onNavigation(target: Target): Promise<void> {

@@ -22,7 +22,6 @@ import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
 import { getInstalledExtensionPoints } from "@/contentScript/messenger/api";
-import { getCurrentURL } from "@/pageEditor/utils";
 import { validateRegistryId } from "@/types/helpers";
 import {
   type MenuDefinition,
@@ -37,6 +36,7 @@ import {
 import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 
 jest.mock("@/contentScript/messenger/api");
 
@@ -47,7 +47,7 @@ const { actions: optionsActions, reducer: extensionsReducer } = extensionsSlice;
 describe("checkAvailableInstalledExtensions", () => {
   test("it checks installed extensions correctly", async () => {
     const testUrl = "https://www.myUrl.com/*";
-    jest.mocked(getCurrentURL).mockResolvedValue(testUrl);
+    jest.mocked(getCurrentInspectedURL).mockResolvedValue(testUrl);
 
     const availableButtonId = validateRegistryId("test/available-button");
     const availableButton = standaloneModDefinitionFactory({

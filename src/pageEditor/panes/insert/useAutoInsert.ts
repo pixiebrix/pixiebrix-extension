@@ -1,6 +1,5 @@
 import { useDispatch } from "react-redux";
 import { useAsyncEffect } from "use-async-effect";
-import { getCurrentURL, allFramesInThisTab } from "@/pageEditor/utils";
 import { internalStarterBrickMetaFactory } from "@/pageEditor/starterBricks/base";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { getExampleBrickPipeline } from "@/pageEditor/exampleStarterBrickConfigs";
@@ -12,6 +11,11 @@ import { Events } from "@/telemetry/events";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import notify from "@/utils/notify";
+import {
+  allFramesInThisTab,
+  getCurrentInspectedURL,
+  inspectedTab,
+} from "@/pageEditor/context/connection";
 
 const { addElement, toggleInsert } = actions;
 
@@ -25,7 +29,7 @@ function useAutoInsert(type: StarterBrickType): void {
     }
 
     try {
-      const url = await getCurrentURL();
+      const url = await getCurrentInspectedURL();
 
       const config = ADAPTERS.get(type);
 
@@ -61,7 +65,7 @@ function useAutoInsert(type: StarterBrickType): void {
       if (config.elementType === "actionPanel") {
         // For convenience, open the side panel if it's not already open so that the user doesn't
         // have to manually toggle it
-        void openSidePanel(chrome.devtools.inspectedWindow.tabId);
+        void openSidePanel(inspectedTab.tabId);
       }
 
       reportEvent(Events.MOD_COMPONENT_ADD_NEW, {

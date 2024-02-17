@@ -16,7 +16,6 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
-import { thisTab } from "@/pageEditor/utils";
 import { ensureContentScript } from "@/background/messenger/strict/api";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
@@ -30,6 +29,7 @@ import { actions } from "@/pageEditor/slices/editorSlice";
 import { canAccessTab } from "@/permissions/permissionsUtils";
 import { serializeError } from "serialize-error";
 import reportError from "@/telemetry/reportError";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 const defaultFrameState: FrameConnectionState = {
   navSequence: undefined,
@@ -53,13 +53,13 @@ const connectToContentScript = createAsyncThunk<
   const common = { ...defaultFrameState, navSequence: uuid };
 
   console.debug(`connectToContentScript: connecting for ${uuid}`);
-  if (!(await canAccessTab(thisTab))) {
+  if (!(await canAccessTab(inspectedTab))) {
     console.debug("connectToFrame: cannot access tab");
     return common;
   }
 
   console.debug("connectToContentScript: ensuring contentScript");
-  await ensureContentScript(thisTab, 4500);
+  await ensureContentScript(inspectedTab, 4500);
 
   void thunkAPI.dispatch(actions.checkAvailableDynamicElements());
   void thunkAPI.dispatch(actions.checkAvailableInstalledExtensions());
