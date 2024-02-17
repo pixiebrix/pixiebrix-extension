@@ -147,11 +147,12 @@ function useSaveMod(): ModSaver {
       await checkModStarterBrickInvariants(newMod);
 
     if (!modComponentDefinitionCountsMatch || !modComponentStarterBricksMatch) {
+      // Not including modDefinition because it can be 1.5MB+ in some rare cases
+      // See discussion: https://github.com/pixiebrix/pixiebrix-extension/pull/7629/files#r1492864349
       reportEvent(Events.PAGE_EDITOR_MOD_SAVE_ERROR, {
         modId: newMod.metadata.id,
         modComponentDefinitionCountsMatch,
         modComponentStarterBricksMatch,
-        modDefinition: JSON.stringify(modDefinition, null, 2),
       });
       dispatch(editorActions.showSaveDataIntegrityErrorModal());
       return false;
