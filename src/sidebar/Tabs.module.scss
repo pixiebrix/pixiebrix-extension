@@ -24,6 +24,11 @@
 
 .tabContainer {
   flex-wrap: nowrap;
+  // Leave some space to the right to preserve the previous feel
+  // TODO: Drop after https://github.com/pixiebrix/pixiebrix-extension/issues/7646
+  &:not(:has(> [aria-label="Open Mod Launcher" i])) {
+    padding-right: 40px;
+  }
 }
 
 .tabWrapper {

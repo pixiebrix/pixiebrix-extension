@@ -288,7 +288,7 @@ const Tabs: React.FC = () => {
               size="sm"
               variant="link"
               className={styles.addButton}
-              aria-label="open mod launcher"
+              aria-label="Open Mod Launcher"
               onClick={onOpenModLauncher}
             >
               <FontAwesomeIcon icon={faPlus} />
