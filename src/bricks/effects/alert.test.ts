@@ -19,6 +19,7 @@ import { AlertEffect } from "@/bricks/effects/alert";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { validateInput } from "@/validators/generic";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { platformMock } from "@/testUtils/platformMock";
 
 const brick = new AlertEffect();
 
@@ -33,11 +34,14 @@ describe("AlertEffect", () => {
   });
 
   it("type defaults to window if excluded", async () => {
-    window.alert = jest.fn();
+    const platform = platformMock;
+
     await brick.run(
       unsafeAssumeValidArg({ message: "Hello, world!" }),
-      brickOptionsFactory(),
+      brickOptionsFactory({
+        platform,
+      }),
     );
-    expect(window.alert).toHaveBeenCalledWith("Hello, world!");
+    expect(platform.alert).toHaveBeenCalledWith("Hello, world!");
   });
 });

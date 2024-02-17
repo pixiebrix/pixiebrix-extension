@@ -180,3 +180,8 @@ export function getState({
     }
   }
 }
+
+export function TEST_resetState(): void {
+  privateState.clear();
+  modState.clear();
+}

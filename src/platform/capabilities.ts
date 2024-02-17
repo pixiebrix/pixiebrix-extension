@@ -18,7 +18,7 @@
 /**
  * Capabilities a platform may provide to extensions/plug-ins/add-ins/userscripts.
  */
-const platformCapabilities = [
+export const platformCapabilities = [
   // Access to a DOM
   "dom",
   // Access the host-page Javascript context

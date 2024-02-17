@@ -60,7 +60,7 @@ class ContentScriptPlatform extends PlatformABC {
     "http",
   ];
 
-  // Running window methods yields Invocation Error if not bound to the window object
+  // Running unbound window methods throws Invocation Error
   override alert = window.alert.bind(window);
   override prompt = window.prompt.bind(window);
 
