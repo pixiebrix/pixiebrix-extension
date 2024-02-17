@@ -31,7 +31,7 @@ const Footer: React.FunctionComponent = () => {
     <footer className="footer">
       <div className="d-sm-flex justify-content-center justify-content-sm-between">
         <span className="text-muted text-center text-sm-left d-block d-sm-inline-block">
-          Copyright © 2023{" "}
+          Copyright © 2024{" "}
           <a href="https://www.pixiebrix.com">PixieBrix, Inc.</a> All rights
           reserved.
         </span>
