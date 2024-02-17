@@ -28,6 +28,12 @@ import { getReferenceForElement } from "@/contentScript/elementReference";
 import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { ephemeralForm } from "@/contentScript/ephemeralForm";
 import { ephemeralPanel } from "@/contentScript/ephemeralPanel";
+import type { ElementReference } from "@/types/runtimeTypes";
+
+/**
+ * @file Platform definition for mods running in a content script
+ * @see PlatformProtocol
+ */
 
 async function playSound(sound: string): Promise<void> {
   const audio = new Audio(browser.runtime.getURL(`audio/${sound}.mp3`));
@@ -35,7 +41,7 @@ async function playSound(sound: string): Promise<void> {
   await audio.play();
 }
 
-async function userSelectElementRefs() {
+async function userSelectElementRefs(): Promise<ElementReference[]> {
   // The picker uses `bootstrap-switch-button`, which does a `window` check on load and breaks
   // the MV3 background worker. Lazy-loading it keeps the background worker from breaking.
   const { userSelectElement } = await import(

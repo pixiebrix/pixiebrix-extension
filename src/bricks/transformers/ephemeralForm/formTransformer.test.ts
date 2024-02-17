@@ -23,10 +23,10 @@ import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { TEST_cancelAll } from "@/platform/forms/formController";
 import * as messenger from "webext-messenger";
-import { showModal } from "@/contentScript/modalDOM";
+import { showModal } from "@/contentScript/modalDom";
 
 jest.mock("@/utils/iframeUtils");
-jest.mock("@/contentScript/modalDOM");
+jest.mock("@/contentScript/modalDom");
 jest.mock("@/contentScript/sidebarDomControllerLite");
 
 const showModalMock = jest.mocked(showModal);

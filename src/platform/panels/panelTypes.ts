@@ -18,7 +18,7 @@
 import type { PanelPayload, TemporaryPanelEntry } from "@/types/sidebarTypes";
 import type { Location } from "@/types/starterBrickTypes";
 import type { UUID } from "@/types/stringTypes";
-import type { Placement } from "@/bricks/transformers/temporaryInfo/popoverUtils";
+import type { Placement } from "@/contentScript/popoverDom";
 import type { Except } from "type-fest";
 
 // Match naming of the sidebar panel extension point triggers

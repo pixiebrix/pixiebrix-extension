@@ -22,6 +22,12 @@ import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import type { UnknownObject } from "@/types/objectTypes";
+import type { BrickConfig } from "@/bricks/types";
+import {
+  CONTENT_SCRIPT_CAPABILITIES,
+  type PlatformCapability,
+} from "@/platform/capabilities";
+import { expectContext } from "@/utils/expectContext";
 
 const UIPATH_PROPERTIES: SchemaProperties = {
   releaseKey: {
@@ -52,6 +58,13 @@ class RunLocalProcess extends TransformerABC {
     properties: UIPATH_PROPERTIES,
   };
 
+  override async getRequiredCapabilities(
+    _config: BrickConfig,
+  ): Promise<PlatformCapability[]> {
+    // Required for UiPath Robot
+    return CONTENT_SCRIPT_CAPABILITIES;
+  }
+
   async transform(
     {
       releaseKey,
@@ -62,6 +75,12 @@ class RunLocalProcess extends TransformerABC {
     }>,
     { logger }: BrickOptions,
   ): Promise<JobResult> {
+    // XXX: not worth adding to the platform definition because it will only be available in webext platform for now
+    expectContext(
+      "contentScript",
+      "UiPath Robot JavaScript SDK can only be loaded in the content script",
+    );
+
     const { UiPathRobot } = await import(
       /* webpackChunkName: "uipath-robot" */ "@/contrib/uipath/UiPathRobot"
     );

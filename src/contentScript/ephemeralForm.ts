@@ -30,7 +30,7 @@ import type { UUID } from "@/types/stringTypes";
 import type { RegistryId } from "@/types/registryTypes";
 import { getThisFrame } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
-import { showModal } from "@/contentScript/modalDOM";
+import { showModal } from "@/contentScript/modalDom";
 import type { Target } from "@/types/messengerTypes";
 
 // The modes for createFrameSource are different from the location argument for FormTransformer. The mode for the frame

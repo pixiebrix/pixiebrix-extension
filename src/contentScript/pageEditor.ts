@@ -45,7 +45,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
 import { $safeFind } from "@/utils/domUtils";
 import { createFrameSource } from "@/contentScript/ephemeralPanel";
-import { showModal } from "@/contentScript/modalDOM";
+import { showModal } from "@/contentScript/modalDom";
 
 export type RunBlockArgs = {
   /**

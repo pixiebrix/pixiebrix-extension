@@ -42,7 +42,7 @@ import type { TemporaryPanelDefinition } from "@/platform/panels/panelTypes";
 import type { Location } from "@/types/starterBrickTypes";
 import { getThisFrame } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
-import { showModal } from "@/contentScript/modalDOM";
+import { showModal } from "@/contentScript/modalDom";
 
 export async function createFrameSource(
   nonce: string,
@@ -150,8 +150,8 @@ export async function ephemeralPanel({
       }
 
       const { showPopover } = await import(
-        /* webpackChunkName: "popoverUtils" */
-        "@/bricks/transformers/temporaryInfo/popoverUtils"
+        /* webpackChunkName: "popoverDom" */
+        "@/contentScript/popoverDom"
       );
 
       const popover = showPopover({

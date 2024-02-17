@@ -55,9 +55,9 @@ import { setState } from "@/platform/state/stateController";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
 import { unary } from "lodash";
 import { toExpression } from "@/utils/expressionUtils";
-import { showModal } from "@/contentScript/modalDOM";
+import { showModal } from "@/contentScript/modalDom";
 
-jest.mock("@/contentScript/modalDOM");
+jest.mock("@/contentScript/modalDom");
 const showModalMock = jest.mocked(showModal);
 
 jest.mock("@/contentScript/sidebarController");

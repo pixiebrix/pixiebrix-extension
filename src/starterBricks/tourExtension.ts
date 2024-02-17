@@ -107,7 +107,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     if (await this.isAvailable()) {
       const { initPopoverPool } = await import(
         /* webpackChunkName: "popoverUtils" */
-        "@/bricks/transformers/temporaryInfo/popoverUtils"
+        "@/contentScript/popoverDom"
       );
 
       await initPopoverPool();
