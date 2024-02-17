@@ -129,6 +129,11 @@ const Tabs: React.FC = () => {
   const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
   const closedTabs = useSelector(selectClosedTabs);
 
+  const modLauncherEventKey = eventKeyForEntry(MOD_LAUNCHER);
+  const isModLauncherOpen =
+    // eslint-disable-next-line security/detect-object-injection -- modLauncherEventKey is not user input
+    !closedTabs[modLauncherEventKey];
+
   const onSelect = (eventKey: string) => {
     reportEvent(Events.VIEW_SIDEBAR_PANEL, {
       ...selectEventData(getExtensionFromEventKey(eventKey)),
@@ -139,17 +144,14 @@ const Tabs: React.FC = () => {
   };
 
   const onOpenModLauncher = () => {
-    const modLauncherEventKey = eventKeyForEntry(MOD_LAUNCHER);
-    const isModLauncherOpen =
-      // eslint-disable-next-line security/detect-object-injection -- modLauncherEventKey is not user input
-      !closedTabs[modLauncherEventKey];
-
     reportEvent(Events.VIEW_SIDEBAR_PANEL, {
       ...selectEventData(getExtensionFromEventKey(modLauncherEventKey)),
       initialLoad: false,
       source: "modLauncher open button",
     });
 
+    // TODO: In the future we'll want to open multiple tabs instead
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/6549#issuecomment-1742961879
     if (!isModLauncherOpen) {
       dispatch(sidebarSlice.actions.openTab(modLauncherEventKey));
     }
@@ -281,15 +283,17 @@ const Tabs: React.FC = () => {
               />
             </TabWithDivider>
           ))}
-          <Button
-            size="sm"
-            variant="link"
-            className={styles.addButton}
-            aria-label="open mod launcher"
-            onClick={onOpenModLauncher}
-          >
-            <FontAwesomeIcon icon={faPlus} />
-          </Button>
+          {!isModLauncherOpen && (
+            <Button
+              size="sm"
+              variant="link"
+              className={styles.addButton}
+              aria-label="open mod launcher"
+              onClick={onOpenModLauncher}
+            >
+              <FontAwesomeIcon icon={faPlus} />
+            </Button>
+          )}
         </Nav>
         <Tab.Content
           className={cx(
