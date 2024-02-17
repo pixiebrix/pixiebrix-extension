@@ -339,6 +339,8 @@
     "./mv3/api.ts",
     "./pageEditor/NonScriptablePage.tsx",
     "./pageEditor/baseFormStateTypes.ts",
+    "./pageEditor/context/connection.ts",
+    "./pageEditor/context/TabInspectionGate.tsx",
     "./pageEditor/components/LoginCard.tsx",
     "./pageEditor/components/ToggleField.tsx",
     "./pageEditor/consts.ts",

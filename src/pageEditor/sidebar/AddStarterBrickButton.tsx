@@ -23,7 +23,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sortBy } from "lodash";
 import useAddElement from "@/pageEditor/hooks/useAddElement";
 import { useSelector } from "react-redux";
-import { thisTab } from "@/pageEditor/utils";
 import { selectTabHasPermissions } from "@/pageEditor/tabState/tabStateSelectors";
 import { flagOn } from "@/auth/authUtils";
 import useAsyncState from "@/hooks/useAsyncState";
@@ -32,6 +31,7 @@ import { navigateTab } from "@/contentScript/messenger/api";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 const sortedStarterBricks = sortBy(
   [...ADAPTERS.values()],
@@ -112,7 +112,7 @@ const AddStarterBrickButton: React.FunctionComponent = () => {
             sessionId,
             source: TEMPLATE_TELEMETRY_SOURCE,
           });
-          navigateTab(thisTab, {
+          navigateTab(inspectedTab, {
             url: `https://www.pixiebrix.com/templates-gallery?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=${TEMPLATE_TELEMETRY_SOURCE}`,
           });
         }}
