@@ -28,7 +28,7 @@ import LoginCard from "@/pageEditor/components/LoginCard";
 import EditorLayout from "@/pageEditor/EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
 import { logActions } from "@/components/logViewer/logSlice";
-import { thisTab } from "@/pageEditor/utils";
+import { allFramesInThisTab } from "@/pageEditor/utils";
 import {
   removeInstalledExtension,
   updateDynamicElement,
@@ -60,7 +60,7 @@ const cleanUpStarterBrickForElement = (
     return;
   }
 
-  removeInstalledExtension(thisTab, element.uuid);
+  removeInstalledExtension(allFramesInThisTab, element.uuid);
 };
 
 const PanelContent: React.FC = () => {
@@ -72,7 +72,7 @@ const PanelContent: React.FC = () => {
 
     if (activeElement != null && shouldAutoRun(activeElement)) {
       const dynamicElement = formStateToDynamicElement(activeElement);
-      void updateDynamicElement(thisTab, dynamicElement);
+      updateDynamicElement(allFramesInThisTab, dynamicElement);
     }
   }, [dispatch, activeElement]);
 

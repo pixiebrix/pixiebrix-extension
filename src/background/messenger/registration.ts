@@ -34,7 +34,6 @@ import {
   requestRunInTarget,
   requestRunInTop,
 } from "@/background/executor";
-import * as registry from "@/registry/packageRegistry";
 import serviceRegistry from "@/integrations/registry";
 import { performConfiguredRequest } from "@/background/requests";
 import { getAvailableVersion } from "@/background/installer";
@@ -99,10 +98,6 @@ declare global {
     REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
     CLOSE_TAB: typeof closeTab;
     OPEN_TAB: typeof openTab;
-    REGISTRY_SYNC: typeof registry.syncPackages;
-    REGISTRY_CLEAR: typeof registry.clear;
-    REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
-    REGISTRY_FIND: typeof registry.find;
     LOCATE_SERVICES_FOR_ID: typeof locator.locateAllForService;
     LOCATE_SERVICE: typeof locator.locate;
     REFRESH_SERVICES: typeof refreshServices;
@@ -164,10 +159,6 @@ export default function registerMessenger(): void {
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
     CLOSE_TAB: closeTab,
     OPEN_TAB: openTab,
-    REGISTRY_SYNC: registry.syncPackages,
-    REGISTRY_CLEAR: registry.clear,
-    REGISTRY_GET_BY_KINDS: registry.getByKinds,
-    REGISTRY_FIND: registry.find,
     LOCATE_SERVICES_FOR_ID: locator.locateAllForService.bind(locator),
     LOCATE_SERVICE: locator.locate.bind(locator),
     LOCATOR_REFRESH_LOCAL: locator.refreshLocal.bind(locator),

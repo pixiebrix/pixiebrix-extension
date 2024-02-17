@@ -39,7 +39,7 @@ import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalys
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { extensionToFormState } from "@/pageEditor/starterBricks/adapter";
+import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { getPageState } from "@/contentScript/messenger/strict/api";
 import { thisTab } from "@/pageEditor/utils";
 import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
@@ -70,7 +70,7 @@ async function selectActiveModFormStates(
       (x) => x._recipe?.id === element.recipe.id && !dirtyIds.has(x.id),
     );
     const otherElements = await Promise.all(
-      otherExtensions.map(async (x) => extensionToFormState(x)),
+      otherExtensions.map(async (x) => modComponentToFormState(x)),
     );
 
     return [...dirtyElements, ...otherElements];

@@ -37,8 +37,7 @@ import initNavigation from "@/background/navigation";
 import initExecutor from "@/background/executor";
 import initBrowserCommands from "@/background/initBrowserCommands";
 import initDeploymentUpdater from "@/background/deploymentUpdater";
-import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
-import initPartnerTheme from "@/background/partnerTheme";
+import initTheme from "@/background/initTheme";
 import initStarterMods from "@/background/starterMods";
 import { initPartnerTokenRefresh } from "@/background/partnerIntegrations";
 import { initContentScriptReadyListener } from "@/background/contentScript";
@@ -48,6 +47,16 @@ import { initRuntimeLogging } from "@/development/runtimeLogging";
 import initWalkthroughModalTrigger from "@/background/walkthroughModalTrigger";
 import { initSidePanel } from "./sidePanel";
 import initRestrictUnauthenticatedUrlAccess from "@/background/restrictUnauthenticatedUrlAccess";
+import {
+  initManagedStorage,
+  watchDelayedStorageInitialization,
+} from "@/store/enterprise/managedStorage";
+
+// Try to initialize managed storage as early as possible because it impacts background behavior
+// Call watchDelayedStorageInitialization to handle case where storage is not immediately available within timeout.
+// We might consider putting watchStorageInitialization in initManagedStorage, but having a non-terminating
+// interval complicates testing.
+void initManagedStorage().then(async () => watchDelayedStorageInitialization());
 
 void initLocator();
 void initMessengerLogging();
@@ -64,8 +73,7 @@ initContextMenus();
 initContentScriptReadyListener();
 initBrowserCommands();
 initDeploymentUpdater();
-void activateBrowserActionIcon();
-initPartnerTheme();
+initTheme();
 initStarterMods();
 initPartnerTokenRefresh();
 initLogSweep();

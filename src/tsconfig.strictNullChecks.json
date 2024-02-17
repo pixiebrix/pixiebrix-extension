@@ -22,6 +22,7 @@
     "./activation/activationLinkUtils.ts",
     "./activation/WizardValuesModIntegrationsContextAdapter.tsx",
     "./activation/activateLinkClickHandler.ts",
+    "./activation/getActivatedModComponentFromDefinition.ts",
     "./activation/wizardTypes.ts",
     "./analysis/analysisVisitors/varAnalysis/parseTemplateVariables.ts",
     "./analysis/analysisVisitors/varAnalysis/varMap.ts",
@@ -42,7 +43,7 @@
     "./background/externalProtocol.ts",
     "./background/messenger/strict/api.ts",
     "./background/messenger/strict/registration.ts",
-    "./background/partnerTheme.ts",
+    "./background/initTheme.ts",
     "./background/setToolbarBadge.test.ts",
     "./background/sidePanel.ts",
     "./background/toolbarBadge.ts",
@@ -322,6 +323,7 @@
     "./integrations/store/integrationsSlice.ts",
     "./integrations/util/collectExistingConfiguredDependenciesForMod.ts",
     "./integrations/util/extractIntegrationIdsFromSchema.ts",
+    "./integrations/util/getModDefinitionIntegrationIds.ts",
     "./integrations/util/getUnconfiguredComponentIntegrations.ts",
     "./layout/ErrorDisplay.tsx",
     "./layout/Footer.tsx",
@@ -464,6 +466,7 @@
     "./telemetry/traceHelpers.ts",
     "./testUtils/appApiMock.ts",
     "./testUtils/detectPageMock.ts",
+    "./testUtils/factories/browserFactories.ts",
     "./testUtils/factories/databaseFactories.ts",
     "./testUtils/factories/messengerFactories.ts",
     "./testUtils/factories/metadataFactory.ts",
@@ -589,6 +592,8 @@
     "./sidebar/thunks/addTemporaryPanel.ts",
     "./sidebar/thunks/removeTemporaryPanel.ts",
     "./sidebar/thunks/resolveTemporaryPanel.ts",
-    "./background/activateBrowserActionIcon.test.ts"
+    "./background/activateBrowserActionIcon.test.ts",
+    "./services/apiClient.ts",
+    "./__mocks__/@/background/messenger/strict/api.ts"
   ]
 }

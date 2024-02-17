@@ -15,23 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
-import React from "react";
-import AddToRecipeModal from "./sidebar/modals/AddToRecipeModal";
-import CreateModModal from "./sidebar/modals/CreateModModal";
-import MoveFromModModal from "./sidebar/modals/MoveFromModModal";
-import SaveAsNewRecipeModal from "./sidebar/modals/SaveAsNewRecipeModal";
-import SaveDataIntegrityErrorModal from "@/pageEditor/panes/save/SaveDataIntegrityErrorModal";
+import { define } from "cooky-cutter";
+import type { Tabs } from "webextension-polyfill";
 
-const Modals: React.FunctionComponent = () => (
-  <>
-    <AddToRecipeModal />
-    <MoveFromModModal />
-    <SaveAsNewRecipeModal />
-    <CreateModModal />
-    <AddBlockModal />
-    <SaveDataIntegrityErrorModal />
-  </>
-);
-
-export default Modals;
+export const tabFactory = define<Tabs.Tab>({
+  url: () => "https://example.com",
+  id: (x: number) => x,
+  index: (x: number) => x,
+  active: true,
+  pinned: false,
+  highlighted: false,
+  incognito: false,
+});

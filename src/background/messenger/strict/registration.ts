@@ -22,7 +22,7 @@ import { expectContext } from "@/utils/expectContext";
 import { showMySidePanel } from "@/background/sidePanel";
 import { ensureContentScript } from "@/background/contentScript";
 import { getRecord, setRecord } from "@/background/dataStore";
-import initPartnerTheme from "@/background/partnerTheme";
+import initTheme from "@/background/initTheme";
 import {
   addTraceEntry,
   addTraceExit,
@@ -37,6 +37,7 @@ import {
 import { setToolbarBadge } from "@/background/toolbarBadge";
 import { rememberFocus } from "@/utils/focusTracker";
 import writeToClipboard from "@/background/clipboard";
+import * as registry from "@/registry/packageRegistry";
 
 expectContext("background");
 
@@ -46,7 +47,7 @@ declare global {
     INJECT_SCRIPT: typeof ensureContentScript;
     GET_DATA_STORE: typeof getRecord;
     SET_DATA_STORE: typeof setRecord;
-    ACTIVATE_PARTNER_THEME: typeof initPartnerTheme;
+    ACTIVATE_THEME: typeof initTheme;
     ADD_TRACE_ENTRY: typeof addTraceEntry;
     ADD_TRACE_EXIT: typeof addTraceExit;
     CLEAR_TRACES: typeof clearExtensionTraces;
@@ -57,6 +58,10 @@ declare global {
     SET_TOOLBAR_BADGE: typeof setToolbarBadge;
     DOCUMENT_RECEIVED_FOCUS: typeof rememberFocus;
     WRITE_TO_CLIPBOARD: typeof writeToClipboard;
+    REGISTRY_SYNC: typeof registry.syncPackages;
+    REGISTRY_CLEAR: typeof registry.clear;
+    REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
+    REGISTRY_FIND: typeof registry.find;
   }
 }
 
@@ -66,7 +71,7 @@ export default function registerMessenger(): void {
     INJECT_SCRIPT: ensureContentScript,
     GET_DATA_STORE: getRecord,
     SET_DATA_STORE: setRecord,
-    ACTIVATE_PARTNER_THEME: initPartnerTheme,
+    ACTIVATE_THEME: initTheme,
     ADD_TRACE_ENTRY: addTraceEntry,
     ADD_TRACE_EXIT: addTraceExit,
     CLEAR_TRACES: clearExtensionTraces,
@@ -77,5 +82,9 @@ export default function registerMessenger(): void {
     SET_TOOLBAR_BADGE: setToolbarBadge,
     DOCUMENT_RECEIVED_FOCUS: rememberFocus,
     WRITE_TO_CLIPBOARD: writeToClipboard,
+    REGISTRY_SYNC: registry.syncPackages,
+    REGISTRY_CLEAR: registry.clear,
+    REGISTRY_GET_BY_KINDS: registry.getByKinds,
+    REGISTRY_FIND: registry.find,
   });
 }

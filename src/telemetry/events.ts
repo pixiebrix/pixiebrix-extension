@@ -101,6 +101,7 @@ export const Events = {
   PAGE_EDITOR_VIEW_TEMPLATES: "PageEditorViewTemplates",
   PAGE_EDITOR_MOD_CREATE: "PageEditorModCreate",
   PAGE_EDITOR_MOD_UPDATE: "PageEditorModUpdate",
+  PAGE_EDITOR_MOD_SAVE_ERROR: "PageEditorModSaveError",
 
   PAGE_EDITOR_SESSION_START: "PageEditorSessionStart",
   PAGE_EDITOR_SESSION_END: "PageEditorSessionEnd",

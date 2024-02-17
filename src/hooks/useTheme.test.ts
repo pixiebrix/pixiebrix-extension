@@ -15,9 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useGetOrganizationTheme, useGetTheme } from "@/hooks/useTheme";
+import { useGetOrganizationTheme, useGetThemeName } from "@/hooks/useTheme";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
-import { mockAnonymousUser, mockCachedUser } from "@/testUtils/userMock";
+import {
+  mockAnonymousUser,
+  mockCachedUser,
+  mockLoadingCachedUser,
+} from "@/testUtils/userMock";
 import { renderHook } from "@/testUtils/renderWithCommonStore";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { uuidv4 } from "@/types/helpers";
@@ -29,13 +33,13 @@ import {
   userOrganizationFactory,
 } from "@/testUtils/factories/authFactories";
 
-describe("useGetTheme", () => {
+describe("useGetThemeName", () => {
   test("has no partner", () => {
     mockCachedUser(userFactory());
 
     const {
       result: { current: theme },
-    } = renderHook(() => useGetTheme());
+    } = renderHook(() => useGetThemeName());
 
     expect(theme).toBe(DEFAULT_THEME);
   });
@@ -45,7 +49,7 @@ describe("useGetTheme", () => {
 
     const {
       result: { current: theme },
-    } = renderHook(() => useGetTheme(), {
+    } = renderHook(() => useGetThemeName(), {
       setupRedux(dispatch) {
         dispatch(
           settingsSlice.actions.setPartnerId({
@@ -63,7 +67,7 @@ describe("useGetTheme", () => {
 
     const {
       result: { current: theme },
-    } = renderHook(() => useGetTheme(), {
+    } = renderHook(() => useGetThemeName(), {
       setupRedux(dispatch) {
         dispatch(
           settingsSlice.actions.setTheme({ theme: "automation-anywhere" }),
@@ -79,7 +83,7 @@ describe("useGetTheme", () => {
 
     const {
       result: { current: theme },
-    } = renderHook(() => useGetTheme(), {
+    } = renderHook(() => useGetThemeName(), {
       setupRedux(dispatch) {
         dispatch(
           authSlice.actions.setAuth(
@@ -102,7 +106,7 @@ describe("useGetTheme", () => {
 
     const {
       result: { current: theme },
-    } = renderHook(() => useGetTheme(), {
+    } = renderHook(() => useGetThemeName(), {
       setupRedux(dispatch) {
         dispatch(settingsSlice.actions.setPartnerId({ partnerId: "default" }));
       },
@@ -116,14 +120,18 @@ describe("useGetTheme", () => {
 
     const {
       result: { current: theme },
-    } = renderHook(() => useGetTheme(), {
+    } = renderHook(() => useGetThemeName(), {
       setupRedux(dispatch) {
-        authStateFactory({
-          partner: {
-            name: "PixieBrix",
-            theme: "default",
-          },
-        });
+        dispatch(
+          authSlice.actions.setAuth(
+            authStateFactory({
+              partner: {
+                name: "PixieBrix",
+                theme: "default",
+              },
+            }),
+          ),
+        );
       },
     });
 
@@ -134,8 +142,39 @@ describe("useGetTheme", () => {
 describe("useGetOrganizationTheme", () => {
   const customTestLogoUrl = "https://test-logo.svg";
 
+  test("uses cached organization theme while me is loading", () => {
+    mockLoadingCachedUser();
+
+    const {
+      result: { current: organizationTheme },
+    } = renderHook(() => useGetOrganizationTheme(), {
+      setupRedux(dispatch) {
+        dispatch(
+          authSlice.actions.setAuth(
+            authStateFactory({
+              organization: {
+                id: uuidv4(),
+                name: "Cached Organization",
+                theme: {
+                  show_sidebar_logo: true,
+                  logo: customTestLogoUrl,
+                  toolbar_icon: "someOldOne.svg",
+                },
+              },
+            }),
+          ),
+        );
+      },
+    });
+
+    expect(organizationTheme.showSidebarLogo).toBe(true);
+    expect(organizationTheme.customSidebarLogo).toBe(customTestLogoUrl);
+    expect(organizationTheme.toolbarIcon).toBe("someOldOne.svg");
+  });
+
   test("new organization theme trumps cached organization theme", () => {
     const newTestLogoUrl = "https://new-test-logo.svg";
+    const newTestToolbarIconUrl = "https://test-logo.svg";
 
     mockCachedUser(
       userFactory({
@@ -143,6 +182,7 @@ describe("useGetOrganizationTheme", () => {
           theme: {
             show_sidebar_logo: false,
             logo: newTestLogoUrl,
+            toolbar_icon: newTestToolbarIconUrl,
           },
         }),
       }),
@@ -152,20 +192,26 @@ describe("useGetOrganizationTheme", () => {
       result: { current: organizationTheme },
     } = renderHook(() => useGetOrganizationTheme(), {
       setupRedux(dispatch) {
-        authStateFactory({
-          organization: {
-            id: uuidv4(),
-            name: "Cached Organization",
-            theme: {
-              show_sidebar_logo: true,
-              logo: customTestLogoUrl,
-            },
-          },
-        });
+        dispatch(
+          authSlice.actions.setAuth(
+            authStateFactory({
+              organization: {
+                id: uuidv4(),
+                name: "Cached Organization",
+                theme: {
+                  show_sidebar_logo: true,
+                  logo: customTestLogoUrl,
+                  toolbar_icon: "someOldOne.svg",
+                },
+              },
+            }),
+          ),
+        );
       },
     });
 
     expect(organizationTheme.showSidebarLogo).toBe(false);
     expect(organizationTheme.customSidebarLogo).toBe(newTestLogoUrl);
+    expect(organizationTheme.toolbarIcon).toBe(newTestToolbarIconUrl);
   });
 });

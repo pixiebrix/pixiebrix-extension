@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "1.8.9-alpha.1",
+  "version": "1.8.10-alpha.1",
   "description": "PixieBrix Browser Extension",
   "scripts": {
     "test": "TZ=UTC jest",
@@ -98,6 +98,7 @@
     "json-stringify-safe": "^5.0.1",
     "json5": "^2.2.3",
     "jsonpath-plus": "^8.0.0",
+    "jszip": "^3.10.1",
     "kbar": "^0.1.0-beta.45",
     "lodash-es": "^4.17.21",
     "mark.js": "^8.11.1",
@@ -165,7 +166,7 @@
     "webext-detect-page": "^5.0.0",
     "webext-events": "^2.1.0",
     "webext-inject-on-install": "^2.0.1",
-    "webext-messenger": "^0.25.2",
+    "webext-messenger": "^0.26.0",
     "webext-patterns": "^1.4.0",
     "webext-permissions": "^3.1.2",
     "webext-polyfill-kinda": "^1.0.2",

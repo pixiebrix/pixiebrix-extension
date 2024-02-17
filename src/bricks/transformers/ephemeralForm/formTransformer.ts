@@ -35,8 +35,11 @@ import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { type BrickConfig } from "@/bricks/types";
 import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
 import { isExpression } from "@/utils/expressionUtils";
+import { getThisFrame } from "webext-messenger";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { BusinessError } from "@/errors/businessErrors";
 
-// The modes for createFrameSrc are different than the location argument for FormTransformer. The mode for the frame
+// The modes for createFrameSource are different from the location argument for FormTransformer. The mode for the frame
 // just determines the layout container of the form
 type Mode = "modal" | "panel";
 
@@ -44,7 +47,9 @@ export async function createFrameSource(
   nonce: string,
   mode: Mode,
 ): Promise<URL> {
-  const target = await getConnectedTarget();
+  // Match the frame where the form is being shown
+  const target =
+    mode === "modal" ? await getThisFrame() : await getConnectedTarget();
 
   const frameSource = new URL(browser.runtime.getURL("ephemeralForm.html"));
   frameSource.searchParams.set("nonce", nonce);
@@ -144,6 +149,13 @@ export class FormTransformer extends TransformerABC {
     { logger, abortSignal }: BrickOptions,
   ): Promise<unknown> {
     expectContext("contentScript");
+
+    if (location === "sidebar" && isLoadedInIframe()) {
+      // Validate before registerForm to avoid an uncaught promise rejection
+      throw new BusinessError(
+        "Cannot show sidebar in a frame. To use the sidebar, set the target to Top-level Frame",
+      );
+    }
 
     // Future improvements:
     // - Support draggable modals. This will require showing the modal header on the host page so there's a drag handle?

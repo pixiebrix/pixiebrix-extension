@@ -375,7 +375,12 @@ export async function updateDeployments(): Promise<void> {
       readManagedStorage(),
     ]);
 
-  const { campaignIds = [], managedOrganizationId, ssoUrl } = managedStorage;
+  const {
+    campaignIds = [],
+    managedOrganizationId,
+    ssoUrl,
+    disableLoginTab,
+  } = managedStorage;
 
   if (!linked) {
     // If the Browser extension is unlinked (it doesn't have the API key), one of the following must be true:
@@ -385,6 +390,11 @@ export async function updateDeployments(): Promise<void> {
     // - If the user is not an enterprise user (or has not linked their extension yet), just NOP. They likely they just
     //   need to reconnect their extension. If it's a non-enterprise user, they shouldn't have any deployments
     //   installed anyway.
+
+    if (disableLoginTab) {
+      // IT manager has disabled opening login tab automatically
+      return;
+    }
 
     if (ssoUrl != null) {
       reportEvent(Events.ORGANIZATION_EXTENSION_LINK, {
@@ -411,7 +421,7 @@ export async function updateDeployments(): Promise<void> {
         sso: false,
       });
 
-      void browser.runtime.openOptionsPage();
+      await browser.runtime.openOptionsPage();
 
       return;
     }

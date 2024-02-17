@@ -15,23 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
-import React from "react";
-import AddToRecipeModal from "./sidebar/modals/AddToRecipeModal";
-import CreateModModal from "./sidebar/modals/CreateModModal";
-import MoveFromModModal from "./sidebar/modals/MoveFromModModal";
-import SaveAsNewRecipeModal from "./sidebar/modals/SaveAsNewRecipeModal";
-import SaveDataIntegrityErrorModal from "@/pageEditor/panes/save/SaveDataIntegrityErrorModal";
+import { RegistryId } from "@/types/registryTypes";
+import { getMethod, backgroundTarget as bg } from "webext-messenger";
 
-const Modals: React.FunctionComponent = () => (
-  <>
-    <AddToRecipeModal />
-    <MoveFromModModal />
-    <SaveAsNewRecipeModal />
-    <CreateModModal />
-    <AddBlockModal />
-    <SaveDataIntegrityErrorModal />
-  </>
-);
+export * from "../../../../../background/messenger/strict/api";
 
-export default Modals;
+export const registry = {
+  syncRemote: jest.fn(),
+  getByKinds: jest.fn().mockResolvedValue([]),
+  find: jest.fn().mockImplementation(async (id: RegistryId) => {
+    throw new Error(
+      `Find not implemented in registry mock (looking up "${id}"). See __mocks__/background/messenger/api for more information.`,
+    );
+  }),
+  clear: getMethod("REGISTRY_CLEAR", bg),
+};

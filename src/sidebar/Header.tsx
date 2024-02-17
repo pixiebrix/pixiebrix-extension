@@ -21,19 +21,19 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
 import { hideSidebar } from "@/contentScript/messenger/strict/api";
-import useTheme, { useGetTheme } from "@/hooks/useTheme";
+import useTheme, { useGetThemeName } from "@/hooks/useTheme";
 import cx from "classnames";
 import { getTopLevelFrame } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
 
 const Header: React.FunctionComponent = () => {
   const { logo, showSidebarLogo, customSidebarLogo } = useTheme();
-  const theme = useGetTheme();
+  const theme = useGetThemeName();
   /* In MV3, Chrome offers a native Close button */
   const showCloseButton = !isMV3();
 
   return (
-    <div className="d-flex py-2 pl-2 pr-0 justify-content-between align-content-center">
+    <div className="d-flex py-2 pl-2 pr-0 align-items-center">
       {showCloseButton && (
         <Button
           className={cx(
@@ -52,14 +52,8 @@ const Header: React.FunctionComponent = () => {
         </Button>
       )}
       {showSidebarLogo && (
-        <div
-          className={cx({
-            // Flexbox centering works because there's a button to the left of the logo
-            "align-self-center": showCloseButton,
-            // Use mx-auto because the button is removed in MV3
-            "mx-auto": !showCloseButton,
-          })}
-        >
+        // `mx-auto` centers the logo
+        <div className="mx-auto">
           <img
             src={customSidebarLogo ?? logo.regular}
             alt={customSidebarLogo ? "Custom logo" : "PixieBrix logo"}

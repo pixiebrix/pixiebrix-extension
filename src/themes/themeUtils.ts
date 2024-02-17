@@ -15,14 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DEFAULT_THEME, type Theme, THEMES } from "@/themes/themeTypes";
+import {
+  DEFAULT_THEME,
+  type ThemeName,
+  THEME_NAMES,
+} from "@/themes/themeTypes";
 import logo from "@img/logo.svg";
 import logoSmall from "@img/logo-small.svg";
 import aaLogo from "@img/aa-logo.svg";
 import aaLogoSmall from "@img/aa-logo-small.svg";
 
-export const isValidTheme = (theme: string): theme is Theme =>
-  THEMES.includes(theme);
+export const isValidThemeName = (themeName: string): themeName is ThemeName =>
+  THEME_NAMES.includes(themeName);
 
 export type ThemeLogo = {
   regular: string;
@@ -30,7 +34,7 @@ export type ThemeLogo = {
 };
 
 type ThemeLogoMap = {
-  [key in Theme]: ThemeLogo;
+  [key in ThemeName]: ThemeLogo;
 };
 
 export const THEME_LOGOS: ThemeLogoMap = {
@@ -46,39 +50,39 @@ export const THEME_LOGOS: ThemeLogoMap = {
 
 // Note: this function is re-used in the app. Should not reference
 // anything unavailable in the app environment, e.g. the background page
-export const getThemeLogo = (theme: string): ThemeLogo => {
-  if (isValidTheme(theme)) {
-    // eslint-disable-next-line security/detect-object-injection -- theme is type Theme, a union type of string literal
-    return THEME_LOGOS[theme];
+export const getThemeLogo = (themeName: string): ThemeLogo => {
+  if (isValidThemeName(themeName)) {
+    // eslint-disable-next-line security/detect-object-injection -- themeName is type ThemeName, a union type of string literal
+    return THEME_LOGOS[themeName];
   }
 
-  // eslint-disable-next-line security/detect-object-injection -- theme not user defined
+  // eslint-disable-next-line security/detect-object-injection -- themeName not user defined
   return THEME_LOGOS[DEFAULT_THEME];
 };
 
 // Note: this function is re-used in the app. Should not reference
 // anything unavailable in the app environment, e.g. the background page
-export const addThemeClassToDocumentRoot = (theme: Theme): void => {
-  for (const theme of THEMES) {
+export const addThemeClassToDocumentRoot = (themeName: ThemeName): void => {
+  for (const theme of THEME_NAMES) {
     document.documentElement.classList.remove(theme);
   }
 
-  if (theme && theme !== DEFAULT_THEME) {
-    document.documentElement.classList.add(theme);
+  if (themeName && themeName !== DEFAULT_THEME) {
+    document.documentElement.classList.add(themeName);
   }
 };
 
-export const setThemeFavicon = (theme: Theme): void => {
+export const setThemeFavicon = (themeName: ThemeName): void => {
   const favicon = document.querySelector("link[rel='icon']");
   if (!favicon) {
     // Not all pages have favicons
     return;
   }
 
-  if (theme === "default") {
+  if (themeName === "default") {
     favicon.removeAttribute("href");
   } else {
-    const { small: icon } = getThemeLogo(theme);
+    const { small: icon } = getThemeLogo(themeName);
     favicon.setAttribute("href", icon);
   }
 };

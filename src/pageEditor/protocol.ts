@@ -16,7 +16,7 @@
  */
 
 import { resetTab } from "@/contentScript/messenger/api";
-import { thisTab } from "./utils";
+import { allFramesInThisTab } from "./utils";
 import { type Target } from "@/types/messengerTypes";
 import { updatePageEditor } from "./events";
 
@@ -38,7 +38,7 @@ async function onNavigation(target: Target): Promise<void> {
 }
 
 function onEditorClose(): void {
-  resetTab(thisTab);
+  resetTab(allFramesInThisTab);
 }
 
 export function watchNavigation(): void {

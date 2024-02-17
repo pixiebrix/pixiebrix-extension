@@ -21,7 +21,7 @@ import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import { act, render } from "@/pageEditor/testHelpers";
 import { validateSchema } from "@/extensionConsole/pages/brickEditor/validate";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { registry as messengerRegistry } from "@/background/messenger/api";
+import { registry as messengerRegistry } from "@/background/messenger/strict/api";
 import * as localRegistry from "@/registry/packageRegistry";
 import pDefer from "p-defer";
 import { defaultInitialValue } from "@/utils/asyncStateUtils";

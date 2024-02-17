@@ -94,7 +94,6 @@ export const initialState: EditorState = {
   elements: [],
   knownEditable: [],
   dirty: {},
-  inserting: null,
   isBetaUI: false,
   elementUIStates: {},
   showV3UpgradeMessageByElement: {},
@@ -112,6 +111,7 @@ export const initialState: EditorState = {
   isDimensionsWarningDismissed: false,
 
   // Not persisted
+  inserting: null,
   isVariablePopoverVisible: false,
 };
 
@@ -812,6 +812,9 @@ export const editorSlice = createSlice({
     dismissDimensionsWarning(state) {
       state.isDimensionsWarningDismissed = true;
     },
+    showSaveDataIntegrityErrorModal(state) {
+      state.visibleModalKey = ModalKey.SAVE_DATA_INTEGRITY_ERROR;
+    },
   },
   extraReducers(builder) {
     builder
@@ -876,5 +879,9 @@ export const persistEditorConfig = {
   storage: localStorage as StorageInterface,
   version: 2,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
-  blacklist: ["isVarPopoverVisible", "inserting"],
+  blacklist: [
+    "inserting",
+    "isVarPopoverVisible",
+    "isSaveDataIntegrityErrorModalVisible",
+  ],
 };

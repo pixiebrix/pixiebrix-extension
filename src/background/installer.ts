@@ -27,7 +27,10 @@ import { getExtensionToken, getUserData, isLinked } from "@/auth/token";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import { isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
-import { readManagedStorage } from "@/store/enterprise/managedStorage";
+import {
+  readManagedStorage,
+  isInitialized as isManagedStorageInitialized,
+} from "@/store/enterprise/managedStorage";
 import { Events } from "@/telemetry/events";
 
 import { DEFAULT_SERVICE_URL, UNINSTALL_URL } from "@/urlConstants";
@@ -39,6 +42,35 @@ import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
  * The latest version of PixieBrix available in the Chrome Web Store, or null if the version hasn't been fetched.
  */
 let _availableVersion: string | null = null;
+
+/**
+ * Returns true if this appears to be a Chrome Web Store install and/or the user has an app URL where they're
+ * authenticated so the extension can be linked.
+ */
+async function isLikelyEndUserInstall(): Promise<boolean> {
+  // Query existing app/CWS tabs: https://developer.chrome.com/docs/extensions/reference/api/tabs#method-query
+  // `browser.tabs.query` supports https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns
+  const likelyOnboardingTabs = await browser.tabs.query({
+    // Can't use SERVICE_URL directly because it contains a port number during development, resulting in an
+    // invalid URL match pattern
+    url: [
+      // Setup page is page before sending user to the CWS
+      new URL("setup", DEFAULT_SERVICE_URL).href,
+      // Base page is extension linking page. Needs path to be a valid URL match pattern
+      new URL("", DEFAULT_SERVICE_URL).href,
+      // Known CWS URLs: https://docs.pixiebrix.com/enterprise-it-setup/network-email-firewall-configuration
+      "https://chromewebstore.google.com/*",
+      "https://chrome.google.com/webstore/*",
+    ],
+  });
+
+  // The CWS install URL differs based on the extension listing slug. So instead, only match on the runtime id.
+  return likelyOnboardingTabs.some(
+    (tab) =>
+      tab.url.includes(DEFAULT_SERVICE_URL) ||
+      tab.url.includes(browser.runtime.id),
+  );
+}
 
 /**
  * Install handler to complete authentication configuration for the extension.
@@ -127,7 +159,7 @@ export async function openInstallPage() {
       active: true,
     });
   } else {
-    // Case 3: there's no Admin Console onboarding tab open
+    // Case 3: there's no Admin Console onboarding tab open.
     //
     // Open a new Admin Console tab which will automatically "links" the extension (by passing the native PixieBrix
     // token to the extension).
@@ -181,10 +213,11 @@ export async function requirePartnerAuth(): Promise<void> {
   }
 }
 
-async function install({
+// Exported for testing
+export async function handleInstall({
   reason,
   previousVersion,
-}: Runtime.OnInstalledDetailsType) {
+}: Runtime.OnInstalledDetailsType): Promise<void> {
   // https://developer.chrome.com/docs/extensions/reference/runtime/#event-onInstalled
   // https://developer.chrome.com/docs/extensions/reference/runtime/#type-OnInstalledReason
   console.debug("onInstalled", { reason, previousVersion });
@@ -198,20 +231,40 @@ async function install({
     // XXX: under what conditions could onInstalled fire, but the extension is already linked? Is this the case during
     // development/loading an update of the extension from the file system?
     if (!(await isLinked())) {
-      // PERFORMANCE: readManagedStorageByKey waits up to 2 seconds for managed storage to be available. Shouldn't be
-      // notice-able for end-user relative to the extension download/install time
-      const { ssoUrl, partnerId, controlRoomUrl } = await readManagedStorage();
-      if (ssoUrl) {
-        // Don't launch the SSO page automatically. The SSO flow will be launched by deploymentUpdater.ts:updateDeployments
+      // If an end-user appears to be installing, jump to linking directly vs. waiting for readManagedStorage because
+      // readManagedStorage will wait until a timeout for managed storage to be available.
+      if (!isManagedStorageInitialized() && (await isLikelyEndUserInstall())) {
+        console.debug("Skipping readManagedStorage for end-user install");
+
+        await openInstallPage();
+        return;
+      }
+
+      // Reminder: readManagedStorage waits up to 4.5 seconds for managed storage to be available
+      const {
+        ssoUrl,
+        partnerId,
+        controlRoomUrl,
+        disableLoginTab,
+        managedOrganizationId,
+      } = await readManagedStorage();
+
+      if (disableLoginTab) {
+        // IT manager has disabled the login tab
+        return;
+      }
+
+      if (ssoUrl || managedOrganizationId) {
+        // Don't launch the page automatically. The SSO flow will be launched by deploymentUpdater.ts:updateDeployments
         return;
       }
 
       if (partnerId === "automation-anywhere" && isEmpty(controlRoomUrl)) {
-        // Don't launch the install page automatically if only the partner id is specified
+        // Don't launch the installation page automatically if only the partner id is specified
         return;
       }
 
-      void openInstallPage();
+      await openInstallPage();
     }
   } else if (reason === "update") {
     // `update` is also triggered on browser.runtime.reload() and manually reloading from the extensions page
@@ -261,7 +314,7 @@ async function setUninstallURL(): Promise<void> {
 
 function initInstaller() {
   browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
-  browser.runtime.onInstalled.addListener(install);
+  browser.runtime.onInstalled.addListener(handleInstall);
   browser.runtime.onStartup.addListener(initTelemetry);
   dntConfig.onChanged(() => {
     void setUninstallURL();
