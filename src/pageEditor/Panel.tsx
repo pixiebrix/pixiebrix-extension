@@ -47,11 +47,11 @@ const UnguardedPanel: React.VoidFunctionComponent = () => {
 };
 
 const Panel: React.VoidFunctionComponent = () => (
-  <TabInspectionGate>
-    <InvalidatedContextGate contextNameTitleCase="Page Editor">
+  <InvalidatedContextGate contextNameTitleCase="Page Editor">
+    <TabInspectionGate>
       <UnguardedPanel />
-    </InvalidatedContextGate>
-  </TabInspectionGate>
+    </TabInspectionGate>
+  </InvalidatedContextGate>
 );
 
 export default Panel;
