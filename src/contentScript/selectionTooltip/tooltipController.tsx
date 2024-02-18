@@ -30,6 +30,8 @@ import {
 } from "@floating-ui/dom";
 import { getCaretCoordinates } from "@/utils/textAreaUtils";
 import SelectionToolbar from "@/contentScript/selectionTooltip/SelectionToolbar";
+import { expectContext } from "@/utils/expectContext";
+import { onContextInvalidated } from "webext-events";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
@@ -77,11 +79,9 @@ function createTooltip(): HTMLElement {
   popover.style.setProperty("margin", "0");
   popover.style.setProperty("padding", "0");
 
-  const shadowRoot = popover.attachShadow({ mode: "closed" });
-
   render(
     <SelectionToolbar registry={tooltipActionRegistry} onHide={hideTooltip} />,
-    shadowRoot,
+    popover,
   );
 
   container.append(popover);
@@ -215,6 +215,8 @@ function isSelectionValid(selection: Nullishable<Selection>): boolean {
  * Initialize the selection tooltip once.
  */
 export const initSelectionTooltip = once(() => {
+  expectContext("contentScript");
+
   console.debug("Initializing text selection toolip");
 
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
@@ -252,5 +254,9 @@ export const initSelectionTooltip = once(() => {
     if (isShowing) {
       showTooltip();
     }
+  });
+
+  onContextInvalidated.addListener(() => {
+    destroyTooltip();
   });
 });

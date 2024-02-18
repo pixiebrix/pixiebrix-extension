@@ -16,6 +16,8 @@
  */
 
 import React from "react";
+// We're rendering in the shadow DOM, so we need to load styles as a URL. loadAsUrl doesn't work with module mangling
+import stylesUrl from "@/contentScript/selectionTooltip/SelectionToolbar.scss?loadAsUrl";
 import type ActionRegistry from "@/contentScript/selectionTooltip/ActionRegistry";
 import type { RegisteredAction } from "@/contentScript/selectionTooltip/ActionRegistry";
 import Icon from "@/icons/Icon";
@@ -24,6 +26,13 @@ import { truncate } from "lodash";
 import useWindowSelection from "@/hooks/useWindowSelection";
 import type { Nullishable } from "@/utils/nullishUtils";
 import useActionRegistry from "@/contentScript/selectionTooltip/useActionRegistry";
+import { Stylesheets } from "@/components/Stylesheets";
+import EmotionShadowRoot from "react-shadow/emotion";
+
+// "Every property exists" (via Proxy), TypeScript doesn't offer such type
+// Also strictNullChecks config mismatch
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+const ShadowRoot = EmotionShadowRoot.div!;
 
 const ICON_SIZE_PX = 16;
 
@@ -62,9 +71,8 @@ const ToolbarItem: React.FC<RegisteredAction & ActionCallbacks> = ({
   return (
     <button
       role="menuitem"
+      className="toolbarItem"
       style={{
-        borderRadius: 0,
-        cursor: "pointer",
         // Keep emoji and icon height consistent
         fontSize: `${ICON_SIZE_PX}px`,
       }}
@@ -89,15 +97,20 @@ const SelectionToolbar: React.FC<
 
   // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menu_role
   return (
-    <div
-      role="menu"
-      aria-orientation="horizontal"
-      aria-label="Text selection menu"
-    >
-      {[...actions.entries()].map(([id, action]) => (
-        <ToolbarItem key={id} {...action} onHide={onHide} />
-      ))}
-    </div>
+    <ShadowRoot mode="closed">
+      <Stylesheets href={[stylesUrl]}>
+        <div
+          role="menu"
+          aria-orientation="horizontal"
+          aria-label="Text selection menu"
+          className="toolbar"
+        >
+          {[...actions.entries()].map(([id, action]) => (
+            <ToolbarItem key={id} {...action} onHide={onHide} />
+          ))}
+        </div>
+      </Stylesheets>
+    </ShadowRoot>
   );
 };
 

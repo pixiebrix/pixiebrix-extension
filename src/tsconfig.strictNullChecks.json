@@ -213,6 +213,8 @@
     "./contentScript/selectionTooltip/SelectionToolbar.tsx",
     "./contentScript/selectionTooltip/useActionRegistry.ts",
     "./contentScript/selectionTooltip/tooltipController.tsx",
+    "./contentScript/selectionTooltip/tooltipController.test.ts",
+    "./contentScript/selectionTooltip/SelectionToolbar.stories.tsx",
     "./contentScript/browserActionInstantHandler.ts",
     "./contentScript/context.ts",
     "./contentScript/contextMenus.ts",
