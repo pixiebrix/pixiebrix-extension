@@ -47,7 +47,8 @@ describe("tooltipController", () => {
 
     await selectText();
 
-    // I couldn't get screen from shadow dom testing library to work, otherwise I would have use getByRole for 'menu'
+    // I couldn't get screen from shadow-dom-testing-library to work, otherwise I would have use getByRole for 'menu'
+    // I think it might only work with render().
     expect(
       screen.getByTestId("pixiebrix-selection-tooltip"),
     ).toBeInTheDocument();

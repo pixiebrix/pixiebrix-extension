@@ -3491,6 +3491,87 @@ exports[`Storyshots Editor/LogToolbar Default 1`] = `
 </div>
 `;
 
+exports[`Storyshots Enhancements/SelectionToolbar Emoji Buttons 1`] = `
+<div
+  aria-label="Text selection menu"
+  aria-orientation="horizontal"
+  role="menu"
+>
+  <button
+    onClick={[Function]}
+    role="menuitem"
+    style={
+      {
+        "borderRadius": 0,
+        "cursor": "pointer",
+        "fontSize": "16px",
+      }
+    }
+    title=" Emoji"
+  >
+    😊
+  </button>
+  <button
+    onClick={[Function]}
+    role="menuitem"
+    style={
+      {
+        "borderRadius": 0,
+        "cursor": "pointer",
+        "fontSize": "16px",
+      }
+    }
+    title=" Emoji"
+  >
+    😊
+  </button>
+</div>
+`;
+
+exports[`Storyshots Enhancements/SelectionToolbar Mixed Buttons 1`] = `
+<div
+  aria-label="Text selection menu"
+  aria-orientation="horizontal"
+  role="menu"
+>
+  <button
+    onClick={[Function]}
+    role="menuitem"
+    style={
+      {
+        "borderRadius": 0,
+        "cursor": "pointer",
+        "fontSize": "16px",
+      }
+    }
+    title=" Emoji"
+  >
+    😊
+  </button>
+  <button
+    onClick={[Function]}
+    role="menuitem"
+    style={
+      {
+        "borderRadius": 0,
+        "cursor": "pointer",
+        "fontSize": "16px",
+      }
+    }
+    title="No Emoji"
+  >
+    <span
+      className="root"
+      dangerouslySetInnerHTML={
+        {
+          "__html": "",
+        }
+      }
+    />
+  </button>
+</div>
+`;
+
 exports[`Storyshots ExtensionConsole/IDBErrorDisplay Connection Error 1`] = `
 <div
   className="p-3"

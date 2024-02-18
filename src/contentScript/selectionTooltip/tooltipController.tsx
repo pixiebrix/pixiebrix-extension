@@ -15,25 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ActionRegistry from "@/contentScript/selectionTooltip/actionRegistry";
-import { once, truncate } from "lodash";
+import ActionRegistry from "@/contentScript/selectionTooltip/ActionRegistry";
+import { once } from "lodash";
 import type { Nullishable } from "@/utils/nullishUtils";
 import { render } from "react-dom";
 import React from "react";
 import { ensureTooltipsContainer } from "@/contentScript/tooltipDom";
-import Icon from "@/icons/Icon";
-import { splitStartingEmoji } from "@/utils/stringUtils";
 import {
-  computePosition,
   autoUpdate,
+  computePosition,
   inline,
-  type VirtualElement,
   offset,
+  type VirtualElement,
 } from "@floating-ui/dom";
 import { getCaretCoordinates } from "@/utils/textAreaUtils";
+import SelectionToolbar from "@/contentScript/selectionTooltip/SelectionToolbar";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
-const ICON_SIZE_PX = 16;
 
 export const tooltipActionRegistry = new ActionRegistry();
 
@@ -60,24 +58,6 @@ function hideTooltip(): void {
   cleanupAutoPosition?.();
 }
 
-function selectButtonTitle(
-  title: string,
-  {
-    selectionPreviewLength = 10,
-  }: {
-    selectionPreviewLength?: number;
-  } = {},
-): string {
-  const text = splitStartingEmoji(title).rest;
-  // Chrome uses %s as selection placeholder, which is confusing to users. We might instead show a preview of
-  // the selected text here.
-  const selectionText = truncate(window.getSelection()?.toString() ?? "", {
-    length: selectionPreviewLength,
-    omission: "…",
-  });
-  return text.replace("%s", selectionText);
-}
-
 function createTooltip(): HTMLElement {
   const container = ensureTooltipsContainer();
 
@@ -99,37 +79,8 @@ function createTooltip(): HTMLElement {
 
   const shadowRoot = popover.attachShadow({ mode: "closed" });
 
-  // TODO: fix CSS for icon vs. emoji and dark mode
-  // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menu_role
   render(
-    <div
-      role="menu"
-      aria-orientation="horizontal"
-      aria-label="Text selection menu"
-    >
-      {[...tooltipActionRegistry.actions.entries()].map(([id, action]) => (
-        <button
-          role="menuitem"
-          key={id}
-          style={{
-            borderRadius: 0,
-            cursor: "pointer",
-            // Keep emoji and icon height consistent
-            fontSize: `${ICON_SIZE_PX}px`,
-          }}
-          title={selectButtonTitle(action.title)}
-          onClick={() => {
-            const selection = window.getSelection();
-            if (selection) {
-              action.handler(selection.toString());
-              hideTooltip();
-            }
-          }}
-        >
-          {action.emoji ?? <Icon {...action.icon} size={ICON_SIZE_PX} />}
-        </button>
-      ))}
-    </div>,
+    <SelectionToolbar registry={tooltipActionRegistry} onHide={hideTooltip} />,
     shadowRoot,
   );
 
@@ -271,19 +222,27 @@ export const initSelectionTooltip = once(() => {
   // but it's not supported in Chrome
 
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
-  document.addEventListener("selectionchange", () => {
-    const selection = window.getSelection();
-    if (isSelectionValid(selection)) {
-      showTooltip();
-    } else {
-      hideTooltip();
-    }
-  });
+  document.addEventListener(
+    "selectionchange",
+    () => {
+      const selection = window.getSelection();
+      if (isSelectionValid(selection)) {
+        showTooltip();
+      } else {
+        hideTooltip();
+      }
+    },
+    { passive: true },
+  );
 
   // Try to avoid sticky tool-tip on SPA navigation
-  document.addEventListener("navigate", () => {
-    destroyTooltip();
-  });
+  document.addEventListener(
+    "navigate",
+    () => {
+      destroyTooltip();
+    },
+    { passive: true },
+  );
 
   tooltipActionRegistry.onChange.add(() => {
     const isShowing = selectionTooltip?.checkVisibility();

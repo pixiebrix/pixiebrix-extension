@@ -16,19 +16,19 @@
  */
 
 import type { UUID } from "@/types/stringTypes";
-import type { Nullishable } from "@/utils/nullishUtils";
 import type { IconConfig } from "@/types/iconTypes";
 import { splitStartingEmoji } from "@/utils/stringUtils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 type TextSelectionAction = {
   // NOTE: currently there's no way to set icons for context menu items, so this will always be null
-  icon: Nullishable<IconConfig>;
+  icon?: Nullishable<IconConfig>;
   title: string;
   handler: (text: string) => void;
 };
 
-type RegisteredAction = TextSelectionAction & {
+export type RegisteredAction = TextSelectionAction & {
   emoji: Nullishable<string>;
 };
 
