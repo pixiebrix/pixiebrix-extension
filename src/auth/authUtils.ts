@@ -56,7 +56,7 @@ export function selectUserDataUpdate({
   partner,
   enforce_update_millis: enforceUpdateMillis,
   partner_principals: partnerPrincipals = [],
-}: Me): Partial<UserDataUpdate> {
+}: Me): UserDataUpdate {
   const organizations = selectOrganizations(organizationMemberships);
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
 
@@ -87,7 +87,7 @@ export function selectExtensionAuthState({
   group_memberships = [],
   partner,
   enforce_update_millis: enforceUpdateMillis,
-}: Me): Partial<AuthState> {
+}: Me): AuthState {
   const organizations = selectOrganizations(organizationMemberships);
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
 

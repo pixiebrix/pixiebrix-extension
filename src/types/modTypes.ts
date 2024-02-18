@@ -20,6 +20,7 @@ import { type Organization } from "@/types/contract";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import type { UnknownObject } from "@/types/objectTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * @deprecated
@@ -45,7 +46,7 @@ export type SharingType =
 export type SharingSource = {
   type: SharingType;
   label: string;
-  organization?: Organization;
+  organization?: Nullishable<Organization>;
 };
 
 export type ModStatus =

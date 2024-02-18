@@ -274,8 +274,8 @@ export type ErrorItem = Except<
   components["schemas"]["ErrorItem"],
   "user" | "user_extension"
 > & {
-  deployment: UUID | null;
-  organization: UUID | null;
+  deployment?: UUID;
+  organization?: UUID;
   user_agent_extension_version: SemVerString;
 };
 
