@@ -18,6 +18,7 @@
 import {
   type AudioProtocol,
   type BadgeProtocol,
+  type ContextMenuProtocol,
   PlatformABC,
   type StateProtocol,
   type TemplateProtocol,
@@ -32,8 +33,10 @@ import { expectContext } from "@/utils/expectContext";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import {
+  ensureContextMenu,
   openTab,
   performConfiguredRequestInBackground,
+  uninstallContextMenu,
 } from "@/background/messenger/api";
 import { ephemeralForm } from "@/contentScript/ephemeralForm";
 import { ephemeralPanel } from "@/contentScript/ephemeralPanel";
@@ -46,6 +49,7 @@ import {
 } from "@/sandbox/messenger/api";
 import type { JsonObject } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
+import { registerHandler } from "@/contentScript/contextMenus";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -164,6 +168,20 @@ class ContentScriptPlatform extends PlatformABC {
     return {
       getState,
       setState,
+    };
+  }
+
+  override get contextMenu(): ContextMenuProtocol {
+    expectContext("contentScript");
+
+    return {
+      async register({ handler, ...options }) {
+        registerHandler(options.extensionId, handler);
+        await ensureContextMenu(options);
+      },
+      async unregister(componentId) {
+        await uninstallContextMenu({ extensionId: componentId });
+      },
     };
   }
 

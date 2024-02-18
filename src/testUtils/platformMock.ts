@@ -38,6 +38,10 @@ export const platformMock: PlatformProtocol = {
   badge: {
     setText: jest.fn(),
   },
+  contextMenu: {
+    register: jest.fn(),
+    unregister: jest.fn(),
+  },
   state: {
     getState: jest.fn(),
     setState: jest.fn(),

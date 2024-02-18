@@ -33,6 +33,7 @@ import type { RegistryId } from "@/types/registryTypes";
 import type { JsonObject } from "type-fest";
 import type { TemporaryPanelDefinition } from "@/platform/panels/panelTypes";
 import type { JavaScriptPayload } from "@/sandbox/messenger/api";
+import type { Menus } from "webextension-polyfill";
 
 function notAvailable(capability: PlatformCapability): () => never {
   return () => {
@@ -46,6 +47,23 @@ export type AudioProtocol = {
 
 export type BadgeProtocol = {
   setText(text: Nullishable<string>): void;
+};
+
+export type SelectionMenuOptions = {
+  extensionId: UUID;
+  title: string;
+  contexts: Menus.ContextType[];
+  documentUrlPatterns: string[];
+};
+
+type ContextMenuHandler = (args: Menus.OnClickData) => Promise<void>;
+
+export type ContextMenuProtocol = {
+  register: (
+    arg: SelectionMenuOptions & { handler: ContextMenuHandler },
+  ) => Promise<void>;
+  // XXX: currently this assumes one menu item per component
+  unregister: (componentId: UUID) => Promise<void>;
 };
 
 /**
@@ -92,7 +110,7 @@ export interface PlatformProtocol {
   readonly capabilities: readonly PlatformCapability[];
 
   /**
-   * Open a URL
+   * Open a URL. On the web, typically opens in a new tab.
    */
   open: (url: URL) => Promise<void>;
 
@@ -147,6 +165,11 @@ export interface PlatformProtocol {
     integrationConfig: Nullishable<SanitizedIntegrationConfig>,
     requestConfig: AxiosRequestConfig,
   ) => Promise<RemoteResponse<TData>>;
+
+  /**
+   * The context menu protocol for the platform.
+   */
+  get contextMenu(): ContextMenuProtocol;
 
   /**
    * The audio protocol for the platform.
@@ -207,6 +230,10 @@ export class PlatformABC implements PlatformProtocol {
 
   get template(): TemplateProtocol {
     throw new PlatformCapabilityNotAvailable("template");
+  }
+
+  get contextMenu(): ContextMenuProtocol {
+    throw new PlatformCapabilityNotAvailable("contextMenu");
   }
 
   get badge(): BadgeProtocol {

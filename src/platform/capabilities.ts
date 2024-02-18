@@ -41,6 +41,8 @@ export const platformCapabilities = [
   "audio",
   // PixieBrix quick bar or, eventually, the native app's command palette
   "quickBar",
+  // Context menu
+  "contextMenu",
   // PixieBrix badge, e.g., toolbar icon or standalone app favicon
   "badge",
   // Mod variables/page state

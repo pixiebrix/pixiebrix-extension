@@ -24,7 +24,6 @@ class WebPlatform extends PlatformABC {
   override capabilities: PlatformCapability[] = [
     "dom",
     "alert",
-    "sandbox",
     "toast",
     "form",
     "clipboardWrite",
@@ -34,6 +33,10 @@ class WebPlatform extends PlatformABC {
   // Running unbound window methods throws Invocation Error
   override alert = window.alert.bind(window);
   override prompt = window.prompt.bind(window);
+
+  override open = async (url: URL) => {
+    window.open(url.toString(), "_blank");
+  };
 
   override notify = showNotification;
 
