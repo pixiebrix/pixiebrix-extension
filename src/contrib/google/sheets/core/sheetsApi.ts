@@ -30,7 +30,7 @@ import {
   type UserInfo,
   type ValueRange,
 } from "@/contrib/google/sheets/core/types";
-import { platform } from "@/platform/platformContext";
+import { getPlatform } from "@/platform/platformContext";
 import type { Nullishable } from "@/utils/nullishUtils";
 
 const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
@@ -56,7 +56,7 @@ async function executeRequest<Response, RequestData = never>(
   try {
     // XXX: instead of using the implicit platform, might instead choose to wrap all the module methods in a class
     // that takes the platform and googleAccount as a constructor argument
-    const result = await platform.request<Response>(
+    const result = await getPlatform().request<Response>(
       googleAccount,
       requestConfig,
     );

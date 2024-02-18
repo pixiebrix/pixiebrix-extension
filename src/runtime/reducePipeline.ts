@@ -80,7 +80,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
 import { allSettled } from "@/utils/promiseUtils";
-import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { getPlatform } from "@/platform/platformContext";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
@@ -92,20 +92,15 @@ let brickRegistry: RegistryProtocol<RegistryId, Brick> = {
   },
 };
 
-let platform: PlatformProtocol;
-
 /**
  * Initialize the runtime with the given brick registry.
- * @param platformProtocol platform protocol for the runtime
  * @param registry brick registry to use for looking up bricks
  * @since 1.8.2 introduced to eliminate circular dependency between runtime and registry
  */
 export function initRuntime(
-  platformProtocol: PlatformProtocol,
   registry: RegistryProtocol<RegistryId, Brick>,
 ): void {
   brickRegistry = registry;
-  platform = platformProtocol;
 }
 
 /**
@@ -349,7 +344,7 @@ async function executeBlockWithValidatedProps(
       const { runId, extensionId, branches } = options.trace;
 
       return block.run(args, {
-        platform,
+        platform: getPlatform(),
         ...commonOptions,
         ...options,
         meta: {

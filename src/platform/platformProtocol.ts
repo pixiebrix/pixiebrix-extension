@@ -16,7 +16,6 @@
  */
 
 import type { showNotification } from "@/utils/notify";
-import type { UnknownObject } from "@/types/objectTypes";
 import {
   type PlatformCapability,
   PlatformCapabilityNotAvailable,
@@ -33,6 +32,7 @@ import type { UUID } from "@/types/stringTypes";
 import type { RegistryId } from "@/types/registryTypes";
 import type { JsonObject } from "type-fest";
 import type { TemporaryPanelDefinition } from "@/platform/panels/panelTypes";
+import type { JavaScriptPayload } from "@/sandbox/messenger/api";
 
 function notAvailable(capability: PlatformCapability): () => never {
   return () => {
@@ -43,7 +43,7 @@ function notAvailable(capability: PlatformCapability): () => never {
 /**
  * The variable store/state for the platform. Formerly known as the "page state".
  */
-type State = {
+export type StateProtocol = {
   /**
    * Get the current state.
    */
@@ -53,6 +53,18 @@ type State = {
    * Set the current state.
    */
   setState: typeof setState;
+};
+
+export type TemplateProtocol = {
+  render: (args: {
+    engine: "nunjucks" | "handlebars";
+    template: string;
+    context: JsonObject;
+    autoescape: boolean;
+  }) => Promise<string>;
+
+  // Must also provide a "validate" because nunjucks uses function constructor for compiling the template
+  validate: (args: { engine: "nunjucks"; template: string }) => Promise<void>;
 };
 
 /**
@@ -102,30 +114,16 @@ export interface PlatformProtocol {
   panel: (definition: TemporaryPanelDefinition) => Promise<JsonObject>;
 
   /**
-   * Set the badge text for the platform, e.g., the browser extension icon badge or tab favicon badge.
+   * Set the badge text for the platform, currently the toolbar icon.
    */
   setBadgeText: (text: string) => void;
-
-  /**
-   * Render a template. Uses a sandbox, if available.
-   * @param args
-   */
-  renderTemplate: (args: {
-    engine: "nunjucks" | "handlebars";
-    template: string;
-    context: JsonObject;
-    autoescape: boolean;
-  }) => Promise<string>;
 
   /**
    * Run sandboxed Javascript. Does not have access to the DOM.
    * @param code the function to run
    * @param data the data to pass to the function
    */
-  runSandboxedJavascript: (
-    code: string,
-    data: UnknownObject,
-  ) => Promise<unknown>;
+  runSandboxedJavascript: (args: JavaScriptPayload) => Promise<unknown>;
 
   /**
    * Play a sound effect.
@@ -136,6 +134,8 @@ export interface PlatformProtocol {
   /**
    * Prompt the user to select one or more elements on a host page.
    */
+  // XXX: this method only makes sense in the context of a content script. We might choose to exclude it from
+  // the platform protocol.
   userSelectElementRefs: () => Promise<ElementReference[]>;
 
   /**
@@ -149,12 +149,17 @@ export interface PlatformProtocol {
   /**
    * The variable store/state for the platform. Formerly known as the "page state".
    */
-  get state(): State;
+  get state(): StateProtocol;
+
+  /**
+   * The template engines for the platform.
+   */
+  get template(): TemplateProtocol;
 
   /**
    * The registry for the quick bar.
    */
-  get quickBarRegistry(): QuickBarRegistryProtocol;
+  get quickBar(): QuickBarRegistryProtocol;
 }
 
 export class PlatformABC implements PlatformProtocol {
@@ -165,9 +170,6 @@ export class PlatformABC implements PlatformProtocol {
   prompt: PlatformProtocol["prompt"] = notAvailable("alert");
 
   notify: PlatformProtocol["notify"] = notAvailable("toast");
-
-  runSandboxedJavascript: PlatformProtocol["runSandboxedJavascript"] =
-    notAvailable("sandbox");
 
   playSound: PlatformProtocol["playSound"] = notAvailable("audio");
 
@@ -182,13 +184,18 @@ export class PlatformABC implements PlatformProtocol {
 
   panel: PlatformProtocol["panel"] = notAvailable("panel");
 
-  renderTemplate: PlatformProtocol["renderTemplate"] = notAvailable("template");
+  runSandboxedJavascript: PlatformProtocol["runSandboxedJavascript"] =
+    notAvailable("sandbox");
 
-  get state(): State {
+  get state(): StateProtocol {
     throw new PlatformCapabilityNotAvailable("state");
   }
 
-  get quickBarRegistry(): QuickBarRegistryProtocol {
+  get template(): TemplateProtocol {
+    throw new PlatformCapabilityNotAvailable("template");
+  }
+
+  get quickBar(): QuickBarRegistryProtocol {
     throw new PlatformCapabilityNotAvailable("quickBar");
   }
 }
@@ -196,4 +203,4 @@ export class PlatformABC implements PlatformProtocol {
 /**
  * A platform protocol with no available capabilities.
  */
-export const unavailablePlatform = new PlatformABC();
+export const uninitializedPlatform = new PlatformABC();

@@ -17,11 +17,26 @@
 
 import {
   type PlatformProtocol,
-  unavailablePlatform,
+  uninitializedPlatform,
 } from "@/platform/platformProtocol";
 
-export let platform: PlatformProtocol = unavailablePlatform;
+/**
+ * @file defines an explicit platform protocol
+ */
 
+let platform: PlatformProtocol = uninitializedPlatform;
+
+/**
+ * Get the current platform.
+ */
+export function getPlatform(): PlatformProtocol {
+  return platform;
+}
+
+/**
+ * Set the current platform. Should be called once at the beginning of the application.
+ * @param platformProtocol
+ */
 export function setPlatform(platformProtocol: PlatformProtocol): void {
   platform = platformProtocol;
 }

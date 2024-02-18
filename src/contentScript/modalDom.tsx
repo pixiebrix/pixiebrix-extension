@@ -20,6 +20,12 @@ import { render, unmountComponentAtNode } from "react-dom";
 import React from "react";
 import { expectContext } from "@/utils/expectContext";
 
+/**
+ * Show a modal with the given URL in the host page
+ * @param url the URL to show
+ * @param controller AbortController to cancel the modal
+ * @param onOutsideClick callback to call when the user clicks outside the modal
+ */
 export function showModal({
   url,
   controller,
@@ -29,6 +35,7 @@ export function showModal({
   controller: AbortController;
   onOutsideClick?: () => void;
 }): void {
+  // In React apps, should use React modal component
   expectContext("contentScript");
 
   // Using `<style>` will avoid overriding the site’s inline styles

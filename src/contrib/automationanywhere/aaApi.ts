@@ -52,7 +52,7 @@ import { sleep } from "@/utils/timeUtils";
 
 // XXX: using the ambient platform object for now. In the future, we might want to wrap all these methods in a class
 // and pass the platform and integration config as a constructor argument
-import { platform } from "@/platform/platformContext";
+import { getPlatform } from "@/platform/platformContext";
 
 // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
 // Same as default for Control Room
@@ -93,7 +93,7 @@ async function fetchPages<TData>(
     length: PAGINATION_LIMIT,
   };
 
-  const initialResponse = await platform.request<ListResponse<TData>>(
+  const initialResponse = await getPlatform().request<ListResponse<TData>>(
     config,
     paginatedRequestConfig,
   );
@@ -115,7 +115,7 @@ async function fetchPages<TData>(
       length: PAGINATION_LIMIT,
     };
     // eslint-disable-next-line no-await-in-loop -- be conservative on number of concurrent requests to CR
-    const response = await platform.request<ListResponse<TData>>(
+    const response = await getPlatform().request<ListResponse<TData>>(
       config,
       paginatedRequestConfig,
     );
@@ -135,7 +135,7 @@ async function fetchBotFile(
   fileId: string,
 ): Promise<Bot> {
   // The same API endpoint can be used for any file, but for now assume it's a bot
-  const response = await platform.request<Bot>(config, {
+  const response = await getPlatform().request<Bot>(config, {
     url: `/v2/repository/files/${fileId}`,
     method: "GET",
   });
@@ -155,7 +155,7 @@ async function fetchFolder(
   folderId: string,
 ): Promise<Folder> {
   // The same API endpoint can be used for any file, but for now assume it's a bot
-  const response = await platform.request<Folder>(config, {
+  const response = await getPlatform().request<Folder>(config, {
     url: `/v2/repository/files/${folderId}`,
     method: "GET",
   });
@@ -329,7 +329,7 @@ export const cachedFetchRunAsUsers = cachePromiseMethod(
 
 async function fetchSchema(config: SanitizedIntegrationConfig, fileId: string) {
   if (config && fileId) {
-    const response = await platform.request<Interface>(config, {
+    const response = await getPlatform().request<Interface>(config, {
       url: `/v1/filecontent/${fileId}/interface`,
       method: "GET",
     });
@@ -351,7 +351,7 @@ export async function runCommunityBot({
 }: CommunityBotArgs): Promise<void> {
   // Don't bother returning the DeployResponse because it's just "0" for all community deployments
   // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-deploy.html
-  await platform.request<DeployResponse>(service, {
+  await getPlatform().request<DeployResponse>(service, {
     url: "/v2/automations/deploy",
     method: "post",
     data: {
@@ -371,19 +371,22 @@ export async function runEnterpriseBot({
   poolIds = [],
 }: EnterpriseBotArgs) {
   // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-bot-deploy-task.html
-  const { data: deployData } = await platform.request<DeployResponse>(service, {
-    url: "/v3/automations/deploy",
-    method: "post",
-    data: {
-      fileId,
-      botInput: mapBotInput(data),
-      // Use the runAsUser's default device instead of a device pool
-      overrideDefaultDevice: poolIds?.length > 0,
-      numOfRunAsUsersToUse: 1,
-      poolIds,
-      runAsUserIds: castArray(runAsUserIds),
+  const { data: deployData } = await getPlatform().request<DeployResponse>(
+    service,
+    {
+      url: "/v3/automations/deploy",
+      method: "post",
+      data: {
+        fileId,
+        botInput: mapBotInput(data),
+        // Use the runAsUser's default device instead of a device pool
+        overrideDefaultDevice: poolIds?.length > 0,
+        numOfRunAsUsersToUse: 1,
+        poolIds,
+        runAsUserIds: castArray(runAsUserIds),
+      },
     },
-  });
+  );
 
   return deployData;
 }
@@ -410,7 +413,7 @@ export async function pollEnterpriseResult({
     await sleep(POLL_MILLIS);
 
     // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-progress.html
-    const { data: activityList } = await platform.request<
+    const { data: activityList } = await getPlatform().request<
       ListResponse<Activity>
     >(service, {
       url: "/v3/activity/list",
@@ -474,10 +477,13 @@ export async function pollEnterpriseResult({
   }
 
   if (completedActivity) {
-    const { data: execution } = await platform.request<Execution>(service, {
-      url: `/v3/activity/execution/${completedActivity.id}`,
-      method: "get",
-    });
+    const { data: execution } = await getPlatform().request<Execution>(
+      service,
+      {
+        url: `/v3/activity/execution/${completedActivity.id}`,
+        method: "get",
+      },
+    );
 
     return selectBotOutput(execution);
   }

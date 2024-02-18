@@ -139,7 +139,7 @@ class AddQuickBarAction extends EffectABC {
     }: BrickArgs<ActionConfig>,
     { root, logger, runPipeline, abortSignal, platform }: BrickOptions,
   ): Promise<void> {
-    const { quickBarRegistry } = platform;
+    const { quickBar } = platform;
 
     // The runtime checks the abortSignal for each brick. But check here too to avoid flickering in the Quick Bar
     if (abortSignal.aborted) {
@@ -159,7 +159,7 @@ class AddQuickBarAction extends EffectABC {
       extensionPointId: logger.context.extensionPointId,
       extensionId: logger.context.extensionId,
       // Can only provide a parent if the parent exists
-      parent: quickBarRegistry.knownGeneratorRootIds.has(parentId)
+      parent: quickBar.knownGeneratorRootIds.has(parentId)
         ? parentId
         : undefined,
       name: title,
@@ -189,7 +189,7 @@ class AddQuickBarAction extends EffectABC {
       },
     };
 
-    quickBarRegistry.addAction(action);
+    quickBar.addAction(action);
   }
 }
 

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { runUserJs } from "@/sandbox/messenger/api";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
@@ -72,12 +71,11 @@ export class JavaScriptTransformer extends TransformerABC {
       function: string;
       arguments?: JsonObject;
     }>,
-    _options: BrickOptions,
+    { platform }: BrickOptions,
   ): Promise<unknown> {
-    return runUserJs({
+    return platform.runSandboxedJavascript({
       code: input.function,
       data: input.arguments,
-      blockId: this.id,
     });
   }
 }

@@ -41,7 +41,6 @@ import {
 } from "@/contentScript/sidebarController";
 import {
   cancelTemporaryPanelsForExtension,
-  registerEmptyTemporaryPanel,
   updatePanelDefinition,
   waitForTemporaryPanel,
 } from "@/platform/panels/panelController";
@@ -58,28 +57,13 @@ import { toExpression } from "@/utils/expressionUtils";
 import { showModal } from "@/contentScript/modalDom";
 
 jest.mock("@/contentScript/modalDom");
-const showModalMock = jest.mocked(showModal);
-
 jest.mock("@/contentScript/sidebarController");
-const showTemporarySidebarPanelMock = jest.mocked(showTemporarySidebarPanel);
-const updateTemporarySidebarPanelMock = jest.mocked(
-  updateTemporarySidebarPanel,
-);
-
 jest.mock("@/platform/panels/panelController");
-const registerEmptyTemporaryPanelMock = jest.mocked(
-  registerEmptyTemporaryPanel,
-);
-const waitForTemporaryPanelMock = jest.mocked(waitForTemporaryPanel);
-const cancelTemporaryPanelsForExtensionMock = jest.mocked(
-  cancelTemporaryPanelsForExtension,
-);
-const updatePanelDefinitionMock = jest.mocked(updatePanelDefinition);
+
+const displayTemporaryInfoBlock = new DisplayTemporaryInfo();
+const renderer = new DocumentRenderer();
 
 describe("DisplayTemporaryInfo", () => {
-  const displayTemporaryInfoBlock = new DisplayTemporaryInfo();
-  const renderer = new DocumentRenderer();
-
   beforeEach(() => {
     blockRegistry.clear();
     blockRegistry.register([
@@ -91,11 +75,7 @@ describe("DisplayTemporaryInfo", () => {
       displayTemporaryInfoBlock,
     ]);
 
-    showTemporarySidebarPanelMock.mockReset();
-    showModalMock.mockReset();
-    cancelTemporaryPanelsForExtensionMock.mockReset();
-    updateTemporarySidebarPanelMock.mockReset();
-    registerEmptyTemporaryPanelMock.mockReset();
+    jest.clearAllMocks();
   });
 
   test("isRootAware", async () => {
@@ -121,7 +101,7 @@ describe("DisplayTemporaryInfo", () => {
     });
 
     // Show function will be called with a "loading" payload
-    expect(showTemporarySidebarPanelMock).toHaveBeenCalledExactlyOnceWith({
+    expect(showTemporarySidebarPanel).toHaveBeenCalledExactlyOnceWith({
       blueprintId,
       extensionId,
       nonce: expect.toBeString(),
@@ -132,7 +112,7 @@ describe("DisplayTemporaryInfo", () => {
     });
 
     // Panel will be updated when the real payload is ready
-    expect(updatePanelDefinitionMock).toHaveBeenCalledExactlyOnceWith({
+    expect(updatePanelDefinition).toHaveBeenCalledExactlyOnceWith({
       blueprintId,
       extensionId,
       nonce: expect.toBeString(),
@@ -160,16 +140,16 @@ describe("DisplayTemporaryInfo", () => {
     };
 
     let payload: PanelPayload;
-    showTemporarySidebarPanelMock.mockImplementation(
-      async (entry: TemporaryPanelEntry) => {
+    jest
+      .mocked(showTemporarySidebarPanel)
+      .mockImplementation(async (entry: TemporaryPanelEntry) => {
         payload = entry.payload;
-      },
-    );
-    updatePanelDefinitionMock.mockImplementation(
-      (entry: TemporaryPanelEntry) => {
+      });
+    jest
+      .mocked(updatePanelDefinition)
+      .mockImplementation((entry: TemporaryPanelEntry) => {
         payload = entry.payload;
-      },
-    );
+      });
 
     await reducePipeline(pipeline, simpleInput({}), testOptions("v3"));
 
@@ -201,10 +181,10 @@ describe("DisplayTemporaryInfo", () => {
 
     await reducePipeline(pipeline, simpleInput({}), options);
 
-    expect(showModalMock).toHaveBeenCalled();
-    expect(showTemporarySidebarPanelMock).not.toHaveBeenCalled();
+    expect(showModal).toHaveBeenCalled();
+    expect(showTemporarySidebarPanel).not.toHaveBeenCalled();
 
-    expect(waitForTemporaryPanelMock).toHaveBeenCalledWith({
+    expect(waitForTemporaryPanel).toHaveBeenCalledWith({
       nonce: expect.toBeString(),
       extensionId,
       location: "modal",
@@ -269,9 +249,9 @@ describe("DisplayTemporaryInfo", () => {
 
     await reducePipeline(pipeline, { ...simpleInput({}), root }, options);
 
-    expect(showModalMock).not.toHaveBeenCalled();
-    expect(showTemporarySidebarPanelMock).not.toHaveBeenCalled();
-    expect(cancelTemporaryPanelsForExtensionMock).toHaveBeenCalled();
+    expect(showModal).not.toHaveBeenCalled();
+    expect(showTemporarySidebarPanel).not.toHaveBeenCalled();
+    expect(cancelTemporaryPanelsForExtension).toHaveBeenCalled();
 
     expect(
       document.body.querySelector("#pb-tooltips-container"),
@@ -282,9 +262,9 @@ describe("DisplayTemporaryInfo", () => {
     document.body.innerHTML = '<div><div id="target"></div></div>';
 
     const deferredPromise = pDefer<any>();
-    waitForTemporaryPanelMock.mockImplementation(
-      async () => deferredPromise.promise,
-    );
+    jest
+      .mocked(waitForTemporaryPanel)
+      .mockImplementation(async () => deferredPromise.promise);
 
     const config = getExampleBrickConfig(renderer.id);
     const pipeline = {
@@ -310,13 +290,13 @@ describe("DisplayTemporaryInfo", () => {
 
     await tick();
 
-    expect(showTemporarySidebarPanelMock).toHaveBeenCalled();
+    expect(jest.mocked(showTemporarySidebarPanel)).toHaveBeenCalled();
 
     $(document).trigger("statechange");
 
     await tick();
 
-    expect(updateTemporarySidebarPanelMock).toHaveBeenCalled();
+    expect(jest.mocked(updateTemporarySidebarPanel)).toHaveBeenCalled();
 
     deferredPromise.resolve();
   });
@@ -325,9 +305,9 @@ describe("DisplayTemporaryInfo", () => {
     document.body.innerHTML = '<div><div id="target"></div></div>';
 
     const deferredPromise = pDefer<any>();
-    waitForTemporaryPanelMock.mockImplementation(
-      async () => deferredPromise.promise,
-    );
+    jest
+      .mocked(waitForTemporaryPanel)
+      .mockImplementation(async () => deferredPromise.promise);
 
     const config = getExampleBrickConfig(renderer.id);
 
@@ -360,7 +340,7 @@ describe("DisplayTemporaryInfo", () => {
     expect(
       ContextBrick.contexts.map(unary(contextAsPlainObject)),
     ).toStrictEqual([{ "@input": {}, "@mod": {}, "@options": {} }]);
-    expect(showTemporarySidebarPanelMock).toHaveBeenCalled();
+    expect(jest.mocked(showTemporarySidebarPanel)).toHaveBeenCalled();
 
     setState({
       namespace: "blueprint",
@@ -378,7 +358,7 @@ describe("DisplayTemporaryInfo", () => {
       { "@input": {}, "@mod": {}, "@options": {} },
       { "@input": {}, "@mod": { foo: 42 }, "@options": {} },
     ]);
-    expect(updateTemporarySidebarPanelMock).toHaveBeenCalled();
+    expect(jest.mocked(updateTemporarySidebarPanel)).toHaveBeenCalled();
 
     deferredPromise.resolve();
   });

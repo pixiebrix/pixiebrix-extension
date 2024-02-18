@@ -56,7 +56,7 @@ describe("AddQuickBarAction", () => {
         abortSignal: abortController.signal,
       }),
     );
-    expect(platform.quickBarRegistry.addAction).toHaveBeenCalledWith({
+    expect(platform.quickBar.addAction).toHaveBeenCalledWith({
       id: expect.toBeString(),
       extensionPointId: logger.context.extensionPointId,
       extensionId: logger.context.extensionId,

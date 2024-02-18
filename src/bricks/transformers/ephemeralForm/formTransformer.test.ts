@@ -36,6 +36,7 @@ const brick = new FormTransformer();
 afterEach(async () => {
   // eslint-disable-next-line new-cap -- test method
   await TEST_cancelAll();
+  jest.clearAllMocks();
 });
 
 describe("FormTransformer", () => {
@@ -90,7 +91,6 @@ describe("FormTransformer", () => {
     // Exposed via __mocks__/webext-messenger
     (messenger as any).setFrameId(0);
     jest.mocked(isLoadedInIframe).mockReturnValue(false);
-    showModalMock.mockReturnValue(null);
 
     const brickPromise = brick.run(
       unsafeAssumeValidArg({
@@ -123,7 +123,6 @@ describe("FormTransformer", () => {
     // Exposed via __mocks__/webext-messenger
     (messenger as any).setFrameId(1);
     jest.mocked(isLoadedInIframe).mockReturnValue(true);
-    showModalMock.mockReturnValue(null);
 
     const brickPromise = brick.run(
       unsafeAssumeValidArg({
@@ -142,13 +141,14 @@ describe("FormTransformer", () => {
 
     expect(showModalMock).toHaveBeenCalledExactlyOnceWith({
       controller: expect.any(AbortController),
-      // Why is any(String) now working here?
+      // Why is any(String) not working here?
       url: expect.anything(),
     });
 
     const opener = new URL(showModalMock.mock.calls[0][0].url).searchParams.get(
       "opener",
     );
+
     expect(JSON.parse(opener)).toStrictEqual({ tabId: 1, frameId: 1 });
   });
 });

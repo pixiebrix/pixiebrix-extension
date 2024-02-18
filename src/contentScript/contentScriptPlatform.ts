@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PlatformABC } from "@/platform/platformProtocol";
+import {
+  PlatformABC,
+  type StateProtocol,
+  type TemplateProtocol,
+} from "@/platform/platformProtocol";
 import { showNotification } from "@/utils/notify";
 import { setToolbarBadge } from "@/background/messenger/strict/api";
 import { getState, setState } from "@/platform/state/stateController";
@@ -29,6 +33,14 @@ import { performConfiguredRequestInBackground } from "@/background/messenger/api
 import { ephemeralForm } from "@/contentScript/ephemeralForm";
 import { ephemeralPanel } from "@/contentScript/ephemeralPanel";
 import type { ElementReference } from "@/types/runtimeTypes";
+import {
+  renderHandlebarsTemplate,
+  renderNunjucksTemplate,
+  runUserJs,
+  validateNunjucksTemplate,
+} from "@/sandbox/messenger/api";
+import type { JsonObject } from "type-fest";
+import { BusinessError } from "@/errors/businessErrors";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -88,7 +100,43 @@ class ContentScriptPlatform extends PlatformABC {
 
   override panel = ephemeralPanel;
 
-  override get state() {
+  override runSandboxedJavascript = runUserJs;
+
+  override get template(): TemplateProtocol {
+    return {
+      async render({
+        engine,
+        ...payload
+      }: {
+        engine: "nunjucks" | "handlebars";
+        template: string;
+        context: JsonObject;
+        autoescape: boolean;
+      }): Promise<string> {
+        if (engine === "nunjucks") {
+          return renderNunjucksTemplate(payload);
+        }
+
+        if (engine === "handlebars") {
+          return renderHandlebarsTemplate(payload);
+        }
+
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
+        throw new BusinessError(`Unsupported template engine: ${engine}`);
+      },
+
+      async validate({
+        template,
+      }: {
+        engine: "nunjucks";
+        template: string;
+      }): Promise<void> {
+        await validateNunjucksTemplate(template);
+      },
+    };
+  }
+
+  override get state(): StateProtocol {
     // Double-check already in contentScript because the calls don't go through the messenger
     expectContext("contentScript");
 
@@ -98,7 +146,7 @@ class ContentScriptPlatform extends PlatformABC {
     };
   }
 
-  override get quickBarRegistry(): QuickBarRegistryProtocol {
+  override get quickBar(): QuickBarRegistryProtocol {
     return quickBarRegistry;
   }
 }

@@ -18,24 +18,30 @@
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { platformCapabilities } from "@/platform/capabilities";
 
+/**
+ * Implementation of PlatformProtocol that mocks all methods
+ */
 export const platformMock: PlatformProtocol = {
   capabilities: platformCapabilities,
   alert: jest.fn(),
   prompt: jest.fn(),
   notify: jest.fn(),
-  state: {
-    getState: jest.fn(),
-    setState: jest.fn(),
-  },
   setBadgeText: jest.fn(),
   playSound: jest.fn(),
   userSelectElementRefs: jest.fn(),
   request: jest.fn(),
-  renderTemplate: jest.fn(),
   runSandboxedJavascript: jest.fn(),
   form: jest.fn(),
   panel: jest.fn(),
-  quickBarRegistry: {
+  state: {
+    getState: jest.fn(),
+    setState: jest.fn(),
+  },
+  template: {
+    render: jest.fn(),
+    validate: jest.fn(),
+  },
+  quickBar: {
     addAction: jest.fn(),
     knownGeneratorRootIds: new Set<string>(),
   },
