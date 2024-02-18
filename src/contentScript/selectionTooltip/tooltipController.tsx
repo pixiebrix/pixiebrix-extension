@@ -41,7 +41,7 @@ let selectionTooltip: Nullishable<HTMLElement>;
 
 let cleanupAutoPosition: () => void;
 
-export function showTooltip(): void {
+function showTooltip(): void {
   if (tooltipActionRegistry.actions.size === 0) {
     // No registered actions to show
     return;
@@ -54,7 +54,7 @@ export function showTooltip(): void {
   void updatePosition();
 }
 
-export function hideTooltip(): void {
+function hideTooltip(): void {
   selectionTooltip?.setAttribute("aria-hidden", "true");
   selectionTooltip?.style.setProperty("display", "none");
   cleanupAutoPosition?.();
@@ -78,7 +78,7 @@ function selectButtonTitle(
   return text.replace("%s", selectionText);
 }
 
-export function createTooltip(): HTMLElement {
+function createTooltip(): HTMLElement {
   const container = ensureTooltipsContainer();
 
   const popover = document.createElement("div");
