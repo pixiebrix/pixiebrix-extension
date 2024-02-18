@@ -48,9 +48,6 @@ export const resolveTemporaryPanel = getNotifier("TEMPORARY_PANEL_RESOLVE");
 export const getPageState = getMethod("GET_PAGE_STATE");
 export const setPageState = getMethod("SET_PAGE_STATE");
 
-// This method is registered in multiple contexts, they deal with according to their capabilities
-export const writeToClipboard = getMethod("WRITE_TO_CLIPBOARD");
-
 export const notify = {
   info: getNotifier("NOTIFY_INFO"),
   // TODO: Automatically report from api.ts because of https://github.com/pixiebrix/pixiebrix-extension/blob/dce0d5cbb54d5fc1a61d720e43d17383a152df2e/src/background/contextMenus.ts#L92-L95

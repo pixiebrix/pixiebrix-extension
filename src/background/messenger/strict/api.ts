@@ -44,7 +44,7 @@ export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 export const setToolbarBadge = getMethod("SET_TOOLBAR_BADGE", bg);
 export const documentReceivedFocus = getNotifier("DOCUMENT_RECEIVED_FOCUS", bg);
 
-// This method is registered in multiple contexts, they deal with according to their capabilities
+// `WRITE_TO_CLIPBOARD` is registered in multiple contexts, they deal with according to their capabilities
 export const writeToClipboardInFocusedDocument = getMethod(
   "WRITE_TO_CLIPBOARD",
   bg,

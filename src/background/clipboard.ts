@@ -16,9 +16,16 @@
  */
 
 import { lastFocusedTarget } from "@/utils/focusTracker";
-import { writeToClipboard } from "@/contentScript/messenger/strict/api";
-import { type Sender, type Target, type PageTarget } from "webext-messenger";
+import {
+  type Sender,
+  type Target,
+  type PageTarget,
+  getMethod,
+} from "webext-messenger";
 import { type ClipboardText } from "@/utils/clipboardUtils";
+
+// `WRITE_TO_CLIPBOARD` can be handled by multiple contexts, that's why it's here and not in their /api.ts files
+const writeToClipboardInTarget = getMethod("WRITE_TO_CLIPBOARD");
 
 /**
  * Given a `Sender` as defined by the native Chrome Messaging API,
@@ -62,14 +69,14 @@ export default async function writeToClipboardInFocusedContext(
       // The target might be any context that calls `markContextAsFocusableByUser`.
       // Also, just because they were the lastFocusedDocument, it doesn't mean that
       // they are still focused at a OS level, so this might return false.
-      return writeToClipboard(target, item);
+      return writeToClipboardInTarget(target, item);
     }
   }
 
   // Try just getting the frontmost tab
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   if (tab?.id != null) {
-    return writeToClipboard({ tabId: tab.id }, item);
+    return writeToClipboardInTarget({ tabId: tab.id }, item);
   }
 
   // Dead code, there's always at least one tab, but not worth throwing
