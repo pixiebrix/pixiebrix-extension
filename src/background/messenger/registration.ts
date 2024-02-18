@@ -18,12 +18,12 @@
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
-import * as sheets from "@/contrib/google/sheets/core/sheetsApi";
+import * as sheets from "@/contrib/google/sheets/core/sheetsApi"; // Background/messenger import
 import {
   ensureContextMenu,
   preloadContextMenus,
   uninstallContextMenu,
-} from "@/background/contextMenus";
+} from "@/background/contextMenus"; // 300 errors
 import {
   activateTab,
   closeTab,
@@ -33,32 +33,32 @@ import {
   requestRunInOpener,
   requestRunInTarget,
   requestRunInTop,
-} from "@/background/executor";
-import { performConfiguredRequest } from "@/background/requests";
-import { getAvailableVersion } from "@/background/installer";
-import { locator, refreshServices } from "@/background/locator";
-import { reactivateEveryTab } from "@/background/navigation";
-import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab";
-import { debouncedInstallStarterMods as installStarterBlueprints } from "@/background/starterMods";
+} from "@/background/executor"; // ContentScript/messenger import
+import { performConfiguredRequest } from "@/background/requests"; // 39 errors
+import { getAvailableVersion } from "@/background/installer"; // 300 errors
+import { locator, refreshServices } from "@/background/locator"; // 8 errors
+import { reactivateEveryTab } from "@/background/navigation"; // ContentScript/messenger import
+import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 300 errors
+import { debouncedInstallStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 300 errors
 import {
   clearExtensionDebugLogs,
   clearLog,
   clearLogs,
   recordError,
   recordLog,
-} from "@/telemetry/logging";
+} from "@/telemetry/logging"; // 28 errors
 import {
   collectPerformanceDiagnostics,
   initTelemetry,
   pong,
   recordEvent,
   sendDeploymentAlert,
-} from "@/background/telemetry";
+} from "@/background/telemetry"; // 280 errors
 import {
   getPartnerPrincipals,
   launchAuthIntegration,
-} from "@/background/partnerIntegrations";
-import { setCopilotProcessData } from "@/background/partnerHandlers";
+} from "@/background/partnerIntegrations"; // 45 errors
+import { setCopilotProcessData } from "@/background/partnerHandlers"; // ContentScript/messenger import
 
 expectContext("background");
 
@@ -114,7 +114,6 @@ declare global {
 
     INIT_TELEMETRY: typeof initTelemetry;
     SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
-    GET_USER_DATA: typeof getUserData;
   }
 }
 
@@ -161,7 +160,6 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_OTHER_TABS: requestRunInOtherTabs,
     REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
 
-    CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
     CONFIGURED_REQUEST: performConfiguredRequest,
 
     RECORD_LOG: recordLog,
@@ -173,7 +171,5 @@ export default function registerMessenger(): void {
 
     INIT_TELEMETRY: initTelemetry,
     SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
-
-    GET_USER_DATA: getUserData,
   });
 }
