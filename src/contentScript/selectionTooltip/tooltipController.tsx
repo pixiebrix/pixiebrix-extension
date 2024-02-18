@@ -26,28 +26,44 @@ import type { Nullishable } from "@/utils/nullishUtils";
 import { render } from "react-dom";
 import React from "react";
 import { ensureTooltipsContainer } from "@/contentScript/tooltipDom";
-
-const ITEM_WIDTH_PX = 20;
+import Icon from "@/icons/Icon";
+import { splitStartingEmoji } from "@/utils/stringUtils";
+import {
+  computePosition,
+  autoUpdate,
+  inline,
+  type VirtualElement,
+  offset,
+} from "@floating-ui/dom";
+import { getCaretCoordinates } from "@/utils/textAreaUtils";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
 export const tooltipActionRegistry = new ActionRegistry();
 let selectionTooltip: Nullishable<HTMLElement>;
 
+let cleanup: () => void;
+
 export function showTooltip(): void {
   if (!selectionTooltip) {
     createTooltip();
   }
 
-  updatePosition();
-
   selectionTooltip.setAttribute("aria-hidden", "false");
   selectionTooltip.style.setProperty("display", "block");
+
+  void updatePosition();
 }
 
 export function hideTooltip(): void {
   selectionTooltip?.setAttribute("aria-hidden", "true");
   selectionTooltip?.style.setProperty("display", "none");
+  cleanup?.();
+}
+
+function selectButtonTitle(title: string): string {
+  const text = splitStartingEmoji(title).rest;
+  return text.replace("%s", "[selection]");
 }
 
 export function createTooltip(): HTMLElement {
@@ -57,6 +73,14 @@ export function createTooltip(): HTMLElement {
   popover.setAttribute("popover", "");
   popover.id = "pixiebrix-selection-tooltip";
 
+  // Must be set before positioning: https://floating-ui.com/docs/computeposition#initial-layout
+  popover.style.setProperty("position", "fixed");
+  popover.style.setProperty("width", "max-content");
+  popover.style.setProperty("top", "0");
+  popover.style.setProperty("left", "0");
+  // Chrome base stylesheet has margin: "auto" for the popover attribute
+  popover.style.setProperty("margin", "0");
+
   const shadowRoot = popover.attachShadow({ mode: "closed" });
 
   render(
@@ -64,11 +88,16 @@ export function createTooltip(): HTMLElement {
       {[...tooltipActionRegistry.actions.entries()].map(([id, action]) => (
         <button
           key={id}
+          title={selectButtonTitle(action.title)}
           onClick={() => {
             action.handler(window.getSelection().toString());
+            hideTooltip();
           }}
         >
-          {action.emoji}
+          {
+            // TODO: need to include stylesheet for icon?
+            action.icon ? <Icon {...action.icon} /> : action.emoji
+          }
         </button>
       ))}
     </div>,
@@ -81,45 +110,69 @@ export function createTooltip(): HTMLElement {
   return selectionTooltip;
 }
 
-export function updatePosition(): void {
-  // Positioning libraries: https://floating-ui.com/docs/getting-started
+function getPositionReference(): VirtualElement | Element {
+  // Browsers don't report an accurate selection within inputs/textarea
+  if (["TEXTAREA", "INPUT"].includes(document.activeElement?.tagName)) {
+    const activeElement = document.activeElement as
+      | HTMLTextAreaElement
+      | HTMLInputElement;
 
-  const selection = window.getSelection();
+    return {
+      getBoundingClientRect() {
+        const position =
+          activeElement.selectionDirection === "forward"
+            ? activeElement.selectionStart
+            : activeElement.selectionEnd;
+        const caret = getCaretCoordinates(activeElement, position);
 
-  // Allows us to measure where the selection is on the page relative to the viewport
-  const range = selection.getRangeAt(0);
+        const width = 0;
+        const height = 0;
 
-  const { top, left, width } = range.getBoundingClientRect();
+        console.debug("getBoundingClientRect", caret);
 
-  // Middle of selection width
-  let newTipLeft = left + width / 2 - window.scrollX;
-
-  // Right above selection
-  const newTipBottom = window.innerHeight - top - window.scrollY;
-
-  const tooltipWidth = tooltipActionRegistry.actions.size * ITEM_WIDTH_PX;
-
-  // Stop tooltip bleeding off of left or right edge of screen
-  // Use a buffer of 20px so we don't bump right against the edge
-  // The tooltip transforms itself left minus 50% of it's width in css
-  // so this will need to be taken into account
-  const buffer = 20;
-  const tipHalfWidth = tooltipWidth / 2;
-
-  // "real" means after taking the css transform into account
-  const realTipLeft = newTipLeft - tipHalfWidth;
-  const realTipRight = realTipLeft + tooltipWidth;
-
-  if (realTipLeft < buffer) {
-    // Correct for left edge overlap
-    newTipLeft = buffer + tipHalfWidth;
-  } else if (realTipRight > window.innerWidth - buffer) {
-    // Correct for right edge overlap
-    newTipLeft = window.innerWidth - buffer - tipHalfWidth;
+        const elementRect = activeElement.getBoundingClientRect();
+        return {
+          height,
+          width,
+          x: elementRect.x + caret.left,
+          y: elementRect.y + caret.top,
+          left: elementRect.x + caret.left,
+          top: elementRect.y + caret.top,
+          right: elementRect.x + width,
+          bottom: elementRect.y + height,
+        };
+      },
+    } satisfies VirtualElement;
   }
 
-  selectionTooltip.style.left = newTipLeft + "px";
-  selectionTooltip.style.bottom = newTipBottom + "px";
+  // Allows us to measure where the selection is on the page relative to the viewport
+  const range = window.getSelection().getRangeAt(0);
+
+  // https://floating-ui.com/docs/virtual-elements#getclientrects
+  return {
+    getBoundingClientRect: () => range.getBoundingClientRect(),
+    getClientRects: () => range.getClientRects(),
+  };
+}
+
+async function updatePosition(): Promise<void> {
+  // Positioning libraries: https://floating-ui.com/docs/getting-started
+
+  const referenceElement = getPositionReference();
+
+  // Keep anchored on scroll/resize: https://floating-ui.com/docs/computeposition#anchoring
+  cleanup = autoUpdate(referenceElement, selectionTooltip, async () => {
+    const { x, y } = await computePosition(referenceElement, selectionTooltip, {
+      placement: "top",
+      strategy: "fixed",
+      // Prevent from appearing detached if multiple lines selected: https://floating-ui.com/docs/inline
+      middleware: [inline(), offset(10)],
+    });
+    Object.assign(selectionTooltip.style, {
+      left: `${x}px`,
+      top: `${y}px`,
+    });
+  });
 }
 
 /**
@@ -129,8 +182,16 @@ export function updatePosition(): void {
 function isSelectionValid(selection: Selection): boolean {
   const selectionText = selection.toString();
 
-  const anchorNodeParent = selection.anchorNode.parentElement;
-  const focusNodeParent = selection.focusNode.parentElement;
+  const anchorNodeParent = selection.anchorNode?.parentElement;
+  const focusNodeParent = selection.focusNode?.parentElement;
+
+  console.debug(
+    "isSelectionValid",
+    selection,
+    anchorNodeParent,
+    focusNodeParent,
+    selectionText,
+  );
 
   if (!anchorNodeParent || !focusNodeParent) {
     return false;
@@ -157,5 +218,10 @@ export const initSelectionToolip = once(() => {
     } else {
       hideTooltip();
     }
+  });
+
+  // Try to avoid sticky tool-tip on SPA navigation
+  document.addEventListener("navigate", () => {
+    hideTooltip();
   });
 });
