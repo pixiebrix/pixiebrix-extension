@@ -23,7 +23,6 @@ import {
   sidebarWasLoaded,
   updateSidebar,
   removeExtensions as removeSidebars,
-  reloadSidebar,
   getReservedPanelEntries,
 } from "@/contentScript/sidebarController";
 import { handleMenuAction } from "@/contentScript/contextMenus";
@@ -55,7 +54,6 @@ declare global {
     SIDEBAR_WAS_LOADED: typeof sidebarWasLoaded;
     SHOW_SIDEBAR: typeof showSidebar;
     HIDE_SIDEBAR: typeof hideSidebar;
-    RELOAD_SIDEBAR: typeof reloadSidebar;
     REMOVE_SIDEBARS: typeof removeSidebars;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
     GET_RESERVED_SIDEBAR_ENTRIES: typeof getReservedPanelEntries;
@@ -84,7 +82,6 @@ export default function registerMessenger(): void {
     SIDEBAR_WAS_LOADED: sidebarWasLoaded,
     SHOW_SIDEBAR: showSidebar,
     HIDE_SIDEBAR: hideSidebar,
-    RELOAD_SIDEBAR: reloadSidebar,
     REMOVE_SIDEBARS: removeSidebars,
     HANDLE_MENU_ACTION: handleMenuAction,
     GET_RESERVED_SIDEBAR_ENTRIES: getReservedPanelEntries,
