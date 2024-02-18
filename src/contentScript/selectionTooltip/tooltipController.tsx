@@ -15,11 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Inspiration:
-// - https://github.com/AdamJaggard/text-tip
-// Libraries/APIs:
-// - Popover API: https://developer.chrome.com/blog/introducing-popover-api
-
 import ActionRegistry from "@/contentScript/selectionTooltip/actionRegistry";
 import { once, truncate } from "lodash";
 import type { Nullishable } from "@/utils/nullishUtils";
