@@ -69,10 +69,10 @@ function isDocumentFocusError(error: unknown): boolean {
     .includes("document is not focused");
 }
 
-function isPermissionError(error: unknown): boolean {
-  return getErrorMessage(error).toLowerCase().includes("has been blocked");
-}
-
+/**
+ * Attempt to write to clipboard, but don't throw nor retry in other ways.
+ * Use `writeToClipboard` in the current context if you want to handle errors and try in other ways.
+ */
 export async function nonInteractivelyWriteToClipboard(
   content: ClipboardText,
 ): Promise<boolean> {
@@ -87,23 +87,23 @@ export async function nonInteractivelyWriteToClipboard(
  * @param type the data type, to show in the message to the user.
  */
 async function interactiveWriteToClipboard(
-  clipboardItem: ClipboardItem,
+  content: ClipboardContent,
 ): Promise<void> {
+  const clipboardItems = [getClipboardItem(content)];
   try {
-    await navigator.clipboard.write([clipboardItem]);
+    await navigator.clipboard.write(clipboardItems);
   } catch (error) {
     if (!isDocumentFocusError(error)) {
       throw error;
     }
 
-    // It should be "text" or "image" extracted from the MIME type
-    const friendlyName = clipboardItem.types[0]?.split("/")[0] ?? "the content";
+    const type = "image" in content ? "image" : "text";
     await focusCaptureDialog(
-      `Please click "OK" to allow PixieBrix to copy ${friendlyName} to your clipboard.`,
+      `Please click "OK" to allow PixieBrix to copy the ${type} to your clipboard.`,
     );
 
     // Let the error be caught by the caller if it still fails
-    await navigator.clipboard.write([clipboardItem]);
+    await navigator.clipboard.write(clipboardItems);
   }
 }
 
@@ -130,21 +130,22 @@ export async function writeToClipboard(
   try {
     // Fails in frame contexts if the frame CSP doesn't include clipboard-write. Unfortunately, that includes the
     // Chrome DevTools. In this case, will fall back to legacy method in the catch block
-    await interactiveWriteToClipboard(getClipboardItem(content));
+    await interactiveWriteToClipboard(content);
   } catch (error) {
-    if (!isPermissionError(error) || "image" in content) {
-      throw error;
+    if (
+      "text" in content &&
+      // Deprecated method of copying text to clipboard doesn't require clipboard-write in frame CSP.
+      // It can sometimes return `true` even if the text wasn't actually copied so try to use navigator.clipboard first
+      // The legacy approach uses a hidden text area and document.execCommand('copy') under the hood
+      legacyCopyText(content.text)
+    ) {
+      // The legacy method worked, probably
+      return true;
     }
 
-    // Deprecated method of copying text to clipboard doesn't require clipboard-write in frame CSP.
-    // It can sometimes return `true` even if the text wasn't actually copied so try to use navigator.clipboard first
-    // The legacy approach uses a hidden text area and document.execCommand('copy') under the hood
-    const copied = legacyCopyText(content.text);
-    if (!copied) {
-      throw new BusinessError("Unable to write text to clipboard", {
-        cause: error,
-      });
-    }
+    throw new BusinessError("Unable to write text to clipboard", {
+      cause: error,
+    });
   }
 
   return true;
