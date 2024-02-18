@@ -21,7 +21,7 @@
 // - Popover API: https://developer.chrome.com/blog/introducing-popover-api
 
 import ActionRegistry from "@/contentScript/selectionTooltip/actionRegistry";
-import { once } from "lodash";
+import { once, truncate } from "lodash";
 import type { Nullishable } from "@/utils/nullishUtils";
 import { render } from "react-dom";
 import React from "react";
@@ -65,9 +65,22 @@ export function hideTooltip(): void {
   cleanupAutoPosition?.();
 }
 
-function selectButtonTitle(title: string): string {
+function selectButtonTitle(
+  title: string,
+  {
+    selectionPreviewLength = 10,
+  }: {
+    selectionPreviewLength?: number;
+  } = {},
+): string {
   const text = splitStartingEmoji(title).rest;
-  return text.replace("%s", "[selection]");
+  // Chrome uses %s as selection placeholder, which is confusing to users. We might instead show a preview of
+  // the selected text here.
+  const selectionText = truncate(window.getSelection()?.toString() ?? "", {
+    length: selectionPreviewLength,
+    omission: "…",
+  });
+  return text.replace("%s", selectionText);
 }
 
 export function createTooltip(): HTMLElement {
@@ -103,6 +116,7 @@ export function createTooltip(): HTMLElement {
           style={{
             borderRadius: 0,
             cursor: "pointer",
+            // Keep emoji and icon height consistent
             fontSize: `${ICON_SIZE_PX}px`,
           }}
           title={selectButtonTitle(action.title)}

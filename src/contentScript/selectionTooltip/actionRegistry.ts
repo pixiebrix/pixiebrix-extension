@@ -37,6 +37,10 @@ const defaultIcon: IconConfig = {
   library: "bootstrap",
 };
 
+/**
+ * Registry for text selection actions.
+ * @since 1.8.10
+ */
 class ActionRegistry {
   /**
    * Map from component UUID to registered action
@@ -48,13 +52,25 @@ class ActionRegistry {
    */
   public readonly onChange = new SimpleEventTarget<RegisteredAction[]>();
 
+  /**
+   * Register a new text selection action. Overwrites any existing action for the mod component.
+   * @param componentId the mod component id
+   * @param action the action definition
+   */
   register(componentId: UUID, action: TextSelectionAction): void {
     const { startingEmoji } = splitStartingEmoji(action.title);
-    const icon = action.icon ?? defaultIcon;
-    this.actions.set(componentId, { ...action, emoji: startingEmoji, icon });
+    this.actions.set(componentId, {
+      ...action,
+      emoji: startingEmoji,
+      icon: action.icon ?? defaultIcon,
+    });
     this.onChange.emit([...this.actions.values()]);
   }
 
+  /**
+   * Unregister a text selection action. Does nothing if an action for the component is not registered.
+   * @param componentId the mod component id
+   */
   unregister(componentId: UUID): void {
     this.actions.delete(componentId);
     this.onChange.emit([...this.actions.values()]);
