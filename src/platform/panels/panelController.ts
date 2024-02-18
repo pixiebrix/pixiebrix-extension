@@ -27,7 +27,7 @@ import { type Except, type SetOptional } from "type-fest";
 import { type Location } from "@/types/starterBrickTypes";
 import { isObject } from "@/utils/objectUtils";
 
-export type RegisteredPanel = {
+type RegisteredPanel = {
   /**
    * The location of the panel. Used to determine which registered temporary panels to reserve space for in the
    * sidebar when the sidebar opens.
@@ -49,7 +49,7 @@ export type RegisteredPanel = {
   entry: Except<TemporaryPanelEntry, "type">;
 };
 
-export type PlaceholderPanel = SetOptional<RegisteredPanel, "entry">;
+type PlaceholderPanel = SetOptional<RegisteredPanel, "entry">;
 
 const panels = new Map<UUID, RegisteredPanel | PlaceholderPanel>();
 

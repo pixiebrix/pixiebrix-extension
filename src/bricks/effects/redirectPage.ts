@@ -16,8 +16,7 @@
  */
 
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { type BrickArgs, BrickOptions } from "@/types/runtimeTypes";
-import { openTab } from "@/background/messenger/api";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { URL_INPUT_SPEC } from "@/bricks/transformers/url";
 import {
   LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT,
@@ -64,6 +63,10 @@ export class OpenURLEffect extends EffectABC {
 
   inputSchema = URL_INPUT_SPEC;
 
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["link"];
+  }
+
   async effect(
     {
       url,
@@ -76,8 +79,6 @@ export class OpenURLEffect extends EffectABC {
     }>,
     { platform }: BrickOptions,
   ): Promise<void> {
-    await openTab({
-      url: makeURL(url, params, spaceEncoding),
-    });
+    await platform.open(new URL(makeURL(url, params, spaceEncoding)));
   }
 }
