@@ -336,8 +336,8 @@ export function flattenStackForDatadog(stack: string, cause?: unknown): string {
   }
 
   // Drop spaces from cause’s title or else Datadog will clip the title
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const errorTitle = cause.stack.split("\n", 1).at(1)!;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+  const errorTitle = cause.stack.split("\n", 1).at(0)!;
   const causeStack = cause.stack.replace(
     errorTitle,
     errorTitle.replaceAll(" ", "-"),

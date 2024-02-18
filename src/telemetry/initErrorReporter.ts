@@ -108,7 +108,7 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
         event.error.stack = event.error.stack?.replaceAll(
           // Include the slash because location.origin does not have a trailing slash but the ENV does
           location.origin + "/",
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Webpack enforces its presence
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- Webpack enforces its presence
           process.env.SOURCE_MAP_PUBLIC_PATH!,
         );
 
