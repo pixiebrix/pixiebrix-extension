@@ -56,3 +56,5 @@ export const registry = {
   find: getMethod("REGISTRY_FIND", bg),
   clear: getMethod("REGISTRY_CLEAR", bg),
 };
+
+export const queryTabs = getMethod("QUERY_TABS", bg);

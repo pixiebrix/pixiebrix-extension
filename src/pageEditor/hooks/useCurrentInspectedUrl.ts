@@ -17,24 +17,18 @@
 
 import { once } from "lodash";
 import { useEffect, useState } from "react";
-import { type Target } from "@/types/messengerTypes";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { type WebNavigation } from "webextension-polyfill";
 import { expectContext } from "@/utils/expectContext";
-import { getCurrentURL } from "@/pageEditor/utils";
+import {
+  getCurrentInspectedURL,
+  isCurrentTopFrame,
+} from "@/pageEditor/context/connection";
+import type { Nullishable } from "@/utils/nullishUtils";
 
-let tabUrl: string;
-const TOP_LEVEL_FRAME_ID = 0;
+let tabUrl: Nullishable<string>;
 
 const urlChanges = new SimpleEventTarget<string>();
-
-// The pageEditor only cares for the top frame
-function isCurrentTopFrame({ tabId, frameId }: Target) {
-  return (
-    frameId === TOP_LEVEL_FRAME_ID &&
-    tabId === browser.devtools.inspectedWindow.tabId
-  );
-}
 
 async function onNavigation(
   target: WebNavigation.OnCommittedDetailsType,
@@ -47,11 +41,14 @@ async function onNavigation(
 
 const startWatching = once(async () => {
   browser.webNavigation.onCommitted.addListener(onNavigation);
-  tabUrl = await getCurrentURL();
+  tabUrl = await getCurrentInspectedURL();
   urlChanges.emit(tabUrl);
 });
 
-export default function useCurrentUrl(): string {
+/**
+ * Returns the current URL of the inspected tab, or nullish if value is not initialized yet.
+ */
+export default function useCurrentInspectedUrl(): Nullishable<string> {
   expectContext("pageEditor");
 
   const [url, setUrl] = useState(tabUrl);

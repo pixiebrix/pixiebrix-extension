@@ -62,6 +62,7 @@ declare global {
     REGISTRY_CLEAR: typeof registry.clear;
     REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
     REGISTRY_FIND: typeof registry.find;
+    QUERY_TABS: typeof browser.tabs.query;
   }
 }
 
@@ -86,5 +87,6 @@ export default function registerMessenger(): void {
     REGISTRY_CLEAR: registry.clear,
     REGISTRY_GET_BY_KINDS: registry.getByKinds,
     REGISTRY_FIND: registry.find,
+    QUERY_TABS: browser.tabs.query,
   });
 }

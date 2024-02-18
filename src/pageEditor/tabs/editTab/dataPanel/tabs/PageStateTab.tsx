@@ -20,7 +20,6 @@ import JsonTree from "@/components/jsonTree/JsonTree";
 import { getPageState } from "@/contentScript/messenger/strict/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
-import { thisTab } from "@/pageEditor/utils";
 import { faExternalLinkAlt, faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "react-bootstrap";
@@ -30,6 +29,7 @@ import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTy
 import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
 import useAsyncState from "@/hooks/useAsyncState";
 import { type ShouldExpandNodeInitially } from "react-json-tree";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 // We used to expand nodes initially. But makes state hard to read when using async state with long values, e.g.,
 // ChatGPT responses
@@ -51,11 +51,11 @@ const PageStateTab: React.VFC = () => {
       };
 
       const [shared, mod, local] = await Promise.all([
-        getPageState(thisTab, { namespace: "shared", ...context }),
+        getPageState(inspectedTab, { namespace: "shared", ...context }),
         activeElement.recipe
-          ? getPageState(thisTab, { namespace: "blueprint", ...context })
+          ? getPageState(inspectedTab, { namespace: "blueprint", ...context })
           : Promise.resolve("Starter Brick is not in a mod"),
-        getPageState(thisTab, { namespace: "extension", ...context }),
+        getPageState(inspectedTab, { namespace: "extension", ...context }),
       ]);
 
       return {

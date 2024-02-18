@@ -20,10 +20,11 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 import { sleep } from "@/utils/timeUtils";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 const onReload = async (event: MouseEvent<HTMLElement>) => {
   if (event.shiftKey) {
-    await browser.tabs.reload(browser.devtools.inspectedWindow.tabId);
+    await browser.tabs.reload(inspectedTab.tabId);
 
     browser.runtime?.reload(); // Not guaranteed
 
