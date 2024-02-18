@@ -6,139 +6,7 @@ exports[`FormEditor renders empty schema 1`] = `
     action="#"
   >
     <div
-      class="formGroup form-group"
-    >
-      <div
-        class="mb-2 w-100 collapse"
-      >
-        <div
-          class="annotationPlaceholder"
-        />
-      </div>
-      <label
-        class="label form-label"
-        for="rjsfSchema.schema.title"
-      >
-        Form Title
-      </label>
-      <div
-        class="formField"
-      >
-        <div
-          class="root"
-        >
-          <div
-            class="field"
-          >
-            <input
-              class="form-control"
-              id="rjsfSchema.schema.title"
-              name="rjsfSchema.schema.title"
-              readonly=""
-              value=""
-            />
-          </div>
-          <div
-            class="dropdown dropdown"
-            data-test-selected="Exclude"
-            data-testid="toggle-rjsfSchema.schema.title"
-          >
-            <button
-              aria-expanded="false"
-              aria-haspopup="true"
-              class="dropdown-toggle btn btn-link"
-              type="button"
-            >
-              <span
-                class="symbol"
-              >
-                <test-file-stub
-                  classname="root"
-                />
-              </span>
-            </button>
-          </div>
-        </div>
-        <small
-          class="text-muted form-text"
-        >
-          <span>
-            The form title to display
-          </span>
-        </small>
-      </div>
-    </div>
-    <div
-      class="formGroup form-group"
-    >
-      <div
-        class="mb-2 w-100 collapse"
-      >
-        <div
-          class="annotationPlaceholder"
-        />
-      </div>
-      <label
-        class="label form-label"
-        for="rjsfSchema.schema.description"
-      >
-        Form Description
-      </label>
-      <div
-        class="formField"
-      >
-        <div
-          class="root"
-        >
-          <div
-            class="field"
-          >
-            <input
-              class="form-control"
-              id="rjsfSchema.schema.description"
-              name="rjsfSchema.schema.description"
-              readonly=""
-              value=""
-            />
-          </div>
-          <div
-            class="dropdown dropdown"
-            data-test-selected="Exclude"
-            data-testid="toggle-rjsfSchema.schema.description"
-          >
-            <button
-              aria-expanded="false"
-              aria-haspopup="true"
-              class="dropdown-toggle btn btn-link"
-              type="button"
-            >
-              <span
-                class="symbol"
-              >
-                <test-file-stub
-                  classname="root"
-                />
-              </span>
-            </button>
-          </div>
-        </div>
-        <small
-          class="text-muted form-text"
-        >
-          <span>
-            Form description or instructions. Supports 
-            <a
-              href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown"
-            >
-              Markdown
-            </a>
-          </span>
-        </small>
-      </div>
-    </div>
-    <hr />
-    <div
-      class="addRow"
+      class="d-flex mb-3 gap-1 gap-column-4 align-items-center flex-wrap"
     >
       <button
         class="btn btn-primary btn-sm"
@@ -161,26 +29,6 @@ exports[`FormEditor renders empty schema 1`] = `
         </svg>
          Add new field
       </button>
-    </div>
-    <div
-      class="currentFieldRow row"
-    >
-      <div
-        class="currentField col-xl-3"
-      >
-        <h6>
-          Current Field
-        </h6>
-      </div>
-      <div
-        class="col-xl"
-      >
-        <small
-          class="text-muted"
-        >
-          Use the Preview Tab on the right to select a field to edit ⟶
-        </small>
-      </div>
     </div>
     <button
       type="submit"
@@ -197,141 +45,7 @@ exports[`FormEditor renders simple schema 1`] = `
     action="#"
   >
     <div
-      class="formGroup form-group"
-    >
-      <div
-        class="mb-2 w-100 collapse"
-      >
-        <div
-          class="annotationPlaceholder"
-        />
-      </div>
-      <label
-        class="label form-label"
-        for="rjsfSchema.schema.title"
-      >
-        Form Title
-      </label>
-      <div
-        class="formField"
-      >
-        <div
-          class="root"
-        >
-          <div
-            class="field"
-          >
-            <textarea
-              class="form-control"
-              id="rjsfSchema.schema.title"
-              name="rjsfSchema.schema.title"
-              rows="1"
-            >
-              A form
-            </textarea>
-          </div>
-          <div
-            class="dropdown dropdown"
-            data-test-selected="Text"
-            data-testid="toggle-rjsfSchema.schema.title"
-          >
-            <button
-              aria-expanded="false"
-              aria-haspopup="true"
-              class="dropdown-toggle btn btn-link"
-              type="button"
-            >
-              <span
-                class="symbol"
-              >
-                <test-file-stub
-                  classname="root"
-                />
-              </span>
-            </button>
-          </div>
-        </div>
-        <small
-          class="text-muted form-text"
-        >
-          <span>
-            The form title to display
-          </span>
-        </small>
-      </div>
-    </div>
-    <div
-      class="formGroup form-group"
-    >
-      <div
-        class="mb-2 w-100 collapse"
-      >
-        <div
-          class="annotationPlaceholder"
-        />
-      </div>
-      <label
-        class="label form-label"
-        for="rjsfSchema.schema.description"
-      >
-        Form Description
-      </label>
-      <div
-        class="formField"
-      >
-        <div
-          class="root"
-        >
-          <div
-            class="field"
-          >
-            <textarea
-              class="form-control"
-              id="rjsfSchema.schema.description"
-              name="rjsfSchema.schema.description"
-              rows="1"
-            >
-              A form example.
-            </textarea>
-          </div>
-          <div
-            class="dropdown dropdown"
-            data-test-selected="Text"
-            data-testid="toggle-rjsfSchema.schema.description"
-          >
-            <button
-              aria-expanded="false"
-              aria-haspopup="true"
-              class="dropdown-toggle btn btn-link"
-              type="button"
-            >
-              <span
-                class="symbol"
-              >
-                <test-file-stub
-                  classname="root"
-                />
-              </span>
-            </button>
-          </div>
-        </div>
-        <small
-          class="text-muted form-text"
-        >
-          <span>
-            Form description or instructions. Supports 
-            <a
-              href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown"
-            >
-              Markdown
-            </a>
-          </span>
-        </small>
-      </div>
-    </div>
-    <hr />
-    <div
-      class="addRow"
+      class="d-flex mb-3 gap-1 gap-column-4 align-items-center flex-wrap"
     >
       <button
         class="btn btn-primary btn-sm"
@@ -354,52 +68,31 @@ exports[`FormEditor renders simple schema 1`] = `
         </svg>
          Add new field
       </button>
-    </div>
-    <div
-      class="currentFieldRow row"
-    >
-      <div
-        class="currentField col-xl-3"
+      <button
+        class="btn btn-danger btn-sm"
+        type="button"
       >
-        <h6>
-          Current Field
-        </h6>
-      </div>
-      <div
-        class="col-xl"
-      >
-        <button
-          class="btn btn-danger btn-sm"
-          type="button"
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-trash fa-w-14 "
+          data-icon="trash"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 448 512"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <svg
-            aria-hidden="true"
-            class="svg-inline--fa fa-trash fa-w-14 "
-            data-icon="trash"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            viewBox="0 0 448 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
-              fill="currentColor"
-            />
-          </svg>
-           Remove field
-        </button>
-      </div>
-      <div
-        class="col-xl"
-      >
-        <small
-          class="text-muted"
-        >
-          Use the Preview Tab on the right to select a field to edit ⟶
-        </small>
-      </div>
+          <path
+            d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
+            fill="currentColor"
+          />
+        </svg>
+         Remove current field
+      </button>
     </div>
+    <h6>
+      Current Field
+    </h6>
     <div
       class="root"
     >
@@ -938,141 +631,7 @@ exports[`FormEditor renders unknown field format 1`] = `
     action="#"
   >
     <div
-      class="formGroup form-group"
-    >
-      <div
-        class="mb-2 w-100 collapse"
-      >
-        <div
-          class="annotationPlaceholder"
-        />
-      </div>
-      <label
-        class="label form-label"
-        for="rjsfSchema.schema.title"
-      >
-        Form Title
-      </label>
-      <div
-        class="formField"
-      >
-        <div
-          class="root"
-        >
-          <div
-            class="field"
-          >
-            <textarea
-              class="form-control"
-              id="rjsfSchema.schema.title"
-              name="rjsfSchema.schema.title"
-              rows="1"
-            >
-              A form
-            </textarea>
-          </div>
-          <div
-            class="dropdown dropdown"
-            data-test-selected="Text"
-            data-testid="toggle-rjsfSchema.schema.title"
-          >
-            <button
-              aria-expanded="false"
-              aria-haspopup="true"
-              class="dropdown-toggle btn btn-link"
-              type="button"
-            >
-              <span
-                class="symbol"
-              >
-                <test-file-stub
-                  classname="root"
-                />
-              </span>
-            </button>
-          </div>
-        </div>
-        <small
-          class="text-muted form-text"
-        >
-          <span>
-            The form title to display
-          </span>
-        </small>
-      </div>
-    </div>
-    <div
-      class="formGroup form-group"
-    >
-      <div
-        class="mb-2 w-100 collapse"
-      >
-        <div
-          class="annotationPlaceholder"
-        />
-      </div>
-      <label
-        class="label form-label"
-        for="rjsfSchema.schema.description"
-      >
-        Form Description
-      </label>
-      <div
-        class="formField"
-      >
-        <div
-          class="root"
-        >
-          <div
-            class="field"
-          >
-            <textarea
-              class="form-control"
-              id="rjsfSchema.schema.description"
-              name="rjsfSchema.schema.description"
-              rows="1"
-            >
-              A form example.
-            </textarea>
-          </div>
-          <div
-            class="dropdown dropdown"
-            data-test-selected="Text"
-            data-testid="toggle-rjsfSchema.schema.description"
-          >
-            <button
-              aria-expanded="false"
-              aria-haspopup="true"
-              class="dropdown-toggle btn btn-link"
-              type="button"
-            >
-              <span
-                class="symbol"
-              >
-                <test-file-stub
-                  classname="root"
-                />
-              </span>
-            </button>
-          </div>
-        </div>
-        <small
-          class="text-muted form-text"
-        >
-          <span>
-            Form description or instructions. Supports 
-            <a
-              href="https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown"
-            >
-              Markdown
-            </a>
-          </span>
-        </small>
-      </div>
-    </div>
-    <hr />
-    <div
-      class="addRow"
+      class="d-flex mb-3 gap-1 gap-column-4 align-items-center flex-wrap"
     >
       <button
         class="btn btn-primary btn-sm"
@@ -1095,52 +654,31 @@ exports[`FormEditor renders unknown field format 1`] = `
         </svg>
          Add new field
       </button>
-    </div>
-    <div
-      class="currentFieldRow row"
-    >
-      <div
-        class="currentField col-xl-3"
+      <button
+        class="btn btn-danger btn-sm"
+        type="button"
       >
-        <h6>
-          Current Field
-        </h6>
-      </div>
-      <div
-        class="col-xl"
-      >
-        <button
-          class="btn btn-danger btn-sm"
-          type="button"
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-trash fa-w-14 "
+          data-icon="trash"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 448 512"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <svg
-            aria-hidden="true"
-            class="svg-inline--fa fa-trash fa-w-14 "
-            data-icon="trash"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            viewBox="0 0 448 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
-              fill="currentColor"
-            />
-          </svg>
-           Remove field
-        </button>
-      </div>
-      <div
-        class="col-xl"
-      >
-        <small
-          class="text-muted"
-        >
-          Use the Preview Tab on the right to select a field to edit ⟶
-        </small>
-      </div>
+          <path
+            d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
+            fill="currentColor"
+          />
+        </svg>
+         Remove current field
+      </button>
     </div>
+    <h6>
+      Current Field
+    </h6>
     <div
       class="root"
     >

@@ -183,6 +183,8 @@
     "./components/Effect.tsx",
     "./components/EmotionShadowRoot.ts",
     "./components/ErrorBoundary.tsx",
+    "./components/formBuilder/edit/ActiveField.tsx",
+    "./components/formBuilder/edit/FormIntroFields.tsx",
     "./components/InvalidatedContextGate.test.tsx",
     "./components/InvalidatedContextGate.tsx",
     "./components/LayoutWidget.tsx",
