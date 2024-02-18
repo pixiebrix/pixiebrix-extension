@@ -31,7 +31,6 @@ import { initTelemetry } from "@/background/messenger/api";
 import { initMessengerLogging } from "@/development/messengerLogging";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
-import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
 
 function init(): void {
   render(<App />, document.querySelector("#container"));
@@ -43,4 +42,3 @@ initToaster();
 initTelemetry();
 void initPerformanceMonitoring();
 init();
-markDocumentAsFocusableByUser();
