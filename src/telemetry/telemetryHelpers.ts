@@ -82,7 +82,7 @@ export function cleanDatadogVersionName(versionName: string): string {
  * @param data the PixieBrix user data
  */
 export async function mapAppUserToTelemetryUser(
-  data: Partial<UserData>,
+  data: UserData,
 ): Promise<TelemetryUser> {
   const browserId = await getUID();
   const { user, email, telemetryOrganizationId, organizationId } = data;

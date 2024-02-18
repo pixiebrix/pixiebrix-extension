@@ -155,21 +155,21 @@ export async function reportToErrorService(
   // For blueprint_version/service_version/brick_version the server can't handle null value. Must leave the property
   // off completely.
 
-  if (flatContext.blueprintId) {
+  if (flatContext.blueprintId && flatContext.blueprintVersion) {
     payload.blueprint_version = {
       id: flatContext.blueprintId,
       version: flatContext.blueprintVersion,
     };
   }
 
-  if (flatContext.serviceId) {
+  if (flatContext.serviceId && flatContext.serviceVersion) {
     payload.service_version = {
       id: flatContext.serviceId,
       version: flatContext.serviceVersion,
     };
   }
 
-  if (flatContext.blockId) {
+  if (flatContext.blockId && flatContext.blockVersion) {
     payload.brick_version = {
       id: flatContext.blockId,
       version: flatContext.blockVersion,

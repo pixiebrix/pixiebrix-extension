@@ -41,13 +41,6 @@ import { reactivateEveryTab } from "@/background/navigation"; // ContentScript/m
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 300 errors
 import { debouncedInstallStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 300 errors
 import {
-  clearExtensionDebugLogs,
-  clearLog,
-  clearLogs,
-  recordError,
-  recordLog,
-} from "@/telemetry/logging"; // 28 errors
-import {
   collectPerformanceDiagnostics,
   initTelemetry,
   pong,
@@ -105,13 +98,7 @@ declare global {
     REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
 
     CONFIGURED_REQUEST: typeof performConfiguredRequest;
-    RECORD_LOG: typeof recordLog;
-    RECORD_ERROR: typeof recordError;
     RECORD_EVENT: typeof recordEvent;
-    CLEAR_LOGS: typeof clearLogs;
-    CLEAR_LOG: typeof clearLog;
-    CLEAR_EXTENSION_DEBUG_LOGS: typeof clearExtensionDebugLogs;
-
     INIT_TELEMETRY: typeof initTelemetry;
     SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
   }
@@ -161,14 +148,7 @@ export default function registerMessenger(): void {
     REQUEST_RUN_IN_ALL_FRAMES: requestRunInAllFrames,
 
     CONFIGURED_REQUEST: performConfiguredRequest,
-
-    RECORD_LOG: recordLog,
-    RECORD_ERROR: recordError,
     RECORD_EVENT: recordEvent,
-    CLEAR_LOGS: clearLogs,
-    CLEAR_LOG: clearLog,
-    CLEAR_EXTENSION_DEBUG_LOGS: clearExtensionDebugLogs,
-
     INIT_TELEMETRY: initTelemetry,
     SEND_DEPLOYMENT_ALERT: sendDeploymentAlert,
   });

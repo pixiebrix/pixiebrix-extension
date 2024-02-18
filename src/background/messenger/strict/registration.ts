@@ -38,6 +38,13 @@ import { setToolbarBadge } from "@/background/toolbarBadge";
 import * as registry from "@/registry/packageRegistry";
 import serviceRegistry from "@/integrations/registry";
 import { getUserData } from "@/auth/token";
+import {
+  clearExtensionDebugLogs,
+  clearLog,
+  clearLogs,
+  recordError,
+  recordLog,
+} from "@/telemetry/logging";
 
 expectContext("background");
 
@@ -64,6 +71,11 @@ declare global {
 
     CLEAR_SERVICE_CACHE: typeof serviceRegistry.clear;
     GET_USER_DATA: typeof getUserData;
+    RECORD_LOG: typeof recordLog;
+    RECORD_ERROR: typeof recordError;
+    CLEAR_LOGS: typeof clearLogs;
+    CLEAR_LOG: typeof clearLog;
+    CLEAR_EXTENSION_DEBUG_LOGS: typeof clearExtensionDebugLogs;
   }
 }
 
@@ -90,5 +102,10 @@ export default function registerMessenger(): void {
 
     CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
     GET_USER_DATA: getUserData,
+    RECORD_LOG: recordLog,
+    RECORD_ERROR: recordError,
+    CLEAR_LOGS: clearLogs,
+    CLEAR_LOG: clearLog,
+    CLEAR_EXTENSION_DEBUG_LOGS: clearExtensionDebugLogs,
   });
 }

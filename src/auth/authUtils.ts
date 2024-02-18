@@ -56,7 +56,7 @@ export function selectUserDataUpdate({
   partner,
   enforce_update_millis: enforceUpdateMillis,
   partner_principals: partnerPrincipals = [],
-}: Me): UserDataUpdate {
+}: Me): Partial<UserDataUpdate> {
   const organizations = selectOrganizations(organizationMemberships);
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
 
@@ -87,7 +87,7 @@ export function selectExtensionAuthState({
   group_memberships = [],
   partner,
   enforce_update_millis: enforceUpdateMillis,
-}: Me): AuthState {
+}: Me): Partial<AuthState> {
   const organizations = selectOrganizations(organizationMemberships);
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
 
@@ -116,5 +116,5 @@ export function selectExtensionAuthState({
  */
 export async function flagOn(flag: string): Promise<boolean> {
   const authData = await readAuthData();
-  return authData.flags?.includes(flag);
+  return Boolean(authData.flags?.includes(flag));
 }

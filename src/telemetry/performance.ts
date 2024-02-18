@@ -102,7 +102,7 @@ export async function initPerformanceMonitoring(): Promise<void> {
   addAuthListener(updatePerson);
 }
 
-async function updatePerson(data: Partial<UserData>): Promise<void> {
+async function updatePerson(data: UserData): Promise<void> {
   const person = await mapAppUserToTelemetryUser(data);
 
   console.debug("Setting error telemetry user", person);

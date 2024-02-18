@@ -75,7 +75,8 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
       clientToken: CLIENT_TOKEN,
       service: "pixiebrix-browser-extension",
       env: ENVIRONMENT,
-      version: cleanDatadogVersionName(version_name),
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      version: cleanDatadogVersionName(version_name!),
       site: "datadoghq.com",
       forwardErrorsToLogs: false,
       // Record all sessions because it's error telemetry
@@ -83,7 +84,7 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
       // Opt-out of Datadog's own SDK telemetry
       telemetrySampleRate: 0,
       // https://docs.datadoghq.com/logs/log_collection/javascript/#scrub-sensitive-data-from-your-browser-logs
-      beforeSend(event: LogsEvent): Nullishable<boolean> {
+      beforeSend(event: LogsEvent) {
         // NOTE: we are also applying filtering in reportUncaughtErrors and reportError
 
         // Need to filter out here, instead of using IGNORED_ERROR_PATTERNS, because these patterns have context and
@@ -96,12 +97,19 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
           return false;
         }
 
+        if (!event.error) {
+          // Presumably not possible, but these are the types we get from DataDog
+          console.debug("Sending non-error telemetry to Datadog", { event });
+          return true;
+        }
+
         // Patch to match the host in the public source maps. Used to handle different
         // protocols for extension pages across browsers (e.g. chrome-extension://)
-        event.error.stack = event.error.stack.replaceAll(
+        event.error.stack = event.error.stack?.replaceAll(
           // Include the slash because location.origin does not have a trailing slash but the ENV does
           location.origin + "/",
-          process.env.SOURCE_MAP_PUBLIC_PATH,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Webpack enforces its presence
+          process.env.SOURCE_MAP_PUBLIC_PATH!,
         );
 
         console.debug("Sending error telemetry to Datadog", { event });
@@ -135,7 +143,7 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
 // https://github-redirect.dependabot.com/sindresorhus/p-memoize/pull/48
 export const getErrorReporter = pMemoize(initErrorReporter);
 
-async function updatePerson(data: Partial<UserData>): Promise<void> {
+async function updatePerson(data: UserData): Promise<void> {
   const person = await mapAppUserToTelemetryUser(data);
 
   console.debug("Setting error telemetry user", person);
