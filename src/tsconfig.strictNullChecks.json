@@ -209,6 +209,7 @@
     "./components/walkthroughModal/showWalkthroughModal.ts",
     "./contentScript/tooltipDom.ts",
     "./contentScript/selectionTooltip/actionRegistry.ts",
+    "./contentScript/selectionTooltip/actionRegistry.test.ts",
     "./contentScript/selectionTooltip/tooltipController.tsx",
     "./contentScript/browserActionInstantHandler.ts",
     "./contentScript/context.ts",
