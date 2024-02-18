@@ -246,7 +246,10 @@ export async function allSettled<T>(
   return { fulfilled, rejected };
 }
 
-/** Utility to await promises where you only care whether they throw or not */
+/**
+ * Utility to await promises where you only care whether they throw or not
+ * @warning it swallows the error. Use try/catch if you want the error to bubble up
+ */
 export async function isPromiseFulfilled(
   promise: Promise<unknown>,
 ): Promise<boolean> {

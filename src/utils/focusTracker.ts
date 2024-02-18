@@ -33,7 +33,11 @@ export function rememberFocus(this: MessengerMeta): void {
   void lastFocusedTarget.set(this.trace[0]!);
 }
 
-/** @warning Only call this function in contexts that registered the `WRITE_TO_CLIPBOARD` handler */
+/**
+ * Will send a message to the background worker so that knows which context is currently focused.
+ * https://github.com/pixiebrix/pixiebrix-extension/pull/7635
+ * @warning Only call this function in contexts that registered the `WRITE_TO_CLIPBOARD` handler
+ */
 export const markContextAsFocusableByUser = once((): void => {
   forbidContext("background");
   window.addEventListener(
