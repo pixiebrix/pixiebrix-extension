@@ -399,7 +399,6 @@
     "./platform/capabilities.ts",
     "./platform/platformContext.ts",
     "./platform/platformProtocol.ts",
-    "./platform/webPlatform.ts",
     "./runtime/apiVersionOptions.ts",
     "./runtime/brickYaml.ts",
     "./runtime/extendModVariableContext.ts",
