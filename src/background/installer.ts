@@ -17,8 +17,7 @@
 
 import { locator as serviceLocator } from "@/background/locator";
 import { type Runtime } from "webextension-polyfill";
-import reportEvent from "@/telemetry/reportEvent";
-import { initTelemetry } from "@/background/telemetry";
+import { initTelemetry, recordEvent } from "@/background/telemetry";
 import { getUID } from "@/telemetry/telemetryHelpers";
 import { allowsTrack, dntConfig } from "@/telemetry/dnt";
 import { gt } from "semver";
@@ -224,8 +223,11 @@ export async function handleInstall({
   const { version } = browser.runtime.getManifest();
 
   if (reason === "install") {
-    reportEvent(Events.PIXIEBRIX_INSTALL, {
-      version,
+    void recordEvent({
+      event: Events.PIXIEBRIX_INSTALL,
+      data: {
+        version,
+      },
     });
 
     // XXX: under what conditions could onInstalled fire, but the extension is already linked? Is this the case during
@@ -271,13 +273,19 @@ export async function handleInstall({
     void requirePartnerAuth();
 
     if (version === previousVersion) {
-      reportEvent(Events.PIXIEBRIX_RELOAD, {
-        version,
+      void recordEvent({
+        event: Events.PIXIEBRIX_RELOAD,
+        data: {
+          version,
+        },
       });
     } else {
-      reportEvent(Events.PIXIEBRIX_UPDATE, {
-        version,
-        previousVersion,
+      void recordEvent({
+        event: Events.PIXIEBRIX_UPDATE,
+        data: {
+          version,
+          previousVersion,
+        },
       });
     }
   }
