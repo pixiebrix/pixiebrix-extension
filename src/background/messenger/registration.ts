@@ -34,7 +34,6 @@ import {
   requestRunInTarget,
   requestRunInTop,
 } from "@/background/executor";
-import serviceRegistry from "@/integrations/registry";
 import { performConfiguredRequest } from "@/background/requests";
 import { getAvailableVersion } from "@/background/installer";
 import { locator, refreshServices } from "@/background/locator";
@@ -55,7 +54,6 @@ import {
   recordEvent,
   sendDeploymentAlert,
 } from "@/background/telemetry";
-import { getUserData } from "@/auth/token";
 import {
   getPartnerPrincipals,
   launchAuthIntegration,
@@ -107,7 +105,6 @@ declare global {
     REQUEST_RUN_IN_ALL_FRAMES: typeof requestRunInAllFrames;
 
     CONFIGURED_REQUEST: typeof performConfiguredRequest;
-    CLEAR_SERVICE_CACHE: VoidFunction;
     RECORD_LOG: typeof recordLog;
     RECORD_ERROR: typeof recordError;
     RECORD_EVENT: typeof recordEvent;
@@ -117,7 +114,6 @@ declare global {
 
     INIT_TELEMETRY: typeof initTelemetry;
     SEND_DEPLOYMENT_ALERT: typeof sendDeploymentAlert;
-
     GET_USER_DATA: typeof getUserData;
   }
 }

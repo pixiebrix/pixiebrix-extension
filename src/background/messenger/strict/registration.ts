@@ -36,6 +36,8 @@ import {
 } from "@/background/auth/authStorage";
 import { setToolbarBadge } from "@/background/toolbarBadge";
 import * as registry from "@/registry/packageRegistry";
+import serviceRegistry from "@/integrations/registry";
+import { getUserData } from "@/auth/token";
 
 expectContext("background");
 
@@ -59,6 +61,9 @@ declare global {
     REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
     REGISTRY_FIND: typeof registry.find;
     QUERY_TABS: typeof browser.tabs.query;
+
+    CLEAR_SERVICE_CACHE: typeof serviceRegistry.clear;
+    GET_USER_DATA: typeof getUserData;
   }
 }
 
@@ -82,5 +87,8 @@ export default function registerMessenger(): void {
     REGISTRY_GET_BY_KINDS: registry.getByKinds,
     REGISTRY_FIND: registry.find,
     QUERY_TABS: browser.tabs.query,
+
+    CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
+    GET_USER_DATA: getUserData,
   });
 }
