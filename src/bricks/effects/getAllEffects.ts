@@ -54,6 +54,7 @@ import PostMessageEffect from "@/bricks/effects/postMessage";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import CommentEffect from "@/bricks/effects/comment";
 import SetToolbarBadge from "@/bricks/effects/setToolbarBadge";
+import InsertAtCursorEffect from "@/bricks/effects/InsertAtCursorEffect";
 
 function getAllEffects(): Brick[] {
   return [
@@ -101,6 +102,7 @@ function getAllEffects(): Brick[] {
     new RunSubTourEffect(),
     new CommentEffect(),
     new SetToolbarBadge(),
+    new InsertAtCursorEffect(),
   ];
 }
 
