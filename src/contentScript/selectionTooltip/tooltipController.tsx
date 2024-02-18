@@ -87,6 +87,9 @@ export function createTooltip(): HTMLElement {
   const container = ensureTooltipsContainer();
 
   const popover = document.createElement("div");
+  // Using popover attribute should keep it on top of the page
+  // https://developer.chrome.com/blog/introducing-popover-api
+  // https://developer.mozilla.org/en-US/docs/Web/API/Popover_API
   popover.setAttribute("popover", "");
   popover.id = "pixiebrix-selection-tooltip";
 
