@@ -17,23 +17,27 @@
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import type { Nullishable } from "@/utils/nullishUtils";
 
+// Using the string instead of the Selection object because the reference didn't seem to change on getSelection
+type TextSelection = string;
+
 function subscribe(callback: () => void) {
-  window.addEventListener("selectionchange", callback, { passive: true });
+  // Use document vs. window because window.selectionchange wasn't firing reliably
+  document.addEventListener("selectionchange", callback, { passive: true });
   return () => {
-    window.removeEventListener("selectionchange", callback);
+    document.removeEventListener("selectionchange", callback);
   };
 }
 
-function getSnapshot(): Nullishable<Selection> {
-  return window.getSelection();
+function getSnapshot(): Nullishable<TextSelection> {
+  return document.getSelection()?.toString();
 }
 
 /**
  * Utility hook to watch for changes to the window selection.
  * @since 1.8.10
  */
-function useWindowSelection(): Nullishable<Selection> {
+function useDocumentSelection(): Nullishable<TextSelection> {
   return useSyncExternalStore(subscribe, getSnapshot);
 }
 
-export default useWindowSelection;
+export default useDocumentSelection;

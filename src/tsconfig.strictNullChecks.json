@@ -315,7 +315,7 @@
     "./hooks/useUpdatableAsyncState.ts",
     "./hooks/useUserAction.ts",
     "./hooks/useWindowSize.ts",
-    "./hooks/useWindowSelection.ts",
+    "./hooks/useDocumentSelection.ts",
     "./icons/Icon.tsx",
     "./icons/IconSelector.tsx",
     "./icons/constants.ts",

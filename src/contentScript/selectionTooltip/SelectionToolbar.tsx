@@ -23,7 +23,7 @@ import type { RegisteredAction } from "@/contentScript/selectionTooltip/ActionRe
 import Icon from "@/icons/Icon";
 import { splitStartingEmoji } from "@/utils/stringUtils";
 import { truncate } from "lodash";
-import useWindowSelection from "@/hooks/useWindowSelection";
+import useDocumentSelection from "@/hooks/useDocumentSelection";
 import type { Nullishable } from "@/utils/nullishUtils";
 import useActionRegistry from "@/contentScript/selectionTooltip/useActionRegistry";
 import { Stylesheets } from "@/components/Stylesheets";
@@ -42,7 +42,7 @@ type ActionCallbacks = {
 
 function selectButtonTitle(
   title: string,
-  selection: Nullishable<Selection>,
+  selection: Nullishable<string>,
   {
     selectionPreviewLength = 10,
   }: {
@@ -52,52 +52,45 @@ function selectButtonTitle(
   const text = splitStartingEmoji(title).rest;
   // Chrome uses %s as selection placeholder, which is confusing to users. We might instead show a preview of
   // the selected text here.
-  const selectionText = truncate(selection?.toString() ?? "", {
+  const selectionText = truncate(selection ?? "", {
     length: selectionPreviewLength,
     omission: "…",
   });
   return text.replace("%s", selectionText);
 }
 
-const ToolbarItem: React.FC<RegisteredAction & ActionCallbacks> = ({
-  title,
-  handler,
-  emoji,
-  icon,
-  onHide,
-}) => {
-  const selection = useWindowSelection();
-
-  return (
-    <button
-      role="menuitem"
-      className="toolbarItem"
-      style={{
-        // Keep emoji and icon height consistent
-        fontSize: `${ICON_SIZE_PX}px`,
-      }}
-      title={selectButtonTitle(title, selection)}
-      onClick={() => {
-        const selection = window.getSelection();
-        if (selection) {
-          handler(selection.toString());
-          onHide();
-        }
-      }}
-    >
-      {emoji ?? <Icon {...icon} size={ICON_SIZE_PX} />}
-    </button>
-  );
-};
+const ToolbarItem: React.FC<
+  RegisteredAction & ActionCallbacks & { selection: Nullishable<string> }
+> = ({ selection, title, handler, emoji, icon, onHide }) => (
+  <button
+    role="menuitem"
+    className="toolbarItem"
+    style={{
+      // Keep emoji and icon height consistent
+      fontSize: `${ICON_SIZE_PX}px`,
+    }}
+    title={selectButtonTitle(title, selection)}
+    onClick={() => {
+      const selection = window.getSelection();
+      if (selection) {
+        handler(selection.toString());
+        onHide();
+      }
+    }}
+  >
+    {emoji ?? <Icon {...icon} size={ICON_SIZE_PX} />}
+  </button>
+);
 
 const SelectionToolbar: React.FC<
   { registry: ActionRegistry } & ActionCallbacks
 > = ({ registry, onHide }) => {
+  const selection = useDocumentSelection();
   const actions = useActionRegistry(registry);
 
   // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menu_role
   return (
-    <ShadowRoot mode="closed">
+    <ShadowRoot mode="open">
       <Stylesheets href={[stylesUrl]}>
         <div
           role="menu"
@@ -106,7 +99,12 @@ const SelectionToolbar: React.FC<
           className="toolbar"
         >
           {[...actions.entries()].map(([id, action]) => (
-            <ToolbarItem key={id} {...action} onHide={onHide} />
+            <ToolbarItem
+              key={id}
+              {...action}
+              onHide={onHide}
+              selection={selection}
+            />
           ))}
         </div>
       </Stylesheets>
