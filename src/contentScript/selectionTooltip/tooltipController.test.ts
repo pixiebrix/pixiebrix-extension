@@ -1,12 +1,9 @@
-import {
-  initSelectionTooltip,
-  tooltipActionRegistry,
-} from "@/contentScript/selectionTooltip/tooltipController";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { uuidv4 } from "@/types/helpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { rectFactory } from "@/testUtils/factories/domFactories";
+import type * as controllerModule from "@/contentScript/selectionTooltip/tooltipController";
 
 document.body.innerHTML =
   '<div><span data-testid="span">Here\'s some text</span></div>';
@@ -17,6 +14,8 @@ document.body.innerHTML =
 (Range.prototype.getClientRects as any) = jest.fn(() => [rectFactory()]);
 
 describe("tooltipController", () => {
+  let module: typeof controllerModule;
+
   async function selectText() {
     const user = userEvent.setup();
     await user.tripleClick(screen.getByTestId("span"));
@@ -24,8 +23,13 @@ describe("tooltipController", () => {
     await waitForEffect();
   }
 
+  beforeEach(async () => {
+    jest.resetModules();
+    module = await import("@/contentScript/selectionTooltip/tooltipController");
+  });
+
   it("don't show tooltip if no actions are registered", async () => {
-    initSelectionTooltip();
+    module.initSelectionTooltip();
     await selectText();
     expect(
       screen.queryByRole("pixiebrix-selection-tooltip"),
@@ -33,9 +37,9 @@ describe("tooltipController", () => {
   });
 
   it("attach tooltip when user selects text", async () => {
-    initSelectionTooltip();
+    module.initSelectionTooltip();
 
-    tooltipActionRegistry.register(uuidv4(), {
+    module.tooltipActionRegistry.register(uuidv4(), {
       title: "Copy",
       icon: undefined,
       handler() {},
