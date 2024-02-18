@@ -27,7 +27,6 @@ import {
   writeItemsToClipboard,
 } from "@/utils/clipboardUtils";
 import { convertDataUrl } from "@/utils/parseDataUrl";
-import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 
 export class CopyToClipboard extends EffectABC {
@@ -43,9 +42,7 @@ export class CopyToClipboard extends EffectABC {
     permissions: ["clipboardWrite"],
   };
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return ["clipboardWrite"];
   }
 

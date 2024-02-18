@@ -20,7 +20,6 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
-import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 
 export const ALERT_EFFECT_ID = validateRegistryId("@pixiebrix/browser/alert");
@@ -62,9 +61,7 @@ export class AlertEffect extends EffectABC {
     ["message"],
   );
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     // In the future, dynamically determine based off type if type is statically known
     return ["alert", "toast"];
   }

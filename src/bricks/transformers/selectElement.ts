@@ -18,7 +18,6 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
-import type { BrickConfig } from "@/bricks/types";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
@@ -57,9 +56,7 @@ export class SelectElement extends TransformerABC {
     ["elements"],
   );
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return CONTENT_SCRIPT_CAPABILITIES;
   }
 

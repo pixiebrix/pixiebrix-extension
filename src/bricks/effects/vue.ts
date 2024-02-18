@@ -20,7 +20,6 @@ import { setComponentData } from "@/pageScript/messenger/api";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import type { BrickConfig } from "@/bricks/types";
 import {
   type PlatformCapability,
   PAGE_SCRIPT_CAPABILITIES,
@@ -53,9 +52,7 @@ export class SetVueValues extends EffectABC {
     required: ["component", "values"],
   };
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return PAGE_SCRIPT_CAPABILITIES;
   }
 

@@ -17,7 +17,6 @@
 
 import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
-import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 
 class TimestampReader extends ReaderABC {
@@ -44,9 +43,7 @@ class TimestampReader extends ReaderABC {
     return false;
   }
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return [];
   }
 

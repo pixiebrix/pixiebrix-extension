@@ -23,7 +23,6 @@ import { type AxiosRequestConfig } from "axios";
 import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 
 export const inputProperties: Record<string, Schema> = {
@@ -80,9 +79,7 @@ export class RemoteMethod extends TransformerABC {
 
   inputSchema: Schema = propertiesToSchema(inputProperties, ["url"]);
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return ["http"];
   }
 

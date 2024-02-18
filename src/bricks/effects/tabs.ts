@@ -19,7 +19,6 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { activateTab, closeTab } from "@/background/messenger/api";
-import type { BrickConfig } from "@/bricks/types";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
@@ -36,9 +35,7 @@ export class ActivateTabEffect extends EffectABC {
 
   inputSchema: Schema = propertiesToSchema({}, []);
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return CONTENT_SCRIPT_CAPABILITIES;
   }
 
@@ -54,9 +51,7 @@ export class CloseTabEffect extends EffectABC {
 
   inputSchema: Schema = propertiesToSchema({}, []);
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     // Could get away with just "dom" if the brick used window.close. But window.close doesn't work in sub-frames.
     return CONTENT_SCRIPT_CAPABILITIES;
   }

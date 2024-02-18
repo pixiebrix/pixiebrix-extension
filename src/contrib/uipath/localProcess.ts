@@ -22,7 +22,6 @@ import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import type { UnknownObject } from "@/types/objectTypes";
-import type { BrickConfig } from "@/bricks/types";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
@@ -58,9 +57,7 @@ class RunLocalProcess extends TransformerABC {
     properties: UIPATH_PROPERTIES,
   };
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     // Required for UiPath Robot
     return CONTENT_SCRIPT_CAPABILITIES;
   }

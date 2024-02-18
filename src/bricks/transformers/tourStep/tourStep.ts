@@ -43,7 +43,6 @@ import type {
   TemporaryPanelDefinition,
   TemporaryPanelEntryMetadata,
 } from "@/platform/panels/panelTypes";
-import type { BrickConfig } from "@/bricks/types";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
@@ -314,9 +313,7 @@ class TourStepTransformer extends TransformerABC {
     return false;
   }
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return [...CONTENT_SCRIPT_CAPABILITIES, "panel"];
   }
 

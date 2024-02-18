@@ -21,7 +21,6 @@ import {
   type BrickOptions,
   type RendererOutput,
 } from "@/types/runtimeTypes";
-import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 
 export abstract class RendererABC extends BrickABC {
@@ -30,9 +29,7 @@ export abstract class RendererABC extends BrickABC {
     options: BrickOptions,
   ): Promise<RendererOutput>;
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return ["dom"];
   }
 

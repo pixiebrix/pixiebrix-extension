@@ -19,7 +19,6 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 
 export class AddLead extends EffectABC {
@@ -71,9 +70,7 @@ export class AddLead extends EffectABC {
     required: ["salesforce", "LastName", "Company"],
   };
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return ["http"];
   }
 

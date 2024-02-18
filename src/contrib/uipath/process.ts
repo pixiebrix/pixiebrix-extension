@@ -24,7 +24,6 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
-import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 
 export const UIPATH_SERVICE_IDS: RegistryId[] = [
@@ -116,9 +115,7 @@ export class RunProcess extends TransformerABC {
     properties: UIPATH_PROPERTIES,
   };
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return ["http"];
   }
 

@@ -26,7 +26,6 @@ import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type UnknownObject } from "@/types/objectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
-import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 
 export const ZAPIER_ID = validateRegistryId("@pixiebrix/zapier/push-data");
@@ -64,9 +63,7 @@ export class PushZap extends EffectABC {
    */
   override permissions: Permissions.Permissions = ZAPIER_PERMISSIONS;
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return ["http"];
   }
 

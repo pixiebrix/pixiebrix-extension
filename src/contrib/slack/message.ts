@@ -19,7 +19,6 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { boolean } from "@/utils/typeUtils";
-import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 
 export class SendSimpleSlackMessage extends EffectABC {
@@ -64,9 +63,7 @@ export class SendSimpleSlackMessage extends EffectABC {
     },
   };
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return ["http"];
   }
 
@@ -184,9 +181,7 @@ export class SendAdvancedSlackMessage extends EffectABC {
     },
   };
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return ["http"];
   }
 

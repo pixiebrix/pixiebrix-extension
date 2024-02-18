@@ -20,7 +20,6 @@ import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { CancelError } from "@/errors/businessErrors";
-import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 
 export class Prompt extends TransformerABC {
@@ -49,9 +48,7 @@ export class Prompt extends TransformerABC {
     ["message"],
   );
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return ["alert"];
   }
 

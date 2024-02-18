@@ -24,7 +24,6 @@ import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type AxiosRequestConfig } from "axios";
 import { isNullOrBlank } from "@/utils/stringUtils";
-import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 
 export class GetAPITransformer extends TransformerABC {
@@ -67,9 +66,7 @@ export class GetAPITransformer extends TransformerABC {
     ["url"],
   );
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return ["http"];
   }
 

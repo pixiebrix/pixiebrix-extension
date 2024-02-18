@@ -20,7 +20,6 @@ import { partial } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Schema } from "@/types/schemaTypes";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
-import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 
 function makeProperties(
@@ -93,9 +92,7 @@ export class AddUpdateContact extends EffectABC {
     additionalProperties: { type: "string" },
   };
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return ["http"];
   }
 
@@ -189,9 +186,7 @@ export class AddUpdateCompany extends EffectABC {
     required: ["website"],
   };
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return ["http"];
   }
 

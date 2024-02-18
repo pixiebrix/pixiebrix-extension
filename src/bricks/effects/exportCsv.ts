@@ -21,7 +21,6 @@ import { type Schema } from "@/types/schemaTypes";
 import { PropError } from "@/errors/businessErrors";
 import { isUnknownObjectArray } from "@/utils/objectUtils";
 import type { UnknownObject } from "@/types/objectTypes";
-import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 
 export class ExportCsv extends EffectABC {
@@ -59,9 +58,7 @@ export class ExportCsv extends EffectABC {
     },
   };
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     // XXX: might introduce a "download" capability in the future, e.g., to support making the file as an artifact
     // from a headless platform run
     return ["dom"];

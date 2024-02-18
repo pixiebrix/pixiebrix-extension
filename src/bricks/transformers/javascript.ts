@@ -22,6 +22,7 @@ import { type UiSchema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type JSONSchema7 } from "json-schema";
 import { type JsonObject } from "type-fest";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export class JavaScriptTransformer extends TransformerABC {
   static readonly BRICK_ID = validateRegistryId("@pixiebrix/javascript");
@@ -65,6 +66,10 @@ export class JavaScriptTransformer extends TransformerABC {
       "ui:widget": "CodeEditorWidget",
     },
   };
+
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["sandbox"];
+  }
 
   override async transform(
     input: BrickArgs<{

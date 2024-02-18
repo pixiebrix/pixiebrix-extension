@@ -21,7 +21,6 @@ import { propertiesToSchema } from "@/validators/generic";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type Schema } from "@/types/schemaTypes";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
-import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 
@@ -124,9 +123,7 @@ export class GeocodeTransformer extends TransformerABC {
     ["service", "address"],
   );
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return ["http"];
   }
 
