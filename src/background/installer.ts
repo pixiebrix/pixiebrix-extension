@@ -19,7 +19,7 @@ import { locator as serviceLocator } from "@/background/locator";
 import { type Runtime } from "webextension-polyfill";
 import reportEvent from "@/telemetry/reportEvent";
 import { initTelemetry } from "@/background/telemetry";
-import { getUID } from "@/background/messenger/api";
+import { getUID } from "@/telemetry/telemetryHelpers";
 import { allowsTrack, dntConfig } from "@/telemetry/dnt";
 import { gt } from "semver";
 import { getBaseURL } from "@/services/baseService";

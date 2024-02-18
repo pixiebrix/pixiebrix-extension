@@ -54,7 +54,6 @@ import {
   pong,
   recordEvent,
   sendDeploymentAlert,
-  uid,
 } from "@/background/telemetry";
 import { getUserData } from "@/auth/token";
 import {
@@ -87,8 +86,6 @@ declare global {
     SET_PARTNER_COPILOT_DATA: typeof setCopilotProcessData;
 
     INSTALL_STARTER_BLUEPRINTS: typeof installStarterBlueprints;
-
-    GET_UID: typeof uid;
 
     PING: typeof pong;
     COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
@@ -148,8 +145,6 @@ export default function registerMessenger(): void {
     PRELOAD_CONTEXT_MENUS: preloadContextMenus,
     UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
     ENSURE_CONTEXT_MENU: ensureContextMenu,
-
-    GET_UID: uid,
 
     PING: pong,
     COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,

@@ -26,7 +26,6 @@ import type { RemoteResponse } from "@/types/contract";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
 export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
-export const getUID = getMethod("GET_UID", bg);
 export const getPartnerPrincipals = getMethod("GET_PARTNER_PRINCIPALS", bg);
 export const launchAuthIntegration = getMethod("LAUNCH_AUTH_INTEGRATION", bg);
 export const setPartnerCopilotData = getNotifier(
