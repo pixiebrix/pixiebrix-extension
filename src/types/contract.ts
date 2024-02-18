@@ -60,7 +60,7 @@ type MeOrganization = Required<components["schemas"]["Me"]["organization"]> & {
 };
 
 export type Me = Except<
-  components["schemas"]["Me"],
+  Required<components["schemas"]["Me"]>,
   | "flags"
   | "is_onboarded"
   | "organization"
@@ -275,7 +275,7 @@ export type ErrorItem = Except<
   "user" | "user_extension"
 > & {
   deployment?: UUID;
-  organization?: UUID;
+  organization?: UUID | null;
   user_agent_extension_version: SemVerString;
 };
 

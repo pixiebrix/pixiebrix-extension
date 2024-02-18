@@ -23,6 +23,7 @@ import {
 import { type Except } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export type AuthSharing = "private" | "shared" | "built-in";
 export interface AuthOption {
@@ -50,11 +51,11 @@ export type UserData = Partial<{
   /**
    * The user's primary organization.
    */
-  organizationId: UUID;
+  organizationId: UUID | null;
   /**
    * The user's organization for engagement and error attribution
    */
-  telemetryOrganizationId: UUID;
+  telemetryOrganizationId: UUID | null;
   /**
    * Feature flags
    */
@@ -86,12 +87,12 @@ export type UserData = Partial<{
    *
    * @since 1.7.14
    */
-  readonly partner?: Me["partner"];
+  readonly partner: Me["partner"] | null;
   /**
    * The partner principals. Currently, just the Automation Anywhere Control Room principal if applicable.
    * @since 1.7.16
    */
-  readonly partnerPrincipals?: Me["partner_principals"];
+  readonly partnerPrincipals: Me["partner_principals"];
 }>;
 
 // Exclude tenant information in updates (these are only updated on linking)
@@ -247,7 +248,7 @@ export type AuthState = {
   /**
    * The partner, controlling theme, documentation links, etc.
    */
-  readonly partner?: Me["partner"];
+  readonly partner?: Me["partner"] | null;
 
   /**
    * Number of milliseconds after which to enforce browser extension and manual deployment updates, or `null` to
@@ -257,7 +258,7 @@ export type AuthState = {
    *
    * @since 1.7.1
    */
-  readonly enforceUpdateMillis: number | null;
+  readonly enforceUpdateMillis: Nullishable<number>;
 };
 
 export type AuthRootState = {

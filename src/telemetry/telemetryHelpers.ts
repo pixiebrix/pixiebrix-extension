@@ -30,7 +30,7 @@ type TelemetryUser = {
    */
   id: UUID;
   email?: string;
-  organizationId?: UUID;
+  organizationId?: UUID | null;
 };
 
 const uidStorage = new StorageItem<UUID>("USER_UUID");

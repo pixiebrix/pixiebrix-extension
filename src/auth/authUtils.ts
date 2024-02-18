@@ -62,8 +62,8 @@ export function selectUserDataUpdate({
 
   return {
     email,
-    organizationId: organization?.id,
-    telemetryOrganizationId: telemetryOrganization?.id,
+    organizationId: organization?.id ?? null,
+    telemetryOrganizationId: telemetryOrganization?.id ?? null,
     flags,
     organizations,
     groups,
@@ -80,7 +80,7 @@ export function selectExtensionAuthState({
   organization,
   telemetry_organization,
   is_onboarded: isOnboarded,
-  test_account: isTestAccount,
+  test_account: isTestAccount = false,
   flags = [],
   milestones = [],
   organization_memberships: organizationMemberships = [],
