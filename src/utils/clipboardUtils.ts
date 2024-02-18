@@ -83,8 +83,6 @@ export async function nonInteractivelyWriteToClipboard(
 
 /**
  * Copy to clipboard, and prompt user to interact with page if the browser blocks the clipboard write due to focus
- * @param clipboardItem the ClipboardItem to copy to the clipboard
- * @param type the data type, to show in the message to the user.
  */
 async function interactiveWriteToClipboard(
   content: ClipboardContent,
