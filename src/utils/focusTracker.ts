@@ -16,11 +16,22 @@
  */
 
 import { SessionValue } from "@/mv3/SessionStorage";
-import { type MessengerMeta, type Sender } from "webext-messenger";
+import {
+  registerMethods,
+  type MessengerMeta,
+  type Sender,
+} from "webext-messenger";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { once } from "lodash";
 import { onContextInvalidated } from "webext-events";
 import { documentReceivedFocus } from "@/background/messenger/strict/api";
+import { nonInteractivelyWriteToClipboard } from "./clipboardUtils";
+
+declare global {
+  interface MessengerMethods {
+    WRITE_TO_CLIPBOARD: typeof nonInteractivelyWriteToClipboard;
+  }
+}
 
 export const lastFocusedTarget = new SessionValue<Sender | null>(
   "lastFocusedTarget",
@@ -35,11 +46,14 @@ export function rememberFocus(this: MessengerMeta): void {
 
 /**
  * Will send a message to the background worker so that knows which context is currently focused.
+ * It also registers the `WRITE_TO_CLIPBOARD` method here so that it's never mistakenly left out.
  * https://github.com/pixiebrix/pixiebrix-extension/pull/7635
- * @warning Only call this function in contexts that registered the `WRITE_TO_CLIPBOARD` handler
  */
-export const markContextAsFocusableByUser = once((): void => {
+export const markDocumentAsFocusableByUser = once((): void => {
   forbidContext("background");
+  registerMethods({
+    WRITE_TO_CLIPBOARD: nonInteractivelyWriteToClipboard,
+  });
   window.addEventListener(
     "focus",
     () => {

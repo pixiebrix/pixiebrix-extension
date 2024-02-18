@@ -66,7 +66,7 @@ export default async function writeToClipboardInFocusedContext(
   if (lastFocusedDocument) {
     const target = extractTargetFromSender(lastFocusedDocument);
     if (target) {
-      // The target might be any context that calls `markContextAsFocusableByUser`.
+      // The target might be any context that calls `markDocumentAsFocusableByUser`.
       // Also, just because they were the lastFocusedDocument, it doesn't mean that
       // they are still focused at a OS level, so this might return false.
       return writeToClipboardInTarget(target, item);

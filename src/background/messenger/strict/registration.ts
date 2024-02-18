@@ -36,7 +36,7 @@ import {
 } from "@/background/auth/authStorage";
 import { setToolbarBadge } from "@/background/toolbarBadge";
 import { rememberFocus } from "@/utils/focusTracker";
-import writeToClipboard from "@/background/clipboard";
+import writeToClipboardInFocusedContext from "@/background/clipboard";
 import * as registry from "@/registry/packageRegistry";
 
 expectContext("background");
@@ -57,7 +57,7 @@ declare global {
     GET_CACHED_AUTH: typeof getCachedAuthData;
     SET_TOOLBAR_BADGE: typeof setToolbarBadge;
     DOCUMENT_RECEIVED_FOCUS: typeof rememberFocus;
-    WRITE_TO_CLIPBOARD: typeof writeToClipboard;
+    WRITE_TO_CLIPBOARD_IN_FOCUSED_DOCUMENT: typeof writeToClipboardInFocusedContext;
     REGISTRY_SYNC: typeof registry.syncPackages;
     REGISTRY_CLEAR: typeof registry.clear;
     REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
@@ -82,7 +82,7 @@ export default function registerMessenger(): void {
     GET_CACHED_AUTH: getCachedAuthData,
     SET_TOOLBAR_BADGE: setToolbarBadge,
     DOCUMENT_RECEIVED_FOCUS: rememberFocus,
-    WRITE_TO_CLIPBOARD: writeToClipboard,
+    WRITE_TO_CLIPBOARD_IN_FOCUSED_DOCUMENT: writeToClipboardInFocusedContext,
     REGISTRY_SYNC: registry.syncPackages,
     REGISTRY_CLEAR: registry.clear,
     REGISTRY_GET_BY_KINDS: registry.getByKinds,

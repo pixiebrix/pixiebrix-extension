@@ -45,7 +45,6 @@ import {
 import { closeWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
 import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughModal";
 import { registerMethods } from "webext-messenger";
-import { nonInteractivelyWriteToClipboard } from "@/utils/clipboardUtils";
 
 declare global {
   interface MessengerMethods {
@@ -74,7 +73,6 @@ declare global {
     PANEL_GET_DEFINITION: typeof getPanelDefinition;
     WALKTHROUGH_MODAL_CLOSE: typeof closeWalkthroughModal;
     WALKTHROUGH_MODAL_SHOW: typeof showWalkthroughModal;
-    WRITE_TO_CLIPBOARD: typeof nonInteractivelyWriteToClipboard;
   }
 }
 export default function registerMessenger(): void {
@@ -104,6 +102,5 @@ export default function registerMessenger(): void {
     PANEL_GET_DEFINITION: getPanelDefinition,
     WALKTHROUGH_MODAL_CLOSE: closeWalkthroughModal,
     WALKTHROUGH_MODAL_SHOW: showWalkthroughModal,
-    WRITE_TO_CLIPBOARD: nonInteractivelyWriteToClipboard,
   });
 }
