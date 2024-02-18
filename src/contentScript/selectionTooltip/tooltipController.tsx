@@ -87,6 +87,7 @@ function createTooltip(): HTMLElement {
   // https://developer.mozilla.org/en-US/docs/Web/API/Popover_API
   popover.setAttribute("popover", "");
   popover.id = "pixiebrix-selection-tooltip";
+  popover.setAttribute("data-testid", "pixiebrix-selection-tooltip");
 
   // Must be set before positioning: https://floating-ui.com/docs/computeposition#initial-layout
   popover.style.setProperty("position", "fixed");
@@ -263,7 +264,7 @@ function isSelectionValid(selection: Nullishable<Selection>): boolean {
 /**
  * Initialize the selection tooltip once.
  */
-export const initSelectionToolip = once(() => {
+export const initSelectionTooltip = once(() => {
   console.debug("Initializing text selection toolip");
 
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event

@@ -73,7 +73,7 @@ import { allSettled } from "@/utils/promiseUtils";
 import batchedFunction from "batched-function";
 import { onContextInvalidated } from "webext-events";
 import {
-  initSelectionToolip,
+  initSelectionTooltip,
   tooltipActionRegistry,
 } from "@/contentScript/selectionTooltip/tooltipController";
 import { getSettingsState } from "@/store/settings/settingsStorage";
@@ -230,7 +230,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     if (this.contexts.includes("selection") || this.contexts.includes("all")) {
       const { selectionPopover } = await getSettingsState();
       if (selectionPopover) {
-        initSelectionToolip();
+        initSelectionTooltip();
       }
     }
 
