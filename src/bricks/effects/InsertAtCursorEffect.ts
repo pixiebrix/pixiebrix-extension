@@ -35,7 +35,7 @@ class InsertAtCursorEffect extends EffectABC {
   constructor() {
     super(
       "@pixiebrix/html/insert-text",
-      "Insert Text at Cursor",
+      "[Experimental] Insert Text at Cursor",
       "Insert text at the cursor position the active field/editor",
     );
   }
