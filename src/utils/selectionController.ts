@@ -27,7 +27,7 @@ function getSelection(): Selection {
 // https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setSelectionRange
 // Note that according to the WHATWG forms spec selectionStart, selectionEnd properties and setSelectionRange
 // method apply only to inputs of types text, search, URL, tel and password.
-const SUPPORTED_INPUT_TYPES = new Set([
+const SUPPORTED_INPUT_TYPES = new Set<string>([
   "text",
   "search",
   "url",
@@ -38,24 +38,28 @@ const SUPPORTED_INPUT_TYPES = new Set([
 // // https://stackoverflow.com/a/59106148
 function withInputSelectionHack(
   element: HTMLTextElement,
-  fn: () => void,
+  fn: (supportedElement: HTMLTextElement) => void,
 ): void {
   let doHack = false;
   const originalType = element.getAttribute("type");
 
   if (
     element instanceof HTMLInputElement &&
-    !SUPPORTED_INPUT_TYPES.has(originalType)
+    !SUPPORTED_INPUT_TYPES.has(originalType ?? "text")
   ) {
     doHack = true;
     element.setAttribute("type", "text");
   }
 
   try {
-    fn();
+    fn(element);
   } finally {
     if (doHack) {
-      element.setAttribute("type", originalType);
+      if (originalType == null) {
+        element.removeAttribute("type");
+      } else {
+        element.setAttribute("type", originalType);
+      }
     }
   }
 }
@@ -137,17 +141,17 @@ const selectionController = {
       : undefined;
   },
   restore(): void {
-    if (elementOverride) {
+    if (elementOverride != null) {
       const element = elementOverride.activeElement.deref();
       if (element) {
         console.debug("Restoring selection for input element", element);
 
-        withInputSelectionHack(element, () => {
-          element.focus();
-          element.setSelectionRange(
-            elementOverride.selectionStart,
-            elementOverride.selectionEnd,
-            elementOverride.selectionDirection,
+        withInputSelectionHack(element, (supportedElement) => {
+          supportedElement.focus();
+          supportedElement.setSelectionRange(
+            element.selectionStart,
+            element.selectionEnd,
+            element.selectionDirection ?? "none",
           );
         });
       }
