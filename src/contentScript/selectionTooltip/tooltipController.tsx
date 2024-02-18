@@ -38,13 +38,20 @@ import {
 import { getCaretCoordinates } from "@/utils/textAreaUtils";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
+const ICON_SIZE_PX = 16;
 
 export const tooltipActionRegistry = new ActionRegistry();
+
 let selectionTooltip: Nullishable<HTMLElement>;
 
-let cleanup: () => void;
+let cleanupAutoPosition: () => void;
 
 export function showTooltip(): void {
+  if (tooltipActionRegistry.actions.size === 0) {
+    // No registered actions to show
+    return;
+  }
+
   if (!selectionTooltip) {
     createTooltip();
   }
@@ -58,7 +65,7 @@ export function showTooltip(): void {
 export function hideTooltip(): void {
   selectionTooltip?.setAttribute("aria-hidden", "true");
   selectionTooltip?.style.setProperty("display", "none");
-  cleanup?.();
+  cleanupAutoPosition?.();
 }
 
 function selectButtonTitle(title: string): string {
@@ -78,26 +85,36 @@ export function createTooltip(): HTMLElement {
   popover.style.setProperty("width", "max-content");
   popover.style.setProperty("top", "0");
   popover.style.setProperty("left", "0");
-  // Chrome base stylesheet has margin: "auto" for the popover attribute
+  // Override Chrome's based styles for [popover] attribute
   popover.style.setProperty("margin", "0");
+  popover.style.setProperty("padding", "0");
 
   const shadowRoot = popover.attachShadow({ mode: "closed" });
 
+  // TODO: fix CSS for icon vs. emoji and dark mode
+  // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menu_role
   render(
-    <div>
+    <div
+      role="menu"
+      aria-orientation="horizontal"
+      aria-label="Text selection menu"
+    >
       {[...tooltipActionRegistry.actions.entries()].map(([id, action]) => (
         <button
+          role="menuitem"
           key={id}
+          style={{
+            borderRadius: 0,
+            cursor: "pointer",
+            fontSize: `${ICON_SIZE_PX}px`,
+          }}
           title={selectButtonTitle(action.title)}
           onClick={() => {
             action.handler(window.getSelection().toString());
             hideTooltip();
           }}
         >
-          {
-            // TODO: need to include stylesheet for icon?
-            action.icon ? <Icon {...action.icon} /> : action.emoji
-          }
+          {action.emoji ?? <Icon {...action.icon} size={ICON_SIZE_PX} />}
         </button>
       ))}
     </div>,
@@ -110,6 +127,11 @@ export function createTooltip(): HTMLElement {
   return selectionTooltip;
 }
 
+function destroyTooltip(): void {
+  selectionTooltip?.remove();
+  selectionTooltip = null;
+}
+
 function getPositionReference(): VirtualElement | Element {
   // Browsers don't report an accurate selection within inputs/textarea
   if (["TEXTAREA", "INPUT"].includes(document.activeElement?.tagName)) {
@@ -117,27 +139,36 @@ function getPositionReference(): VirtualElement | Element {
       | HTMLTextAreaElement
       | HTMLInputElement;
 
+    const elementRect = activeElement.getBoundingClientRect();
+
     return {
       getBoundingClientRect() {
-        const position =
-          activeElement.selectionDirection === "forward"
-            ? activeElement.selectionStart
-            : activeElement.selectionEnd;
-        const caret = getCaretCoordinates(activeElement, position);
+        // Try to be somewhat smart about where to place the tooltip when the user has a range selected. Ideally
+        // In a perfect world, we'd be able to provide getClientRects for the top row so the value is consistent
+        // with behavior for normal text.
+        const topPosition = Math.min(
+          activeElement.selectionStart,
+          activeElement.selectionEnd,
+        );
+        const bottomPosition = Math.max(
+          activeElement.selectionStart,
+          activeElement.selectionEnd,
+        );
+        const topCaret = getCaretCoordinates(activeElement, topPosition);
+        const bottomCaret = getCaretCoordinates(activeElement, bottomPosition);
 
-        const width = 0;
-        const height = 0;
+        const width = Math.abs(bottomCaret.left - topCaret.left);
+        const height = Math.abs(
+          bottomCaret.top - topCaret.top + bottomCaret.height,
+        );
 
-        console.debug("getBoundingClientRect", caret);
-
-        const elementRect = activeElement.getBoundingClientRect();
         return {
           height,
           width,
-          x: elementRect.x + caret.left,
-          y: elementRect.y + caret.top,
-          left: elementRect.x + caret.left,
-          top: elementRect.y + caret.top,
+          x: elementRect.x + topCaret.left,
+          y: elementRect.y + topCaret.top,
+          left: elementRect.x + topCaret.left,
+          top: elementRect.y + topCaret.top,
           right: elementRect.x + width,
           bottom: elementRect.y + height,
         };
@@ -156,23 +187,31 @@ function getPositionReference(): VirtualElement | Element {
 }
 
 async function updatePosition(): Promise<void> {
-  // Positioning libraries: https://floating-ui.com/docs/getting-started
-
+  // https://floating-ui.com/docs/getting-started
   const referenceElement = getPositionReference();
+  const supportsInline = "getClientRects" in referenceElement;
 
   // Keep anchored on scroll/resize: https://floating-ui.com/docs/computeposition#anchoring
-  cleanup = autoUpdate(referenceElement, selectionTooltip, async () => {
-    const { x, y } = await computePosition(referenceElement, selectionTooltip, {
-      placement: "top",
-      strategy: "fixed",
-      // Prevent from appearing detached if multiple lines selected: https://floating-ui.com/docs/inline
-      middleware: [inline(), offset(10)],
-    });
-    Object.assign(selectionTooltip.style, {
-      left: `${x}px`,
-      top: `${y}px`,
-    });
-  });
+  cleanupAutoPosition = autoUpdate(
+    referenceElement,
+    selectionTooltip,
+    async () => {
+      const { x, y } = await computePosition(
+        referenceElement,
+        selectionTooltip,
+        {
+          placement: "top",
+          strategy: "fixed",
+          // Prevent from appearing detached if multiple lines selected: https://floating-ui.com/docs/inline
+          middleware: [...(supportsInline ? [inline()] : []), offset(10)],
+        },
+      );
+      Object.assign(selectionTooltip.style, {
+        left: `${x}px`,
+        top: `${y}px`,
+      });
+    },
+  );
 }
 
 /**
@@ -185,19 +224,11 @@ function isSelectionValid(selection: Selection): boolean {
   const anchorNodeParent = selection.anchorNode?.parentElement;
   const focusNodeParent = selection.focusNode?.parentElement;
 
-  console.debug(
-    "isSelectionValid",
-    selection,
-    anchorNodeParent,
-    focusNodeParent,
-    selectionText,
-  );
-
   if (!anchorNodeParent || !focusNodeParent) {
     return false;
   }
 
-  return selectionText.length > MIN_SELECTION_LENGTH_CHARS;
+  return selectionText.length >= MIN_SELECTION_LENGTH_CHARS;
 }
 
 /**
@@ -222,6 +253,16 @@ export const initSelectionToolip = once(() => {
 
   // Try to avoid sticky tool-tip on SPA navigation
   document.addEventListener("navigate", () => {
-    hideTooltip();
+    destroyTooltip();
+  });
+
+  tooltipActionRegistry.onChange.add(() => {
+    const isShowing = selectionTooltip?.checkVisibility();
+    destroyTooltip();
+
+    // Allow live updates from the Page Editor
+    if (isShowing) {
+      showTooltip();
+    }
   });
 });

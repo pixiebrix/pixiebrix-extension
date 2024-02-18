@@ -200,6 +200,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     if (global) {
       for (const extension of extensions) {
         void uninstallContextMenu({ extensionId: extension.id });
+        tooltipActionRegistry.unregister(extension.id);
       }
     }
   }
@@ -218,6 +219,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
     for (const extensionId of extensionIds) {
       void uninstallContextMenu({ extensionId });
+      tooltipActionRegistry.unregister(extensionId);
     }
   }
 

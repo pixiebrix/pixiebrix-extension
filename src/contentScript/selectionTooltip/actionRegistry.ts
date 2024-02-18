@@ -19,34 +19,45 @@ import type { UUID } from "@/types/stringTypes";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { IconConfig } from "@/types/iconTypes";
 import { splitStartingEmoji } from "@/utils/stringUtils";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 
-type SelectionAction = {
+type TextSelectionAction = {
+  // NOTE: currently there's no way to set icons for context menu items, so this will always be null
   icon: Nullishable<IconConfig>;
   title: string;
   handler: (text: string) => void;
 };
 
-type RegisteredSelectionAction = SelectionAction & {
+type RegisteredAction = TextSelectionAction & {
   emoji: string;
+};
+
+const defaultIcon: IconConfig = {
+  id: "box",
+  library: "bootstrap",
 };
 
 class ActionRegistry {
   /**
-   * Map from component UUID to action
-   * @private
+   * Map from component UUID to registered action
    */
-  public readonly actions = new Map<UUID, RegisteredSelectionAction>();
+  public readonly actions = new Map<UUID, RegisteredAction>();
 
-  register(componentId: UUID, action: SelectionAction): void {
+  /**
+   * Event fired when the set of registered actions changes
+   */
+  public readonly onChange = new SimpleEventTarget<RegisteredAction[]>();
+
+  register(componentId: UUID, action: TextSelectionAction): void {
     const { startingEmoji } = splitStartingEmoji(action.title);
-
-    if (startingEmoji) {
-      this.actions.set(componentId, { ...action, emoji: startingEmoji });
-    }
+    const icon = action.icon ?? defaultIcon;
+    this.actions.set(componentId, { ...action, emoji: startingEmoji, icon });
+    this.onChange.emit([...this.actions.values()]);
   }
 
   unregister(componentId: UUID): void {
     this.actions.delete(componentId);
+    this.onChange.emit([...this.actions.values()]);
   }
 }
 
