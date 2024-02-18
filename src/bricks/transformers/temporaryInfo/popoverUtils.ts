@@ -8,23 +8,7 @@ import { setTemporaryOverlayPanel } from "@/contentScript/ephemeralPanelControll
 import { getThisFrame } from "webext-messenger";
 import { html } from "code-tag";
 import { setAnimationFrameInterval } from "@/utils/domUtils";
-
-/**
- * Attaches a tooltip container to the DOM.
- *
- * Having a separate container instead of attaching to the body directly improves performance, see:
- * https://popper.js.org/docs/v2/performance/#attaching-elements-to-the-dom
- */
-function ensureTooltipsContainer(): Element {
-  let container = document.querySelector("#pb-tooltips-container");
-  if (!container) {
-    container = document.createElement("div");
-    container.id = "pb-tooltips-container";
-    document.body.append(container);
-  }
-
-  return container;
-}
+import { ensureTooltipsContainer } from "@/contentScript/tooltipDom";
 
 // https://popper.js.org/docs/v2/constructors/
 export type Placement =
