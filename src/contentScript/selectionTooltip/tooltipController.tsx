@@ -52,10 +52,7 @@ export function showTooltip(): void {
     return;
   }
 
-  if (!selectionTooltip) {
-    createTooltip();
-  }
-
+  selectionTooltip ??= createTooltip();
   selectionTooltip.setAttribute("aria-hidden", "false");
   selectionTooltip.style.setProperty("display", "block");
 
@@ -110,8 +107,11 @@ export function createTooltip(): HTMLElement {
           }}
           title={selectButtonTitle(action.title)}
           onClick={() => {
-            action.handler(window.getSelection().toString());
-            hideTooltip();
+            const selection = window.getSelection();
+            if (selection) {
+              action.handler(selection.toString());
+              hideTooltip();
+            }
           }}
         >
           {action.emoji ?? <Icon {...action.icon} size={ICON_SIZE_PX} />}
@@ -132,9 +132,10 @@ function destroyTooltip(): void {
   selectionTooltip = null;
 }
 
-function getPositionReference(): VirtualElement | Element {
+function getPositionReference(selection: Selection): VirtualElement | Element {
   // Browsers don't report an accurate selection within inputs/textarea
-  if (["TEXTAREA", "INPUT"].includes(document.activeElement?.tagName)) {
+  const tagName = document.activeElement?.tagName;
+  if (tagName === "TEXTAREA" || tagName === "INPUT") {
     const activeElement = document.activeElement as
       | HTMLTextAreaElement
       | HTMLInputElement;
@@ -147,12 +148,12 @@ function getPositionReference(): VirtualElement | Element {
         // In a perfect world, we'd be able to provide getClientRects for the top row so the value is consistent
         // with behavior for normal text.
         const topPosition = Math.min(
-          activeElement.selectionStart,
-          activeElement.selectionEnd,
+          activeElement.selectionStart ?? 0,
+          activeElement.selectionEnd ?? 0,
         );
         const bottomPosition = Math.max(
-          activeElement.selectionStart,
-          activeElement.selectionEnd,
+          activeElement.selectionStart ?? 0,
+          activeElement.selectionEnd ?? 0,
         );
         const topCaret = getCaretCoordinates(activeElement, topPosition);
         const bottomCaret = getCaretCoordinates(activeElement, bottomPosition);
@@ -177,7 +178,7 @@ function getPositionReference(): VirtualElement | Element {
   }
 
   // Allows us to measure where the selection is on the page relative to the viewport
-  const range = window.getSelection().getRangeAt(0);
+  const range = selection.getRangeAt(0);
 
   // https://floating-ui.com/docs/virtual-elements#getclientrects
   return {
@@ -187,8 +188,15 @@ function getPositionReference(): VirtualElement | Element {
 }
 
 async function updatePosition(): Promise<void> {
+  const selection = window.getSelection();
+
+  if (!selectionTooltip || !selection) {
+    // Guard against race condition
+    return;
+  }
+
   // https://floating-ui.com/docs/getting-started
-  const referenceElement = getPositionReference();
+  const referenceElement = getPositionReference(selection);
   const supportsInline = "getClientRects" in referenceElement;
 
   // Keep anchored on scroll/resize: https://floating-ui.com/docs/computeposition#anchoring
@@ -196,6 +204,11 @@ async function updatePosition(): Promise<void> {
     referenceElement,
     selectionTooltip,
     async () => {
+      if (!selectionTooltip) {
+        // Handle race in async handler
+        return;
+      }
+
       const { x, y } = await computePosition(
         referenceElement,
         selectionTooltip,
@@ -218,7 +231,11 @@ async function updatePosition(): Promise<void> {
  * Return true if selection is valid for showing a tooltip.
  * @param selection
  */
-function isSelectionValid(selection: Selection): boolean {
+function isSelectionValid(selection: Nullishable<Selection>): boolean {
+  if (!selection) {
+    return false;
+  }
+
   const selectionText = selection.toString();
 
   const anchorNodeParent = selection.anchorNode?.parentElement;

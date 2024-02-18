@@ -29,7 +29,7 @@ type TextSelectionAction = {
 };
 
 type RegisteredAction = TextSelectionAction & {
-  emoji: string;
+  emoji: Nullishable<string>;
 };
 
 const defaultIcon: IconConfig = {
