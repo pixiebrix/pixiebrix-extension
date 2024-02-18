@@ -102,9 +102,7 @@ export class FormTransformer extends TransformerABC {
     return formSchema ?? this.outputSchema;
   }
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
     return ["form"];
   }
 

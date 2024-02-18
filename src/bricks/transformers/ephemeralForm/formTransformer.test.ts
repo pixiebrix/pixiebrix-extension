@@ -24,6 +24,7 @@ import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { TEST_cancelAll } from "@/platform/forms/formController";
 import * as messenger from "webext-messenger";
 import { showModal } from "@/contentScript/modalDom";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 jest.mock("@/utils/iframeUtils");
 jest.mock("@/contentScript/modalDom");
@@ -117,6 +118,44 @@ describe("FormTransformer", () => {
       "opener",
     );
     expect(JSON.parse(opener)).toStrictEqual({ tabId: 1, frameId: 0 });
+  });
+
+  it("cancels form if form already showing", async () => {
+    // Exposed via __mocks__/webext-messenger
+    (messenger as any).setFrameId(0);
+    jest.mocked(isLoadedInIframe).mockReturnValue(false);
+
+    // Use same options so they have the same extensionId
+    const options = brickOptionsFactory();
+
+    const firstPromise = brick.run(
+      unsafeAssumeValidArg({
+        location: "modal",
+        schema: {
+          tile: "Hello, World",
+        },
+      }),
+      options,
+    );
+
+    await expect(
+      brick.run(
+        unsafeAssumeValidArg({
+          location: "modal",
+          schema: {
+            tile: "Hello, Again",
+          },
+        }),
+        options,
+      ),
+    ).rejects.toThrow(BusinessError);
+
+    await waitForEffect();
+
+    // eslint-disable-next-line new-cap -- test method
+    await TEST_cancelAll();
+
+    await expect(firstPromise).rejects.toThrow(CancelError);
   });
 
   it("shows modal in sub-frame", async () => {

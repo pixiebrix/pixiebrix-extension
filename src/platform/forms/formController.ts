@@ -18,14 +18,14 @@
 import { type FormDefinition } from "@/platform/forms/formTypes";
 import { type UUID } from "@/types/stringTypes";
 import pDefer, { type DeferredPromise } from "p-defer";
-import { CancelError } from "@/errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type FormPanelEntry } from "@/types/sidebarTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 
 export type RegisteredForm = {
   /**
-   * The ModComponentBase that created the form.
+   * The Mod Component that created the form. Only 1 form can be registered per Mod Component.
    */
   extensionId: UUID;
   definition: FormDefinition;
@@ -33,6 +33,9 @@ export type RegisteredForm = {
   blueprintId: Nullishable<RegistryId>;
 };
 
+/**
+ * Mapping from form nonce to form definition.
+ */
 const forms = new Map<UUID, RegisteredForm>();
 
 /**
@@ -71,7 +74,18 @@ export async function registerForm({
   const registration = pDefer();
 
   if (forms.has(nonce)) {
-    console.warn("A form was already registered with nonce %s", nonce);
+    // This should never happen, but if it does, it's a bug.
+    throw new Error("Form with nonce already exists");
+  }
+
+  // O(n) search is fine - we expect a small number of forms
+  const componentMatch = [...forms.entries()].find(
+    ([, form]) => form.extensionId === extensionId,
+  );
+  if (componentMatch) {
+    // Prevent multiple forms to avoid memory leaks. We're throwing an error for the new form instead of the old
+    // form to avoid cancelling the form the user is currently interacting with.
+    throw new BusinessError("Mod component already displaying form");
   }
 
   forms.set(nonce, {

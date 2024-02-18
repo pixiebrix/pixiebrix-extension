@@ -40,6 +40,14 @@ function notAvailable(capability: PlatformCapability): () => never {
   };
 }
 
+export type AudioProtocol = {
+  play(soundEffect: string): Promise<void>;
+};
+
+export type BadgeProtocol = {
+  setText(text: Nullishable<string>): void;
+};
+
 /**
  * The variable store/state for the platform. Formerly known as the "page state".
  */
@@ -84,6 +92,11 @@ export interface PlatformProtocol {
   readonly capabilities: readonly PlatformCapability[];
 
   /**
+   * Open a URL
+   */
+  open: (url: URL) => Promise<void>;
+
+  /**
    * Show a blocking alert.
    */
   alert: typeof window.alert;
@@ -114,22 +127,11 @@ export interface PlatformProtocol {
   panel: (definition: TemporaryPanelDefinition) => Promise<JsonObject>;
 
   /**
-   * Set the badge text for the platform, currently the toolbar icon.
-   */
-  setBadgeText: (text: string) => void;
-
-  /**
    * Run sandboxed Javascript. Does not have access to the DOM.
    * @param code the function to run
    * @param data the data to pass to the function
    */
   runSandboxedJavascript: (args: JavaScriptPayload) => Promise<unknown>;
-
-  /**
-   * Play a sound effect.
-   * @param sound
-   */
-  playSound: (sound: string) => Promise<void>;
 
   /**
    * Prompt the user to select one or more elements on a host page.
@@ -147,7 +149,12 @@ export interface PlatformProtocol {
   ) => Promise<RemoteResponse<TData>>;
 
   /**
-   * The variable store/state for the platform. Formerly known as the "page state".
+   * The audio protocol for the platform.
+   */
+  get audio(): AudioProtocol;
+
+  /**
+   * The variable store/state for the platform. Generalizes "page state" to context without a page.
    */
   get state(): StateProtocol;
 
@@ -160,20 +167,23 @@ export interface PlatformProtocol {
    * The registry for the quick bar.
    */
   get quickBar(): QuickBarRegistryProtocol;
+
+  /**
+   * The badge, e.g., the toolbar icon in a web extension.
+   */
+  get badge(): BadgeProtocol;
 }
 
 export class PlatformABC implements PlatformProtocol {
   readonly capabilities: readonly PlatformCapability[] = [];
+
+  open: PlatformProtocol["open"] = notAvailable("link");
 
   alert: PlatformProtocol["alert"] = notAvailable("alert");
 
   prompt: PlatformProtocol["prompt"] = notAvailable("alert");
 
   notify: PlatformProtocol["notify"] = notAvailable("toast");
-
-  playSound: PlatformProtocol["playSound"] = notAvailable("audio");
-
-  setBadgeText: PlatformProtocol["setBadgeText"] = notAvailable("icon");
 
   userSelectElementRefs: PlatformProtocol["userSelectElementRefs"] =
     notAvailable("contentScript");
@@ -187,12 +197,20 @@ export class PlatformABC implements PlatformProtocol {
   runSandboxedJavascript: PlatformProtocol["runSandboxedJavascript"] =
     notAvailable("sandbox");
 
+  get audio(): AudioProtocol {
+    throw new PlatformCapabilityNotAvailable("audio");
+  }
+
   get state(): StateProtocol {
     throw new PlatformCapabilityNotAvailable("state");
   }
 
   get template(): TemplateProtocol {
     throw new PlatformCapabilityNotAvailable("template");
+  }
+
+  get badge(): BadgeProtocol {
+    throw new PlatformCapabilityNotAvailable("badge");
   }
 
   get quickBar(): QuickBarRegistryProtocol {

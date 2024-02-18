@@ -19,7 +19,7 @@
  * Capabilities a platform may provide to extensions/plug-ins/add-ins/userscripts.
  */
 export const platformCapabilities = [
-  // Access to a DOM
+  // Access to a DOM - but not necessarily visible to a user
   "dom",
   // Access the host-page Javascript context
   "pageScript",
@@ -41,10 +41,12 @@ export const platformCapabilities = [
   "audio",
   // PixieBrix quick bar or, eventually, the native app's command palette
   "quickBar",
-  // PixieBrix icon, e.g., toolbar icon or standalone app favicon
-  "icon",
+  // PixieBrix badge, e.g., toolbar icon or standalone app favicon
+  "badge",
   // Mod variables/page state
   "state",
+  // Access to open URLs/links
+  "link",
   // Make API requests
   "http",
   // Render a template

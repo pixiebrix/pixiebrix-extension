@@ -23,16 +23,21 @@ import { platformCapabilities } from "@/platform/capabilities";
  */
 export const platformMock: PlatformProtocol = {
   capabilities: platformCapabilities,
+  open: jest.fn(),
   alert: jest.fn(),
   prompt: jest.fn(),
   notify: jest.fn(),
-  setBadgeText: jest.fn(),
-  playSound: jest.fn(),
   userSelectElementRefs: jest.fn(),
   request: jest.fn(),
   runSandboxedJavascript: jest.fn(),
   form: jest.fn(),
   panel: jest.fn(),
+  audio: {
+    play: jest.fn(),
+  },
+  badge: {
+    setText: jest.fn(),
+  },
   state: {
     getState: jest.fn(),
     setState: jest.fn(),

@@ -20,7 +20,6 @@ import { propertiesToSchema } from "@/validators/generic";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { BusinessError } from "@/errors/businessErrors";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
-import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 
 class SetToolbarBadge extends EffectABC {
@@ -44,10 +43,8 @@ class SetToolbarBadge extends EffectABC {
     [],
   );
 
-  override async getRequiredCapabilities(
-    _config: BrickConfig,
-  ): Promise<PlatformCapability[]> {
-    return ["icon"];
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["badge"];
   }
 
   async effect(
@@ -58,7 +55,7 @@ class SetToolbarBadge extends EffectABC {
       throw new BusinessError("Cannot set toolbar badge from an iframe.");
     }
 
-    platform.setBadgeText(text);
+    platform.badge.setText(text);
   }
 }
 

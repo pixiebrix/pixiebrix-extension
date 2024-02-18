@@ -16,6 +16,8 @@
  */
 
 import {
+  type AudioProtocol,
+  type BadgeProtocol,
   PlatformABC,
   type StateProtocol,
   type TemplateProtocol,
@@ -29,7 +31,10 @@ import quickBarRegistry, {
 import { expectContext } from "@/utils/expectContext";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
+import {
+  openTab,
+  performConfiguredRequestInBackground,
+} from "@/background/messenger/api";
 import { ephemeralForm } from "@/contentScript/ephemeralForm";
 import { ephemeralPanel } from "@/contentScript/ephemeralPanel";
 import type { ElementReference } from "@/types/runtimeTypes";
@@ -78,17 +83,21 @@ class ContentScriptPlatform extends PlatformABC {
     "state",
     "quickBar",
     "http",
+    "badge",
+    "link",
   ];
+
+  override open = async (url: URL): Promise<void> => {
+    await openTab({
+      url: url.href,
+    });
+  };
 
   // Running unbound window methods throws Invocation Error
   override alert = window.alert.bind(window);
   override prompt = window.prompt.bind(window);
 
   override notify = showNotification;
-
-  override setBadgeText = setToolbarBadge;
-
-  override playSound = playSound;
 
   override userSelectElementRefs = userSelectElementRefs;
 
@@ -133,6 +142,18 @@ class ContentScriptPlatform extends PlatformABC {
       }): Promise<void> {
         await validateNunjucksTemplate(template);
       },
+    };
+  }
+
+  override get audio(): AudioProtocol {
+    return {
+      play: playSound,
+    };
+  }
+
+  override get badge(): BadgeProtocol {
+    return {
+      setText: setToolbarBadge,
     };
   }
 
