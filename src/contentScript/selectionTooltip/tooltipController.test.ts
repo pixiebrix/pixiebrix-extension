@@ -6,26 +6,15 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { uuidv4 } from "@/types/helpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { rectFactory } from "@/testUtils/factories/domFactories";
 
 document.body.innerHTML =
   '<div><span data-testid="span">Here\'s some text</span></div>';
 
-const rect: DOMRect = {
-  x: 0,
-  y: 0,
-  width: 0,
-  height: 0,
-  top: 0,
-  left: 0,
-  bottom: 0,
-  right: 0,
-  toJSON: jest.fn(),
-};
-
-// NOTE: `jsdom` does not implement full layout engine:
+// `jsdom` does not implement full layout engine
 // https://github.com/jsdom/jsdom#unimplemented-parts-of-the-web-platform
-(Range.prototype.getBoundingClientRect as any) = jest.fn(() => rect);
-(Range.prototype.getClientRects as any) = jest.fn(() => [rect]);
+(Range.prototype.getBoundingClientRect as any) = jest.fn(() => rectFactory());
+(Range.prototype.getClientRects as any) = jest.fn(() => [rectFactory()]);
 
 describe("tooltipController", () => {
   async function selectText() {
@@ -53,6 +42,8 @@ describe("tooltipController", () => {
     });
 
     await selectText();
+
+    // I couldn't get screen from shadow dom testing library to work, otherwise I would have use getByRole for 'menu'
     expect(
       screen.getByTestId("pixiebrix-selection-tooltip"),
     ).toBeInTheDocument();

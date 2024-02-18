@@ -479,6 +479,7 @@
     "./testUtils/factories/selectorFactories.ts",
     "./testUtils/factories/sidebarEntryFactories.ts",
     "./testUtils/factories/stringFactories.ts",
+    "./testUtils/factories/domFactories.ts",
     "./testUtils/factories/traceFactories.ts",
     "./testUtils/testAfterEnv.ts",
     "./testUtils/testHelpers.tsx",

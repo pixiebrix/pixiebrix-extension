@@ -86,8 +86,7 @@ function createTooltip(): HTMLElement {
   // https://developer.chrome.com/blog/introducing-popover-api
   // https://developer.mozilla.org/en-US/docs/Web/API/Popover_API
   popover.setAttribute("popover", "");
-  popover.id = "pixiebrix-selection-tooltip";
-  popover.setAttribute("data-testid", "pixiebrix-selection-tooltip");
+  popover.dataset.testid = "pixiebrix-selection-tooltip";
 
   // Must be set before positioning: https://floating-ui.com/docs/computeposition#initial-layout
   popover.style.setProperty("position", "fixed");
