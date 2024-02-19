@@ -46,12 +46,12 @@ type CommandArgs = {
 };
 
 class AddTextCommand extends EffectABC {
-  static BLOCK_ID = validateRegistryId("@pixiebrix/command/text-command");
+  static BRICK_ID = validateRegistryId("@pixiebrix/command/text-command");
 
   constructor() {
     super(
-      AddTextCommand.BLOCK_ID,
-      "Add Text Command",
+      AddTextCommand.BRICK_ID,
+      "[Experimental] Add Text Command",
       "Add a dynamic text command",
     );
   }
@@ -93,6 +93,10 @@ class AddTextCommand extends EffectABC {
       return;
     }
 
+    if (logger.context.extensionId == null) {
+      throw new Error("Must be run in the context of a mod");
+    }
+
     // Counter to keep track of the action run number for tracing
     let counter = 0;
 
@@ -112,11 +116,19 @@ class AddTextCommand extends EffectABC {
           },
         );
 
-        if (typeof last !== "string") {
-          throw new BusinessError("Text generator did not return a string");
+        if (last == null) {
+          throw new BusinessError("Text generator did not return a value");
         }
 
-        return last;
+        if (typeof last === "object") {
+          throw new BusinessError("Text generator returned an object/array");
+        }
+
+        if (typeof last !== "string") {
+          logger.debug("Text generator returned non-string value", { last });
+        }
+
+        return (last as string | boolean | number).toLocaleString();
       },
     });
 

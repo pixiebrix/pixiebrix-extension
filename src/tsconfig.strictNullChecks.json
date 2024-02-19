@@ -64,6 +64,8 @@
     "./bricks/effects/telemetry.ts",
     "./bricks/effects/vue.ts",
     "./bricks/effects/wait.ts",
+    "./bricks/effects/AddTextCommand.ts",
+    "./bricks/effects/AddTextSnippets.ts",
     "./bricks/errors.ts",
     "./bricks/readers/ArrayCompositeReader.ts",
     "./bricks/readers/BlankReader.ts",
