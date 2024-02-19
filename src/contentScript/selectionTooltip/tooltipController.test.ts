@@ -32,7 +32,7 @@ describe("tooltipController", () => {
     module.initSelectionTooltip();
     await selectText();
     expect(
-      screen.queryByRole("pixiebrix-selection-tooltip"),
+      screen.queryByTestId("pixiebrix-selection-tooltip"),
     ).not.toBeInTheDocument();
   });
 
@@ -45,12 +45,13 @@ describe("tooltipController", () => {
       handler() {},
     });
 
+    // Surround in `act()` because icon loading is async
     await selectText();
 
     // I couldn't get screen from shadow-dom-testing-library to work, otherwise I would have use getByRole for 'menu'
     // I think it might only work with render().
-    expect(
-      screen.getByTestId("pixiebrix-selection-tooltip"),
-    ).toBeInTheDocument();
+    await expect(
+      screen.findByTestId("pixiebrix-selection-tooltip"),
+    ).resolves.toBeInTheDocument();
   });
 });
