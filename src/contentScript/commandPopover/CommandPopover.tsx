@@ -74,10 +74,8 @@ const ResultItem: React.FunctionComponent<{
   const elementRef = useRef<HTMLButtonElement>(null);
 
   useLayoutEffect(() => {
-    if (elementRef.current) {
-      elementRef.current.scrollIntoView({
-        block: "nearest",
-      });
+    if (isSelected) {
+      elementRef.current?.scrollIntoViewIfNeeded();
     }
   }, [elementRef, isSelected]);
 
@@ -87,6 +85,7 @@ const ResultItem: React.FunctionComponent<{
       disabled={disabled}
       key={command.shortcut}
       aria-label={command.title}
+      title={command.title}
       role="menuitem"
       className={cx("result", { "result--selected": isSelected })}
       onClick={onClick}

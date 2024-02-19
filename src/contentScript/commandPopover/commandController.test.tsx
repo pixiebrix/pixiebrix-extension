@@ -28,6 +28,7 @@ document.body.innerHTML = '<div><input type="text" /></div>';
 // https://github.com/jsdom/jsdom#unimplemented-parts-of-the-web-platform
 (Range.prototype.getBoundingClientRect as any) = jest.fn(() => rectFactory());
 (Range.prototype.getClientRects as any) = jest.fn(() => [rectFactory()]);
+(Element.prototype.scrollIntoViewIfNeeded as any) = jest.fn();
 
 describe("commandController", () => {
   let module: typeof controllerModule;
@@ -35,7 +36,9 @@ describe("commandController", () => {
   async function triggerCommandPopover() {
     const user = userEvent.setup();
     const textbox = screen.getByRole("textbox");
+    console.debug("Clicking textbox to focus it.");
     await user.click(textbox);
+    console.debug("Triggering command popover");
     await user.type(textbox, "/");
     await waitForEffect();
   }
@@ -72,5 +75,9 @@ describe("commandController", () => {
       // eslint-disable-next-line testing-library/no-node-access -- see comment
       document.querySelector("#pb-tooltips-container"),
     ).toBeInTheDocument();
+
+    expect(
+      jest.mocked(Element.prototype.scrollIntoViewIfNeeded),
+    ).toHaveBeenCalledOnce();
   });
 });
