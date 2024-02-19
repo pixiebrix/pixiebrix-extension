@@ -25,7 +25,7 @@ export type TextCommand = {
    */
   componentId: UUID;
   /**
-   * The /shortcut to trigger the command
+   * The shortcut to trigger the command, excluding the command key
    */
   shortcut: string;
   /**
@@ -63,7 +63,6 @@ class CommandRegistry {
     );
 
     if (index >= 0) {
-      console.debug("Replacing command", newCommand.shortcut);
       // eslint-disable-next-line security/detect-object-injection -- number from findIndex
       this.commands[index] = newCommand;
     } else {

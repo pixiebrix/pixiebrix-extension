@@ -17,27 +17,66 @@
 
 import type { Nullishable } from "@/utils/nullishUtils";
 import {
-  type EditableTextElement,
-  isContentEditable,
-} from "@/contentScript/commandPopover/commandTypes";
+  type HTMLTextEditorElement,
+  isSelectableInputField,
+} from "@/types/inputTypes";
 import { useEffect, useState } from "react";
 
 const CLEAR_QUERY_KEYS = new Set<string>([" ", "Escape", "Tab"]);
+const SUBMIT_QUERY_KEYS = new Set<string>(["Enter"]);
+
+/**
+ * Select the active query based on the current cursor position/selection
+ * @param field
+ * @param commandKey
+ */
+function selectActiveQuery({
+  element,
+  commandKey,
+}: {
+  element: HTMLTextEditorElement;
+  commandKey: string;
+}): Nullishable<string> {
+  if (isSelectableInputField(element)) {
+    const { selectionStart, value } = element;
+    if (selectionStart == null) {
+      return null;
+    }
+
+    const queryStart = value.lastIndexOf(commandKey, selectionStart);
+
+    if (queryStart >= 0) {
+      // Exclude the commandKey from the query
+      return value.slice(queryStart + 1, selectionStart);
+    }
+
+    return null;
+  }
+
+  // TODO: handle contenteditable
+  return null;
+}
 
 /**
  * Watches an element to determine the active command query.
  * @param commandKey the character to watch for, defaults to "/"
  * @param element the text element to watch
  * @param onHide the callback to hide the command popover
+ * @param onSelect the callback to select a command
+ * @param onOffset the callback to offset the selected command
  */
 function useCommandQuery({
   commandKey = "/",
   element,
   onHide,
+  onSelect,
+  onOffset,
 }: {
   commandKey?: string;
-  element: EditableTextElement;
+  element: HTMLTextEditorElement;
   onHide: () => void;
+  onSelect: (query: string) => void;
+  onOffset: (offset: number) => void;
 }): Nullishable<string> {
   const [query, setQuery] = useState<Nullishable<string>>(null);
 
@@ -46,29 +85,48 @@ function useCommandQuery({
       if (CLEAR_QUERY_KEYS.has(event.key)) {
         setQuery(null);
         onHide();
-      }
-
-      if (isContentEditable(element)) {
-        // Ignore for now
       } else {
-        const field = element as HTMLInputElement | HTMLTextAreaElement;
-
-        const queryStart = field.value.lastIndexOf(
-          commandKey,
-          field.selectionStart - 1,
-        );
-        // Exclude the COMMAND_CHAR from the query
-        setQuery(field.value.slice(queryStart + 1, field.selectionStart));
+        setQuery(selectActiveQuery({ element, commandKey }));
       }
     };
 
+    const handleSubmit = (event: KeyboardEvent) => {
+      const query = selectActiveQuery({ element, commandKey });
+
+      // No active query, so let the user type normally
+      if (query == null) {
+        return;
+      }
+
+      if (SUBMIT_QUERY_KEYS.has(event.key)) {
+        // Use enter for submit instead of newline
+        event.preventDefault();
+        event.stopPropagation();
+        onSelect(query);
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        event.stopPropagation();
+        onOffset(-1);
+      } else if (event.key === "ArrowDown") {
+        event.preventDefault();
+        event.stopPropagation();
+        onOffset(1);
+      }
+    };
+
+    // Hijacking events for the popover
+    element.addEventListener("keydown", handleSubmit, {
+      capture: true,
+      passive: false,
+    });
     // Watch keyup instead of keypress to get backspace
     element.addEventListener("keyup", handleKeyUp);
 
     return () => {
+      element.removeEventListener("keydown", handleSubmit);
       element.removeEventListener("keyup", handleKeyUp);
     };
-  }, [element, setQuery, onHide, commandKey]);
+  }, [element, setQuery, onHide, onSelect, commandKey, onOffset]);
 
   return query;
 }

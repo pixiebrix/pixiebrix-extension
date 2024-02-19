@@ -33,9 +33,9 @@ import CommandPopover from "@/contentScript/commandPopover/CommandPopover";
 import { onContextInvalidated } from "webext-events";
 import { tooltipActionRegistry } from "@/contentScript/selectionTooltip/tooltipController";
 import {
-  type EditableTextElement,
-  isEditable,
-} from "@/contentScript/commandPopover/commandTypes";
+  type HTMLTextEditorElement,
+  isTextEditorElement,
+} from "@/types/inputTypes";
 
 export const commandRegistry = new CommandRegistry();
 
@@ -43,9 +43,13 @@ let commandPopover: Nullishable<HTMLElement>;
 
 let cleanupAutoPosition: () => void;
 
-let targetElement: EditableTextElement | undefined;
+let targetElement: HTMLTextEditorElement | undefined;
 
 function showPopover(): void {
+  if (targetElement == null) {
+    return;
+  }
+
   commandPopover ??= createPopover(targetElement);
   commandPopover.setAttribute("aria-hidden", "false");
   commandPopover.style.setProperty("display", "block");
@@ -59,7 +63,7 @@ function hidePopover(): void {
   cleanupAutoPosition?.();
 }
 
-function createPopover(element: EditableTextElement): HTMLElement {
+function createPopover(element: HTMLTextEditorElement): HTMLElement {
   const container = ensureTooltipsContainer();
 
   const popover = document.createElement("div");
@@ -200,7 +204,7 @@ export const initCommandController = once(() => {
   document.addEventListener(
     "keypress",
     (event) => {
-      if (event.key === "/" && isEditable(event.target)) {
+      if (event.key === "/" && isTextEditorElement(event.target)) {
         targetElement = event.target;
         showPopover();
       }
