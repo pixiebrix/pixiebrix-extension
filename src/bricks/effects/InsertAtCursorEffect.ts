@@ -82,9 +82,13 @@ class InsertAtCursorEffect extends EffectABC {
     // - ✅ TinyMCE: https://www.tiny.cloud/docs/demo/basic-example/ - when using Run All Frames
     // - ❌ CKEditor: https://ckeditor.com/ckeditor-5/demo/feature-rich/
     if (element.contentEditable) {
+      // Ensure window is focused so, so that when calling from the sidebar, the browser will show the cursor and
+      // the user can keep typing
+      window.focus();
       element.focus();
-      // This approach seems to be more reliable than range.insertNode(document.createTextNode(text));
+      // Using  document.execCommand seems to be more reliable than range.insertNode(document.createTextNode(text));
       document.execCommand("insertText", false, text);
+
       return;
     }
 

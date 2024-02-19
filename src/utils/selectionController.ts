@@ -121,16 +121,16 @@ const selectionController = {
     ) {
       const textElement = activeElement as HTMLTextElement;
 
-      withInputSelectionHack(textElement, () => {
-        // FIXME: this isn't working for email field on https://pbx.vercel.app/bootstrap-5/. You can see a flash
-        //  where the cursor resets when the field type changes
-        elementOverride = {
-          activeElement: new WeakRef(textElement),
-          selectionStart: textElement.selectionStart,
-          selectionEnd: textElement.selectionEnd,
-          selectionDirection: textElement.selectionDirection,
-        };
-      });
+      // FIXME: this isn't working for email field on https://pbx.vercel.app/bootstrap-5/. You can see a flash
+      //  where the cursor resets when the field type changes
+      // withInputSelectionHack(textElement, () => {
+
+      elementOverride = {
+        activeElement: new WeakRef(textElement),
+        selectionStart: textElement.selectionStart,
+        selectionEnd: textElement.selectionEnd,
+        selectionDirection: textElement.selectionDirection,
+      };
 
       return;
     }
