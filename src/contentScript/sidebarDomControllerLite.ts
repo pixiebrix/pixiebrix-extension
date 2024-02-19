@@ -79,11 +79,6 @@ export function isSidebarFrameVisible(): boolean {
 /** Removes the element; Returns false if no element was found */
 export function removeSidebarFrame(): boolean {
   const sidebar = getSidebarElement();
-
-  console.debug("sidebarDomControllerLite:removeSidebarFrame", {
-    isSidebarFrameVisible: Boolean(sidebar),
-  });
-
   if (sidebar) {
     sidebar.remove();
     setSidebarWidth(0);
@@ -94,12 +89,7 @@ export function removeSidebarFrame(): boolean {
 
 /** Inserts the element; Returns false if it already existed */
 export function insertSidebarFrame(): boolean {
-  console.debug("sidebarDomControllerLite:insertSidebarFrame", {
-    isSidebarFrameVisible: isSidebarFrameVisible(),
-  });
-
   if (isSidebarFrameVisible()) {
-    console.debug("insertSidebarFrame: sidebar frame already exists");
     return false;
   }
 
