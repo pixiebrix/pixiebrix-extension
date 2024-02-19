@@ -54,6 +54,7 @@ import PostMessageEffect from "@/bricks/effects/postMessage";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import CommentEffect from "@/bricks/effects/comment";
 import SetToolbarBadge from "@/bricks/effects/setToolbarBadge";
+import AddTextCommand from "@/bricks/effects/AddTextCommand";
 
 function getAllEffects(): Brick[] {
   return [
@@ -96,6 +97,7 @@ function getAllEffects(): Brick[] {
     new HighlightText(),
     new ScrollIntoViewEffect(),
     new AddQuickBarAction(),
+    new AddTextCommand(),
     new ToggleQuickbarEffect(),
     new SubmitPanelEffect(),
     new RunSubTourEffect(),
