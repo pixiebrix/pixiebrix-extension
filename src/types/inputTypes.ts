@@ -62,8 +62,16 @@ export type SelectableTextControlElement =
   | SelectableTextInputElement
   | HTMLTextAreaElement;
 
+/**
+ * A contenteditable HTML element.
+ * @see isContentEditableElement
+ */
 type ContentEditableElement = HTMLElement & ElementContentEditable;
 
+/**
+ * A text editor that supports controlling the selection.
+ * @see isSelectableTextEditorElement
+ */
 export type SelectableTextEditorElement =
   | SelectableTextControlElement
   | ContentEditableElement;
@@ -72,6 +80,7 @@ export type SelectableTextEditorElement =
  * A text entry element that can be edited by the user, e.g., an input, textarea, or contenteditable element.
  * @see isTextEditorElement
  */
+// The browser context API uses the terminology "editable": A flag indicating whether the element is editable (text input, textarea, etc.).?
 export type TextEditorElement = TextInputElement | ContentEditableElement;
 
 /**
