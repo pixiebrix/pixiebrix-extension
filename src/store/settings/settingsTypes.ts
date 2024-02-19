@@ -48,6 +48,12 @@ export type SkunkworksSettingsFlags = {
    * Experimental setting to run some code in a sandbox
    */
   sandboxedCode?: boolean;
+
+  /**
+   * Experimental setting to enable the selection popover for all/text context menu items
+   * @since 1.8.10
+   */
+  selectionPopover?: boolean;
 };
 
 export type GeneralSettingsFlags = {

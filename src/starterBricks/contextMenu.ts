@@ -72,6 +72,14 @@ import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
 import batchedFunction from "batched-function";
 import { onContextInvalidated } from "webext-events";
+import {
+  initSelectionTooltip,
+  tooltipActionRegistry,
+} from "@/contentScript/selectionTooltip/tooltipController";
+import { getSettingsState } from "@/store/settings/settingsStorage";
+import type { Except } from "type-fest";
+
+const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const groupRegistrationErrorNotification = batchedFunction(
@@ -192,6 +200,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     if (global) {
       for (const extension of extensions) {
         void uninstallContextMenu({ extensionId: extension.id });
+        tooltipActionRegistry.unregister(extension.id);
       }
     }
   }
@@ -210,12 +219,21 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
     for (const extensionId of extensionIds) {
       void uninstallContextMenu({ extensionId });
+      tooltipActionRegistry.unregister(extensionId);
     }
   }
 
   async install(): Promise<boolean> {
     // Always install the mouse handler in case a context menu is added later
     installMouseHandlerOnce();
+
+    if (this.contexts.includes("selection") || this.contexts.includes("all")) {
+      const { selectionPopover } = await getSettingsState();
+      if (selectionPopover) {
+        initSelectionTooltip();
+      }
+    }
+
     return this.isAvailable();
   }
 
@@ -243,7 +261,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       "id" | "config" | "_deployment"
     >,
   ): Promise<void> {
-    const { title = "Untitled menu item" } = extension.config;
+    const { title = DEFAULT_MENU_ITEM_TITLE } = extension.config;
 
     // Check for null/undefined to preserve backward compatability
     if (!isDeploymentActive(extension)) {
@@ -329,7 +347,11 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   private async registerExtension(
     extension: ResolvedModComponent<ContextMenuConfig>,
   ): Promise<void> {
-    const { action: actionConfig, onSuccess = {} } = extension.config;
+    const {
+      action: actionConfig,
+      onSuccess = {},
+      title = DEFAULT_MENU_ITEM_TITLE,
+    } = extension.config;
 
     await this.ensureMenu(extension);
 
@@ -346,7 +368,12 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       },
     );
 
-    registerHandler(extension.id, async (clickData) => {
+    const handler = async (
+      clickData: Except<
+        Menus.OnClickData,
+        "menuItemId" | "editable" | "modifiers"
+      >,
+    ): Promise<void> => {
       reportEvent(Events.HANDLE_CONTEXT_MENU, selectEventData(extension));
 
       try {
@@ -400,7 +427,17 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
           });
         }
       }
+    };
+
+    tooltipActionRegistry.register(extension.id, {
+      title,
+      icon: undefined,
+      async handler(text: string) {
+        return handler({ selectionText: text });
+      },
     });
+
+    registerHandler(extension.id, handler);
   }
 }
 

@@ -31,6 +31,7 @@ const ExperimentalSettings: React.FunctionComponent = () => {
     excludeRandomClasses,
     performanceTracing,
     sandboxedCode,
+    selectionPopover,
   } = useSelector(selectSettings);
 
   return (
@@ -62,6 +63,13 @@ const ExperimentalSettings: React.FunctionComponent = () => {
             description="Toggle on to trace runtime performance"
             isEnabled={performanceTracing}
             flag="performanceTracing"
+          />
+          <SettingToggle
+            controlId="selectionPopover"
+            label="Selection Popover"
+            description="Show context menu items in a selection popover"
+            isEnabled={selectionPopover}
+            flag="selectionPopover"
           />
           {!isMV3() && (
             <SettingToggle
