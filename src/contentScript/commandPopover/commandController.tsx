@@ -31,19 +31,23 @@ import React from "react";
 import CommandRegistry from "@/contentScript/commandPopover/CommandRegistry";
 import CommandPopover from "@/contentScript/commandPopover/CommandPopover";
 import { onContextInvalidated } from "webext-events";
-import { tooltipActionRegistry } from "@/contentScript/selectionTooltip/tooltipController";
 import {
-  type HTMLTextEditorElement,
-  isTextEditorElement,
+  type TextEditorElement,
+  isSelectableTextControlElement,
+  isContentEditableElement,
+  isSelectableTextEditorElement,
 } from "@/types/inputTypes";
+import { expectContext } from "@/utils/expectContext";
+
+const COMMAND_KEY = "/";
 
 export const commandRegistry = new CommandRegistry();
 
 let commandPopover: Nullishable<HTMLElement>;
 
-let cleanupAutoPosition: () => void;
+let cleanupAutoPosition: Nullishable<() => void>;
 
-let targetElement: HTMLTextEditorElement | undefined;
+let targetElement: Nullishable<TextEditorElement>;
 
 function showPopover(): void {
   if (targetElement == null) {
@@ -57,13 +61,7 @@ function showPopover(): void {
   void updatePosition();
 }
 
-function hidePopover(): void {
-  commandPopover?.setAttribute("aria-hidden", "true");
-  commandPopover?.style.setProperty("display", "none");
-  cleanupAutoPosition?.();
-}
-
-function createPopover(element: HTMLTextEditorElement): HTMLElement {
+function createPopover(element: TextEditorElement): HTMLElement {
   const container = ensureTooltipsContainer();
 
   const popover = document.createElement("div");
@@ -86,7 +84,7 @@ function createPopover(element: HTMLTextEditorElement): HTMLElement {
     <CommandPopover
       registry={commandRegistry}
       element={element}
-      onHide={hidePopover}
+      onHide={destroyPopover}
     />,
     popover,
   );
@@ -98,36 +96,27 @@ function createPopover(element: HTMLTextEditorElement): HTMLElement {
 }
 
 function destroyPopover(): void {
+  cleanupAutoPosition?.();
   commandPopover?.remove();
   commandPopover = null;
 }
 
-function getPositionReference(
-  selection: Selection,
-): Nullishable<VirtualElement | Element> {
+function getPositionReference(): Nullishable<VirtualElement | Element> {
   // Browsers don't report an accurate selection within inputs/textarea
-  const tagName = document.activeElement?.tagName;
-  if (tagName === "TEXTAREA" || tagName === "INPUT") {
-    const activeElement = document.activeElement as
-      | HTMLTextAreaElement
-      | HTMLInputElement;
+  if (isSelectableTextControlElement(targetElement)) {
+    const textControl = targetElement;
+    const elementRect = targetElement.getBoundingClientRect();
 
-    const elementRect = activeElement.getBoundingClientRect();
-
-    if (
-      !activeElement.selectionStart ||
-      activeElement.selectionStart !== activeElement.selectionEnd
-    ) {
-      // Detecting typing "/" vs. a selection
+    if (targetElement.selectionStart == null) {
       return;
     }
 
     return {
       getBoundingClientRect() {
-        const { selectionStart } = activeElement;
+        const { selectionStart } = textControl;
 
         const position = selectionStart
-          ? getCaretCoordinates(activeElement, selectionStart)
+          ? getCaretCoordinates(textControl, selectionStart)
           : {
               top: 0,
               left: 0,
@@ -147,6 +136,13 @@ function getPositionReference(
     } satisfies VirtualElement;
   }
 
+  // Content Editable
+  const selection = window.getSelection();
+
+  if (selection == null) {
+    return null;
+  }
+
   // Allows us to measure where the selection is on the page relative to the viewport
   const range = selection.getRangeAt(0);
 
@@ -158,15 +154,12 @@ function getPositionReference(
 }
 
 async function updatePosition(): Promise<void> {
-  const selection = window.getSelection();
-
-  if (!commandPopover || !selection) {
+  if (!commandPopover) {
     // Guard against race condition
     return;
   }
 
-  // https://floating-ui.com/docs/getting-started
-  const referenceElement = getPositionReference(selection);
+  const referenceElement = getPositionReference();
 
   if (!referenceElement) {
     return;
@@ -205,16 +198,36 @@ async function updatePosition(): Promise<void> {
 }
 
 export const initCommandController = once(() => {
+  expectContext("contentScript");
+
   document.addEventListener(
     "keypress",
     (event) => {
-      if (event.key === "/" && isTextEditorElement(event.target)) {
+      if (
+        event.key === COMMAND_KEY &&
+        isSelectableTextEditorElement(event.target)
+      ) {
         targetElement = event.target;
         showPopover();
       }
     },
     { capture: true, passive: true },
   );
+
+  // Hide if the user selects text
+  document.addEventListener("selectionchange", () => {
+    if (
+      isSelectableTextControlElement(targetElement) &&
+      targetElement.selectionStart !== targetElement.selectionEnd
+    ) {
+      destroyPopover();
+    } else if (isContentEditableElement(targetElement)) {
+      const range = window.getSelection()?.getRangeAt(0);
+      if (range && range.toString().length > 0) {
+        destroyPopover();
+      }
+    }
+  });
 
   // Hide on outside click
   document.addEventListener(
@@ -224,7 +237,7 @@ export const initCommandController = once(() => {
         event.target !== commandPopover &&
         !commandPopover?.contains(event.target as Node)
       ) {
-        hidePopover();
+        destroyPopover();
       }
     },
     { capture: true, passive: true },
@@ -238,16 +251,6 @@ export const initCommandController = once(() => {
     },
     { passive: true },
   );
-
-  tooltipActionRegistry.onChange.add(() => {
-    const isShowing = commandPopover?.checkVisibility();
-    destroyPopover();
-
-    // Allow live updates from the Page Editor
-    if (isShowing) {
-      showPopover();
-    }
-  });
 
   onContextInvalidated.addListener(() => {
     destroyPopover();

@@ -17,13 +17,34 @@
 
 import type { Nullishable } from "@/utils/nullishUtils";
 import {
-  type HTMLTextEditorElement,
-  isSelectableInputField,
+  type TextEditorElement,
+  isSelectableTextControlElement,
+  isContentEditableElement,
 } from "@/types/inputTypes";
 import { useEffect, useRef, useState } from "react";
 
 const CLEAR_QUERY_KEYS = new Set<string>([" ", "Escape"]);
 const SUBMIT_QUERY_KEYS = new Set<string>(["Enter", "Tab"]);
+
+function selectActiveQueryFromText({
+  text,
+  start,
+  commandKey,
+}: {
+  text: string;
+  start: number;
+  commandKey: string;
+}): Nullishable<string> {
+  // To support RTL in the future, will need to conditionally switch to indexOf?
+  const queryStart = text.lastIndexOf(commandKey, start);
+
+  if (queryStart >= 0) {
+    // Exclude the commandKey from the query
+    return text.slice(queryStart + 1, start);
+  }
+
+  return null;
+}
 
 /**
  * Select the active query based on the current cursor position/selection
@@ -34,26 +55,33 @@ function selectActiveQuery({
   element,
   commandKey,
 }: {
-  element: HTMLTextEditorElement;
+  element: TextEditorElement;
   commandKey: string;
 }): Nullishable<string> {
-  if (isSelectableInputField(element)) {
+  if (isSelectableTextControlElement(element)) {
     const { selectionStart, value } = element;
-    if (selectionStart == null) {
-      return null;
+    if (selectionStart != null) {
+      return selectActiveQueryFromText({
+        text: value,
+        start: selectionStart,
+        commandKey,
+      });
     }
-
-    const queryStart = value.lastIndexOf(commandKey, selectionStart);
-
-    if (queryStart >= 0) {
-      // Exclude the commandKey from the query
-      return value.slice(queryStart + 1, selectionStart);
-    }
-
-    return null;
   }
 
-  // TODO: handle contenteditable
+  if (isContentEditableElement(element)) {
+    const range = window.getSelection()?.getRangeAt(0);
+    if (range?.startContainer.nodeType === Node.TEXT_NODE) {
+      const { data } = range.startContainer as Text;
+
+      return selectActiveQueryFromText({
+        text: data,
+        start: range.startOffset,
+        commandKey,
+      });
+    }
+  }
+
   return null;
 }
 
@@ -71,7 +99,7 @@ function useKeyboardQuery({
   onOffset,
 }: {
   commandKey?: string;
-  element: HTMLTextEditorElement;
+  element: TextEditorElement;
   onSubmit: () => void;
   onOffset: (offset: number) => void;
 }): Nullishable<string> {

@@ -16,9 +16,10 @@
  */
 
 import {
-  type HTMLTextEditorElement,
-  isBasicTextField,
-  isSelectableInputField,
+  type TextEditorElement,
+  isTextControlElement,
+  isSelectableTextControlElement,
+  type SelectableTextEditorElement,
 } from "@/types/inputTypes";
 
 /**
@@ -26,8 +27,8 @@ import {
  * @param element the text editor element
  */
 // In the future, we might decide to only return text up to the cursor position, or provide both full and prior text
-export function getElementText(element: HTMLTextEditorElement): string {
-  if (isBasicTextField(element)) {
+export function getElementText(element: TextEditorElement): string {
+  if (isTextControlElement(element)) {
     return element.value;
   }
 
@@ -45,13 +46,13 @@ export async function replaceAtCommand({
   text,
   commandKey,
 }: {
-  element: HTMLTextEditorElement;
+  element: SelectableTextEditorElement;
   text: string;
   commandKey: string;
 }): Promise<void> {
   element.focus();
 
-  if (isSelectableInputField(element)) {
+  if (isSelectableTextControlElement(element)) {
     const { selectionStart, value } = element;
     if (selectionStart == null) {
       return;
@@ -59,7 +60,8 @@ export async function replaceAtCommand({
 
     const commandStart = value.lastIndexOf(commandKey, selectionStart);
     if (commandStart < 0) {
-      return;
+      // Could happen if field's value was programmatically altered
+      throw new Error("Command key not found");
     }
 
     const endIndex = value.indexOf(" ", commandStart);
@@ -69,5 +71,25 @@ export async function replaceAtCommand({
     return;
   }
 
-  throw new Error("Not implemented for contenteditable");
+  // Content Editable
+  const range = window.getSelection()?.getRangeAt(0);
+
+  if (range?.startContainer.nodeType === Node.TEXT_NODE) {
+    const { data } = range.startContainer as Text;
+
+    const commandStart = data.lastIndexOf(commandKey, range.startOffset);
+    if (commandStart < 0) {
+      // Could happen if field's value was programmatically altered
+      throw new Error("Command key not found");
+    }
+
+    const endIndex = data.indexOf(" ", commandStart);
+    range.setStart(range.startContainer, commandStart);
+    range.setEnd(range.startContainer, Math.min(endIndex, data.length));
+
+    // FIXME: this is not deleting the contents of the range or inserting the text
+    range.deleteContents();
+    document.execCommand("delete", false);
+    document.execCommand("insertText", false, text);
+  }
 }

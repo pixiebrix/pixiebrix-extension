@@ -21,47 +21,66 @@
  */
 
 /**
- * A basic text entry element, e.g., an input or textarea element.
- * @see isBasicTextField
- */
-// XXX: consider refining the HTMLInputElement type only include textual input types on the `type` field
-export type HTMLBasicTextField = HTMLInputElement | HTMLTextAreaElement;
-
-/**
  * The set of input types that support selectionStart, selectionEnd, and setSelectionRange.
  * https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setSelectionRange
  */
-const SELECTABLE_INPUT_CONTENT_TYPES: readonly string[] = [
+const SELECTABLE_INPUT_CONTENT_TYPES = [
   "text",
   "search",
   "url",
   "tel",
   "password",
-];
+] as const;
 
-export type HTMLSelectableInputField = HTMLInputElement & {
+/**
+ * The set of input types that support text entry.
+ * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#input_types
+ */
+const TEXT_INPUT_CONTENT_TYPES = [
+  ...SELECTABLE_INPUT_CONTENT_TYPES,
+  "email",
+] as const;
+
+/**
+ * An input element with a text entry field
+ */
+export type TextInputElement = HTMLInputElement & {
+  type: (typeof TEXT_INPUT_CONTENT_TYPES)[number];
+};
+
+/**
+ * A basic text entry element, e.g., an input or textarea element.
+ * @see isTextControlElement
+ */
+export type TextControlElement = TextInputElement | HTMLTextAreaElement;
+
+export type SelectableTextInputElement = TextInputElement & {
   type: (typeof SELECTABLE_INPUT_CONTENT_TYPES)[number];
 };
 
-export type HTMLSelectableTextEditor =
-  | HTMLSelectableInputField
-  | (HTMLElement & ElementContentEditable);
+export type SelectableTextControlElement =
+  | SelectableTextInputElement
+  | HTMLTextAreaElement;
+
+type ContentEditableElement = HTMLElement & ElementContentEditable;
+
+export type SelectableTextEditorElement =
+  | SelectableTextControlElement
+  | ContentEditableElement;
 
 /**
  * A text entry element that can be edited by the user, e.g., an input, textarea, or contenteditable element.
  * @see isTextEditorElement
  */
-export type HTMLTextEditorElement =
-  | HTMLBasicTextField
-  | (HTMLElement & ElementContentEditable);
+export type TextEditorElement = TextInputElement | ContentEditableElement;
 
 /**
  * Returns true if the element is a contenteditable HTML element.
  * @param targetOrElement the query element
  */
-export function isContentEditable(
+export function isContentEditableElement(
   targetOrElement: unknown,
-): targetOrElement is HTMLElement & ElementContentEditable {
+): targetOrElement is ContentEditableElement {
   return (
     targetOrElement instanceof HTMLElement && targetOrElement.isContentEditable
   );
@@ -69,19 +88,15 @@ export function isContentEditable(
 
 /**
  * Returns true if the element is a basic text control.
- * @param targetOrElement
  */
-export function isBasicTextField(
+export function isTextControlElement(
   targetOrElement: unknown,
-): targetOrElement is HTMLBasicTextField {
-  if (targetOrElement instanceof HTMLTextAreaElement) {
-    return true;
+): targetOrElement is TextControlElement {
+  if (targetOrElement instanceof HTMLInputElement) {
+    return TEXT_INPUT_CONTENT_TYPES.includes(targetOrElement.type ?? "text");
   }
 
-  return (
-    targetOrElement instanceof HTMLInputElement ||
-    targetOrElement instanceof HTMLTextAreaElement
-  );
+  return targetOrElement instanceof HTMLTextAreaElement;
 }
 
 /**
@@ -89,33 +104,34 @@ export function isBasicTextField(
  */
 export function isTextEditorElement(
   targetOrElement: unknown,
-): targetOrElement is HTMLTextEditorElement {
+): targetOrElement is TextEditorElement {
   return (
-    isBasicTextField(targetOrElement) || isContentEditable(targetOrElement)
+    isTextControlElement(targetOrElement) ||
+    isContentEditableElement(targetOrElement)
   );
 }
 
 /**
  * Returns true if the element is a basic text control that supports the selection API.
  */
-export function isSelectableInputField(
+export function isSelectableTextControlElement(
   targetOrElement: unknown,
-): targetOrElement is HTMLSelectableInputField {
+): targetOrElement is SelectableTextControlElement {
   return (
-    isBasicTextField(targetOrElement) &&
+    isTextControlElement(targetOrElement) &&
     (SELECTABLE_INPUT_CONTENT_TYPES.includes(targetOrElement.type) ||
-      targetOrElement.tagName === "TEXTAREA")
+      targetOrElement instanceof HTMLTextAreaElement)
   );
 }
 
 /**
  * Returns true if the input supports managing the selection.
  */
-export function isSelectableTextEditor(
+export function isSelectableTextEditorElement(
   targetOrElement: unknown,
-): targetOrElement is HTMLSelectableTextEditor {
+): targetOrElement is SelectableTextEditorElement {
   return (
-    isSelectableInputField(targetOrElement) ||
-    isContentEditable(targetOrElement)
+    isSelectableTextControlElement(targetOrElement) ||
+    isContentEditableElement(targetOrElement)
   );
 }

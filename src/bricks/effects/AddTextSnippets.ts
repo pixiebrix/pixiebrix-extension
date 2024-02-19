@@ -24,6 +24,7 @@ import {
   commandRegistry,
   initCommandController,
 } from "@/contentScript/commandPopover/commandController";
+import { getSettingsState } from "@/store/settings/settingsStorage";
 
 type Snippet = {
   /**
@@ -115,7 +116,10 @@ class AddTextSnippets extends EffectABC {
       });
     }
 
-    initCommandController();
+    const { textCommandPopover } = await getSettingsState();
+    if (textCommandPopover) {
+      initCommandController();
+    }
   }
 }
 

@@ -29,6 +29,7 @@ import {
   initCommandController,
 } from "@/contentScript/commandPopover/commandController";
 import { BusinessError } from "@/errors/businessErrors";
+import { getSettingsState } from "@/store/settings/settingsStorage";
 
 type CommandArgs = {
   /**
@@ -132,7 +133,10 @@ class AddTextCommand extends EffectABC {
       },
     });
 
-    initCommandController();
+    const { textCommandPopover } = await getSettingsState();
+    if (textCommandPopover) {
+      initCommandController();
+    }
   }
 }
 

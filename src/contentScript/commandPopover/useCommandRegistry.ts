@@ -21,7 +21,7 @@ import type CommandRegistry from "@/contentScript/commandPopover/CommandRegistry
 import type { TextCommand } from "@/contentScript/commandPopover/CommandRegistry";
 
 /**
- * React hook to receive command updates from the command registry.
+ * React hook to sync React with the text command registry.
  * @param registry the registry to watch
  */
 function useCommandRegistry(registry: CommandRegistry): TextCommand[] {
