@@ -35,7 +35,6 @@ function useCommandRegistry(registry: CommandRegistry): TextCommand[] {
     [registry],
   );
 
-  // `getSnapshot` must return a consistent reference between snapshots, so just pass back the command array directly
   const getSnapshot = useCallback(() => registry.commands, [registry]);
 
   return useSyncExternalStore(subscribe, getSnapshot);

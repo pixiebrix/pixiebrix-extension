@@ -29,7 +29,7 @@ const CommandPopover: React.FunctionComponent<
   { registry: CommandRegistry; element: EditableTextElement } & ActionCallbacks
 > = ({ registry, element, onHide }) => {
   const commands = useCommandRegistry(registry);
-  const query = useCommandQuery(element, onHide);
+  const query = useCommandQuery({ element, onHide, commandKey: "/" });
 
   return (
     <div>

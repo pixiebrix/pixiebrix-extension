@@ -62,7 +62,7 @@ class CommandRegistry {
       (command) => newCommand.shortcut === command.shortcut,
     );
 
-    if (index) {
+    if (index >= 0) {
       console.debug("Replacing command", newCommand.shortcut);
       // eslint-disable-next-line security/detect-object-injection -- number from findIndex
       this.commands[index] = newCommand;

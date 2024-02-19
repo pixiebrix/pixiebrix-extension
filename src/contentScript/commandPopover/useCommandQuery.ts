@@ -22,22 +22,28 @@ import {
 } from "@/contentScript/commandPopover/commandTypes";
 import { useEffect, useState } from "react";
 
-const COMMAND_CHAR = "/";
+const CLEAR_QUERY_KEYS = new Set<string>([" ", "Escape", "Tab"]);
 
 /**
  * Watches an element to determine the active command query.
+ * @param commandKey the character to watch for, defaults to "/"
  * @param element the text element to watch
+ * @param onHide the callback to hide the command popover
  */
-function useCommandQuery(
-  element: EditableTextElement,
-  onHide: () => void,
-): Nullishable<string> {
+function useCommandQuery({
+  commandKey = "/",
+  element,
+  onHide,
+}: {
+  commandKey?: string;
+  element: EditableTextElement;
+  onHide: () => void;
+}): Nullishable<string> {
   const [query, setQuery] = useState<Nullishable<string>>(null);
 
   useEffect(() => {
     const handleKeyUp = (event: KeyboardEvent) => {
-      // TODO: also watch tab/escape to clear the query
-      if (event.key === " ") {
+      if (CLEAR_QUERY_KEYS.has(event.key)) {
         setQuery(null);
         onHide();
       }
@@ -48,7 +54,7 @@ function useCommandQuery(
         const field = element as HTMLInputElement | HTMLTextAreaElement;
 
         const queryStart = field.value.lastIndexOf(
-          COMMAND_CHAR,
+          commandKey,
           field.selectionStart - 1,
         );
         // Exclude the COMMAND_CHAR from the query
@@ -62,7 +68,7 @@ function useCommandQuery(
     return () => {
       element.removeEventListener("keyup", handleKeyUp);
     };
-  }, [element, setQuery, onHide]);
+  }, [element, setQuery, onHide, commandKey]);
 
   return query;
 }
