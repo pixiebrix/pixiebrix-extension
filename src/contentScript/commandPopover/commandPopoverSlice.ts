@@ -23,6 +23,7 @@ import type { AsyncState } from "@/types/sliceTypes";
 import {
   errorToAsyncState,
   loadingAsyncStateFactory,
+  valueToAsyncState,
 } from "@/utils/asyncStateUtils";
 
 type PopoverState = {
@@ -56,7 +57,7 @@ export const initialState: PopoverState = {
   activeCommand: null,
 };
 
-export function selectSelectedResult(
+export function selectSelectedCommand(
   state: PopoverState,
 ): Nullishable<TextCommand> {
   return state.selectedIndex == null
@@ -105,7 +106,7 @@ export const popoverSlice = createSlice({
         state.selectedIndex = state.results.length > 0 ? 0 : null;
       }
     },
-    commandRun(
+    setCommandLoading(
       state,
       action: PayloadAction<{
         command: TextCommand;
@@ -114,7 +115,18 @@ export const popoverSlice = createSlice({
       const { command } = action.payload;
       state.activeCommand = { command, state: loadingAsyncStateFactory() };
     },
-    setCommandRejected(
+    setCommandSuccess(
+      state,
+      action: PayloadAction<{
+        text: string;
+      }>,
+    ) {
+      const { text } = action.payload;
+      if (state.activeCommand) {
+        state.activeCommand.state = valueToAsyncState(text);
+      }
+    },
+    setCommandError(
       state,
       action: PayloadAction<{
         error: unknown;

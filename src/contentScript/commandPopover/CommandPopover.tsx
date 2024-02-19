@@ -15,39 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useReducer } from "react";
+import React, { useCallback, useEffect, useReducer, useRef } from "react";
 import type CommandRegistry from "@/contentScript/commandPopover/CommandRegistry";
 import type { TextCommand } from "@/contentScript/commandPopover/CommandRegistry";
 import useCommandRegistry from "@/contentScript/commandPopover/useCommandRegistry";
-import {
-  type HTMLTextEditorElement,
-  isBasicTextField,
-} from "@/types/inputTypes";
-import useCommandQuery from "@/contentScript/commandPopover/useCommandQuery";
+import { type HTMLTextEditorElement } from "@/types/inputTypes";
+import useKeyboardQuery from "@/contentScript/commandPopover/useKeyboardQuery";
 import cx from "classnames";
 import "./CommandPopover.scss";
 import {
   initialState,
   popoverSlice,
-  selectSelectedResult,
+  selectSelectedCommand,
 } from "@/contentScript/commandPopover/commandPopoverSlice";
+import {
+  getElementText,
+  replaceAtCommand,
+} from "@/contentScript/commandPopover/editorUtils";
+import { truncate } from "lodash";
+import { getErrorMessage } from "@/errors/errorHelpers";
 
 type PopoverActionCallbacks = {
   onHide: () => void;
 };
-
-/**
- * Returns the current text content of the element to pass to the command handler
- * @param element the text editor element
- */
-// In the future, we might decide to only return text up to the cursor position, or provide both full and prior text
-function getElementText(element: HTMLTextEditorElement): string {
-  if (isBasicTextField(element)) {
-    return element.value;
-  }
-
-  return $(element).text();
-}
 
 const CommandPopover: React.FunctionComponent<
   {
@@ -57,62 +47,64 @@ const CommandPopover: React.FunctionComponent<
   } & PopoverActionCallbacks
 > = ({ commandKey = "/", registry, element, onHide }) => {
   const [state, dispatch] = useReducer(popoverSlice.reducer, initialState);
+  const selectedCommand = selectSelectedCommand(state);
+  const selectedCommandRef = useRef(selectedCommand);
   const commands = useCommandRegistry(registry);
 
   const fillAtCursor = useCallback(
     async (command: TextCommand) => {
-      // Async thunks don't work with React useReducer so write as a hook
+      // Async thunks don't work with React useReducer so write async logic as a hook
       // https://github.com/reduxjs/redux-toolkit/issues/754
+      dispatch(popoverSlice.actions.setCommandLoading({ command }));
       try {
-        dispatch(popoverSlice.actions.commandRun({ command }));
         const text = await command.handler(getElementText(element));
-        element.focus();
-        // TODO: delete the current word that contains the commandKey and fire onChange
-        document.execCommand("insertText", false, text);
+        await replaceAtCommand({ commandKey, element, text });
+        dispatch(popoverSlice.actions.setCommandSuccess({ text }));
         onHide();
       } catch (error) {
-        dispatch(popoverSlice.actions.setCommandRejected({ error }));
+        dispatch(popoverSlice.actions.setCommandError({ error }));
       }
     },
-    [element, onHide, dispatch],
+    [element, commandKey, onHide, dispatch],
   );
 
-  const onSelect = useCallback(async () => {
-    // FIXME: this might be returning null?
-    await fillAtCursor(selectSelectedResult(state));
-  }, [state, fillAtCursor]);
-
-  const onOffset = useCallback(
-    (offset: number) => {
+  const query = useKeyboardQuery({
+    element,
+    commandKey,
+    // OK to pass handlers directly because hook uses useRef
+    async onSubmit() {
+      if (selectedCommandRef.current != null) {
+        await fillAtCursor(selectedCommandRef.current);
+      }
+    },
+    onOffset(offset: number) {
       dispatch(popoverSlice.actions.offsetSelectedIndex({ offset }));
     },
-    [dispatch],
-  );
-
-  const query = useCommandQuery({
-    element,
-    onHide,
-    commandKey: "/",
-    onSelect,
-    onOffset,
   });
+
+  // Make current value available to onSubmit handler for useKeyboardQuery
+  useEffect(() => {
+    selectedCommandRef.current = selectedCommand;
+  }, [selectedCommand]);
 
   // Search effect
   useEffect(() => {
     dispatch(popoverSlice.actions.search({ commands, query }));
   }, [query, commands, dispatch]);
 
-  const selectedCommand = selectSelectedResult(state);
-
   return (
     <div role="menu" aria-label="Text command menu">
-      <p>Command Popover: {query}</p>
       {state.activeCommand?.state.isLoading && (
-        <span className="text-info">Running command...</span>
+        <span className="text-info">
+          Running command: {state.activeCommand.command.title}
+        </span>
       )}
       {state.activeCommand?.state.isError && (
-        <span className="text-error">
-          Error running {state.activeCommand.command.title}
+        <span className="text-danger">
+          Error running command:{" "}
+          {truncate(getErrorMessage(state.activeCommand.state.error), {
+            length: 25,
+          })}
         </span>
       )}
 
@@ -135,7 +127,7 @@ const CommandPopover: React.FunctionComponent<
           );
         })}
         {state.results.length === 0 && (
-          <span className="text-muted">No commands found</span>
+          <span className="text-muted">No snippets/commands found</span>
         )}
       </div>
     </div>

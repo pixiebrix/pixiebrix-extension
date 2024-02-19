@@ -124,10 +124,14 @@ function getPositionReference(
 
     return {
       getBoundingClientRect() {
-        const position = getCaretCoordinates(
-          activeElement,
-          activeElement.selectionStart,
-        );
+        const { selectionStart } = activeElement;
+
+        const position = selectionStart
+          ? getCaretCoordinates(activeElement, selectionStart)
+          : {
+              top: 0,
+              left: 0,
+            };
 
         return {
           height: 0,

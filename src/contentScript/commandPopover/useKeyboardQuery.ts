@@ -20,10 +20,10 @@ import {
   type HTMLTextEditorElement,
   isSelectableInputField,
 } from "@/types/inputTypes";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-const CLEAR_QUERY_KEYS = new Set<string>([" ", "Escape", "Tab"]);
-const SUBMIT_QUERY_KEYS = new Set<string>(["Enter"]);
+const CLEAR_QUERY_KEYS = new Set<string>([" ", "Escape"]);
+const SUBMIT_QUERY_KEYS = new Set<string>(["Enter", "Tab"]);
 
 /**
  * Select the active query based on the current cursor position/selection
@@ -58,77 +58,78 @@ function selectActiveQuery({
 }
 
 /**
- * Watches an element to determine the active command query.
+ * Watches keyboard interaction with an element to determine a command search query
  * @param commandKey the character to watch for, defaults to "/"
  * @param element the text element to watch
- * @param onHide the callback to hide the command popover
- * @param onSelect the callback to select a command
- * @param onOffset the callback to offset the selected command
+ * @param onSubmitRef callback to select a command
+ * @param onOffset callback to offset the selected command
  */
-function useCommandQuery({
+function useKeyboardQuery({
   commandKey = "/",
   element,
-  onHide,
-  onSelect,
+  onSubmit,
   onOffset,
 }: {
   commandKey?: string;
   element: HTMLTextEditorElement;
-  onHide: () => void;
-  onSelect: (query: string) => void;
+  onSubmit: () => void;
   onOffset: (offset: number) => void;
 }): Nullishable<string> {
   const [query, setQuery] = useState<Nullishable<string>>(null);
+  const queryRef = useRef<Nullishable<string>>(null);
+  // Use ref to avoid re-running effect
+  const onSubmitRef = useRef(onSubmit);
+  const onOffsetRef = useRef(onOffset);
 
   useEffect(() => {
     const handleKeyUp = (event: KeyboardEvent) => {
       if (CLEAR_QUERY_KEYS.has(event.key)) {
         setQuery(null);
-        onHide();
       } else {
-        setQuery(selectActiveQuery({ element, commandKey }));
+        const activeQuery = selectActiveQuery({ element, commandKey });
+        setQuery(activeQuery);
+        // Make instantly (outside of React lifecycle) available for keydown event
+        queryRef.current = activeQuery;
       }
     };
 
-    const handleSubmit = (event: KeyboardEvent) => {
-      const query = selectActiveQuery({ element, commandKey });
-
+    const handleKeyDown = (event: KeyboardEvent) => {
       // No active query, so let the user type normally
-      if (query == null) {
+      if (queryRef.current == null) {
         return;
       }
 
       if (SUBMIT_QUERY_KEYS.has(event.key)) {
-        // Use enter for submit instead of newline
         event.preventDefault();
         event.stopPropagation();
-        onSelect(query);
+        onSubmitRef.current();
       } else if (event.key === "ArrowUp") {
         event.preventDefault();
         event.stopPropagation();
-        onOffset(-1);
+        onOffsetRef.current(-1);
       } else if (event.key === "ArrowDown") {
         event.preventDefault();
         event.stopPropagation();
-        onOffset(1);
+        onOffsetRef.current(1);
       }
     };
 
     // Hijacking events for the popover
-    element.addEventListener("keydown", handleSubmit, {
+    element.addEventListener("keydown", handleKeyDown, {
       capture: true,
       passive: false,
     });
+
     // Watch keyup instead of keypress to get backspace
-    element.addEventListener("keyup", handleKeyUp);
+    element.addEventListener("keyup", handleKeyUp, { passive: true });
 
     return () => {
-      element.removeEventListener("keydown", handleSubmit);
+      element.removeEventListener("keydown", handleKeyDown);
       element.removeEventListener("keyup", handleKeyUp);
     };
-  }, [element, setQuery, onHide, onSelect, commandKey, onOffset]);
+  }, [element, setQuery, commandKey, onSubmitRef, onOffsetRef]);
 
   return query;
 }
 
-export default useCommandQuery;
+export default useKeyboardQuery;

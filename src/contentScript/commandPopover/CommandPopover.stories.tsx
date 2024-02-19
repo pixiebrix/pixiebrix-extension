@@ -22,7 +22,7 @@ import { action } from "@storybook/addon-actions";
 import CommandPopover from "@/contentScript/commandPopover/CommandPopover";
 import CommandRegistry from "@/contentScript/commandPopover/CommandRegistry";
 import { sleep } from "@/utils/timeUtils";
-import { Nullishable } from "@/utils/nullishUtils";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 export default {
   title: "Enhancements/CommandPopover",
