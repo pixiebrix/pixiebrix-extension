@@ -527,6 +527,7 @@
     "./types/contract.ts",
     "./types/helpers.ts",
     "./types/iconTypes.ts",
+    "./types/inputTypes.ts",
     "./types/loggerTypes.ts",
     "./types/messengerTypes.ts",
     "./types/modComponentTypes.ts",

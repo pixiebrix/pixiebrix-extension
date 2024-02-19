@@ -80,6 +80,14 @@ class CommandRegistry {
     remove(this.commands, (command) => command.componentId === componentId);
     this.onChange.emit(this.commands);
   }
+
+  /**
+   * Clear all commands.
+   */
+  clear(): void {
+    this.commands.splice(0, this.commands.length);
+    this.onChange.emit(this.commands);
+  }
 }
 
 export default CommandRegistry;
