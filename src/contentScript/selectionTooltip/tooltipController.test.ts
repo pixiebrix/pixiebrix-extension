@@ -45,7 +45,6 @@ describe("tooltipController", () => {
       handler() {},
     });
 
-    // Surround in `act()` because icon loading is async
     await selectText();
 
     // I couldn't get screen from shadow-dom-testing-library to work, otherwise I would have use getByRole for 'menu'
