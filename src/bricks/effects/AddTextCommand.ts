@@ -30,6 +30,7 @@ import {
 } from "@/contentScript/commandPopover/commandController";
 import { BusinessError } from "@/errors/businessErrors";
 import { getSettingsState } from "@/store/settings/settingsStorage";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 type CommandArgs = {
   /**
@@ -48,6 +49,8 @@ type CommandArgs = {
 
 class AddTextCommand extends EffectABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/command/text-command");
+
+  static DEFAULT_PIPELINE_VAR = validateOutputKey("currentText");
 
   constructor() {
     super(
@@ -113,7 +116,7 @@ class AddTextCommand extends EffectABC {
           generatePipeline,
           { key: "generate", counter },
           {
-            "@body": currentText,
+            [`@${AddTextCommand.DEFAULT_PIPELINE_VAR}`]: currentText,
           },
         );
 

@@ -44,6 +44,7 @@ import { inputProperties } from "@/utils/schemaUtils";
 import { joinPathParts } from "@/utils/formUtils";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import MapValues from "@/bricks/transformers/controlFlow/MapValues";
+import AddTextCommand from "@/bricks/effects/AddTextCommand";
 
 export function getIdForElement(
   element: ModComponentBase | ModComponentFormState,
@@ -158,6 +159,13 @@ export function getVariableKeyForSubPipeline(
     // We currently don't allow the user to rename the variable for the onSubmit pipeline because it'd add another
     // option to an already cluttered UI.
     return CustomFormRenderer.ON_SUBMIT_VARIABLE_NAME;
+  }
+
+  if (
+    brickConfig.id === AddTextCommand.BRICK_ID &&
+    pipelinePropName === "generate"
+  ) {
+    return AddTextCommand.DEFAULT_PIPELINE_VAR;
   }
 
   if (!keyPropName) {

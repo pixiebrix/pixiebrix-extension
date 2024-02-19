@@ -51,7 +51,7 @@ describe("AddTextCommand", () => {
         shortcut: "/echo",
         title: "Echo",
         generate: toExpression("pipeline", [
-          { id: identity.id, config: toExpression("var", "@body") },
+          { id: identity.id, config: toExpression("var", "@currentText") },
         ]),
       },
     };
