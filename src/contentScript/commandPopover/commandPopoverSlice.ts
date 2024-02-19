@@ -42,7 +42,7 @@ type PopoverState = {
   selectedIndex: Nullishable<number>;
 
   /**
-   * The command that is currently being run, or nullish if not command is being run.
+   * The latest active command, or null if no command has been run.
    */
   activeCommand: Nullishable<{
     command: TextCommand;
@@ -106,6 +106,9 @@ export const popoverSlice = createSlice({
         state.selectedIndex = state.results.length > 0 ? 0 : null;
       }
     },
+
+    // Async thunks don't work with React useReducer so write async logic as a hook
+    // https://github.com/reduxjs/redux-toolkit/issues/754
     setCommandLoading(
       state,
       action: PayloadAction<{
@@ -115,6 +118,7 @@ export const popoverSlice = createSlice({
       const { command } = action.payload;
       state.activeCommand = { command, state: loadingAsyncStateFactory() };
     },
+    // In practice, the popover will be hidden on success. This state is for Storybook where the component is persistent
     setCommandSuccess(
       state,
       action: PayloadAction<{

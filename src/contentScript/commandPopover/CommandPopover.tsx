@@ -52,7 +52,7 @@ const CommandTitle: React.FunctionComponent<{
 }> = ({ query, shortcut, commandKey }) => (
   <span>
     {commandKey}
-    {!isEmpty(query) && <span className="match">{query}</span>}
+    {!isEmpty(query) && <span className="result__match">{query}</span>}
     {shortcut.slice(query.length)}
   </span>
 );
