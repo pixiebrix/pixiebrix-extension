@@ -74,8 +74,6 @@ const knipConfig = {
     "@types/gapi.client.oauth2-v2",
     // Used by Code Editor so format on save matches pre-commit behavior
     "prettier",
-    // Used by eslint-local-rules/noCrossBoundaryImports.js
-    "multimatch",
   ],
   rules: {
     // Issue Type reference: https://knip.dev/reference/issue-types/

@@ -21,7 +21,12 @@
  */
 
 if (chrome.runtime.getManifest === undefined) {
-  throw new Error(
-    "Chrome bug: The extension was loaded as MV2, but Chrome is still running the worker. Unregister the loader from chrome://serviceworker-internals/",
-  );
+  try {
+    console.log("Unregistering orphan background worker");
+    globalThis.registration.unregister(); // Try to automatically unregister
+  } catch {
+    throw new Error(
+      "Chrome bug: The extension was loaded as MV2, but Chrome is still running the worker. Unregister the loader from chrome://serviceworker-internals/",
+    );
+  }
 }

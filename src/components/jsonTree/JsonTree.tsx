@@ -48,7 +48,7 @@ import notify from "@/utils/notify";
 import safeJsonStringify from "json-stringify-safe";
 import styles from "./JsonTree.module.scss";
 import AsyncButton from "@/components/AsyncButton";
-import { writeTextToClipboard } from "@/utils/clipboardUtils";
+import { writeToClipboard } from "@/utils/clipboardUtils";
 
 const SEARCH_DEBOUNCE_MS = 100;
 
@@ -164,7 +164,7 @@ const CopyDataButton: React.FunctionComponent<{ data: unknown }> = ({
     aria-label="copy data"
     href="#"
     onClick={async (event) => {
-      await writeTextToClipboard({ text: safeJsonStringify(data, null, 2) });
+      await writeToClipboard({ text: safeJsonStringify(data, null, 2) });
       event.preventDefault();
       event.stopPropagation();
       notify.info("Copied data to the clipboard");

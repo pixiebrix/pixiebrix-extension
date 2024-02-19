@@ -23,8 +23,7 @@ import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
   type ContentType,
   detectContentType,
-  writeTextToClipboard,
-  writeItemsToClipboard,
+  writeToClipboard,
 } from "@/utils/clipboardUtils";
 import { convertDataUrl } from "@/utils/parseDataUrl";
 
@@ -106,6 +105,12 @@ export class CopyToClipboard extends EffectABC {
           throw new BusinessError("Invalid image content", { cause: error });
         }
 
+        if (blob.type !== "image/png") {
+          throw new BusinessError(
+            "Only PNG images are supported by the browser clipboard API",
+          );
+        }
+
         if (!("write" in navigator.clipboard)) {
           throw new BusinessError(
             "Your browser does not support writing images to the clipboard",
@@ -116,22 +121,13 @@ export class CopyToClipboard extends EffectABC {
           logger.warn("Ignoring HTML content for image content");
         }
 
-        await writeItemsToClipboard(
-          [
-            new ClipboardItem({
-              [blob.type]: blob,
-            }),
-          ],
-          {
-            type: "image",
-          },
-        );
+        await writeToClipboard({ image: blob });
 
         break;
       }
 
       case "text": {
-        await writeTextToClipboard({
+        await writeToClipboard({
           text: String(text),
           html,
         });

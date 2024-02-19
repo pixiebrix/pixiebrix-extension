@@ -19,8 +19,38 @@ import { BusinessError } from "@/errors/businessErrors";
 import legacyCopyText from "copy-text-to-clipboard";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
+import { isPromiseFulfilled } from "./promiseUtils";
+import { writeToClipboardInFocusedDocument } from "@/background/messenger/strict/api";
 
 export type ContentType = "infer" | "text" | "image";
+
+export type ClipboardText = {
+  text: string;
+  html?: string;
+};
+
+type ClipboardImage = {
+  image: Blob;
+};
+
+/** Serializable ClipboardItem-like object */
+export type ClipboardContent = ClipboardText | ClipboardImage;
+
+function getClipboardItem(content: ClipboardContent): ClipboardItem {
+  if ("image" in content) {
+    return new ClipboardItem({ [content.image.type]: content.image });
+  }
+
+  const items: Record<string, Blob> = {
+    "text/plain": new Blob([content.text], { type: "text/plain" }),
+  };
+
+  if (content.html) {
+    items["text/html"] = new Blob([content.html], { type: "text/html" });
+  }
+
+  return new ClipboardItem(items);
+}
 
 export function detectContentType(content: unknown): "text" | "image" {
   if (typeof content === "string" && content.startsWith("data:image/")) {
@@ -39,19 +69,25 @@ function isDocumentFocusError(error: unknown): boolean {
     .includes("document is not focused");
 }
 
-function isPermissionError(error: unknown): boolean {
-  return getErrorMessage(error).toLowerCase().includes("has been blocked");
+/**
+ * Attempt to write to clipboard, but don't throw nor retry in other ways.
+ * Use `writeToClipboard` in the current context if you want to handle errors and try in other ways.
+ */
+export async function nonInteractivelyWriteToClipboard(
+  content: ClipboardText,
+): Promise<boolean> {
+  return isPromiseFulfilled(
+    navigator.clipboard.write([getClipboardItem(content)]),
+  );
 }
 
 /**
  * Copy to clipboard, and prompt user to interact with page if the browser blocks the clipboard write due to focus
- * @param clipboardItems the ClipboardItems to copy to the clipboard
- * @param type the data type, to show in the message to the user.
  */
 async function interactiveWriteToClipboard(
-  clipboardItems: ClipboardItems,
-  { type }: { type: "text" | "image" },
+  content: ClipboardContent,
 ): Promise<void> {
+  const clipboardItems = [getClipboardItem(content)];
   try {
     await navigator.clipboard.write(clipboardItems);
   } catch (error) {
@@ -59,8 +95,9 @@ async function interactiveWriteToClipboard(
       throw error;
     }
 
+    const type = "image" in content ? "image" : "text";
     await focusCaptureDialog(
-      `Please click "OK" to allow PixieBrix to copy ${type} to your clipboard.`,
+      `Please click "OK" to allow PixieBrix to copy the ${type} to your clipboard.`,
     );
 
     // Let the error be caught by the caller if it still fails
@@ -69,68 +106,45 @@ async function interactiveWriteToClipboard(
 }
 
 /**
- * Copy text to the clipboard, prompting the user to interact with the page if the browser blocks the clipboard write.
+ * Copy to the clipboard, working around document focus restrictions if necessary.
+ * @param image the image to copy to the clipboard
  * @param text the text to copy to the clipboard
  * @param html optional HTML content to copy to the clipboard for pasting into rich text editors
  */
-export async function writeTextToClipboard({
-  text,
-  html,
-}: {
-  text: string;
-  html?: string;
-}): Promise<void> {
+export async function writeToClipboard(
+  content: ClipboardContent,
+): Promise<boolean> {
+  // Attempt to write to the clipboard in the last focused document
+  if (
+    !document.hasFocus() &&
+    "text" in content &&
+    (await writeToClipboardInFocusedDocument(content))
+  ) {
+    return true;
+  }
+
+  // If the document is focused, or the last focused document is not available, continue here interactively
+
   try {
-    // https://stackoverflow.com/a/74216984/402560
-    const items: Record<string, Blob> = {
-      "text/plain": new Blob([text], { type: "text/plain" }),
-    };
-
-    if (html) {
-      items["text/html"] = new Blob([html], { type: "text/html" });
-    }
-
-    await interactiveWriteToClipboard(
-      // Fails in frame contexts if the frame CSP doesn't include clipboard-write. Unfortunately, that includes the
-      // Chrome DevTools. In this case, will fall back to legacy method in the catch block
-      [new ClipboardItem(items)],
-      { type: "text" },
-    );
+    // Fails in frame contexts if the frame CSP doesn't include clipboard-write. Unfortunately, that includes the
+    // Chrome DevTools. In this case, will fall back to legacy method in the catch block
+    await interactiveWriteToClipboard(content);
   } catch (error) {
-    if (isPermissionError(error)) {
+    if (
+      "text" in content &&
       // Deprecated method of copying text to clipboard doesn't require clipboard-write in frame CSP.
       // It can sometimes return `true` even if the text wasn't actually copied so try to use navigator.clipboard first
       // The legacy approach uses a hidden text area and document.execCommand('copy') under the hood
-      const copied = legacyCopyText(text);
-      if (!copied) {
-        throw new BusinessError("Unable to write text to clipboard", {
-          cause: error,
-        });
-      }
-
-      return;
+      legacyCopyText(content.text)
+    ) {
+      // The legacy method worked, probably
+      return true;
     }
 
-    throw error;
+    throw new BusinessError("Unable to write text to clipboard", {
+      cause: error,
+    });
   }
-}
 
-/**
- * Writes items to the clipboard, prompting the user to interact with the page if the browser blocks the clipboard write.
- * @param items the items to copy to the clipboard
- * @param type type to include in the message to the user if they need to interact with the page to copy to the clipboard
- * @see writeTextToClipboard
- */
-export async function writeItemsToClipboard(
-  items: ClipboardItems,
-  {
-    type,
-  }: {
-    // Only allow image so caller uses writeTextToClipboard instead for text
-    type: "image";
-  },
-): Promise<void> {
-  await interactiveWriteToClipboard(items, {
-    type,
-  });
+  return true;
 }
