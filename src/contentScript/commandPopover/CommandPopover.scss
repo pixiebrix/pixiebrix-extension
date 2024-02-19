@@ -31,7 +31,11 @@
   display: block;
 
   &--selected {
-    background-color: $P50;
+    background-color: $P100;
+  }
+
+  &:active {
+    background-color: $P300;
   }
 
   &__match {

@@ -85,7 +85,7 @@ class CommandRegistry {
    * Clear all commands.
    */
   clear(): void {
-    this.commands.splice(0, this.commands.length);
+    this.commands.splice(0);
     this.onChange.emit(this.commands);
   }
 }

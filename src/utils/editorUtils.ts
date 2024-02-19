@@ -26,8 +26,8 @@ import {
  * Returns the current text content of the element to pass to the command handler
  * @param element the text editor element
  */
-// In the future, we might decide to only return text up to the cursor position, or provide both full and prior text
 export function getElementText(element: TextEditorElement): string {
+  // In the future, we might decide to only return text up to the cursor position, or provide both full and prior text
   if (isTextControlElement(element)) {
     return element.value;
   }
@@ -37,6 +37,10 @@ export function getElementText(element: TextEditorElement): string {
 
 /**
  * Replaces the text at the current command with the given text
+ *
+ * NOTE: currently, replaces all text from the command key to the next space. In the future, we might consider
+ * only replacing the command key + query.
+ *
  * @param element the text editor element
  * @param text the text to insert
  * @param commandKey the command key, e.g., "/"
@@ -65,14 +69,18 @@ export async function replaceAtCommand({
     }
 
     const endIndex = value.indexOf(" ", commandStart);
-    element.setSelectionRange(commandStart, Math.min(endIndex, value.length));
+    element.setSelectionRange(
+      commandStart,
+      endIndex >= 0 ? endIndex : value.length,
+    );
     document.execCommand("insertText", false, text);
 
     return;
   }
 
   // Content Editable
-  const range = window.getSelection()?.getRangeAt(0);
+  const selection = window.getSelection();
+  const range = selection?.getRangeAt(0);
 
   if (range?.startContainer.nodeType === Node.TEXT_NODE) {
     const { data } = range.startContainer as Text;
@@ -85,10 +93,11 @@ export async function replaceAtCommand({
 
     const endIndex = data.indexOf(" ", commandStart);
     range.setStart(range.startContainer, commandStart);
-    range.setEnd(range.startContainer, Math.min(endIndex, data.length));
+    range.setEnd(range.startContainer, endIndex >= 0 ? endIndex : data.length);
 
     // FIXME: this is not deleting the contents of the range or inserting the text
     range.deleteContents();
+
     document.execCommand("delete", false);
     document.execCommand("insertText", false, text);
   }

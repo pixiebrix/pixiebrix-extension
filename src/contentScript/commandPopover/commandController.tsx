@@ -36,6 +36,7 @@ import {
   isSelectableTextControlElement,
   isContentEditableElement,
   isSelectableTextEditorElement,
+  isTextControlElement,
 } from "@/types/inputTypes";
 import { expectContext } from "@/utils/expectContext";
 
@@ -136,15 +137,19 @@ function getPositionReference(): Nullishable<VirtualElement | Element> {
     } satisfies VirtualElement;
   }
 
-  // Content Editable
-  const selection = window.getSelection();
-
-  if (selection == null) {
-    return null;
+  if (isTextControlElement(targetElement)) {
+    // For email/unsupported fields, we might consider guessing the position based on length or just attach
+    // directly to the input element
+    throw new Error(`Unsupported text control element: ${targetElement.type}`);
   }
 
+  // Content Editable
   // Allows us to measure where the selection is on the page relative to the viewport
-  const range = selection.getRangeAt(0);
+  const range = window.getSelection()?.getRangeAt(0);
+
+  if (range == null) {
+    return;
+  }
 
   // https://floating-ui.com/docs/virtual-elements#getclientrects
   return {
