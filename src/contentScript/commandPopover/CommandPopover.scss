@@ -24,11 +24,21 @@
 .results {
   display: flex;
   flex-direction: column;
+  background-color: $N0;
+
+  height: 100px;
+  width: 200px;
+
+  overflow-y: auto;
 }
 
 .result {
   text-align: left;
   display: block;
+
+  background-color: $N0;
+  border: 0;
+  padding: 0.5em 0.5em;
 
   &--selected {
     background-color: $P100;

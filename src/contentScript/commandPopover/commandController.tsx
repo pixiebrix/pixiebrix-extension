@@ -75,6 +75,7 @@ function createPopover(element: TextEditorElement): HTMLElement {
   // Must be set before positioning: https://floating-ui.com/docs/computeposition#initial-layout
   popover.style.setProperty("position", "fixed");
   popover.style.setProperty("width", "max-content");
+  popover.style.setProperty("height", "max-content");
   popover.style.setProperty("top", "0");
   popover.style.setProperty("left", "0");
   // Override Chrome's based styles for [popover] attribute

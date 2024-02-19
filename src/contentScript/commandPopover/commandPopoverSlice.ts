@@ -80,8 +80,13 @@ export const popoverSlice = createSlice({
       if (state.selectedIndex == null || state.results.length === 0) {
         state.selectedIndex = null;
       } else {
-        state.selectedIndex =
-          ((state.selectedIndex ?? 0) + offset) % state.results.length;
+        const next = (state.selectedIndex ?? 0) + offset;
+        if (next >= 0) {
+          state.selectedIndex = next % state.results.length;
+        } else {
+          state.selectedIndex =
+            state.results.length + (next % state.results.length);
+        }
       }
     },
     search(

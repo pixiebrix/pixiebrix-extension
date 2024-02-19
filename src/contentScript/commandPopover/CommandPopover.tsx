@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useReducer, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useReducer,
+  useRef,
+} from "react";
 import type CommandRegistry from "@/contentScript/commandPopover/CommandRegistry";
 import type { TextCommand } from "@/contentScript/commandPopover/CommandRegistry";
 import useCommandRegistry from "@/contentScript/commandPopover/useCommandRegistry";
@@ -57,14 +63,50 @@ const CommandTitle: React.FunctionComponent<{
   </span>
 );
 
+const ResultItem: React.FunctionComponent<{
+  command: TextCommand;
+  isSelected: boolean;
+  disabled: boolean;
+  onClick: () => void;
+  commandKey: string;
+  query: string;
+}> = ({ isSelected, disabled, command, onClick, query, commandKey }) => {
+  const elementRef = useRef<HTMLButtonElement>(null);
+
+  useLayoutEffect(() => {
+    if (elementRef.current) {
+      elementRef.current.scrollIntoView({
+        block: "nearest",
+      });
+    }
+  }, [elementRef, isSelected]);
+
+  return (
+    <button
+      ref={elementRef}
+      disabled={disabled}
+      key={command.shortcut}
+      aria-label={command.title}
+      role="menuitem"
+      className={cx("result", { "result--selected": isSelected })}
+      onClick={onClick}
+    >
+      <CommandTitle
+        query={query}
+        shortcut={command.shortcut}
+        commandKey={commandKey}
+      />
+    </button>
+  );
+};
+
 const CommandPopover: React.FunctionComponent<
   {
     commandKey?: string;
-    maxResults?: number;
     registry: CommandRegistry;
     element: TextEditorElement;
   } & PopoverActionCallbacks
-> = ({ commandKey = "/", maxResults = 5, registry, element, onHide }) => {
+> = ({ commandKey = "/", registry, element, onHide }) => {
   const [state, dispatch] = useReducer(popoverSlice.reducer, initialState);
   const selectedCommand = selectSelectedCommand(state);
   const selectedCommandRef = useRef(selectedCommand);
@@ -136,25 +178,20 @@ const CommandPopover: React.FunctionComponent<
           )}
 
           <div className="results">
-            {state.results.slice(0, maxResults).map((command) => {
+            {state.results.map((command) => {
               const isSelected = selectedCommand?.shortcut === command.shortcut;
               return (
-                <button
-                  disabled={state.activeCommand?.state.isFetching}
+                <ResultItem
                   key={command.shortcut}
-                  aria-label={command.title}
-                  role="menuitem"
-                  className={cx("result", { "result--selected": isSelected })}
+                  command={command}
+                  disabled={state.activeCommand?.state.isFetching ?? false}
+                  isSelected={isSelected}
+                  commandKey={commandKey}
+                  query={state.query ?? ""}
                   onClick={async () => {
                     await fillAtCursor(command);
                   }}
-                >
-                  <CommandTitle
-                    query={state.query ?? ""}
-                    shortcut={command.shortcut}
-                    commandKey={commandKey}
-                  />
-                </button>
+                />
               );
             })}
             {state.results.length === 0 && (
