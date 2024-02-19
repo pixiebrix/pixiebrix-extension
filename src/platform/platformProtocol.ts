@@ -34,6 +34,7 @@ import type { JsonObject } from "type-fest";
 import type { TemporaryPanelDefinition } from "@/platform/panels/panelTypes";
 import type { JavaScriptPayload } from "@/sandbox/messenger/api";
 import type { Menus } from "webextension-polyfill";
+import type { writeToClipboard } from "@/utils/clipboardUtils";
 
 function notAvailable(capability: PlatformCapability): () => never {
   return () => {
@@ -43,6 +44,10 @@ function notAvailable(capability: PlatformCapability): () => never {
 
 export type AudioProtocol = {
   play(soundEffect: string): Promise<void>;
+};
+
+export type ClipboardProtocol = {
+  write: typeof writeToClipboard;
 };
 
 export type BadgeProtocol = {
@@ -177,6 +182,11 @@ export interface PlatformProtocol {
   get audio(): AudioProtocol;
 
   /**
+   * The clipboard protocol for the platform.
+   */
+  get clipboard(): ClipboardProtocol;
+
+  /**
    * The variable store/state for the platform. Generalizes "page state" to context without a page.
    */
   get state(): StateProtocol;
@@ -242,6 +252,10 @@ export class PlatformABC implements PlatformProtocol {
 
   get quickBar(): QuickBarRegistryProtocol {
     throw new PlatformCapabilityNotAvailable("quickBar");
+  }
+
+  get clipboard(): ClipboardProtocol {
+    throw new PlatformCapabilityNotAvailable("clipboardWrite");
   }
 }
 

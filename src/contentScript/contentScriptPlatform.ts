@@ -16,19 +16,13 @@
  */
 
 import {
-  type AudioProtocol,
-  type BadgeProtocol,
-  type ContextMenuProtocol,
   PlatformABC,
-  type StateProtocol,
-  type TemplateProtocol,
+  type PlatformProtocol,
 } from "@/platform/platformProtocol";
 import { showNotification } from "@/utils/notify";
 import { setToolbarBadge } from "@/background/messenger/strict/api";
 import { getState, setState } from "@/platform/state/stateController";
-import quickBarRegistry, {
-  type QuickBarRegistryProtocol,
-} from "@/components/quickBar/quickBarRegistry";
+import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { expectContext } from "@/utils/expectContext";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { getReferenceForElement } from "@/contentScript/elementReference";
@@ -50,6 +44,7 @@ import {
 import type { JsonObject } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 import { registerHandler } from "@/contentScript/contextMenus";
+import { writeToClipboard } from "@/utils/clipboardUtils";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -115,7 +110,7 @@ class ContentScriptPlatform extends PlatformABC {
 
   override runSandboxedJavascript = runUserJs;
 
-  override get template(): TemplateProtocol {
+  override get template(): PlatformProtocol["template"] {
     return {
       async render({
         engine,
@@ -149,19 +144,19 @@ class ContentScriptPlatform extends PlatformABC {
     };
   }
 
-  override get audio(): AudioProtocol {
+  override get audio(): PlatformProtocol["audio"] {
     return {
       play: playSound,
     };
   }
 
-  override get badge(): BadgeProtocol {
+  override get badge(): PlatformProtocol["badge"] {
     return {
       setText: setToolbarBadge,
     };
   }
 
-  override get state(): StateProtocol {
+  override get state(): PlatformProtocol["state"] {
     // Double-check already in contentScript because the calls don't go through the messenger
     expectContext("contentScript");
 
@@ -171,7 +166,7 @@ class ContentScriptPlatform extends PlatformABC {
     };
   }
 
-  override get contextMenu(): ContextMenuProtocol {
+  override get contextMenu(): PlatformProtocol["contextMenu"] {
     expectContext("contentScript");
 
     return {
@@ -185,8 +180,14 @@ class ContentScriptPlatform extends PlatformABC {
     };
   }
 
-  override get quickBar(): QuickBarRegistryProtocol {
+  override get quickBar(): PlatformProtocol["quickBar"] {
     return quickBarRegistry;
+  }
+
+  override get clipboard(): PlatformProtocol["clipboard"] {
+    return {
+      write: writeToClipboard,
+    };
   }
 }
 

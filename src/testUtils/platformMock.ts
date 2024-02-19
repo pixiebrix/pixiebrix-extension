@@ -50,6 +50,9 @@ export const platformMock: PlatformProtocol = {
     render: jest.fn(),
     validate: jest.fn(),
   },
+  clipboard: {
+    write: jest.fn(),
+  },
   quickBar: {
     addAction: jest.fn(),
     knownGeneratorRootIds: new Set<string>(),

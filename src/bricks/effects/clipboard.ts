@@ -20,12 +20,7 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Permissions } from "webextension-polyfill";
 import { BusinessError, PropError } from "@/errors/businessErrors";
-import {
-  type ContentType,
-  detectContentType,
-  writeTextToClipboard,
-  writeItemsToClipboard,
-} from "@/utils/clipboardUtils";
+import { type ContentType, detectContentType } from "@/utils/clipboardUtils";
 import { convertDataUrl } from "@/utils/parseDataUrl";
 import type { PlatformCapability } from "@/platform/capabilities";
 
@@ -87,7 +82,7 @@ export class CopyToClipboard extends EffectABC {
       html: string;
       contentType: ContentType;
     }>,
-    { logger }: BrickOptions,
+    { logger, platform }: BrickOptions,
   ): Promise<void> {
     const contentType =
       contentTypeInput === "infer" ? detectContentType(text) : contentTypeInput;
@@ -111,9 +106,9 @@ export class CopyToClipboard extends EffectABC {
           throw new BusinessError("Invalid image content", { cause: error });
         }
 
-        if (!("write" in navigator.clipboard)) {
+        if (blob.type !== "image/png") {
           throw new BusinessError(
-            "Your browser does not support writing images to the clipboard",
+            "Only PNG images are supported by the browser clipboard API",
           );
         }
 
@@ -121,22 +116,13 @@ export class CopyToClipboard extends EffectABC {
           logger.warn("Ignoring HTML content for image content");
         }
 
-        await writeItemsToClipboard(
-          [
-            new ClipboardItem({
-              [blob.type]: blob,
-            }),
-          ],
-          {
-            type: "image",
-          },
-        );
+        await platform.clipboard.write({ image: blob });
 
         break;
       }
 
       case "text": {
-        await writeTextToClipboard({
+        await platform.clipboard.write({
           text: String(text),
           html,
         });
