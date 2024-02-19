@@ -76,16 +76,21 @@ class InsertAtCursorEffect extends EffectABC {
       return;
     }
 
-    // Editors to check
+    // Reference editors to check:
     // - ✅ Vanilla content editable: https://pbx.vercel.app/react-admin/#/products/1/description
-    // - ✅ DraftJS: https://draftjs.org/
-    // - ✅ TinyMCE: https://www.tiny.cloud/docs/demo/basic-example/ - when using Run All Frames
+    // - ⚠️ DraftJS: https://draftjs.org/ - doesn't advance the cursor
+    // - ⚠️ TinyMCE: https://www.tiny.cloud/docs/demo/basic-example/ - when using Run All Frames, doesn't advance cursor
     // - ❌ CKEditor: https://ckeditor.com/ckeditor-5/demo/feature-rich/
     if (element.contentEditable) {
       // Ensure window is focused so, so that when calling from the sidebar, the browser will show the cursor and
       // the user can keep typing
       window.focus();
-      element.focus();
+
+      // Ensure the element has focus, so that text is inserted at the cursor position
+      if (document.activeElement !== element) {
+        element.focus();
+      }
+
       // Using  document.execCommand seems to be more reliable than range.insertNode(document.createTextNode(text));
       document.execCommand("insertText", false, text);
 
