@@ -28,6 +28,7 @@ import { initCommandController } from "@/contentScript/commandPopover/commandCon
 import { BusinessError } from "@/errors/businessErrors";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 type CommandArgs = {
   /**
@@ -84,6 +85,10 @@ class AddTextCommand extends EffectABC {
     },
     ["shortcut", "title", "generate"],
   );
+
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["commandPopover"];
+  }
 
   async effect(
     { shortcut, title, generate: generatePipeline }: BrickArgs<CommandArgs>,

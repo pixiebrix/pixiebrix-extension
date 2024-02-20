@@ -22,6 +22,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { initCommandController } from "@/contentScript/commandPopover/commandController";
 import { getSettingsState } from "@/store/settings/settingsStorage";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 type Snippet = {
   /**
@@ -57,6 +58,10 @@ class AddTextSnippets extends EffectABC {
   override async isRootAware(): Promise<boolean> {
     // Safe default -- need to be able to inspect the inputs to determine if any sub-calls are root aware
     return true;
+  }
+
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["commandPopover"];
   }
 
   inputSchema: Schema = propertiesToSchema(
