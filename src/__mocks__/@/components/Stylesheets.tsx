@@ -32,8 +32,8 @@ export const Stylesheets: React.FC<{
       {urls.map((href) => (
         <link rel="stylesheet" href={href} key={href} />
       ))}
-      // Unlike the real Stylesheets, this wraps in a div so that we can add a
-      data-testid for testing
+      // Test Mock: Unlike the real Stylesheets, this wraps in a div so that we
+      can add a data-testid for testing
       <div data-testid="Stylesheets">{children}</div>
     </>
   );

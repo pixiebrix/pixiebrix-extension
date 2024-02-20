@@ -15,14 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { screen } from "@testing-library/react";
+import React from "react";
+import { screen, waitForElementToBeRemoved } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { uuidv4 } from "@/types/helpers";
-import { waitForEffect } from "@/testUtils/testHelpers";
 import { rectFactory } from "@/testUtils/factories/domFactories";
-import type * as controllerModule from "@/contentScript/commandPopover/commandController";
+import {
+  initCommandController,
+  commandRegistry,
+} from "@/contentScript/commandPopover/commandController";
 
-document.body.innerHTML = '<div><input type="text" /></div>';
+// I couldn't get shadow-dom-testing-library working
+jest.mock("react-shadow/emotion", () => ({
+  __esModule: true,
+  default: {
+    div(props: any) {
+      return <div {...props}></div>;
+    },
+  },
+}));
 
 // `jsdom` does not implement full layout engine
 // https://github.com/jsdom/jsdom#unimplemented-parts-of-the-web-platform
@@ -31,53 +42,55 @@ document.body.innerHTML = '<div><input type="text" /></div>';
 (Element.prototype.scrollIntoViewIfNeeded as any) = jest.fn();
 
 describe("commandController", () => {
-  let module: typeof controllerModule;
-
   async function triggerCommandPopover() {
     const user = userEvent.setup();
     const textbox = screen.getByRole("textbox");
-    console.debug("Clicking textbox to focus it.");
     await user.click(textbox);
-    console.debug("Triggering command popover");
     await user.type(textbox, "/");
-    await waitForEffect();
+
+    return user;
   }
 
-  beforeEach(async () => {
-    jest.resetModules();
-    module = await import("@/contentScript/commandPopover/commandController");
+  beforeAll(() => {
+    initCommandController();
   });
 
-  it("don't show popover if no actions are registered", async () => {
-    module.initCommandController();
-    await triggerCommandPopover();
-    expect(
-      screen.queryByTestId("pixiebrix-command-popover"),
-    ).not.toBeInTheDocument();
+  beforeEach(async () => {
+    document.body.innerHTML = '<div><input type="text" /></div>';
+    commandRegistry.clear();
+  });
+
+  it("shows popover if no actions are registered", async () => {
+    const user = await triggerCommandPopover();
+
+    await expect(screen.findByRole("menu")).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByText("No commands found"),
+    ).resolves.toBeInTheDocument();
+
+    await user.keyboard("{Esc}");
+
+    await waitForElementToBeRemoved(() => screen.queryByRole("menu"));
   });
 
   it("attach popover when user types command key", async () => {
-    module.initCommandController();
-
-    module.commandRegistry.register({
+    commandRegistry.register({
       componentId: uuidv4(),
       title: "Copy",
       shortcut: "copy",
       handler: jest.fn(),
     });
 
-    await triggerCommandPopover();
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
 
-    expect(
-      // The popover is getting added and then immediately destroyed. For now just check that the tooltips container
-      // for floating-ui has been added. The controller needs to be E2E tested anyway because it relies on selection
-      // API and document.execCommand which are not meaningfully available in JSDOM.
-      // eslint-disable-next-line testing-library/no-node-access -- see comment
-      document.querySelector("#pb-tooltips-container"),
-    ).toBeInTheDocument();
+    const user = await triggerCommandPopover();
 
-    expect(
-      jest.mocked(Element.prototype.scrollIntoViewIfNeeded),
-    ).toHaveBeenCalledOnce();
+    await expect(screen.findByRole("menu")).resolves.toBeInTheDocument();
+    expect(commandRegistry.commands).toHaveLength(1);
+
+    const textbox = screen.getByRole("textbox");
+    await user.type(textbox, " ");
+
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
   });
 });

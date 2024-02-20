@@ -194,7 +194,7 @@ const CommandPopover: React.FunctionComponent<
               );
             })}
             {state.results.length === 0 && (
-              <span className="text-muted">No snippets/commands found</span>
+              <span className="text-muted">No commands found</span>
             )}
           </div>
         </div>
