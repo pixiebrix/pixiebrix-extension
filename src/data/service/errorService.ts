@@ -16,7 +16,7 @@
  */
 
 import { debounce } from "lodash";
-import { maybeGetLinkedApiClient } from "@/services/apiClient";
+import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import {
   hasSpecificErrorCause,
   selectSpecificError,
@@ -28,7 +28,7 @@ import {
   isAppRequestError,
   selectAbsoluteUrl,
   selectAxiosError,
-} from "@/services/requestErrorUtils";
+} from "@/data/service/requestErrorUtils";
 import { type ErrorItem } from "@/types/contract";
 import { expectContext } from "@/utils/expectContext";
 import { BusinessError, CancelError } from "@/errors/businessErrors";

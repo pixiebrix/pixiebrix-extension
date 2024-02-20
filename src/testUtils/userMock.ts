@@ -22,7 +22,7 @@ import {
 } from "@/testUtils/factories/authFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { TEST_setAuthData } from "@/auth/token";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { queryLoadingFactory } from "@/testUtils/rtkQueryFactories";
 
 // In existing code, there was a lot of places mocking both useQueryState and useGetMeQuery. This could in some places
