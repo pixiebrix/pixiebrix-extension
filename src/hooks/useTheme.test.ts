@@ -177,16 +177,21 @@ describe("useGetOrganizationTheme", () => {
       () => useGetOrganizationTheme(),
       {
         setupRedux(dispatch) {
-          authStateFactory({
-            organization: {
-              id: uuidv4(),
-              name: "Cached Organization",
-              theme: {
-                show_sidebar_logo: true,
-                logo: customTestLogoUrl,
-              },
-            },
-          });
+          dispatch(
+            authActions.setAuth(
+              authStateFactory({
+                organization: {
+                  id: uuidv4(),
+                  name: "Cached Organization",
+                  theme: {
+                    show_sidebar_logo: true,
+                    logo: customTestLogoUrl,
+                    toolbar_icon: "someOldOne.svg",
+                  },
+                },
+              }),
+            ),
+          );
         },
       },
     );
@@ -196,6 +201,9 @@ describe("useGetOrganizationTheme", () => {
     });
     expect(organizationThemeResult.current.customSidebarLogo).toBe(
       newTestLogoUrl,
+    );
+    expect(organizationThemeResult.current.toolbarIcon).toBe(
+      newTestToolbarIconUrl,
     );
   });
 });

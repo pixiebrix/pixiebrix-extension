@@ -48,9 +48,3 @@ export async function mockAuthenticatedUser(me?: Me): Promise<void> {
 export function mockErrorUser(error: unknown): void {
   appApiMock.onGet("/api/me/").reply(500, error);
 }
-
-export function mockLoadingCachedUser(): void {
-  (appApi.endpoints.getMe as any).useQueryState = jest.fn(() =>
-    queryLoadingFactory(),
-  );
-}
