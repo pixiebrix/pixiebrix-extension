@@ -17,10 +17,14 @@
 
 import { useGetOrganizationTheme, useGetThemeName } from "@/hooks/useTheme";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
-import { mockAnonymousUser, mockAuthenticatedUser } from "@/testUtils/userMock";
+import {
+  mockAnonymousUser,
+  mockAuthenticatedUser,
+  mockLoadingUser,
+} from "@/testUtils/userMock";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { uuidv4 } from "@/types/helpers";
-import { authActions, authSlice } from "@/auth/authSlice";
+import { authActions } from "@/auth/authSlice";
 import {
   authStateFactory,
   partnerUserFactory,
@@ -28,6 +32,10 @@ import {
   userOrganizationFactory,
 } from "@/testUtils/factories/authFactories";
 import { renderHook } from "@/pageEditor/testHelpers";
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 describe("useGetThemeName", () => {
   test("has no partner", async () => {
@@ -90,7 +98,7 @@ describe("useGetThemeName", () => {
       {
         setupRedux(dispatch) {
           dispatch(
-            authSlice.actions.setAuth(
+            authActions.setAuth(
               authStateFactory({
                 partner: {
                   name: "Automation Anywhere",
@@ -156,6 +164,41 @@ describe("useGetThemeName", () => {
 
 describe("useGetOrganizationTheme", () => {
   const customTestLogoUrl = "https://test-logo.svg";
+
+  test("uses cached organization theme while me is loading", async () => {
+    mockLoadingUser();
+
+    const { result: organizationThemeResult, waitFor } = renderHook(
+      () => useGetOrganizationTheme(),
+      {
+        setupRedux(dispatch) {
+          dispatch(
+            authActions.setAuth(
+              authStateFactory({
+                organization: {
+                  id: uuidv4(),
+                  name: "Cached Organization",
+                  theme: {
+                    show_sidebar_logo: true,
+                    logo: customTestLogoUrl,
+                    toolbar_icon: "someOldOne.svg",
+                  },
+                },
+              }),
+            ),
+          );
+        },
+      },
+    );
+
+    await waitFor(() => {
+      expect(organizationThemeResult.current.showSidebarLogo).toBe(true);
+    });
+    expect(organizationThemeResult.current.customSidebarLogo).toBe(
+      customTestLogoUrl,
+    );
+    expect(organizationThemeResult.current.toolbarIcon).toBe("someOldOne.svg");
+  });
 
   test("new organization theme trumps cached organization theme", async () => {
     const newTestLogoUrl = "https://new-test-logo.svg";
