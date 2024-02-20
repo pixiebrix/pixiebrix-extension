@@ -32,6 +32,7 @@ const ExperimentalSettings: React.FunctionComponent = () => {
     performanceTracing,
     sandboxedCode,
     selectionPopover,
+    textCommandPopover,
   } = useSelector(selectSettings);
 
   return (
@@ -64,13 +65,6 @@ const ExperimentalSettings: React.FunctionComponent = () => {
             isEnabled={performanceTracing}
             flag="performanceTracing"
           />
-          <SettingToggle
-            controlId="selectionPopover"
-            label="Selection Popover"
-            description="Show context menu items in a selection popover"
-            isEnabled={selectionPopover}
-            flag="selectionPopover"
-          />
           {!isMV3() && (
             <SettingToggle
               controlId="sandboxedCode"
@@ -80,6 +74,20 @@ const ExperimentalSettings: React.FunctionComponent = () => {
               flag="sandboxedCode"
             />
           )}
+          <SettingToggle
+            controlId="selectionPopover"
+            label="Selection Popover"
+            description="Show context menu items in a selection popover"
+            isEnabled={selectionPopover}
+            flag="selectionPopover"
+          />
+          <SettingToggle
+            controlId="textCommandPopover"
+            label="Text Command Popover"
+            description="Show a text command popover"
+            isEnabled={textCommandPopover}
+            flag="textCommandPopover"
+          />
         </Form>
       </Card.Body>
     </Card>
