@@ -19,7 +19,7 @@ import axios from "axios";
 // Re-export utility methods directly, skip automatic __mocks__ resolution #6799
 export { absoluteApiUrl } from "../../../../data/service/apiClient";
 
-// A mock of @/services/apiClient that doesn't use the local browser state. For use with msw in Storybook.
+// A mock of @/data/service/apiClient that doesn't use the local browser state. For use with msw in Storybook.
 // See .storybook/preview.js for more information
 
 export async function getLinkedApiClient() {
