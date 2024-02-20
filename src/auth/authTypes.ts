@@ -242,7 +242,7 @@ export type AuthState = {
   /**
    * List of milestones for the user. A Milestone represents progress through the PixieBrix product.
    */
-  readonly milestones: Milestone[];
+  readonly milestones: readonly Milestone[];
 
   /**
    * The partner, controlling theme, documentation links, etc.

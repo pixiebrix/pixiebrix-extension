@@ -37,7 +37,7 @@ const partnerTokenStorage = new StorageItem("partnerToken", {
   defaultValue: {} as Partial<PartnerAuthData>,
 });
 
-type AuthListener = (auth: Partial<TokenAuthData>) => void;
+type AuthListener = (auth: Partial<TokenAuthData | PartnerAuthData>) => void;
 
 // TODO: Use SimpleEventTarget instead
 // eslint-disable-next-line local-rules/persistBackgroundData -- Functions

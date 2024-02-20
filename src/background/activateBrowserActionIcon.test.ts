@@ -108,7 +108,13 @@ describe("activateBrowserActionIcon", () => {
 
       expect(result).toBe("image data");
       expect(getContextmock).toHaveBeenCalledWith("2d");
-      expect(drawImageMock).toHaveBeenCalledWith(expect.any(Image), 0, 0);
+      expect(drawImageMock).toHaveBeenCalledWith(
+        expect.any(Image),
+        0,
+        0,
+        16,
+        16,
+      );
       expect(getImageDataMock).toHaveBeenCalledWith(0, 0, 16, 16);
     });
   });

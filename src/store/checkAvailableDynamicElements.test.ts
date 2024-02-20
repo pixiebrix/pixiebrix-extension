@@ -21,7 +21,6 @@ import { actions, editorSlice } from "@/pageEditor/slices/editorSlice";
 import { type RegistryId } from "@/types/registryTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { selectExtensionAvailability } from "@/pageEditor/slices/editorSelectors";
-import { getCurrentURL } from "@/pageEditor/utils";
 import { checkAvailable } from "@/contentScript/messenger/api";
 import { checkAvailable as backgroundCheckAvailable } from "@/bricks/available";
 import { type Target } from "@/types/messengerTypes";
@@ -30,17 +29,18 @@ import { type Availability } from "@/bricks/types";
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 
 jest.mock("@/contentScript/messenger/api");
 
-jest.mock("@/pageEditor/utils");
+jest.mock("@/pageEditor/context/connection");
 
 const { reducer: extensionsReducer } = extensionsSlice;
 
 describe("checkAvailableDynamicElements", () => {
   test("it checks dynamic elements correctly", async () => {
     const testUrl = "https://www.myUrl.com/*";
-    jest.mocked(getCurrentURL).mockResolvedValue(testUrl);
+    jest.mocked(getCurrentInspectedURL).mockResolvedValue(testUrl);
 
     const store = configureStore<EditorRootState & ModComponentsRootState>({
       reducer: {

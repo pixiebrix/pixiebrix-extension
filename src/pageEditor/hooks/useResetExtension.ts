@@ -20,7 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
-import { extensionToFormState } from "@/pageEditor/starterBricks/adapter";
+import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import reportError from "@/telemetry/reportError";
 import { initRecipeOptionsIfNeeded } from "@/pageEditor/starterBricks/base";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
@@ -64,7 +64,7 @@ function useResetExtension(): (useResetConfig: Config) => Promise<void> {
         if (extension == null) {
           dispatch(actions.removeElement(extensionId));
         } else {
-          const formState = await extensionToFormState(extension);
+          const formState = await modComponentToFormState(extension);
           initRecipeOptionsIfNeeded(formState, recipes);
           dispatch(actions.resetInstalled(formState));
         }

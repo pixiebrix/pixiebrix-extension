@@ -24,6 +24,7 @@ import { PACKAGE_REGEX } from "@/types/helpers";
 import { type UnknownObject } from "@/types/objectTypes";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getApiClient } from "@/services/apiClient";
+import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
 
 const DATABASE_NAME = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
@@ -50,9 +51,10 @@ type PackageVersion = {
   id: string;
   version: Version;
   kind: Kind;
-  scope: string;
+  scope: Nullishable<string>;
   config: UnknownObject;
-  rawConfig: string | null;
+  // `rawConfig` is the YAML configuration. Only available for user-defined packages
+  rawConfig: Nullishable<string>;
   timestamp: Date;
 };
 
@@ -107,10 +109,12 @@ async function openRegistryDB() {
   return database;
 }
 
-function latestVersion(versions: PackageVersion[]): PackageVersion | null {
+function latestVersion(
+  versions: PackageVersion[],
+): Nullishable<PackageVersion> {
   return versions.length > 0
     ? sortBy(
-        versions,
+        versions.filter(Boolean),
         (x) => -x.version.major,
         (x) => -x.version.minor,
         (x) => -x.version.patch,
@@ -134,8 +138,10 @@ export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
       ),
     );
 
-    return Object.entries(groupBy(bricks, (x) => x.id)).map(([, versions]) =>
-      latestVersion(versions),
+    return Object.entries(groupBy(bricks, (x) => x.id)).map(
+      ([, versions]) =>
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- there's at least one element per group
+        latestVersion(versions)!,
     );
   } finally {
     db.close();
@@ -224,20 +230,27 @@ async function replaceAll(packages: PackageVersion[]): Promise<void> {
 export function parsePackage(
   item: RegistryPackage,
 ): Except<PackageVersion, "timestamp"> {
-  const [major, minor, patch] = item.metadata.version
+  const { version, id } = item.metadata;
+  assertNotNullish(version, "Package Version is required");
+
+  const [major, minor, patch] = version
     .split(".")
     .map((x) => Number.parseInt(x, 10));
 
-  const match = PACKAGE_REGEX.exec(item.metadata.id);
+  if (major == null || minor == null || patch == null) {
+    throw new Error(`Invalid version: ${version}`);
+  }
+
+  const match = PACKAGE_REGEX.exec(id);
 
   return {
-    id: item.metadata.id,
+    id,
     version: { major, minor, patch },
-    scope: match.groups.scope,
+    scope: match?.groups?.scope,
     kind: item.kind,
     config: item,
     // We don't need to store the raw configs, because the Workshop uses an endpoint vs. the registry version
-    rawConfig: undefined,
+    rawConfig: null,
   };
 }
 
@@ -245,7 +258,7 @@ export function parsePackage(
  * Return the latest version of a brick, or null if it's not found.
  * @param id the registry id
  */
-export async function find(id: string): Promise<PackageVersion | null> {
+export async function find(id: string): Promise<Nullishable<PackageVersion>> {
   if (id == null) {
     throw new Error("id is required");
   }

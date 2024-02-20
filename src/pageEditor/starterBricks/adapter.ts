@@ -16,7 +16,7 @@
  */
 
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { registry } from "@/background/messenger/api";
+import { registry } from "@/background/messenger/strict/api";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
 import menuItemExtension from "@/pageEditor/starterBricks/menuItem";
@@ -67,19 +67,19 @@ export async function selectType(
   return extensionPoint.definition.type;
 }
 
-export async function extensionToFormState(
-  extension: ModComponentBase,
+export async function modComponentToFormState(
+  modComponent: ModComponentBase,
 ): Promise<ModComponentFormState> {
-  const type = await selectType(extension);
-  const { fromExtension } = ADAPTERS.get(type);
+  const starterBrickType = await selectType(modComponent);
+  const { fromExtension } = ADAPTERS.get(starterBrickType);
   if (!fromExtension) {
     throw new Error(
-      `Editing existing extensions not implemented for type: '${type}'`,
+      `Editing existing mod components not implemented for starter brick type: '${starterBrickType}'`,
     );
   }
 
-  // FormState is the sum type of all the extension form states, so OK to cast
-  return fromExtension(extension) as Promise<ModComponentFormState>;
+  // FormState is the sum type of all the modComponent form states, so OK to cast
+  return fromExtension(modComponent) as Promise<ModComponentFormState>;
 }
 
 export function formStateToDynamicElement(

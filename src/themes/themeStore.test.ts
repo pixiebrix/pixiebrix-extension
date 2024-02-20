@@ -40,6 +40,17 @@ describe("getActiveTheme", () => {
 
     await saveSettingsState(initialSettingsState);
 
-    await expect(getActiveTheme()).resolves.toBe("automation-anywhere");
+    await expect(getActiveTheme()).resolves.toStrictEqual({
+      themeName: "automation-anywhere",
+      toolbarIcon: null,
+    });
   });
+
+  it.todo(
+    "fetches organization theme from the organization theme endpoint if set in managed storage",
+  );
+
+  it.todo(
+    "fetches organization theme from the me endpoint if no managed storage organization",
+  );
 });

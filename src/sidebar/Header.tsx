@@ -21,14 +21,14 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
 import { hideSidebar } from "@/contentScript/messenger/strict/api";
-import useTheme, { useGetTheme } from "@/hooks/useTheme";
+import useTheme, { useGetThemeName } from "@/hooks/useTheme";
 import cx from "classnames";
 import { getTopLevelFrame } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
 
 const Header: React.FunctionComponent = () => {
   const { logo, showSidebarLogo, customSidebarLogo } = useTheme();
-  const theme = useGetTheme();
+  const theme = useGetThemeName();
   /* In MV3, Chrome offers a native Close button */
   const showCloseButton = !isMV3();
 

@@ -30,9 +30,10 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import selectEvent from "react-select-event";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { clear, find, syncPackages } from "@/registry/packageRegistry";
-import { registry, services } from "@/background/messenger/api";
+import { services } from "@/background/messenger/api";
 import { refreshServices } from "@/background/locator";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { registry } from "@/background/messenger/strict/api";
 
 const { remoteConfig, integrationDefinition } =
   generateIntegrationAndRemoteConfig();

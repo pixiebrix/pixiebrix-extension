@@ -41,9 +41,9 @@ import useKeyboardNavigation from "@/components/fields/schemaFields/widgets/varP
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import useAsyncState from "@/hooks/useAsyncState";
 import { getPageState } from "@/contentScript/messenger/strict/api";
-import { thisTab } from "@/pageEditor/utils";
 import { isEmpty } from "lodash";
 import { getSelectedLineVirtualElement } from "@/components/fields/schemaFields/widgets/varPopup/utils";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 const emptyVarMap = new VarMap();
 
@@ -167,7 +167,7 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
   const trace = useSelector(selectActiveNodeTrace);
   const { data: modVariables } = useAsyncState(
     async () =>
-      getPageState(thisTab, {
+      getPageState(inspectedTab, {
         namespace: "blueprint",
         extensionId: null,
         blueprintId: activeElement.recipe?.id,

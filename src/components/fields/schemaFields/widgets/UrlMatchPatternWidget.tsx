@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { getCurrentURL } from "@/pageEditor/utils";
 import {
   createDomainPattern,
   createSitePattern,
@@ -33,6 +32,7 @@ import {
   type UrlMatchPatternWidgetProps,
 } from "./urlMatchPatternWidgetTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
 
 const UrlMatchShortcut: React.FC<{
   caption: string;
@@ -47,14 +47,14 @@ const DEFAULT_SHORTCUTS: Shortcut[] = [
   {
     caption: "Site",
     async getPattern() {
-      const url = await getCurrentURL();
+      const url = await getCurrentInspectedURL();
       return createSitePattern(url);
     },
   },
   {
     caption: "Domain",
     async getPattern() {
-      const url = await getCurrentURL();
+      const url = await getCurrentInspectedURL();
       return createDomainPattern(url);
     },
   },

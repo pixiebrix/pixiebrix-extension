@@ -37,8 +37,7 @@ import initNavigation from "@/background/navigation";
 import initExecutor from "@/background/executor";
 import initBrowserCommands from "@/background/initBrowserCommands";
 import initDeploymentUpdater from "@/background/deploymentUpdater";
-import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
-import initPartnerTheme from "@/background/partnerTheme";
+import initTheme from "@/background/initTheme";
 import initStarterMods from "@/background/starterMods";
 import { initPartnerTokenRefresh } from "@/background/partnerIntegrations";
 import { initContentScriptReadyListener } from "@/background/contentScript";
@@ -52,6 +51,7 @@ import {
   initManagedStorage,
   watchDelayedStorageInitialization,
 } from "@/store/enterprise/managedStorage";
+import activateBrowserActionIcon from "./activateBrowserActionIcon";
 
 // Try to initialize managed storage as early as possible because it impacts background behavior
 // Call watchDelayedStorageInitialization to handle case where storage is not immediately available within timeout.
@@ -74,8 +74,8 @@ initContextMenus();
 initContentScriptReadyListener();
 initBrowserCommands();
 initDeploymentUpdater();
-void activateBrowserActionIcon();
-initPartnerTheme();
+void activateBrowserActionIcon(); // Keep here #7645
+initTheme();
 initStarterMods();
 initPartnerTokenRefresh();
 initLogSweep();

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Theme } from "@/themes/themeTypes";
+import { type ThemeName } from "@/themes/themeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Except } from "type-fest";
 
@@ -48,6 +48,18 @@ export type SkunkworksSettingsFlags = {
    * Experimental setting to run some code in a sandbox
    */
   sandboxedCode?: boolean;
+
+  /**
+   * Experimental setting to enable the selection popover for all/text context menu items
+   * @since 1.8.10
+   */
+  selectionPopover?: boolean;
+
+  /**
+   * Experimental setting to enable a text command popover
+   * @since 1.8.10
+   */
+  textCommandPopover?: boolean;
 };
 
 export type GeneralSettingsFlags = {
@@ -127,7 +139,7 @@ export type SettingsStateV1 = SkunkworksSettingsFlags &
     /**
      * Theme name for the extension
      */
-    theme: Theme;
+    theme: ThemeName;
   };
 
 /**

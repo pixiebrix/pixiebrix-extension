@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useGetOrganizationTheme, useGetTheme } from "@/hooks/useTheme";
+import { useGetOrganizationTheme, useGetThemeName } from "@/hooks/useTheme";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { mockAnonymousUser, mockAuthenticatedUser } from "@/testUtils/userMock";
 import settingsSlice from "@/store/settings/settingsSlice";
@@ -29,11 +29,13 @@ import {
 } from "@/testUtils/factories/authFactories";
 import { renderHook } from "@/pageEditor/testHelpers";
 
-describe("useGetTheme", () => {
+describe("useGetThemeName", () => {
   test("has no partner", async () => {
     await mockAuthenticatedUser(userFactory());
 
-    const { result: themeResult, waitFor } = renderHook(() => useGetTheme());
+    const { result: themeResult, waitFor } = renderHook(() =>
+      useGetThemeName(),
+    );
 
     await waitFor(() => {
       expect(themeResult.current).toBe(DEFAULT_THEME);
@@ -43,15 +45,18 @@ describe("useGetTheme", () => {
   test("has partnerId and no me partner", async () => {
     await mockAuthenticatedUser(userFactory());
 
-    const { result: themeResult, waitFor } = renderHook(() => useGetTheme(), {
-      setupRedux(dispatch) {
-        dispatch(
-          settingsSlice.actions.setPartnerId({
-            partnerId: "automation-anywhere",
-          }),
-        );
+    const { result: themeResult, waitFor } = renderHook(
+      () => useGetThemeName(),
+      {
+        setupRedux(dispatch) {
+          dispatch(
+            settingsSlice.actions.setPartnerId({
+              partnerId: "automation-anywhere",
+            }),
+          );
+        },
       },
-    });
+    );
 
     await waitFor(() => {
       expect(themeResult.current).toBe("automation-anywhere");
@@ -61,13 +66,16 @@ describe("useGetTheme", () => {
   test("has theme, but no partnerId and no me partner", async () => {
     mockAnonymousUser();
 
-    const { result: themeResult, waitFor } = renderHook(() => useGetTheme(), {
-      setupRedux(dispatch) {
-        dispatch(
-          settingsSlice.actions.setTheme({ theme: "automation-anywhere" }),
-        );
+    const { result: themeResult, waitFor } = renderHook(
+      () => useGetThemeName(),
+      {
+        setupRedux(dispatch) {
+          dispatch(
+            settingsSlice.actions.setTheme({ theme: "automation-anywhere" }),
+          );
+        },
       },
-    });
+    );
 
     await waitFor(() => {
       expect(themeResult.current).toBe(DEFAULT_THEME);
@@ -77,20 +85,23 @@ describe("useGetTheme", () => {
   test("has cached partner, but no me partner", async () => {
     mockAnonymousUser();
 
-    const { result: themeResult, waitFor } = renderHook(() => useGetTheme(), {
-      setupRedux(dispatch) {
-        dispatch(
-          authSlice.actions.setAuth(
-            authStateFactory({
-              partner: {
-                name: "Automation Anywhere",
-                theme: "automation-anywhere",
-              },
-            }),
-          ),
-        );
+    const { result: themeResult, waitFor } = renderHook(
+      () => useGetThemeName(),
+      {
+        setupRedux(dispatch) {
+          dispatch(
+            authSlice.actions.setAuth(
+              authStateFactory({
+                partner: {
+                  name: "Automation Anywhere",
+                  theme: "automation-anywhere",
+                },
+              }),
+            ),
+          );
+        },
       },
-    });
+    );
 
     await waitFor(() => {
       expect(themeResult.current).toBe("automation-anywhere");
@@ -100,11 +111,16 @@ describe("useGetTheme", () => {
   test("has partnerId, and me partner", async () => {
     await mockAuthenticatedUser(partnerUserFactory());
 
-    const { result: themeResult, waitFor } = renderHook(() => useGetTheme(), {
-      setupRedux(dispatch) {
-        dispatch(settingsSlice.actions.setPartnerId({ partnerId: "default" }));
+    const { result: themeResult, waitFor } = renderHook(
+      () => useGetThemeName(),
+      {
+        setupRedux(dispatch) {
+          dispatch(
+            settingsSlice.actions.setPartnerId({ partnerId: "default" }),
+          );
+        },
       },
-    });
+    );
 
     await waitFor(() => {
       expect(themeResult.current).toBe("automation-anywhere");
@@ -114,20 +130,23 @@ describe("useGetTheme", () => {
   test("has me partner, and different cached partner", async () => {
     await mockAuthenticatedUser(partnerUserFactory());
 
-    const { result: themeResult, waitFor } = renderHook(() => useGetTheme(), {
-      setupRedux(dispatch) {
-        dispatch(
-          authActions.setAuth(
-            authStateFactory({
-              partner: {
-                name: "PixieBrix",
-                theme: "default",
-              },
-            }),
-          ),
-        );
+    const { result: themeResult, waitFor } = renderHook(
+      () => useGetThemeName(),
+      {
+        setupRedux(dispatch) {
+          dispatch(
+            authActions.setAuth(
+              authStateFactory({
+                partner: {
+                  name: "PixieBrix",
+                  theme: "default",
+                },
+              }),
+            ),
+          );
+        },
       },
-    });
+    );
 
     await waitFor(() => {
       expect(themeResult.current).toBe("automation-anywhere");
@@ -140,6 +159,7 @@ describe("useGetOrganizationTheme", () => {
 
   test("new organization theme trumps cached organization theme", async () => {
     const newTestLogoUrl = "https://new-test-logo.svg";
+    const newTestToolbarIconUrl = "https://test-logo.svg";
 
     await mockAuthenticatedUser(
       userFactory({
@@ -147,6 +167,7 @@ describe("useGetOrganizationTheme", () => {
           theme: {
             show_sidebar_logo: false,
             logo: newTestLogoUrl,
+            toolbar_icon: newTestToolbarIconUrl,
           },
         }),
       }),

@@ -25,7 +25,6 @@ import RequireIntegrationConfig from "@/integrations/components/RequireIntegrati
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 // TODO: Fix `no-restricted-paths`: Look into a standardized way to mark this whole as pageEditor-only
-import { thisTab } from "@/pageEditor/utils";
 import { getProcesses, initRobot } from "@/contentScript/messenger/strict/api";
 import WorkshopMessage from "@/components/fields/schemaFields/WorkshopMessage";
 import { expectContext } from "@/utils/expectContext";
@@ -35,6 +34,7 @@ import { joinName } from "@/utils/formUtils";
 import useAsyncState from "@/hooks/useAsyncState";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import type { Option } from "@/components/form/widgets/SelectWidget";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
@@ -54,7 +54,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   );
 
   const robotState = useAsyncState(async () => {
-    const { available, consentCode } = await initRobot(thisTab);
+    const { available, consentCode } = await initRobot(inspectedTab);
     return { robotAvailable: available, consentCode };
   }, []);
 
@@ -65,7 +65,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const processOptionsPromise: Promise<Option[]> = useMemo(async () => {
     if (robotAvailable) {
-      const processes = await getProcesses(thisTab);
+      const processes = await getProcesses(inspectedTab);
       return processes.map((process) => ({
         label: process.name,
         value: process.id,

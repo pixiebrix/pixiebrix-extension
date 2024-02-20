@@ -18,7 +18,7 @@
 import React from "react";
 import Centered from "@/components/Centered";
 import { parse as parseDomain } from "psl";
-import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
+import useCurrentInspectedUrl from "@/pageEditor/hooks/useCurrentInspectedUrl";
 import { safeParseUrl } from "@/utils/urlUtils";
 
 function getPageLabel(url: string): string {
@@ -37,7 +37,7 @@ function getPageLabel(url: string): string {
  * @constructor
  */
 const NoTabAccessPane: React.FunctionComponent = () => {
-  const url = useCurrentUrl();
+  const url = useCurrentInspectedUrl();
   const siteLabel = (url && getPageLabel(url)) || "this page";
 
   return (
