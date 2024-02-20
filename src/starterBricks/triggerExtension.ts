@@ -403,22 +403,20 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
    * It's bound to this instance so that it can be removed when the extension is uninstalled.
    */
   private readonly eventHandler = async (event: Event) => {
-    const target = event.target as HTMLElement | Document;
+    let element = event.target as HTMLElement | Document;
     console.debug("TriggerExtensionPoint:eventHandler", {
       id: this.id,
       instanceNonce: this.instanceNonce,
-      target,
+      target: element,
       event,
     });
-
-    let element = target;
 
     if (this.trigger === "selectionchange") {
       element = guessSelectedElement() ?? document;
     }
 
     if (this.targetMode === "root") {
-      element = $(target).closest(this.triggerSelector).get(0);
+      element = $(element).closest(this.triggerSelector).get(0);
       console.debug(
         "Locating closest element for target: %s",
         this.triggerSelector,
