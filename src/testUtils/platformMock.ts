@@ -53,6 +53,10 @@ export const platformMock: PlatformProtocol = {
   clipboard: {
     write: jest.fn(),
   },
+  selectionTooltip: {
+    register: jest.fn(),
+    unregister: jest.fn(),
+  },
   quickBar: {
     addAction: jest.fn(),
     knownGeneratorRootIds: new Set<string>(),

@@ -45,6 +45,7 @@ import type { JsonObject } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { writeToClipboard } from "@/utils/clipboardUtils";
+import { tooltipActionRegistry } from "@/contentScript/selectionTooltip/tooltipController";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -80,7 +81,9 @@ class ContentScriptPlatform extends PlatformABC {
     "clipboardWrite",
     "audio",
     "state",
+    "contextMenu",
     "quickBar",
+    "selectionTooltip",
     "http",
     "badge",
     "link",
@@ -182,6 +185,10 @@ class ContentScriptPlatform extends PlatformABC {
 
   override get quickBar(): PlatformProtocol["quickBar"] {
     return quickBarRegistry;
+  }
+
+  override get selectionTooltip(): PlatformProtocol["selectionTooltip"] {
+    return tooltipActionRegistry;
   }
 
   override get clipboard(): PlatformProtocol["clipboard"] {

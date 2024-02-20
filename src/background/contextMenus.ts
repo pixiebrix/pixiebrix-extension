@@ -187,8 +187,11 @@ export async function preloadContextMenus(
       resolved.extensionPointId,
     );
     if (extensionPoint instanceof ContextMenuStarterBrickABC) {
-      await extensionPoint.reserveMenuItem(
+      await extensionPoint.registerMenuItem(
         definition as unknown as ResolvedModComponent<ContextMenuConfig>,
+        () => {
+          throw new Error("Handler not registered");
+        },
       );
     }
   });

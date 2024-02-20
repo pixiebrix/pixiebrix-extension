@@ -69,7 +69,11 @@ import batchedFunction from "batched-function";
 import { onContextInvalidated } from "webext-events";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { getPlatform } from "@/platform/platformContext";
-import { ensureContextMenu } from "@/background/messenger/api";
+import { initSelectionTooltip } from "@/contentScript/selectionTooltip/tooltipController";
+import { getSettingsState } from "@/store/settings/settingsStorage";
+import type { Except } from "type-fest";
+
+const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Function
 const groupRegistrationErrorNotification = batchedFunction(
@@ -192,6 +196,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     if (global) {
       for (const extension of extensions) {
         void getPlatform().contextMenu.unregister(extension.id);
+        getPlatform().selectionTooltip.unregister(extension.id);
       }
     }
   }
@@ -210,12 +215,21 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
     for (const extensionId of extensionIds) {
       void getPlatform().contextMenu.unregister(extensionId);
+      getPlatform().selectionTooltip.unregister(extensionId);
     }
   }
 
   async install(): Promise<boolean> {
     // Always install the mouse handler in case a context menu is added later
     installMouseHandlerOnce();
+
+    if (this.contexts.includes("selection") || this.contexts.includes("all")) {
+      const { selectionPopover } = await getSettingsState();
+      if (selectionPopover) {
+        initSelectionTooltip();
+      }
+    }
+
     return this.isAvailable();
   }
 
@@ -235,30 +249,6 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       await this.getBaseReader(),
       contextMenuReaderShim as unknown as Reader,
     ]);
-  }
-
-  async reserveMenuItem(
-    extension: Pick<
-      ResolvedModComponent<ContextMenuConfig>,
-      "id" | "config" | "_deployment"
-    >,
-  ): Promise<void> {
-    const { title = "Untitled menu item" } = extension.config;
-
-    if (!isDeploymentActive(extension)) {
-      return;
-    }
-
-    const patterns = compact(
-      uniq([...this.documentUrlPatterns, ...(this.permissions?.origins ?? [])]),
-    );
-
-    await ensureContextMenu({
-      extensionId: extension.id,
-      contexts: this.contexts ?? ["all"],
-      title,
-      documentUrlPatterns: patterns,
-    });
   }
 
   async registerMenuItem(
@@ -353,13 +343,22 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
   private async registerExtension(
     extension: ResolvedModComponent<ContextMenuConfig>,
   ): Promise<void> {
-    const { action: actionConfig, onSuccess = {} } = extension.config;
+    const {
+      action: actionConfig,
+      onSuccess = {},
+      title = DEFAULT_MENU_ITEM_TITLE,
+    } = extension.config;
 
     const extensionLogger = this.logger.childLogger(
       selectExtensionContext(extension),
     );
 
-    await this.registerMenuItem(extension, async (clickData) => {
+    const handler = async (
+      clickData: Except<
+        Menus.OnClickData,
+        "menuItemId" | "editable" | "modifiers"
+      >,
+    ): Promise<void> => {
       reportEvent(Events.HANDLE_CONTEXT_MENU, selectEventData(extension));
 
       try {
@@ -413,6 +412,17 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
           });
         }
       }
+    };
+
+    await this.registerMenuItem(extension, handler);
+
+    getPlatform().selectionTooltip.register(extension.id, {
+      title,
+      // Starter Brick current doesn't have an icon affordance because the browser context menu API doesn't support them
+      icon: undefined,
+      async handler(text: string) {
+        return handler({ selectionText: text });
+      },
     });
   }
 }

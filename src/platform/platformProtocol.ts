@@ -35,6 +35,7 @@ import type { TemporaryPanelDefinition } from "@/platform/panels/panelTypes";
 import type { JavaScriptPayload } from "@/sandbox/messenger/api";
 import type { Menus } from "webextension-polyfill";
 import type { writeToClipboard } from "@/utils/clipboardUtils";
+import type { IconConfig } from "@/types/iconTypes";
 
 function notAvailable(capability: PlatformCapability): () => never {
   return () => {
@@ -64,12 +65,55 @@ export type SelectionMenuOptions = {
 type ContextMenuHandler = (args: Menus.OnClickData) => Promise<void>;
 
 export type ContextMenuProtocol = {
+  /**
+   * Register a context menu item. In browsers, there's a single context menu per mod component.
+   */
   register: (
     arg: SelectionMenuOptions & { handler: ContextMenuHandler },
   ) => Promise<void>;
-  // XXX: currently this assumes one menu item per component
-  unregister: (componentId: UUID) => Promise<void>;
+
+  /**
+   * Unregister all content menu items owner by a mod component
+   * @param componentId the mod component
+   */
+  unregister: (modComponentId: UUID) => Promise<void>;
 };
+
+export type TextSelectionAction = {
+  /**
+   * The icon to display in the selection tooltip.
+   * Currently, there's no way to set icons for context menu items, so icon will always be nullish
+   */
+  icon?: Nullishable<IconConfig>;
+  /**
+   * The user-visible title of the action.
+   */
+  title: string;
+  /**
+   * Text selection handler
+   * @param text the selected text
+   */
+  handler: (text: string) => void;
+};
+
+/**
+ * Protocol for a popover displayed when a user selects text
+ * @since 1.8.10
+ */
+export interface SelectionTooltipProtocol {
+  /**
+   * Register a text selection action
+   * @param modComponentId the owner mod component
+   * @param action the action definition
+   */
+  register(modComponentId: UUID, action: TextSelectionAction): void;
+
+  /**
+   * Unregister all text selection actions for a given mod component
+   * @param modComponentId the owner mod component
+   */
+  unregister(modComponentId: UUID): void;
+}
 
 /**
  * The variable store/state for the platform. Formerly known as the "page state".
@@ -202,6 +246,12 @@ export interface PlatformProtocol {
   get quickBar(): QuickBarRegistryProtocol;
 
   /**
+   * The registry for the selection popover.
+   * @since 1.8.10
+   */
+  get selectionTooltip(): SelectionTooltipProtocol;
+
+  /**
    * The badge, e.g., the toolbar icon in a web extension.
    */
   get badge(): BadgeProtocol;
@@ -252,6 +302,10 @@ export class PlatformABC implements PlatformProtocol {
 
   get quickBar(): QuickBarRegistryProtocol {
     throw new PlatformCapabilityNotAvailable("quickBar");
+  }
+
+  get selectionTooltip(): SelectionTooltipProtocol {
+    throw new PlatformCapabilityNotAvailable("selectionTooltip");
   }
 
   get clipboard(): ClipboardProtocol {
