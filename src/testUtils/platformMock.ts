@@ -57,6 +57,10 @@ export const platformMock: PlatformProtocol = {
     register: jest.fn(),
     unregister: jest.fn(),
   },
+  commandPopover: {
+    register: jest.fn(),
+    unregister: jest.fn(),
+  },
   quickBar: {
     addAction: jest.fn(),
     knownGeneratorRootIds: new Set<string>(),

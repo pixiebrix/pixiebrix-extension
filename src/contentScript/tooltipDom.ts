@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { PIXIEBRIX_TOOLTIPS_CONTAINER_CLASS } from "@/domConstants";
+import { onContextInvalidated } from "webext-events";
+
 /**
  * Attaches a tooltip container to the DOM.
  *
@@ -22,11 +25,16 @@
  * https://popper.js.org/docs/v2/performance/#attaching-elements-to-the-dom
  */
 export function ensureTooltipsContainer(): Element {
-  let container = document.querySelector("#pb-tooltips-container");
+  let container = document.querySelector(
+    `.${PIXIEBRIX_TOOLTIPS_CONTAINER_CLASS}`,
+  );
   if (!container) {
     container = document.createElement("div");
-    container.id = "pb-tooltips-container";
+    container.className = PIXIEBRIX_TOOLTIPS_CONTAINER_CLASS;
     document.body.append(container);
+    onContextInvalidated.addListener(() => {
+      container?.remove();
+    });
   }
 
   return container;

@@ -254,7 +254,7 @@ describe("DisplayTemporaryInfo", () => {
     expect(cancelTemporaryPanelsForExtension).toHaveBeenCalled();
 
     expect(
-      document.body.querySelector("#pb-tooltips-container"),
+      document.body.querySelector(".pixiebrix-tooltips-container"),
     ).not.toBeNull();
   });
 

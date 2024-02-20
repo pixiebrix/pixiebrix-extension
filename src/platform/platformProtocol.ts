@@ -115,6 +115,44 @@ export interface SelectionTooltipProtocol {
   unregister(modComponentId: UUID): void;
 }
 
+export type TextCommand = {
+  /**
+   * The mod component id that owns the command/snippet
+   */
+  componentId: UUID;
+  /**
+   * The shortcut to trigger the command, excluding the command key
+   */
+  shortcut: string;
+  /**
+   * The title/label of the snippet
+   */
+  title: string;
+  /**
+   * The text generator
+   * @param currentText current text in the editor
+   */
+  handler: (currentText: string) => Promise<string>;
+};
+
+/**
+ * Protocol for a text command popover triggered by a command key
+ * @since 1.8.10
+ */
+export interface CommandPopoverProtocol {
+  /**
+   * Register a text command
+   * @param command the command definition
+   */
+  register(command: TextCommand): void;
+
+  /**
+   * Unregister all text commands for a given mod component
+   * @param modComponentId the owner mod component
+   */
+  unregister(modComponentId: UUID): void;
+}
+
 /**
  * The variable store/state for the platform. Formerly known as the "page state".
  */
@@ -246,10 +284,16 @@ export interface PlatformProtocol {
   get quickBar(): QuickBarRegistryProtocol;
 
   /**
-   * The registry for the selection popover.
+   * The registry for the text selection tooltip.
    * @since 1.8.10
    */
   get selectionTooltip(): SelectionTooltipProtocol;
+
+  /**
+   * The registry for the text editor command popover.
+   * @since 1.8.10
+   */
+  get commandPopover(): CommandPopoverProtocol;
 
   /**
    * The badge, e.g., the toolbar icon in a web extension.
@@ -306,6 +350,10 @@ export class PlatformABC implements PlatformProtocol {
 
   get selectionTooltip(): SelectionTooltipProtocol {
     throw new PlatformCapabilityNotAvailable("selectionTooltip");
+  }
+
+  get commandPopover(): CommandPopoverProtocol {
+    throw new PlatformCapabilityNotAvailable("commandPopover");
   }
 
   get clipboard(): ClipboardProtocol {
