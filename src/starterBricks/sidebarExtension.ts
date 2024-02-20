@@ -115,12 +115,6 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
    */
   private abortController = new AbortController();
 
-  /**
-   * True if the starter brick has already installed event listeners for the trigger event, if applicable
-   * @private
-   */
-  private installedListeners = false;
-
   inputSchema: Schema = propertiesToSchema(
     {
       heading: {
@@ -260,18 +254,12 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     }
   }
 
-  addCancelHandler(callback: () => void): void {
-    this.abortController.signal.addEventListener("abort", callback);
-  }
-
   cancelListeners(): void {
     // Inform registered listeners
     this.abortController.abort();
 
     // Allow new registrations
     this.abortController = new AbortController();
-
-    this.installedListeners = false;
   }
 
   /**
@@ -342,10 +330,9 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 
   /**
    * Shared event handler for DOM event triggers.
+   * It's bound to this instance so that it can be removed when the extension is uninstalled.
    */
-  private readonly eventHandler: JQuery.EventHandler<unknown> = async (
-    event,
-  ): Promise<void> => {
+  private readonly eventHandler = async (event: Event): Promise<void> => {
     let relevantModComponents;
 
     switch (this.trigger) {
@@ -354,10 +341,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         // Perform the check _before_ debounce, so that the debounce timer is not impacted by state from other mods.
         // See https://github.com/pixiebrix/pixiebrix-extension/issues/6804 for more details/considerations.
         relevantModComponents = this.modComponents.filter((modComponent) =>
-          shouldModComponentRunForStateChange(
-            modComponent,
-            event.originalEvent,
-          ),
+          shouldModComponentRunForStateChange(modComponent, event),
         );
         break;
       }
@@ -372,15 +356,8 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   };
 
   private attachEventTrigger(eventName: string): void {
-    const $document = $(document);
-
-    $document.off(eventName, this.eventHandler);
-
-    // Install the DOM trigger
-    $document.on(eventName, this.eventHandler);
-
-    this.addCancelHandler(() => {
-      $document.off(eventName, this.eventHandler);
+    document.addEventListener(eventName, this.eventHandler, {
+      signal: this.abortController.signal,
     });
   }
 
@@ -436,20 +413,13 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       void this.debouncedRefreshPanels(this.modComponents);
     }
 
-    if (!this.installedListeners) {
-      if (
-        this.trigger === "selectionchange" ||
-        this.trigger === "statechange"
-      ) {
-        this.attachEventTrigger(this.trigger);
-      } else if (
-        this.trigger === "custom" &&
-        this.customTriggerOptions?.eventName
-      ) {
-        this.attachEventTrigger(this.customTriggerOptions?.eventName);
-      }
-
-      this.installedListeners = true;
+    if (this.trigger === "selectionchange" || this.trigger === "statechange") {
+      this.attachEventTrigger(this.trigger);
+    } else if (
+      this.trigger === "custom" &&
+      this.customTriggerOptions?.eventName
+    ) {
+      this.attachEventTrigger(this.customTriggerOptions?.eventName);
     }
   };
 

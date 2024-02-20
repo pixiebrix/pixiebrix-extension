@@ -192,16 +192,6 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   >();
 
   /**
-   * Installed DOM event listeners, e.g., `click`, or the name of a custom event. Used to keep track of which event
-   * handlers need to be removed when the extension is uninstalled.
-   *
-   * Currently, there's only ever 1 event attached per trigger extension point instance.
-   *
-   * @private
-   */
-  private readonly installedEvents = new Set<string>();
-
-  /**
    * Controller to drop all listeners and timers
    * @private
    */
@@ -297,6 +287,11 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   }
 
   cancelObservers(): void {
+    console.trace("TriggerExtensionPoint:cancelObservers", {
+      id: this.id,
+      instanceNonce: this.instanceNonce,
+    });
+
     // Inform registered listeners
     this.abortController.abort();
 
@@ -333,13 +328,6 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       trigger: this.trigger,
       $currentElements,
     });
-
-    // This won't impact with other trigger extension points because the handler reference is unique to `this`
-    for (const event of this.installedEvents) {
-      $currentElements.off(event, this.eventHandler);
-    }
-
-    this.installedEvents.clear();
 
     // Remove all extensions to prevent them from running if there are any straggler event handlers on the page
     this.modComponents.length = 0;
@@ -412,26 +400,25 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
   /**
    * Shared event handler for DOM event triggers
+   * It's bound to this instance so that it can be removed when the extension is uninstalled.
    */
-  private readonly eventHandler: JQuery.EventHandler<unknown> = async (
-    event,
-  ) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- based on available trigger types
-    let element: TriggerTarget = event.target;
-
+  private readonly eventHandler = async (event: Event) => {
+    const target = event.target as HTMLElement | Document;
     console.debug("TriggerExtensionPoint:eventHandler", {
       id: this.id,
       instanceNonce: this.instanceNonce,
-      target: element,
+      target,
       event,
     });
+
+    let element = target;
 
     if (this.trigger === "selectionchange") {
       element = guessSelectedElement() ?? document;
     }
 
     if (this.targetMode === "root") {
-      element = $(element).closest(this.triggerSelector).get(0);
+      element = $(target).closest(this.triggerSelector).get(0);
       console.debug(
         "Locating closest element for target: %s",
         this.triggerSelector,
@@ -439,7 +426,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     }
 
     await this.debouncedRunTriggersAndNotify([element], {
-      nativeEvent: event.originalEvent,
+      nativeEvent: event,
     });
   };
 
@@ -722,17 +709,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   }
 
   private attachDocumentTrigger(): void {
-    const $document = $(document);
-
-    $document.off(this.trigger, this.eventHandler);
-
-    // Install the DOM trigger
-    $document.on(this.trigger, this.eventHandler);
-
-    this.installedEvents.add(this.trigger);
-
-    this.addCancelHandler(() => {
-      $document.off(this.trigger, this.eventHandler);
+    document.addEventListener(this.trigger, this.eventHandler, {
+      signal: this.abortController.signal,
     });
   }
 
@@ -768,16 +746,21 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       $elements.off("mouseenter.hoverIntent");
       $elements.off("mouseleave.hoverIntent");
       $elements.hoverIntent({
-        over: this.eventHandler,
+        over: async ({ originalEvent }) => this.eventHandler(originalEvent),
         // If `out` is not provided, over is called on both mouseenter and mouseleave
         out: noop,
       });
+      this.addCancelHandler(() => {
+        $elements.off("mouseenter.hoverIntent");
+        $elements.off("mouseleave.hoverIntent");
+      });
     } else {
-      $elements.off(domEventName, this.eventHandler);
-      $elements.on(domEventName, this.eventHandler);
+      for (const element of $elements) {
+        element.addEventListener(domEventName, this.eventHandler, {
+          signal: this.abortController.signal,
+        });
+      }
     }
-
-    this.installedEvents.add(domEventName);
 
     if (watch) {
       if ($elements.get(0) === document) {

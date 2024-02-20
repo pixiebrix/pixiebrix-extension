@@ -26,6 +26,8 @@ const ALLOWED_CONSTRUCTORS = [
   "SessionValue",
   "StorageItem",
   "WeakMap",
+  "SimpleEventTarget",
+  "AbortController",
 ];
 const ALLOWED_FUNCTIONS = [
   "getMethod",
