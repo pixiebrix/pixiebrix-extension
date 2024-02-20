@@ -412,7 +412,7 @@ exports[`Storyshots Components/BrickDetail Amazon Search 1`] = `
         <svg
           aria-hidden="true"
           className="svg-inline--fa fa-cube fa-w-16 fa-fw fa-1x "
-          color="darkGrey"
+          color="#241C32"
           data-icon="cube"
           data-prefix="fas"
           focusable="false"
@@ -705,7 +705,7 @@ exports[`Storyshots Components/BrickDetail Built In 1`] = `
         <svg
           aria-hidden="true"
           className="svg-inline--fa fa-cube fa-w-16 fa-fw fa-1x "
-          color="darkGrey"
+          color="#241C32"
           data-icon="cube"
           data-prefix="fas"
           focusable="false"

@@ -21,23 +21,22 @@ import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/m
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import PublishRecipeContent from "./PublishRecipeContent";
 import { Modal } from "react-bootstrap";
-import { appApi } from "@/services/api";
+import { useGetMarketplaceListingQuery } from "@/services/api";
 import Loader from "@/components/Loader";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import EditPublishContent from "./EditPublishContent";
 import CancelPublishContent from "./CancelPublishContent";
-import { isModPendingPublish } from "@/utils/modUtils";
 import PublishedContent from "./PublishedContent";
 
 const ModalContentSwitch: React.FunctionComponent = () => {
   const showPublishContext = useSelector(selectShowPublishContext);
-  const { blueprintId, cancelingPublish } = showPublishContext;
-  const { data: listings, isSuccess: areListingsLoaded } =
-    appApi.endpoints.getMarketplaceListings.useQueryState();
-  const { data: recipe, isFetching: isFetchingRecipe } =
-    useOptionalModDefinition(blueprintId);
+  const { blueprintId: modId, cancelingPublish } = showPublishContext;
+  const { data: listing, isLoading: isLoadingListing } =
+    useGetMarketplaceListingQuery({ packageId: modId });
+  const { data: modDefinition, isLoading: isLoadingRecipe } =
+    useOptionalModDefinition(modId);
 
-  if (isFetchingRecipe || !areListingsLoaded) {
+  if (isLoadingRecipe || isLoadingListing) {
     return (
       <Modal.Body>
         <Loader />
@@ -45,11 +44,12 @@ const ModalContentSwitch: React.FunctionComponent = () => {
     );
   }
 
-  if (!recipe.sharing.public) {
+  if (!modDefinition.sharing.public) {
     return <PublishRecipeContent />;
   }
 
-  if (isModPendingPublish(recipe, listings)) {
+  // A mod is pending publish if it has been made public but does not yet have a marketplace listing
+  if (!listing) {
     return cancelingPublish ? <CancelPublishContent /> : <EditPublishContent />;
   }
 

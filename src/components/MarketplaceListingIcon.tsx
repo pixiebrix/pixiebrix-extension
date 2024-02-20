@@ -17,33 +17,37 @@
 
 import React from "react";
 import { type RegistryId } from "@/types/registryTypes";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
-import type { MarketplaceListing } from "@/types/contract";
+import { useGetMarketplaceListingQuery } from "@/services/api";
 import { useAsyncIcon } from "@/components/asyncIcon";
-import { type IconDefinition } from "@fortawesome/fontawesome-common-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import styles from "./MarketplaceListingModIcon.module.scss";
 import { DEFAULT_TEXT_ICON_COLOR } from "@/icons/constants";
+import { type IconProp } from "@fortawesome/fontawesome-svg-core";
 
-const MarketplaceListingModIcon: React.FC<{
-  modId: RegistryId;
-  defaultIcon: IconDefinition;
+const MarketplaceListingIcon: React.FC<{
+  packageId: RegistryId;
+  defaultIcon: IconProp;
   size?: "1x" | "2x";
-}> = ({ modId, defaultIcon, size = "1x" }) => {
-  const { data: listings } = useGetMarketplaceListingsQuery({
-    package__name: modId,
-  });
+  faIconClass?: string;
+  inheritColor?: boolean;
+}> = ({
+  packageId,
+  defaultIcon,
+  size = "1x",
+  faIconClass = "",
+  inheritColor = false,
+}) => {
+  const { data: listing } = useGetMarketplaceListingQuery({ packageId });
 
-  // eslint-disable-next-line security/detect-object-injection -- RegistryId is not user input
-  const listing: MarketplaceListing | undefined = listings?.[modId];
   const listingFaIcon = useAsyncIcon(listing?.fa_icon, defaultIcon);
 
   if (!listing) {
     return (
       <FontAwesomeIcon
         icon={defaultIcon}
-        color={DEFAULT_TEXT_ICON_COLOR}
+        color={inheritColor ? "inherit" : DEFAULT_TEXT_ICON_COLOR}
+        className={faIconClass}
         size={size}
         fixedWidth
       />
@@ -62,11 +66,16 @@ const MarketplaceListingModIcon: React.FC<{
   ) : (
     <FontAwesomeIcon
       icon={listingFaIcon}
-      color={listing?.icon_color ?? DEFAULT_TEXT_ICON_COLOR}
+      color={
+        inheritColor
+          ? "inherit"
+          : listing?.icon_color ?? DEFAULT_TEXT_ICON_COLOR
+      }
+      className={faIconClass}
       size={size}
       fixedWidth
     />
   );
 };
 
-export default MarketplaceListingModIcon;
+export default MarketplaceListingIcon;

@@ -22,7 +22,7 @@ import OnboardingChecklistCard, {
 import ControlRoomOAuthForm from "@/extensionConsole/pages/onboarding/partner/ControlRoomOAuthForm";
 import ControlRoomTokenForm from "@/extensionConsole/pages/onboarding/partner/ControlRoomTokenForm";
 import { selectSettings } from "@/store/settings/settingsSelectors";
-import { appApi } from "@/services/api";
+import { useGetMeQuery } from "@/services/api";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Button } from "react-bootstrap";
@@ -115,7 +115,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   // Make sure to use useLocation because the location.search are on the hash route
   const location = useLocation();
   const mode = usePartnerLoginMode();
-  const { data: me } = appApi.endpoints.getMe.useQueryState();
+  const { data: me } = useGetMeQuery();
   const managedStorage = useManagedStorageState();
 
   // Hostname passed from manual flow during manual setup initiated via Control Room link
