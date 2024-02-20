@@ -27,7 +27,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import {
   useGetEditablePackagesQuery,
   useUpdateRecipeMutation,
-} from "@/services/api";
+} from "@/data/service/api";
 import { type FormikHelpers } from "formik";
 import notify from "@/utils/notify";
 import { produce } from "immer";

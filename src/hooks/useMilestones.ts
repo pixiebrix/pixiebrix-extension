@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 import { selectMilestones } from "@/auth/authSelectors";
 import { useMemo } from "react";
 import { type Milestone } from "@/types/contract";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 
 type MilestoneHelpers = {
   getMilestone: (milestoneKey: string) => Milestone;

@@ -21,7 +21,7 @@ import { selectShowPublishContext } from "@/extensionConsole/pages/mods/modals/m
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import PublishRecipeContent from "./PublishRecipeContent";
 import { Modal } from "react-bootstrap";
-import { useGetMarketplaceListingQuery } from "@/services/api";
+import { useGetMarketplaceListingQuery } from "@/data/service/api";
 import Loader from "@/components/Loader";
 import { useOptionalModDefinition } from "@/modDefinitions/modDefinitionHooks";
 import EditPublishContent from "./EditPublishContent";

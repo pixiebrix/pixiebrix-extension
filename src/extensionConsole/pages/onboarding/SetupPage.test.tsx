@@ -60,7 +60,7 @@ jest.mock("p-memoize", () => {
   };
 });
 
-jest.mock("@/services/baseService", () => ({
+jest.mock("@/data/service/baseService", () => ({
   getInstallURL: jest.fn().mockResolvedValue("https://app.pixiebrix.com"),
 }));
 

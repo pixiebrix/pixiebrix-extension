@@ -28,7 +28,7 @@ import {
   setThemeFavicon,
   type ThemeLogo,
 } from "@/themes/themeUtils";
-import { useGetMeQuery } from "@/services/api";
+import { useGetMeQuery } from "@/data/service/api";
 import { selectAuth } from "@/auth/authSelectors";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import { isEmpty } from "lodash";

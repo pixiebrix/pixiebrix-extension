@@ -28,7 +28,7 @@ import {
   useCreateRecipeMutation as useCreateRecipeMutationMock,
   useUpdateRecipeMutation as useUpdateRecipeMutationMock,
   useGetEditablePackagesQuery as useGetEditablePackagesQueryMock,
-} from "@/services/api";
+} from "@/data/service/api";
 import { selectElements } from "@/pageEditor/slices/editorSelectors";
 import { uuidv4 } from "@/types/helpers";
 import menuItem from "@/pageEditor/starterBricks/menuItem";
@@ -49,7 +49,7 @@ import { minimalUiSchemaFactory } from "@/utils/schemaUtils";
 jest.mock("@/pageEditor/hooks/useUpsertModComponentFormState");
 jest.mock("@/pageEditor/hooks/useResetExtension");
 
-jest.mock("@/services/api", () => ({
+jest.mock("@/data/service/api", () => ({
   useCreateRecipeMutation: jest.fn().mockReturnValue([]),
   useUpdateRecipeMutation: jest.fn().mockReturnValue([]),
   useGetEditablePackagesQuery: jest.fn().mockReturnValue({

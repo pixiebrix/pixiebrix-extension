@@ -29,7 +29,7 @@ import {
 import { SidebarLink } from "./SidebarLink";
 import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
 import useFlags from "@/hooks/useFlags";
-import { useGetMeQuery } from "@/services/api";
+import { useGetMeQuery } from "@/data/service/api";
 import { faSlack } from "@fortawesome/free-brands-svg-icons";
 import { MARKETPLACE_URL } from "@/urlConstants";
 

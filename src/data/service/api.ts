@@ -45,7 +45,7 @@ import {
   type ModDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-import baseQuery from "@/services/baseQuery";
+import baseQuery from "@/data/service/baseQuery";
 import type { ModComponentBase } from "@/types/modComponentTypes";
 
 export const appApi = createApi({
