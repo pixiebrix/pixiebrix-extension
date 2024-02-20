@@ -55,7 +55,7 @@ describe("commandController", () => {
     initCommandController();
   });
 
-  // TODO: figure out how to properly isolate tests
+  // TODO: figure out how to properly isolate tests - adding multiple tests cause flakiness
   beforeEach(async () => {
     document.body.innerHTML = '<div><input type="text" /></div>';
     commandRegistry.clear();
