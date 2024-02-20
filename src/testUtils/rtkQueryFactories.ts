@@ -40,7 +40,7 @@ export function queryLoadingFactory(): UseQueryHookResult<
 /**
  * Factory to create an RTK Query success state.
  *
- * @since 1.8.9 - Not used, but kept for future reference in case it's needed
+ * @since 1.8.10 - Not used, but kept for future reference in case it's needed
  */
 /*
 function querySuccessFactory<T>(
