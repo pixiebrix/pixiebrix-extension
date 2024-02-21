@@ -40,7 +40,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import EmotionShadowRoot from "react-shadow/emotion";
 import { Stylesheets } from "@/components/Stylesheets";
-import { TextCommand } from "@/platform/platformProtocol";
+import type { TextCommand } from "@/platform/platformProtocol";
 
 // "Every property exists" (via Proxy), TypeScript doesn't offer such type
 // Also strictNullChecks config mismatch
