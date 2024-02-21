@@ -32,6 +32,7 @@ import { selectSettings } from "@/store/settings/settingsSelectors";
  */
 function useTheme(): ThemeAssets {
   const { partnerId } = useSelector(selectSettings);
+  // TODO: figure out a way to get this to return the local storage cache first instead of a static initialValue
   const { data } = useAsyncState(getActiveTheme, [partnerId], {
     initialValue: initialTheme,
   });

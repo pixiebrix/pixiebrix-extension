@@ -92,6 +92,8 @@ export const setThemeFavicon = (themeName: ThemeName): void => {
   }
 
   if (themeName === "default") {
+    // TODO: this doesn't work... The favicon isn't reset back to the default after being set to AA.
+    //  The page needs to be reloaded to reset the favicon (This is a current bug in the latest build)
     favicon.removeAttribute("href");
   } else {
     const { small: icon } = getThemeLogo(themeName);
