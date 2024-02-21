@@ -26,7 +26,7 @@ import {
   getThemeLogo,
   isValidThemeName,
   setThemeFavicon,
-  type ThemeLogo,
+  ThemeAssets,
 } from "@/themes/themeUtils";
 import { appApi } from "@/services/api";
 import { selectAuth } from "@/auth/authSelectors";
@@ -115,13 +115,6 @@ export function useGetOrganizationTheme(): {
   };
 }
 
-type ThemeAssets = {
-  logo: ThemeLogo;
-  showSidebarLogo: boolean;
-  customSidebarLogo: string | null;
-  toolbarIcon: string | null;
-};
-
 /**
  * Hook to activate the PixieBrix or partner theme.
  * @param themeName the themeName to use, or nullish to automatically determine the theme.
@@ -141,6 +134,7 @@ function useTheme(themeName?: ThemeName): ThemeAssets {
   return {
     logo: themeLogo,
     ...organizationTheme,
+    baseThemeName: themeName,
   };
 }
 

@@ -15,26 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getThemeLogo } from "@/themes/themeUtils";
 import activateBrowserActionIcon from "@/background/activateBrowserActionIcon";
-import { DEFAULT_THEME } from "@/themes/themeTypes";
-import { browserAction } from "@/mv3/api";
 import { expectContext } from "@/utils/expectContext";
 import { getActiveTheme } from "@/themes/themeStore";
+import { browserAction } from "@/mv3/api";
+import { themeStorage } from "@/themes/themeUtils";
 
 /**
  * Set the toolbar icon based on the current theme settings.
  * @see useGetTheme
  */
 async function setToolbarIcon(): Promise<void> {
-  const { themeName: activeThemeName, toolbarIcon } = await getActiveTheme();
-
-  if (toolbarIcon || activeThemeName === DEFAULT_THEME) {
-    await activateBrowserActionIcon(toolbarIcon);
+  const cachedTheme = await themeStorage.get();
+  if (cachedTheme) {
+    await activateBrowserActionIcon(cachedTheme);
   } else {
-    const themeLogo = getThemeLogo(activeThemeName);
-    browserAction.setIcon({ path: themeLogo.small });
+    // Default to manifest icons (This re-sets the colored manifest icons)
+    const { icons: manifestPath } = browser.runtime.getManifest();
+    browserAction.setIcon({ path: manifestPath });
   }
+
+  const activeTheme = await getActiveTheme();
+  void activateBrowserActionIcon(activeTheme);
 }
 
 export default function initTheme() {

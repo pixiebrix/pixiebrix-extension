@@ -24,6 +24,7 @@ import logo from "@img/logo.svg";
 import logoSmall from "@img/logo-small.svg";
 import aaLogo from "@img/aa-logo.svg";
 import aaLogoSmall from "@img/aa-logo-small.svg";
+import { StorageItem } from "webext-storage";
 
 export const isValidThemeName = (themeName: string): themeName is ThemeName =>
   THEME_NAMES.includes(themeName);
@@ -46,6 +47,17 @@ export const THEME_LOGOS: ThemeLogoMap = {
     regular: aaLogo,
     small: aaLogoSmall,
   },
+};
+
+export type ThemeAssets = {
+  logo: ThemeLogo;
+  showSidebarLogo: boolean;
+  /** URL to a png or a svg */
+  customSidebarLogo: string | null;
+  /** URL to a svg */
+  toolbarIcon: string | null;
+  /** The base theme name **/
+  baseThemeName: ThemeName;
 };
 
 // Note: this function is re-used in the app. Should not reference
@@ -86,3 +98,5 @@ export const setThemeFavicon = (themeName: ThemeName): void => {
     favicon.setAttribute("href", icon);
   }
 };
+
+export const themeStorage = new StorageItem<ThemeAssets>("THEME");
