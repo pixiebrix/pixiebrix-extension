@@ -26,6 +26,8 @@ import { propertiesToSchema } from "@/validators/generic";
 import textFieldEdit from "text-field-edit";
 import { BusinessError } from "@/errors/businessErrors";
 import { isEmpty } from "lodash";
+import focus from "@/utils/focusController";
+import { isNativeField } from "@/utils/domUtils";
 
 /**
  * Insert text at the cursor position. For use with text snippets, etc.
@@ -61,18 +63,15 @@ class InsertAtCursorEffect extends EffectABC {
       return;
     }
 
-    const element: HTMLElement = isDocument(root)
-      ? (document.activeElement as HTMLElement)
-      : root;
+    const element = isDocument(root) ? focus.get() : root;
 
     if (!element) {
       throw new BusinessError("No active element");
     }
 
     // Demo page: https://pbx.vercel.app/bootstrap-5/
-    if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
-      const textElement = element as HTMLTextAreaElement | HTMLInputElement;
-      textFieldEdit.insert(textElement, text);
+    if (isNativeField(element)) {
+      textFieldEdit.insert(element, text);
       return;
     }
 

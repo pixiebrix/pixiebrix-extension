@@ -208,3 +208,11 @@ export function runOnDocumentVisible<Args extends unknown[], TReturn = unknown>(
 
   return runOnce;
 }
+
+export function isNativeField(
+  field: HTMLElement,
+): field is HTMLInputElement | HTMLTextAreaElement {
+  return (
+    field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement
+  );
+}
