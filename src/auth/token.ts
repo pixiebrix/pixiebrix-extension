@@ -30,6 +30,7 @@ import { type UnknownObject } from "@/types/objectTypes";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { StorageItem } from "webext-storage";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
+import { RepeatableAbortController } from "abort-utils";
 
 const extensionKeyStorage = new StorageItem("extensionKey", {
   defaultValue: {} as Partial<TokenAuthData>,
@@ -41,7 +42,7 @@ const partnerTokenStorage = new StorageItem("partnerToken", {
 type AuthListener = (auth: Partial<TokenAuthData | PartnerAuthData>) => void;
 
 // Used only for testing
-let controller = new AbortController();
+const controller = new RepeatableAbortController();
 
 const authChanges = new SimpleEventTarget<
   Partial<TokenAuthData | PartnerAuthData>
@@ -67,8 +68,7 @@ export function TEST_triggerListeners(auth: Partial<TokenAuthData>): void {
 }
 
 export function TEST_clearListeners(): void {
-  controller.abort();
-  controller = new AbortController();
+  controller.abortAndReset();
 }
 
 /**

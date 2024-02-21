@@ -63,6 +63,7 @@ import { type StarterBrick } from "@/types/starterBrickTypes";
 import { boolean } from "@/utils/typeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import pluralize from "@/utils/pluralize";
+import { RepeatableAbortController } from "abort-utils";
 
 export type PanelConfig = {
   heading?: string;
@@ -104,7 +105,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
   private readonly collapsedExtensions: Map<UUID, boolean>;
 
-  private cancelController = new AbortController();
+  private readonly cancelController = new RepeatableAbortController();
 
   private uninstalled = false;
 
@@ -198,8 +199,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
     this.$container = null;
 
-    this.cancelController.abort();
-    this.cancelController = new AbortController();
+    this.cancelController.abortAndReset();
   }
 
   async install(): Promise<boolean> {

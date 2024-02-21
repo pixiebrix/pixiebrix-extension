@@ -27,6 +27,7 @@ import pMemoize, { pMemoizeClear } from "p-memoize";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import type { Nullishable } from "@/utils/nullishUtils";
+import { RepeatableAbortController } from "abort-utils";
 
 // 1.8.9: bumped to 4.5s because 2s was too short: https://github.com/pixiebrix/pixiebrix-extension/issues/7618
 //   Privacy Badger uses 4.5s timeout, but thinks policy should generally be available within 2.5s. In installer.ts,
@@ -44,7 +45,7 @@ let initializationInterval: ReturnType<typeof setTimeout> | undefined;
 let managedStorageSnapshot: Nullishable<ManagedStorageState>;
 
 // Used only for testing
-let controller = new AbortController();
+const controller = new RepeatableAbortController();
 
 const manageStorageStateChanges = new SimpleEventTarget<ManagedStorageState>();
 
@@ -261,8 +262,7 @@ export function subscribe(
  * Helper method for resetting the module for testing.
  */
 export function INTERNAL_reset(): void {
-  controller.abort();
-  controller = new AbortController();
+  controller.abortAndReset();
   managedStorageSnapshot = undefined;
 
   clearInterval(initializationInterval);

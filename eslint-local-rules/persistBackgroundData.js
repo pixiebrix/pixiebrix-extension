@@ -28,6 +28,7 @@ const ALLOWED_CONSTRUCTORS = [
   "WeakMap",
   "SimpleEventTarget",
   "AbortController",
+  "RepeatableAbortController",
 ];
 const ALLOWED_FUNCTIONS = [
   "getMethod",

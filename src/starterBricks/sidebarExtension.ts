@@ -63,6 +63,7 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import { RepeatableAbortController } from "abort-utils";
 
 export type SidebarConfig = {
   heading: string;
@@ -113,7 +114,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
    * Controller to drop all listeners and timers
    * @private
    */
-  private abortController = new AbortController();
+  private readonly abortController = new RepeatableAbortController();
 
   inputSchema: Schema = propertiesToSchema(
     {
@@ -255,11 +256,8 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   }
 
   cancelListeners(): void {
-    // Inform registered listeners
-    this.abortController.abort();
-
-    // Allow new registrations
-    this.abortController = new AbortController();
+    // Inform and remove registered listeners
+    this.abortController.abortAndReset();
   }
 
   /**
