@@ -14,10 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { absoluteApiUrl } from "@/services/apiClient";
+import { absoluteApiUrl } from "@/data/service/apiClient";
 
 // Disable automatic __mocks__ resolution #6799
-jest.mock("@/services/apiClient", () => jest.requireActual("./apiClient.ts"));
+jest.mock("@/data/service/apiClient", () =>
+  jest.requireActual("./apiClient.ts"),
+);
 
 describe("absoluteApiUrl", () => {
   it("makes relative url absolute", async () => {

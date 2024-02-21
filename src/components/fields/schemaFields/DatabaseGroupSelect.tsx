@@ -17,7 +17,7 @@
 
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { validateUUID } from "@/types/helpers";
 import { useField } from "formik";
 import React from "react";

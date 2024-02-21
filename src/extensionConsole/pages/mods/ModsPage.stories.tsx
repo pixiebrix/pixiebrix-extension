@@ -24,7 +24,7 @@ import { authSlice } from "@/auth/authSlice";
 import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import extensionsSlice from "@/store/extensionsSlice";
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { type UnknownObject } from "@/types/objectTypes";
 

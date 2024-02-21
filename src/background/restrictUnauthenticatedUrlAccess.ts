@@ -25,7 +25,7 @@ import { SessionValue } from "@/mv3/SessionStorage";
 import reportError from "@/telemetry/reportError";
 import type { Tabs } from "webextension-polyfill";
 import { forEachTab } from "@/utils/extensionUtils";
-import { getApiClient } from "@/services/apiClient";
+import { getApiClient } from "@/data/service/apiClient";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import { StorageItem } from "webext-storage";
 

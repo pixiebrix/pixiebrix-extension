@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { withoutTrailingSlash } from "@/services/baseService";
+import { withoutTrailingSlash } from "@/data/service/baseService";
 
 describe("withoutTrailingSlash", () => {
   it.each(["https://app.pixiebrix.com/", "https://app.pixiebrix.com"])(

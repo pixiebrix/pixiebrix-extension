@@ -16,7 +16,7 @@
  */
 
 import { pixiebrixConfigurationFactory } from "@/integrations/locator";
-import { getBaseURL } from "@/services/baseService";
+import { getBaseURL } from "@/data/service/baseService";
 import { validateInput } from "@/validators/generic";
 import { type Webhook } from "@/contrib/zapier/contract";
 import { type Permissions } from "webextension-polyfill";

@@ -33,7 +33,7 @@ import {
   isUnavailableMod,
   updateAvailable,
 } from "@/utils/modUtils";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import { selectOrganizations, selectScope } from "@/auth/authSelectors";
 import { isDeploymentActive } from "@/utils/deploymentUtils";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";

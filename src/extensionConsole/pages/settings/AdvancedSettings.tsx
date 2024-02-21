@@ -19,7 +19,7 @@ import styles from "./SettingsCard.module.scss";
 
 // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
 import { Button, Card, Form } from "react-bootstrap";
-import { useConfiguredHost } from "@/services/baseService";
+import { useConfiguredHost } from "@/data/service/baseService";
 import React, { useCallback } from "react";
 import { clearCachedAuthSecrets, clearPartnerAuth } from "@/auth/token";
 import notify from "@/utils/notify";
@@ -33,7 +33,7 @@ import pTimeout from "p-timeout";
 import chromeP from "webext-polyfill-kinda";
 import useUserAction from "@/hooks/useUserAction";
 import { isEmpty } from "lodash";
-import { util as apiUtil } from "@/services/api";
+import { util as apiUtil } from "@/data/service/api";
 import useDiagnostics from "@/extensionConsole/pages/settings/useDiagnostics";
 import AsyncButton from "@/components/AsyncButton";
 import { reloadIfNewVersionIsReady } from "@/utils/extensionUtils";

@@ -37,7 +37,7 @@ import TagList, { type TagItem } from "@/components/addBlockModal/TagList";
 import {
   useGetMarketplaceListingsQuery,
   useGetMarketplaceTagsQuery,
-} from "@/services/api";
+} from "@/data/service/api";
 import { type MarketplaceListing } from "@/types/contract";
 import BlockDetail from "@/components/addBlockModal/BlockDetail";
 import Loader from "@/components/Loader";
@@ -61,7 +61,7 @@ import {
 import { getItemKey } from "@/components/addBlockModal/addBlockModalHelpers";
 import useAddBlock from "@/components/addBlockModal/useAddBlock";
 import { useGetThemeName } from "@/hooks/useTheme";
-import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
+import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/data/service/constants";
 import aaLogo from "@img/aa-logo-small.svg";
 import { scrollbarWidth } from "@xobotyi/scrollbar-width";
 import { type RegistryId } from "@/types/registryTypes";

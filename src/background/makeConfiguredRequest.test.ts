@@ -36,8 +36,8 @@ import { getToken } from "@/background/auth/getToken";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 
 // Disable automatic __mocks__ resolution #6799
-jest.mock("@/services/apiClient", () =>
-  jest.requireActual("../services/apiClient.ts"),
+jest.mock("@/data/service/apiClient", () =>
+  jest.requireActual("@/data/service/apiClient.ts"),
 );
 
 setContext("background");

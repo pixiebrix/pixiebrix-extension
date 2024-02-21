@@ -26,7 +26,7 @@ import {
   selectExtensions,
   selectExtensionsForRecipe,
 } from "@/store/extensionsSelectors";
-import { maybeGetLinkedApiClient } from "@/services/apiClient";
+import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab, getExtensionVersion } from "@/utils/extensionUtils";
 import { parse as parseSemVer, satisfies, type SemVer } from "semver";

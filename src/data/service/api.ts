@@ -45,7 +45,7 @@ import {
   type ModDefinition,
   type UnsavedModDefinition,
 } from "@/types/modDefinitionTypes";
-import baseQuery from "@/services/baseQuery";
+import baseQuery from "@/data/service/baseQuery";
 import type { ModComponentBase } from "@/types/modComponentTypes";
 
 export const appApi = createApi({
@@ -169,6 +169,22 @@ export const appApi = createApi({
       ) => ({
         [organizationId]: baseQueryReturnValue,
       }),
+    }),
+    getMarketplaceListing: builder.query<
+      MarketplaceListing,
+      { packageId: RegistryId }
+    >({
+      query: (params) => ({
+        url: "/api/marketplace/listings/",
+        method: "get",
+        // Returns public marketplace
+        requireLinked: false,
+        params: {
+          package__name: params.packageId,
+        },
+      }),
+      transformResponse: (baseQueryReturnValue: MarketplaceListing[]) =>
+        baseQueryReturnValue[0],
     }),
     getMarketplaceListings: builder.query<
       Record<RegistryId, MarketplaceListing>,
@@ -422,6 +438,7 @@ export const {
   useAddDatabaseToGroupMutation,
   useGetIntegrationsQuery,
   useGetIntegrationAuthsQuery,
+  useGetMarketplaceListingQuery,
   useGetMarketplaceListingsQuery,
   useGetMarketplaceTagsQuery,
   useGetOrganizationsQuery,
