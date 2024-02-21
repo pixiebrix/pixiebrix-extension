@@ -17,12 +17,13 @@
 
 import { useSelector } from "react-redux";
 import { selectTelemetryOrganizationId } from "@/auth/authSelectors";
-import { useGetThemeName } from "@/hooks/useTheme";
+import useTheme from "@/hooks/useTheme";
+import { DEFAULT_THEME } from "@/themes/themeTypes";
 
 function useIsEnterpriseUser() {
   const telemetryOrganizationId = useSelector(selectTelemetryOrganizationId);
-  const theme = useGetThemeName();
-  return Boolean(telemetryOrganizationId) || theme !== "default";
+  const { baseThemeName } = useTheme();
+  return Boolean(telemetryOrganizationId) || baseThemeName !== DEFAULT_THEME;
 }
 
 export default useIsEnterpriseUser;

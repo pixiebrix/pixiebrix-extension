@@ -21,14 +21,15 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
 import { hideSidebar } from "@/contentScript/messenger/strict/api";
-import useTheme, { useGetThemeName } from "@/hooks/useTheme";
+import useTheme from "@/hooks/useTheme";
 import cx from "classnames";
 import { getTopLevelFrame } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
+import { DEFAULT_THEME } from "@/themes/themeTypes";
 
 const Header: React.FunctionComponent = () => {
   const { logo, showSidebarLogo, customSidebarLogo } = useTheme();
-  const theme = useGetThemeName();
+  const { baseThemeName } = useTheme();
   /* In MV3, Chrome offers a native Close button */
   const showCloseButton = !isMV3();
 
@@ -38,7 +39,9 @@ const Header: React.FunctionComponent = () => {
         <Button
           className={cx(
             styles.button,
-            theme === "default" ? styles.themeColorOverride : styles.themeColor,
+            baseThemeName === DEFAULT_THEME
+              ? styles.themeColorOverride
+              : styles.themeColor,
           )}
           onClick={async () => {
             // This piece of code is MV2-only, it only needs to handle being run in an iframe
@@ -69,7 +72,9 @@ const Header: React.FunctionComponent = () => {
         variant="link"
         className={cx(
           styles.button,
-          theme === "default" ? styles.themeColorOverride : styles.themeColor,
+          baseThemeName === "default"
+            ? styles.themeColorOverride
+            : styles.themeColor,
         )}
       >
         <FontAwesomeIcon icon={faCog} />

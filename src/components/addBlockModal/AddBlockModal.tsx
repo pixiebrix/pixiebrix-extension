@@ -60,7 +60,7 @@ import {
 } from "@/components/addBlockModal/addBlockModalTypes";
 import { getItemKey } from "@/components/addBlockModal/addBlockModalHelpers";
 import useAddBlock from "@/components/addBlockModal/useAddBlock";
-import { useGetThemeName } from "@/hooks/useTheme";
+import useTheme from "@/hooks/useTheme";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/services/constants";
 import aaLogo from "@img/aa-logo-small.svg";
 import { scrollbarWidth } from "@xobotyi/scrollbar-width";
@@ -182,7 +182,7 @@ const AddBlockModal: React.FC = () => {
     [marketplaceTags, listings],
   );
 
-  const themeName = useGetThemeName();
+  const { baseThemeName: themeName } = useTheme();
 
   const tagItems: TagItem[] = useMemo(() => {
     const items: TagItem[] = [{ tag: TAG_ALL }];

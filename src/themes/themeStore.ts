@@ -30,20 +30,27 @@ import reportError from "@/telemetry/reportError";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 
+export const initialTheme: ThemeAssets = {
+  logo: getThemeLogo(DEFAULT_THEME),
+  showSidebarLogo: true,
+  customSidebarLogo: null,
+  toolbarIcon: null,
+  baseThemeName: DEFAULT_THEME,
+};
+
 /**
  * Returns the active theme assets. In React, prefer useTheme.
  * @see useTheme
  */
 export async function getActiveTheme(): Promise<ThemeAssets> {
   expectContext("extension");
-
-  // Enterprise managed storage, if provided, always takes precedence over the user's theme settings
-  const { partnerId: managedPartnerId, managedOrganizationId } =
-    await readManagedStorage();
-
-  const client = await getApiClient();
-
   try {
+    // Enterprise managed storage, if provided, always takes precedence over the user's theme settings
+    const { partnerId: managedPartnerId, managedOrganizationId } =
+      await readManagedStorage();
+
+    const client = await getApiClient();
+
     let organizationTheme: OrganizationTheme;
     if (managedOrganizationId && isUUID(managedOrganizationId)) {
       const { data } = await client.get<OrganizationTheme>(
@@ -59,9 +66,12 @@ export async function getActiveTheme(): Promise<ThemeAssets> {
     }
 
     // The theme property is initialized/set via an effect in useGetThemeName
-    const { theme: themeName } = await getSettingsState();
+    const { partnerId: settingsPartnerId } = await getSettingsState();
     const activeThemeName =
-      managedPartnerId ?? themeName ?? meData.partner?.theme ?? DEFAULT_THEME;
+      managedPartnerId ??
+      settingsPartnerId ??
+      meData.partner?.theme ??
+      DEFAULT_THEME;
 
     const activeThemeAssets = {
       logo: getThemeLogo(activeThemeName),
@@ -79,12 +89,6 @@ export async function getActiveTheme(): Promise<ThemeAssets> {
     return activeThemeAssets;
   } catch (error) {
     reportError(error);
-    return {
-      logo: getThemeLogo(DEFAULT_THEME),
-      showSidebarLogo: true,
-      customSidebarLogo: null,
-      toolbarIcon: null,
-      baseThemeName: DEFAULT_THEME,
-    };
+    return initialTheme;
   }
 }
