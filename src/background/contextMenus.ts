@@ -36,6 +36,8 @@ import {
 } from "@/types/modComponentTypes";
 import { allSettled, memoizeUntilSettled } from "@/utils/promiseUtils";
 import type { SelectionMenuOptions } from "@/platform/platformProtocol";
+import { ContextError } from "@/errors/genericErrors";
+import { selectEventData } from "@/telemetry/deployments";
 
 const MENU_PREFIX = "pixiebrix-";
 
@@ -190,7 +192,12 @@ export async function preloadContextMenus(
       await extensionPoint.registerMenuItem(
         definition as unknown as ResolvedModComponent<ContextMenuConfig>,
         () => {
-          throw new Error("Handler not registered");
+          throw new ContextError(
+            "Context menu was preloaded, but no handler was registered",
+            {
+              context: selectEventData(resolved),
+            },
+          );
         },
       );
     }
