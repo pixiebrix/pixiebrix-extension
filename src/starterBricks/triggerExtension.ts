@@ -19,7 +19,7 @@ import {
   type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-
+import { RepeatableAbortController } from "abort-utils";
 import { propertiesToSchema } from "@/validators/generic";
 import {
   type CustomEventOptions,
@@ -192,10 +192,15 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   >();
 
   /**
-   * Controller to drop all listeners and timers
+   * Controller to drop observers
    * @private
    */
-  private abortController = new AbortController();
+  private readonly observersController = new RepeatableAbortController();
+
+  /**
+   * Controller to drop event listeners and timers
+   */
+  private readonly cancelHandlers = new RepeatableAbortController();
 
   // Extensions that have errors/events reported. NOTE: this tracked per contentScript instance. These are not
   // reset on Single Page Application navigation events
@@ -292,15 +297,12 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       instanceNonce: this.instanceNonce,
     });
 
-    // Inform registered listeners
-    this.abortController.abort();
-
-    // Allow new registrations
-    this.abortController = new AbortController();
+    // Inform and discard registered observers
+    this.observersController.abortAndReset();
   }
 
   addCancelHandler(callback: () => void): void {
-    this.abortController.signal.addEventListener("abort", callback);
+    this.cancelHandlers.signal.addEventListener("abort", callback);
   }
 
   clearModComponentInterfaceAndEvents(): void {
@@ -328,6 +330,9 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       trigger: this.trigger,
       $currentElements,
     });
+
+    // This won't impact with other trigger extension points because the handler reference is unique to `this`
+    this.cancelHandlers.abortAndReset();
 
     // Remove all extensions to prevent them from running if there are any straggler event handlers on the page
     this.modComponents.length = 0;
@@ -580,7 +585,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     // Await for the element(s) to appear on the page so that we can
     const rootPromise = isEmpty(rootSelector)
       ? document
-      : awaitElementOnce(rootSelector, this.abortController.signal);
+      : awaitElementOnce(rootSelector, this.observersController.signal);
 
     try {
       await rootPromise;
@@ -618,7 +623,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       void interval({
         intervalMillis: this.intervalMillis,
         effectGenerator: intervalEffect,
-        signal: this.abortController.signal,
+        signal: this.observersController.signal,
         requestAnimationFrame: !this.allowInactiveFrames,
       });
 
@@ -708,7 +713,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
   private attachDocumentTrigger(): void {
     document.addEventListener(this.trigger, this.eventHandler, {
-      signal: this.abortController.signal,
+      signal: this.cancelHandlers.signal,
     });
   }
 
@@ -755,7 +760,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     } else {
       for (const element of $elements) {
         element.addEventListener(domEventName, this.eventHandler, {
-          signal: this.abortController.signal,
+          signal: this.cancelHandlers.signal,
         });
       }
     }
