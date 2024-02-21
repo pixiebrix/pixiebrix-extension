@@ -258,7 +258,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     >,
     handler: (clickData: Menus.OnClickData) => Promise<void>,
   ): Promise<void> {
-    const { title = "Untitled menu item" } = extension.config;
+    const { title = DEFAULT_MENU_ITEM_TITLE } = extension.config;
 
     if (!isDeploymentActive(extension)) {
       return;

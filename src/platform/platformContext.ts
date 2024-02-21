@@ -34,7 +34,7 @@ export function getPlatform(): PlatformProtocol {
 }
 
 /**
- * Set the current platform. Should be called once at the beginning of the application.
+ * Set the current ambient platform. Should be called once at the beginning of the application.
  * @param platformProtocol
  */
 export function setPlatform(platformProtocol: PlatformProtocol): void {

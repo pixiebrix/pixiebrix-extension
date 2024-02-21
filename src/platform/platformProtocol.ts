@@ -37,12 +37,6 @@ import type { Menus } from "webextension-polyfill";
 import type { writeToClipboard } from "@/utils/clipboardUtils";
 import type { IconConfig } from "@/types/iconTypes";
 
-function notAvailable(capability: PlatformCapability): () => never {
-  return () => {
-    throw new PlatformCapabilityNotAvailable(capability);
-  };
-}
-
 export type AudioProtocol = {
   play(soundEffect: string): Promise<void>;
 };
@@ -301,67 +295,110 @@ export interface PlatformProtocol {
   get badge(): BadgeProtocol;
 }
 
-export class PlatformABC implements PlatformProtocol {
+export class PlatformBase implements PlatformProtocol {
   readonly capabilities: readonly PlatformCapability[] = [];
 
-  open: PlatformProtocol["open"] = notAvailable("link");
+  constructor(readonly platformName: string) {}
 
-  alert: PlatformProtocol["alert"] = notAvailable("alert");
+  alert(_message: unknown): void {
+    throw new PlatformCapabilityNotAvailable(this.platformName, "alert");
+  }
 
-  prompt: PlatformProtocol["prompt"] = notAvailable("alert");
+  prompt(
+    _message: string | undefined,
+    _default: string | undefined,
+  ): string | null {
+    throw new PlatformCapabilityNotAvailable(this.platformName, "alert");
+  }
 
-  notify: PlatformProtocol["notify"] = notAvailable("toast");
+  async form(
+    _definition: FormDefinition,
+    _controller: AbortController,
+    _context: {
+      componentId: UUID;
+      modId?: RegistryId;
+    },
+  ): Promise<unknown> {
+    throw new PlatformCapabilityNotAvailable(this.platformName, "form");
+  }
 
-  userSelectElementRefs: PlatformProtocol["userSelectElementRefs"] =
-    notAvailable("contentScript");
+  notify(..._args: Parameters<typeof showNotification>): string {
+    throw new PlatformCapabilityNotAvailable(this.platformName, "toast");
+  }
 
-  request: PlatformProtocol["request"] = notAvailable("http");
+  async open(_url: URL): Promise<void> {
+    throw new PlatformCapabilityNotAvailable(this.platformName, "link");
+  }
 
-  form: PlatformProtocol["form"] = notAvailable("form");
+  async panel(_definition: TemporaryPanelDefinition): Promise<JsonObject> {
+    throw new PlatformCapabilityNotAvailable(this.platformName, "panel");
+  }
 
-  panel: PlatformProtocol["panel"] = notAvailable("panel");
+  async request<TData>(
+    _integrationConfig: Nullishable<SanitizedIntegrationConfig>,
+    _requestConfig: AxiosRequestConfig,
+  ): Promise<RemoteResponse<TData>> {
+    throw new PlatformCapabilityNotAvailable(this.platformName, "http");
+  }
 
-  runSandboxedJavascript: PlatformProtocol["runSandboxedJavascript"] =
-    notAvailable("sandbox");
+  async runSandboxedJavascript(_args: JavaScriptPayload): Promise<unknown> {
+    throw new PlatformCapabilityNotAvailable(this.platformName, "sandbox");
+  }
+
+  async userSelectElementRefs(): Promise<ElementReference[]> {
+    throw new PlatformCapabilityNotAvailable(
+      this.platformName,
+      "contentScript",
+    );
+  }
 
   get audio(): AudioProtocol {
-    throw new PlatformCapabilityNotAvailable("audio");
+    throw new PlatformCapabilityNotAvailable(this.platformName, "audio");
   }
 
   get state(): StateProtocol {
-    throw new PlatformCapabilityNotAvailable("state");
+    throw new PlatformCapabilityNotAvailable(this.platformName, "state");
   }
 
   get template(): TemplateProtocol {
-    throw new PlatformCapabilityNotAvailable("template");
+    throw new PlatformCapabilityNotAvailable(this.platformName, "template");
   }
 
   get contextMenu(): ContextMenuProtocol {
-    throw new PlatformCapabilityNotAvailable("contextMenu");
+    throw new PlatformCapabilityNotAvailable(this.platformName, "contextMenu");
   }
 
   get badge(): BadgeProtocol {
-    throw new PlatformCapabilityNotAvailable("badge");
+    throw new PlatformCapabilityNotAvailable(this.platformName, "badge");
   }
 
   get quickBar(): QuickBarRegistryProtocol {
-    throw new PlatformCapabilityNotAvailable("quickBar");
+    throw new PlatformCapabilityNotAvailable(this.platformName, "quickBar");
   }
 
   get selectionTooltip(): SelectionTooltipProtocol {
-    throw new PlatformCapabilityNotAvailable("selectionTooltip");
+    throw new PlatformCapabilityNotAvailable(
+      this.platformName,
+      "selectionTooltip",
+    );
   }
 
   get commandPopover(): CommandPopoverProtocol {
-    throw new PlatformCapabilityNotAvailable("commandPopover");
+    throw new PlatformCapabilityNotAvailable(
+      this.platformName,
+      "commandPopover",
+    );
   }
 
   get clipboard(): ClipboardProtocol {
-    throw new PlatformCapabilityNotAvailable("clipboardWrite");
+    throw new PlatformCapabilityNotAvailable(
+      this.platformName,
+      "clipboardWrite",
+    );
   }
 }
 
 /**
  * A platform protocol with no available capabilities.
  */
-export const uninitializedPlatform = new PlatformABC();
+export const uninitializedPlatform = new PlatformBase("uninitialized");

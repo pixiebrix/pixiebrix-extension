@@ -83,7 +83,12 @@ export const PAGE_SCRIPT_CAPABILITIES: PlatformCapability[] = [
 export class PlatformCapabilityNotAvailable extends Error {
   override name = "PlatformCapabilityNotAvailable";
 
-  constructor(capability: PlatformCapability) {
-    super("Capability not available for platform: " + capability);
+  constructor(
+    readonly platformName: string,
+    readonly capability: PlatformCapability,
+  ) {
+    super(
+      `Capability not available for platform [${platformName}]: ${capability}`,
+    );
   }
 }

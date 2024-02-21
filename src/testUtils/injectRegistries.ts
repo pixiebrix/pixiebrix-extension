@@ -28,7 +28,8 @@ import { setPlatform } from "@/platform/platformContext";
 // Since 1.8.2, the runtime is decoupled from the brick registry.
 initRuntime(brickRegistry);
 
-beforeAll(async () => {
+// Use beforeEach so individual tests can cleanly override the ambient platform
+beforeEach(async () => {
   // Use contentScriptPlatform as the default because it covers the most functionality
   // Perform dynamic import to ensure the mocks defined in the test file take precedence.
   const { default: contentScriptPlatform } = await import(

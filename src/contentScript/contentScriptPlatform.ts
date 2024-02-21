@@ -16,7 +16,7 @@
  */
 
 import {
-  PlatformABC,
+  PlatformBase,
   type PlatformProtocol,
 } from "@/platform/platformProtocol";
 import { showNotification } from "@/utils/notify";
@@ -71,7 +71,11 @@ async function userSelectElementRefs(): Promise<ElementReference[]> {
   return elements.map((element) => getReferenceForElement(element));
 }
 
-class ContentScriptPlatform extends PlatformABC {
+class ContentScriptPlatform extends PlatformBase {
+  constructor() {
+    super("contentScript");
+  }
+
   override capabilities: PlatformCapability[] = [
     "dom",
     "contentScript",
