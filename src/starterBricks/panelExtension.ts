@@ -63,6 +63,10 @@ import { type StarterBrick } from "@/types/starterBrickTypes";
 import { boolean } from "@/utils/typeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import pluralize from "@/utils/pluralize";
+import {
+  CONTENT_SCRIPT_CAPABILITIES,
+  type PlatformCapability,
+} from "@/platform/capabilities";
 
 export type PanelConfig = {
   heading?: string;
@@ -160,6 +164,8 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
   public get kind(): "panel" {
     return "panel";
   }
+
+  readonly capabilities: PlatformCapability[] = CONTENT_SCRIPT_CAPABILITIES;
 
   async getBricks(
     extension: ResolvedModComponent<PanelConfig>,

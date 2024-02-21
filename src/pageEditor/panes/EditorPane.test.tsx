@@ -23,10 +23,7 @@ import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import brickRegistry from "@/bricks/registry";
-import {
-  type EditorRootState,
-  PipelineFlavor,
-} from "@/pageEditor/pageEditorTypes";
+import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import {
   echoBrick,
   teapotBrick,
@@ -65,6 +62,7 @@ import {
 } from "@/testUtils/factories/marketplaceFactories";
 import { partnerUserFactory } from "@/testUtils/factories/authFactories";
 import { toExpression } from "@/utils/expressionUtils";
+import { PipelineFlavor } from "@/bricks/types";
 
 jest.setTimeout(15_000); // This test is flaky with the default timeout of 5000 ms
 

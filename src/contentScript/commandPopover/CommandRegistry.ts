@@ -18,26 +18,7 @@
 import type { UUID } from "@/types/stringTypes";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { remove } from "lodash";
-
-export type TextCommand = {
-  /**
-   * The mod component id that owns the command/snippet
-   */
-  componentId: UUID;
-  /**
-   * The shortcut to trigger the command, excluding the command key
-   */
-  shortcut: string;
-  /**
-   * The title/label of the snippet
-   */
-  title: string;
-  /**
-   * The text generator
-   * @param currentText current text in the editor
-   */
-  handler: (currentText: string) => Promise<string>;
-};
+import type { TextCommand } from "@/platform/platformProtocol";
 
 /**
  * Registry for slash commands

@@ -23,7 +23,6 @@ import React, {
   useRef,
 } from "react";
 import type CommandRegistry from "@/contentScript/commandPopover/CommandRegistry";
-import type { TextCommand } from "@/contentScript/commandPopover/CommandRegistry";
 import useCommandRegistry from "@/contentScript/commandPopover/useCommandRegistry";
 import { type TextEditorElement } from "@/types/inputTypes";
 import useKeyboardQuery from "@/contentScript/commandPopover/useKeyboardQuery";
@@ -41,6 +40,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import EmotionShadowRoot from "react-shadow/emotion";
 import { Stylesheets } from "@/components/Stylesheets";
+import type { TextCommand } from "@/platform/platformProtocol";
 
 // "Every property exists" (via Proxy), TypeScript doesn't offer such type
 // Also strictNullChecks config mismatch

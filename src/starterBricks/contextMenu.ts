@@ -33,11 +33,6 @@ import {
 } from "@/starterBricks/types";
 import { castArray, cloneDeep, compact, isEmpty, pick, uniq } from "lodash";
 import { checkAvailable } from "@/bricks/available";
-import {
-  ensureContextMenu,
-  uninstallContextMenu,
-} from "@/background/messenger/api";
-import { registerHandler } from "@/contentScript/contextMenus";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
 import notify, {
@@ -72,10 +67,9 @@ import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
 import batchedFunction from "batched-function";
 import { onContextInvalidated } from "webext-events";
-import {
-  initSelectionTooltip,
-  tooltipActionRegistry,
-} from "@/contentScript/selectionTooltip/tooltipController";
+import type { PlatformCapability } from "@/platform/capabilities";
+import { getPlatform } from "@/platform/platformContext";
+import { initSelectionTooltip } from "@/contentScript/selectionTooltip/tooltipController";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import type { Except } from "type-fest";
 
@@ -168,6 +162,8 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     return "contextMenu";
   }
 
+  readonly capabilities: PlatformCapability[] = ["contextMenu"];
+
   inputSchema: Schema = propertiesToSchema(
     {
       title: {
@@ -199,8 +195,8 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     const extensions = this.modComponents.splice(0);
     if (global) {
       for (const extension of extensions) {
-        void uninstallContextMenu({ extensionId: extension.id });
-        tooltipActionRegistry.unregister(extension.id);
+        void getPlatform().contextMenu.unregister(extension.id);
+        getPlatform().selectionTooltip.unregister(extension.id);
       }
     }
   }
@@ -218,8 +214,8 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     // re-activating a context menu (during re-activation, mod components get new extensionIds.)
 
     for (const extensionId of extensionIds) {
-      void uninstallContextMenu({ extensionId });
-      tooltipActionRegistry.unregister(extensionId);
+      void getPlatform().contextMenu.unregister(extensionId);
+      getPlatform().selectionTooltip.unregister(extensionId);
     }
   }
 
@@ -255,17 +251,16 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     ]);
   }
 
-  async ensureMenu(
+  async registerMenuItem(
     extension: Pick<
       ResolvedModComponent<ContextMenuConfig>,
       "id" | "config" | "_deployment"
     >,
+    handler: (clickData: Menus.OnClickData) => Promise<void>,
   ): Promise<void> {
     const { title = DEFAULT_MENU_ITEM_TITLE } = extension.config;
 
-    // Check for null/undefined to preserve backward compatability
     if (!isDeploymentActive(extension)) {
-      console.debug("Skipping ensureMenu for extension from paused deployment");
       return;
     }
 
@@ -273,11 +268,12 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       uniq([...this.documentUrlPatterns, ...(this.permissions?.origins ?? [])]),
     );
 
-    await ensureContextMenu({
+    await getPlatform().contextMenu.register({
       extensionId: extension.id,
       contexts: this.contexts ?? ["all"],
       title,
       documentUrlPatterns: patterns,
+      handler,
     });
   }
 
@@ -353,19 +349,8 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       title = DEFAULT_MENU_ITEM_TITLE,
     } = extension.config;
 
-    await this.ensureMenu(extension);
-
     const extensionLogger = this.logger.childLogger(
       selectExtensionContext(extension),
-    );
-
-    console.debug(
-      "Register context menu handler for: %s (%s)",
-      extension.id,
-      extension.label ?? "No Label",
-      {
-        extension,
-      },
     );
 
     const handler = async (
@@ -429,15 +414,16 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       }
     };
 
-    tooltipActionRegistry.register(extension.id, {
+    await this.registerMenuItem(extension, handler);
+
+    getPlatform().selectionTooltip.register(extension.id, {
       title,
+      // Starter Brick current doesn't have an icon affordance because the browser context menu API doesn't support them
       icon: undefined,
       async handler(text: string) {
         return handler({ selectionText: text });
       },
     });
-
-    registerHandler(extension.id, handler);
   }
 }
 

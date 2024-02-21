@@ -20,11 +20,9 @@ import { propertiesToSchema } from "@/validators/generic";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
-import {
-  commandRegistry,
-  initCommandController,
-} from "@/contentScript/commandPopover/commandController";
+import { initCommandController } from "@/contentScript/commandPopover/commandController";
 import { getSettingsState } from "@/store/settings/settingsStorage";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 type Snippet = {
   /**
@@ -62,6 +60,10 @@ class AddTextSnippets extends EffectABC {
     return true;
   }
 
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["commandPopover"];
+  }
+
   inputSchema: Schema = propertiesToSchema(
     {
       snippets: {
@@ -93,7 +95,7 @@ class AddTextSnippets extends EffectABC {
 
   async effect(
     { snippets }: BrickArgs<{ snippets: Snippet[] }>,
-    { logger, abortSignal }: BrickOptions,
+    { logger, abortSignal, platform }: BrickOptions,
   ): Promise<void> {
     // The runtime checks the abortSignal for each brick. But check here too to avoid flickering in the popover
     if (abortSignal?.aborted) {
@@ -105,7 +107,7 @@ class AddTextSnippets extends EffectABC {
     }
 
     for (const { shortcut, title, text } of snippets) {
-      commandRegistry.register({
+      platform.commandPopover.register({
         componentId: logger.context.extensionId,
         // Trim leading slash to be resilient to user input
         shortcut: shortcut.replace(/^\//, ""),

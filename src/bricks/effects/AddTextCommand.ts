@@ -24,13 +24,11 @@ import type {
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
-import {
-  commandRegistry,
-  initCommandController,
-} from "@/contentScript/commandPopover/commandController";
+import { initCommandController } from "@/contentScript/commandPopover/commandController";
 import { BusinessError } from "@/errors/businessErrors";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 type CommandArgs = {
   /**
@@ -88,9 +86,13 @@ class AddTextCommand extends EffectABC {
     ["shortcut", "title", "generate"],
   );
 
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["commandPopover"];
+  }
+
   async effect(
     { shortcut, title, generate: generatePipeline }: BrickArgs<CommandArgs>,
-    { logger, runPipeline, abortSignal }: BrickOptions,
+    { logger, runPipeline, platform, abortSignal }: BrickOptions,
   ): Promise<void> {
     // The runtime checks the abortSignal for each brick. But check here too to avoid flickering in the popover
     if (abortSignal?.aborted) {
@@ -104,7 +106,7 @@ class AddTextCommand extends EffectABC {
     // Counter to keep track of the action run number for tracing
     let counter = 0;
 
-    commandRegistry.register({
+    platform.commandPopover.register({
       componentId: logger.context.extensionId,
       // Trim leading slash to be resilient to user input
       shortcut: shortcut.replace(/^\//, ""),

@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickConfig, type BrickPosition } from "@/bricks/types";
+import {
+  type BrickConfig,
+  type BrickPosition,
+  PipelineFlavor,
+} from "@/bricks/types";
 import { type UUID } from "@/types/stringTypes";
 import { type TypedBrickPair } from "@/bricks/registry";
 import { DocumentRenderer } from "@/bricks/renderers/document";
@@ -26,7 +30,6 @@ import {
   getSubPipelineFlavor,
 } from "@/bricks/blockFilterHelpers";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
-import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { isPipelineExpression } from "@/utils/expressionUtils";
 import { joinPathParts } from "@/utils/formUtils";
@@ -175,7 +178,7 @@ class PipelineVisitor {
   ): void {
     const flavor = extra?.extensionPointType
       ? getRootPipelineFlavor(extra.extensionPointType)
-      : PipelineFlavor.AllBlocks;
+      : PipelineFlavor.AllBricks;
     this.visitPipeline(ROOT_POSITION, pipeline, { flavor });
   }
 }

@@ -18,7 +18,7 @@
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import { useCallback } from "react";
 import type CommandRegistry from "@/contentScript/commandPopover/CommandRegistry";
-import type { TextCommand } from "@/contentScript/commandPopover/CommandRegistry";
+import type { TextCommand } from "@/platform/platformProtocol";
 
 /**
  * React hook to sync React with the text command registry.

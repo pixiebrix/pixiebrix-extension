@@ -19,7 +19,6 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type JsonObject } from "type-fest";
-import { getPageState, setPageState } from "@/contentScript/pageState";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type BrickConfig } from "@/bricks/types";
@@ -140,11 +139,11 @@ export class SetPageState extends TransformerABC {
       namespace?: Namespace;
       mergeStrategy?: MergeStrategy;
     }>,
-    { logger }: BrickOptions,
+    { logger, platform }: BrickOptions,
   ): Promise<JsonObject> {
     const { blueprintId = null, extensionId } = logger.context;
 
-    return setPageState({
+    return platform.state.setState({
       namespace,
       data,
       mergeStrategy,
@@ -192,9 +191,10 @@ export class GetPageState extends TransformerABC {
 
   async transform(
     { namespace = "blueprint" }: BrickArgs<{ namespace?: Namespace }>,
-    { logger }: BrickOptions,
+    { logger, platform }: BrickOptions,
   ): Promise<JsonObject> {
     const { blueprintId = null, extensionId } = logger.context;
-    return getPageState({ namespace, blueprintId, extensionId });
+
+    return platform.state.getState({ namespace, blueprintId, extensionId });
   }
 }

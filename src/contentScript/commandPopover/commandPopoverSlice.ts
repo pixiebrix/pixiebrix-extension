@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { TextCommand } from "@/contentScript/commandPopover/CommandRegistry";
 import type { Nullishable } from "@/utils/nullishUtils";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { sortBy } from "lodash";
@@ -25,6 +24,7 @@ import {
   loadingAsyncStateFactory,
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
+import type { TextCommand } from "@/platform/platformProtocol";
 
 type PopoverState = {
   /**

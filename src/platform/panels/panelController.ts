@@ -17,7 +17,6 @@
 
 import { type UUID } from "@/types/stringTypes";
 import pDefer, { type DeferredPromise } from "p-defer";
-import { expectContext } from "@/utils/expectContext";
 import {
   type PanelAction,
   type TemporaryPanelEntry,
@@ -28,7 +27,7 @@ import { type Except, type SetOptional } from "type-fest";
 import { type Location } from "@/types/starterBrickTypes";
 import { isObject } from "@/utils/objectUtils";
 
-export type RegisteredPanel = {
+type RegisteredPanel = {
   /**
    * The location of the panel. Used to determine which registered temporary panels to reserve space for in the
    * sidebar when the sidebar opens.
@@ -50,7 +49,7 @@ export type RegisteredPanel = {
   entry: Except<TemporaryPanelEntry, "type">;
 };
 
-export type PlaceholderPanel = SetOptional<RegisteredPanel, "entry">;
+type PlaceholderPanel = SetOptional<RegisteredPanel, "entry">;
 
 const panels = new Map<UUID, RegisteredPanel | PlaceholderPanel>();
 
@@ -61,8 +60,6 @@ const extensionNonces = new Map<UUID, Set<UUID>>();
  * Return all temporary panel entries.
  */
 export function getTemporaryPanelSidebarEntries(): TemporaryPanelEntry[] {
-  expectContext("contentScript");
-
   return [...panels.values()]
     .filter(
       (panel): panel is RegisteredPanel =>
@@ -81,8 +78,6 @@ export function getTemporaryPanelSidebarEntries(): TemporaryPanelEntry[] {
 export async function getPanelDefinition(
   nonce: UUID,
 ): Promise<TemporaryPanelEntry> {
-  expectContext("contentScript");
-
   const panel = panels.get(nonce);
 
   if (!panel) {
@@ -104,8 +99,6 @@ export async function getPanelDefinition(
 export function updatePanelDefinition(
   entry: Except<TemporaryPanelEntry, "type">,
 ): void {
-  expectContext("contentScript");
-
   const panel = panels.get(entry.nonce);
 
   if (!panel) {
@@ -137,8 +130,6 @@ export function registerEmptyTemporaryPanel({
   extensionId: UUID;
   location: Location;
 }) {
-  expectContext("contentScript");
-
   if (panels.has(nonce)) {
     console.error(
       `A temporary panel was already registered with nonce ${nonce}`,
@@ -180,8 +171,6 @@ export async function waitForTemporaryPanel({
   entry: Except<TemporaryPanelEntry, "type">;
   onRegister?: () => void;
 }): Promise<PanelAction | null> {
-  expectContext("contentScript");
-
   if (panels.has(nonce)) {
     console.warn(
       `A temporary panel was already registered with nonce ${nonce}`,
@@ -226,8 +215,6 @@ function removePanelEntry(panelNonce: UUID): void {
  * @see resolveTemporaryPanel
  */
 export async function stopWaitingForTemporaryPanels(nonces: UUID[]) {
-  expectContext("contentScript");
-
   for (const nonce of nonces) {
     panels.get(nonce)?.registration.resolve();
     removePanelEntry(nonce);
@@ -243,8 +230,6 @@ export async function resolveTemporaryPanel(
   nonce: UUID,
   action: PanelAction,
 ): Promise<void> {
-  expectContext("contentScript");
-
   panels.get(nonce)?.registration.resolve(action);
   panels.delete(nonce);
 }
@@ -258,8 +243,6 @@ export async function cancelTemporaryPanels(
   nonces: UUID[],
   error?: unknown,
 ): Promise<void> {
-  expectContext("contentScript");
-
   let rejectError = error ?? new CancelError("User closed the panel");
 
   // :shrug: the error doesn't get deserialized by the messenger because it's not a rejection and the messenger

@@ -226,6 +226,16 @@ export type BrickConfig = {
 export type BrickPipeline = BrickConfig[];
 
 /**
+ * Which kinds of bricks are allowed in the pipeline
+ * @see BrickPipeline
+ */
+export enum PipelineFlavor {
+  AllBricks = "allBricks",
+  NoEffect = "noEffect",
+  NoRenderer = "noRenderer",
+}
+
+/**
  * Defines the position of the brick in the extension
  * ex. "extension.brickPipeline.0.config.body.__value__.0",
  * "extension.brickPipeline.0.config.body.0.children.0.config.onClick.__value__.0"

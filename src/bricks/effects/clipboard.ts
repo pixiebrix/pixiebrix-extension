@@ -20,12 +20,9 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type Permissions } from "webextension-polyfill";
 import { BusinessError, PropError } from "@/errors/businessErrors";
-import {
-  type ContentType,
-  detectContentType,
-  writeToClipboard,
-} from "@/utils/clipboardUtils";
+import { type ContentType, detectContentType } from "@/utils/clipboardUtils";
 import { convertDataUrl } from "@/utils/parseDataUrl";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export class CopyToClipboard extends EffectABC {
   constructor() {
@@ -39,6 +36,10 @@ export class CopyToClipboard extends EffectABC {
   override permissions: Permissions.Permissions = {
     permissions: ["clipboardWrite"],
   };
+
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["clipboardWrite"];
+  }
 
   inputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -81,7 +82,7 @@ export class CopyToClipboard extends EffectABC {
       html: string;
       contentType: ContentType;
     }>,
-    { logger }: BrickOptions,
+    { logger, platform }: BrickOptions,
   ): Promise<void> {
     const contentType =
       contentTypeInput === "infer" ? detectContentType(text) : contentTypeInput;
@@ -111,23 +112,17 @@ export class CopyToClipboard extends EffectABC {
           );
         }
 
-        if (!("write" in navigator.clipboard)) {
-          throw new BusinessError(
-            "Your browser does not support writing images to the clipboard",
-          );
-        }
-
         if (html) {
           logger.warn("Ignoring HTML content for image content");
         }
 
-        await writeToClipboard({ image: blob });
+        await platform.clipboard.write({ image: blob });
 
         break;
       }
 
       case "text": {
-        await writeToClipboard({
+        await platform.clipboard.write({
           text: String(text),
           html,
         });

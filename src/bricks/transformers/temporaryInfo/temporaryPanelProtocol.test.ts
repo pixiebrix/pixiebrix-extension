@@ -21,7 +21,7 @@ import {
   stopWaitingForTemporaryPanels,
   waitForTemporaryPanel,
   resolveTemporaryPanel,
-} from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
+} from "@/platform/panels/panelController";
 import { uuidv4 } from "@/types/helpers";
 import { CancelError } from "@/errors/businessErrors";
 

@@ -16,23 +16,15 @@
  */
 
 import AddQuickBarAction from "@/bricks/effects/AddQuickBarAction";
-import quickbarRegistry from "@/components/quickBar/quickBarRegistry";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { platformMock } from "@/testUtils/platformMock";
 
 const brick = new AddQuickBarAction();
 
-jest.mock("@/components/quickBar/quickBarRegistry", () => ({
-  __esModule: true,
-  default: {
-    addAction: jest.fn(),
-    knownGeneratorRootIds: new Set<string>(),
-  },
-}));
-
-const addActionMock = jest.mocked(quickbarRegistry.addAction);
+const platform = platformMock;
 
 const logger = new ConsoleLogger({
   extensionId: uuidv4(),
@@ -41,7 +33,7 @@ const logger = new ConsoleLogger({
 
 describe("AddQuickBarAction", () => {
   beforeEach(() => {
-    addActionMock.mockReset();
+    jest.clearAllMocks();
   });
 
   test("is root aware", async () => {
@@ -58,12 +50,13 @@ describe("AddQuickBarAction", () => {
     await brick.run(
       unsafeAssumeValidArg({ title: "test" }),
       brickOptionsFactory({
+        platform,
         logger,
         root: document,
         abortSignal: abortController.signal,
       }),
     );
-    expect(addActionMock).toHaveBeenCalledWith({
+    expect(platform.quickBar.addAction).toHaveBeenCalledWith({
       id: expect.toBeString(),
       extensionPointId: logger.context.extensionPointId,
       extensionId: logger.context.extensionId,

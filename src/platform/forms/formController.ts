@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
+import { type FormDefinition } from "@/platform/forms/formTypes";
 import { type UUID } from "@/types/stringTypes";
-import { expectContext } from "@/utils/expectContext";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { CancelError } from "@/errors/businessErrors";
 import { type FormPanelEntry } from "@/types/sidebarTypes";
@@ -26,7 +25,7 @@ import { type Nullishable } from "@/utils/nullishUtils";
 
 export type RegisteredForm = {
   /**
-   * The ModComponentBase that created the form.
+   * The Mod Component that created the form. Only 1 form can be registered per Mod Component.
    */
   extensionId: UUID;
   definition: FormDefinition;
@@ -34,15 +33,15 @@ export type RegisteredForm = {
   blueprintId: Nullishable<RegistryId>;
 };
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- Unused there
+/**
+ * Mapping from form nonce to form definition.
+ */
 const forms = new Map<UUID, RegisteredForm>();
 
 /**
  * Returns form panel entries corresponding forms registered for the sidebar.
  */
 export function getFormPanelSidebarEntries(): FormPanelEntry[] {
-  expectContext("contentScript");
-
   return [...forms.entries()]
     .filter(([, form]) => form.definition.location === "sidebar")
     .map(([nonce, form]) => ({
@@ -72,11 +71,10 @@ export async function registerForm({
   definition: FormDefinition;
   blueprintId: Nullishable<RegistryId>;
 }): Promise<unknown> {
-  expectContext("contentScript");
-
   const registration = pDefer();
 
   if (forms.has(nonce)) {
+    // This should never happen, but if it does, it's a bug.
     console.warn("A form was already registered with nonce %s", nonce);
   }
 
@@ -94,16 +92,12 @@ export async function registerForm({
  * Helper method to unregister the deferred promise for the form.
  */
 function unregisterForm(formNonce: UUID): void {
-  expectContext("contentScript");
-
   forms.delete(formNonce);
 }
 
 export async function getFormDefinition(
   formNonce: UUID,
 ): Promise<FormDefinition> {
-  expectContext("contentScript");
-
   const form = forms.get(formNonce);
   if (!form) {
     throw new Error(`Form not registered: ${formNonce}`);
@@ -116,8 +110,6 @@ export async function resolveForm(
   formNonce: UUID,
   values: unknown,
 ): Promise<void> {
-  expectContext("contentScript");
-
   const form = forms.get(formNonce);
   if (!form) {
     throw new Error(`Form not registered: ${formNonce}`);
@@ -132,8 +124,6 @@ export async function resolveForm(
  * @param formNonces the form nonces
  */
 export async function cancelForm(...formNonces: UUID[]): Promise<void> {
-  expectContext("contentScript");
-
   for (const formNonce of formNonces) {
     const form = forms.get(formNonce);
     form?.registration.reject(new CancelError("User cancelled the action"));
@@ -141,6 +131,10 @@ export async function cancelForm(...formNonces: UUID[]): Promise<void> {
   }
 }
 
+/**
+ * Test helper to cancel all pending forms.
+ * @constructor
+ */
 export async function TEST_cancelAll(): Promise<void> {
   await cancelForm(...forms.keys());
 }

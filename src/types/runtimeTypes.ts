@@ -23,6 +23,7 @@ import { type Primitive } from "type-fest";
 import { type Logger } from "@/types/loggerTypes";
 import { type BrickPipeline } from "@/bricks/types";
 import { type PanelPayload } from "./sidebarTypes";
+import { type PlatformProtocol } from "@/platform/platformProtocol";
 
 /**
  * The PixieBrix brick definition API. Controls how the PixieBrix runtime interprets brick definitions.
@@ -332,6 +333,12 @@ export type BrickOptions<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see comment above
   TCtxt extends Record<string, any> = Record<string, any>,
 > = {
+  /**
+   * The platform/environment running the brick.
+   * @since 1.8.10
+   */
+  platform: PlatformProtocol;
+
   /**
    * The variable context, e.g., @input, @options, service definitions, and any output keys from other bricks
    *
