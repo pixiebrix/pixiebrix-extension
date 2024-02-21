@@ -130,16 +130,20 @@ class ContentScriptPlatform extends PlatformBase {
         context: JsonObject;
         autoescape: boolean;
       }): Promise<string> {
-        if (engine === "nunjucks") {
-          return renderNunjucksTemplate(payload);
-        }
+        switch (engine) {
+          case "nunjucks": {
+            return renderNunjucksTemplate(payload);
+          }
 
-        if (engine === "handlebars") {
-          return renderHandlebarsTemplate(payload);
-        }
+          case "handlebars": {
+            return renderHandlebarsTemplate(payload);
+          }
 
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Unsupported template engine: ${engine}`);
+          default: {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
+            throw new BusinessError(`Unsupported template engine: ${engine}`);
+          }
+        }
       },
 
       async validate({

@@ -27,9 +27,9 @@ export const platformCapabilities = [
   "contentScript",
   // Show a blocking alert/prompt to the user
   "alert",
-  // Show a form to a user
+  // Show a form to a user. Currently, covers both modal form (blocking) and panel form (non-blocking)
   "form",
-  // Show a panel to a user
+  // Show a panel to a user. Currently, covers both modal panel (blocking) and inline/sidebar panel (non-blocking)
   "panel",
   // Show a non-blocking notification/toast
   "toast",
