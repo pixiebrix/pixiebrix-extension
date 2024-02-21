@@ -78,21 +78,24 @@ class ContentScriptPlatform extends PlatformBase {
 
   override capabilities: PlatformCapability[] = [
     "dom",
+    "pageScript",
     "contentScript",
     "alert",
+    "form",
+    "panel",
     "toast",
     "sandbox",
-    "form",
     "clipboardWrite",
     "audio",
-    "state",
-    "contextMenu",
     "quickBar",
     "selectionTooltip",
     "commandPopover",
-    "http",
+    "contextMenu",
     "badge",
+    "state",
     "link",
+    "http",
+    "template",
   ];
 
   override open = async (url: URL): Promise<void> => {
