@@ -35,17 +35,18 @@ const Header: React.FunctionComponent = () => {
   /* In MV3, Chrome offers a native Close button */
   const showCloseButton = !isMV3();
 
+  const headerButtonClassName = cx({
+    [styles.button || ""]: true,
+    [styles.themeColorOverride || ""]: baseThemeName === DEFAULT_THEME,
+    [styles.themeColor || ""]: baseThemeName !== DEFAULT_THEME,
+  });
+
   return (
     !isLoading && (
       <div className="d-flex py-2 pl-2 pr-0 align-items-center">
         {showCloseButton && (
           <Button
-            className={cx(
-              styles.button,
-              baseThemeName === DEFAULT_THEME
-                ? styles.themeColorOverride
-                : styles.themeColor,
-            )}
+            className={headerButtonClassName}
             onClick={async () => {
               // This piece of code is MV2-only, it only needs to handle being run in an iframe
               const topLevelFrame = await getTopLevelFrame();
@@ -73,12 +74,7 @@ const Header: React.FunctionComponent = () => {
           target="_blank"
           size="sm"
           variant="link"
-          className={cx(
-            styles.button,
-            baseThemeName === "default"
-              ? styles.themeColorOverride
-              : styles.themeColor,
-          )}
+          className={headerButtonClassName}
         >
           <FontAwesomeIcon icon={faCog} />
         </Button>

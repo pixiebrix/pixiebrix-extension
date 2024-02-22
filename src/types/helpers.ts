@@ -84,7 +84,7 @@ export function validateUUID(uuid: unknown): UUID {
 
   if (typeof uuid !== "string") {
     throw new TypeError(
-      `Expected UUID to be a string. Instead got: ${JSON.stringify(uuid)}`,
+      `Expected UUID to be a string. Instead got: ${typeof uuid}`,
     );
   }
 

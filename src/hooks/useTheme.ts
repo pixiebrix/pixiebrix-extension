@@ -54,7 +54,7 @@ function useTheme(): { activeTheme: ThemeAssets; isLoading: boolean } {
       // Re-fetch the theme if it has not been fetched in the past 30 seconds
       void activateTheme();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- re-activate theme once on mount when loading finishes
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- re-activate theme when loading finishes on mount
   }, [isLoading]);
 
   const activeTheme = useMemo(
