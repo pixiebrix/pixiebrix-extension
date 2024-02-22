@@ -31,12 +31,10 @@ const StopPropagation: React.FC<StopPropagationProps> = ({
   children,
   ...events
 }) => {
-  const wrappedEvents: Record<string, (...args: any[]) => void> = {};
+  const wrappedEvents: Record<string, typeof stopPropagation> = {};
 
-  for (const eventName in events) {
-    if (events[eventName as ValidEventNames]) {
-      wrappedEvents[eventName] = stopPropagation;
-    }
+  for (const eventName of Object.keys(events)) {
+    wrappedEvents[eventName] = stopPropagation;
   }
 
   return <div {...wrappedEvents}>{children}</div>;
