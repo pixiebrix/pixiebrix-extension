@@ -15,239 +15,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useGetOrganizationTheme, useGetThemeName } from "@/hooks/useTheme";
-import { DEFAULT_THEME } from "@/themes/themeTypes";
-import {
-  mockAnonymousUser,
-  mockAuthenticatedUser,
-  mockLoadingUser,
-} from "@/testUtils/userMock";
-import settingsSlice from "@/store/settings/settingsSlice";
-import { uuidv4 } from "@/types/helpers";
-import { authActions } from "@/auth/authSlice";
-import {
-  authStateFactory,
-  partnerUserFactory,
-  userFactory,
-  userOrganizationFactory,
-} from "@/testUtils/factories/authFactories";
+import useTheme from "@/hooks/useTheme";
 import { renderHook } from "@/pageEditor/testHelpers";
+import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
+import { initialTheme } from "@/themes/themeStore";
+import { type AsyncState } from "@/types/sliceTypes";
+import { themeStorage } from "@/themes/themeUtils";
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
-// NEXT IN PR: fix unit tests...
-describe("useGetThemeName", () => {
-  test("has no partner", async () => {
-    await mockAuthenticatedUser(userFactory());
+jest.mock("@/hooks/useAsyncExternalStore");
 
-    const { result: themeResult, waitFor } = renderHook(() =>
-      useGetThemeName(),
+describe("useTheme", () => {
+  beforeEach(() => {
+    jest
+      .mocked(useAsyncExternalStore)
+      .mockReturnValue({ data: initialTheme, isLoading: false } as AsyncState);
+  });
+  test("calls useAsyncExternalStore and gets current theme state", async () => {
+    const { result: themeResult } = renderHook(() => useTheme());
+
+    expect(useAsyncExternalStore).toHaveBeenNthCalledWith(
+      1,
+      expect.any(Function),
+      themeStorage.get,
     );
 
-    await waitFor(() => {
-      expect(themeResult.current).toBe(DEFAULT_THEME);
-    });
-  });
-
-  test("has partnerId and no me partner", async () => {
-    await mockAuthenticatedUser(userFactory());
-
-    const { result: themeResult, waitFor } = renderHook(
-      () => useGetThemeName(),
-      {
-        setupRedux(dispatch) {
-          dispatch(
-            settingsSlice.actions.setPartnerId({
-              partnerId: "automation-anywhere",
-            }),
-          );
-        },
+    expect(themeResult.current).toStrictEqual({
+      activeTheme: {
+        baseThemeName: "default",
+        customSidebarLogo: null,
+        lastFetched: null,
+        logo: { regular: "test-file-stub", small: "test-file-stub" },
+        showSidebarLogo: true,
+        toolbarIcon: null,
       },
-    );
-
-    await waitFor(() => {
-      expect(themeResult.current).toBe("automation-anywhere");
+      isLoading: false,
     });
   });
 
-  test("has theme, but no partnerId and no me partner", async () => {
-    mockAnonymousUser();
-
-    const { result: themeResult, waitFor } = renderHook(
-      () => useGetThemeName(),
-      {
-        setupRedux(dispatch) {
-          dispatch(
-            settingsSlice.actions.setTheme({ theme: "automation-anywhere" }),
-          );
-        },
-      },
-    );
-
-    await waitFor(() => {
-      expect(themeResult.current).toBe(DEFAULT_THEME);
-    });
-  });
-
-  test("has cached partner, but no me partner", async () => {
-    mockAnonymousUser();
-
-    const { result: themeResult, waitFor } = renderHook(
-      () => useGetThemeName(),
-      {
-        setupRedux(dispatch) {
-          dispatch(
-            authActions.setAuth(
-              authStateFactory({
-                partner: {
-                  name: "Automation Anywhere",
-                  theme: "automation-anywhere",
-                },
-              }),
-            ),
-          );
-        },
-      },
-    );
-
-    await waitFor(() => {
-      expect(themeResult.current).toBe("automation-anywhere");
-    });
-  });
-
-  test("has partnerId, and me partner", async () => {
-    await mockAuthenticatedUser(partnerUserFactory());
-
-    const { result: themeResult, waitFor } = renderHook(
-      () => useGetThemeName(),
-      {
-        setupRedux(dispatch) {
-          dispatch(
-            settingsSlice.actions.setPartnerId({ partnerId: "default" }),
-          );
-        },
-      },
-    );
-
-    await waitFor(() => {
-      expect(themeResult.current).toBe("automation-anywhere");
-    });
-  });
-
-  test("has me partner, and different cached partner", async () => {
-    await mockAuthenticatedUser(partnerUserFactory());
-
-    const { result: themeResult, waitFor } = renderHook(
-      () => useGetThemeName(),
-      {
-        setupRedux(dispatch) {
-          dispatch(
-            authActions.setAuth(
-              authStateFactory({
-                partner: {
-                  name: "PixieBrix",
-                  theme: "default",
-                },
-              }),
-            ),
-          );
-        },
-      },
-    );
-
-    await waitFor(() => {
-      expect(themeResult.current).toBe("automation-anywhere");
-    });
-  });
-});
-
-describe("useGetOrganizationTheme", () => {
-  const customTestLogoUrl = "https://test-logo.svg";
-
-  test("uses cached organization theme while me is loading", async () => {
-    mockLoadingUser();
-
-    const { result: organizationThemeResult, waitFor } = renderHook(
-      () => useGetOrganizationTheme(),
-      {
-        setupRedux(dispatch) {
-          dispatch(
-            authActions.setAuth(
-              authStateFactory({
-                organization: {
-                  id: uuidv4(),
-                  name: "Cached Organization",
-                  theme: {
-                    show_sidebar_logo: true,
-                    logo: customTestLogoUrl,
-                    toolbar_icon: "someOldOne.svg",
-                  },
-                },
-              }),
-            ),
-          );
-        },
-      },
-    );
-
-    await waitFor(() => {
-      expect(organizationThemeResult.current.showSidebarLogo).toBe(true);
-    });
-    expect(organizationThemeResult.current.customSidebarLogo).toBe(
-      customTestLogoUrl,
-    );
-    expect(organizationThemeResult.current.toolbarIcon).toBe("someOldOne.svg");
-  });
-
-  test("new organization theme trumps cached organization theme", async () => {
-    const newTestLogoUrl = "https://new-test-logo.svg";
-    const newTestToolbarIconUrl = "https://test-logo.svg";
-
-    await mockAuthenticatedUser(
-      userFactory({
-        organization: userOrganizationFactory({
-          theme: {
-            show_sidebar_logo: false,
-            logo: newTestLogoUrl,
-            toolbar_icon: newTestToolbarIconUrl,
-          },
-        }),
-      }),
-    );
-
-    const { result: organizationThemeResult, waitFor } = renderHook(
-      () => useGetOrganizationTheme(),
-      {
-        setupRedux(dispatch) {
-          dispatch(
-            authActions.setAuth(
-              authStateFactory({
-                organization: {
-                  id: uuidv4(),
-                  name: "Cached Organization",
-                  theme: {
-                    show_sidebar_logo: true,
-                    logo: customTestLogoUrl,
-                    toolbar_icon: "someOldOne.svg",
-                  },
-                },
-              }),
-            ),
-          );
-        },
-      },
-    );
-
-    await waitFor(() => {
-      expect(organizationThemeResult.current.showSidebarLogo).toBe(false);
-    });
-    expect(organizationThemeResult.current.customSidebarLogo).toBe(
-      newTestLogoUrl,
-    );
-    expect(organizationThemeResult.current.toolbarIcon).toBe(
-      newTestToolbarIconUrl,
-    );
-  });
+  it.todo(
+    "calls activateTheme after loading is done and it hasn't been called recently",
+  );
 });

@@ -42,7 +42,7 @@ const themeStorageSubscribe = (callback: () => void) => {
 function useTheme(): { activeTheme: ThemeAssets; isLoading: boolean } {
   // The active theme is fetched with `getActiveTheme` in the background script and cached in the themeStorage,
   // This hook subscribes to changes in themeStorage to retrieve the latest current activeTheme
-  const { data, isLoading, error } = useAsyncExternalStore(
+  const { data, isLoading } = useAsyncExternalStore(
     themeStorageSubscribe,
     themeStorage.get,
   );
@@ -50,6 +50,7 @@ function useTheme(): { activeTheme: ThemeAssets; isLoading: boolean } {
   useEffect(() => {
     if (
       !isLoading &&
+      data &&
       (!data.lastFetched || Date.now() > data.lastFetched + 30_000)
     ) {
       // Re-fetch the theme if it has not been fetched in the past 30 seconds
@@ -59,8 +60,8 @@ function useTheme(): { activeTheme: ThemeAssets; isLoading: boolean } {
   }, [isLoading]);
 
   const activeTheme = useMemo(
-    () => (isLoading || error ? initialTheme : data),
-    [data, error, isLoading],
+    () => (!isLoading && data ? data : initialTheme),
+    [data, isLoading],
   );
 
   useEffect(() => {

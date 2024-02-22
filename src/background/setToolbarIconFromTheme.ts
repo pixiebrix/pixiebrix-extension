@@ -24,14 +24,17 @@ export default async function setToolbarIconFromTheme({
   logo: { small: smallLogo },
   toolbarIcon,
   baseThemeName,
-}: ThemeAssets) {
+}: Pick<ThemeAssets, "logo" | "toolbarIcon" | "baseThemeName">) {
   if (toolbarIcon) {
     const imageData = await getImageData(toolbarIcon);
 
     if (imageData) {
       browserAction.setIcon({ imageData });
+      return;
     }
-  } else if (baseThemeName === DEFAULT_THEME) {
+  }
+
+  if (baseThemeName === DEFAULT_THEME) {
     const { icons: path } = browser.runtime.getManifest();
     browserAction.setIcon({ path });
   } else {

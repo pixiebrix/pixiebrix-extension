@@ -18,40 +18,204 @@
 import { saveSettingsState } from "@/store/settings/settingsStorage";
 import { initialSettingsState } from "@/store/settings/settingsSlice";
 import {
-  INTERNAL_reset as resetManagedStorage,
+  INTERNAL_reset,
   readManagedStorage,
 } from "@/store/enterprise/managedStorage";
 import { getActiveTheme } from "@/themes/themeStore";
+import MockAdapter from "axios-mock-adapter";
+import axios, { type AxiosError } from "axios";
+import reportError from "@/telemetry/reportError";
+import { uuidSequence } from "@/testUtils/factories/stringFactories";
 
-afterEach(() => {
-  resetManagedStorage();
-});
+const axiosMock = new MockAdapter(axios);
+const reportErrorMock = jest.mocked(reportError);
 
-// NEXT IN PR: fix unit tests...
 describe("getActiveTheme", () => {
-  it("prefers managed storage", async () => {
-    await browser.storage.managed.set({
-      partnerId: "automation-anywhere",
+  const expectedManagedOrganizationId = uuidSequence(1);
+
+  describe("managed storage is set", () => {
+    beforeEach(async () => {
+      axiosMock
+        .onGet(`/api/organizations/${expectedManagedOrganizationId}/theme/`)
+        .reply(200, {
+          show_sidebar_logo: true,
+          logo: "some_managed_logo.svg",
+          toolbar_icon: "some_managed_icon.svg",
+        });
+
+      axiosMock.onGet("/api/me/").reply(200, {
+        id: "7d6d22af-bdd0-4d93-8bcd-b223e92a76de",
+        email: "eduardo+test@pixiebrix.com",
+        name: "Eduardo Fungairino",
+        organization: {
+          id: "ab62c6c7-9508-4c81-9317-0c34123e58fa",
+          name: "My cool team",
+          control_room: null,
+          theme: {
+            show_sidebar_logo: true,
+            logo: "",
+            toolbar_icon: "",
+          },
+        },
+        partner: null,
+      });
+      await browser.storage.managed.set({
+        partnerId: "automation-anywhere",
+        managedOrganizationId: expectedManagedOrganizationId,
+      });
+
+      // XXX: waiting for managed storage initialization seems to be necessary to avoid test interference when
+      // run with other tests. We needed to add it after some seemingly unrelated changes:
+      // See test suite changes in : https://github.com/pixiebrix/pixiebrix-extension/pull/6134/
+      await readManagedStorage();
+
+      // `initialSettingsState` partnerId is by default null
+      await saveSettingsState(initialSettingsState);
     });
 
-    // XXX: waiting for managed storage initialization seems to be necessary to avoid test interference when
-    // run with other tests. We needed to add it after some seemingly unrelated changes:
-    // See test suite changes in : https://github.com/pixiebrix/pixiebrix-extension/pull/6134/
-    await readManagedStorage();
+    afterEach(async () => {
+      // eslint-disable-next-line new-cap -- used for testing
+      INTERNAL_reset();
+      await browser.storage.managed.clear();
+      await browser.storage.local.clear();
+    });
 
-    await saveSettingsState(initialSettingsState);
-
-    await expect(getActiveTheme()).resolves.toStrictEqual({
-      themeName: "automation-anywhere",
-      toolbarIcon: null,
+    it("prefers managed storage", async () => {
+      await expect(getActiveTheme()).resolves.toStrictEqual({
+        baseThemeName: "automation-anywhere",
+        toolbarIcon: "some_managed_icon.svg",
+        customSidebarLogo: "some_managed_logo.svg",
+        lastFetched: expect.any(Number),
+        logo: {
+          regular: "test-file-stub",
+          small: "test-file-stub",
+        },
+        showSidebarLogo: true,
+      });
     });
   });
 
-  it.todo(
-    "fetches organization theme from the organization theme endpoint if set in managed storage",
-  );
+  describe("the user has a primary organization defined and managed storage not present", () => {
+    beforeEach(async () => {
+      axiosMock.onGet("/api/me/").reply(200, {
+        id: "7d6d22af-bdd0-4d93-8bcd-b223e92a76de",
+        email: "eduardo+test@pixiebrix.com",
+        name: "Eduardo Fungairino",
+        organization: {
+          id: "ab62c6c7-9508-4c81-9317-0c34123e58fa",
+          name: "My cool team",
+          control_room: null,
+          theme: {
+            show_sidebar_logo: true,
+            logo: "myPrimaryOrglogo.svg",
+            toolbar_icon: "myPrimaryOrgIcon.svg",
+          },
+        },
+        partner: { theme: "automation-anywhere" },
+      });
 
-  it.todo(
-    "fetches organization theme from the me endpoint if no managed storage organization",
-  );
+      // `initialSettingsState` partnerId is by default null
+      await saveSettingsState(initialSettingsState);
+    });
+
+    it("prefers users primary org and partner", async () => {
+      await expect(getActiveTheme()).resolves.toStrictEqual({
+        baseThemeName: "automation-anywhere",
+        customSidebarLogo: "myPrimaryOrglogo.svg",
+        toolbarIcon: "myPrimaryOrgIcon.svg",
+        lastFetched: expect.any(Number),
+        logo: {
+          regular: "test-file-stub",
+          small: "test-file-stub",
+        },
+        showSidebarLogo: true,
+      });
+    });
+  });
+
+  describe("local settings defines a partner value if managed storage and user org/partner not present", () => {
+    beforeEach(async () => {
+      axiosMock.onGet("/api/me/").reply(200, {
+        id: "7d6d22af-bdd0-4d93-8bcd-b223e92a76de",
+        email: "eduardo+test@pixiebrix.com",
+        name: "Eduardo Fungairino",
+        partner: null,
+      });
+
+      // `initialSettingsState` partnerId is by default null
+      await saveSettingsState({
+        ...initialSettingsState,
+        partnerId: "automation-anywhere",
+      });
+    });
+
+    it("prefers the local settings state last", async () => {
+      await expect(getActiveTheme()).resolves.toStrictEqual({
+        baseThemeName: "automation-anywhere",
+        customSidebarLogo: null,
+        toolbarIcon: null,
+        lastFetched: expect.any(Number),
+        logo: {
+          regular: "test-file-stub",
+          small: "test-file-stub",
+        },
+        showSidebarLogo: true,
+      });
+    });
+  });
+
+  describe("no other theme data sources are present", () => {
+    beforeEach(async () => {
+      axiosMock.onGet("/api/me/").reply(200, {
+        id: "7d6d22af-bdd0-4d93-8bcd-b223e92a76de",
+        email: "eduardo+test@pixiebrix.com",
+        name: "Eduardo Fungairino",
+        partner: null,
+      });
+
+      // `initialSettingsState` partnerId is by default null
+      await saveSettingsState(initialSettingsState);
+    });
+
+    it("uses default theme", async () => {
+      await expect(getActiveTheme()).resolves.toStrictEqual({
+        baseThemeName: "default",
+        customSidebarLogo: null,
+        toolbarIcon: null,
+        lastFetched: expect.any(Number),
+        logo: {
+          regular: "test-file-stub",
+          small: "test-file-stub",
+        },
+        showSidebarLogo: true,
+      });
+    });
+  });
+
+  describe("an error is thrown", () => {
+    beforeEach(async () => {
+      axiosMock.onGet("/api/me/").reply(500);
+
+      // `initialSettingsState` partnerId is by default null
+      await saveSettingsState(initialSettingsState);
+    });
+
+    it("uses default theme and reports the error", async () => {
+      await expect(getActiveTheme()).resolves.toStrictEqual({
+        baseThemeName: "default",
+        customSidebarLogo: null,
+        toolbarIcon: null,
+        lastFetched: null,
+        logo: {
+          regular: "test-file-stub",
+          small: "test-file-stub",
+        },
+        showSidebarLogo: true,
+      });
+      expect(reportErrorMock).toHaveBeenCalledOnce();
+      expect((reportErrorMock.mock.calls[0][0] as AxiosError).message).toBe(
+        "Request failed with status code 500",
+      );
+    });
+  });
 });

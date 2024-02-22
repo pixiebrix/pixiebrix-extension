@@ -25,6 +25,7 @@ import logoSmall from "@img/logo-small.svg";
 import aaLogo from "@img/aa-logo.svg";
 import aaLogoSmall from "@img/aa-logo-small.svg";
 import { StorageItem } from "webext-storage";
+import { Nullishable } from "@/utils/nullishUtils";
 
 export const isValidThemeName = (themeName: string): themeName is ThemeName =>
   THEME_NAMES.includes(themeName);
@@ -53,13 +54,13 @@ export type ThemeAssets = {
   logo: ThemeLogo;
   showSidebarLogo: boolean;
   /** URL to a png or a svg */
-  customSidebarLogo: string | null;
+  customSidebarLogo: Nullishable<string>;
   /** URL to a svg */
-  toolbarIcon: string | null;
+  toolbarIcon: Nullishable<string>;
   /** The base theme name **/
   baseThemeName: ThemeName;
   /** Internal attribute that tracks when the active theme was last fetched and calculated for re-fetching purposes **/
-  lastFetched?: number;
+  lastFetched?: Nullishable<number>;
 };
 
 // Note: this function is re-used in the app. Should not reference
