@@ -18,7 +18,7 @@ import { type AxiosRequestConfig } from "axios";
 import { type BaseQueryFn } from "@reduxjs/toolkit/query/react";
 import { serializeError } from "serialize-error";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
-import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
+import { getApiClient, getLinkedApiClient } from "@/data/service/apiClient";
 
 type QueryArgs = {
   /**

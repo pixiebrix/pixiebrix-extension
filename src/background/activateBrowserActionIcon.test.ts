@@ -24,6 +24,7 @@ import MockAdapter from "axios-mock-adapter";
 import { browserAction } from "@/mv3/api";
 
 jest.mock("@/mv3/api", () => ({
+  isMV3: jest.fn().mockReturnValue(false),
   browserAction: {
     setIcon: jest.fn(),
   },
@@ -35,7 +36,7 @@ describe("activateBrowserActionIcon", () => {
 
   const drawImageMock = jest.fn();
   const getImageDataMock = jest.fn().mockReturnValue("image data");
-  const getContextmock = jest.fn().mockReturnValue({
+  const getContextMock = jest.fn().mockReturnValue({
     drawImage: drawImageMock,
     getImageData: getImageDataMock,
   });
@@ -55,7 +56,7 @@ describe("activateBrowserActionIcon", () => {
   };
   // @ts-expect-error -- No need to mock the whole class for the test
   global.OffscreenCanvas = class {
-    getContext = getContextmock;
+    getContext = getContextMock;
   };
 
   URL.createObjectURL = jest.fn();
@@ -107,7 +108,7 @@ describe("activateBrowserActionIcon", () => {
       const result = await blobToImageData(blob);
 
       expect(result).toBe("image data");
-      expect(getContextmock).toHaveBeenCalledWith("2d");
+      expect(getContextMock).toHaveBeenCalledWith("2d");
       expect(drawImageMock).toHaveBeenCalledWith(
         expect.any(Image),
         0,

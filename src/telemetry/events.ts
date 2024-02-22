@@ -160,6 +160,8 @@ export const Events = {
   VIEW_SIDEBAR_PANEL: "ViewSidePanelPanel",
 
   ZAPIER_KEY_COPY: "ZapierKeyCopy",
+
+  TEXT_COMMAND_RUN: "TextCommandRun",
 } as const;
 
 export type Event = (typeof Events)[keyof typeof Events];

@@ -35,7 +35,7 @@ import {
   useCreateRecipeMutation,
   useDeleteStandaloneModDefinitionMutation,
   useGetAllStandaloneModDefinitionsQuery,
-} from "@/services/api";
+} from "@/data/service/api";
 import { type FormikHelpers } from "formik";
 import { makeBlueprint } from "@/extensionConsole/pages/mods/utils/exportBlueprint";
 import extensionsSlice from "@/store/extensionsSlice";

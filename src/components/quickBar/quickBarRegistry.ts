@@ -27,7 +27,15 @@ import {
 import { allSettled } from "@/utils/promiseUtils";
 import { RepeatableAbortController } from "abort-utils";
 
-class QuickBarRegistry {
+/**
+ * Public interface for the Quick Bar registry.
+ */
+export interface QuickBarRegistryProtocol {
+  addAction(action: CustomAction): void;
+  knownGeneratorRootIds: Set<string>;
+}
+
+class QuickBarRegistry implements QuickBarRegistryProtocol {
   /**
    * Current set of actions, including static and generated actions.
    * @see actionGenerators

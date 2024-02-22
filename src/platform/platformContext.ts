@@ -15,13 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { withoutTrailingSlash } from "@/services/baseService";
+import {
+  type PlatformProtocol,
+  uninitializedPlatform,
+} from "@/platform/platformProtocol";
 
-describe("withoutTrailingSlash", () => {
-  it.each(["https://app.pixiebrix.com/", "https://app.pixiebrix.com"])(
-    "strips trailing slash for %s",
-    (url) => {
-      expect(withoutTrailingSlash(url)).toBe("https://app.pixiebrix.com");
-    },
-  );
-});
+/**
+ * @file defines an explicit platform protocol
+ */
+
+let platform: PlatformProtocol = uninitializedPlatform;
+
+/**
+ * Get the current platform.
+ */
+export function getPlatform(): PlatformProtocol {
+  return platform;
+}
+
+/**
+ * Set the current ambient platform. Should be called once at the beginning of the application.
+ * @param platformProtocol
+ */
+export function setPlatform(platformProtocol: PlatformProtocol): void {
+  platform = platformProtocol;
+}

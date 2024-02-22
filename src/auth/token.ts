@@ -71,6 +71,12 @@ export function TEST_clearListeners(): void {
   controller.abortAndReset();
 }
 
+export async function TEST_setAuthData(
+  data: Partial<TokenAuthData>,
+): Promise<void> {
+  await extensionKeyStorage.set(data);
+}
+
 /**
  * Read cached PixieBrix authentication data from local storage.
  */

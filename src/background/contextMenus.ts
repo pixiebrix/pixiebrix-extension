@@ -35,19 +35,15 @@ import {
   type ResolvedModComponent,
 } from "@/types/modComponentTypes";
 import { allSettled, memoizeUntilSettled } from "@/utils/promiseUtils";
+import type { SelectionMenuOptions } from "@/platform/platformProtocol";
+import { ContextError } from "@/errors/genericErrors";
+import { selectEventData } from "@/telemetry/deployments";
 
 const MENU_PREFIX = "pixiebrix-";
 
 // This constant must be high enough to give Chrome time to inject the content script. ensureContentScript can take
 // >= 1 seconds because it also waits for the content script to be ready
 const CONTEXT_SCRIPT_INSTALL_MS = 5000;
-
-type SelectionMenuOptions = {
-  extensionId: UUID;
-  title: string;
-  contexts: Menus.ContextType[];
-  documentUrlPatterns: string[];
-};
 
 /**
  * Return a unique context menu item id for the given extension id.
@@ -193,8 +189,16 @@ export async function preloadContextMenus(
       resolved.extensionPointId,
     );
     if (extensionPoint instanceof ContextMenuStarterBrickABC) {
-      await extensionPoint.ensureMenu(
+      await extensionPoint.registerMenuItem(
         definition as unknown as ResolvedModComponent<ContextMenuConfig>,
+        () => {
+          throw new ContextError(
+            "Context menu was preloaded, but no handler was registered",
+            {
+              context: selectEventData(resolved),
+            },
+          );
+        },
       );
     }
   });

@@ -20,7 +20,7 @@ import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
-import { useGetAllStandaloneModDefinitionsQuery } from "@/services/api";
+import { useGetAllStandaloneModDefinitionsQuery } from "@/data/service/api";
 import { selectScope } from "@/auth/authSelectors";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
 import { uniqBy } from "lodash";

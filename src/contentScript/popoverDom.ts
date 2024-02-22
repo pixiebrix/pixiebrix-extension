@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2024 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import { createPopper, type Instance as PopperInstance } from "@popperjs/core";
 import { type IFrameComponent, iframeResizer } from "iframe-resizer";
 import { once, trimEnd } from "lodash";
@@ -9,6 +26,7 @@ import { getThisFrame } from "webext-messenger";
 import { html } from "code-tag";
 import { setAnimationFrameInterval } from "@/utils/domUtils";
 import { ensureTooltipsContainer } from "@/contentScript/tooltipDom";
+import { expectContext } from "@/utils/expectContext";
 
 // https://popper.js.org/docs/v2/constructors/
 export type Placement =
@@ -44,6 +62,8 @@ const resizerMap = new WeakMap<HTMLElement, IFrameComponent>();
  * @param initialUrl the original iframe URL
  */
 function popoverFactory(initialUrl: URL): HTMLElement {
+  expectContext("contentScript");
+
   const $container = $(ensureTooltipsContainer());
 
   const existingPopover = popoverPool.pop();

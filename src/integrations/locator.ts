@@ -39,7 +39,7 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { sanitizeIntegrationConfig } from "@/integrations/sanitizeIntegrationConfig";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
-import { getLinkedApiClient } from "@/services/apiClient";
+import { getLinkedApiClient } from "@/data/service/apiClient";
 
 enum Visibility {
   Private = 0,

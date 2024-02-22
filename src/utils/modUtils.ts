@@ -20,7 +20,7 @@ import {
   type ModOptionsDefinition,
 } from "@/types/modDefinitionTypes";
 import * as semver from "semver";
-import { type MarketplaceListing, type Organization } from "@/types/contract";
+import { type Organization } from "@/types/contract";
 import {
   type Mod,
   type SharingSource,
@@ -204,16 +204,6 @@ export function isDeployment(
   return installedComponents.some(
     (component) => component._recipe?.id === modId && component?._deployment,
   );
-}
-
-/**
- * Returns true if a mod has been made public but is not yet published to the Marketplace.
- */
-export function isModPendingPublish(
-  mod: ModDefinition,
-  marketplaceListings: Record<RegistryId, MarketplaceListing>,
-): boolean {
-  return mod.sharing.public && !marketplaceListings[mod.metadata.id];
 }
 
 export function getSharingSource({

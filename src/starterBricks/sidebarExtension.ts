@@ -64,6 +64,7 @@ import { type StarterBrick } from "@/types/starterBrickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import { RepeatableAbortController } from "abort-utils";
+import { type PlatformCapability } from "@/platform/capabilities";
 
 export type SidebarConfig = {
   heading: string;
@@ -141,6 +142,8 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   public get kind(): "actionPanel" {
     return "actionPanel";
   }
+
+  readonly capabilities: PlatformCapability[] = ["panel"];
 
   async getBricks(
     extension: ResolvedModComponent<SidebarConfig>,

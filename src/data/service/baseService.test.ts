@@ -14,24 +14,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { absoluteApiUrl } from "@/services/apiClient";
 
-// Disable automatic __mocks__ resolution #6799
-jest.mock("@/services/apiClient", () => jest.requireActual("./apiClient.ts"));
+import { withoutTrailingSlash } from "@/data/service/baseService";
 
-describe("absoluteApiUrl", () => {
-  it("makes relative url absolute", async () => {
-    await expect(absoluteApiUrl("/relative")).resolves.toBe(
-      "https://app.pixiebrix.com/relative",
-    );
-  });
-
-  it("throws on other absolute URL", async () => {
-    await expect(absoluteApiUrl("https://virus.com")).rejects.toThrow();
-  });
-
-  it("handles absolute URL", async () => {
-    const absoluteUrl = "https://app.pixiebrix.com/path";
-    await expect(absoluteApiUrl(absoluteUrl)).resolves.toBe(absoluteUrl);
-  });
+describe("withoutTrailingSlash", () => {
+  it.each(["https://app.pixiebrix.com/", "https://app.pixiebrix.com"])(
+    "strips trailing slash for %s",
+    (url) => {
+      expect(withoutTrailingSlash(url)).toBe("https://app.pixiebrix.com");
+    },
+  );
 });

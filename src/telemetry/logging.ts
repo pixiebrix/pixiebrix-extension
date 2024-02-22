@@ -31,7 +31,7 @@ import { expectContext } from "@/utils/expectContext";
 import {
   reportToErrorService,
   selectExtraContext,
-} from "@/services/errorService";
+} from "@/data/service/errorService";
 import { BusinessError } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import { isAxiosError } from "@/errors/networkErrorHelpers";

@@ -39,6 +39,10 @@ import { initSidePanel } from "./sidePanel";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { sidebarWasLoaded } from "@/contentScript/messenger/strict/api";
 import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
+import { setPlatform } from "@/platform/platformContext";
+import sidebarPlatform from "@/sidebar/sidebarPlatform";
+
+setPlatform(sidebarPlatform);
 
 async function init(): Promise<void> {
   ReactDOM.render(<App />, document.querySelector("#container"));

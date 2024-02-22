@@ -20,15 +20,18 @@ import type { IconConfig } from "@/types/iconTypes";
 import { splitStartingEmoji } from "@/utils/stringUtils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import type { Nullishable } from "@/utils/nullishUtils";
+import type {
+  SelectionTooltipProtocol,
+  TextSelectionAction,
+} from "@/platform/platformProtocol";
 
-type TextSelectionAction = {
-  // NOTE: currently there's no way to set icons for context menu items, so this will always be null
-  icon?: Nullishable<IconConfig>;
-  title: string;
-  handler: (text: string) => void;
-};
-
+/**
+ * A registered text selection action.
+ */
 export type RegisteredAction = TextSelectionAction & {
+  /**
+   * Emoji icon extracted from the title, or nullish if the title did not contain a leading emoji
+   */
   emoji: Nullishable<string>;
 };
 
@@ -41,7 +44,7 @@ const defaultIcon: IconConfig = {
  * Registry for text selection actions.
  * @since 1.8.10
  */
-class ActionRegistry {
+class ActionRegistry implements SelectionTooltipProtocol {
   /**
    * Map from component UUID to registered action
    */

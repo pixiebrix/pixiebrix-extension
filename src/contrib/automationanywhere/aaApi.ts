@@ -17,7 +17,6 @@
 
 import { type Logger } from "@/types/loggerTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import {
   type Activity,
   type Bot,
@@ -50,6 +49,10 @@ import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes
 import { pollUntilTruthy } from "@/utils/promiseUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { sleep } from "@/utils/timeUtils";
+
+// XXX: using the ambient platform object for now. In the future, we might want to wrap all these methods in a class
+// and pass the platform and integration config as a constructor argument
+import { getPlatform } from "@/platform/platformContext";
 
 // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
 // Same as default for Control Room
@@ -90,9 +93,10 @@ async function fetchPages<TData>(
     length: PAGINATION_LIMIT,
   };
 
-  const initialResponse = await performConfiguredRequestInBackground<
-    ListResponse<TData>
-  >(config, paginatedRequestConfig);
+  const initialResponse = await getPlatform().request<ListResponse<TData>>(
+    config,
+    paginatedRequestConfig,
+  );
 
   if (initialResponse.data.list == null) {
     // Use TypeError instead of BusinessError to ensure we send it to Application error telemetry if we're calling API incorrectly
@@ -111,9 +115,10 @@ async function fetchPages<TData>(
       length: PAGINATION_LIMIT,
     };
     // eslint-disable-next-line no-await-in-loop -- be conservative on number of concurrent requests to CR
-    const response = await performConfiguredRequestInBackground<
-      ListResponse<TData>
-    >(config, paginatedRequestConfig);
+    const response = await getPlatform().request<ListResponse<TData>>(
+      config,
+      paginatedRequestConfig,
+    );
     results.push(...response.data.list);
     offset += response.data.list.length;
     page += 1;
@@ -130,7 +135,7 @@ async function fetchBotFile(
   fileId: string,
 ): Promise<Bot> {
   // The same API endpoint can be used for any file, but for now assume it's a bot
-  const response = await performConfiguredRequestInBackground<Bot>(config, {
+  const response = await getPlatform().request<Bot>(config, {
     url: `/v2/repository/files/${fileId}`,
     method: "GET",
   });
@@ -150,7 +155,7 @@ async function fetchFolder(
   folderId: string,
 ): Promise<Folder> {
   // The same API endpoint can be used for any file, but for now assume it's a bot
-  const response = await performConfiguredRequestInBackground<Folder>(config, {
+  const response = await getPlatform().request<Folder>(config, {
     url: `/v2/repository/files/${folderId}`,
     method: "GET",
   });
@@ -324,13 +329,10 @@ export const cachedFetchRunAsUsers = cachePromiseMethod(
 
 async function fetchSchema(config: SanitizedIntegrationConfig, fileId: string) {
   if (config && fileId) {
-    const response = await performConfiguredRequestInBackground<Interface>(
-      config,
-      {
-        url: `/v1/filecontent/${fileId}/interface`,
-        method: "GET",
-      },
-    );
+    const response = await getPlatform().request<Interface>(config, {
+      url: `/v1/filecontent/${fileId}/interface`,
+      method: "GET",
+    });
 
     return interfaceToInputSchema(response.data);
   }
@@ -349,7 +351,7 @@ export async function runCommunityBot({
 }: CommunityBotArgs): Promise<void> {
   // Don't bother returning the DeployResponse because it's just "0" for all community deployments
   // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-deploy.html
-  await performConfiguredRequestInBackground<DeployResponse>(service, {
+  await getPlatform().request<DeployResponse>(service, {
     url: "/v2/automations/deploy",
     method: "post",
     data: {
@@ -369,8 +371,9 @@ export async function runEnterpriseBot({
   poolIds = [],
 }: EnterpriseBotArgs) {
   // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-bot-deploy-task.html
-  const { data: deployData } =
-    await performConfiguredRequestInBackground<DeployResponse>(service, {
+  const { data: deployData } = await getPlatform().request<DeployResponse>(
+    service,
+    {
       url: "/v3/automations/deploy",
       method: "post",
       data: {
@@ -382,7 +385,8 @@ export async function runEnterpriseBot({
         poolIds,
         runAsUserIds: castArray(runAsUserIds),
       },
-    });
+    },
+  );
 
   return deployData;
 }
@@ -409,7 +413,7 @@ export async function pollEnterpriseResult({
     await sleep(POLL_MILLIS);
 
     // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-progress.html
-    const { data: activityList } = await performConfiguredRequestInBackground<
+    const { data: activityList } = await getPlatform().request<
       ListResponse<Activity>
     >(service, {
       url: "/v3/activity/list",
@@ -473,11 +477,13 @@ export async function pollEnterpriseResult({
   }
 
   if (completedActivity) {
-    const { data: execution } =
-      await performConfiguredRequestInBackground<Execution>(service, {
+    const { data: execution } = await getPlatform().request<Execution>(
+      service,
+      {
         url: `/v3/activity/execution/${completedActivity.id}`,
         method: "get",
-      });
+      },
+    );
 
     return selectBotOutput(execution);
   }

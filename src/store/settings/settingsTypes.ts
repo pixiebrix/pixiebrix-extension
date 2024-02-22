@@ -54,6 +54,12 @@ export type SkunkworksSettingsFlags = {
    * @since 1.8.10
    */
   selectionPopover?: boolean;
+
+  /**
+   * Experimental setting to enable a text command popover
+   * @since 1.8.10
+   */
+  textCommandPopover?: boolean;
 };
 
 export type GeneralSettingsFlags = {
