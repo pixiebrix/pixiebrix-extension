@@ -122,6 +122,7 @@
     "./components/MarkdownInline.tsx",
     "./components/ModalLayout.tsx",
     "./components/StopPropagation.tsx",
+    "./components/StopPropagation.test.tsx",
     "./components/Stylesheets.tsx",
     "./components/StylesheetsContext.ts",
     "./components/TooltipIconButton.tsx",
