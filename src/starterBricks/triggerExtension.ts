@@ -408,7 +408,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
 
   /**
    * Shared event handler for DOM event triggers
-   * It's bound to this instance so that it can be removed when the extension is uninstalled.
+   * It's bound to this instance so that it can be removed when the mod is deactivated.
    */
   private readonly eventHandler = async (event: Event) => {
     let element = event.target as HTMLElement | Document;

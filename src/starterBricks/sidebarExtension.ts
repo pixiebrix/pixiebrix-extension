@@ -331,7 +331,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 
   /**
    * Shared event handler for DOM event triggers.
-   * It's bound to this instance so that it can be removed when the extension is uninstalled.
+   * It's bound to this instance so that it can be removed when the mod is deactivated.
    */
   private readonly eventHandler = async (event: Event): Promise<void> => {
     let relevantModComponents;
