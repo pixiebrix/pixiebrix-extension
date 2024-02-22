@@ -38,14 +38,14 @@ import { type PanelPayload } from "@/types/sidebarTypes";
 import { HeadlessModeError } from "@/bricks/errors";
 import { showTemporarySidebarPanel } from "@/contentScript/sidebarController";
 import { stopInspectingNativeHandler } from "./pageEditor/elementPicker";
-import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
-import { createFrameSource } from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
-import { waitForTemporaryPanel } from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
+import { waitForTemporaryPanel } from "@/platform/panels/panelController";
 import { type ApiVersion, type BrickArgsContext } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
 import { $safeFind } from "@/utils/domUtils";
+import { createFrameSource } from "@/contentScript/ephemeralPanel";
+import { showModal } from "@/contentScript/modalDom";
 
 export type RunBlockArgs = {
   /**

@@ -23,10 +23,7 @@ import EditorPane from "./EditorPane";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import brickRegistry from "@/bricks/registry";
-import {
-  type EditorRootState,
-  PipelineFlavor,
-} from "@/pageEditor/pageEditorTypes";
+import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import {
   echoBrick,
   teapotBrick,
@@ -52,7 +49,7 @@ import { act } from "react-dom/test-utils";
 import * as sinonTimers from "@sinonjs/fake-timers";
 import { array } from "cooky-cutter";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { mockCachedUser } from "@/testUtils/userMock";
+import { mockAuthenticatedUser } from "@/testUtils/userMock";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   formStateFactory,
@@ -65,6 +62,7 @@ import {
 } from "@/testUtils/factories/marketplaceFactories";
 import { partnerUserFactory } from "@/testUtils/factories/authFactories";
 import { toExpression } from "@/utils/expressionUtils";
+import { PipelineFlavor } from "@/bricks/types";
 
 jest.setTimeout(15_000); // This test is flaky with the default timeout of 5000 ms
 
@@ -909,7 +907,7 @@ describe("brick validation in Add Brick Modal UI", () => {
   );
 
   test("hides UiPath bricks for AA users", async () => {
-    mockCachedUser(partnerUserFactory());
+    await mockAuthenticatedUser(partnerUserFactory());
     const formState = formStateFactory();
     render(
       <>

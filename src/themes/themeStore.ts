@@ -24,8 +24,8 @@ import {
   themeStorage,
 } from "@/themes/themeUtils";
 import { type Me, type OrganizationTheme } from "@/types/contract";
-import { getApiClient } from "@/services/apiClient";
 import { isUUID } from "@/types/helpers";
+import { getApiClient } from "@/data/service/apiClient";
 import reportError from "@/telemetry/reportError";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { getSettingsState } from "@/store/settings/settingsStorage";

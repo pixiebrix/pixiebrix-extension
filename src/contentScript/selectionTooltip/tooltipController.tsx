@@ -217,8 +217,6 @@ function isSelectionValid(selection: Nullishable<Selection>): boolean {
 export const initSelectionTooltip = once(() => {
   expectContext("contentScript");
 
-  console.debug("Initializing text selection toolip");
-
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
   // Firefox has support watching carat position: https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/selectionchange_event
   // but it's not supported in Chrome

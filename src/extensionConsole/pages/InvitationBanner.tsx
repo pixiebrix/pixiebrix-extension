@@ -19,7 +19,7 @@ import React from "react";
 import Banner from "@/components/banner/Banner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-import { useGetInvitationsQuery } from "@/services/api";
+import { useGetInvitationsQuery } from "@/data/service/api";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 const InvitationBanner: React.FunctionComponent = () => {

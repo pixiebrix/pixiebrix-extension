@@ -23,8 +23,11 @@ import {
 import { type PipelineHeaderNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineHeaderNode";
 import { type PipelineFooterNodeProps } from "@/pageEditor/tabs/editTab/editorNodes/PipelineFooterNode";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
-import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
-import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
+import {
+  type BrickConfig,
+  type BrickPipeline,
+  PipelineFlavor,
+} from "@/bricks/types";
 import {
   filterTracesByCall,
   getLatestBrickCall,

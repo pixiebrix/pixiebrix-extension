@@ -63,6 +63,7 @@ import { isLoadedInIframe } from "@/utils/iframeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
 
@@ -96,6 +97,8 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
   abstract readonly documentUrlPatterns: Manifest.MatchPattern[];
 
   abstract readonly contexts: Menus.ContextType[];
+
+  readonly capabilities: PlatformCapability[] = ["quickBar"];
 
   inputSchema: Schema = propertiesToSchema(
     {

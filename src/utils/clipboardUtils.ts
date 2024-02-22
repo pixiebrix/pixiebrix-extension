@@ -19,17 +19,26 @@ import { BusinessError } from "@/errors/businessErrors";
 import legacyCopyText from "copy-text-to-clipboard";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
-import { isPromiseFulfilled } from "./promiseUtils";
+import { isPromiseFulfilled } from "@/utils/promiseUtils";
 import { writeToClipboardInFocusedDocument } from "@/background/messenger/strict/api";
 
 export type ContentType = "infer" | "text" | "image";
 
 export type ClipboardText = {
+  /**
+   * The text to copy to the clipboard.
+   */
   text: string;
+  /**
+   * Optional HTML content to copy to the clipboard for pasting into rich text editors.
+   */
   html?: string;
 };
 
 type ClipboardImage = {
+  /**
+   * The image to copy to the clipboard.
+   */
   image: Blob;
 };
 
@@ -107,13 +116,16 @@ async function interactiveWriteToClipboard(
 
 /**
  * Copy to the clipboard, working around document focus restrictions if necessary.
- * @param image the image to copy to the clipboard
- * @param text the text to copy to the clipboard
- * @param html optional HTML content to copy to the clipboard for pasting into rich text editors
  */
 export async function writeToClipboard(
   content: ClipboardContent,
 ): Promise<boolean> {
+  if ("image" in content && !("write" in navigator.clipboard)) {
+    throw new BusinessError(
+      "Your browser does not support writing images to the clipboard",
+    );
+  }
+
   // Attempt to write to the clipboard in the last focused document
   if (
     !document.hasFocus() &&
