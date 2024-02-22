@@ -48,7 +48,7 @@ import defaultActions, {
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { flagOn } from "@/auth/authUtils";
 import { onContextInvalidated } from "webext-events";
-import StopPropagation from "../StopPropagation";
+import StopPropagation from "@/components/StopPropagation";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
