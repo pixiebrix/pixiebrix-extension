@@ -25,7 +25,7 @@ import {
 import { reducePipeline } from "@/runtime/reducePipeline";
 import brickRegistry from "@/bricks/registry";
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { getPageState, setPageState } from "@/contentScript/pageState";
+import { getState, setState } from "@/platform/state/stateController";
 import pDefer, { type DeferredPromise } from "p-defer";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { type Brick } from "@/types/brickTypes";
@@ -68,7 +68,7 @@ const logger = new ConsoleLogger({
 });
 
 function expectPageState(expectedState: UnknownObject) {
-  const pageState = getPageState({
+  const pageState = getState({
     namespace: "blueprint",
     extensionId,
     blueprintId,
@@ -83,7 +83,7 @@ describe("WithAsyncModVariable", () => {
 
   beforeEach(() => {
     // Reset the page state to avoid interference between tests
-    setPageState({
+    setState({
       namespace: "blueprint",
       data: {},
       blueprintId,

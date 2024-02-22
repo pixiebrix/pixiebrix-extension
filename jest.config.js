@@ -20,7 +20,6 @@ const config = {
   testEnvironment: "./src/testUtils/FixJsdomEnvironment.js",
   modulePaths: ["/src"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "yaml", "yml", "json"],
-  testPathIgnorePatterns: ["<rootDir>/selenium/"],
   modulePathIgnorePatterns: ["<rootDir>/headers.json", "<rootDir>/dist/"],
   transform: {
     "^.+\\.[jt]sx?$": "@swc/jest",
@@ -31,7 +30,7 @@ const config = {
     "^.+\\.txt$": "<rootDir>/src/testUtils/rawJestTransformer.mjs",
   },
   transformIgnorePatterns: [
-    "node_modules/(?!@cfworker|escape-string-regex|filename-reserved-regex|filenamify|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|strip-outer|trim-repeated|mimic-fn|urlpattern-polyfill|url-join|uuid|nanoid|use-debounce|copy-text-to-clipboard|linkify-urls|create-html-element|stringify-attributes|escape-goat|stemmer|uint8array-extras|one-event|abort-utils|batched-function)",
+    "node_modules/(?!@cfworker|escape-string-regex|filename-reserved-regex|filenamify|idb|webext-|p-timeout|p-retry|p-defer|p-memoize|serialize-error|strip-outer|trim-repeated|mimic-fn|urlpattern-polyfill|url-join|uuid|nanoid|use-debounce|copy-text-to-clipboard|linkify-urls|create-html-element|stringify-attributes|escape-goat|stemmer|uint8array-extras|one-event|abort-utils|batched-function|is-network-error)",
   ],
   setupFiles: [
     "dotenv/config",

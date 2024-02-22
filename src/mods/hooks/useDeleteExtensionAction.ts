@@ -17,7 +17,7 @@
 
 import { type ModViewItem } from "@/types/modTypes";
 import { useModals } from "@/components/ConfirmationModal";
-import { useDeleteStandaloneModDefinitionMutation } from "@/services/api";
+import { useDeleteStandaloneModDefinitionMutation } from "@/data/service/api";
 import {
   getLabel,
   isResolvedModComponent,

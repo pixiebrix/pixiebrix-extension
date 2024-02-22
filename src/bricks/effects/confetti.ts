@@ -17,6 +17,7 @@
 
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type Schema } from "@/types/schemaTypes";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export class ConfettiEffect extends EffectABC {
   constructor() {
@@ -27,6 +28,10 @@ export class ConfettiEffect extends EffectABC {
     type: "object",
     properties: {},
   };
+
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["dom"];
+  }
 
   async effect(): Promise<void> {
     const { default: confetti } = await import(

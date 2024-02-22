@@ -25,7 +25,7 @@ import {
   createRenderHookWithWrappers,
   createRenderWithWrappers,
 } from "@/testUtils/testHelpers";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
 import { sessionChangesMiddleware } from "@/store/sessionChanges/sessionChangesListenerMiddleware";

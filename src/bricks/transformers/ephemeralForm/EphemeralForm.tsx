@@ -39,7 +39,7 @@ import useAsyncState from "@/hooks/useAsyncState";
 import { Stylesheets } from "@/components/Stylesheets";
 import EmotionShadowRoot from "react-shadow/emotion";
 import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
-import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
+import { type FormDefinition } from "@/platform/forms/formTypes";
 import { type UUID } from "@/types/stringTypes";
 
 const fields = {

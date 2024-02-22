@@ -16,10 +16,28 @@
  */
 
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
-
 import { toExpression } from "@/utils/expressionUtils";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
+import { TEST_cancelAll } from "@/platform/forms/formController";
+import * as messenger from "webext-messenger";
+import { showModal } from "@/contentScript/modalDom";
+
+jest.mock("@/utils/iframeUtils");
+jest.mock("@/contentScript/modalDom");
+jest.mock("@/contentScript/sidebarDomControllerLite");
+
+const showModalMock = jest.mocked(showModal);
 
 const brick = new FormTransformer();
+
+afterEach(async () => {
+  // eslint-disable-next-line new-cap -- test method
+  await TEST_cancelAll();
+  jest.clearAllMocks();
+});
 
 describe("FormTransformer", () => {
   it("returns form schema for output schema", () => {
@@ -49,5 +67,88 @@ describe("FormTransformer", () => {
     });
 
     expect(outputSchema).toEqual(brick.outputSchema);
+  });
+
+  it("throws BusinessError if targeting sidebar from frame", async () => {
+    jest.mocked(isLoadedInIframe).mockReturnValue(true);
+
+    await expect(
+      brick.run(
+        unsafeAssumeValidArg({
+          location: "sidebar",
+          schema: {
+            tile: "Hello, World",
+          },
+        }),
+        brickOptionsFactory(),
+      ),
+    ).rejects.toThrow(BusinessError);
+
+    expect(showModalMock).not.toHaveBeenCalled();
+  });
+
+  it("shows modal in top-level", async () => {
+    // Exposed via __mocks__/webext-messenger
+    (messenger as any).setFrameId(0);
+    jest.mocked(isLoadedInIframe).mockReturnValue(false);
+
+    const brickPromise = brick.run(
+      unsafeAssumeValidArg({
+        location: "modal",
+        schema: {
+          tile: "Hello, World",
+        },
+      }),
+      brickOptionsFactory(),
+    );
+
+    // eslint-disable-next-line new-cap -- test method
+    await TEST_cancelAll();
+
+    await expect(brickPromise).rejects.toThrow(CancelError);
+
+    expect(showModalMock).toHaveBeenCalledExactlyOnceWith({
+      controller: expect.any(AbortController),
+      // Why is any(String) now working here?
+      url: expect.anything(),
+    });
+
+    const opener = new URL(showModalMock.mock.calls[0][0].url).searchParams.get(
+      "opener",
+    );
+    expect(JSON.parse(opener)).toStrictEqual({ tabId: 1, frameId: 0 });
+  });
+
+  it("shows modal in sub-frame", async () => {
+    // Exposed via __mocks__/webext-messenger
+    (messenger as any).setFrameId(1);
+    jest.mocked(isLoadedInIframe).mockReturnValue(true);
+
+    const brickPromise = brick.run(
+      unsafeAssumeValidArg({
+        location: "modal",
+        schema: {
+          tile: "Hello, World",
+        },
+      }),
+      brickOptionsFactory(),
+    );
+
+    // eslint-disable-next-line new-cap -- test method
+    await TEST_cancelAll();
+
+    await expect(brickPromise).rejects.toThrow(CancelError);
+
+    expect(showModalMock).toHaveBeenCalledExactlyOnceWith({
+      controller: expect.any(AbortController),
+      // Why is any(String) not working here?
+      url: expect.anything(),
+    });
+
+    const opener = new URL(showModalMock.mock.calls[0][0].url).searchParams.get(
+      "opener",
+    );
+
+    expect(JSON.parse(opener)).toStrictEqual({ tabId: 1, frameId: 1 });
   });
 });

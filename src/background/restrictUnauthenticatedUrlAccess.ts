@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fetch } from "@/hooks/fetch";
 import { type OrganizationAuthUrlPattern } from "@/types/contract";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { addListener as addAuthListener, isLinked } from "@/auth/token";
@@ -26,17 +25,42 @@ import { SessionValue } from "@/mv3/SessionStorage";
 import reportError from "@/telemetry/reportError";
 import type { Tabs } from "webextension-polyfill";
 import { forEachTab } from "@/utils/extensionUtils";
+import { getApiClient } from "@/data/service/apiClient";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import { StorageItem } from "webext-storage";
 
-const sessionValue = new SessionValue<string[]>(
+const authUrlPatternCache = new SessionValue<string[]>(
   "authUrlPatterns",
   import.meta.url,
 );
 
+/**
+ * A tab that had its navigation restricted.
+ */
+type RestrictedNavigationMetadata = {
+  tabId: number;
+  url: string;
+};
+
+/**
+ * Most recent restricted URL and tab id to allow redirecting to the same URL once authenticated.
+ * @since 1.8.9
+ */
+// Storing on a per-tab basis might be useful for cases where multiple tabs are redirected due to the extension
+// becoming unlinked. But storing a single tab/URL is sufficient for the more common use case of a URL being restricted
+// in a fresh environment prior to the SSO login.
+// NOTE: can't use SessionValue because the extension reloads on extension linking, so SessionValue is reset.
+// StorageItem uses local storage, so persists across extension reloads
+const lastRestrictedNavigationStorage =
+  new StorageItem<RestrictedNavigationMetadata>("lastRestrictedNavigation");
+
 async function getAuthUrlPatterns(organizationId: UUID): Promise<string[]> {
   try {
-    const authUrlPatterns = await fetch<OrganizationAuthUrlPattern[]>(
-      `/api/organizations/${organizationId}/auth-url-patterns/`,
-    );
+    // Is an unauthenticated endpoint
+    const client = await getApiClient();
+    const { data: authUrlPatterns } = await client.get<
+      OrganizationAuthUrlPattern[]
+    >(`/api/organizations/${organizationId}/auth-url-patterns/`);
     return authUrlPatterns.map(({ url_pattern }) => url_pattern);
   } catch (error) {
     reportError(error);
@@ -44,14 +68,14 @@ async function getAuthUrlPatterns(organizationId: UUID): Promise<string[]> {
   }
 }
 
-async function isRestrictedUrl(url: string) {
-  const cachedAuthUrlPatterns = await sessionValue.get();
+async function isRestrictedUrl(url: string): Promise<boolean> {
+  const cachedAuthUrlPatterns = await authUrlPatternCache.get();
   return testMatchPatterns(cachedAuthUrlPatterns, url);
 }
 
 function getDefaultAuthUrl(restrictedUrl: string) {
   const errorMessage = `Access is restricted to '${restrictedUrl}'. Log in with PixieBrix to proceed`;
-  const defaultUrl = new URL("https://app.pixiebrix.com/login/");
+  const defaultUrl = new URL("login", DEFAULT_SERVICE_URL);
   defaultUrl.searchParams.set("error", errorMessage);
   return defaultUrl.href;
 }
@@ -61,7 +85,7 @@ async function getRedirectUrl(restrictedUrl: string) {
   return ssoUrl ?? getDefaultAuthUrl(restrictedUrl);
 }
 
-async function redirectRestrictedTab({
+async function redirectTabIfRestrictedUrl({
   tabId,
   url,
 }: {
@@ -69,10 +93,27 @@ async function redirectRestrictedTab({
   url: string;
 }) {
   if (await isRestrictedUrl(url)) {
+    await lastRestrictedNavigationStorage.set({
+      tabId,
+      url,
+    });
+
     await browser.tabs.update(tabId, {
       url: await getRedirectUrl(url),
     });
   }
+
+  // There's post-login redirection corner case for lastRestrictedNavigationStorage in the following unusual sequence:
+  // 1. User visits restricted URL
+  // 2. They're redirected to the app login page
+  // 3. User manually changes URL to visit an unrestricted URL
+  // 4. User manually visits app login page and logs in
+  // 5. User will be automatically redirected to original restricted URL
+
+  // You could consider resetting lastRestrictedNavigationStorage on step 3. However, the problem though is that for
+  // SSO flows, the user will visit one or more unrestricted URLs. It's non-trivial to distinguish navigation events
+  // that are part of an SSO/OpenID flow vs. the user deciding to "abort" the login flow.
+  // For more discussion, see https://github.com/pixiebrix/pixiebrix-extension/pull/7625#discussion_r1491407499
 }
 
 async function handleRestrictedTab(
@@ -83,7 +124,31 @@ async function handleRestrictedTab(
     return;
   }
 
-  await redirectRestrictedTab({ tabId, url: changeInfo.url });
+  await redirectTabIfRestrictedUrl({ tabId, url: changeInfo.url });
+}
+
+/**
+ * Open the restricted URL that was most recently accessed causing the user to be redirected to a login page, if any.
+ */
+async function openLatestRestrictedUrl(): Promise<void> {
+  const lastRestrictedNavigation = await lastRestrictedNavigationStorage.get();
+
+  if (!lastRestrictedNavigation) {
+    return;
+  }
+
+  await lastRestrictedNavigationStorage.remove();
+
+  const { tabId, url } = lastRestrictedNavigation;
+
+  // Double-check the tab still exists
+  const tab = await browser.tabs.get(tabId);
+  if (tab) {
+    await browser.tabs.update(tabId, {
+      url,
+      active: true,
+    });
+  }
 }
 
 /**
@@ -108,7 +173,7 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
       return;
     }
 
-    await sessionValue.set(authUrlPatterns);
+    await authUrlPatternCache.set(authUrlPatterns);
   } catch (error) {
     reportError(error);
   }
@@ -117,11 +182,23 @@ async function initRestrictUnauthenticatedUrlAccess(): Promise<void> {
     browser.tabs.onUpdated.addListener(handleRestrictedTab);
   }
 
+  // Clean up the lastRestrictedNavigationStorage when its tab is closed.
+  // Could just rely on tab existing in openLatestRestrictedUrl, but explicitly clearing is more robust to tab id reuse.
+  browser.tabs.onRemoved.addListener(async (tabId) => {
+    const lastRestrictedNavigation =
+      await lastRestrictedNavigationStorage.get();
+    if (lastRestrictedNavigation?.tabId === tabId) {
+      await lastRestrictedNavigationStorage.remove();
+    }
+  });
+
   addAuthListener(async (auth) => {
     if (auth) {
+      // Be sure to remove the listener before accessing the URL again because the listener doesn't check isLinked
       browser.tabs.onUpdated.removeListener(handleRestrictedTab);
+      await openLatestRestrictedUrl();
     } else {
-      await forEachTab(redirectRestrictedTab);
+      await forEachTab(redirectTabIfRestrictedUrl);
       browser.tabs.onUpdated.addListener(handleRestrictedTab);
     }
   });

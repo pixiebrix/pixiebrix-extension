@@ -23,7 +23,6 @@ import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
 import { uuidv4 } from "@/types/helpers";
 import { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { RegistryId } from "@/types/registryTypes";
 
 // Bypass auto-mocks
 export * from "../../../../background/messenger/api";
@@ -45,18 +44,6 @@ export const sheets = {
   getAllRows: jest.fn().mockRejectedValue(new Error("Not implemented")),
   createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB", bg),
   appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS", bg),
-};
-
-export const registry = {
-  fetch: jest.fn().mockResolvedValue(true),
-  syncRemote: jest.fn(),
-  getByKinds: jest.fn().mockResolvedValue([]),
-  find: jest.fn().mockImplementation(async (id: RegistryId) => {
-    throw new Error(
-      `Find not implemented in registry mock (looking up "${id}"). See __mocks__/background/messenger/api for more information.`,
-    );
-  }),
-  clear: getMethod("REGISTRY_CLEAR", bg),
 };
 
 export const dataStore = {

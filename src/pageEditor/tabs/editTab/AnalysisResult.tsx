@@ -24,7 +24,9 @@ import React from "react";
 
 import { useSelector } from "react-redux";
 
-const AnalysisResult: React.FunctionComponent = () => {
+const AnalysisResult: React.FunctionComponent<{ className?: string }> = ({
+  className,
+}) => {
   const { path } = useSelector(selectActiveNodeInfo);
   const annotations = useSelector(selectAnnotationsForPath(path));
   if (annotations.length === 0) {
@@ -32,7 +34,7 @@ const AnalysisResult: React.FunctionComponent = () => {
   }
 
   return (
-    <>
+    <div className={className}>
       {annotations.map(({ message, type }, index) => (
         <FieldAnnotationAlert
           // eslint-disable-next-line react/no-array-index-key -- Requires a refactor of the `FieldAnnotation` component to require specifying a key
@@ -41,7 +43,7 @@ const AnalysisResult: React.FunctionComponent = () => {
           type={type}
         />
       ))}
-    </>
+    </div>
   );
 };
 

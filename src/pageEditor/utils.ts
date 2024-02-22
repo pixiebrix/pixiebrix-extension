@@ -30,9 +30,7 @@ import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
 import { castArray, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
-import { expectContext } from "@/utils/expectContext";
 import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
-import { type Target } from "@/types/messengerTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
@@ -46,25 +44,7 @@ import { inputProperties } from "@/utils/schemaUtils";
 import { joinPathParts } from "@/utils/formUtils";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import MapValues from "@/bricks/transformers/controlFlow/MapValues";
-
-export async function getCurrentURL(): Promise<string> {
-  expectContext("pageEditor");
-
-  const tab = await browser.tabs.get(chrome.devtools.inspectedWindow.tabId);
-  return tab.url;
-}
-
-/**
- * Message target for the tab being inspected by the devtools.
- *
- * The Page Editor only supports editing the top-level frame.
- */
-export const thisTab: Target = {
-  // This code might end up (unused) in non-dev bundles, so use `?.` to avoid errors from undefined values
-  tabId: globalThis.chrome?.devtools?.inspectedWindow?.tabId ?? 0,
-  // The top-level frame
-  frameId: 0,
-};
+import AddTextCommand from "@/bricks/effects/AddTextCommand";
 
 export function getIdForElement(
   element: ModComponentBase | ModComponentFormState,
@@ -179,6 +159,13 @@ export function getVariableKeyForSubPipeline(
     // We currently don't allow the user to rename the variable for the onSubmit pipeline because it'd add another
     // option to an already cluttered UI.
     return CustomFormRenderer.ON_SUBMIT_VARIABLE_NAME;
+  }
+
+  if (
+    brickConfig.id === AddTextCommand.BRICK_ID &&
+    pipelinePropName === "generate"
+  ) {
+    return AddTextCommand.DEFAULT_PIPELINE_VAR;
   }
 
   if (!keyPropName) {

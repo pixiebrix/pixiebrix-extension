@@ -29,6 +29,8 @@ import {
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { setPlatform } from "@/platform/platformContext";
+import { platformMock as platform } from "@/testUtils/platformMock";
 
 jest.mock("@/background/messenger/api", () => ({
   performConfiguredRequestInBackground: jest.fn().mockResolvedValue({
@@ -43,6 +45,13 @@ jest.mock("@/background/messenger/api", () => ({
 const performConfiguredRequestInBackgroundMock = jest.mocked(
   performConfiguredRequestInBackground,
 );
+
+// `The aaApi module uses the platform global
+setPlatform({
+  ...platform,
+  request: performConfiguredRequestInBackgroundMock,
+});
+
 const getCachedAuthDataMock = jest.mocked(getCachedAuthData);
 const getUserDataMock = jest.mocked(getUserData);
 
@@ -90,7 +99,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      brickOptionsFactory(),
+      brickOptionsFactory({ platform }),
     );
 
     expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
@@ -149,7 +158,7 @@ describe("Automation Anywhere - RunBot", () => {
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
         data: {},
       }),
-      brickOptionsFactory(),
+      brickOptionsFactory({ platform }),
     );
 
     expect(getCachedAuthDataMock).not.toHaveBeenCalled();
@@ -213,7 +222,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      brickOptionsFactory(),
+      brickOptionsFactory({ platform }),
     );
 
     expect(getCachedAuthDataMock).toHaveBeenCalledWith(tokenAuthId);
@@ -278,7 +287,7 @@ describe("Automation Anywhere - RunBot", () => {
         data: {},
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
       }),
-      brickOptionsFactory(),
+      brickOptionsFactory({ platform }),
     );
 
     expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
@@ -343,7 +352,7 @@ describe("Automation Anywhere - RunBot", () => {
         fileId: FILE_ID,
         data: {},
       }),
-      brickOptionsFactory(),
+      brickOptionsFactory({ platform }),
     );
 
     expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(
@@ -452,7 +461,7 @@ describe("Automation Anywhere - RunBot", () => {
         runAsUserIds: [UNATTENDED_RUN_AS_USER_ID],
         awaitResult: true,
       }),
-      brickOptionsFactory(),
+      brickOptionsFactory({ platform }),
     );
 
     expect(performConfiguredRequestInBackgroundMock).toHaveBeenCalledWith(

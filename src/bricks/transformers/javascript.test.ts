@@ -17,28 +17,29 @@
 
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
-import { runUserJs } from "@/sandbox/messenger/api";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
-
-jest.mock("@/sandbox/messenger/api");
-
-const runUserJsMock = jest.mocked(runUserJs);
+import { platformMock as platform } from "@/testUtils/platformMock";
+import { extend } from "cooky-cutter";
 
 const brick = new JavaScriptTransformer();
 
+const optionsFactory = extend(brickOptionsFactory, {
+  platform: () => platform,
+});
+
 describe("JavaScriptTransformer", () => {
   beforeEach(() => {
-    runUserJsMock.mockReset();
+    jest.resetAllMocks();
   });
 
   test("executes the JavaScript function", async () => {
     const value = { function: "function () { return 1 + 1; };" };
 
-    await brick.transform(unsafeAssumeValidArg(value), brickOptionsFactory());
+    await brick.transform(unsafeAssumeValidArg(value), optionsFactory());
 
-    expect(runUserJsMock).toHaveBeenCalledWith({
-      blockId: "@pixiebrix/javascript",
+    expect(platform.runSandboxedJavascript).toHaveBeenCalledWith({
       code: "function () { return 1 + 1; };",
+      data: undefined,
     });
   });
 
@@ -48,21 +49,22 @@ describe("JavaScriptTransformer", () => {
       arguments: { x: 1 },
     };
 
-    await brick.transform(unsafeAssumeValidArg(value), brickOptionsFactory());
+    await brick.transform(unsafeAssumeValidArg(value), optionsFactory());
 
-    expect(runUserJsMock).toHaveBeenCalledWith({
-      blockId: "@pixiebrix/javascript",
+    expect(platform.runSandboxedJavascript).toHaveBeenCalledWith({
       code: "function (x) { return x + 1; };",
       data: { x: 1 },
     });
   });
 
   test("errors are propagated", async () => {
-    runUserJsMock.mockRejectedValueOnce(new Error("test"));
+    jest
+      .mocked(platform.runSandboxedJavascript)
+      .mockRejectedValueOnce(new Error("test"));
     const value = { function: "function () { throw new Error('test'); };" };
 
     await expect(
-      brick.transform(unsafeAssumeValidArg(value), brickOptionsFactory()),
+      brick.transform(unsafeAssumeValidArg(value), optionsFactory()),
     ).rejects.toThrow("test");
   });
 });

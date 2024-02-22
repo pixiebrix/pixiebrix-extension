@@ -28,14 +28,14 @@ import { locator } from "@/background/locator";
 import { isEmpty } from "lodash";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { expectContext } from "@/utils/expectContext";
-import { absoluteApiUrl } from "@/services/apiClient";
+import { absoluteApiUrl } from "@/data/service/apiClient";
 import { type ProxyResponseData, type RemoteResponse } from "@/types/contract";
 import {
   selectRemoteResponseErrorMessage,
   isProxiedErrorResponse,
   proxyResponseToAxiosResponse,
 } from "@/background/proxyUtils";
-import { selectAxiosError } from "@/services/requestErrorUtils";
+import { selectAxiosError } from "@/data/service/requestErrorUtils";
 import {
   BusinessError,
   ProxiedRemoteServiceError,

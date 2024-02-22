@@ -37,7 +37,7 @@ const partnerTokenStorage = new StorageItem("partnerToken", {
   defaultValue: {} as Partial<PartnerAuthData>,
 });
 
-type AuthListener = (auth: Partial<TokenAuthData>) => void;
+type AuthListener = (auth: Partial<TokenAuthData | PartnerAuthData>) => void;
 
 // TODO: Use SimpleEventTarget instead
 // eslint-disable-next-line local-rules/persistBackgroundData -- Functions
@@ -66,6 +66,12 @@ export function TEST_triggerListeners(auth: Partial<TokenAuthData>): void {
 
 export function TEST_clearListeners(): void {
   listeners.clear();
+}
+
+export async function TEST_setAuthData(
+  data: Partial<TokenAuthData>,
+): Promise<void> {
+  await extensionKeyStorage.set(data);
 }
 
 /**

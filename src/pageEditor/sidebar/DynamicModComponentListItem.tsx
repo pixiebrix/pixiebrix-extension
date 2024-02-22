@@ -30,7 +30,6 @@ import { type UUID } from "@/types/stringTypes";
 import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
 import { updateSidebar } from "@/contentScript/messenger/strict/api";
 import { openSidePanel } from "@/utils/sidePanelUtils";
-import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -52,6 +51,7 @@ import {
 } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import useSaveMod from "@/pageEditor/hooks/useSaveMod";
 import { selectIsModComponentSavedOnCloud } from "@/store/extensionsSelectors";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 type DynamicModComponentListItemProps = {
   modComponentFormState: ModComponentFormState;
@@ -88,11 +88,11 @@ const DynamicModComponentListItem: React.FunctionComponent<
   const isButton = modComponentFormState.type === "menuItem";
 
   const showOverlay = useCallback(async (uuid: UUID) => {
-    await enableOverlay(thisTab, `[data-pb-uuid="${uuid}"]`);
+    await enableOverlay(inspectedTab, `[data-pb-uuid="${uuid}"]`);
   }, []);
 
   const hideOverlay = useCallback(async () => {
-    await disableOverlay(thisTab);
+    await disableOverlay(inspectedTab);
   }, []);
 
   const {
@@ -163,8 +163,8 @@ const DynamicModComponentListItem: React.FunctionComponent<
         if (modComponentFormState.type === "actionPanel") {
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
           // frequently between extensions within the same blueprint.
-          await openSidePanel(chrome.devtools.inspectedWindow.tabId);
-          updateSidebar(thisTab, {
+          await openSidePanel(inspectedTab.tabId);
+          updateSidebar(inspectedTab, {
             extensionId: modComponentFormState.uuid,
             force: true,
             refresh: false,

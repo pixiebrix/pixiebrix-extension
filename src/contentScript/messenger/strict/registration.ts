@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -31,17 +31,17 @@ import {
   getFormDefinition,
   resolveForm,
   cancelForm,
-} from "@/contentScript/ephemeralFormProtocol";
+} from "@/platform/forms/formController";
 import { getProcesses, initRobot } from "@/contentScript/uipath";
 import { checkAvailable } from "@/bricks/available";
 import notify from "@/utils/notify";
-import { getPageState, setPageState } from "@/contentScript/pageState";
+import { getState, setState } from "@/platform/state/stateController";
 import {
   cancelTemporaryPanels,
   getPanelDefinition,
   resolveTemporaryPanel,
   stopWaitingForTemporaryPanels,
-} from "@/bricks/transformers/temporaryInfo/temporaryPanelProtocol";
+} from "@/platform/panels/panelController";
 import { closeWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
 import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughModal";
 import { registerMethods } from "webext-messenger";
@@ -62,8 +62,8 @@ declare global {
     UIPATH_INIT: typeof initRobot;
     UIPATH_GET_PROCESSES: typeof getProcesses;
     CHECK_AVAILABLE: typeof checkAvailable;
-    GET_PAGE_STATE: typeof getPageState;
-    SET_PAGE_STATE: typeof setPageState;
+    GET_PAGE_STATE: typeof getState;
+    SET_PAGE_STATE: typeof setState;
     NOTIFY_INFO: typeof notify.info;
     NOTIFY_ERROR: typeof notify.error;
     NOTIFY_SUCCESS: typeof notify.success;
@@ -91,8 +91,8 @@ export default function registerMessenger(): void {
     UIPATH_INIT: initRobot,
     UIPATH_GET_PROCESSES: getProcesses,
     CHECK_AVAILABLE: checkAvailable,
-    GET_PAGE_STATE: getPageState,
-    SET_PAGE_STATE: setPageState,
+    GET_PAGE_STATE: getState,
+    SET_PAGE_STATE: setState,
     NOTIFY_INFO: notify.info,
     NOTIFY_ERROR: notify.error,
     NOTIFY_SUCCESS: notify.success,

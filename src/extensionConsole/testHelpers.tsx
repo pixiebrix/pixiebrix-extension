@@ -26,7 +26,7 @@ import {
 } from "@/testUtils/testHelpers";
 import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import integrationsSlice from "@/integrations/store/integrationsSlice";
 import workshopSlice from "@/store/workshopSlice";

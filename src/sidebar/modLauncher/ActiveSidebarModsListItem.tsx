@@ -32,7 +32,7 @@ import { splitStartingEmoji } from "@/utils/stringUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { DEFAULT_TEXT_ICON_COLOR } from "@/icons/constants";
-import MarketplaceListingModIcon from "@/components/MarketplaceListingModIcon";
+import MarketplaceListingIcon from "@/components/MarketplaceListingIcon";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 
 /**
@@ -80,8 +80,8 @@ const ActiveSidebarModsListItem: React.FunctionComponent<{
     icon = emojiIcon;
   } else if (modComponent?._recipe) {
     icon = (
-      <MarketplaceListingModIcon
-        modId={modComponent._recipe.id}
+      <MarketplaceListingIcon
+        packageId={modComponent._recipe.id}
         defaultIcon={faCube}
       />
     );

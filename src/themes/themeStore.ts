@@ -18,22 +18,58 @@
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import { readManagedStorage } from "@/store/enterprise/managedStorage";
 import { expectContext } from "@/utils/expectContext";
-import { DEFAULT_THEME, type Theme } from "@/themes/themeTypes";
-import { isValidTheme } from "@/themes/themeUtils";
+import { DEFAULT_THEME, type ThemeName } from "@/themes/themeTypes";
+import { isValidThemeName } from "@/themes/themeUtils";
+import { type Me, type OrganizationTheme } from "@/types/contract";
+import { getApiClient } from "@/data/service/apiClient";
+import { validateUUID } from "@/types/helpers";
+import { type Nullishable } from "@/utils/nullishUtils";
+import reportError from "@/telemetry/reportError";
+
+async function getOrganizationTheme(
+  organizationId: Nullishable<string>,
+): Promise<OrganizationTheme> {
+  try {
+    const client = await getApiClient();
+    if (organizationId) {
+      const orgUUID = validateUUID(organizationId);
+      const { data } = await client.get<OrganizationTheme>(
+        // Is an unauthenticated endpoint
+        `/api/organizations/${orgUUID}/theme/`,
+      );
+      return data;
+    }
+
+    const { data } = await client.get<Me>("/api/me/");
+    return data.organization?.theme;
+  } catch (error) {
+    reportError(error);
+    return { show_sidebar_logo: true, logo: null, toolbar_icon: null };
+  }
+}
 
 /**
- * Returns the active theme. In React, prefer useGetTheme.
- * @see useGetTheme
+ * Returns the active theme settings. In React, prefer useTheme.
+ * @see useTheme
  */
-export async function getActiveTheme(): Promise<Theme> {
+export async function getActiveTheme(): Promise<{
+  themeName: ThemeName;
+  toolbarIcon: Nullishable<string>;
+}> {
   expectContext("extension");
 
-  // The theme property is initialized/set via an effect in useGetTheme
+  // The theme property is initialized/set via an effect in useGetThemeName
+  // TODO: refactor this so it's instead fetched here once on init.
   const { theme } = await getSettingsState();
-  const { partnerId: managedPartnerId } = await readManagedStorage();
+  const { partnerId: managedPartnerId, managedOrganizationId } =
+    await readManagedStorage();
+
+  const organizationTheme = await getOrganizationTheme(managedOrganizationId);
 
   // Enterprise managed storage, if provided, always takes precedence over the user's theme settings
   const active = managedPartnerId ?? theme;
 
-  return isValidTheme(active) ? active : DEFAULT_THEME;
+  const themeName = isValidThemeName(active) ? active : DEFAULT_THEME;
+
+  return { themeName, toolbarIcon: organizationTheme?.toolbar_icon };
 }

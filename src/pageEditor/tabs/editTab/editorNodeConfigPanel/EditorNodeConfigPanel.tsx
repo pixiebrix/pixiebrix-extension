@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./EditorNodeConfigPanel.module.scss";
-
 import React from "react";
-import { Col, Row } from "react-bootstrap";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BrickConfiguration from "@/pageEditor/tabs/effect/BrickConfiguration";
 import blockRegistry from "@/bricks/registry";
@@ -29,8 +26,7 @@ import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabe
 import AnalysisResult from "@/pageEditor/tabs/editTab/AnalysisResult";
 import { useSelector } from "react-redux";
 import { selectActiveNodeInfo } from "@/pageEditor/slices/editorSelectors";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
-import cx from "classnames";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import { MARKETPLACE_URL } from "@/urlConstants";
 import CommentsPreview from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/CommentsPreview";
 import useAsyncState from "@/hooks/useAsyncState";
@@ -75,44 +71,37 @@ const EditorNodeConfigPanel: React.FC = () => {
 
   return (
     <>
-      <div className="mb-3">
-        <AnalysisResult />
-      </div>
-      <Row className={cx(styles.brickInfo, "justify-content-between")}>
-        <Col>
-          <p>{brickInfo?.block.name}</p>
-        </Col>
+      <AnalysisResult className="mb-3" />
+
+      <h6 className="mb-3 d-flex justify-content-between flex-wrap gap-2">
+        {brickInfo?.block.name}
         {showDocumentationLink && (
-          <Col xs="auto">
-            <a
-              href={`${MARKETPLACE_URL}${listingId}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View Documentation
-            </a>
-          </Col>
+          <a
+            href={`${MARKETPLACE_URL}${listingId}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
+          >
+            View Documentation
+          </a>
         )}
-      </Row>
-      <Row className={styles.topRow}>
-        <Col xl>
-          <ConnectedFieldTemplate
-            name={`${brickFieldName}.label`}
-            label="Step Name"
-            fitLabelWidth
-            placeholder={brickInfo?.block.name}
-          />
-        </Col>
-        <Col xl>
-          <ConnectedFieldTemplate
-            name={`${brickFieldName}.outputKey`}
-            label={PopoverOutputLabel}
-            fitLabelWidth
-            disabled={isOutputDisabled}
-            as={KeyNameWidget}
-          />
-        </Col>
-      </Row>
+      </h6>
+
+      <div className="mb-3 d-flex flex-wrap gap-column-4">
+        <ConnectedFieldTemplate
+          name={`${brickFieldName}.label`}
+          label="Step Name"
+          className="flex-grow-1"
+          fitLabelWidth
+          placeholder={brickInfo?.block.name}
+        />
+        <ConnectedFieldTemplate
+          name={`${brickFieldName}.outputKey`}
+          label={PopoverOutputLabel}
+          className="flex-grow-1"
+          fitLabelWidth
+          disabled={isOutputDisabled}
+          as={KeyNameWidget}
+        />
+      </div>
+
       {comments && <CommentsPreview comments={comments} />}
 
       <BrickConfiguration name={brickFieldName} brickId={brickId} />

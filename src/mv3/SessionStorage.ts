@@ -23,8 +23,9 @@
  */
 
 import { expectContext } from "@/utils/expectContext";
-import { type JsonValue } from "type-fest";
+import { type OmitIndexSignature, type JsonValue } from "type-fest";
 import { type ManualStorageKey } from "@/utils/storageUtils";
+import { once } from "lodash";
 
 // Just like chrome.storage.session, this must be "global"
 // eslint-disable-next-line local-rules/persistBackgroundData -- MV2-only
@@ -32,6 +33,12 @@ const storage = new Map<ManualStorageKey, JsonValue>();
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const hasSession = "session" in chrome.storage;
+function validateContext(): void {
+  expectContext(
+    "background",
+    "This polyfill doesn’t share data across contexts; only use it in the background page",
+  );
+}
 
 /**
  * MV3-compatible Map-like storage, this helps transition to chrome.storage.session
@@ -41,18 +48,18 @@ export class SessionMap<Value extends JsonValue> {
   constructor(
     private readonly key: string,
     private readonly url: ImportMeta["url"],
-  ) {
-    expectContext(
-      "background",
-      "This polyfill doesn’t share data across contexts; only use it in the background page",
-    );
-  }
+  ) {}
+
+  // Do not call `expectContext` in the constructor so that `SessionMap` can be
+  // instantiated at the top level and still be imported (but unused) in other contexts.
+  private readonly validateContext = once(validateContext);
 
   private getRawStorageKey(secondaryKey: string): ManualStorageKey {
     return `${this.key}::${this.url}::${secondaryKey}` as ManualStorageKey;
   }
 
   async get(secondaryKey: string): Promise<Value | undefined> {
+    this.validateContext();
     const rawStorageKey = this.getRawStorageKey(secondaryKey);
     if (!hasSession) {
       return storage.get(rawStorageKey) as Value | undefined;
@@ -64,6 +71,8 @@ export class SessionMap<Value extends JsonValue> {
   }
 
   async set(secondaryKey: string, value: Value): Promise<void> {
+    this.validateContext();
+
     const rawStorageKey = this.getRawStorageKey(secondaryKey);
     if (hasSession) {
       await browser.storage.session.set({ [rawStorageKey]: value });
@@ -73,6 +82,8 @@ export class SessionMap<Value extends JsonValue> {
   }
 
   async delete(secondaryKey: string): Promise<void> {
+    this.validateContext();
+
     const rawStorageKey = this.getRawStorageKey(secondaryKey);
     if (hasSession) {
       await browser.storage.session.remove(rawStorageKey);
@@ -86,7 +97,8 @@ export class SessionMap<Value extends JsonValue> {
  * MV3-compatible single-value storage.
  * This helps transition to chrome.storage.session and provide some type safety.
  */
-export class SessionValue<Value extends JsonValue> {
+// "OmitIndexSignature" is because of https://github.com/sindresorhus/type-fest/issues/815
+export class SessionValue<Value extends OmitIndexSignature<JsonValue>> {
   private readonly map: SessionMap<Value>;
 
   constructor(key: string, url: ImportMeta["url"]) {

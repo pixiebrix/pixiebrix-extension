@@ -27,7 +27,6 @@ import {
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
-import { registry } from "@/background/messenger/api";
 import type React from "react";
 import { createSitePattern } from "@/permissions/patterns";
 import { type Except } from "type-fest";
@@ -61,6 +60,7 @@ import {
   type SingleLayerReaderConfig,
 } from "@/pageEditor/baseFormStateTypes";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
+import { registry } from "@/background/messenger/strict/api";
 
 export interface WizardStep {
   step: string;

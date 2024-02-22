@@ -16,11 +16,11 @@
  */
 
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { propertiesToSchema } from "@/validators/generic";
 import { BusinessError } from "@/errors/businessErrors";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export class AddOrganization extends EffectABC {
   // https://developers.pipedrive.com/docs/api/v1/#!/Organizations/post_organizations
@@ -51,6 +51,10 @@ export class AddOrganization extends EffectABC {
     ["name"],
   );
 
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["http"];
+  }
+
   async effect(
     {
       pipedrive,
@@ -61,9 +65,9 @@ export class AddOrganization extends EffectABC {
       owner_id: number;
       pipedrive: SanitizedIntegrationConfig;
     }>,
-    { logger }: BrickOptions,
+    { logger, platform }: BrickOptions,
   ): Promise<void> {
-    const { data } = await performConfiguredRequestInBackground<{
+    const { data } = await platform.request<{
       items: unknown[];
     }>(pipedrive, {
       url: "https://api.pipedrive.com/v1/organizations/search",
@@ -80,7 +84,7 @@ export class AddOrganization extends EffectABC {
     }
 
     try {
-      await performConfiguredRequestInBackground(pipedrive, {
+      await platform.request(pipedrive, {
         url: "https://api.pipedrive.com/v1/organizations",
         method: "post",
         data: { name, owner_id },
@@ -128,6 +132,10 @@ export class AddPerson extends EffectABC {
     ["name"],
   );
 
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["http"];
+  }
+
   async effect(
     {
       pipedrive,
@@ -142,9 +150,9 @@ export class AddPerson extends EffectABC {
       email?: string;
       phone?: string;
     }>,
-    { logger }: BrickOptions,
+    { logger, platform }: BrickOptions,
   ): Promise<void> {
-    const { data } = await performConfiguredRequestInBackground<{
+    const { data } = await platform.request<{
       items: unknown[];
     }>(pipedrive, {
       url: "https://api.pipedrive.com/v1/persons/search",
@@ -161,7 +169,7 @@ export class AddPerson extends EffectABC {
     }
 
     try {
-      await performConfiguredRequestInBackground(pipedrive, {
+      await platform.request(pipedrive, {
         url: "https://api.pipedrive.com/v1/persons",
         method: "post",
         data: {

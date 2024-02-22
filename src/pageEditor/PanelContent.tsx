@@ -28,7 +28,6 @@ import LoginCard from "@/pageEditor/components/LoginCard";
 import EditorLayout from "@/pageEditor/EditorLayout";
 import { PersistGate } from "redux-persist/integration/react";
 import { logActions } from "@/components/logViewer/logSlice";
-import { thisTab } from "@/pageEditor/utils";
 import {
   removeInstalledExtension,
   updateDynamicElement,
@@ -42,6 +41,7 @@ import ReduxPersistenceContext, {
 import type { StarterBrickType } from "@/types/starterBrickTypes";
 import type { EditorState } from "@/pageEditor/pageEditorTypes";
 import DimensionGate from "@/pageEditor/components/DimensionGate";
+import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 
 const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
   "actionPanel",
@@ -60,7 +60,7 @@ const cleanUpStarterBrickForElement = (
     return;
   }
 
-  removeInstalledExtension(thisTab, element.uuid);
+  removeInstalledExtension(allFramesInInspectedTab, element.uuid);
 };
 
 const PanelContent: React.FC = () => {
@@ -72,7 +72,7 @@ const PanelContent: React.FC = () => {
 
     if (activeElement != null && shouldAutoRun(activeElement)) {
       const dynamicElement = formStateToDynamicElement(activeElement);
-      void updateDynamicElement(thisTab, dynamicElement);
+      updateDynamicElement(allFramesInInspectedTab, dynamicElement);
     }
   }, [dispatch, activeElement]);
 

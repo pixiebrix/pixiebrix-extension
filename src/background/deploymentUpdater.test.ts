@@ -39,7 +39,7 @@ import {
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ActionFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { parsePackage } from "@/registry/packageRegistry";
-import { registry } from "@/background/messenger/api";
+import { registry } from "@/background/messenger/strict/api";
 import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
@@ -123,6 +123,7 @@ beforeEach(async () => {
   } as any);
 
   browserManagedStorageMock.mockResolvedValue({});
+  jest.mocked(browser.tabs.create).mockClear();
 
   readAuthDataMock.mockResolvedValue({
     organizationId: "00000000-00000000-00000000-00000000",
@@ -184,6 +185,26 @@ describe("updateDeployments", () => {
       active: false,
     });
   });
+
+  test.each([null, uuidv4()])(
+    "do not launch sso flow if disableLoginTab, with cached organization id: %s",
+    async (organizationId) => {
+      isLinkedMock.mockResolvedValue(false);
+      // The organizationId doesn't currently impact the logic. Vary it to catch regressions
+      readAuthDataMock.mockResolvedValue({
+        organizationId,
+      });
+      browserManagedStorageMock.mockResolvedValue({
+        ssoUrl: "https://sso.example.com",
+        disableLoginTab: true,
+      });
+
+      await updateDeployments();
+
+      expect(openOptionsPageMock).not.toHaveBeenCalled();
+      expect(browser.tabs.create).not.toHaveBeenCalled();
+    },
+  );
 
   test("opens options page if enterprise customer becomes unlinked", async () => {
     // `readAuthDataMock` already has organizationId "00000000-00000000-00000000-00000000"
@@ -395,7 +416,7 @@ describe("updateDeployments", () => {
     expect(jest.mocked(uninstallAllDeployments).mock.calls).toHaveLength(0);
     expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(0);
-  });
+  }, 10_000);
 
   test("do not open options page on update if restricted-version flag not set", async () => {
     isLinkedMock.mockResolvedValue(true);

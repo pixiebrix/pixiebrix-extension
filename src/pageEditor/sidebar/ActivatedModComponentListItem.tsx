@@ -20,7 +20,7 @@ import styles from "./Entry.module.scss";
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  extensionToFormState,
+  modComponentToFormState,
   selectType,
 } from "@/pageEditor/starterBricks/adapter";
 import { actions } from "@/pageEditor/slices/editorSlice";
@@ -33,7 +33,6 @@ import {
 import { disableOverlay, enableOverlay } from "@/contentScript/messenger/api";
 import { updateSidebar } from "@/contentScript/messenger/strict/api";
 import { openSidePanel } from "@/utils/sidePanelUtils";
-import { thisTab } from "@/pageEditor/utils";
 import cx from "classnames";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
@@ -44,10 +43,11 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import { type UUID } from "@/types/stringTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { emptyModOptionsDefinitionFactory } from "@/utils/modUtils";
 import { type Schema } from "@/types/schemaTypes";
 import useAsyncState from "@/hooks/useAsyncState";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 /**
  * A sidebar menu entry corresponding to an untouched mod component
@@ -84,7 +84,8 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
           extensionId: modComponent.id,
         });
 
-        const modComponentFormState = await extensionToFormState(modComponent);
+        const modComponentFormState =
+          await modComponentToFormState(modComponent);
 
         // Initialize mod options schema if needed
         if (modComponent._recipe) {
@@ -114,8 +115,8 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
         if (type === "actionPanel") {
           // Switch the sidepanel over to the panel. However, don't refresh because the user might be switching
           // frequently between extensions within the same blueprint.
-          await openSidePanel(chrome.devtools.inspectedWindow.tabId);
-          updateSidebar(thisTab, {
+          await openSidePanel(inspectedTab.tabId);
+          updateSidebar(inspectedTab, {
             extensionId: modComponent.id,
             force: true,
             refresh: false,
@@ -132,11 +133,11 @@ const ActivatedModComponentListItem: React.FunctionComponent<{
   const isButton = type === "menuItem";
 
   const showOverlay = useCallback(async (uuid: UUID) => {
-    await enableOverlay(thisTab, `[data-pb-uuid="${uuid}"]`);
+    await enableOverlay(inspectedTab, `[data-pb-uuid="${uuid}"]`);
   }, []);
 
   const hideOverlay = useCallback(async () => {
-    await disableOverlay(thisTab);
+    await disableOverlay(inspectedTab);
   }, []);
 
   return (

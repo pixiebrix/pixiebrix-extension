@@ -105,6 +105,12 @@ export async function awaitValue<T>(
   throw new TimeoutError(`Value not found after ${waitMillis} milliseconds`);
 }
 
+/**
+ * Poll until the looper returns a truthy value. If the timeout is reached, return undefined.
+ * @param looper the value generator
+ * @param maxWaitMillis maximium time to wait for the value
+ * @param intervalMillis time between each call to looper
+ */
 export async function pollUntilTruthy<T>(
   looper: (...args: unknown[]) => Promise<T> | T,
   { maxWaitMillis = Number.MAX_SAFE_INTEGER, intervalMillis = 100 },
@@ -238,4 +244,19 @@ export async function allSettled<T>(
   }
 
   return { fulfilled, rejected };
+}
+
+/**
+ * Utility to await promises where you only care whether they throw or not
+ * @warning it swallows the error. Use try/catch if you want the error to bubble up
+ */
+export async function isPromiseFulfilled(
+  promise: Promise<unknown>,
+): Promise<boolean> {
+  try {
+    await promise;
+    return true;
+  } catch {
+    return false;
+  }
 }

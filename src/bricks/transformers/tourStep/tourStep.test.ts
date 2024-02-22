@@ -23,10 +23,10 @@ import { type BrickOptions } from "@/types/runtimeTypes";
 import { cancelAllTours, markTourStart } from "@/starterBricks/tourController";
 import { tick } from "@/starterBricks/starterBrickTestUtils";
 import { MultipleElementsFoundError } from "@/errors/businessErrors";
-import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
-import { showPopover } from "@/bricks/transformers/temporaryInfo/popoverUtils";
+import { showPopover } from "@/contentScript/popoverDom";
 import { ensureMocksReset, requestIdleCallback } from "@shopify/jest-dom-mocks";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { showModal } from "@/contentScript/modalDom";
 
 beforeAll(() => {
   requestIdleCallback.mock();
@@ -38,9 +38,9 @@ beforeEach(() => {
 
 Element.prototype.scrollIntoView = jest.fn();
 
-jest.mock("@/bricks/transformers/ephemeralForm/modalUtils");
+jest.mock("@/contentScript/modalDom");
 
-jest.mock("@/bricks/transformers/temporaryInfo/popoverUtils", () => ({
+jest.mock("@/contentScript/popoverDom", () => ({
   showPopover: jest.fn().mockReturnValue({
     onReady: jest.fn(),
   }),

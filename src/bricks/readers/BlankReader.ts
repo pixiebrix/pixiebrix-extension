@@ -17,6 +17,7 @@
 
 import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export class BlankReader extends ReaderABC {
   constructor() {
@@ -36,6 +37,10 @@ export class BlankReader extends ReaderABC {
 
   override async isRootAware(): Promise<boolean> {
     return false;
+  }
+
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return [];
   }
 
   async isAvailable() {

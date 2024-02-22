@@ -23,8 +23,8 @@ import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import notify from "@/utils/notify";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { writeTextToClipboard } from "@/utils/clipboardUtils";
-import { useGetZapierKeyQuery } from "@/services/api";
+import { writeToClipboard } from "@/utils/clipboardUtils";
+import { useGetZapierKeyQuery } from "@/data/service/api";
 
 interface OwnProps {
   show: boolean;
@@ -38,7 +38,7 @@ const ZapierIntegrationModal: React.FunctionComponent<OwnProps> = ({
   const { data } = useGetZapierKeyQuery(undefined, { skip: !show });
 
   const handleCopy = useCallback(async () => {
-    await writeTextToClipboard({ text: String(data?.api_key) });
+    await writeToClipboard({ text: String(data?.api_key) });
     notify.success("Copied API Key to clipboard");
     reportEvent(Events.ZAPIER_KEY_COPY);
   }, [data?.api_key]);

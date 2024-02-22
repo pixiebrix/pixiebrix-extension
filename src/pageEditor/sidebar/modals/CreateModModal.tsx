@@ -27,12 +27,9 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   selectActiveElement,
   selectActiveRecipeId,
-  selectDeletedElements,
-  selectDirty,
   selectDirtyMetadataForRecipeId,
   selectDirtyRecipeOptionDefinitions,
   selectEditorModalVisibilities,
-  selectElements,
   selectKeepLocalCopyOnCreateRecipe,
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
@@ -48,7 +45,7 @@ import Form, {
   type RenderBody,
   type RenderSubmit,
 } from "@/components/form/Form";
-import { useCreateRecipeMutation } from "@/services/api";
+import { useCreateRecipeMutation } from "@/data/service/api";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
@@ -56,7 +53,6 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
 import { object, string } from "yup";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { selectExtensions } from "@/store/extensionsSelectors";
 import { collectModOptions } from "@/store/extensionsUtils";
 import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
@@ -83,6 +79,7 @@ import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
+import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 
 const { actions: modComponentActions } = extensionsSlice;
 
@@ -107,12 +104,10 @@ function useSaveCallbacks({
   const upsertModComponentFormState = useUpsertModComponentFormState();
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
   const deactivateMod = useDeactivateMod();
-
-  const editorFormElements = useSelector(selectElements);
-  const isDirtyByElementId = useSelector(selectDirty);
-  const activatedModComponents = useSelector(selectExtensions);
+  const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
+    selectGetCleanComponentsAndDirtyFormStatesForMod,
+  );
   const dirtyModOptions = useSelector(selectDirtyRecipeOptionDefinitions);
-  const deletedComponentsByModId = useSelector(selectDeletedElements);
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
 
   const createModFromComponent = useCallback(
@@ -182,26 +177,9 @@ function useSaveCallbacks({
   const createModFromMod = useCallback(
     async (modDefinition: ModDefinition, metadata: ModMetadataFormState) => {
       const modId = modDefinition.metadata.id;
-      // eslint-disable-next-line security/detect-object-injection -- recipeId
-      const deletedModComponents = deletedComponentsByModId[modId] ?? [];
-      const deletedElementIds = new Set(
-        deletedModComponents.map(({ uuid }) => uuid),
-      );
+      const { cleanModComponents, dirtyModComponentFormStates } =
+        getCleanComponentsAndDirtyFormStatesForMod(modId);
 
-      const dirtyModComponentFormStates = editorFormElements.filter(
-        (modComponentFormState) =>
-          modComponentFormState.recipe?.id === modId &&
-          isDirtyByElementId[modComponentFormState.uuid] &&
-          !deletedElementIds.has(modComponentFormState.uuid),
-      );
-      const cleanModComponents = activatedModComponents.filter(
-        (modComponent) =>
-          modComponent._recipe?.id === modId &&
-          !dirtyModComponentFormStates.some(
-            (element) => element.uuid === modComponent.id,
-          ) &&
-          !deletedElementIds.has(modComponent.id),
-      );
       // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
       const modOptions = dirtyModOptions[modId];
 
@@ -257,14 +235,11 @@ function useSaveCallbacks({
       });
     },
     [
-      createMod,
-      deletedComponentsByModId,
+      getCleanComponentsAndDirtyFormStatesForMod,
       dirtyModOptions,
-      dispatch,
-      editorFormElements,
-      activatedModComponents,
-      isDirtyByElementId,
+      createMod,
       keepLocalCopy,
+      dispatch,
       deactivateMod,
     ],
   );

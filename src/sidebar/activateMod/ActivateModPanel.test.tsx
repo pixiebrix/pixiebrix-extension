@@ -44,7 +44,7 @@ import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 import { generateIntegrationAndRemoteConfig } from "@/testUtils/factories/integrationFactories";
-import { registry, services } from "@/background/messenger/api";
+import { services } from "@/background/messenger/api";
 import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { refreshServices } from "@/background/locator";
@@ -55,6 +55,7 @@ import useActivateRecipe, {
 import brickRegistry from "@/bricks/registry";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import type { UnknownObject } from "@/types/objectTypes";
+import { registry } from "@/background/messenger/strict/api";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
 jest.mock("@/sidebar/sidebarSelectors");

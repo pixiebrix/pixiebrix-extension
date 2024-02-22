@@ -5,7 +5,7 @@ exports[`customizeManifest mv2 1`] = `
   "author": "PixieBrix, Inc.",
   "background": {
     "scripts": [
-      "grayIconWhileLoading.js",
+      "backgroundCanary.js",
       "background.js",
     ],
   },

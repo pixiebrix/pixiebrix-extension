@@ -37,7 +37,7 @@ import {
   getReservedPanelEntries,
   sidebarShowEvents,
 } from "@/contentScript/sidebarController";
-import { setPageState } from "@/contentScript/pageState";
+import { setState } from "@/platform/state/stateController";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { PANEL_FRAME_ID } from "@/domConstants";
 import brickRegistry from "@/bricks/registry";
@@ -176,7 +176,7 @@ describe("sidebarExtension", () => {
 
     expect(rootReader.readCount).toBe(0);
 
-    setPageState({
+    setState({
       namespace: "blueprint",
       data: {},
       mergeStrategy: "replace",
@@ -196,7 +196,7 @@ describe("sidebarExtension", () => {
     // Runs because statechange mods also run on manual
     expect(rootReader.readCount).toBe(1);
 
-    setPageState({
+    setState({
       namespace: "blueprint",
       // Data needs to be different than previous to trigger a state change event
       data: { foo: 42 },
@@ -210,7 +210,7 @@ describe("sidebarExtension", () => {
     expect(rootReader.readCount).toBe(2);
 
     // Should ignore state change from other mod
-    setPageState({
+    setState({
       namespace: "blueprint",
       data: {},
       mergeStrategy: "replace",
@@ -258,7 +258,7 @@ describe("sidebarExtension", () => {
     expect(rootReader.readCount).toBe(1);
 
     for (let i = 0; i < 10; i++) {
-      setPageState({
+      setState({
         namespace: "blueprint",
         data: { foo: i },
         mergeStrategy: "replace",

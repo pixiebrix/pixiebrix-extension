@@ -27,7 +27,7 @@ import {
 } from "@/types/sidebarTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
+import { type FormDefinition } from "@/platform/forms/formTypes";
 
 const activateModPanelEntryFactory = define<ModActivationPanelEntry>({
   type: "activateMods",

@@ -16,6 +16,10 @@
  */
 
 export const DEFAULT_THEME = "default";
-export const THEMES = [DEFAULT_THEME, "automation-anywhere"] as const;
+export const THEME_NAMES = [DEFAULT_THEME, "automation-anywhere"] as const;
 
-export type Theme = (typeof THEMES)[number];
+/**
+ * A list of theme names that are built into the extension. These are mapped to logos in THEME_LOGOS
+ * @see THEME_LOGOS
+ */
+export type ThemeName = (typeof THEME_NAMES)[number];

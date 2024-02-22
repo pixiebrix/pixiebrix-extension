@@ -39,11 +39,11 @@ import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalys
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { selectExtensions } from "@/store/extensionsSelectors";
-import { extensionToFormState } from "@/pageEditor/starterBricks/adapter";
+import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { getPageState } from "@/contentScript/messenger/strict/api";
-import { thisTab } from "@/pageEditor/utils";
 import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
 import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -70,7 +70,7 @@ async function selectActiveModFormStates(
       (x) => x._recipe?.id === element.recipe.id && !dirtyIds.has(x.id),
     );
     const otherElements = await Promise.all(
-      otherExtensions.map(async (x) => extensionToFormState(x)),
+      otherExtensions.map(async (x) => modComponentToFormState(x)),
     );
 
     return [...dirtyElements, ...otherElements];
@@ -184,7 +184,7 @@ async function varAnalysisFactory(
   const variables = await ModVariableNames.collectSchemas(formStates);
 
   // The actual mod variables
-  const modState = await getPageState(thisTab, {
+  const modState = await getPageState(inspectedTab, {
     namespace: "blueprint",
     extensionId: extension.uuid,
     blueprintId: extension.recipe?.id,

@@ -41,4 +41,12 @@ browser.runtime.getManifest = jest.fn().mockReturnValue({
 
 browser.runtime.getURL = (path) => `chrome-extension://abcxyz/${path}`;
 
+// `jest-webextension-mock` is missing mocks for onRemoved: https://github.com/clarkbw/jest-webextension-mock/pull/180
+browser.tabs.onRemoved = {
+  addListener: jest.fn(),
+  removeListener: jest.fn(),
+  hasListener: jest.fn(),
+  hasListeners: jest.fn(),
+};
+
 jest.setMock("webext-detect-page", detectPageMock);

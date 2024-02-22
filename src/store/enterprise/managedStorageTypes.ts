@@ -35,6 +35,12 @@ export type ManagedStorageState = {
    */
   enforceAuthentication?: boolean;
   /**
+   * If true, the extension will not open a login tab on install or on heartbeat if unauthenticated.
+   *
+   * @since 1.8.9
+   */
+  disableLoginTab?: boolean;
+  /**
    * PixieBrix partner ID
    */
   partnerId?: string;

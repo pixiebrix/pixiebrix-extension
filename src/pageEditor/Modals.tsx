@@ -21,6 +21,7 @@ import AddToRecipeModal from "./sidebar/modals/AddToRecipeModal";
 import CreateModModal from "./sidebar/modals/CreateModModal";
 import MoveFromModModal from "./sidebar/modals/MoveFromModModal";
 import SaveAsNewRecipeModal from "./sidebar/modals/SaveAsNewRecipeModal";
+import SaveDataIntegrityErrorModal from "@/pageEditor/panes/save/SaveDataIntegrityErrorModal";
 
 const Modals: React.FunctionComponent = () => (
   <>
@@ -29,6 +30,7 @@ const Modals: React.FunctionComponent = () => (
     <SaveAsNewRecipeModal />
     <CreateModModal />
     <AddBlockModal />
+    <SaveDataIntegrityErrorModal />
   </>
 );
 

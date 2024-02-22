@@ -32,7 +32,10 @@ import {
 import { type ModComponentsRootState } from "@/store/extensionsTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { deserializeError } from "serialize-error";
-import { type ModComponentBase } from "@/types/modComponentTypes";
+import {
+  type ActivatedModComponent,
+  type ModComponentBase,
+} from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { AnnotationType } from "@/types/annotationTypes";
@@ -83,6 +86,14 @@ export const selectDirty = ({ editor }: EditorRootState) => editor.dirty;
 export const selectDeletedElements = ({ editor }: EditorRootState) =>
   editor.deletedElementsByRecipeId;
 
+export const selectGetDeletedComponentIdsForMod =
+  ({ editor }: EditorRootState) =>
+  (modId: RegistryId) =>
+    // eslint-disable-next-line security/detect-object-injection -- RegistryId
+    (editor.deletedElementsByRecipeId[modId] ?? []).map(
+      (formState) => formState.uuid,
+    );
+
 const selectAllDeletedElementIds = ({ editor }: EditorRootState) =>
   new Set(
     flatMap(editor.deletedElementsByRecipeId).map(
@@ -101,7 +112,7 @@ export const selectNotDeletedElements: ({
 
 export const selectNotDeletedExtensions: ({
   options,
-}: ModComponentsRootState) => ModComponentBase[] = createSelector(
+}: ModComponentsRootState) => ActivatedModComponent[] = createSelector(
   selectExtensions,
   selectAllDeletedElementIds,
   (extensions, deletedElementIds) =>
@@ -213,6 +224,8 @@ export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
     editor.visibleModalKey === ModalKey.SAVE_AS_NEW_RECIPE,
   isCreateRecipeModalVisible: editor.visibleModalKey === ModalKey.CREATE_RECIPE,
   isAddBlockModalVisible: editor.visibleModalKey === ModalKey.ADD_BLOCK,
+  isSaveDataIntegrityErrorModalVisible:
+    editor.visibleModalKey === ModalKey.SAVE_DATA_INTEGRITY_ERROR,
 });
 
 export const selectInstalledRecipeMetadatas = createSelector(
