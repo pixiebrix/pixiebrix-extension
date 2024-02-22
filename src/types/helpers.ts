@@ -92,7 +92,7 @@ export function validateUUID(uuid: unknown): UUID {
 
   console.debug("Invalid UUID: %s", uuid);
 
-  throw new Error(`Invalid UUID: ${uuid} of type: ${typeof uuid}`);
+  throw new Error("Invalid UUID", { cause: { uuid, type: typeof uuid } });
 }
 
 /**
