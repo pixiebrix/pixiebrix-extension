@@ -28,58 +28,62 @@ import { isMV3 } from "@/mv3/api";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 
 const Header: React.FunctionComponent = () => {
-  const { logo, showSidebarLogo, customSidebarLogo, baseThemeName } =
-    useTheme();
+  const {
+    activeTheme: { logo, showSidebarLogo, customSidebarLogo, baseThemeName },
+    isLoading,
+  } = useTheme();
   /* In MV3, Chrome offers a native Close button */
   const showCloseButton = !isMV3();
 
   return (
-    <div className="d-flex py-2 pl-2 pr-0 align-items-center">
-      {showCloseButton && (
+    !isLoading && (
+      <div className="d-flex py-2 pl-2 pr-0 align-items-center">
+        {showCloseButton && (
+          <Button
+            className={cx(
+              styles.button,
+              baseThemeName === DEFAULT_THEME
+                ? styles.themeColorOverride
+                : styles.themeColor,
+            )}
+            onClick={async () => {
+              // This piece of code is MV2-only, it only needs to handle being run in an iframe
+              const topLevelFrame = await getTopLevelFrame();
+              await hideSidebar(topLevelFrame);
+            }}
+            size="sm"
+            variant="link"
+          >
+            <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
+          </Button>
+        )}
+        {showSidebarLogo && (
+          // `mx-auto` centers the logo
+          <div className="mx-auto">
+            <img
+              src={customSidebarLogo ?? logo.regular}
+              alt={customSidebarLogo ? "Custom logo" : "PixieBrix logo"}
+              className={styles.logo}
+              data-testid="sidebarHeaderLogo"
+            />
+          </div>
+        )}
         <Button
+          href="/options.html"
+          target="_blank"
+          size="sm"
+          variant="link"
           className={cx(
             styles.button,
-            baseThemeName === DEFAULT_THEME
+            baseThemeName === "default"
               ? styles.themeColorOverride
               : styles.themeColor,
           )}
-          onClick={async () => {
-            // This piece of code is MV2-only, it only needs to handle being run in an iframe
-            const topLevelFrame = await getTopLevelFrame();
-            await hideSidebar(topLevelFrame);
-          }}
-          size="sm"
-          variant="link"
         >
-          <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
+          <FontAwesomeIcon icon={faCog} />
         </Button>
-      )}
-      {showSidebarLogo && (
-        // `mx-auto` centers the logo
-        <div className="mx-auto">
-          <img
-            src={customSidebarLogo ?? logo.regular}
-            alt={customSidebarLogo ? "Custom logo" : "PixieBrix logo"}
-            className={styles.logo}
-            data-testid="sidebarHeaderLogo"
-          />
-        </div>
-      )}
-      <Button
-        href="/options.html"
-        target="_blank"
-        size="sm"
-        variant="link"
-        className={cx(
-          styles.button,
-          baseThemeName === "default"
-            ? styles.themeColorOverride
-            : styles.themeColor,
-        )}
-      >
-        <FontAwesomeIcon icon={faCog} />
-      </Button>
-    </div>
+      </div>
+    )
   );
 };
 

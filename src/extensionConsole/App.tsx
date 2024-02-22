@@ -133,20 +133,25 @@ const AuthenticatedContent: React.VFC = () => {
 };
 
 const Layout = () => {
-  const { logo } = useTheme();
+  const {
+    activeTheme: { logo },
+    isLoading,
+  } = useTheme();
 
   return (
-    <div>
-      <Navbar logo={logo} />
-      <Container fluid className="page-body-wrapper">
-        {/* It is guaranteed that under RequireAuth the user has a valid API token (either PixieBrix token or partner JWT). */}
-        <ErrorBoundary ErrorComponent={IDBErrorDisplay}>
-          <RequireAuth LoginPage={SetupPage}>
-            <AuthenticatedContent />
-          </RequireAuth>
-        </ErrorBoundary>
-      </Container>
-    </div>
+    !isLoading && (
+      <div>
+        <Navbar logo={logo} />
+        <Container fluid className="page-body-wrapper">
+          {/* It is guaranteed that under RequireAuth the user has a valid API token (either PixieBrix token or partner JWT). */}
+          <ErrorBoundary ErrorComponent={IDBErrorDisplay}>
+            <RequireAuth LoginPage={SetupPage}>
+              <AuthenticatedContent />
+            </RequireAuth>
+          </ErrorBoundary>
+        </Container>
+      </div>
+    )
   );
 };
 

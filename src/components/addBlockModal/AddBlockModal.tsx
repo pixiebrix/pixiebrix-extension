@@ -182,7 +182,9 @@ const AddBlockModal: React.FC = () => {
     [marketplaceTags, listings],
   );
 
-  const { baseThemeName: themeName } = useTheme();
+  const {
+    activeTheme: { baseThemeName: themeName },
+  } = useTheme();
 
   const tagItems: TagItem[] = useMemo(() => {
     const items: TagItem[] = [{ tag: TAG_ALL }];

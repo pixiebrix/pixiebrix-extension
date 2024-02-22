@@ -22,9 +22,9 @@ import {
   type ThemeAssets,
   themeStorage,
 } from "@/themes/themeUtils";
-import useAsyncState from "@/hooks/useAsyncState";
-import { getActiveTheme, initialTheme } from "@/themes/themeStore";
+import { initialTheme } from "@/themes/themeStore";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
+import { activateTheme } from "@/background/messenger/strict/api";
 
 const themeStorageSubscribe = (callback: () => void) => {
   const abortController = new AbortController();
@@ -35,32 +35,39 @@ const themeStorageSubscribe = (callback: () => void) => {
 };
 
 /**
- * Hook to retrieve the active theme.
+ * Hook to retrieve the active theme. The source of truth for the current theme is in `themeStorage` which
+ * is updated by the background script's initTheme method.
  */
-function useTheme(): ThemeAssets {
+function useTheme(): { activeTheme: ThemeAssets; isLoading: boolean } {
   // The active theme is fetched with `getActiveTheme` in the background script and cached in the themeStorage,
   // This hook subscribes to changes in themeStorage to retrieve the latest current activeTheme
   const { data, isLoading, error } = useAsyncExternalStore(
     themeStorageSubscribe,
-    // NEXT PR commit: see if we can just access the storage rather than refetch getActiveTheme
-    getActiveTheme,
+    themeStorage.get,
   );
-  const { data: cachedTheme } = useAsyncState(themeStorage.get, []);
 
-  const activeTheme = useMemo(() => {
-    if (isLoading || error) {
-      return cachedTheme ?? initialTheme;
+  useEffect(() => {
+    if (
+      !isLoading &&
+      (!data.lastFetched || Date.now() > data.lastFetched + 30_000)
+    ) {
+      // Re-fetch the theme if it has not been fetched in the past 30 seconds
+      void activateTheme();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- re-activate theme once on mount when loading finishes
+  }, [isLoading]);
 
-    return data;
-  }, [cachedTheme, data, error, isLoading]);
+  const activeTheme = useMemo(
+    () => (isLoading || error ? initialTheme : data),
+    [data, error, isLoading],
+  );
 
   useEffect(() => {
     addThemeClassToDocumentRoot(activeTheme.baseThemeName);
     setThemeFavicon(activeTheme.baseThemeName);
   }, [activeTheme, data, isLoading]);
 
-  return activeTheme;
+  return { activeTheme, isLoading };
 }
 
 export default useTheme;
