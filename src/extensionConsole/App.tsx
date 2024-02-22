@@ -138,20 +138,22 @@ const Layout = () => {
     isLoading,
   } = useTheme();
 
+  if (isLoading) {
+    return null;
+  }
+
   return (
-    !isLoading && (
-      <div>
-        <Navbar logo={logo} />
-        <Container fluid className="page-body-wrapper">
-          {/* It is guaranteed that under RequireAuth the user has a valid API token (either PixieBrix token or partner JWT). */}
-          <ErrorBoundary ErrorComponent={IDBErrorDisplay}>
-            <RequireAuth LoginPage={SetupPage}>
-              <AuthenticatedContent />
-            </RequireAuth>
-          </ErrorBoundary>
-        </Container>
-      </div>
-    )
+    <div>
+      <Navbar logo={logo} />
+      <Container fluid className="page-body-wrapper">
+        {/* It is guaranteed that under RequireAuth the user has a valid API token (either PixieBrix token or partner JWT). */}
+        <ErrorBoundary ErrorComponent={IDBErrorDisplay}>
+          <RequireAuth LoginPage={SetupPage}>
+            <AuthenticatedContent />
+          </RequireAuth>
+        </ErrorBoundary>
+      </Container>
+    </div>
   );
 };
 

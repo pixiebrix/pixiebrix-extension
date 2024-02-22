@@ -37,6 +37,7 @@ const themeStorageSubscribe = (callback: () => void) => {
 /**
  * Hook to retrieve the active theme. The source of truth for the current theme is in `themeStorage` which
  * is updated by the background script's initTheme method.
+ * @see getActiveTheme
  */
 function useTheme(): { activeTheme: ThemeAssets; isLoading: boolean } {
   // The active theme is fetched with `getActiveTheme` in the background script and cached in the themeStorage,

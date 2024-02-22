@@ -41,45 +41,47 @@ const Header: React.FunctionComponent = () => {
     [styles.themeColor || ""]: baseThemeName !== DEFAULT_THEME,
   });
 
+  if (isLoading) {
+    return null;
+  }
+
   return (
-    !isLoading && (
-      <div className="d-flex py-2 pl-2 pr-0 align-items-center">
-        {showCloseButton && (
-          <Button
-            className={headerButtonClassName}
-            onClick={async () => {
-              // This piece of code is MV2-only, it only needs to handle being run in an iframe
-              const topLevelFrame = await getTopLevelFrame();
-              await hideSidebar(topLevelFrame);
-            }}
-            size="sm"
-            variant="link"
-          >
-            <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
-          </Button>
-        )}
-        {showSidebarLogo && (
-          // `mx-auto` centers the logo
-          <div className="mx-auto">
-            <img
-              src={customSidebarLogo ?? logo.regular}
-              alt={customSidebarLogo ? "Custom logo" : "PixieBrix logo"}
-              className={styles.logo}
-              data-testid="sidebarHeaderLogo"
-            />
-          </div>
-        )}
+    <div className="d-flex py-2 pl-2 pr-0 align-items-center">
+      {showCloseButton && (
         <Button
-          href="/options.html"
-          target="_blank"
+          className={headerButtonClassName}
+          onClick={async () => {
+            // This piece of code is MV2-only, it only needs to handle being run in an iframe
+            const topLevelFrame = await getTopLevelFrame();
+            await hideSidebar(topLevelFrame);
+          }}
           size="sm"
           variant="link"
-          className={headerButtonClassName}
         >
-          <FontAwesomeIcon icon={faCog} />
+          <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
         </Button>
-      </div>
-    )
+      )}
+      {showSidebarLogo && (
+        // `mx-auto` centers the logo
+        <div className="mx-auto">
+          <img
+            src={customSidebarLogo ?? logo.regular}
+            alt={customSidebarLogo ? "Custom logo" : "PixieBrix logo"}
+            className={styles.logo}
+            data-testid="sidebarHeaderLogo"
+          />
+        </div>
+      )}
+      <Button
+        href="/options.html"
+        target="_blank"
+        size="sm"
+        variant="link"
+        className={headerButtonClassName}
+      >
+        <FontAwesomeIcon icon={faCog} />
+      </Button>
+    </div>
   );
 };
 
