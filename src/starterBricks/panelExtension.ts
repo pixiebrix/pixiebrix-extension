@@ -67,6 +67,7 @@ import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
 } from "@/platform/capabilities";
+import { RepeatableAbortController } from "abort-utils";
 
 export type PanelConfig = {
   heading?: string;

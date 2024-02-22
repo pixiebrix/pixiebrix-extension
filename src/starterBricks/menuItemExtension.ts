@@ -491,7 +491,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       { target: document },
     );
 
-    onAbort(this.cancelController, mutationObserver);
+    onAbort(this.cancelController.signal, mutationObserver);
   }
 
   /**
