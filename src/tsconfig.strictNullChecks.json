@@ -571,6 +571,7 @@
     "./utils/expectContext.ts",
     "./utils/expressionUtils.ts",
     "./utils/extensionUtils.ts",
+    "./utils/focusController.ts",
     "./utils/focusTracker.ts",
     "./utils/formUtils.ts",
     "./utils/getOptionsArgForFieldValue.ts",
