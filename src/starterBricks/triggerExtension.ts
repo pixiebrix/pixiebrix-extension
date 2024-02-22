@@ -85,6 +85,7 @@ import {
 } from "@/utils/domUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import { allSettled } from "@/utils/promiseUtils";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 type TriggerTarget = Document | HTMLElement;
 
@@ -215,6 +216,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   public get kind(): "trigger" {
     return "trigger";
   }
+
+  readonly capabilities: PlatformCapability[] = ["dom", "state"];
 
   /**
    * Returns true if an event should be reported, given whether it has already been reported.

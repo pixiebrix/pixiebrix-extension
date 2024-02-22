@@ -20,7 +20,7 @@ import { persistReducer } from "redux-persist";
 import { authSlice, persistAuthConfig } from "@/auth/authSlice";
 import { persistSettingsConfig } from "@/store/settings/settingsStorage";
 import settingsSlice from "@/store/settings/settingsSlice";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { modDefinitionsMiddleware } from "@/modDefinitions/modDefinitionsListenerMiddleware";
 import {
   createRenderHookWithWrappers,

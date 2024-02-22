@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { type BrickArgs } from "@/types/runtimeTypes";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-
 import { boolean } from "@/utils/typeUtils";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export class SendSimpleSlackMessage extends EffectABC {
   constructor() {
@@ -64,15 +63,15 @@ export class SendSimpleSlackMessage extends EffectABC {
     },
   };
 
-  async effect({
-    text,
-    hookUrl,
-    channel,
-    iconEmoji,
-    botName,
-    unfurlLinks,
-  }: BrickArgs): Promise<void> {
-    await performConfiguredRequestInBackground(null, {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["http"];
+  }
+
+  async effect(
+    { text, hookUrl, channel, iconEmoji, botName, unfurlLinks }: BrickArgs,
+    { platform }: BrickOptions,
+  ): Promise<void> {
+    await platform.request(null, {
       url: hookUrl,
       method: "post",
       // https://stackoverflow.com/questions/45752537/slack-incoming-webhook-request-header-field-content-type-is-not-allowed-by-acce
@@ -182,20 +181,27 @@ export class SendAdvancedSlackMessage extends EffectABC {
     },
   };
 
-  async effect({
-    text,
-    hookUrl,
-    channel,
-    iconEmoji,
-    botName,
-    unfurlLinks,
-    attachments,
-  }: BrickArgs): Promise<void> {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["http"];
+  }
+
+  async effect(
+    {
+      text,
+      hookUrl,
+      channel,
+      iconEmoji,
+      botName,
+      unfurlLinks,
+      attachments,
+    }: BrickArgs,
+    { platform }: BrickOptions,
+  ): Promise<void> {
     if (!hookUrl) {
       throw new Error("hookUrl not configured");
     }
 
-    await performConfiguredRequestInBackground(null, {
+    await platform.request(null, {
       url: hookUrl,
       method: "post",
       // https://stackoverflow.com/questions/45752537/slack-incoming-webhook-request-header-field-content-type-is-not-allowed-by-acce

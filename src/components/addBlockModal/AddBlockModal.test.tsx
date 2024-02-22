@@ -20,7 +20,6 @@ import { render, screen } from "@/pageEditor/testHelpers";
 import AddBlockModal from "@/components/addBlockModal/AddBlockModal";
 import { actions } from "@/pageEditor/slices/editorSlice";
 import userEvent from "@testing-library/user-event";
-import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "@/pageEditor/consts";
 import { array } from "cooky-cutter";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -33,6 +32,7 @@ import {
   marketplaceListingFactory,
   marketplaceTagFactory,
 } from "@/testUtils/factories/marketplaceFactories";
+import { PipelineFlavor } from "@/bricks/types";
 
 // Need at least one item so callers see the registry as initialized
 bricksRegistry.register([echoBrick]);
@@ -56,7 +56,7 @@ describe("AddBlockModal", () => {
         dispatch(
           actions.showAddBlockModal({
             path: "",
-            flavor: PipelineFlavor.AllBlocks,
+            flavor: PipelineFlavor.AllBricks,
             index: 0,
           }),
         );
@@ -81,7 +81,7 @@ describe("AddBlockModal", () => {
         dispatch(
           actions.showAddBlockModal({
             path: PIPELINE_BLOCKS_FIELD_NAME,
-            flavor: PipelineFlavor.AllBlocks,
+            flavor: PipelineFlavor.AllBricks,
             index: 0,
           }),
         );

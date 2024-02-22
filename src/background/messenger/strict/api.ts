@@ -42,6 +42,12 @@ export const captureTab = getMethod("CAPTURE_TAB", bg);
 export const deleteCachedAuthData = getMethod("DELETE_CACHED_AUTH", bg);
 export const getCachedAuthData = getMethod("GET_CACHED_AUTH", bg);
 export const setToolbarBadge = getMethod("SET_TOOLBAR_BADGE", bg);
+export const documentReceivedFocus = getNotifier("DOCUMENT_RECEIVED_FOCUS", bg);
+
+export const writeToClipboardInFocusedDocument = getMethod(
+  "WRITE_TO_CLIPBOARD_IN_FOCUSED_DOCUMENT",
+  bg,
+);
 
 export const registry = {
   syncRemote: getMethod("REGISTRY_SYNC", bg),

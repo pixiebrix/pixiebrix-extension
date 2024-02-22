@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useGetOrganizationsQuery } from "@/services/api";
+import { useGetOrganizationsQuery } from "@/data/service/api";
 import useFlags from "@/hooks/useFlags";
 import { useContext, useMemo } from "react";
 import { useSelector } from "react-redux";

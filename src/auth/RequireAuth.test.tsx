@@ -16,39 +16,11 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
 import RequireAuth from "@/auth/RequireAuth";
-import { configureStore } from "@reduxjs/toolkit";
-import { persistReducer } from "redux-persist";
-import { appApi, useGetMeQuery } from "@/services/api";
-import { Provider } from "react-redux";
-import { authSlice, persistAuthConfig } from "@/auth/authSlice";
-import integrationsSlice, {
-  persistIntegrationsConfig,
-} from "@/integrations/store/integrationsSlice";
-import settingsSlice from "@/store/settings/settingsSlice";
-import { type Me } from "@/types/contract";
-
-function optionsStore(initialState?: any) {
-  return configureStore({
-    reducer: {
-      auth: persistReducer(persistAuthConfig, authSlice.reducer),
-      integrations: persistReducer(
-        persistIntegrationsConfig,
-        integrationsSlice.reducer,
-      ),
-      settings: settingsSlice.reducer,
-    },
-    preloadedState: initialState,
-  });
-}
-
-jest.mock("@/services/api");
-
-function mockMeQuery(state: { isLoading: boolean; data?: Me; error?: any }) {
-  jest.mocked(appApi.endpoints.getMe.useQueryState).mockReturnValue(state);
-  jest.mocked(useGetMeQuery).mockReturnValue(state as any);
-}
+import { mockAuthenticatedUser, mockErrorUser } from "@/testUtils/userMock";
+import { render, screen } from "@/pageEditor/testHelpers";
+import { userFactory } from "@/testUtils/factories/authFactories";
+import { waitFor } from "@testing-library/react";
 
 const MockLoginPage: React.VFC = () => <div>Login</div>;
 
@@ -57,64 +29,40 @@ beforeEach(() => {
 });
 
 describe("RequireAuth", () => {
-  test("authenticated user", () => {
-    mockMeQuery({
-      isLoading: false,
-    });
+  test("authenticated user", async () => {
+    await mockAuthenticatedUser(userFactory());
 
     render(
-      <Provider store={optionsStore({ auth: { isLoggedIn: true } })}>
-        <RequireAuth LoginPage={MockLoginPage}>
-          Only authenticated users should see me!
-        </RequireAuth>
-      </Provider>,
+      <RequireAuth LoginPage={MockLoginPage}>
+        Only authenticated users should see me!
+      </RequireAuth>,
     );
 
-    expect(screen.queryByTestId("loader")).toBeNull();
+    await waitFor(async () => {
+      expect(await screen.findByTestId("loader")).not.toBeInTheDocument();
+    });
     expect(
       screen.getByText("Only authenticated users should see me!"),
-    ).not.toBeNull();
+    ).toBeVisible();
   });
 
-  test("unauthenticated user", () => {
-    mockMeQuery({
-      isLoading: false,
-      error: { response: { status: 401 } },
+  test("unauthenticated user", async () => {
+    mockErrorUser({
+      response: { status: 401 },
     });
 
     render(
-      <Provider store={optionsStore({ auth: { isLoggedIn: true } })}>
-        <RequireAuth LoginPage={MockLoginPage}>
-          Only authenticated users should see me!
-        </RequireAuth>
-      </Provider>,
+      <RequireAuth LoginPage={MockLoginPage}>
+        Only authenticated users should see me!
+      </RequireAuth>,
     );
 
-    expect(screen.queryByTestId("loader")).toBeNull();
-    expect(screen.getByText("Login")).not.toBeNull();
-    expect(
-      screen.queryByText("Only authenticated users should see me!"),
-    ).toBeNull();
-  });
-
-  test("loading state does not flash content", () => {
-    // FIXME: this is not a real internal state the app can be in. In order for the meQuery to be loading,
-    //  they must have a token, which implies there is a cached user in the auth state.
-    mockMeQuery({
-      isLoading: true,
+    await waitFor(async () => {
+      expect(await screen.findByText("Login")).toBeVisible();
     });
-
-    render(
-      <Provider store={optionsStore()}>
-        <RequireAuth LoginPage={MockLoginPage}>
-          Only authenticated users should see me!
-        </RequireAuth>
-      </Provider>,
-    );
-
-    expect(screen.getByTestId("loader")).not.toBeNull();
+    expect(screen.queryByTestId("loader")).not.toBeInTheDocument();
     expect(
       screen.queryByText("Only authenticated users should see me!"),
-    ).toBeNull();
+    ).not.toBeInTheDocument();
   });
 });

@@ -19,12 +19,7 @@ import {
   renderNunjucksTemplate,
   runUserJs,
 } from "@/sandbox/messenger/executor";
-import {
-  BusinessError,
-  InvalidTemplateError,
-  PropError,
-} from "@/errors/businessErrors";
-import { JavaScriptTransformer } from "@/bricks/transformers/javascript";
+import { BusinessError, InvalidTemplateError } from "@/errors/businessErrors";
 
 describe("renderNunjucksTemplate", () => {
   it("handles template", async () => {
@@ -71,7 +66,6 @@ describe("runUserJs", () => {
     await expect(
       runUserJs({
         code: "function () { return 1 + 1; };",
-        blockId: JavaScriptTransformer.BRICK_ID,
       }),
     ).resolves.toBe(2);
   });
@@ -81,7 +75,6 @@ describe("runUserJs", () => {
       runUserJs({
         code: "function (data) { return data.hello + ' world'; };",
         data: { hello: "hello" },
-        blockId: JavaScriptTransformer.BRICK_ID,
       }),
     ).resolves.toBe("hello world");
   });
@@ -91,21 +84,19 @@ describe("runUserJs", () => {
       runUserJs({
         code: "async function (data) { return data.hello + ' world'; };",
         data: { hello: "hello" },
-        blockId: JavaScriptTransformer.BRICK_ID,
       }),
     ).resolves.toBe("hello world");
   });
 
-  it("throws a PropError if the Function Constructor throws an error", async () => {
+  it("throws a BusinessError if the Function Constructor throws an error", async () => {
     const malformedCode = "func() { return 1 + 1; };";
 
     await expect(async () =>
       runUserJs({
         code: malformedCode,
         data: {},
-        blockId: JavaScriptTransformer.BRICK_ID,
       }),
-    ).rejects.toThrow(PropError);
+    ).rejects.toThrow(BusinessError);
   });
 
   it("throws a Business error if the user-defined function throws an error", async () => {
@@ -115,7 +106,6 @@ describe("runUserJs", () => {
       runUserJs({
         code: errorCode,
         data: {},
-        blockId: JavaScriptTransformer.BRICK_ID,
       }),
     ).rejects.toThrow(
       new BusinessError("Error running user-defined JavaScript", {

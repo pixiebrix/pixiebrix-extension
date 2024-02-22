@@ -87,6 +87,10 @@ import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/utils/domUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import { onAbort } from "abort-utils";
+import {
+  CONTENT_SCRIPT_CAPABILITIES,
+  type PlatformCapability,
+} from "@/platform/capabilities";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -236,6 +240,8 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   public get kind(): "menuItem" {
     return "menuItem";
   }
+
+  readonly capabilities: PlatformCapability[] = CONTENT_SCRIPT_CAPABILITIES;
 
   public abstract get targetMode(): MenuTargetMode;
 

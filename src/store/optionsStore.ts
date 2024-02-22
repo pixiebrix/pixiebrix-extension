@@ -29,7 +29,7 @@ import {
   type ModModalsRootState,
   modModalsSlice,
 } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
 import settingsSlice from "@/store/settings/settingsSlice";

@@ -18,12 +18,13 @@
 import React from "react";
 import { screen, render } from "@/sidebar/testHelpers";
 import Header from "@/sidebar/Header";
-import { mockCachedUser } from "@/testUtils/userMock";
+import { mockAuthenticatedUser } from "@/testUtils/userMock";
 
 import {
   userFactory,
   userOrganizationFactory,
 } from "@/testUtils/factories/authFactories";
+import { waitFor } from "@testing-library/react";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -37,8 +38,8 @@ describe("Header", () => {
     expect(screen.getByTestId("sidebarHeaderLogo")).not.toBeNull();
   });
 
-  it("renders sidebar header logo per organization theme", () => {
-    mockCachedUser(
+  it("renders sidebar header logo per organization theme", async () => {
+    await mockAuthenticatedUser(
       userFactory({
         organization: userOrganizationFactory({
           theme: {
@@ -53,8 +54,8 @@ describe("Header", () => {
     expect(screen.getByTestId("sidebarHeaderLogo")).not.toBeNull();
   });
 
-  it("renders no sidebar header logo per organization theme", () => {
-    mockCachedUser(
+  it("renders no sidebar header logo per organization theme", async () => {
+    await mockAuthenticatedUser(
       userFactory({
         organization: userOrganizationFactory({
           theme: {
@@ -66,6 +67,8 @@ describe("Header", () => {
 
     render(<Header />);
 
-    expect(screen.queryByTestId("sidebarHeaderLogo")).toBeNull();
+    await waitFor(() => {
+      expect(screen.queryByTestId("sidebarHeaderLogo")).toBeNull();
+    });
   });
 });

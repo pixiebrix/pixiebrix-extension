@@ -18,6 +18,9 @@
 import { BrickABC } from "@/types/brickTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 
+/**
+ * Abstract base class for transformers - bricks that take an input and produce an output.
+ */
 export abstract class TransformerABC extends BrickABC {
   override async isRootAware(): Promise<boolean> {
     // Most transformers don't use the root, so have them opt-in

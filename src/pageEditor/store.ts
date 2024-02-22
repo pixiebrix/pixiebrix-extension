@@ -23,7 +23,7 @@ import {
 } from "@/pageEditor/slices/editorSlice";
 import { createLogger } from "redux-logger";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import runtimeSlice from "@/pageEditor/slices/runtimeSlice";
 import { savingExtensionSlice } from "@/pageEditor/panes/save/savingExtensionSlice";
 import settingsSlice from "@/store/settings/settingsSlice";

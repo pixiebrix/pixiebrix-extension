@@ -17,7 +17,7 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import settingsSlice from "@/store/settings/settingsSlice";
-import { appApi } from "@/services/api";
+import { appApi } from "@/data/service/api";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import sessionSlice from "@/pageEditor/slices/sessionSlice";
 
