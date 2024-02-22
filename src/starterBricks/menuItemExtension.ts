@@ -202,7 +202,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
    * Set of methods to call to cancel any DOM watchers associated with this extension point
    * @private
    */
-  private cancelController = new RepeatableAbortController();
+  private readonly cancelController = new RepeatableAbortController();
 
   /**
    * Map from extension id to callback to cancel observers for its dependencies.
