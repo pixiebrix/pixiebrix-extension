@@ -28,8 +28,8 @@ import { isMV3 } from "@/mv3/api";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 
 const Header: React.FunctionComponent = () => {
-  const { logo, showSidebarLogo, customSidebarLogo } = useTheme();
-  const { baseThemeName } = useTheme();
+  const { logo, showSidebarLogo, customSidebarLogo, baseThemeName } =
+    useTheme();
   /* In MV3, Chrome offers a native Close button */
   const showCloseButton = !isMV3();
 

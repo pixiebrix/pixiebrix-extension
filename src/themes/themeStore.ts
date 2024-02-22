@@ -39,17 +39,32 @@ export const initialTheme: ThemeAssets = {
 };
 
 /**
- * Returns the active theme assets. In React, prefer useTheme.
+ * Returns the active theme assets based on a few different sources.
+ * In order of preference we use information from:
+ * - The managed storage defined organization and partnerId
+ * - The user's (`me` endpoint) primary organization and partnerId
+ * - The user's local settings
+ * - The default theme
+ *
+ * The value for the active theme is cached in `themeStorage`.
+ *
+ * In React components, prefer useTheme.
  * @see useTheme
  */
 export async function getActiveTheme(): Promise<ThemeAssets> {
   expectContext("extension");
   try {
-    // Enterprise managed storage, if provided, always takes precedence over the user's theme settings
-    const { partnerId: managedPartnerId, managedOrganizationId } =
-      await readManagedStorage();
-
     const client = await getApiClient();
+    const [
+      { partnerId: managedPartnerId, managedOrganizationId },
+      { data: meData },
+      { partnerId: settingsPartnerId },
+    ] = await Promise.all([
+      // Enterprise managed storage, if provided, always takes precedence over the user's theme settings
+      await readManagedStorage(),
+      await client.get<Me>("/api/me/"),
+      await getSettingsState(),
+    ]);
 
     let organizationTheme: OrganizationTheme;
     if (managedOrganizationId && isUUID(managedOrganizationId)) {
@@ -60,17 +75,14 @@ export async function getActiveTheme(): Promise<ThemeAssets> {
       organizationTheme = data;
     }
 
-    const { data: meData } = await client.get<Me>("/api/me/");
-    if (meData.organization?.theme) {
+    if (meData.organization?.theme && !managedOrganizationId) {
       organizationTheme = meData.organization?.theme;
     }
 
-    // The theme property is initialized/set via an effect in useGetThemeName
-    const { partnerId: settingsPartnerId } = await getSettingsState();
     const activeThemeName =
       managedPartnerId ??
-      settingsPartnerId ??
       meData.partner?.theme ??
+      settingsPartnerId ??
       DEFAULT_THEME;
 
     const activeThemeAssets = {

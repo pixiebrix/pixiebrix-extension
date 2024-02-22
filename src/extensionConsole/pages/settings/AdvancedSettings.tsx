@@ -204,7 +204,8 @@ const AdvancedSettings: React.FunctionComponent = () => {
                     partnerId: event.target.value,
                   }),
                 );
-                activateTheme();
+                // `activateTheme` in background script triggers updating themeStorage
+                void activateTheme();
               }}
             />
             <Form.Text muted>The partner id of a PixieBrix partner</Form.Text>

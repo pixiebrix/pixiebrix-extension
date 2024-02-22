@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import activateBrowserActionIcon, {
+import setToolbarIconFromTheme, {
   blobToImageData,
   getImageData,
-} from "@/background/activateBrowserActionIcon";
+} from "@/background/setToolbarIconFromTheme";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { browserAction } from "@/mv3/api";
@@ -29,6 +29,7 @@ jest.mock("@/mv3/api", () => ({
   },
 }));
 
+// NEXT IN PR: fix unit tests...
 describe("activateBrowserActionIcon", () => {
   const mock = new MockAdapter(axios);
   const url = "http://test.com/image.svg";
@@ -68,7 +69,7 @@ describe("activateBrowserActionIcon", () => {
   describe("activateBrowserActionIcon", () => {
     it("skips fetching the image data and uses the default icon when no URL is provided", async () => {
       const axiosSpy = jest.spyOn(axios, "get");
-      await activateBrowserActionIcon();
+      await setToolbarIconFromTheme();
 
       expect(axiosSpy).not.toHaveBeenCalled();
       expect(browserAction.setIcon).toHaveBeenCalledWith({
@@ -82,7 +83,7 @@ describe("activateBrowserActionIcon", () => {
 
       mock.onGet(url).reply(200, blob);
 
-      await activateBrowserActionIcon(url);
+      await setToolbarIconFromTheme(url);
 
       expect(browserAction.setIcon).toHaveBeenCalledWith({
         imageData: "image data",
@@ -92,7 +93,7 @@ describe("activateBrowserActionIcon", () => {
     it("uses the default icon when the request fails", async () => {
       mock.onGet(url).reply(500);
 
-      await activateBrowserActionIcon(url);
+      await setToolbarIconFromTheme(url);
 
       expect(browserAction.setIcon).toHaveBeenCalledWith({
         path: "path to icons",

@@ -27,6 +27,7 @@ afterEach(() => {
   resetManagedStorage();
 });
 
+// NEXT IN PR: fix unit tests...
 describe("getActiveTheme", () => {
   it("prefers managed storage", async () => {
     await browser.storage.managed.set({

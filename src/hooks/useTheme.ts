@@ -15,33 +15,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect } from "react";
-import { DEFAULT_THEME } from "@/themes/themeTypes";
+import { useEffect, useMemo } from "react";
 import {
   addThemeClassToDocumentRoot,
   setThemeFavicon,
   type ThemeAssets,
+  themeStorage,
 } from "@/themes/themeUtils";
 import useAsyncState from "@/hooks/useAsyncState";
 import { getActiveTheme, initialTheme } from "@/themes/themeStore";
-import { useSelector } from "react-redux";
-import { selectSettings } from "@/store/settings/settingsSelectors";
+import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
+
+const themeStorageSubscribe = (callback: () => void) => {
+  const abortController = new AbortController();
+  themeStorage.onChanged(callback, abortController.signal);
+  return () => {
+    abortController.abort();
+  };
+};
 
 /**
- * Hook to activate the PixieBrix or partner theme.
+ * Hook to retrieve the active theme.
  */
 function useTheme(): ThemeAssets {
-  const { partnerId } = useSelector(selectSettings);
-  // TODO: figure out a way to get this to return the local storage cache first instead of a static initialValue
-  const { data } = useAsyncState(getActiveTheme, [partnerId], {
-    initialValue: initialTheme,
-  });
-  useEffect(() => {
-    addThemeClassToDocumentRoot(data.baseThemeName ?? DEFAULT_THEME);
-    setThemeFavicon(data.baseThemeName ?? DEFAULT_THEME);
-  }, [data.baseThemeName]);
+  // The active theme is fetched with `getActiveTheme` in the background script and cached in the themeStorage,
+  // This hook subscribes to changes in themeStorage to retrieve the latest current activeTheme
+  const { data, isLoading, error } = useAsyncExternalStore(
+    themeStorageSubscribe,
+    // NEXT PR commit: see if we can just access the storage rather than refetch getActiveTheme
+    getActiveTheme,
+  );
+  const { data: cachedTheme } = useAsyncState(themeStorage.get, []);
 
-  return data;
+  const activeTheme = useMemo(() => {
+    if (isLoading || error) {
+      return cachedTheme ?? initialTheme;
+    }
+
+    return data;
+  }, [cachedTheme, data, error, isLoading]);
+
+  useEffect(() => {
+    addThemeClassToDocumentRoot(activeTheme.baseThemeName);
+    setThemeFavicon(activeTheme.baseThemeName);
+  }, [activeTheme, data, isLoading]);
+
+  return activeTheme;
 }
 
 export default useTheme;

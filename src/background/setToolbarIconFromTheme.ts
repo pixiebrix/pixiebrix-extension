@@ -20,7 +20,7 @@ import axios from "axios";
 import type { ThemeAssets } from "@/themes/themeUtils";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 
-export default async function activateBrowserActionIcon({
+export default async function setToolbarIconFromTheme({
   logo: { small: smallLogo },
   toolbarIcon,
   baseThemeName,
