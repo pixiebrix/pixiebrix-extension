@@ -86,7 +86,7 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/utils/domUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
-import { onAbort } from "abort-utils";
+import { RepeatableAbortController, onAbort } from "abort-utils";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
@@ -202,7 +202,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
    * Set of methods to call to cancel any DOM watchers associated with this extension point
    * @private
    */
-  private cancelController: AbortController;
+  private readonly cancelController = new RepeatableAbortController();
 
   /**
    * Map from extension id to callback to cancel observers for its dependencies.
@@ -255,7 +255,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     super(metadata, logger);
     this.menus = new Map<UUID, HTMLElement>();
     this.removed = new Set<UUID>();
-    this.cancelController = new AbortController();
     this.cancelDependencyObservers = new Map<UUID, () => void>();
   }
 
@@ -302,8 +301,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
   private cancelAllPending(): void {
     console.debug("Cancelling menuItemExtension observers");
-    this.cancelController.abort();
-    this.cancelController = new AbortController();
+    this.cancelController.abortAndReset();
   }
 
   clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
@@ -493,7 +491,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       { target: document },
     );
 
-    onAbort(this.cancelController, mutationObserver);
+    onAbort(this.cancelController.signal, mutationObserver);
   }
 
   /**

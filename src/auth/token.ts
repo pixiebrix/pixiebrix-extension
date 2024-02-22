@@ -29,6 +29,8 @@ import { isEmpty, omit } from "lodash";
 import { type UnknownObject } from "@/types/objectTypes";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { StorageItem } from "webext-storage";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
+import { RepeatableAbortController } from "abort-utils";
 
 const extensionKeyStorage = new StorageItem("extensionKey", {
   defaultValue: {} as Partial<TokenAuthData>,
@@ -39,25 +41,26 @@ const partnerTokenStorage = new StorageItem("partnerToken", {
 
 type AuthListener = (auth: Partial<TokenAuthData | PartnerAuthData>) => void;
 
-// TODO: Use SimpleEventTarget instead
-// eslint-disable-next-line local-rules/persistBackgroundData -- Functions
-const listeners = new Set<AuthListener>();
+// Used only for testing
+const controller = new RepeatableAbortController();
+
+const authChanges = new SimpleEventTarget<
+  Partial<TokenAuthData | PartnerAuthData>
+>();
 
 // Use listeners to allow inversion of control and avoid circular dependency with error reporter.
 export function addListener(handler: AuthListener): void {
-  listeners.add(handler);
+  authChanges.add(handler, { signal: controller.signal });
 }
 
 export function removeListener(handler: AuthListener): void {
-  listeners.delete(handler);
+  authChanges.remove(handler);
 }
 
 function triggerListeners(
   auth: Partial<TokenAuthData | PartnerAuthData>,
 ): void {
-  for (const listener of listeners) {
-    listener(auth);
-  }
+  authChanges.emit(auth);
 }
 
 export function TEST_triggerListeners(auth: Partial<TokenAuthData>): void {
@@ -65,7 +68,7 @@ export function TEST_triggerListeners(auth: Partial<TokenAuthData>): void {
 }
 
 export function TEST_clearListeners(): void {
-  listeners.clear();
+  controller.abortAndReset();
 }
 
 export async function TEST_setAuthData(
