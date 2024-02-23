@@ -50,6 +50,7 @@ import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { flagOn } from "@/auth/authUtils";
 import { onContextInvalidated } from "webext-events";
 import StopPropagation from "@/components/StopPropagation";
+import useScrollLock from "@/hooks/useScrollLock";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -95,6 +96,8 @@ const KBarComponent: React.FC = () => {
   const { showing } = useKBar((state) => ({
     showing: state.visualState !== VisualState.hidden,
   }));
+
+  useScrollLock(showing);
 
   // Save the selection at the time the quick bar is shown so it can be used in quick bar actions even after the user
   // types in the quick bar search box. Restore the selection when the quick bar is hidden.
