@@ -17,11 +17,15 @@
 
 import React, { type ReactNode } from "react";
 
-type ValidEventNames = "onClick" | "onKeyDown" | "onKeyPress" | "onKeyUp"; // Add more event names as needed
+// Extract form DOMAttributes via keyof
+type ValidEventNames = Exclude<
+  keyof React.DOMAttributes<HTMLElement>,
+  "children"
+>;
 
-type StopPropagationProps = {
+type StopPropagationProps = Partial<Record<ValidEventNames, boolean>> & {
   children: ReactNode;
-} & Partial<Record<ValidEventNames, boolean>>;
+};
 
 const stopPropagation = (event: React.SyntheticEvent) => {
   event.stopPropagation();
@@ -34,7 +38,13 @@ const StopPropagation: React.FC<StopPropagationProps> = ({
   const wrappedEvents: Record<string, typeof stopPropagation> = {};
 
   for (const eventName of Object.keys(events)) {
-    wrappedEvents[eventName] = stopPropagation;
+    if (eventName.startsWith("on")) {
+      wrappedEvents[eventName] = stopPropagation;
+    } else {
+      throw new TypeError(
+        `Invalid property passed to StopPropagation: ${eventName}`,
+      );
+    }
   }
 
   return <div {...wrappedEvents}>{children}</div>;

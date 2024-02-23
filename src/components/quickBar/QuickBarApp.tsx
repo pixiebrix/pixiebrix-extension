@@ -142,7 +142,7 @@ const KBarComponent: React.FC = () => {
             suppressContentEditableWarning
           >
             <Stylesheets href={faStyleSheet} mountOnLoad>
-              <StopPropagation onKeyPress onKeyDown onKeyUp>
+              <StopPropagation onKeyPress onKeyDown onKeyUp onInput>
                 <KBarSearch style={searchStyle} />
                 <QuickBarResults />
               </StopPropagation>
