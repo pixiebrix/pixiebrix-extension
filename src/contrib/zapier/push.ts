@@ -24,7 +24,6 @@ import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import type { PlatformCapability } from "@/platform/capabilities";
 

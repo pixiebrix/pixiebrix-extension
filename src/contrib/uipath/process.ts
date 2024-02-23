@@ -22,7 +22,6 @@ import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
 

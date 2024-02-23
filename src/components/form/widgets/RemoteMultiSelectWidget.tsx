@@ -26,7 +26,6 @@ import {
 } from "@/components/form/widgets/RemoteSelectWidget";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import useReportError from "@/hooks/useReportError";
-import { type UnknownObject } from "@/types/objectTypes";
 
 type RemoteMultiSelectWidgetProps = {
   id?: string;

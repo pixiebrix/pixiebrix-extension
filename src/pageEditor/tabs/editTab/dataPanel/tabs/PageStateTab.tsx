@@ -24,7 +24,6 @@ import { faExternalLinkAlt, faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { type UnknownObject } from "@/types/objectTypes";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import DataTab from "@/pageEditor/tabs/editTab/dataPanel/DataTab";
 import useAsyncState from "@/hooks/useAsyncState";

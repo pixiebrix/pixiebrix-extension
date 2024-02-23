@@ -54,7 +54,6 @@ import useActivateRecipe, {
 } from "@/activation/useActivateRecipe";
 import brickRegistry from "@/bricks/registry";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
-import type { UnknownObject } from "@/types/objectTypes";
 import { registry } from "@/background/messenger/strict/api";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");

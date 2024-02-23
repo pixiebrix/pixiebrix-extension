@@ -33,7 +33,6 @@ import { sheets } from "@/background/messenger/api";
 import hash from "object-hash";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { joinName } from "@/utils/formUtils";
-import { type UnknownObject } from "@/types/objectTypes";
 
 function headerFieldSchemaForHeaders(headers: string[]): Schema {
   const headerProperties: Record<string, Schema> = Object.fromEntries(

@@ -28,7 +28,6 @@ import { BusinessError } from "@/errors/businessErrors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
-import { type UnknownObject } from "@/types/objectTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import type { FetchableAsyncState } from "@/types/sliceTypes";
 

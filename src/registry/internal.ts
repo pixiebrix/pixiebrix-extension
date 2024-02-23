@@ -28,7 +28,6 @@ import {
 } from "@/types/modDefinitionTypes";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type ReaderConfig } from "@/bricks/types";
-import { type UnknownObject } from "@/types/objectTypes";
 import {
   INNER_SCOPE,
   type InnerDefinitions,

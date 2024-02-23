@@ -36,7 +36,6 @@ import { type SerializedError } from "@/types/messengerTypes";
 import { type SemVerString } from "@/types/registryTypes";
 import { type MessageContext } from "@/types/loggerTypes";
 import { isObject } from "@/utils/objectUtils";
-import type { UnknownObject } from "@/types/objectTypes";
 import { flagOn } from "@/auth/authUtils";
 import type { Timestamp } from "@/types/stringTypes";
 

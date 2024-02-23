@@ -42,7 +42,6 @@ import { type AttributeExample } from "@/contentScript/pageEditor/types";
 import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection";
 import cx from "classnames";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
 import { freshIdentifier } from "@/utils/variableUtils";

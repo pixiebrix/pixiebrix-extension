@@ -23,7 +23,6 @@ import {
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import serviceRegistry from "@/integrations/registry";
 import { pickBy } from "lodash";
-import { type UnknownObject } from "@/types/objectTypes";
 import urljoin from "url-join";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import {
@@ -82,7 +81,7 @@ export const KIND_SCHEMAS = {
 };
 
 export async function validateKind(
-  instance: Record<string, unknown>,
+  instance: UnknownObject,
   kind: keyof typeof KIND_SCHEMAS,
 ): Promise<ValidationResult> {
   const finalSchema = await dereference(KIND_SCHEMAS[kind] as Schema);

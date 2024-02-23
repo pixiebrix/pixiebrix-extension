@@ -23,7 +23,6 @@ import {
   type TemplateEngine,
 } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 
 /**
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API

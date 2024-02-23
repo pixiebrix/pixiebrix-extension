@@ -23,7 +23,6 @@ import {
   type DynamicPath,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import { get } from "lodash";
-import { type UnknownObject } from "@/types/objectTypes";
 import { getComponentDefinition } from "@/components/documentBuilder/documentTree";
 import Unknown from "./elementsPreview/Unknown";
 import Basic from "./elementsPreview/Basic";

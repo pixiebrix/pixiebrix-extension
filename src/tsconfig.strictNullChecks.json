@@ -545,7 +545,6 @@
     "./types/modComponentTypes.ts",
     "./types/modDefinitionTypes.ts",
     "./types/modTypes.ts",
-    "./types/objectTypes.ts",
     "./types/reactTableConfig.d.ts",
     "./types/registryTypes.ts",
     "./types/rendererTypes.ts",

@@ -17,7 +17,6 @@
 
 import { type MigrationManifest, type PersistedState } from "redux-persist";
 import { produce } from "immer";
-import { type UnknownObject } from "@/types/objectTypes";
 import { isEmpty } from "lodash";
 
 export function getMaxMigrationsVersion(migrations: MigrationManifest): number {

@@ -24,7 +24,6 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { define } from "cooky-cutter";
 import { type StarterBrickConfig } from "@/starterBricks/types";
-import { type UnknownObject } from "@/types/objectTypes";
 import blockRegistry from "@/bricks/registry";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import {

@@ -31,7 +31,6 @@ import {
   useGetEditablePackagesQuery,
   useSaveStandaloneModDefinitionMutation,
 } from "@/data/service/api";
-import { type UnknownObject } from "@/types/objectTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
