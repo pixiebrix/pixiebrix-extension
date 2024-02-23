@@ -27,7 +27,8 @@ import textFieldEdit from "text-field-edit";
 import { BusinessError } from "@/errors/businessErrors";
 import { isEmpty } from "lodash";
 import focus from "@/utils/focusController";
-import { isNativeField } from "@/utils/domUtils";
+
+import { isNativeField } from "@/types/inputTypes";
 
 /**
  * Insert text at the cursor position. For use with text snippets, etc.
