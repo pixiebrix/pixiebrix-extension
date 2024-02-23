@@ -46,7 +46,7 @@ describe("useTheme", () => {
 
     expect(themeResult.current).toStrictEqual({
       activeTheme: {
-        baseThemeName: "default",
+        themeName: "default",
         customSidebarLogo: null,
         lastFetched: null,
         logo: { regular: "test-file-stub", small: "test-file-stub" },

@@ -29,15 +29,15 @@ import { DEFAULT_THEME } from "@/themes/themeTypes";
 
 const Header: React.FunctionComponent = () => {
   const {
-    activeTheme: { logo, showSidebarLogo, customSidebarLogo, baseThemeName },
+    activeTheme: { logo, showSidebarLogo, customSidebarLogo, themeName },
     isLoading,
   } = useTheme();
   /* In MV3, Chrome offers a native Close button */
   const showCloseButton = !isMV3();
 
   const headerButtonClassName = cx(styles.button, {
-    [styles.themeColorOverride || ""]: baseThemeName === DEFAULT_THEME,
-    [styles.themeColor || ""]: baseThemeName !== DEFAULT_THEME,
+    [styles.themeColorOverride || ""]: themeName === DEFAULT_THEME,
+    [styles.themeColor || ""]: themeName !== DEFAULT_THEME,
   });
 
   if (isLoading) {

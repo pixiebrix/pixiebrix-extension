@@ -23,9 +23,9 @@ import { DEFAULT_THEME } from "@/themes/themeTypes";
 function useIsEnterpriseUser() {
   const telemetryOrganizationId = useSelector(selectTelemetryOrganizationId);
   const {
-    activeTheme: { baseThemeName },
+    activeTheme: { themeName },
   } = useTheme();
-  return Boolean(telemetryOrganizationId) || baseThemeName !== DEFAULT_THEME;
+  return Boolean(telemetryOrganizationId) || themeName !== DEFAULT_THEME;
 }
 
 export default useIsEnterpriseUser;

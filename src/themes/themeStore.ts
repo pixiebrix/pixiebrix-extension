@@ -34,7 +34,7 @@ export const initialTheme: ThemeAssets = {
   showSidebarLogo: true,
   customSidebarLogo: null,
   toolbarIcon: null,
-  baseThemeName: DEFAULT_THEME,
+  themeName: DEFAULT_THEME,
   lastFetched: null,
 };
 
@@ -90,7 +90,7 @@ export async function getActiveTheme(): Promise<ThemeAssets> {
         : true,
       customSidebarLogo: organizationTheme?.logo || null,
       toolbarIcon: organizationTheme?.toolbar_icon || null,
-      baseThemeName: isValidThemeName(activeThemeName)
+      themeName: isValidThemeName(activeThemeName)
         ? activeThemeName
         : DEFAULT_THEME,
       lastFetched: Date.now(),

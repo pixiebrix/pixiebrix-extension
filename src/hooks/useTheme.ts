@@ -65,8 +65,8 @@ function useTheme(): { activeTheme: ThemeAssets; isLoading: boolean } {
   );
 
   useEffect(() => {
-    addThemeClassToDocumentRoot(activeTheme.baseThemeName);
-    setThemeFavicon(activeTheme.baseThemeName);
+    addThemeClassToDocumentRoot(activeTheme.themeName);
+    setThemeFavicon(activeTheme.themeName);
   }, [activeTheme, data, isLoading]);
 
   return { activeTheme, isLoading };

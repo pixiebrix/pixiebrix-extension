@@ -183,7 +183,7 @@ const AddBlockModal: React.FC = () => {
   );
 
   const {
-    activeTheme: { baseThemeName: themeName },
+    activeTheme: { themeName },
   } = useTheme();
 
   const tagItems: TagItem[] = useMemo(() => {

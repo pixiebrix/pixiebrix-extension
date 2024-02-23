@@ -71,7 +71,7 @@ describe("setToolbarIconFromTheme", () => {
       const axiosSpy = jest.spyOn(axios, "get");
       await setToolbarIconFromTheme({
         toolbarIcon: null,
-        baseThemeName: "default",
+        themeName: "default",
         logo: { small: "smallLogoPath", regular: "regularLogoPath" },
       });
 
@@ -89,7 +89,7 @@ describe("setToolbarIconFromTheme", () => {
 
       await setToolbarIconFromTheme({
         toolbarIcon: url,
-        baseThemeName: "default",
+        themeName: "default",
         logo: { small: "smallLogoPath", regular: "regularLogoPath" },
       });
 
@@ -103,7 +103,7 @@ describe("setToolbarIconFromTheme", () => {
 
       await setToolbarIconFromTheme({
         toolbarIcon: url,
-        baseThemeName: "default",
+        themeName: "default",
         logo: { small: "smallLogoPath", regular: "regularLogoPath" },
       });
 
@@ -115,7 +115,7 @@ describe("setToolbarIconFromTheme", () => {
     it("uses the small logo image if toolbar is not defined, and theme is not default", async () => {
       await setToolbarIconFromTheme({
         toolbarIcon: null,
-        baseThemeName: "automation-anywhere",
+        themeName: "automation-anywhere",
         logo: { small: "smallLogoPath", regular: "regularLogoPath" },
       });
 

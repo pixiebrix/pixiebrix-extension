@@ -77,7 +77,7 @@ describe("getActiveTheme", () => {
 
     it("prefers managed storage", async () => {
       await expect(getActiveTheme()).resolves.toStrictEqual({
-        baseThemeName: "automation-anywhere",
+        themeName: "automation-anywhere",
         toolbarIcon: "some_managed_icon.svg",
         customSidebarLogo: "some_managed_logo.svg",
         lastFetched: expect.any(Number),
@@ -110,7 +110,7 @@ describe("getActiveTheme", () => {
 
     it("prefers users primary org and partner", async () => {
       await expect(getActiveTheme()).resolves.toStrictEqual({
-        baseThemeName: "automation-anywhere",
+        themeName: "automation-anywhere",
         customSidebarLogo: "myPrimaryOrglogo.svg",
         toolbarIcon: "myPrimaryOrgIcon.svg",
         lastFetched: expect.any(Number),
@@ -136,7 +136,7 @@ describe("getActiveTheme", () => {
 
     it("prefers the local settings state last", async () => {
       await expect(getActiveTheme()).resolves.toStrictEqual({
-        baseThemeName: "automation-anywhere",
+        themeName: "automation-anywhere",
         customSidebarLogo: null,
         toolbarIcon: null,
         lastFetched: expect.any(Number),
@@ -159,7 +159,7 @@ describe("getActiveTheme", () => {
 
     it("uses default theme", async () => {
       await expect(getActiveTheme()).resolves.toStrictEqual({
-        baseThemeName: "default",
+        themeName: "default",
         customSidebarLogo: null,
         toolbarIcon: null,
         lastFetched: expect.any(Number),
@@ -182,7 +182,7 @@ describe("getActiveTheme", () => {
 
     it("uses default theme and reports the error", async () => {
       await expect(getActiveTheme()).resolves.toStrictEqual({
-        baseThemeName: "default",
+        themeName: "default",
         customSidebarLogo: null,
         toolbarIcon: null,
         lastFetched: null,

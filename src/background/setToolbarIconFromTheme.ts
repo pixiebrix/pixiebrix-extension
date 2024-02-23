@@ -23,8 +23,8 @@ import { DEFAULT_THEME } from "@/themes/themeTypes";
 export default async function setToolbarIconFromTheme({
   logo: { small: smallLogo },
   toolbarIcon,
-  baseThemeName,
-}: Pick<ThemeAssets, "logo" | "toolbarIcon" | "baseThemeName">) {
+  themeName,
+}: Pick<ThemeAssets, "logo" | "toolbarIcon" | "themeName">) {
   if (toolbarIcon) {
     const imageData = await getImageData(toolbarIcon);
 
@@ -34,7 +34,7 @@ export default async function setToolbarIconFromTheme({
     }
   }
 
-  if (baseThemeName === DEFAULT_THEME) {
+  if (themeName === DEFAULT_THEME) {
     const { icons: path } = browser.runtime.getManifest();
     browserAction.setIcon({ path });
   } else {

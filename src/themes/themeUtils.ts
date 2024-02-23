@@ -58,7 +58,7 @@ export type ThemeAssets = {
   /** URL to a svg */
   toolbarIcon: Nullishable<string>;
   /** The base theme name **/
-  baseThemeName: ThemeName;
+  themeName: ThemeName;
   /** Internal attribute that tracks when the active theme was last fetched and calculated for re-fetching purposes **/
   lastFetched: Nullishable<number>;
 };
