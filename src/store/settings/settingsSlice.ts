@@ -26,6 +26,7 @@ import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import { revertAll } from "@/store/commonActions";
+import { activateTheme } from "@/background/messenger/strict/api";
 
 export const initialSettingsState: SettingsState = {
   mode: "remote",
@@ -86,6 +87,8 @@ const settingsSlice = createSlice({
       { payload: { partnerId } }: { payload: { partnerId: string } },
     ) {
       state.partnerId = partnerId;
+      // `activateTheme` in background script triggers updating themeStorage
+      void activateTheme();
     },
     setAuthIntegrationId(
       state,
