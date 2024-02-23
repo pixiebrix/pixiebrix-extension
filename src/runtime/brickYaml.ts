@@ -17,7 +17,6 @@
  */
 
 import yaml from "js-yaml";
-import { type UnknownObject } from "@/types/objectTypes";
 import { produce } from "immer";
 import { isPlainObject } from "lodash";
 import { toExpression } from "@/utils/expressionUtils";

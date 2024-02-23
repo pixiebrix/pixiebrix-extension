@@ -71,7 +71,6 @@ import {
   type PipelineExpression,
   type RunMetadata,
 } from "@/types/runtimeTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineClosureExpression } from "@/utils/expressionUtils";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
 import { isObject } from "@/utils/objectUtils";

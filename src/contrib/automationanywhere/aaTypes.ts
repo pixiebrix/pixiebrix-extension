@@ -16,7 +16,6 @@
  */
 
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 
 export type CommunityBotArgs = {
   service: SanitizedIntegrationConfig;

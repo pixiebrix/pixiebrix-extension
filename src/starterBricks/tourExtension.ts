@@ -57,7 +57,6 @@ import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import {
   CONTENT_SCRIPT_CAPABILITIES,

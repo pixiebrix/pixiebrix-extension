@@ -16,7 +16,6 @@
  */
 
 import { cloneDeep, get, set, setWith, toPath } from "lodash";
-import { type UnknownObject } from "@/types/objectTypes";
 import { stripOptionalChaining } from "@/utils/variableUtils";
 
 export enum VarExistence {

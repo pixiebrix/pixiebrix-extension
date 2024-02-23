@@ -23,7 +23,6 @@ import {
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import serviceRegistry from "@/integrations/registry";
 import { pickBy } from "lodash";
-import { type UnknownObject } from "@/types/objectTypes";
 import urljoin from "url-join";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import {

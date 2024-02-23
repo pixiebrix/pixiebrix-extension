@@ -29,6 +29,13 @@ https://github.com/typescript-eslint/typescript-eslint/issues/3295#issuecomment-
 
 declare const browser: import("webextension-polyfill").Browser;
 
+/**
+ * Type to be preferred over a plain `object`
+ * https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/ban-types.md
+ */
+// eslint-disable-next-line no-restricted-syntax
+type UnknownObject = Record<string, unknown>;
+
 // https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
 declare module "*.svg" {
   const content: string;
@@ -83,8 +90,6 @@ declare module "react-select-virtualized" {
 }
 
 declare module "generate-schema" {
-  import { type UnknownObject } from "@/types/objectTypes";
-
   const json: (title: string, obj: unknown) => UnknownObject;
 }
 

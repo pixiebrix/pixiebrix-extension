@@ -27,7 +27,6 @@ import {
 } from "@/data/service/apiClient";
 import { allowsTrack } from "@/telemetry/dnt";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
-import { type UnknownObject } from "@/types/objectTypes";
 import { deleteDatabase } from "@/utils/idbUtils";
 import { detectBrowser } from "@/vendors/mixpanel";
 import { count as registrySize } from "@/registry/packageRegistry";

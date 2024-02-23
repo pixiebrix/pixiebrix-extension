@@ -34,7 +34,6 @@ import {
   registryIdFactory,
 } from "@/testUtils/factories/stringFactories";
 import { type UUID } from "@/types/stringTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type Expression } from "@/types/runtimeTypes";
 import { toExpression } from "@/utils/expressionUtils";
 

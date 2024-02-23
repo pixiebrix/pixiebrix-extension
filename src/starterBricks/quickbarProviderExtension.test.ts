@@ -17,7 +17,6 @@
 
 import { validateRegistryId } from "@/types/helpers";
 import { mockAnimationsApi } from "jsdom-testing-mocks";
-import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
 import {
   fromJS,

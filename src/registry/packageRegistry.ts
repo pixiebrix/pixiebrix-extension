@@ -21,7 +21,6 @@ import { type RegistryPackage } from "@/types/contract";
 import { type Except } from "type-fest";
 import { deleteDatabase } from "@/utils/idbUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
-import { type UnknownObject } from "@/types/objectTypes";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getApiClient } from "@/data/service/apiClient";
 import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
