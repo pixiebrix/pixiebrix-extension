@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import styles from "./useScrollLock.module.scss";
 import { scrollbarWidth } from "@xobotyi/scrollbar-width";
 import { once } from "lodash";
 import { useEffect } from "react";
@@ -43,15 +44,12 @@ const hasSpacialScrollbar = once((element: HTMLElement) => {
 
 function useScrollLock(state: boolean) {
   useEffect(() => {
-    if (state) {
-      document.documentElement.style.overflow = "hidden";
-      if (hasSpacialScrollbar(document.documentElement)) {
-        document.documentElement.style.scrollbarGutter = "stable";
-      }
-    } else {
-      document.documentElement.style.overflow = "";
-      document.documentElement.style.scrollbarGutter = "";
-    }
+    const html = document.documentElement;
+    html.classList.toggle(styles.scrollLocked, state);
+    html.classList.toggle(
+      styles.hadScrollbar,
+      state && hasSpacialScrollbar(html),
+    );
   }, [state]);
 }
 
