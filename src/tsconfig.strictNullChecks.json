@@ -323,6 +323,7 @@
     "./hooks/useQuickbarShortcut.ts",
     "./hooks/useReduxState.ts",
     "./hooks/useReportError.ts",
+    "./hooks/useScrollLock.ts",
     "./hooks/useSetDocumentTitle.ts",
     "./hooks/useTimeoutState.ts",
     "./hooks/useUndo.ts",
