@@ -50,6 +50,11 @@ function useScrollLock(state: boolean) {
       styles.hadScrollbar,
       state && hasSpacialScrollbar(html),
     );
+
+    return () => {
+      html.classList.remove(styles.scrollLocked);
+      html.classList.remove(styles.hadScrollbar);
+    };
   }, [state]);
 }
 
