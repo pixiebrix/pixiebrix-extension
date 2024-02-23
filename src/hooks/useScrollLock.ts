@@ -44,20 +44,30 @@ function doesNeedScrollbarPlaceholder(element: HTMLElement) {
 
 function useScrollLock(state: boolean) {
   useEffect(() => {
+    // Only `tsc --watch` type-checks CSS modules.
+    // Can't use `?? ""` here because it's not supported by the classList API.
+    const { scrollLocked, hadScrollbar } = styles;
+    if (!scrollLocked || !hadScrollbar) {
+      console.error(
+        "useScrollLock: CSS module is missing required classes. Please update the module or the hook.",
+      );
+      return;
+    }
+
     const scrollableRoot =
       window.getComputedStyle(document.body).overflowY === "scroll"
         ? document.body
         : document.documentElement;
 
-    scrollableRoot.classList.toggle(styles.scrollLocked, state);
+    scrollableRoot.classList.toggle(scrollLocked, state);
     scrollableRoot.classList.toggle(
-      styles.hadScrollbar,
+      hadScrollbar,
       state && doesNeedScrollbarPlaceholder(scrollableRoot),
     );
 
     return () => {
-      scrollableRoot.classList.remove(styles.scrollLocked);
-      scrollableRoot.classList.remove(styles.hadScrollbar);
+      scrollableRoot.classList.remove(scrollLocked);
+      scrollableRoot.classList.remove(hadScrollbar);
     };
   }, [state]);
 }
