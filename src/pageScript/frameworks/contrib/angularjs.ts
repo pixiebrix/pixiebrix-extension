@@ -75,7 +75,7 @@ function getAngularData(instance: AngularElement): Scope {
   );
 }
 
-const adapter: ReadableComponentAdapter<AngularElement, Scope> = {
+const adapter: ReadableComponentAdapter<AngularElement> = {
   isManaged,
   getComponent: (node) => ignoreNotFound(() => getComponent(node)),
   getParent: (instance) => instance.parent(),
