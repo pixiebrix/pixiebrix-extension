@@ -137,6 +137,7 @@ const KBarComponent: React.FC = () => {
           <EmotionShadowRoot.div
             data-testid="quickBar"
             className="cke_editable"
+            mode="closed"
             contentEditable
             suppressContentEditableWarning
           >
