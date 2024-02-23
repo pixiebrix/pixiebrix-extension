@@ -29,7 +29,7 @@ export const foreverPendingPromise = new Promise(() => {});
  * Same as lodash mapValues but supports promises
  */
 export async function asyncMapValues<
-  InputObject extends Record<string, unknown>,
+  InputObject extends UnknownObject,
   OutputValues,
 >(mapping: InputObject, fn: ObjectIterator<InputObject, OutputValues>) {
   const entries = Object.entries(mapping) as Array<

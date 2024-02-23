@@ -47,7 +47,6 @@ import {
   type RegistryId,
   type SemVerString,
 } from "@/types/registryTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineExpression } from "@/utils/expressionUtils";
 import { isContentScript } from "webext-detect-page";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";

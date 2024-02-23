@@ -16,7 +16,6 @@
  */
 
 import { validateRegistryId } from "@/types/helpers";
-import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";

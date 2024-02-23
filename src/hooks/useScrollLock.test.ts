@@ -15,33 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getIn } from "formik";
+import { renderHook } from "@testing-library/react-hooks";
+import useScrollLock from "./useScrollLock";
 
-type InvalidPathInformation = {
-  invalidPath: string;
-  values: unknown;
-};
+describe("useScrollLock", () => {
+  const html = document.documentElement;
+  it("should add scrollLocked class to document", () => {
+    renderHook(() => {
+      useScrollLock(true);
+    });
+    expect(html).toHaveClass("scrollLocked");
+    expect(html).not.toHaveClass("hadScrollbar");
+  });
 
-/**
- * Return which part of the key/path is invalid for a call to lodash's getIn
- * @param value the value
- * @param path period separated path
- */
-export function getInvalidPath(
-  value: UnknownObject,
-  path: string,
-): InvalidPathInformation {
-  const parts = path.split(".");
-
-  for (let i = 0; i < parts.length; i++) {
-    const partialPath = parts.slice(0, i + 1).join(".");
-    if (getIn(value, partialPath) == null) {
-      return {
-        invalidPath: partialPath,
-        values: getIn(value, parts.slice(0, i).join(".")),
-      };
-    }
-  }
-
-  throw new Error("Expected invalid path");
-}
+  it("should remove scrollLocked class from document", () => {
+    renderHook(() => {
+      useScrollLock(false);
+    });
+    expect(html).not.toHaveClass("scrollLocked");
+    expect(html).not.toHaveClass("h≈≈adScrollbar");
+  });
+});

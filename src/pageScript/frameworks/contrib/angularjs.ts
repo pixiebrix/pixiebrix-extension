@@ -36,7 +36,7 @@ declare global {
   }
 }
 
-type Scope = Record<string, unknown>;
+type Scope = UnknownObject;
 
 /**
  * See: https://docs.angularjs.org/api/ng/function/angular.element
@@ -75,7 +75,7 @@ function getAngularData(instance: AngularElement): Scope {
   );
 }
 
-const adapter: ReadableComponentAdapter<AngularElement, Scope> = {
+const adapter: ReadableComponentAdapter<AngularElement> = {
   isManaged,
   getComponent: (node) => ignoreNotFound(() => getComponent(node)),
   getParent: (instance) => instance.parent(),

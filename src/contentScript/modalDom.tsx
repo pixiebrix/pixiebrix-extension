@@ -63,6 +63,7 @@ export function showModal({
   const shadowRoot = container.attachShadow({ mode: "closed" });
   document.body.append(container, style);
   render(
+    // TODO: Wrap into separate component and use useScrollLock hook
     <dialog
       onClose={() => {
         controller.abort();

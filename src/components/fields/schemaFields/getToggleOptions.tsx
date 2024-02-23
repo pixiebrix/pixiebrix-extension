@@ -6,7 +6,6 @@ import {
   type OmitOption,
   type StringOption,
 } from "./widgets/templateToggleWidgetTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import OptionIcon from "./optionIcon/OptionIcon";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 import { type CustomFieldToggleMode } from "@/components/fields/schemaFields/schemaFieldTypes";

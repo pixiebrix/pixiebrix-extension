@@ -26,7 +26,6 @@ import extensionsSlice from "@/store/extensionsSlice";
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import { appApi } from "@/data/service/api";
 import { modDefinitionsSlice } from "@/modDefinitions/modDefinitionsSlice";
-import { type UnknownObject } from "@/types/objectTypes";
 
 export default {
   title: "ModsPage/ModsPage",

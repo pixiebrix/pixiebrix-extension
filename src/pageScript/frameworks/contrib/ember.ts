@@ -25,7 +25,6 @@ import {
   ignoreNotFound,
 } from "@/pageScript/frameworks/errors";
 import { findElement } from "@/pageScript/frameworks/dom";
-import { type UnknownObject } from "@/types/objectTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { getAllPropertyNames, isObject } from "@/utils/objectUtils";
 import { isPrimitive } from "@/utils/typeUtils";
@@ -34,7 +33,7 @@ const EMBER_MAX_DEPTH = 5;
 
 interface EmberObject {
   // https://api.emberjs.com/ember/release/classes/EmberObject/methods?anchor=get
-  attrs: Record<string, unknown>;
+  attrs: UnknownObject;
   parentView: EmberObject | null;
   element: Node;
 }

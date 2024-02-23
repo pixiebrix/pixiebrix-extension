@@ -26,7 +26,6 @@ import { setState } from "@/platform/state/stateController";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { contextAsPlainObject } from "@/runtime/extendModVariableContext";
-import { type UnknownObject } from "@/types/objectTypes";
 import { toExpression } from "@/utils/expressionUtils";
 
 beforeEach(() => {

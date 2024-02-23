@@ -17,3 +17,6 @@ export const mockPromise = jest.fn().mockResolvedValue(undefined);
 
 // eslint-disable-next-line no-restricted-syntax
 void Promise.allSettled([Promise.resolve(), Promise.reject()]);
+
+// eslint-disable-next-line no-restricted-syntax
+export type MyObject = Record<string, unknown>;

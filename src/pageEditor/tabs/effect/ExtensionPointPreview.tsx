@@ -19,7 +19,6 @@ import React, { useCallback, useEffect, useReducer } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type UnknownObject } from "@/types/objectTypes";
 import { runExtensionPointReader } from "@/contentScript/messenger/api";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
