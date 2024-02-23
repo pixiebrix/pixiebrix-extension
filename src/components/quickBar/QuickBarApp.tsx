@@ -148,8 +148,11 @@ const KBarComponent: React.FC = () => {
           >
             <Stylesheets href={faStyleSheet} mountOnLoad>
               <StopPropagation onKeyPress onKeyDown onKeyUp onInput>
-                <KBarSearch style={searchStyle} />
-                <QuickBarResults />
+                {/* Avoid black scrollbars on dark sites #7695 */}
+                <div style={{ colorScheme: "light" }}>
+                  <KBarSearch style={searchStyle} />
+                  <QuickBarResults />
+                </div>
               </StopPropagation>
             </Stylesheets>
           </EmotionShadowRoot.div>
