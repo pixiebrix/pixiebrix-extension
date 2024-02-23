@@ -51,6 +51,10 @@ export const VARIABLE_REFERENCE_REGEX = /^@\S+$/;
  */
 export type SelectorRoot = HTMLElement | Document;
 
+export function isDocument(root: SelectorRoot): root is Document {
+  return root instanceof Document;
+}
+
 /**
  * A reference to an element on the page.
  * @see getReferenceForElement
