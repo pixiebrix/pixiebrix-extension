@@ -21,25 +21,34 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faCog } from "@fortawesome/free-solid-svg-icons";
 import { hideSidebar } from "@/contentScript/messenger/strict/api";
-import useTheme, { useGetThemeName } from "@/hooks/useTheme";
+import useTheme from "@/hooks/useTheme";
 import cx from "classnames";
 import { getTopLevelFrame } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
+import { DEFAULT_THEME } from "@/themes/themeTypes";
 
 const Header: React.FunctionComponent = () => {
-  const { logo, showSidebarLogo, customSidebarLogo } = useTheme();
-  const theme = useGetThemeName();
+  const {
+    activeTheme: { logo, showSidebarLogo, customSidebarLogo, themeName },
+    isLoading,
+  } = useTheme();
   /* In MV3, Chrome offers a native Close button */
   const showCloseButton = !isMV3();
+
+  const headerButtonClassName = cx(styles.button, {
+    [styles.themeColorOverride || ""]: themeName === DEFAULT_THEME,
+    [styles.themeColor || ""]: themeName !== DEFAULT_THEME,
+  });
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <div className="d-flex py-2 pl-2 pr-0 align-items-center">
       {showCloseButton && (
         <Button
-          className={cx(
-            styles.button,
-            theme === "default" ? styles.themeColorOverride : styles.themeColor,
-          )}
+          className={headerButtonClassName}
           onClick={async () => {
             // This piece of code is MV2-only, it only needs to handle being run in an iframe
             const topLevelFrame = await getTopLevelFrame();
@@ -67,10 +76,7 @@ const Header: React.FunctionComponent = () => {
         target="_blank"
         size="sm"
         variant="link"
-        className={cx(
-          styles.button,
-          theme === "default" ? styles.themeColorOverride : styles.themeColor,
-        )}
+        className={headerButtonClassName}
       >
         <FontAwesomeIcon icon={faCog} />
       </Button>

@@ -21,10 +21,8 @@ import {
   type SettingsFlags,
   type SettingsState,
 } from "@/store/settings/settingsTypes";
-import reportError from "@/telemetry/reportError";
-import { isEmpty, once } from "lodash";
+import { isEmpty } from "lodash";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
-import { isValidThemeName } from "@/themes/themeUtils";
 import { type RegistryId } from "@/types/registryTypes";
 import { isRegistryId } from "@/types/helpers";
 import { revertAll } from "@/store/commonActions";
@@ -48,6 +46,9 @@ export const initialSettingsState: SettingsState = {
   partnerId: null,
   authMethod: null,
   authIntegrationId: null,
+  /**
+   * @deprecated - instead get themeName from useTheme / themeStorage
+   */
   theme: DEFAULT_THEME,
   updatePromptTimestamp: null,
 };
@@ -117,18 +118,6 @@ const settingsSlice = createSlice({
     },
     resetUpdatePromptTimestamp(state) {
       state.updatePromptTimestamp = null;
-    },
-    setTheme(state, { payload: { theme } }: { payload: { theme: string } }) {
-      if (isValidThemeName(theme)) {
-        state.theme = theme;
-        return;
-      }
-
-      state.theme = DEFAULT_THEME;
-
-      once(() => {
-        reportError(new Error(`Selected theme "${theme}" doesn't exist.`));
-      });
     },
   },
   extraReducers(builder) {
