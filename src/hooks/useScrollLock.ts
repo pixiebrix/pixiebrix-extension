@@ -17,10 +17,10 @@
 
 import styles from "./useScrollLock.module.scss";
 import { scrollbarWidth } from "@xobotyi/scrollbar-width";
-import { memoize } from "lodash";
 import { useEffect } from "react";
 
-const doesNeedScrollbarPlaceholder = memoize((element: HTMLElement) => {
+// Don't wrap this with `memoize`/`once` because it depends on the content and window size, which may vary over time.
+function doesNeedScrollbarPlaceholder(element: HTMLElement) {
   if (scrollbarWidth() === 0) {
     // We're ignoring nested `specific-element::scrollbar` styling for simplicity.
     return false;
@@ -40,7 +40,7 @@ const doesNeedScrollbarPlaceholder = memoize((element: HTMLElement) => {
 
   // `auto`: it depends on the content
   return element.clientHeight < element.scrollHeight;
-});
+}
 
 function useScrollLock(state: boolean) {
   useEffect(() => {
