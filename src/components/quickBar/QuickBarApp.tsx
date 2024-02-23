@@ -160,10 +160,14 @@ const KBarComponent: React.FC = () => {
 };
 
 export const QuickBarApp: React.FC = () => (
-  /* Disable exit animation due to #3724. `enterMs` is required too */
   <KBarProvider
     options={{
+      /* Buggy scrollbar width calculation #7694 */
+      disableScrollbarManagement: true,
+
+      /* Disable exit animation due to #3724. `enterMs` is required too */
       animations: { enterMs: 300, exitMs: 0 },
+
       // Setting `toggleShortcut` to same as the Chrome-level PixieBrix `toggle-quick-bar` command shortcut defined
       // in manifest.json. However, it generally won't take effect. (And KBar does not support disabling it's shortcut)
       //
