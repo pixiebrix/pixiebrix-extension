@@ -89,7 +89,7 @@ const EditorNodeConfigPanel: React.FC = () => {
 
         <div className={styles.coreFields}>
           {/* Do not merge divs, the outer div is a CSS @container */}
-          <div className="mb-3 gap-column-4">
+          <div className="gap-column-4">
             <ConnectedFieldTemplate
               name={`${brickFieldName}.label`}
               label="Step Name"

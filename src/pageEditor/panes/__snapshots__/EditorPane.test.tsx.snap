@@ -1971,7 +1971,7 @@ exports[`renders the first selected node 1`] = `
                 class="coreFields"
               >
                 <div
-                  class="mb-3 gap-column-4"
+                  class="gap-column-4"
                 >
                   <div
                     class="formGroup flex-grow-1 form-group"
