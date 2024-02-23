@@ -21,7 +21,7 @@ import { expectContext } from "@/utils/expectContext";
 import { DEFAULT_THEME, type ThemeName } from "@/themes/themeTypes";
 import { isValidThemeName } from "@/themes/themeUtils";
 import { type Me, type OrganizationTheme } from "@/types/contract";
-import { getApiClient } from "@/services/apiClient";
+import { getApiClient } from "@/data/service/apiClient";
 import { validateUUID } from "@/types/helpers";
 import { type Nullishable } from "@/utils/nullishUtils";
 import reportError from "@/telemetry/reportError";

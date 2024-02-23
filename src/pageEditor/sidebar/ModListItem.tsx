@@ -41,7 +41,7 @@ import {
 } from "@/pageEditor/slices/editorSelectors";
 import * as semver from "semver";
 import ActionMenu from "@/pageEditor/sidebar/ActionMenu";
-import { useGetRecipeQuery } from "@/services/api";
+import { useGetRecipeQuery } from "@/data/service/api";
 
 export type ModListItemProps = PropsWithChildren<{
   modMetadata: Metadata;

@@ -20,6 +20,7 @@ import {
   type BrickConfig,
   type BrickPipeline,
   type BrickPosition,
+  PipelineFlavor,
 } from "@/bricks/types";
 import { produce, type Draft } from "immer";
 import PipelineVisitor, {
@@ -27,7 +28,6 @@ import PipelineVisitor, {
   type VisitResolvedBlockExtra,
 } from "@/bricks/PipelineVisitor";
 import pipelineSchema from "@schemas/pipeline.json";
-import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import blockRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import { isPipelineExpression, toExpression } from "@/utils/expressionUtils";
 
@@ -87,7 +87,7 @@ export async function normalizePipelineForEditor(
       ROOT_POSITION,
       pipeline,
       {
-        flavor: PipelineFlavor.AllBlocks,
+        flavor: PipelineFlavor.AllBricks,
       },
     );
   });
@@ -112,7 +112,7 @@ class OmitEditorMetadataVisitor extends PipelineVisitor {
 export function omitEditorMetadata(pipeline: BrickPipeline): BrickPipeline {
   return produce(pipeline, (pipeline: Draft<BrickPipeline>) => {
     new OmitEditorMetadataVisitor().visitPipeline(ROOT_POSITION, pipeline, {
-      flavor: PipelineFlavor.AllBlocks,
+      flavor: PipelineFlavor.AllBricks,
     });
   });
 }

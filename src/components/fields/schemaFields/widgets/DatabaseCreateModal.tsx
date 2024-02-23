@@ -25,7 +25,7 @@ import {
   useAddDatabaseToGroupMutation,
   useCreateDatabaseMutation,
   useGetOrganizationsQuery,
-} from "@/services/api";
+} from "@/data/service/api";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import DatabaseGroupSelect from "@/components/fields/schemaFields/DatabaseGroupSelect";
 import notify from "@/utils/notify";

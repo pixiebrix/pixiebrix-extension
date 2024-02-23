@@ -146,7 +146,8 @@ export async function validateInput(
       // @ts-expect-error: getting confused about schema types
       properties: pickBy(
         inputProperties(service.schema),
-        (x: JSONSchema7) => !REF_SECRETS.includes(x.$ref),
+        // `includes` type is annoyingly narrow: https://github.com/microsoft/TypeScript/issues/26255
+        (x: JSONSchema7) => x.$ref == null || !REF_SECRETS.includes(x.$ref),
       ),
     });
   }

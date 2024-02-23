@@ -20,6 +20,8 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { PropError } from "@/errors/businessErrors";
 import { isUnknownObjectArray } from "@/utils/objectUtils";
+import type { UnknownObject } from "@/types/objectTypes";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export class ExportCsv extends EffectABC {
   constructor() {
@@ -56,8 +58,22 @@ export class ExportCsv extends EffectABC {
     },
   };
 
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    // XXX: might introduce a "download" capability in the future, e.g., to support making the file as an artifact
+    // from a headless platform run
+    return ["dom"];
+  }
+
   async effect(
-    { filename = "exported", useBOM = false, data }: BrickArgs,
+    {
+      filename = "exported",
+      useBOM = false,
+      data,
+    }: BrickArgs<{
+      filename: string;
+      useBOM: boolean;
+      data: UnknownObject[];
+    }>,
     { ctxt }: BrickOptions,
   ): Promise<void> {
     const { mkConfig, generateCsv, download } = await import(

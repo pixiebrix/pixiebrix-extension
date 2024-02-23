@@ -17,7 +17,6 @@
 
 /** @file It doesn't actually use the Messenger but this file tries to replicate the pattern */
 
-import { type RegistryId } from "@/types/registryTypes";
 import injectIframe, { hiddenIframeStyle } from "@/utils/injectIframe";
 import postMessage from "@/utils/postMessage";
 import pMemoize from "p-memoize";
@@ -53,7 +52,9 @@ export type TemplateRenderPayload = {
 
 export type TemplateValidatePayload = string;
 
-export async function renderNunjucksTemplate(payload: TemplateRenderPayload) {
+export async function renderNunjucksTemplate(
+  payload: TemplateRenderPayload,
+): Promise<string> {
   return (await isSandboxed())
     ? postMessage({
         recipient: await loadSandbox(),
@@ -65,7 +66,7 @@ export async function renderNunjucksTemplate(payload: TemplateRenderPayload) {
 
 export async function validateNunjucksTemplate(
   payload: TemplateValidatePayload,
-) {
+): Promise<void> {
   return (await isSandboxed())
     ? postMessage({
         recipient: await loadSandbox(),
@@ -75,7 +76,9 @@ export async function validateNunjucksTemplate(
     : directApi.validateNunjucksTemplate(payload);
 }
 
-export async function renderHandlebarsTemplate(payload: TemplateRenderPayload) {
+export async function renderHandlebarsTemplate(
+  payload: TemplateRenderPayload,
+): Promise<string> {
   return (await isSandboxed())
     ? postMessage({
         recipient: await loadSandbox(),
@@ -88,7 +91,6 @@ export async function renderHandlebarsTemplate(payload: TemplateRenderPayload) {
 export type JavaScriptPayload = {
   code: string;
   data?: JsonObject;
-  blockId: RegistryId;
 };
 
 export async function runUserJs(payload: JavaScriptPayload) {

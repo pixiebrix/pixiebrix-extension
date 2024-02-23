@@ -19,7 +19,7 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import { validateRegistryId } from "@/types/helpers";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { getPageState, setPageState } from "@/contentScript/pageState";
+import { getState, setState } from "@/platform/state/stateController";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { validateInput } from "@/validators/generic";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
@@ -37,7 +37,7 @@ const logger = new ConsoleLogger({
 const brickOptions = brickOptionsFactory({ logger });
 
 beforeEach(() => {
-  setPageState({
+  setState({
     namespace: "blueprint",
     blueprintId,
     extensionId,
@@ -59,7 +59,7 @@ describe("@pixiebrix/state/assign", () => {
     );
 
     expect(
-      getPageState({ namespace: "blueprint", blueprintId, extensionId }),
+      getState({ namespace: "blueprint", blueprintId, extensionId }),
     ).toEqual({ foo: { bar: 42 } });
   });
 
@@ -86,7 +86,7 @@ describe("@pixiebrix/state/assign", () => {
     );
 
     expect(
-      getPageState({ namespace: "blueprint", blueprintId, extensionId }),
+      getState({ namespace: "blueprint", blueprintId, extensionId }),
     ).toEqual({ foo: null });
   });
 
@@ -102,7 +102,7 @@ describe("@pixiebrix/state/assign", () => {
     );
 
     expect(
-      getPageState({ namespace: "blueprint", blueprintId, extensionId }),
+      getState({ namespace: "blueprint", blueprintId, extensionId }),
     ).toEqual({ foo: 42, bar: 0 });
   });
 

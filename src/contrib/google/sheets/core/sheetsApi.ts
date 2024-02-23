@@ -18,7 +18,6 @@
 import { columnToLetter } from "@/contrib/google/sheets/core/sheetsHelpers";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type AxiosRequestConfig } from "axios";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { getCachedAuthData } from "@/background/messenger/strict/api";
 import { isEmpty } from "lodash";
 import { handleGoogleRequestRejection } from "@/contrib/google/sheets/core/handleGoogleRequestRejection";
@@ -31,6 +30,8 @@ import {
   type UserInfo,
   type ValueRange,
 } from "@/contrib/google/sheets/core/types";
+import { getPlatform } from "@/platform/platformContext";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 const SHEETS_BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
 export const DRIVE_BASE_URL = "https://www.googleapis.com/drive/v3/files";
@@ -50,10 +51,12 @@ export async function isLoggedIn(
 
 async function executeRequest<Response, RequestData = never>(
   requestConfig: AxiosRequestConfig<RequestData>,
-  googleAccount: SanitizedIntegrationConfig | null,
+  googleAccount: Nullishable<SanitizedIntegrationConfig>,
 ): Promise<Response> {
   try {
-    const result = await performConfiguredRequestInBackground<Response>(
+    // XXX: instead of using the implicit platform, might instead choose to wrap all the module methods in a class
+    // that takes the platform and googleAccount as a constructor argument
+    const result = await getPlatform().request<Response>(
       googleAccount,
       requestConfig,
     );

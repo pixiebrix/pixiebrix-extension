@@ -1,0 +1,58 @@
+/*
+ * Copyright (C) 2024 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import AddTextSnippets from "@/bricks/effects/AddTextSnippets";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { commandRegistry } from "@/contentScript/commandPopover/commandController";
+
+const brick = new AddTextSnippets();
+
+afterEach(() => {
+  commandRegistry.clear();
+});
+
+describe("AddTextSnippets", () => {
+  it("add registers snippets", async () => {
+    const options = brickOptionsFactory();
+
+    await brick.run(
+      unsafeAssumeValidArg({
+        snippets: [
+          {
+            shortcut: "/test",
+            title: "Test",
+            text: "test",
+          },
+        ],
+      }),
+      options,
+    );
+
+    expect(commandRegistry.commands).toStrictEqual([
+      {
+        // Leading slash is dropped
+        shortcut: "test",
+        title: "Test",
+        handler: expect.toBeFunction(),
+        componentId: options.logger.context.extensionId,
+      },
+    ]);
+
+    await expect(commandRegistry.commands[0].handler("")).resolves.toBe("test");
+  });
+});

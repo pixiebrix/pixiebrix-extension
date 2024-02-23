@@ -36,7 +36,7 @@ import {
   useCreatePackageMutation,
   useUpdatePackageMutation,
   useDeletePackageMutation,
-} from "@/services/api";
+} from "@/data/service/api";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type UUID } from "@/types/stringTypes";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";

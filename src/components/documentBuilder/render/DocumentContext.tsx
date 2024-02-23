@@ -25,6 +25,7 @@ import {
   type SelectorRoot,
 } from "@/types/runtimeTypes";
 import { UNSET_UUID } from "@/types/helpers";
+import { uninitializedPlatform } from "@/platform/platformProtocol";
 
 type DocumentState = {
   onAction: (action: { type: string; detail: JsonObject }) => void;
@@ -41,6 +42,7 @@ export const initialValue: DocumentState = {
     throw new BusinessError("Panel actions not available for panel type");
   },
   options: {
+    platform: uninitializedPlatform,
     meta: {
       runId: null,
       extensionId: UNSET_UUID,

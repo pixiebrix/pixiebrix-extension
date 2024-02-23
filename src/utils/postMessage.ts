@@ -59,12 +59,12 @@ export interface PostMessageInfo {
 type PostMessageListener = (payload?: Payload) => Promise<Payload | void>;
 
 /** Use the postMessage API but expect a response from the target */
-export default async function postMessage({
+export default async function postMessage<TReturn extends Payload = Payload>({
   type,
   payload,
   recipient,
-}: PostMessageInfo): Promise<Payload> {
-  const promise = new Promise<Payload>((resolve, reject) => {
+}: PostMessageInfo): Promise<TReturn> {
+  const promise = new Promise<TReturn>((resolve, reject) => {
     const privateChannel = new MessageChannel();
     privateChannel.port1.start(); // Mandatory to start receiving messages
     privateChannel.port1.addEventListener(
@@ -73,7 +73,7 @@ export default async function postMessage({
         if ("error" in data) {
           reject(deserializeError(data.error));
         } else {
-          resolve(data.response);
+          resolve(data.response as TReturn);
         }
       },
       { once: true },

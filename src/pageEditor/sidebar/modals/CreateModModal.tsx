@@ -45,7 +45,7 @@ import Form, {
   type RenderBody,
   type RenderSubmit,
 } from "@/components/form/Form";
-import { useCreateRecipeMutation } from "@/services/api";
+import { useCreateRecipeMutation } from "@/data/service/api";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";

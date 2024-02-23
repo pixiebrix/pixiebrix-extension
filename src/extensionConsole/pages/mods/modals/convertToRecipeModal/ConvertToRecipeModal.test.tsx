@@ -23,7 +23,7 @@ import userEvent from "@testing-library/user-event";
 import React from "react";
 import { modModalsSlice } from "@/extensionConsole/pages/mods/modals/modModalsSlice";
 import ConvertToRecipeModal from "./ConvertToRecipeModal";
-import * as api from "@/services/api";
+import * as api from "@/data/service/api";
 import {
   selectModalsContext,
   selectShowShareContext,
@@ -36,8 +36,8 @@ jest.mock("@/modDefinitions/modDefinitionHooks", () => ({
   useAllModDefinitions: jest.fn().mockReturnValue({ refetch: jest.fn() }),
 }));
 
-jest.mock("@/services/api", () => {
-  const originalModule = jest.requireActual("@/services/api");
+jest.mock("@/data/service/api", () => {
+  const originalModule = jest.requireActual("@/data/service/api");
   return {
     ...originalModule,
     useGetAllStandaloneModDefinitionsQuery: jest.fn(),

@@ -37,6 +37,7 @@ import {
 import { useEventListener } from "@/hooks/useEventListener";
 import { Stylesheets } from "@/components/Stylesheets";
 import selection from "@/utils/selectionController";
+import focus from "@/utils/focusController";
 import { animatorStyle, searchStyle } from "./quickBarTheme";
 import QuickBarResults from "./QuickBarResults";
 import useActionGenerators from "@/components/quickBar/useActionGenerators";
@@ -102,10 +103,14 @@ const KBarComponent: React.FC = () => {
   useEffect(() => {
     if (showing) {
       selection.save();
+      focus.save();
       console.debug("Saving last selection:", selection.get());
+      console.debug("Saving last focus:", focus.get());
     } else {
       console.debug("Restoring last selection:", selection.get());
+      console.debug("Restoring last focus:", focus.get());
       selection.restore();
+      focus.restore();
     }
   }, [showing]);
 

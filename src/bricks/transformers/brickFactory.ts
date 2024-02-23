@@ -21,7 +21,7 @@ import {
   type Schema as ValidatorSchema,
   Validator,
 } from "@cfworker/json-schema";
-import { castArray, cloneDeep, compact, pickBy } from "lodash";
+import { castArray, cloneDeep, compact, flatten, pickBy, uniq } from "lodash";
 import { type InitialValues, reducePipeline } from "@/runtime/reducePipeline";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
@@ -61,6 +61,7 @@ import {
   unionSchemaDefinitionTypes,
 } from "@/utils/schemaUtils";
 import type BaseRegistry from "@/registry/memoryRegistry";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 // Interface to avoid circular dependency with the implementation
 type BrickRegistryProtocol = BaseRegistry<RegistryId, Brick>;
@@ -198,6 +199,19 @@ class UserDefinedBrick extends BrickABC {
     );
 
     return awareness.some(Boolean);
+  }
+
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    const pipeline = castArray(this.component.pipeline);
+
+    const capabilities = await Promise.all(
+      pipeline.flatMap(async (blockConfig) => {
+        const resolvedBlock = await this.registry.lookup(blockConfig.id);
+        return resolvedBlock.getRequiredCapabilities(blockConfig);
+      }),
+    );
+
+    return uniq(flatten(capabilities));
   }
 
   override async isPageStateAware(): Promise<boolean> {

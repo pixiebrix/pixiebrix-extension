@@ -23,7 +23,7 @@ import {
   type PanelEntry,
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
-import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
+import { type FormDefinition } from "@/platform/forms/formTypes";
 import { type UUID, type TimedSequence } from "@/types/stringTypes";
 import { sortBy } from "lodash";
 import { getTimedSequence } from "@/types/helpers";
