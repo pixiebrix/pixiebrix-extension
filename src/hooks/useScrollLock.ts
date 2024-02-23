@@ -17,10 +17,10 @@
 
 import styles from "./useScrollLock.module.scss";
 import { scrollbarWidth } from "@xobotyi/scrollbar-width";
-import { once } from "lodash";
+import { memoize } from "lodash";
 import { useEffect } from "react";
 
-const hasSpacialScrollbar = once((element: HTMLElement) => {
+const doesNeedScrollbarPlaceholder = memoize((element: HTMLElement) => {
   if (scrollbarWidth() === 0) {
     // We're ignoring nested `specific-element::scrollbar` styling for simplicity.
     return false;
@@ -44,16 +44,20 @@ const hasSpacialScrollbar = once((element: HTMLElement) => {
 
 function useScrollLock(state: boolean) {
   useEffect(() => {
-    const html = document.documentElement;
-    html.classList.toggle(styles.scrollLocked, state);
-    html.classList.toggle(
+    const scrollableRoot =
+      window.getComputedStyle(document.body).overflowY === "scroll"
+        ? document.body
+        : document.documentElement;
+
+    scrollableRoot.classList.toggle(styles.scrollLocked, state);
+    scrollableRoot.classList.toggle(
       styles.hadScrollbar,
-      state && hasSpacialScrollbar(html),
+      state && doesNeedScrollbarPlaceholder(scrollableRoot),
     );
 
     return () => {
-      html.classList.remove(styles.scrollLocked);
-      html.classList.remove(styles.hadScrollbar);
+      scrollableRoot.classList.remove(styles.scrollLocked);
+      scrollableRoot.classList.remove(styles.hadScrollbar);
     };
   }, [state]);
 }
