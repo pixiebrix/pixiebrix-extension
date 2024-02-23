@@ -34,7 +34,7 @@ const EMBER_MAX_DEPTH = 5;
 
 interface EmberObject {
   // https://api.emberjs.com/ember/release/classes/EmberObject/methods?anchor=get
-  attrs: Record<string, unknown>;
+  attrs: UnknownObject;
   parentView: EmberObject | null;
   element: Node;
 }

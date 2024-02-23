@@ -301,7 +301,7 @@ class RemoteTourExtensionPoint extends TourStarterBrickABC {
 
   public readonly rawConfig: StarterBrickConfig<TourDefinition>;
 
-  public override get defaultOptions(): Record<string, unknown> {
+  public override get defaultOptions(): UnknownObject {
     return this._definition.defaultOptions ?? { allowUserRun: true };
   }
 

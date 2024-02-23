@@ -71,7 +71,7 @@ export class FormData extends TransformerABC {
   async transform(
     { selector, isRootAware = false }: BrickArgs,
     { root }: BrickOptions,
-  ): Promise<Record<string, unknown>> {
+  ): Promise<UnknownObject> {
     const $elements = $safeFindElementsWithRootMode({
       selector,
       isRootAware,

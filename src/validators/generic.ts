@@ -82,7 +82,7 @@ export const KIND_SCHEMAS = {
 };
 
 export async function validateKind(
-  instance: Record<string, unknown>,
+  instance: UnknownObject,
   kind: keyof typeof KIND_SCHEMAS,
 ): Promise<ValidationResult> {
   const finalSchema = await dereference(KIND_SCHEMAS[kind] as Schema);

@@ -53,7 +53,7 @@ export function getSubSchema(schema: Schema, path: string): Schema {
  */
 export function missingProperties(
   schema: Schema,
-  obj: Record<string, unknown>,
+  obj: UnknownObject,
 ): string[] {
   const acc = [];
   for (const propertyKey of schema.required ?? []) {

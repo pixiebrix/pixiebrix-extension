@@ -49,7 +49,7 @@ export type ReadPayload = ReadOptions & {
 export interface WritePayload {
   framework: Framework;
   selector: string;
-  valueMap: Record<string, unknown>;
+  valueMap: UnknownObject;
 }
 
 export const setComponentData = createSendScriptMessage<void, WritePayload>(

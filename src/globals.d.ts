@@ -64,7 +64,7 @@ declare module "*.txt" {
 }
 
 declare module "*.yaml" {
-  const content: Record<string, unknown>;
+  const content: UnknownObject;
   export default content;
 }
 

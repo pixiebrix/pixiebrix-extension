@@ -89,7 +89,7 @@ export function assertStarterBrickConfig(
     throw new TypeError("Expected object for StarterBrickConfig");
   }
 
-  const config = maybeStarterBrickConfig as Record<string, unknown>;
+  const config = maybeStarterBrickConfig as UnknownObject;
 
   if (config.kind !== "extensionPoint") {
     console.warn("Expected extension point", errorContext);

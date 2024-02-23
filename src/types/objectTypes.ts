@@ -19,4 +19,4 @@
  * Type to be preferred over a plain `object`
  * https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/ban-types.md
  */
-export type UnknownObject = Record<string, unknown>;
+export type UnknownObject = UnknownObject;

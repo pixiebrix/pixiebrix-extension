@@ -83,7 +83,7 @@ type SetExistenceFromValuesArgs = {
   /**
    * The object containing the context values
    */
-  values: Record<string, unknown>;
+  values: UnknownObject;
 
   /**
    * Parent path for the values.

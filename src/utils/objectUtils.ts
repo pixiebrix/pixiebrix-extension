@@ -23,7 +23,7 @@ import { isPlainObject, mapValues, partial, pickBy } from "lodash";
 /**
  * Return all property names (including non-enumerable) in the prototype hierarchy.
  */
-export function getAllPropertyNames(obj: Record<string, unknown>): string[] {
+export function getAllPropertyNames(obj: UnknownObject): string[] {
   const props = new Set<string>();
   let current = obj;
   while (current) {
@@ -104,10 +104,10 @@ export function cleanValue(
   depth?: number,
 ): unknown[];
 export function cleanValue(
-  value: Record<string, unknown>,
+  value: UnknownObject,
   maxDepth?: number | undefined,
   depth?: number,
-): Record<string, unknown>;
+): UnknownObject;
 export function cleanValue(
   value: unknown,
   maxDepth?: number | undefined,
