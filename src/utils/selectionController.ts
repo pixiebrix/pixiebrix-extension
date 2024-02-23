@@ -17,51 +17,9 @@
 
 import { getCommonAncestor } from "@/utils/inference/selectorInference";
 
-type HTMLTextElement = HTMLTextAreaElement | HTMLInputElement;
-
 function getSelection(): Selection {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Firefox-only iframe-only "null"
   return window.getSelection()!;
-}
-
-// https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setSelectionRange
-// Note that according to the WHATWG forms spec selectionStart, selectionEnd properties and setSelectionRange
-// method apply only to inputs of types text, search, URL, tel and password.
-const SUPPORTED_INPUT_TYPES = new Set<string>([
-  "text",
-  "search",
-  "url",
-  "tel",
-  "password",
-]);
-
-// // https://stackoverflow.com/a/59106148
-function withInputSelectionHack(
-  element: HTMLTextElement,
-  fn: (supportedElement: HTMLTextElement) => void,
-): void {
-  let doHack = false;
-  const originalType = element.getAttribute("type");
-
-  if (
-    element instanceof HTMLInputElement &&
-    !SUPPORTED_INPUT_TYPES.has(originalType ?? "text")
-  ) {
-    doHack = true;
-    element.setAttribute("type", "text");
-  }
-
-  try {
-    fn(element);
-  } finally {
-    if (doHack) {
-      if (originalType == null) {
-        element.removeAttribute("type");
-      } else {
-        element.setAttribute("type", originalType);
-      }
-    }
-  }
 }
 
 /**
@@ -92,83 +50,33 @@ export function guessSelectedElement(): HTMLElement | null {
   return null;
 }
 
-type TextElementRange = {
-  activeElement: WeakRef<HTMLTextElement>;
-  selectionStart: typeof HTMLInputElement.prototype.selectionStart;
-  selectionEnd: typeof HTMLInputElement.prototype.selectionEnd;
-  selectionDirection: typeof HTMLInputElement.prototype.selectionDirection;
-};
-
 /**
  * Overridable selection getter. Useful to allow the QuickBar to preserve the selection
  * https://github.com/pixiebrix/pixiebrix-extension/issues/2443
  */
 let selectionOverride: Range | undefined;
-let elementOverride: TextElementRange | undefined;
-// eslint-disable-next-line local-rules/persistBackgroundData -- Static
+// eslint-disable-next-line local-rules/persistBackgroundData -- Not used there
 const selectionController = {
   save(): void {
     const selection = getSelection();
-
-    const { activeElement } = document;
-
-    // Browser's Selection API not reliable for input elements. For example, on https://pbx.vercel.app/bootstrap-5/
-    // the selection is the fieldset
-    if (
-      activeElement instanceof HTMLElement &&
-      (activeElement.tagName === "INPUT" ||
-        activeElement.tagName === "TEXTAREA")
-    ) {
-      const textElement = activeElement as HTMLTextElement;
-
-      // FIXME: this isn't working for email field on https://pbx.vercel.app/bootstrap-5/. You can see a flash
-      //  where the cursor resets when the field type changes
-      // withInputSelectionHack(textElement, () => {
-
-      elementOverride = {
-        activeElement: new WeakRef(textElement),
-        selectionStart: textElement.selectionStart,
-        selectionEnd: textElement.selectionEnd,
-        selectionDirection: textElement.selectionDirection,
-      };
-
-      return;
-    }
-
     // It must be set to "undefined" even if there are selections
     selectionOverride = selection.rangeCount
       ? selection.getRangeAt(0)
       : undefined;
   },
   restore(): void {
-    if (elementOverride != null) {
-      const element = elementOverride.activeElement.deref();
-      if (element) {
-        console.debug("Restoring selection for input element", element);
-
-        withInputSelectionHack(element, (supportedElement) => {
-          supportedElement.focus();
-          supportedElement.setSelectionRange(
-            element.selectionStart,
-            element.selectionEnd,
-            element.selectionDirection ?? "none",
-          );
-        });
-      }
-
-      elementOverride = undefined;
+    if (!selectionOverride) {
+      return;
     }
 
-    if (selectionOverride) {
-      const native = getSelection();
-      native.removeAllRanges();
-      native.addRange(selectionOverride);
-      selectionOverride = undefined;
-    }
+    const native = getSelection();
+    native.removeAllRanges();
+    native.addRange(selectionOverride);
+    selectionOverride = undefined;
   },
   get(): string {
     return (selectionOverride ?? getSelection()).toString();
   },
-};
+} as const;
 
 export default selectionController;
