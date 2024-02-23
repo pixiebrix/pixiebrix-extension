@@ -28,6 +28,7 @@ module.exports = {
           "pageEditor",
           "extensionConsole",
           "sidebar",
+          "platform",
           "pageScript",
         ],
         allowedGlobs: ["**/messenger/**", "**/*.scss*"],
