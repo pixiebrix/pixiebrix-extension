@@ -162,8 +162,7 @@ const KBarComponent: React.FC = () => {
 export const QuickBarApp: React.FC = () => (
   <KBarProvider
     options={{
-      /* Buggy scrollbar width calculation #7694 */
-      disableScrollbarManagement: true,
+      disableDocumentLock: true,
 
       /* Disable exit animation due to #3724. `enterMs` is required too */
       animations: { enterMs: 300, exitMs: 0 },
