@@ -52,6 +52,10 @@ import {
   watchDelayedStorageInitialization,
 } from "@/store/enterprise/managedStorage";
 import activateBrowserActionIcon from "./activateBrowserActionIcon";
+import { setPlatform } from "@/platform/platformContext";
+import backgroundPlatform from "@/background/backgroundPlatform";
+
+setPlatform(backgroundPlatform);
 
 // Try to initialize managed storage as early as possible because it impacts background behavior
 // Call watchDelayedStorageInitialization to handle case where storage is not immediately available within timeout.
