@@ -22,20 +22,29 @@ import {
   readManagedStorage,
 } from "@/store/enterprise/managedStorage";
 import { getActiveTheme } from "@/themes/themeStore";
-import MockAdapter from "axios-mock-adapter";
-import axios, { type AxiosError } from "axios";
+import { type AxiosError } from "axios";
 import reportError from "@/telemetry/reportError";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { mockAuthenticatedUser } from "@/testUtils/userMock";
+import {
+  partnerUserFactory,
+  userFactory,
+  userOrganizationFactory,
+} from "@/testUtils/factories/authFactories";
+import { appApiMock } from "@/testUtils/appApiMock";
 
-const axiosMock = new MockAdapter(axios);
 const reportErrorMock = jest.mocked(reportError);
 
 describe("getActiveTheme", () => {
   const expectedManagedOrganizationId = uuidSequence(1);
 
+  beforeEach(() => {
+    appApiMock.reset();
+  });
+
   describe("managed storage is set", () => {
     beforeEach(async () => {
-      axiosMock
+      appApiMock
         .onGet(`/api/organizations/${expectedManagedOrganizationId}/theme/`)
         .reply(200, {
           show_sidebar_logo: true,
@@ -43,22 +52,8 @@ describe("getActiveTheme", () => {
           toolbar_icon: "some_managed_icon.svg",
         });
 
-      axiosMock.onGet("/api/me/").reply(200, {
-        id: "7d6d22af-bdd0-4d93-8bcd-b223e92a76de",
-        email: "eduardo+test@pixiebrix.com",
-        name: "Eduardo Fungairino",
-        organization: {
-          id: "ab62c6c7-9508-4c81-9317-0c34123e58fa",
-          name: "My cool team",
-          control_room: null,
-          theme: {
-            show_sidebar_logo: true,
-            logo: "",
-            toolbar_icon: "",
-          },
-        },
-        partner: null,
-      });
+      await mockAuthenticatedUser(userFactory());
+
       await browser.storage.managed.set({
         partnerId: "automation-anywhere",
         managedOrganizationId: expectedManagedOrganizationId,
@@ -97,22 +92,17 @@ describe("getActiveTheme", () => {
 
   describe("the user has a primary organization defined and managed storage not present", () => {
     beforeEach(async () => {
-      axiosMock.onGet("/api/me/").reply(200, {
-        id: "7d6d22af-bdd0-4d93-8bcd-b223e92a76de",
-        email: "eduardo+test@pixiebrix.com",
-        name: "Eduardo Fungairino",
-        organization: {
-          id: "ab62c6c7-9508-4c81-9317-0c34123e58fa",
-          name: "My cool team",
-          control_room: null,
-          theme: {
-            show_sidebar_logo: true,
-            logo: "myPrimaryOrglogo.svg",
-            toolbar_icon: "myPrimaryOrgIcon.svg",
-          },
-        },
-        partner: { theme: "automation-anywhere" },
-      });
+      await mockAuthenticatedUser(
+        partnerUserFactory({
+          organization: userOrganizationFactory({
+            theme: {
+              show_sidebar_logo: true,
+              logo: "myPrimaryOrglogo.svg",
+              toolbar_icon: "myPrimaryOrgIcon.svg",
+            },
+          }),
+        }),
+      );
 
       // `initialSettingsState` partnerId is by default null
       await saveSettingsState(initialSettingsState);
@@ -133,14 +123,9 @@ describe("getActiveTheme", () => {
     });
   });
 
-  describe("local settings defines a partner value, managed storage and user org/partner not present", () => {
+  describe("local settings defines a partner value; managed storage and user org/partner not present", () => {
     beforeEach(async () => {
-      axiosMock.onGet("/api/me/").reply(200, {
-        id: "7d6d22af-bdd0-4d93-8bcd-b223e92a76de",
-        email: "eduardo+test@pixiebrix.com",
-        name: "Eduardo Fungairino",
-        partner: null,
-      });
+      await mockAuthenticatedUser(userFactory());
 
       // `initialSettingsState` partnerId is by default null
       await saveSettingsState({
@@ -166,12 +151,7 @@ describe("getActiveTheme", () => {
 
   describe("no other theme data sources are present", () => {
     beforeEach(async () => {
-      axiosMock.onGet("/api/me/").reply(200, {
-        id: "7d6d22af-bdd0-4d93-8bcd-b223e92a76de",
-        email: "eduardo+test@pixiebrix.com",
-        name: "Eduardo Fungairino",
-        partner: null,
-      });
+      await mockAuthenticatedUser(userFactory());
 
       // `initialSettingsState` partnerId is by default null
       await saveSettingsState(initialSettingsState);
@@ -194,7 +174,7 @@ describe("getActiveTheme", () => {
 
   describe("an error is thrown", () => {
     beforeEach(async () => {
-      axiosMock.onGet("/api/me/").reply(500);
+      appApiMock.onAny().reply(500);
 
       // `initialSettingsState` partnerId is by default null
       await saveSettingsState(initialSettingsState);

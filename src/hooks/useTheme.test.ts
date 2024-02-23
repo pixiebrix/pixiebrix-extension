@@ -28,7 +28,6 @@ afterEach(() => {
 });
 
 jest.mock("@/hooks/useAsyncExternalStore");
-jest.mock("@/background/messenger/strict/api");
 
 describe("useTheme", () => {
   beforeEach(() => {
@@ -69,7 +68,7 @@ describe("useTheme", () => {
     renderHook(() => useTheme());
     expect(activateTheme).not.toHaveBeenCalled();
 
-    jest.advanceTimersByTime(35_000);
+    jest.advanceTimersByTime(125_000);
 
     renderHook(() => useTheme());
     expect(activateTheme).toHaveBeenCalledOnce();

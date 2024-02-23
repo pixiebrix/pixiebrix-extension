@@ -21,7 +21,6 @@ import {
   getThemeLogo,
   isValidThemeName,
   type ThemeAssets,
-  themeStorage,
 } from "@/themes/themeUtils";
 import { type Me, type OrganizationTheme } from "@/types/contract";
 import { isUUID } from "@/types/helpers";
@@ -62,9 +61,9 @@ export async function getActiveTheme(): Promise<ThemeAssets> {
       { partnerId: settingsPartnerId },
     ] = await Promise.all([
       // Enterprise managed storage, if provided, always takes precedence over the user's theme settings
-      await readManagedStorage(),
-      await client.get<Me>("/api/me/"),
-      await getSettingsState(),
+      readManagedStorage(),
+      client.get<Me>("/api/me/"),
+      getSettingsState(),
     ]);
 
     let organizationTheme: OrganizationTheme;
@@ -74,9 +73,7 @@ export async function getActiveTheme(): Promise<ThemeAssets> {
         `/api/organizations/${managedOrganizationId}/theme/`,
       );
       organizationTheme = data;
-    }
-
-    if (meData.organization?.theme && !managedOrganizationId) {
+    } else if (meData.organization?.theme) {
       organizationTheme = meData.organization?.theme;
     }
 
@@ -86,7 +83,7 @@ export async function getActiveTheme(): Promise<ThemeAssets> {
       settingsPartnerId ??
       DEFAULT_THEME;
 
-    const activeThemeAssets = {
+    return {
       logo: getThemeLogo(activeThemeName),
       showSidebarLogo: organizationTheme
         ? Boolean(organizationTheme.show_sidebar_logo)
@@ -98,9 +95,6 @@ export async function getActiveTheme(): Promise<ThemeAssets> {
         : DEFAULT_THEME,
       lastFetched: Date.now(),
     };
-
-    void themeStorage.set(activeThemeAssets);
-    return activeThemeAssets;
   } catch (error) {
     reportError(error);
     return initialTheme;
