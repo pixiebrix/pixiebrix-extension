@@ -324,6 +324,7 @@
     "./hooks/useReduxState.ts",
     "./hooks/useReportError.ts",
     "./hooks/useScrollLock.ts",
+    "./hooks/useScrollLock.test.ts",
     "./hooks/useSetDocumentTitle.ts",
     "./hooks/useTimeoutState.ts",
     "./hooks/useUndo.ts",
