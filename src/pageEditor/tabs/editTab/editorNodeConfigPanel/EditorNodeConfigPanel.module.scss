@@ -14,6 +14,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+@import "@/themes/colors.scss";
+
+.header {
+  // Add a full-bleed background color to the header to create separation
+  // https://github.com/pixiebrix/pixiebrix-extension/pull/7662
+  margin: -15px -24px 20px;
+  padding: 15px 24px 0;
+  background: $field-section-header;
+}
 
 .coreFields {
   container-name: EditorNodeConfigPanelHeader;

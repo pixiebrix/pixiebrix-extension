@@ -31,6 +31,7 @@ import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import { MARKETPLACE_URL } from "@/urlConstants";
 import CommentsPreview from "@/pageEditor/tabs/editTab/editorNodeConfigPanel/CommentsPreview";
 import useAsyncState from "@/hooks/useAsyncState";
+import cx from "classnames";
 
 const EditorNodeConfigPanel: React.FC = () => {
   const {
@@ -72,35 +73,37 @@ const EditorNodeConfigPanel: React.FC = () => {
 
   return (
     <>
-      <AnalysisResult className="mb-3" />
+      <div className={cx(styles.header, "mb-3")}>
+        <AnalysisResult className="mb-3" />
 
-      <h6 className="mb-3 d-flex justify-content-between flex-wrap gap-2">
-        {brickInfo?.block.name}
-        {showDocumentationLink && (
-          <a
-            href={`${MARKETPLACE_URL}${listingId}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
-          >
-            View Documentation
-          </a>
-        )}
-      </h6>
+        <h6 className="mb-3 d-flex justify-content-between flex-wrap gap-2">
+          {brickInfo?.block.name}
+          {showDocumentationLink && (
+            <a
+              href={`${MARKETPLACE_URL}${listingId}/?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=docs&utm_content=view_docs_link`}
+            >
+              View Documentation
+            </a>
+          )}
+        </h6>
 
-      <div className={styles.header}>
-        {/* Do not merge divs, the outer div is a CSS @container */}
-        <div className="mb-3 gap-column-4">
-          <ConnectedFieldTemplate
-            name={`${brickFieldName}.label`}
-            label="Step Name"
-            className="flex-grow-1"
-            placeholder={brickInfo?.block.name}
-          />
-          <ConnectedFieldTemplate
-            name={`${brickFieldName}.outputKey`}
-            label={PopoverOutputLabel}
-            className="flex-grow-1"
-            disabled={isOutputDisabled}
-            as={KeyNameWidget}
-          />
+        <div className={styles.coreFields}>
+          {/* Do not merge divs, the outer div is a CSS @container */}
+          <div className="mb-3 gap-column-4">
+            <ConnectedFieldTemplate
+              name={`${brickFieldName}.label`}
+              label="Step Name"
+              className="flex-grow-1"
+              placeholder={brickInfo?.block.name}
+            />
+            <ConnectedFieldTemplate
+              name={`${brickFieldName}.outputKey`}
+              label={PopoverOutputLabel}
+              className="flex-grow-1"
+              disabled={isOutputDisabled}
+              as={KeyNameWidget}
+            />
+          </div>
         </div>
       </div>
 
