@@ -17,7 +17,6 @@
 
 import { type TypedBrickPair } from "@/bricks/registry";
 import { type StarterBrickType } from "@/types/starterBrickTypes";
-import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { stubTrue } from "lodash";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { type BrickType } from "@/runtime/runtimeTypes";
@@ -27,6 +26,7 @@ import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
 import { ErrorEffect } from "@/bricks/effects/error";
 import { CancelEffect } from "@/bricks/effects/cancel";
 import CommentEffect from "@/bricks/effects/comment";
+import { PipelineFlavor } from "@/bricks/types";
 
 const PANEL_TYPES = ["actionPanel", "panel"];
 
@@ -82,7 +82,7 @@ export function getSubPipelineFlavor(
 export function makeIsBlockAllowedForPipeline(
   pipelineFlavor: PipelineFlavor,
 ): IsBlockAllowedPredicate {
-  if (pipelineFlavor === PipelineFlavor.AllBlocks) {
+  if (pipelineFlavor === PipelineFlavor.AllBricks) {
     return stubTrue;
   }
 

@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useGetDatabasesQuery, useGetOrganizationsQuery } from "@/services/api";
+import {
+  useGetDatabasesQuery,
+  useGetOrganizationsQuery,
+} from "@/data/service/api";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";

@@ -18,47 +18,13 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { uuidv4, validateRegistryId } from "@/types/helpers";
-import {
-  cancelForm,
-  registerForm,
-} from "@/contentScript/ephemeralFormProtocol";
-import { expectContext } from "@/utils/expectContext";
-import {
-  showSidebar,
-  hideSidebarForm,
-  showSidebarForm,
-  sidePanelOnClose,
-} from "@/contentScript/sidebarController";
-import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
-import { getConnectedTarget } from "@/sidebar/connectedTarget";
+import { validateRegistryId } from "@/types/helpers";
 import { type BrickConfig } from "@/bricks/types";
-import { type FormDefinition } from "@/bricks/transformers/ephemeralForm/formTypes";
+import { type FormDefinition } from "@/platform/forms/formTypes";
 import { isExpression } from "@/utils/expressionUtils";
-import { getThisFrame } from "webext-messenger";
-import { isLoadedInIframe } from "@/utils/iframeUtils";
-import { BusinessError } from "@/errors/businessErrors";
+import type { PlatformCapability } from "@/platform/capabilities";
 
-// The modes for createFrameSource are different from the location argument for FormTransformer. The mode for the frame
-// just determines the layout container of the form
-type Mode = "modal" | "panel";
-
-export async function createFrameSource(
-  nonce: string,
-  mode: Mode,
-): Promise<URL> {
-  // Match the frame where the form is being shown
-  const target =
-    mode === "modal" ? await getThisFrame() : await getConnectedTarget();
-
-  const frameSource = new URL(browser.runtime.getURL("ephemeralForm.html"));
-  frameSource.searchParams.set("nonce", nonce);
-  frameSource.searchParams.set("opener", JSON.stringify(target));
-  frameSource.searchParams.set("mode", mode);
-  return frameSource;
-}
-
-export const MODAL_FORM_SCHEMA: Schema = {
+export const TEMPORARY_FORM_SCHEMA: Schema = {
   type: "object",
   properties: {
     schema: {
@@ -119,7 +85,7 @@ export class FormTransformer extends TransformerABC {
     );
   }
 
-  inputSchema = MODAL_FORM_SCHEMA;
+  inputSchema = TEMPORARY_FORM_SCHEMA;
 
   override outputSchema: Schema = {
     type: "object",
@@ -136,6 +102,10 @@ export class FormTransformer extends TransformerABC {
     return formSchema ?? this.outputSchema;
   }
 
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["form"];
+  }
+
   async transform(
     {
       schema,
@@ -146,22 +116,8 @@ export class FormTransformer extends TransformerABC {
       stylesheets = [],
       disableParentStyles = false,
     }: BrickArgs<FormDefinition>,
-    { logger, abortSignal }: BrickOptions,
+    { logger, abortSignal, platform }: BrickOptions,
   ): Promise<unknown> {
-    expectContext("contentScript");
-
-    if (location === "sidebar" && isLoadedInIframe()) {
-      // Validate before registerForm to avoid an uncaught promise rejection
-      throw new BusinessError(
-        "Cannot show sidebar in a frame. To use the sidebar, set the target to Top-level Frame",
-      );
-    }
-
-    // Future improvements:
-    // - Support draggable modals. This will require showing the modal header on the host page so there's a drag handle?
-
-    const formNonce = uuidv4();
-
     // Repackage the definition from the brick input with default values
     const formDefinition: FormDefinition = {
       schema,
@@ -173,53 +129,21 @@ export class FormTransformer extends TransformerABC {
       disableParentStyles,
     };
 
-    abortSignal?.addEventListener("abort", () => {
-      void cancelForm(formNonce);
-    });
-
     const controller = new AbortController();
 
-    // Register form before adding modal or sidebar to avoid race condition in retrieving the form definition.
-    // Pre-registering the form also allows the sidebar to know a form will be shown in computing the default
-    // tab to show during sidebar initialization.
-    const formPromise = registerForm({
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Review MessageContext types/usage
-      extensionId: logger.context.extensionId!,
-      nonce: formNonce,
-      definition: formDefinition,
-      blueprintId: logger.context.blueprintId,
+    abortSignal?.addEventListener("abort", () => {
+      controller.abort();
     });
 
-    if (location === "sidebar") {
-      // Ensure the sidebar is visible (which may also be showing persistent panels)
-      await showSidebar();
-
-      await showSidebarForm({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Review MessageContext types/usage
-        extensionId: logger.context.extensionId!,
-        blueprintId: logger.context.blueprintId,
-        nonce: formNonce,
-        form: formDefinition,
-      });
-
-      // Two-way binding between sidebar and form. Listen for the user (or an action) closing the sidebar
-      sidePanelOnClose(controller.abort.bind(controller));
-
-      controller.signal.addEventListener("abort", () => {
-        // NOTE: we're not hiding the side panel here to avoid closing the sidebar if the user already had it open.
-        // In the future we might creating/sending a closeIfEmpty message to the sidebar, so that it would close
-        // if this form was the only entry in the panel
-        void hideSidebarForm(formNonce);
-        void cancelForm(formNonce);
-      });
-    } else {
-      const frameSource = await createFrameSource(formNonce, location);
-
-      showModal({ url: frameSource, controller });
+    if (logger.context.extensionId == null) {
+      throw new Error(`${this.name} must be run in a mod context`);
     }
 
     try {
-      return await formPromise;
+      return await platform.form(formDefinition, controller, {
+        componentId: logger.context.extensionId,
+        modId: logger.context.blueprintId,
+      });
     } finally {
       controller.abort();
     }

@@ -20,10 +20,16 @@ import {
   type AuthState,
   type AuthUserOrganization,
   type OrganizationAuthState,
+  type TokenAuthData,
+  type UserData,
 } from "@/auth/authTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type Me, type Milestone, UserRole } from "@/types/contract";
 import { type AuthData } from "@/integrations/integrationTypes";
+
+function emailFactory(n: number): string {
+  return `user${n}@test.com`;
+}
 
 /**
  * @see userOrganizationFactory
@@ -45,7 +51,7 @@ export const organizationStateFactory = define<AuthUserOrganization>({
  */
 export const authStateFactory = define<AuthState>({
   userId: uuidSequence,
-  email: (n: number) => `user${n}@test.com`,
+  email: emailFactory,
   scope: (n: number) => `@user${n}`,
   isLoggedIn: true,
   isOnboarded: true,
@@ -111,9 +117,10 @@ export const userOrganizationFactory = define<Me["organization"]>({
   control_room: null,
   theme: null,
 });
+
 export const userFactory = define<Me>({
   id: uuidSequence,
-  email: (n: number) => `user${n}@test.com`,
+  email: emailFactory,
   scope: (n: number) => `@user${n}`,
   flags: () => [] as Me["flags"],
   is_onboarded: true,
@@ -135,4 +142,22 @@ export const authDataFactory = define<AuthData>({
   _oauthBrand: null,
   username: "test_user",
   password: "test_pwd",
+});
+
+export const tokenAuthDataFactory = define<TokenAuthData>({
+  email: emailFactory,
+  user: uuidSequence,
+  hostname: "app.pixiebrix.com",
+  flags(): string[] {
+    return [];
+  },
+  organizations(): UserData["organizations"] {
+    return [];
+  },
+  groups(): UserData["groups"] {
+    return [];
+  },
+  enforceUpdateMillis: null,
+  partner: null,
+  token: "1234567890abcdef",
 });

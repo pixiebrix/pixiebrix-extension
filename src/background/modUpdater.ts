@@ -16,7 +16,7 @@
  */
 
 import type { Me, PackageVersionUpdates } from "@/types/contract";
-import { maybeGetLinkedApiClient } from "@/services/apiClient";
+import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import reportError from "@/telemetry/reportError";
 import {
   getModComponentState,

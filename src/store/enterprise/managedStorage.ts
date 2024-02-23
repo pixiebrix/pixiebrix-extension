@@ -25,7 +25,9 @@ import { isEmpty, once } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import pMemoize, { pMemoizeClear } from "p-memoize";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import type { Nullishable } from "@/utils/nullishUtils";
+import { RepeatableAbortController } from "abort-utils";
 
 // 1.8.9: bumped to 4.5s because 2s was too short: https://github.com/pixiebrix/pixiebrix-extension/issues/7618
 //   Privacy Badger uses 4.5s timeout, but thinks policy should generally be available within 2.5s. In installer.ts,
@@ -35,30 +37,17 @@ const MAX_MANAGED_STORAGE_WAIT_MILLIS = 4500;
 /**
  * Interval for checking managed storage initialization that takes longer than MAX_MANAGED_STORAGE_WAIT_MILLIS seconds.
  */
-let initializationInterval: Nullishable<ReturnType<typeof setTimeout>>;
+let initializationInterval: ReturnType<typeof setTimeout> | undefined;
 
 /**
  * The managedStorageState, or undefined if it hasn't been initialized yet.
  */
 let managedStorageSnapshot: Nullishable<ManagedStorageState>;
 
-type ChangeListener = (state: ManagedStorageState) => void;
+// Used only for testing
+const controller = new RepeatableAbortController();
 
-// TODO: Use `SimpleEventTarget` instead -- need to add functionality to clear all listeners for INTERNAL_reset
-// eslint-disable-next-line local-rules/persistBackgroundData -- Functions
-const changeListeners = new Set<ChangeListener>();
-
-function notifyAllChangeListeners(
-  managedStorageState: ManagedStorageState,
-): void {
-  for (const listener of changeListeners) {
-    try {
-      listener(managedStorageState);
-    } catch {
-      // NOP - don't let a single listener error prevent others from being notified
-    }
-  }
-}
+const manageStorageStateChanges = new SimpleEventTarget<ManagedStorageState>();
 
 /**
  * Read managed storage immediately, returns {} if managed storage is unavailable/uninitialized.
@@ -118,7 +107,7 @@ export async function watchDelayedStorageInitialization(): Promise<void> {
           initializationInterval = undefined;
         }
 
-        notifyAllChangeListeners(managedStorageSnapshot);
+        manageStorageStateChanges.emit(managedStorageSnapshot);
       }
     },
     // Most likely there's no policy. So only check once every 2 seconds to not consume resources
@@ -149,7 +138,7 @@ const waitForInitialManagedStorage = pMemoize(async () => {
   // After timeout, assume there's no policy set, so assign an empty value
   managedStorageSnapshot ??= {};
 
-  notifyAllChangeListeners(managedStorageSnapshot);
+  manageStorageStateChanges.emit(managedStorageSnapshot);
 
   return managedStorageSnapshot;
 });
@@ -174,7 +163,7 @@ export const initManagedStorage = once(async () => {
         }
 
         managedStorageSnapshot = await readManagedStorageImmediately();
-        notifyAllChangeListeners(managedStorageSnapshot);
+        manageStorageStateChanges.emit(managedStorageSnapshot);
       }
     });
   } catch (error) {
@@ -262,10 +251,10 @@ export function subscribe(
 ): () => void {
   expectContext("extension");
 
-  changeListeners.add(callback);
+  manageStorageStateChanges.add(callback);
 
   return () => {
-    changeListeners.delete(callback);
+    manageStorageStateChanges.remove(callback);
   };
 }
 
@@ -273,13 +262,11 @@ export function subscribe(
  * Helper method for resetting the module for testing.
  */
 export function INTERNAL_reset(): void {
+  controller.abortAndReset();
   managedStorageSnapshot = undefined;
-  changeListeners.clear();
 
-  if (initializationInterval != null) {
-    clearInterval(initializationInterval);
-    initializationInterval = undefined;
-  }
+  clearInterval(initializationInterval);
+  initializationInterval = undefined;
 
   pMemoizeClear(waitForInitialManagedStorage);
 }

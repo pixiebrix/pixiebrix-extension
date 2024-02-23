@@ -34,6 +34,7 @@ import { debounce } from "lodash";
 import { type UUID } from "@/types/stringTypes";
 import AsyncAnalysisQueue from "./asyncAnalysisQueue";
 import { serializeError } from "serialize-error";
+import { RepeatableAbortController } from "abort-utils";
 
 type AnalysisEffect = ListenerEffect<
   AnyAction,
@@ -80,22 +81,17 @@ class ReduxAnalysisManager {
     listenerConfig: AnalysisListenerConfig,
     effectConfig?: EffectConfig<TAnalysis>,
   ) {
-    let abortController: AbortController;
+    const abortController = new RepeatableAbortController();
 
     const effect: AnalysisEffect = async (action, listenerApi) => {
       // Abort the previous analysis run, if running
-      if (abortController) {
-        abortController.abort();
-      }
+      abortController.abortAndReset();
 
       // Capture state at the moment of the action
       const state = listenerApi.getState();
 
-      abortController = new AbortController();
-      const { signal: abortSignal } = abortController;
-
       const task = async () => {
-        if (abortSignal.aborted) {
+        if (abortController.signal.aborted) {
           return;
         }
 

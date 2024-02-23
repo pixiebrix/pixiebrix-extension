@@ -27,7 +27,7 @@ import AuthWidget from "@/components/integrations/AuthWidget";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { AnnotationType } from "@/types/annotationTypes";
 import ServiceFieldError from "@/extensionConsole/components/ServiceFieldError";
-import { useGetIntegrationsQuery } from "@/services/api";
+import { useGetIntegrationsQuery } from "@/data/service/api";
 import { joinName } from "@/utils/formUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 

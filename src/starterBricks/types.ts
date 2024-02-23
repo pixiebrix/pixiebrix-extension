@@ -31,6 +31,7 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type UnknownObject } from "@/types/objectTypes";
+import { type PlatformCapability } from "@/platform/capabilities";
 
 /**
  * Follows the semantics of lodash's debounce: https://lodash.com/docs/4.17.15#debounce
@@ -134,6 +135,8 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
   protected readonly modComponents: Array<ResolvedModComponent<TConfig>> = [];
 
   public abstract readonly inputSchema: Schema;
+
+  public abstract readonly capabilities: PlatformCapability[];
 
   protected readonly logger: Logger;
 

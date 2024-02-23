@@ -23,7 +23,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { act, screen } from "@testing-library/react";
 import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import userEvent from "@testing-library/user-event";
-import { mockCachedUser } from "@/testUtils/userMock";
+import { mockAuthenticatedUser } from "@/testUtils/userMock";
 import { appApiMock, onDeferredGet } from "@/testUtils/appApiMock";
 import {
   userFactory,
@@ -105,7 +105,7 @@ describe("ModsPageLayout", () => {
   });
 
   test("does not show 'Get Started' tab for enterprise users", async () => {
-    mockCachedUser(
+    await mockAuthenticatedUser(
       userFactory({
         organization: userOrganizationFactory(),
       }),
