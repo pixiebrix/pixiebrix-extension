@@ -31,7 +31,7 @@ import { getTopLevelFrame } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
 import useFlags from "@/hooks/useFlags";
 
-function reloadPage() {
+function reloadSidebar() {
   location.reload();
 }
 
@@ -46,7 +46,7 @@ const Header: React.FunctionComponent = () => {
     process.env.ENVIRONMENT === "development" ||
     flagOn("page-editor-developer");
 
-  const classes = cx(
+  const buttonStyles = cx(
     styles.button,
     theme === "default" ? styles.themeColorOverride : styles.themeColor,
   );
@@ -86,8 +86,9 @@ const Header: React.FunctionComponent = () => {
           type="button"
           size="sm"
           variant="link"
-          onClick={reloadPage}
-          className={classes}
+          onClick={reloadSidebar}
+          className={buttonStyles}
+          title="Reload sidebar (button only shown in dev builds)"
         >
           <FontAwesomeIcon icon={faSync} />
         </Button>
@@ -97,7 +98,7 @@ const Header: React.FunctionComponent = () => {
         target="_blank"
         size="sm"
         variant="link"
-        className={classes}
+        className={buttonStyles}
       >
         <FontAwesomeIcon icon={faCog} />
       </Button>
