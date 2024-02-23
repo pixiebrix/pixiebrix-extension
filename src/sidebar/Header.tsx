@@ -35,8 +35,9 @@ const Header: React.FunctionComponent = () => {
   /* In MV3, Chrome offers a native Close button */
   const showCloseButton = !isMV3();
 
-  const headerButtonClassName = cx({
-    [styles.button || ""]: true,
+  const headerButtonClassName = cx(
+  styles.button,
+  {
     [styles.themeColorOverride || ""]: baseThemeName === DEFAULT_THEME,
     [styles.themeColor || ""]: baseThemeName !== DEFAULT_THEME,
   });
