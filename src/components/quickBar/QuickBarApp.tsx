@@ -42,7 +42,6 @@ import { animatorStyle, searchStyle } from "./quickBarTheme";
 import QuickBarResults from "./QuickBarResults";
 import useActionGenerators from "@/components/quickBar/useActionGenerators";
 import useActions from "@/components/quickBar/useActions";
-import FocusLock from "react-focus-lock";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import defaultActions, {
   pageEditorAction,
@@ -50,6 +49,7 @@ import defaultActions, {
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { flagOn } from "@/auth/authUtils";
 import { onContextInvalidated } from "webext-events";
+import StopPropagation from "@/components/StopPropagation";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -142,14 +142,15 @@ const KBarComponent: React.FC = () => {
           <EmotionShadowRoot.div
             data-testid="quickBar"
             className="cke_editable"
+            mode="closed"
             contentEditable
             suppressContentEditableWarning
           >
             <Stylesheets href={faStyleSheet} mountOnLoad>
-              <FocusLock>
+              <StopPropagation onKeyPress onKeyDown onKeyUp onInput>
                 <KBarSearch style={searchStyle} />
                 <QuickBarResults />
-              </FocusLock>
+              </StopPropagation>
             </Stylesheets>
           </EmotionShadowRoot.div>
         </KBarAnimator>
