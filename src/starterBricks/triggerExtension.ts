@@ -230,8 +230,8 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
       }
 
       default: {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Invalid reportMode: ${this.reportMode}`);
+        const exhaustiveCheck: never = this.reportMode;
+        throw new BusinessError(`Invalid reportMode: ${exhaustiveCheck}`);
       }
     }
   }

@@ -557,8 +557,8 @@ class RemotePanelExtensionPoint extends PanelStarterBrickABC {
 
       default: {
         // Type is `never` due to checks above
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        throw new Error(`Unexpected position: ${position}`);
+        const exhaustiveCheck: never = position;
+        throw new Error(`Unexpected position: ${exhaustiveCheck}`);
       }
     }
   }
