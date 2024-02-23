@@ -21,12 +21,14 @@ import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 import { initialTheme } from "@/themes/themeStore";
 import { type AsyncState } from "@/types/sliceTypes";
 import { themeStorage } from "@/themes/themeUtils";
+import { activateTheme } from "@/background/messenger/strict/api";
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 jest.mock("@/hooks/useAsyncExternalStore");
+jest.mock("@/background/messenger/strict/api");
 
 describe("useTheme", () => {
   beforeEach(() => {
@@ -56,7 +58,20 @@ describe("useTheme", () => {
     });
   });
 
-  it.todo(
-    "calls activateTheme after loading is done and it hasn't been called recently",
-  );
+  it("calls activateTheme after loading is done and it hasn't been called recently", () => {
+    jest.useFakeTimers();
+
+    jest.mocked(useAsyncExternalStore).mockReturnValue({
+      data: { ...initialTheme, lastFetched: Date.now() },
+      isLoading: false,
+    } as AsyncState);
+
+    renderHook(() => useTheme());
+    expect(activateTheme).not.toHaveBeenCalled();
+
+    jest.advanceTimersByTime(35_000);
+
+    renderHook(() => useTheme());
+    expect(activateTheme).toHaveBeenCalledOnce();
+  });
 });

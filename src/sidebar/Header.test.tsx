@@ -51,16 +51,7 @@ describe("Header", () => {
 
   it("renders no sidebar header logo per organization theme", async () => {
     jest.mocked(useTheme).mockReturnValue({
-      activeTheme: {
-        baseThemeName: "default",
-        toolbarIcon: null,
-        showSidebarLogo: false,
-        logo: {
-          regular: "",
-          small: "",
-        },
-        customSidebarLogo: null,
-      },
+      activeTheme: { ...initialTheme, showSidebarLogo: false },
       isLoading: false,
     });
 

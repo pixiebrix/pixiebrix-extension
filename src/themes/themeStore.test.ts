@@ -133,7 +133,7 @@ describe("getActiveTheme", () => {
     });
   });
 
-  describe("local settings defines a partner value if managed storage and user org/partner not present", () => {
+  describe("local settings defines a partner value, managed storage and user org/partner not present", () => {
     beforeEach(async () => {
       axiosMock.onGet("/api/me/").reply(200, {
         id: "7d6d22af-bdd0-4d93-8bcd-b223e92a76de",

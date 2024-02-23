@@ -60,7 +60,7 @@ export type ThemeAssets = {
   /** The base theme name **/
   baseThemeName: ThemeName;
   /** Internal attribute that tracks when the active theme was last fetched and calculated for re-fetching purposes **/
-  lastFetched?: Nullishable<number>;
+  lastFetched: Nullishable<number>;
 };
 
 // Note: this function is re-used in the app. Should not reference
