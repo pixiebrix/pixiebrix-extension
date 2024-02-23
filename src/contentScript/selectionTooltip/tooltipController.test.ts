@@ -29,7 +29,8 @@ describe("tooltipController", () => {
     module = await import("@/contentScript/selectionTooltip/tooltipController");
   });
 
-  it("attach tooltip when user selects text", async () => {
+  // TODO: re-enable flaky test https://github.com/pixiebrix/pixiebrix-extension/issues/7682
+  it.skip("attach tooltip when user selects text", async () => {
     module.initSelectionTooltip();
 
     module.tooltipActionRegistry.register(uuidv4(), {

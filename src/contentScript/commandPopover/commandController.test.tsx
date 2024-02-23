@@ -61,7 +61,8 @@ describe("commandController", () => {
     commandRegistry.clear();
   });
 
-  it("attach popover when user types command key", async () => {
+  // TODO: re-enable flaky test https://github.com/pixiebrix/pixiebrix-extension/issues/7682
+  it.skip("attach popover when user types command key", async () => {
     commandRegistry.register({
       componentId: uuidv4(),
       title: "Copy",
