@@ -55,6 +55,8 @@ import activateBrowserActionIcon from "./activateBrowserActionIcon";
 import { setPlatform } from "@/platform/platformContext";
 import backgroundPlatform from "@/background/backgroundPlatform";
 
+// The background "platform" currently is used to execute API requests from Google Sheets/Automation Anywhere.
+// In the future, it might also run other background tasks from mods (e.g., background intervals)
 setPlatform(backgroundPlatform);
 
 // Try to initialize managed storage as early as possible because it impacts background behavior
