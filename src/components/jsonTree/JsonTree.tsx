@@ -174,6 +174,9 @@ const CopyDataButton: React.FunctionComponent<{ data: unknown }> = ({
   </AsyncButton>
 );
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- why is this rule triggering here?
+const emptyObject = {} as const;
+
 /**
  * Internally a memoized component is used, be mindful about the reference equality of the props
  */
@@ -184,7 +187,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   onSearchQueryChange,
   label,
   data,
-  initialExpandedState = {},
+  initialExpandedState = emptyObject,
   onExpandedStateChange,
   ...restProps
 }) => {
