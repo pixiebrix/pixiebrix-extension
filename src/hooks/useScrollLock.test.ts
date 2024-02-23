@@ -24,15 +24,15 @@ describe("useScrollLock", () => {
     renderHook(() => {
       useScrollLock(true);
     });
-    expect(html.classList.contains("scrollLocked")).toBe(true);
-    expect(html.classList.contains("hadScrollbar")).toBe(false);
+    expect(html).toHaveClass("scrollLocked");
+    expect(html).not.toHaveClass("hadScrollbar");
   });
 
   it("should remove scrollLocked class from document", () => {
     renderHook(() => {
       useScrollLock(false);
     });
-    expect(html.classList.contains("scrollLocked")).toBe(false);
-    expect(html.classList.contains("hadScrollbar")).toBe(false);
+    expect(html).not.toHaveClass("scrollLocked");
+    expect(html).not.toHaveClass("h≈≈adScrollbar");
   });
 });
