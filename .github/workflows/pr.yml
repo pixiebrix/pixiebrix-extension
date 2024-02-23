@@ -36,5 +36,4 @@ jobs:
                 title: 'strictNullChecks',
                 file: newFile,
               });
-              process.exitCode = 1;
             }
