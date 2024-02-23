@@ -25,7 +25,7 @@ import logoSmall from "@img/logo-small.svg";
 import aaLogo from "@img/aa-logo.svg";
 import aaLogoSmall from "@img/aa-logo-small.svg";
 import { StorageItem } from "webext-storage";
-import { Nullishable } from "@/utils/nullishUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export const isValidThemeName = (themeName: string): themeName is ThemeName =>
   THEME_NAMES.includes(themeName);

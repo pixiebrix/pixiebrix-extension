@@ -103,7 +103,6 @@ export async function getActiveTheme(): Promise<ThemeAssets> {
     return activeThemeAssets;
   } catch (error) {
     reportError(error);
-    debugger;
     return initialTheme;
   }
 }
