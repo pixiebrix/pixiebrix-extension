@@ -22,18 +22,23 @@ export { absoluteApiUrl } from "../../../../data/service/apiClient";
 // A mock of @/data/service/apiClient that doesn't use the local browser state. For use with msw in Storybook.
 // See .storybook/preview.js for more information
 
+const client = ky.create({
+  prefixUrl: "https://app.pixiebrix.com",
+  retry: 0,
+});
+
 export async function getLinkedApiClient() {
-  return ky;
+  return client;
 }
 
 export async function getApiClient() {
-  return ky;
+  return client;
 }
 
 export async function maybeGetApiClient() {
-  return ky;
+  return client;
 }
 
 export async function maybeGetLinkedApiClient() {
-  return ky;
+  return client;
 }

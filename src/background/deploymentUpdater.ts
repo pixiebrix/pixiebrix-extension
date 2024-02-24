@@ -1,3 +1,4 @@
+/* eslint-disable complexity -- TODO: Split up function */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
@@ -27,6 +28,7 @@ import {
   selectExtensionsForRecipe,
 } from "@/store/extensionsSelectors";
 import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
+import ky, { HTTPError } from "ky";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab, getExtensionVersion } from "@/utils/extensionUtils";
 import { parse as parseSemVer, satisfies, type SemVer } from "semver";
@@ -456,8 +458,21 @@ export async function updateDeployments(): Promise<void> {
     return;
   }
 
-  const { data: profile, status: profileResponseStatus } =
-    await client.get<Me>("/api/me/");
+  let profile: Me;
+  try {
+    profile = await client.get("api/me/").json<Me>();
+  } catch (error) {
+    if (!(error instanceof HTTPError)) {
+      throw error;
+    }
+
+    // If our server is acting up, check again later
+    console.debug(
+      "Skipping deployments update because /api/me/ request failed",
+      { error },
+    );
+    return;
+  }
 
   const { isSnoozed, isUpdateOverdue, updatePromptTimestamp } =
     selectUpdatePromptState(
@@ -468,27 +483,26 @@ export async function updateDeployments(): Promise<void> {
       },
     );
 
-  if (profileResponseStatus >= 400) {
-    // If our server is acting up, check again later
-    console.debug(
-      "Skipping deployments update because /api/me/ request failed",
-    );
-
-    return;
-  }
-
   // Ensure the user's flags and telemetry information is up-to-date
   void updateUserData(selectUserDataUpdate(profile));
 
-  const { data: deployments, status: deploymentResponseStatus } =
-    await client.post<Deployment[]>("/api/deployments/", {
-      uid: await getUID(),
-      version: getExtensionVersion(),
-      active: selectInstalledDeployments(extensions),
-      campaignIds,
-    });
+  let deployments: Deployment[];
+  try {
+    deployments = await client
+      .post("api/deployments/", {
+        json: {
+          uid: await getUID(),
+          version: getExtensionVersion(),
+          active: selectInstalledDeployments(extensions),
+          campaignIds,
+        },
+      })
+      .json<Deployment[]>();
+  } catch (error) {
+    if (!(error instanceof HTTPError)) {
+      throw error;
+    }
 
-  if (deploymentResponseStatus >= 400) {
     // Our server is active up, check again later
     console.debug(
       "Skipping deployments update because /api/deployments/ request failed",

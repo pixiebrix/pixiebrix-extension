@@ -20,8 +20,7 @@ import {
   saveModComponentState,
 } from "@/store/extensionsStorage";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
-import MockAdapter from "axios-mock-adapter";
-import axios from "axios";
+import nock from "nock";
 import { updateDeployments } from "@/background/deploymentUpdater";
 import reportEvent from "@/telemetry/reportEvent";
 import { isLinked, readAuthData } from "@/auth/token";
@@ -56,7 +55,8 @@ import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
 import { type RegistryPackage } from "@/types/contract";
 
 setContext("background");
-const axiosMock = new MockAdapter(axios);
+
+const apiMock = nock("https://app.pixiebrix.com");
 
 jest.mock("@/store/settings/settingsStorage");
 
@@ -224,11 +224,11 @@ describe("updateDeployments", () => {
 
     const deployment = deploymentFactory();
 
-    axiosMock.onGet().reply(200, {
+    apiMock.get("/api/me/").reply(200, {
       flags: [],
     });
 
-    axiosMock.onPost().reply(201, [deployment]);
+    apiMock.post("/api/deployments/").reply(201, [deployment]);
 
     await updateDeployments();
 
@@ -271,11 +271,11 @@ describe("updateDeployments", () => {
 
     const deployment = deploymentFactory();
 
-    axiosMock.onGet().reply(200, {
+    apiMock.get("/api/me/").reply(200, {
       flags: [],
     });
 
-    axiosMock.onPost().reply(201, [deployment]);
+    apiMock.post("/api/deployments/").reply(201, [deployment]);
 
     await updateDeployments();
 
@@ -307,11 +307,11 @@ describe("updateDeployments", () => {
       extensions: [modComponent],
     });
 
-    axiosMock.onGet().reply(200, {
+    apiMock.get("/api/me/").reply(200, {
       flags: [],
     });
 
-    axiosMock.onPost().reply(201, [deployment]);
+    apiMock.post("/api/deployments/").reply(201, [deployment]);
 
     // Make sure we're testing the case where getEditorState() returns undefined
     expect(await getEditorState()).toBeUndefined();
@@ -362,11 +362,11 @@ describe("updateDeployments", () => {
     );
     await saveEditorState(editorState);
 
-    axiosMock.onGet().reply(200, {
+    apiMock.get("/api/me/").reply(200, {
       flags: [],
     });
 
-    axiosMock.onPost().reply(201, [deployment]);
+    apiMock.post("/api/deployments/").reply(201, [deployment]);
 
     await updateDeployments();
 
@@ -387,11 +387,11 @@ describe("updateDeployments", () => {
 
     const deployment = deploymentFactory();
 
-    axiosMock.onGet().reply(200, {
+    apiMock.get("/api/me/").reply(200, {
       flags: [],
     });
 
-    axiosMock.onPost().reply(201, [deployment]);
+    apiMock.post("/api/deployments/").reply(201, [deployment]);
 
     await updateDeployments();
 
@@ -422,11 +422,11 @@ describe("updateDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(true);
 
-    axiosMock.onGet().reply(200, {
+    apiMock.get("/api/me/").reply(200, {
       flags: [],
     });
 
-    axiosMock.onPost().reply(201, []);
+    apiMock.post("/api/deployments/").reply(201, []);
 
     await updateDeployments();
 
@@ -440,12 +440,12 @@ describe("updateDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(false);
 
-    axiosMock.onGet().reply(200, {
+    apiMock.get("/api/me/").reply(200, {
       flags: ["restricted-version"],
     });
 
     const deployment = deploymentFactory();
-    axiosMock.onPost().reply(201, [deployment]);
+    apiMock.post("/api/deployments/").reply(201, [deployment]);
 
     await updateDeployments();
 
@@ -458,11 +458,11 @@ describe("updateDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(true);
 
-    axiosMock.onGet().reply(200, {
+    apiMock.get("/api/me/").reply(200, {
       flags: ["restricted-version"],
     });
 
-    axiosMock.onPost().reply(201, []);
+    apiMock.post("/api/deployments/").reply(201, []);
 
     await updateDeployments();
 
@@ -480,12 +480,12 @@ describe("updateDeployments", () => {
       updatePromptTimestamp: null,
     } as any);
 
-    axiosMock.onGet().reply(200, {
+    apiMock.get("/api/me/").reply(200, {
       flags: [],
       enforce_update_millis: 5000,
     });
 
-    axiosMock.onPost().reply(201, []);
+    apiMock.post("/api/deployments/").reply(201, []);
 
     await updateDeployments();
 
@@ -503,12 +503,12 @@ describe("updateDeployments", () => {
       updatePromptTimestamp: null,
     } as any);
 
-    axiosMock.onGet().reply(200, {
+    apiMock.get("/api/me/").reply(200, {
       flags: [],
       enforce_update_millis: 5000,
     });
 
-    axiosMock.onPost().reply(201, []);
+    apiMock.post("/api/deployments/").reply(201, []);
 
     await updateDeployments();
 
@@ -524,12 +524,11 @@ describe("updateDeployments", () => {
       nextUpdate: Date.now() + 1_000_000,
     } as any);
 
-    axiosMock.onGet().reply(200, {
+    apiMock.get("/api/me/").reply(200, {
       flags: ["restricted-version"],
     });
 
-    axiosMock.onPost().reply(201, []);
-
+    apiMock.post("/api/deployments/").reply(201, []);
     await updateDeployments();
 
     // Unmatched deployments are always uninstalled if snoozed
