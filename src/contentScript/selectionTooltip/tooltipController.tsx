@@ -36,7 +36,7 @@ import { expectContext } from "@/utils/expectContext";
 import { onContextInvalidated } from "webext-events";
 import { MAX_Z_INDEX } from "@/domConstants";
 import { isNativeField } from "@/types/inputTypes";
-import { RepeatableAbortController } from "abort-utils";
+import { onAbort, RepeatableAbortController } from "abort-utils";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
@@ -59,10 +59,18 @@ async function showTooltip(): Promise<void> {
   selectionTooltip.setAttribute("aria-hidden", "false");
   selectionTooltip.style.setProperty("display", "block");
 
-  // For now just hide the tooltip on editor scroll to avoid gotchas with floating UI's `position: fixed` strategy.
-  // See updatePosition for more context. Without this, the tooltip moves with the scroll to keep its position
+  // For now just hide the tooltip on document/element scroll to avoid gotchas with floating UI's `position: fixed`
+  // strategy. See updatePosition for more context. Without this, the tooltip moves with the scroll to keep its position
   // in the viewport fixed.
   document.activeElement?.addEventListener(
+    "scroll",
+    () => {
+      hideTooltip();
+    },
+    { passive: true, once: true },
+  );
+
+  document.addEventListener(
     "scroll",
     () => {
       hideTooltip();
@@ -236,13 +244,9 @@ async function updatePosition(): Promise<void> {
     },
   );
 
-  hideController.signal.addEventListener(
-    "abort",
-    () => {
-      cleanupAutoPosition();
-    },
-    { once: true },
-  );
+  onAbort(hideController.signal, () => {
+    cleanupAutoPosition();
+  });
 }
 
 /**
@@ -286,17 +290,6 @@ export const initSelectionTooltip = once(() => {
       } else {
         hideTooltip();
       }
-    },
-    { passive: true },
-  );
-
-  // For now just hide the tooltip on document scroll to avoid gotchas with floating UI's `position: fixed` strategy.
-  // See updatePosition for more context. Without this, the tooltip moves with the scroll to keep its position
-  // in the viewport fixed.
-  document.addEventListener(
-    "scroll",
-    () => {
-      hideTooltip();
     },
     { passive: true },
   );
