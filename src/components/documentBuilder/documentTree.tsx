@@ -17,7 +17,6 @@
 
 import React, { type ElementType } from "react";
 import BlockElement from "@/components/documentBuilder/render/BlockElement";
-import { type UnknownObject } from "@/types/objectTypes";
 import { get } from "lodash";
 import { Col, Container, Row, Image } from "react-bootstrap";
 import {

@@ -25,17 +25,14 @@ export const objToYaml = (obj: object) =>
     quotingType: '"',
   });
 
-function orderKeys<T extends Record<string, unknown>>(
-  obj: T,
-  keys: Array<keyof T>,
-): T {
+function orderKeys<T extends UnknownObject>(obj: T, keys: Array<keyof T>): T {
   const lookup = new Map(keys.map((key, index) => [key, index]));
   return Object.fromEntries(
     sortBy(Object.entries(obj), ([key]) => lookup.get(key) ?? keys.length),
   ) as T;
 }
 
-export const brickToYaml = (brickConfig: Record<string, unknown>) =>
+export const brickToYaml = (brickConfig: UnknownObject) =>
   objToYaml(
     orderKeys(brickConfig, [
       "apiVersion",

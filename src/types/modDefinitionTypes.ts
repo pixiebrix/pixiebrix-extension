@@ -16,7 +16,6 @@
  */
 
 import { type UiSchema } from "@rjsf/utils";
-import { type UnknownObject } from "@/types/objectTypes";
 import {
   type Definition,
   type InnerDefinitionRef,

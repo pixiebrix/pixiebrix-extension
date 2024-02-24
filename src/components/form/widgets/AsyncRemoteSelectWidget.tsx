@@ -23,7 +23,6 @@ import {
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import AsyncSelect from "react-select/async";
 import { type CustomFieldWidgetProps } from "@/components/form/FieldTemplate";
-import { type UnknownObject } from "@/types/objectTypes";
 import { uniqBy } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { useDebouncedCallback } from "use-debounce";

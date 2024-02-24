@@ -21,7 +21,6 @@ import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
-import type { UnknownObject } from "@/types/objectTypes";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,

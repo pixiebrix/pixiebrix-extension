@@ -21,7 +21,6 @@ import { partial } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
 import AssignModVariable from "@/bricks/effects/assignModVariable";
-import { type UnknownObject } from "@/types/objectTypes";
 import { joinName } from "@/utils/formUtils";
 import { useSelector } from "react-redux";
 import { selectKnownVarsForActiveNode } from "@/components/fields/schemaFields/widgets/varPopup/varSelectors";

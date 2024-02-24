@@ -63,6 +63,11 @@ module.exports = {
     "no-restricted-syntax": [
       "error",
       {
+        selector:
+          "TSTypeReference[typeName.name='Record'][typeParameters.params.0.type=TSStringKeyword][typeParameters.params.1.type=TSUnknownKeyword]",
+        message: "Use `UnknownObject` instead of `Record<string, unknown>`",
+      },
+      {
         selector: "CallExpression[callee.property.name='allSettled']",
         message:
           'For safety and convenience, use this instead: import { allSettled } from "@/utils/promiseUtils";',

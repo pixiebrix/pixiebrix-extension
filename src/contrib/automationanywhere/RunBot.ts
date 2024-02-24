@@ -34,7 +34,6 @@ import { getUserData } from "@/background/messenger/api";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,

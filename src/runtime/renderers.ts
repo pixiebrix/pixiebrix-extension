@@ -20,7 +20,6 @@ import Mustache from "mustache";
 import { identity, mapKeys } from "lodash";
 import { getPropByPath } from "@/runtime/pathHelpers";
 import { type JsonObject } from "type-fest";
-import { type UnknownObject } from "@/types/objectTypes";
 import { containsTemplateExpression } from "@/utils/expressionUtils";
 // XXX: should this be using the platform from reducePipeline?
 import { getPlatform } from "@/platform/platformContext";

@@ -28,7 +28,6 @@ import oneMutation from "one-mutation";
 import { isContentScript } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 import { expectContext, forbidContext } from "@/utils/expectContext";
-import { type UnknownObject } from "@/types/objectTypes";
 import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/domConstants";
 
 // Context for this protocol:

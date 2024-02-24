@@ -4,7 +4,6 @@ import { expectContext } from "@/utils/expectContext";
 import { HeadlessModeError } from "@/bricks/errors";
 import { type Args, mapArgs, type MapOptions } from "@/runtime/mapArgs";
 import { type Except } from "type-fest";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type ApiVersionOptions } from "@/runtime/apiVersionOptions";
 import { BusinessError } from "@/errors/businessErrors";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";

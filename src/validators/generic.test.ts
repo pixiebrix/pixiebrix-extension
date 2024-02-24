@@ -17,7 +17,6 @@
 
 import { validateInput, validateKind } from "@/validators/generic";
 import { loadBrickYaml } from "@/runtime/brickYaml";
-import { type UnknownObject } from "@/types/objectTypes";
 import serviceText from "@contrib/raw/hunter.txt";
 import { type Schema } from "@/types/schemaTypes";
 import { uuidv4 } from "@/types/helpers";

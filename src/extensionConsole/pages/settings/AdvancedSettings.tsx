@@ -39,6 +39,7 @@ import AsyncButton from "@/components/AsyncButton";
 import { reloadIfNewVersionIsReady } from "@/utils/extensionUtils";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import { activateTheme } from "@/background/messenger/strict/api";
 
 const SAVING_URL_NOTIFICATION_ID = uuidv4();
 const SAVING_URL_TIMEOUT_MS = 4000;
@@ -203,6 +204,8 @@ const AdvancedSettings: React.FunctionComponent = () => {
                     partnerId: event.target.value,
                   }),
                 );
+                // `activateTheme` in background script triggers updating themeStorage
+                void activateTheme();
               }}
             />
             <Form.Text muted>The partner id of a PixieBrix partner</Form.Text>

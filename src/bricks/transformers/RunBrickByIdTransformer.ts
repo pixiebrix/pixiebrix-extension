@@ -27,7 +27,6 @@ import { validateRegistryId } from "@/types/helpers";
 import type { RegistryProtocol } from "@/registry/memoryRegistry";
 import type { RegistryId } from "@/types/registryTypes";
 import type { Brick } from "@/types/brickTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
 

@@ -18,7 +18,6 @@
 import { type Logger } from "@/types/loggerTypes";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import sanitize from "@/utils/sanitize";
-import { type UnknownObject } from "@/types/objectTypes";
 import { escape } from "lodash";
 import { type SafeHTML } from "@/types/stringTypes";
 import { type RendererOutput } from "@/types/runtimeTypes";
