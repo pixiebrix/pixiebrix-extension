@@ -35,6 +35,7 @@ import SelectionToolbar from "@/contentScript/selectionTooltip/SelectionToolbar"
 import { expectContext } from "@/utils/expectContext";
 import { onContextInvalidated } from "webext-events";
 import { MAX_Z_INDEX } from "@/domConstants";
+import { isNativeField } from "@/types/inputTypes";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
@@ -79,6 +80,8 @@ function createTooltip(): HTMLElement {
   popover.style.setProperty("z-index", (MAX_Z_INDEX - 1).toString());
 
   // Must be set before positioning: https://floating-ui.com/docs/computeposition#initial-layout
+  // We were getting placement glitches when using "absolute" positioning. The downside of "fixed" is that the
+  // positioning on scroll doesn't "just work". See comments in updatePosition
   popover.style.setProperty("position", "fixed");
   popover.style.setProperty("width", "max-content");
   popover.style.setProperty("top", "0");
@@ -105,13 +108,11 @@ function destroyTooltip(): void {
 }
 
 function getPositionReference(selection: Selection): VirtualElement | Element {
-  // Browsers don't report an accurate selection within inputs/textarea
-  const tagName = document.activeElement?.tagName;
-  if (tagName === "TEXTAREA" || tagName === "INPUT") {
-    const activeElement = document.activeElement as
-      | HTMLTextAreaElement
-      | HTMLInputElement;
+  // eslint-disable-next-line prefer-destructuring -- always reports "document" when using destructuring
+  const activeElement = document.activeElement;
 
+  // Browsers don't report an accurate selection within inputs/textarea
+  if (isNativeField(activeElement)) {
     const elementRect = activeElement.getBoundingClientRect();
 
     return {
@@ -188,10 +189,14 @@ async function updatePosition(): Promise<void> {
           placement: "top",
           strategy: "fixed",
           // `inline` prevents from appearing detached if multiple lines selected: https://floating-ui.com/docs/inline
-          // flip/shift are used to keep the tooltip on the screen: https://floating-ui.com/docs/middleware
+
           middleware: [
             ...(supportsInline ? [inline()] : []),
             offset(10),
+            // Using flip/shift to ensure the tooltip is visible in editors like TinyMCE where the editor is in an
+            // iframe. https://floating-ui.com/docs/middleware. We probably don't want the tooltip to shift/move
+            // on scroll, though. However, it's a bit tricky because we're using `position: fixed`. See createTooltip
+            // for more context.
             flip(),
             shift(),
           ],
