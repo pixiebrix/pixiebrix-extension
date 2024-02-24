@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import {
   AUTH_METHODS,
   type SettingsFlags,
@@ -87,8 +91,6 @@ const settingsSlice = createSlice({
       { payload: { partnerId } }: { payload: { partnerId: string } },
     ) {
       state.partnerId = partnerId;
-      // `activateTheme` in background script triggers updating themeStorage
-      void activateTheme();
     },
     setAuthIntegrationId(
       state,
@@ -126,6 +128,20 @@ const settingsSlice = createSlice({
   extraReducers(builder) {
     builder.addCase(revertAll, () => initialSettingsState);
   },
+});
+
+/**
+ * Updates the partnerId in settingsState and calls `activateTheme` which
+ * triggers updating themeStorage in the background script.
+ * @see activateTheme
+ */
+export const updateLocalPartnerTheme = createAsyncThunk<
+  void,
+  string,
+  { state: SettingsState }
+>("settings/updatePartnerTheme", async (partnerId, thunkAPI) => {
+  thunkAPI.dispatch(settingsSlice.actions.setPartnerId({ partnerId }));
+  await activateTheme();
 });
 
 export default settingsSlice;
