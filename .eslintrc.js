@@ -31,7 +31,7 @@ module.exports = {
     "local-rules/noCrossBoundaryImports": [
       "warn",
       {
-        // Not that the rule is overridden below for files in "src/platform"
+        // This rule is customized below for files in "src/platform"
         boundaries,
         allowedGlobs: ["**/messenger/**", "**/*.scss*"],
       },
