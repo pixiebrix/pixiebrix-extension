@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios from "axios";
+import ky from "ky";
 // Re-export utility methods directly, skip automatic __mocks__ resolution #6799
 export { absoluteApiUrl } from "../../../../data/service/apiClient";
 
@@ -23,17 +23,17 @@ export { absoluteApiUrl } from "../../../../data/service/apiClient";
 // See .storybook/preview.js for more information
 
 export async function getLinkedApiClient() {
-  return axios;
+  return ky;
 }
 
 export async function getApiClient() {
-  return axios;
+  return ky;
 }
 
 export async function maybeGetApiClient() {
-  return axios;
+  return ky;
 }
 
 export async function maybeGetLinkedApiClient() {
-  return axios;
+  return ky;
 }

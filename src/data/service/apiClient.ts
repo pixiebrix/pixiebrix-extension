@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios, { type AxiosInstance } from "axios";
 import { getBaseURL } from "@/data/service/baseService";
 import { getAuthHeaders } from "@/auth/token";
 import {
@@ -23,6 +22,7 @@ import {
   SuspiciousOperationError,
 } from "@/errors/genericErrors";
 import { isAbsoluteUrl } from "@/utils/urlUtils";
+import ky, { type KyInstance } from "ky";
 
 /**
  * Converts `relativeOrAbsoluteURL` to an absolute PixieBrix service URL
@@ -51,15 +51,15 @@ export async function absoluteApiUrl(
  * Returns an Axios client for making authenticated API requests to PixieBrix.
  * @throws ExtensionNotLinkedError if the extension has not been linked to the API yet
  */
-export async function getLinkedApiClient(): Promise<AxiosInstance> {
+export async function getLinkedApiClient(): Promise<KyInstance> {
   const authHeaders = await getAuthHeaders();
 
   if (!authHeaders) {
     throw new ExtensionNotLinkedError();
   }
 
-  return axios.create({
-    baseURL: await getBaseURL(),
+  return ky.create({
+    prefixUrl: await getBaseURL(),
     headers: {
       ...authHeaders,
       // Version 2.0 is paginated. Explicitly pass version so we can switch the default version on the server when
@@ -73,7 +73,7 @@ export async function getLinkedApiClient(): Promise<AxiosInstance> {
  * Return linked API client, or `null`.
  * @see getLinkedApiClient
  */
-export async function maybeGetLinkedApiClient(): Promise<AxiosInstance | null> {
+export async function maybeGetLinkedApiClient(): Promise<KyInstance | null> {
   try {
     return await getLinkedApiClient();
   } catch (error) {
@@ -88,11 +88,11 @@ export async function maybeGetLinkedApiClient(): Promise<AxiosInstance | null> {
 /**
  * Returns an Axios client for making (optionally) authenticated API requests to PixieBrix.
  */
-export async function getApiClient(): Promise<AxiosInstance> {
+export async function getApiClient(): Promise<KyInstance> {
   const authHeaders = await getAuthHeaders();
 
-  return axios.create({
-    baseURL: await getBaseURL(),
+  return ky.create({
+    prefixUrl: await getBaseURL(),
     headers: {
       ...authHeaders,
       // Version 2.0 is paginated. Explicitly pass version so we can switch the default version on the server when
