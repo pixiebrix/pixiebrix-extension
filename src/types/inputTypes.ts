@@ -48,7 +48,7 @@ export type TextInputElement = HTMLInputElement & {
   type: (typeof TEXT_INPUT_CONTENT_TYPES)[number];
 };
 
-type NativeField = HTMLInputElement | HTMLTextAreaElement;
+export type NativeField = HTMLInputElement | HTMLTextAreaElement;
 
 /**
  * A basic text entry element, e.g., an input or textarea element.
