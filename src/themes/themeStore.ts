@@ -33,14 +33,15 @@ async function getOrganizationTheme(
     const client = await getApiClient();
     if (organizationId) {
       const orgUUID = validateUUID(organizationId);
-      const { data } = await client.get<OrganizationTheme>(
-        // Is an unauthenticated endpoint
-        `/api/organizations/${orgUUID}/theme/`,
-      );
-      return data;
+      return await client
+        .get(
+          // Is an unauthenticated endpoint
+          `/api/organizations/${orgUUID}/theme/`,
+        )
+        .json<OrganizationTheme>();
     }
 
-    const { data } = await client.get<Me>("/api/me/");
+    const data = await client.get("/api/me/").json<Me>();
     return data.organization?.theme;
   } catch (error) {
     reportError(error);
