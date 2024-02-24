@@ -218,7 +218,6 @@ async function updatePosition(): Promise<void> {
           placement: "top",
           strategy: "fixed",
           // `inline` prevents from appearing detached if multiple lines selected: https://floating-ui.com/docs/inline
-
           middleware: [
             ...(supportsInline ? [inline()] : []),
             offset(10),
