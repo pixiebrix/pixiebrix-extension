@@ -140,7 +140,7 @@ function getPositionReference(selection: Selection): VirtualElement | Element {
           bottomCaret.top - topCaret.top + bottomCaret.height,
         );
 
-        const x = elementRect.x + topCaret.left;
+        const x = elementRect.x + topCaret.left - activeElement.scrollLeft;
         const y = elementRect.y + topCaret.top - activeElement.scrollTop;
 
         return {
@@ -150,7 +150,7 @@ function getPositionReference(selection: Selection): VirtualElement | Element {
           y,
           left: x,
           top: y,
-          right: elementRect.x + width,
+          right: elementRect.x + width - activeElement.scrollLeft,
           bottom: elementRect.y + height - activeElement.scrollTop,
         };
       },
