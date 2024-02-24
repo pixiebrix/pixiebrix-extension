@@ -18,15 +18,15 @@
 import { type UUID } from "@/types/stringTypes";
 import { getToken } from "@/background/auth/getToken";
 import { uuidv4 } from "@/types/helpers";
-import { mockKyResponse } from "@/testUtils/kyMock";
-
-jest.mock("ky");
+import nock from "nock";
 
 const getOneToken = async (id: UUID) =>
   getToken(
     {
       // @ts-expect-error The result isn't necessary at this time
-      getTokenContext: () => ({}),
+      getTokenContext: () => ({
+        url: "http://example.com/api",
+      }),
       isToken: true,
     },
     { id },
@@ -35,7 +35,10 @@ const getOneToken = async (id: UUID) =>
 describe("getToken", () => {
   test("multiple requests are temporarily memoized", async () => {
     let userId = 0;
-    mockKyResponse("post", () => userId++);
+    nock("http://example.com")
+      .post("/api")
+      .times(5)
+      .reply(200, () => userId++);
 
     const id1 = uuidv4();
     // Consecutive calls should make new requests
