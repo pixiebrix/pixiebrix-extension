@@ -18,10 +18,9 @@
 import { type UUID } from "@/types/stringTypes";
 import { getToken } from "@/background/auth/getToken";
 import { uuidv4 } from "@/types/helpers";
-import MockAdapter from "axios-mock-adapter";
-import axios from "axios";
+import { mockKyResponse } from "@/testUtils/kyMock";
 
-const axiosMock = new MockAdapter(axios);
+jest.mock("ky");
 
 const getOneToken = async (id: UUID) =>
   getToken(
@@ -36,7 +35,7 @@ const getOneToken = async (id: UUID) =>
 describe("getToken", () => {
   test("multiple requests are temporarily memoized", async () => {
     let userId = 0;
-    axiosMock.onPost().reply(() => [200, userId++]); // Increase ID at every request
+    mockKyResponse("post", () => userId++);
 
     const id1 = uuidv4();
     // Consecutive calls should make new requests
