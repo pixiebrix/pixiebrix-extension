@@ -1,6 +1,15 @@
 const { readFileSync } = require("fs");
 const { resolve } = require("path");
 
+const boundaries = [
+  "background",
+  "contentScript",
+  "pageEditor",
+  "extensionConsole",
+  "sidebar",
+  "pageScript",
+];
+
 module.exports = {
   root: true,
   extends: [
@@ -22,15 +31,8 @@ module.exports = {
     "local-rules/noCrossBoundaryImports": [
       "warn",
       {
-        boundaries: [
-          "background",
-          "contentScript",
-          "pageEditor",
-          "extensionConsole",
-          "sidebar",
-          "platform",
-          "pageScript",
-        ],
+        // Not that the rule is overridden below for files in "src/platform"
+        boundaries,
         allowedGlobs: ["**/messenger/**", "**/*.scss*"],
       },
     ],
@@ -132,6 +134,20 @@ module.exports = {
       rules: {
         "unicorn/prefer-spread": "off",
         "local-rules/noCrossBoundaryImports": "off",
+      },
+    },
+    {
+      files: ["./src/platform/**"],
+      rules: {
+        "local-rules/noCrossBoundaryImports": [
+          // Turn into error
+          "error",
+          {
+            boundaries,
+            // Do not allow Messenger imports either
+            allowedGlobs: ["**/*.scss*"],
+          },
+        ],
       },
     },
     {
