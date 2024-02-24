@@ -19,6 +19,8 @@
 // Note that some browsers, such as Firefox, do not concatenate properties
 // into their shorthand (e.g. padding-top, padding-bottom etc. -> padding),
 // so we have to list every single property explicitly.
+import type { NativeField } from "@/types/inputTypes";
+
 const properties = [
   "direction", // RTL support
   "boxSizing",
@@ -67,10 +69,7 @@ const properties = [
  * @param element
  * @param position
  */
-export function getCaretCoordinates(
-  element: HTMLTextAreaElement | HTMLInputElement,
-  position: number,
-) {
+export function getCaretCoordinates(element: NativeField, position: number) {
   // The mirror div will replicate the textarea's style
   const div = document.createElement("div");
   div.id = "input-textarea-caret-position-mirror-div";
