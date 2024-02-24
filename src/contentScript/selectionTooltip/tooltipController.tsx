@@ -36,6 +36,7 @@ import { expectContext } from "@/utils/expectContext";
 import { onContextInvalidated } from "webext-events";
 import { MAX_Z_INDEX } from "@/domConstants";
 import { isNativeField } from "@/types/inputTypes";
+import { RepeatableAbortController } from "abort-utils";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
@@ -43,9 +44,12 @@ export const tooltipActionRegistry = new ActionRegistry();
 
 let selectionTooltip: Nullishable<HTMLElement>;
 
-let cleanupAutoPosition: () => void;
+/**
+ * AbortController fired when the popover is hidden/destroyed.
+ */
+const cleanupController = new RepeatableAbortController();
 
-function showTooltip(): void {
+async function showTooltip(): Promise<void> {
   if (tooltipActionRegistry.actions.size === 0) {
     // No registered actions to show
     return;
@@ -55,13 +59,36 @@ function showTooltip(): void {
   selectionTooltip.setAttribute("aria-hidden", "false");
   selectionTooltip.style.setProperty("display", "block");
 
-  void updatePosition();
+  // For now just hide the tooltip on editor scroll to avoid gotchas with floating UI's `position: fixed` strategy.
+  // See updatePosition for more context. Without this, the tooltip moves with the scroll to keep its position
+  // in the viewport fixed.
+  document.activeElement?.addEventListener(
+    "scroll",
+    () => {
+      hideTooltip();
+    },
+    { passive: true, once: true },
+  );
+
+  return updatePosition();
 }
 
+/**
+ * Hide the tooltip.
+ */
 function hideTooltip(): void {
   selectionTooltip?.setAttribute("aria-hidden", "true");
   selectionTooltip?.style.setProperty("display", "none");
-  cleanupAutoPosition?.();
+  cleanupController.abortAndReset();
+}
+
+/**
+ * Completely remove the tooltip from the DOM.
+ */
+function destroyTooltip(): void {
+  selectionTooltip?.remove();
+  selectionTooltip = null;
+  cleanupController.abortAndReset();
 }
 
 function createTooltip(): HTMLElement {
@@ -105,11 +132,6 @@ function createTooltip(): HTMLElement {
   selectionTooltip = popover;
 
   return selectionTooltip;
-}
-
-function destroyTooltip(): void {
-  selectionTooltip?.remove();
-  selectionTooltip = null;
 }
 
 function getPositionReference(selection: Selection): VirtualElement | Element {
@@ -180,7 +202,7 @@ async function updatePosition(): Promise<void> {
   const supportsInline = "getClientRects" in referenceElement;
 
   // Keep anchored on scroll/resize: https://floating-ui.com/docs/computeposition#anchoring
-  cleanupAutoPosition = autoUpdate(
+  const cleanupAutoPosition = autoUpdate(
     referenceElement,
     selectionTooltip,
     async () => {
@@ -214,6 +236,14 @@ async function updatePosition(): Promise<void> {
         top: `${y}px`,
       });
     },
+  );
+
+  cleanupController.signal.addEventListener(
+    "abort",
+    () => {
+      cleanupAutoPosition();
+    },
+    { once: true },
   );
 }
 
@@ -251,10 +281,10 @@ export const initSelectionTooltip = once(() => {
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
   document.addEventListener(
     "selectionchange",
-    () => {
+    async () => {
       const selection = window.getSelection();
       if (isSelectionValid(selection)) {
-        showTooltip();
+        await showTooltip();
       } else {
         hideTooltip();
       }
@@ -263,7 +293,7 @@ export const initSelectionTooltip = once(() => {
   );
 
   // For now just hide the tooltip on document scroll to avoid gotchas with floating UI's `position: fixed` strategy.
-  // See updatePosition for more context. Without this, the tooltip moves with the scroll to keep it's position
+  // See updatePosition for more context. Without this, the tooltip moves with the scroll to keep its position
   // in the viewport fixed.
   document.addEventListener(
     "scroll",
@@ -282,13 +312,13 @@ export const initSelectionTooltip = once(() => {
     { passive: true },
   );
 
-  tooltipActionRegistry.onChange.add(() => {
+  tooltipActionRegistry.onChange.add(async () => {
     const isShowing = selectionTooltip?.checkVisibility();
     destroyTooltip();
 
     // Allow live updates from the Page Editor
     if (isShowing) {
-      showTooltip();
+      await showTooltip();
     }
   });
 
