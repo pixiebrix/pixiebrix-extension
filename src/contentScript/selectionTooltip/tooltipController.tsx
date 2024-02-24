@@ -103,7 +103,6 @@ function createTooltip(): HTMLElement {
   // https://developer.mozilla.org/en-US/docs/Web/API/Popover_API
   popover.setAttribute("popover", "manual");
   popover.dataset.testid = "pixiebrix-selection-tooltip";
-  // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/showPopover -- required to add it to the top layer
   popover.style.setProperty("z-index", (MAX_Z_INDEX - 1).toString());
 
   // Must be set before positioning: https://floating-ui.com/docs/computeposition#initial-layout
