@@ -24,14 +24,17 @@ import { ensureTooltipsContainer } from "@/contentScript/tooltipDom";
 import {
   autoUpdate,
   computePosition,
+  flip,
   inline,
   offset,
+  shift,
   type VirtualElement,
 } from "@floating-ui/dom";
 import { getCaretCoordinates } from "@/utils/textAreaUtils";
 import SelectionToolbar from "@/contentScript/selectionTooltip/SelectionToolbar";
 import { expectContext } from "@/utils/expectContext";
 import { onContextInvalidated } from "webext-events";
+import { MAX_Z_INDEX } from "@/domConstants";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
@@ -64,11 +67,16 @@ function createTooltip(): HTMLElement {
   const container = ensureTooltipsContainer();
 
   const popover = document.createElement("div");
+  // TODO: figure out how to use with the popover API. Just setting "popover" attribute doesn't promote the element to
+  //  the top layer. I believe we need to call showPopover() on it. We also need it to work with floating UI so we
+  //  can target a virtual element with offset. See https://github.com/floating-ui/floating-ui/issues/1842
   // Using popover attribute should keep it on top of the page
   // https://developer.chrome.com/blog/introducing-popover-api
   // https://developer.mozilla.org/en-US/docs/Web/API/Popover_API
-  popover.setAttribute("popover", "");
+  popover.setAttribute("popover", "manual");
   popover.dataset.testid = "pixiebrix-selection-tooltip";
+  // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/showPopover -- required to add it to the top layer
+  popover.style.setProperty("z-index", (MAX_Z_INDEX - 1).toString());
 
   // Must be set before positioning: https://floating-ui.com/docs/computeposition#initial-layout
   popover.style.setProperty("position", "fixed");
@@ -87,6 +95,7 @@ function createTooltip(): HTMLElement {
   container.append(popover);
 
   selectionTooltip = popover;
+
   return selectionTooltip;
 }
 
@@ -178,8 +187,14 @@ async function updatePosition(): Promise<void> {
         {
           placement: "top",
           strategy: "fixed",
-          // Prevent from appearing detached if multiple lines selected: https://floating-ui.com/docs/inline
-          middleware: [...(supportsInline ? [inline()] : []), offset(10)],
+          // `inline` prevents from appearing detached if multiple lines selected: https://floating-ui.com/docs/inline
+          // flip/shift are used to keep the tooltip on the screen: https://floating-ui.com/docs/middleware
+          middleware: [
+            ...(supportsInline ? [inline()] : []),
+            offset(10),
+            flip(),
+            shift(),
+          ],
         },
       );
       Object.assign(selectionTooltip.style, {
@@ -192,7 +207,7 @@ async function updatePosition(): Promise<void> {
 
 /**
  * Return true if selection is valid for showing a tooltip.
- * @param selection
+ * @param selection current selection from the Selection API
  */
 function isSelectionValid(selection: Nullishable<Selection>): boolean {
   if (!selection) {
