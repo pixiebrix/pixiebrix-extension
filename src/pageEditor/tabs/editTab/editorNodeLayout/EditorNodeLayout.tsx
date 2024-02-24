@@ -60,8 +60,8 @@ const EditorNodeLayout: React.FC = () => {
 
           default: {
             // Impossible code branch
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-            throw new Error(`Unexpected type: ${type}`);
+            const exhaustiveCheck: never = type;
+            throw new Error(`Unexpected type: ${exhaustiveCheck}`);
           }
         }
       })}

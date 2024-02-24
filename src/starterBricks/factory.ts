@@ -40,8 +40,8 @@ const TYPE_MAP = {
 export function fromJS(config: StarterBrickConfig): StarterBrick {
   if (config.kind !== "extensionPoint") {
     // Is `never` due to check, but needed because this method is called dynamically
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    throw new Error(`Expected kind extensionPoint, got ${config.kind}`);
+    const exhaustiveCheck: never = config.kind;
+    throw new Error(`Expected kind extensionPoint, got ${exhaustiveCheck}`);
   }
 
   if (!Object.hasOwn(TYPE_MAP, config.definition.type)) {

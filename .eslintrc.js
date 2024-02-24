@@ -105,7 +105,10 @@ module.exports = {
     ],
 
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
-    "@typescript-eslint/restrict-template-expressions": "warn",
+    "@typescript-eslint/restrict-template-expressions": [
+      "error",
+      { allowNever: true },
+    ],
   },
   overrides: [
     {

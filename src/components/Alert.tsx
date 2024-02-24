@@ -53,8 +53,8 @@ const Alert: React.FunctionComponent<AlertProps> = ({
     }
 
     default: {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamically inferring never
-      throw new Error(`Unknown variant: ${variant}`);
+      const exhaustiveCheck: never = variant;
+      throw new Error(`Unknown variant: ${exhaustiveCheck}`);
     }
   }
 

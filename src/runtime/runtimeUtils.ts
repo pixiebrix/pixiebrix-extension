@@ -213,8 +213,8 @@ export async function selectBlockRootElement(
     }
 
     default: {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check
-      throw new BusinessError(`Invalid rootMode: ${rootMode}`);
+      const exhaustiveCheck: never = rootMode;
+      throw new BusinessError(`Invalid rootMode: ${exhaustiveCheck}`);
     }
   }
 
