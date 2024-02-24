@@ -24,7 +24,9 @@ import React, { useCallback } from "react";
 import { clearCachedAuthSecrets, clearPartnerAuth } from "@/auth/token";
 import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
-import settingsSlice from "@/store/settings/settingsSlice";
+import settingsSlice, {
+  updateLocalPartnerTheme,
+} from "@/store/settings/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { assertProtocolUrl } from "@/errors/assertProtocolUrl";
 import { selectSettings } from "@/store/settings/settingsSelectors";
@@ -39,7 +41,6 @@ import AsyncButton from "@/components/AsyncButton";
 import { reloadIfNewVersionIsReady } from "@/utils/extensionUtils";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
-import { activateTheme } from "@/background/messenger/strict/api";
 
 const SAVING_URL_NOTIFICATION_ID = uuidv4();
 const SAVING_URL_TIMEOUT_MS = 4000;
@@ -199,13 +200,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
               placeholder="my-company"
               defaultValue={partnerId ?? ""}
               onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
-                dispatch(
-                  settingsSlice.actions.setPartnerId({
-                    partnerId: event.target.value,
-                  }),
-                );
-                // `activateTheme` in background script triggers updating themeStorage
-                void activateTheme();
+                dispatch(updateLocalPartnerTheme(event.target.value));
               }}
             />
             <Form.Text muted>The partner id of a PixieBrix partner</Form.Text>

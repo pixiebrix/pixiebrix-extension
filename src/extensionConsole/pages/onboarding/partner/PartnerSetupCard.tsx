@@ -29,7 +29,7 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { getBaseURL } from "@/data/service/baseService";
-import settingsSlice from "@/store/settings/settingsSlice";
+import { updateLocalPartnerTheme } from "@/store/settings/settingsSlice";
 import { useLocation } from "react-router";
 import {
   hostnameToUrl,
@@ -143,11 +143,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
 
   useEffect(() => {
     // Ensure the partner branding is applied
-    dispatch(
-      settingsSlice.actions.setPartnerId({
-        partnerId: "automation-anywhere",
-      }),
-    );
+    dispatch(updateLocalPartnerTheme("automation-anywhere"));
   }, [dispatch]);
 
   if (mode === "oauth2") {
