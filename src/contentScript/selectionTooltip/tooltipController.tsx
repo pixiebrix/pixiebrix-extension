@@ -47,7 +47,7 @@ let selectionTooltip: Nullishable<HTMLElement>;
 /**
  * AbortController fired when the popover is hidden/destroyed.
  */
-const cleanupController = new RepeatableAbortController();
+const hideController = new RepeatableAbortController();
 
 async function showTooltip(): Promise<void> {
   if (tooltipActionRegistry.actions.size === 0) {
@@ -79,7 +79,7 @@ async function showTooltip(): Promise<void> {
 function hideTooltip(): void {
   selectionTooltip?.setAttribute("aria-hidden", "true");
   selectionTooltip?.style.setProperty("display", "none");
-  cleanupController.abortAndReset();
+  hideController.abortAndReset();
 }
 
 /**
@@ -88,7 +88,7 @@ function hideTooltip(): void {
 function destroyTooltip(): void {
   selectionTooltip?.remove();
   selectionTooltip = null;
-  cleanupController.abortAndReset();
+  hideController.abortAndReset();
 }
 
 function createTooltip(): HTMLElement {
@@ -238,7 +238,7 @@ async function updatePosition(): Promise<void> {
     },
   );
 
-  cleanupController.signal.addEventListener(
+  hideController.signal.addEventListener(
     "abort",
     () => {
       cleanupAutoPosition();
