@@ -86,9 +86,14 @@ function createTooltip(): HTMLElement {
   popover.style.setProperty("width", "max-content");
   popover.style.setProperty("top", "0");
   popover.style.setProperty("left", "0");
-  // Override Chrome's based styles for [popover] attribute
+  // Override Chrome's base styles for [popover] attribute and provide a consistent look across applications that
+  // override the browser defaults (e.g., Zendesk)
   popover.style.setProperty("margin", "0");
   popover.style.setProperty("padding", "0");
+  popover.style.setProperty("border-radius", "5px");
+  // Can't use colors file because the element is being rendered directly on the host
+  popover.style.setProperty("background-color", "#ffffff"); // $S0 color
+  popover.style.setProperty("border", "2px solid #a8a1b4"); // $N200 color
 
   render(
     <SelectionToolbar registry={tooltipActionRegistry} onHide={hideTooltip} />,

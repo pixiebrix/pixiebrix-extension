@@ -15,14 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Browsers also add base styling for [popover] attribute. E.g., Chrome adds a system border.
+
 @import "@/themes/colors.scss";
 
 .toolbar {
+  background-color: $S0;
   display: flex;
 
   height: 30px;
   font-size: 16px;
-  //line-height: 20px;
 
   padding-left: 3px;
   padding-right: 3px;
