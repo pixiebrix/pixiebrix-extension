@@ -113,8 +113,7 @@ function destroyTooltip(): void {
 }
 
 function getPositionReference(selection: Selection): VirtualElement | Element {
-  // eslint-disable-next-line prefer-destructuring -- always reports "document" when using destructuring
-  const activeElement = document.activeElement;
+  const { activeElement } = document;
 
   // Browsers don't report an accurate selection within inputs/textarea
   if (isNativeField(activeElement)) {
@@ -256,6 +255,17 @@ export const initSelectionTooltip = once(() => {
       } else {
         hideTooltip();
       }
+    },
+    { passive: true },
+  );
+
+  // For now just hide the tooltip on document scroll to avoid gotchas with floating UI's `position: fixed` strategy.
+  // See updatePosition for more context. Without this, the tooltip moves with the scroll to keep it's position
+  // in the viewport fixed.
+  document.addEventListener(
+    "scroll",
+    () => {
+      hideTooltip();
     },
     { passive: true },
   );
