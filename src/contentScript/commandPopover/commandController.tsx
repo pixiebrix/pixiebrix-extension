@@ -252,9 +252,8 @@ async function updatePosition(): Promise<void> {
         middleware: [
           ...(supportsInline ? [inline()] : []),
           offset({
-            // Offset on the horizontal axis to the popover appears "after" COMMAND_KEY
+            // Give a little space between top of the text and the popover
             mainAxis: 5,
-            crossAxis: 0,
           }),
           // Using flip/shift to ensure the tooltip is visible in editors like TinyMCE where the editor is in an
           // iframe. See tooltipController.ts for more details.

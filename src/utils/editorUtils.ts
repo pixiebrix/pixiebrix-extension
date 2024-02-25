@@ -22,6 +22,7 @@ import {
   type SelectableTextEditorElement,
 } from "@/types/inputTypes";
 import { waitAnimationFrame } from "@/utils/domUtils";
+import textFieldEdit from "text-field-edit";
 
 /**
  * Returns the current text content of the element, e.g., to pass to the text command popover handler
@@ -71,10 +72,10 @@ export async function replaceAtCommand({
 
     element.setSelectionRange(commandStart, commandStart + query.length + 1);
 
-    // TODO: switch to https://www.npmjs.com/package/text-field-edit
-
+    // Ensure the selection update has propagated
     await waitAnimationFrame();
-    document.execCommand("insertText", false, text);
+
+    textFieldEdit.insert(element, text);
 
     return;
   }
@@ -100,14 +101,15 @@ export async function replaceAtCommand({
     range.setStart(range.startContainer, commandStart);
     range.setEnd(range.startContainer, commandStart + query.length + 1);
 
-    // TODO: switch to https://www.npmjs.com/package/text-field-edit
-
-    // Wait for range update to propagate
+    // Ensure the selection update has propagated
     await waitAnimationFrame();
-    document.execCommand("delete", false);
 
-    // Wait for deletion to propagate
-    await waitAnimationFrame();
-    document.execCommand("insertText", false, text);
+    const parentElement = range?.startContainer.parentElement;
+
+    if (parentElement == null) {
+      throw new Error("Selection has no parent element");
+    }
+
+    textFieldEdit.insert(parentElement, text);
   }
 }
