@@ -24,6 +24,7 @@ import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import type { ModActivationConfig } from "@/types/modTypes";
 import { isEmpty, uniq } from "lodash";
 import deepEquals from "fast-deep-equal";
+import { base64ToString, stringToBase64 } from "uint8array-extras";
 
 const ACTIVATE_PATH = "/activate";
 
@@ -83,7 +84,10 @@ export function createActivationRelativeUrl(
 
   // Only add options if they are present
   if (mods.some((x) => !isEmpty(x.initialOptions))) {
-    searchParams.set("activateOptions", btoa(JSON.stringify(initialOptions)));
+    searchParams.set(
+      "activateOptions",
+      stringToBase64(JSON.stringify(initialOptions)),
+    );
   }
 
   if (nextUrl) {
@@ -137,7 +141,7 @@ function parseEncodedOptions(
     return {};
   }
 
-  const json = JSON.parse(atob(encodedOptions));
+  const json = JSON.parse(base64ToString(encodedOptions));
 
   if (typeof json !== "object") {
     throw new TypeError(`Invalid options: ${typeof json}`);
