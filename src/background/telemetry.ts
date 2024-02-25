@@ -30,7 +30,7 @@ import { detectBrowser } from "@/vendors/mixpanel";
 import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
 import { count as traceSize } from "@/telemetry/trace";
-import { getUID } from "@/telemetry/telemetryHelpers";
+import { getUUID } from "@/telemetry/telemetryHelpers";
 import { getTabsWithAccess } from "@/utils/extensionUtils";
 import { type Event } from "@/telemetry/events";
 
@@ -308,7 +308,7 @@ async function init(): Promise<void> {
   if ((await isLinked()) && (await allowsTrack())) {
     const client = await getLinkedApiClient();
     await client.post("/api/identify/", {
-      uid: await getUID(),
+      uid: await getUUID(),
       data: await collectUserSummary(),
     });
   }
@@ -320,7 +320,9 @@ export const initTelemetry = throttle(init, 30 * 60 * 1000, {
   trailing: true,
 });
 
-/** @deprecated Use instead: `import reportEvent from "@/telemetry/reportEvent"` */
+/**
+ * @deprecate Only allowed in @/background files. Otherwise use: `import reportEvent from "@/telemetry/reportEvent"`
+ */
 export async function recordEvent({
   event,
   data = {},
@@ -332,7 +334,7 @@ export async function recordEvent({
     const { version, version_name: versionName } =
       browser.runtime.getManifest();
     const telemetryEvent = {
-      uid: await getUID(),
+      uid: await getUUID(),
       event,
       timestamp: Date.now(),
       data: {

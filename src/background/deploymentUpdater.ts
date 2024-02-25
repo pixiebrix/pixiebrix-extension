@@ -18,7 +18,7 @@
 import { type Deployment, type Me } from "@/types/contract";
 import { isEmpty, partition } from "lodash";
 import reportError from "@/telemetry/reportError";
-import { getUID } from "@/telemetry/telemetryHelpers";
+import { getUUID } from "@/telemetry/telemetryHelpers";
 import { isLinked, readAuthData, updateUserData } from "@/auth/token";
 import reportEvent from "@/telemetry/reportEvent";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
@@ -482,7 +482,7 @@ export async function updateDeployments(): Promise<void> {
 
   const { data: deployments, status: deploymentResponseStatus } =
     await client.post<Deployment[]>("/api/deployments/", {
-      uid: await getUID(),
+      uid: await getUUID(),
       version: getExtensionVersion(),
       active: selectInstalledDeployments(extensions),
       campaignIds,

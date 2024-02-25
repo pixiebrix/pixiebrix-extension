@@ -33,21 +33,21 @@ type TelemetryUser = {
   organizationId?: UUID | null;
 };
 
-const uidStorage = new StorageItem<UUID>("USER_UUID");
+const uuidStorage = new StorageItem<UUID>("USER_UUID");
 
 /**
  * Return a random ID for this browser profile.
  * It's persisted in storage via `chrome.storage.local` and in-memory via `once`
  */
-export const getUID = once(async (): Promise<UUID> => {
-  const uid = await uidStorage.get();
+export const getUUID = once(async (): Promise<UUID> => {
+  const uid = await uuidStorage.get();
   if (uid) {
     return uid;
   }
 
   const uuid = uuidv4();
   console.debug("Generating UID for browser", { uuid });
-  await uidStorage.set(uuid);
+  await uuidStorage.set(uuid);
   return uuid;
 });
 
@@ -84,7 +84,7 @@ export function cleanDatadogVersionName(versionName: string): string {
 export async function mapAppUserToTelemetryUser(
   data: UserData,
 ): Promise<TelemetryUser> {
-  const browserId = await getUID();
+  const browserId = await getUUID();
   const { user, email, telemetryOrganizationId, organizationId } = data;
 
   return {

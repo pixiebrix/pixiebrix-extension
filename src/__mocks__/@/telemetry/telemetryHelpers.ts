@@ -17,4 +17,4 @@
 
 import { uuidv4 } from "@/types/helpers";
 
-export const getUID = jest.fn().mockResolvedValue(uuidv4());
+export const getUUID = jest.fn().mockResolvedValue(uuidv4());

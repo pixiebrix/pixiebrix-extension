@@ -26,7 +26,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
-import { getUID } from "@/telemetry/telemetryHelpers";
+import { getUUID } from "@/telemetry/telemetryHelpers";
 import { services } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { type Dispatch } from "@reduxjs/toolkit";
@@ -67,7 +67,7 @@ async function fetchDeployments(
   const { data: deployments } = await client.post<Deployment[]>(
     "/api/deployments/",
     {
-      uid: await getUID(),
+      uid: await getUUID(),
       version: getExtensionVersion(),
       active: selectInstalledDeployments(installedExtensions),
     },

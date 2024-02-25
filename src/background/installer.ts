@@ -18,7 +18,7 @@
 import { locator as serviceLocator } from "@/background/locator";
 import { type Runtime } from "webextension-polyfill";
 import { initTelemetry, recordEvent } from "@/background/telemetry";
-import { getUID } from "@/telemetry/telemetryHelpers";
+import { getUUID } from "@/telemetry/telemetryHelpers";
 import { allowsTrack, dntConfig } from "@/telemetry/dnt";
 import { gt } from "semver";
 import { getBaseURL } from "@/data/service/baseService";
@@ -313,7 +313,7 @@ export function isUpdateAvailable(): boolean {
 async function setUninstallURL(): Promise<void> {
   const url = new URL(UNINSTALL_URL);
   if (await allowsTrack()) {
-    url.searchParams.set("uid", await getUID());
+    url.searchParams.set("uid", await getUUID());
   }
 
   // We always want to show the uninstallation page so the user can optionally fill out the uninstallation survey
