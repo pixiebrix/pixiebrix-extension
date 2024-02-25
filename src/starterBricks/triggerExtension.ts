@@ -37,14 +37,12 @@ import {
   awaitElementOnce,
   selectExtensionContext,
 } from "@/starterBricks/helpers";
-import notify from "@/utils/notify";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import initialize from "@/vendors/initialize";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import pluralize from "@/utils/pluralize";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { BusinessError } from "@/errors/businessErrors";
@@ -86,6 +84,7 @@ import {
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import { allSettled } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
 
 type TriggerTarget = Document | HTMLElement;
 
@@ -574,7 +573,9 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     const subject = pluralize(errors.length, "a trigger", "$$ triggers");
     const message = `An error occurred running ${subject}`;
     console.debug(message, { errors });
-    notify.error({
+
+    this.platform.toast.showNotification({
+      type: "error",
       message,
       // Show any information to the user about the error, so they can report/correct it.
       error: errors[0],
@@ -958,10 +959,13 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
     return this._definition.defaultOptions ?? {};
   }
 
-  constructor(config: StarterBrickConfig<TriggerDefinition>) {
+  constructor(
+    platform: PlatformProtocol,
+    config: StarterBrickConfig<TriggerDefinition>,
+  ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    super(cloned.metadata, new BackgroundLogger());
+    super(cloned.metadata, platform);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable } = cloned.definition;
@@ -1031,6 +1035,7 @@ class RemoteTriggerExtensionPoint extends TriggerStarterBrickABC {
 }
 
 export function fromJS(
+  platform: PlatformProtocol,
   config: StarterBrickConfig<TriggerDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
@@ -1038,5 +1043,5 @@ export function fromJS(
     throw new Error(`Expected type=trigger, got ${type}`);
   }
 
-  return new RemoteTriggerExtensionPoint(config);
+  return new RemoteTriggerExtensionPoint(platform, config);
 }

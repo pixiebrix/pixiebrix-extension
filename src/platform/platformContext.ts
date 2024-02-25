@@ -27,7 +27,7 @@ import {
 let platform: PlatformProtocol = uninitializedPlatform;
 
 /**
- * Get the current platform.
+ * Get the current global platform. Prefer injecting via constructor/options vs. using the global platform.
  */
 export function getPlatform(): PlatformProtocol {
   return platform;

@@ -18,7 +18,6 @@
 import { type JsonObject } from "type-fest";
 import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { dataStore } from "@/background/messenger/strict/api";
-import notify from "@/utils/notify";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
@@ -253,7 +252,7 @@ export class CustomFormRenderer extends RendererABC {
       disableParentStyles?: boolean;
       onSubmit?: PipelineExpression;
     }>,
-    { logger, runPipeline }: BrickOptions,
+    { logger, runPipeline, platform }: BrickOptions,
   ): Promise<ComponentRef> {
     if (logger.context.extensionId == null) {
       throw new Error("extensionId is required");
@@ -335,12 +334,16 @@ export class CustomFormRenderer extends RendererABC {
             });
 
             if (!isEmpty(successMessage)) {
-              notify.success(successMessage);
+              platform.toast.showNotification({
+                type: "success",
+                message: successMessage,
+              });
             }
           } catch (error) {
-            notify.error({
-              error,
+            platform.toast.showNotification({
+              type: "error",
               message: "Error submitting form",
+              error,
               reportError: false,
             });
           }

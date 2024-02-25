@@ -19,7 +19,7 @@ import {
   PlatformBase,
   type PlatformProtocol,
 } from "@/platform/platformProtocol";
-import { showNotification } from "@/utils/notify";
+import { hideNotification, showNotification } from "@/utils/notify";
 import { setToolbarBadge } from "@/background/messenger/strict/api";
 import { getState, setState } from "@/platform/state/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
@@ -47,6 +47,7 @@ import { registerHandler } from "@/contentScript/contextMenus";
 import { writeToClipboard } from "@/utils/clipboardUtils";
 import { tooltipActionRegistry } from "@/contentScript/selectionTooltip/tooltipController";
 import { commandRegistry } from "@/contentScript/commandPopover/commandController";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -72,6 +73,10 @@ async function userSelectElementRefs(): Promise<ElementReference[]> {
 }
 
 class ContentScriptPlatform extends PlatformBase {
+  private readonly _logger = new BackgroundLogger({
+    platformName: "contentScript",
+  });
+
   constructor() {
     super("contentScript");
   }
@@ -80,6 +85,7 @@ class ContentScriptPlatform extends PlatformBase {
     "dom",
     "pageScript",
     "contentScript",
+    "logs",
     "alert",
     "form",
     "panel",
@@ -107,8 +113,6 @@ class ContentScriptPlatform extends PlatformBase {
   // Running unbound window methods throws Invocation Error
   override alert = window.alert.bind(window);
   override prompt = window.prompt.bind(window);
-
-  override notify = showNotification;
 
   override userSelectElementRefs = userSelectElementRefs;
 
@@ -198,8 +202,19 @@ class ContentScriptPlatform extends PlatformBase {
     };
   }
 
+  override get logger(): PlatformProtocol["logger"] {
+    return this._logger;
+  }
+
   override get quickBar(): PlatformProtocol["quickBar"] {
     return quickBarRegistry;
+  }
+
+  override get toast(): PlatformProtocol["toast"] {
+    return {
+      showNotification,
+      hideNotification,
+    };
   }
 
   override get selectionTooltip(): PlatformProtocol["selectionTooltip"] {

@@ -15,23 +15,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PlatformBase } from "@/platform/platformProtocol";
-import { showNotification } from "@/utils/notify";
+import {
+  PlatformBase,
+  type PlatformProtocol,
+} from "@/platform/platformProtocol";
+import { hideNotification, showNotification } from "@/utils/notify";
 import type { PlatformCapability } from "@/platform/capabilities";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
 
 /**
  * Sidebar platform capabilities. In general, brick execution occurs in the context of the host page.
  */
 class SidebarPlatform extends PlatformBase {
-  override capabilities: PlatformCapability[] = ["dom", "alert", "toast"];
+  override capabilities: PlatformCapability[] = [
+    "dom",
+    "alert",
+    "toast",
+    "logs",
+  ];
+
+  private readonly _logger = new BackgroundLogger({
+    // Match the Chromium extension API name: https://developer.chrome.com/docs/extensions/reference/api/sidePanel
+    platformName: "sidePanel",
+  });
 
   constructor() {
-    super("sidebar");
+    super("sidePanel");
   }
 
   override alert = window.alert;
   override prompt = window.prompt;
-  override notify = showNotification;
+
+  override get logger() {
+    return this._logger;
+  }
+
+  override get toast(): PlatformProtocol["toast"] {
+    return {
+      showNotification,
+      hideNotification,
+    };
+  }
 }
 
 const sidebarPlatform = new SidebarPlatform();

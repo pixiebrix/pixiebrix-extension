@@ -50,7 +50,6 @@ import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { NoRendererError } from "@/errors/businessErrors";
 import { serializeError } from "serialize-error";
 import { type Schema } from "@/types/schemaTypes";
@@ -64,7 +63,8 @@ import { type StarterBrick } from "@/types/starterBrickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import { RepeatableAbortController } from "abort-utils";
-import { type PlatformCapability } from "@/platform/capabilities";
+import type { PlatformCapability } from "@/platform/capabilities";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
 
 export type SidebarConfig = {
   heading: string;
@@ -485,10 +485,10 @@ class RemotePanelExtensionPoint extends SidebarStarterBrickABC {
 
   public readonly rawConfig: StarterBrickConfig;
 
-  constructor(config: StarterBrickConfig) {
+  constructor(platform: PlatformProtocol, config: StarterBrickConfig) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    super(cloned.metadata, new BackgroundLogger());
+    super(cloned.metadata, platform);
     this.rawConfig = cloned;
     this.definition = cloned.definition;
   }
@@ -522,11 +522,14 @@ class RemotePanelExtensionPoint extends SidebarStarterBrickABC {
   }
 }
 
-export function fromJS(config: StarterBrickConfig): StarterBrick {
+export function fromJS(
+  platform: PlatformProtocol,
+  config: StarterBrickConfig,
+): StarterBrick {
   const { type } = config.definition;
   if (type !== "actionPanel") {
     throw new Error(`Expected type=actionPanel, got ${type}`);
   }
 
-  return new RemotePanelExtensionPoint(config);
+  return new RemotePanelExtensionPoint(platform, config);
 }

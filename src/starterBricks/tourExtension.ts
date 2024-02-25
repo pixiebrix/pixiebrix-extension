@@ -35,7 +35,6 @@ import { checkAvailable } from "@/bricks/available";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import "@/vendors/hoverintent";
 import { selectExtensionContext } from "@/starterBricks/helpers";
 import {
@@ -62,6 +61,7 @@ import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
 } from "@/platform/capabilities";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
 
 export type TourConfig = {
   /**
@@ -304,10 +304,13 @@ class RemoteTourExtensionPoint extends TourStarterBrickABC {
     return this._definition.defaultOptions ?? { allowUserRun: true };
   }
 
-  constructor(config: StarterBrickConfig<TourDefinition>) {
+  constructor(
+    platform: PlatformProtocol,
+    config: StarterBrickConfig<TourDefinition>,
+  ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    super(cloned.metadata, new BackgroundLogger());
+    super(cloned.metadata, platform);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable } = cloned.definition;
@@ -335,6 +338,7 @@ class RemoteTourExtensionPoint extends TourStarterBrickABC {
 }
 
 export function fromJS(
+  platform: PlatformProtocol,
   config: StarterBrickConfig<TourDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
@@ -342,5 +346,5 @@ export function fromJS(
     throw new Error(`Expected type=tour, got ${type}`);
   }
 
-  return new RemoteTourExtensionPoint(config);
+  return new RemoteTourExtensionPoint(platform, config);
 }

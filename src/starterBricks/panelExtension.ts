@@ -31,7 +31,6 @@ import {
   selectExtensionContext,
 } from "@/starterBricks/helpers";
 import { type Metadata } from "@/types/registryTypes";
-import { type Logger } from "@/types/loggerTypes";
 import {
   StarterBrickABC,
   type StarterBrickConfig,
@@ -42,7 +41,6 @@ import { render } from "@/starterBricks/dom";
 import { type Permissions } from "webextension-polyfill";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import notify from "@/utils/notify";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { selectEventData } from "@/telemetry/deployments";
@@ -50,7 +48,6 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { PIXIEBRIX_DATA_ATTR } from "@/domConstants";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { type IconConfig } from "@/types/iconTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -68,6 +65,7 @@ import {
   type PlatformCapability,
 } from "@/platform/capabilities";
 import { RepeatableAbortController } from "abort-utils";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
 
 export type PanelConfig = {
   heading?: string;
@@ -124,8 +122,8 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     return { heading: "Custom Panel" };
   }
 
-  protected constructor(metadata: Metadata, logger: Logger) {
-    super(metadata, logger);
+  protected constructor(metadata: Metadata, platform: PlatformProtocol) {
+    super(metadata, platform);
     this.$container = null;
     this.collapsedExtensions = new Map();
     this.cancelRemovalMonitor = new Map();
@@ -477,9 +475,13 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     }
 
     if (errors.length > 0) {
-      notify.error(
-        `An error occurred adding ${pluralize(errors.length, "$$ panel")}`,
-      );
+      this.platform.toast.showNotification({
+        type: "error",
+        message: `An error occurred adding ${pluralize(
+          errors.length,
+          "$$ panel",
+        )}`,
+      });
     }
   }
 }
@@ -511,10 +513,13 @@ class RemotePanelExtensionPoint extends PanelStarterBrickABC {
 
   public readonly rawConfig: StarterBrickConfig<PanelDefinition>;
 
-  constructor(config: StarterBrickConfig<PanelDefinition>) {
+  constructor(
+    platform: PlatformProtocol,
+    config: StarterBrickConfig<PanelDefinition>,
+  ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    super(cloned.metadata, new BackgroundLogger());
+    super(cloned.metadata, platform);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable } = cloned.definition;
@@ -578,6 +583,7 @@ class RemotePanelExtensionPoint extends PanelStarterBrickABC {
 }
 
 export function fromJS(
+  platform: PlatformProtocol,
   config: StarterBrickConfig<PanelDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
@@ -585,5 +591,5 @@ export function fromJS(
     throw new Error(`Expected type=panel, got ${type}`);
   }
 
-  return new RemotePanelExtensionPoint(config);
+  return new RemotePanelExtensionPoint(platform, config);
 }

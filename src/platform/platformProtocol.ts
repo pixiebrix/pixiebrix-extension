@@ -36,6 +36,7 @@ import type { JavaScriptPayload } from "@/sandbox/messenger/api";
 import type { Menus } from "webextension-polyfill";
 import type { writeToClipboard } from "@/utils/clipboardUtils";
 import type { IconConfig } from "@/types/iconTypes";
+import type { Logger } from "@/types/loggerTypes";
 
 export type AudioProtocol = {
   play(soundEffect: string): Promise<void>;
@@ -107,6 +108,22 @@ export interface SelectionTooltipProtocol {
    * @param modComponentId the owner mod component
    */
   unregister(modComponentId: UUID): void;
+}
+
+/**
+ * Protocol for showing toasts to the user
+ * @since 1.8.10
+ */
+export interface ToastProtocol {
+  /**
+   * Show a notification
+   */
+  showNotification: typeof showNotification;
+
+  /**
+   * Show a notification
+   */
+  hideNotification: (id: string) => void;
 }
 
 export type TextCommand = {
@@ -192,26 +209,25 @@ export interface PlatformProtocol {
 
   /**
    * Open a URL. On the web, typically opens in a new tab.
+   * @since 1.8.10
    */
   open: (url: URL) => Promise<void>;
 
   /**
    * Show a blocking alert.
+   * @since 1.8.10
    */
   alert: typeof window.alert;
 
   /**
    * Show a blocking prompt.
+   * @since 1.8.10
    */
   prompt: typeof window.prompt;
 
   /**
-   * Show a non-blocking notification.
-   */
-  notify: typeof showNotification;
-
-  /**
    * Show an ephemeral form.
+   * @since 1.8.10
    */
   form: (
     definition: FormDefinition,
@@ -227,6 +243,7 @@ export interface PlatformProtocol {
 
   /**
    * Run sandboxed Javascript. Does not have access to the DOM.
+   * @since 1.8.10
    * @param code the function to run
    * @param data the data to pass to the function
    */
@@ -234,6 +251,7 @@ export interface PlatformProtocol {
 
   /**
    * Prompt the user to select one or more elements on a host page.
+   * @since 1.8.10
    */
   // XXX: this method only makes sense in the context of a content script. We might choose to exclude it from
   // the platform protocol.
@@ -241,6 +259,7 @@ export interface PlatformProtocol {
 
   /**
    * Perform an API request.
+   * @since 1.8.10
    */
   request: <TData>(
     integrationConfig: Nullishable<SanitizedIntegrationConfig>,
@@ -248,32 +267,44 @@ export interface PlatformProtocol {
   ) => Promise<RemoteResponse<TData>>;
 
   /**
+   * The runtime logger for the platform.
+   * @since 1.8.10
+   */
+  get logger(): Logger;
+
+  /**
    * The context menu protocol for the platform.
+   * @since 1.8.10
    */
   get contextMenu(): ContextMenuProtocol;
 
   /**
    * The audio protocol for the platform.
+   * @since 1.8.10
    */
   get audio(): AudioProtocol;
 
   /**
    * The clipboard protocol for the platform.
+   * @since 1.8.10
    */
   get clipboard(): ClipboardProtocol;
 
   /**
    * The variable store/state for the platform. Generalizes "page state" to context without a page.
+   * @since 1.8.10
    */
   get state(): StateProtocol;
 
   /**
    * The template engines for the platform.
+   * @since 1.8.10
    */
   get template(): TemplateProtocol;
 
   /**
    * The registry for the quick bar.
+   * @since 1.8.10
    */
   get quickBar(): QuickBarRegistryProtocol;
 
@@ -290,7 +321,14 @@ export interface PlatformProtocol {
   get commandPopover(): CommandPopoverProtocol;
 
   /**
+   * Protocol for showing notification toasts to the user
+   * @since 1.8.10
+   */
+  get toast(): ToastProtocol;
+
+  /**
    * The badge, e.g., the toolbar icon in a web extension.
+   * @since 1.8.10
    */
   get badge(): BadgeProtocol;
 }
@@ -322,10 +360,6 @@ export class PlatformBase implements PlatformProtocol {
     throw new PlatformCapabilityNotAvailable(this.platformName, "form");
   }
 
-  notify(..._args: Parameters<typeof showNotification>): string {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "toast");
-  }
-
   async open(_url: URL): Promise<void> {
     throw new PlatformCapabilityNotAvailable(this.platformName, "link");
   }
@@ -352,6 +386,10 @@ export class PlatformBase implements PlatformProtocol {
     );
   }
 
+  get logger(): Logger {
+    throw new PlatformCapabilityNotAvailable(this.platformName, "logs");
+  }
+
   get audio(): AudioProtocol {
     throw new PlatformCapabilityNotAvailable(this.platformName, "audio");
   }
@@ -374,6 +412,10 @@ export class PlatformBase implements PlatformProtocol {
 
   get quickBar(): QuickBarRegistryProtocol {
     throw new PlatformCapabilityNotAvailable(this.platformName, "quickBar");
+  }
+
+  get toast(): ToastProtocol {
+    throw new PlatformCapabilityNotAvailable(this.platformName, "toast");
   }
 
   get selectionTooltip(): SelectionTooltipProtocol {

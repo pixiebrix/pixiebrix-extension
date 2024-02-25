@@ -83,7 +83,7 @@ export class AlertEffect extends EffectABC {
     if (type === "window") {
       platform.alert(messageString);
     } else {
-      platform.notify({
+      platform.toast.showNotification({
         message: messageString,
         type,
         autoDismissTimeMs: duration,

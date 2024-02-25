@@ -32,6 +32,7 @@ import chromeP from "webext-polyfill-kinda";
 import { setContext } from "@/testUtils/detectPageMock";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { getPlatform } from "@/platform/platformContext";
 
 setContext("background");
 
@@ -76,7 +77,7 @@ describe("contextMenus", () => {
 
     updateMenuMock.mockRejectedValue(new Error("My Error"));
 
-    extensionPointRegistry.register([fromJS(extensionPoint)]);
+    extensionPointRegistry.register([fromJS(getPlatform(), extensionPoint)]);
 
     const menuModComponent = modComponentFactory({
       extensionPointId: extensionPoint.metadata.id,

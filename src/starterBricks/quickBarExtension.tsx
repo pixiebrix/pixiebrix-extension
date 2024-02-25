@@ -35,10 +35,6 @@ import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/bricks/available";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
-import notify, {
-  DEFAULT_ACTION_RESULTS,
-  showNotification,
-} from "@/utils/notify";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
@@ -50,7 +46,6 @@ import { mergeReaders } from "@/bricks/readers/readerUtils";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
 import { guessSelectedElement } from "@/utils/selectionController";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type IconConfig } from "@/types/iconTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
@@ -64,6 +59,8 @@ import makeServiceContextFromDependencies from "@/integrations/util/makeServiceC
 import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
+import { DEFAULT_ACTION_RESULTS } from "@/utils/notify";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
 
@@ -192,13 +189,14 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
     });
 
     await allSettled(promises, {
-      catch(errors) {
-        notify.error(
-          `An error occurred adding ${pluralize(
+      catch: (errors) => {
+        this.platform.toast.showNotification({
+          type: "error",
+          message: `An error occurred adding ${pluralize(
             errors.length,
             "$$ quick bar item",
           )}`,
-        );
+        });
       },
     });
   }
@@ -261,10 +259,10 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
           });
         } catch (error) {
           if (hasSpecificErrorCause(error, CancelError)) {
-            showNotification(DEFAULT_ACTION_RESULTS.cancel);
+            this.platform.toast.showNotification(DEFAULT_ACTION_RESULTS.cancel);
           } else {
             extensionLogger.error(error);
-            showNotification({
+            this.platform.toast.showNotification({
               ...DEFAULT_ACTION_RESULTS.error,
               error, // Include more details in the notification
               reportError: false,
@@ -321,10 +319,13 @@ export class RemoteQuickBarExtensionPoint extends QuickBarStarterBrickABC {
 
   public readonly rawConfig: StarterBrickConfig<QuickBarDefinition>;
 
-  constructor(config: StarterBrickConfig<QuickBarDefinition>) {
+  constructor(
+    platform: PlatformProtocol,
+    config: StarterBrickConfig<QuickBarDefinition>,
+  ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    super(cloned.metadata, new BackgroundLogger());
+    super(cloned.metadata, platform);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable, documentUrlPatterns, contexts } = cloned.definition;
@@ -376,6 +377,7 @@ export class RemoteQuickBarExtensionPoint extends QuickBarStarterBrickABC {
 }
 
 export function fromJS(
+  platform: PlatformProtocol,
   config: StarterBrickConfig<QuickBarDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
@@ -383,5 +385,5 @@ export function fromJS(
     throw new Error(`Expected type=quickBar, got ${type}`);
   }
 
-  return new RemoteQuickBarExtensionPoint(config);
+  return new RemoteQuickBarExtensionPoint(platform, config);
 }

@@ -37,6 +37,7 @@ import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
+import { getPlatform } from "@/platform/platformContext";
 
 const rootReader = new RootReader();
 
@@ -94,7 +95,7 @@ const NUM_DEFAULT_QUICKBAR_ACTIONS = [...defaultActions, pageEditorAction]
 
 describe("tourExtension", () => {
   test("install tour via Page Editor", async () => {
-    const starterBrick = fromJS(starterBrickFactory()());
+    const starterBrick = fromJS(getPlatform(), starterBrickFactory()());
 
     starterBrick.registerModComponent(
       extensionFactory({
@@ -117,6 +118,7 @@ describe("tourExtension", () => {
     await initQuickBarApp();
 
     const extensionPoint = fromJS(
+      getPlatform(),
       starterBrickFactory({ allowUserRun: true, autoRunSchedule: "never" })(),
     );
 

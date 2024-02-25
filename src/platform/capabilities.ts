@@ -33,6 +33,8 @@ export const platformCapabilities = [
   "panel",
   // Show a non-blocking notification/toast
   "toast",
+  // Runtime logs
+  "logs",
   // Run sandboxed Javascript code. Sandboxed JS does not have access to the DOM.
   "sandbox",
   // Write to the clipboard

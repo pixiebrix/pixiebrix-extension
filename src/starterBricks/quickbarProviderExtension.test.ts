@@ -46,6 +46,7 @@ import { RunReason } from "@/types/runtimeTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { starterBrickConfigFactory as genericExtensionPointFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { act } from "@testing-library/react";
+import { getPlatform } from "@/platform/platformContext";
 
 const rootReaderId = validateRegistryId("test/root-reader");
 
@@ -109,7 +110,7 @@ describe("quickBarProviderExtension", () => {
   it("quick bar provider adds root action instantly", async () => {
     const user = userEvent.setup();
 
-    const starterBrick = fromJS(starterBrickFactory());
+    const starterBrick = fromJS(getPlatform(), starterBrickFactory());
 
     starterBrick.registerModComponent(
       extensionFactory({
@@ -166,7 +167,7 @@ describe("quickBarProviderExtension", () => {
   it.skip("runs the generator on query change", async () => {
     const user = userEvent.setup();
 
-    const starterBrick = fromJS(starterBrickFactory());
+    const starterBrick = fromJS(getPlatform(), starterBrickFactory());
 
     starterBrick.registerModComponent(
       extensionFactory({
@@ -233,13 +234,13 @@ describe("quickBarProviderExtension", () => {
   });
 
   it("includes query in the schema", async () => {
-    const starterBrick = fromJS(starterBrickFactory());
+    const starterBrick = fromJS(getPlatform(), starterBrickFactory());
     const reader = await starterBrick.defaultReader();
     expect(reader.outputSchema.properties).toHaveProperty("query");
   });
 
   it("includes query in preview", async () => {
-    const starterBrick = fromJS(starterBrickFactory());
+    const starterBrick = fromJS(getPlatform(), starterBrickFactory());
     const reader = await starterBrick.previewReader();
     const value = await reader.read(document);
     expect(value).toHaveProperty("query");

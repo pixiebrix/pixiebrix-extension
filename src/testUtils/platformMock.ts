@@ -15,8 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { PlatformProtocol } from "@/platform/platformProtocol";
+import type {
+  PlatformProtocol,
+  ToastProtocol,
+} from "@/platform/platformProtocol";
 import { platformCapabilities } from "@/platform/capabilities";
+import ConsoleLogger from "@/utils/ConsoleLogger";
+import type { Logger } from "@/types/loggerTypes";
 
 /**
  * Implementation of PlatformProtocol that mocks all methods
@@ -26,7 +31,6 @@ export const platformMock: PlatformProtocol = {
   open: jest.fn(),
   alert: jest.fn(),
   prompt: jest.fn(),
-  notify: jest.fn(),
   userSelectElementRefs: jest.fn(),
   request: jest.fn(),
   runSandboxedJavascript: jest.fn(),
@@ -64,5 +68,14 @@ export const platformMock: PlatformProtocol = {
   quickBar: {
     addAction: jest.fn(),
     knownGeneratorRootIds: new Set<string>(),
+  },
+  get logger(): Logger {
+    return new ConsoleLogger();
+  },
+  get toast(): ToastProtocol {
+    return {
+      showNotification: jest.fn(),
+      hideNotification: jest.fn(),
+    };
   },
 };

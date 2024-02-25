@@ -26,6 +26,9 @@ import reportError from "@/telemetry/reportError";
 
 /**
  * A Logger that logs messages through the background page (which can make calls to Application error telemetry)
+ *
+ * Can only be used in extension contexts because it sends messages to the background page.
+ *
  * @see recordLog
  * @see recordError
  */
