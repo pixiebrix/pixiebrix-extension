@@ -69,7 +69,7 @@
     "csharp-helpers": "^0.9.3",
     "css-selector-generator": "^3.6.6",
     "date-fns": "^3.3.1",
-    "dompurify": "^3.0.8",
+    "dompurify": "^3.0.9",
     "downloadjs": "^1.4.7",
     "escape-string-regexp": "^5.0.0",
     "exifreader": "^4.21.0",
