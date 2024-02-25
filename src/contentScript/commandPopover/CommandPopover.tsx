@@ -34,8 +34,7 @@ import {
   selectSelectedCommand,
 } from "@/contentScript/commandPopover/commandPopoverSlice";
 import { getElementText } from "@/utils/editorUtils";
-import { isEmpty, truncate } from "lodash";
-import { getErrorMessage } from "@/errors/errorHelpers";
+import { isEmpty } from "lodash";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import EmotionShadowRoot from "react-shadow/emotion";
@@ -165,24 +164,33 @@ const CommandPopover: React.FunctionComponent<
     dispatch(popoverSlice.actions.search({ commands, query }));
   }, [query, commands, dispatch]);
 
+  let status = null;
+
+  if (state.activeCommand?.state.isFetching) {
+    status = (
+      <div role="status" className="status status--fetching">
+        Running command: {state.activeCommand.command.title}
+      </div>
+    );
+  } else if (state.activeCommand?.state.isError) {
+    status = (
+      <div role="status" className="status status--error">
+        Error running last command
+      </div>
+    );
+  } else if (state.results.length === 0) {
+    status = (
+      <div role="status" className="status status--empty">
+        No matches found
+      </div>
+    );
+  }
+
   return (
     <ShadowRoot mode="open">
       <Stylesheets href={[stylesUrl]}>
-        <div role="menu" aria-label="Text command menu">
-          {state.activeCommand?.state.isFetching && (
-            <span className="text-info">
-              Running command: {state.activeCommand.command.title}
-            </span>
-          )}
-          {state.activeCommand?.state.isError && (
-            <span className="text-danger">
-              Error running command:{" "}
-              {truncate(getErrorMessage(state.activeCommand.state.error), {
-                length: 25,
-              })}
-            </span>
-          )}
-
+        <div role="menu" aria-label="Text command menu" className="root">
+          {status}
           <div className="results">
             {state.results.map((command) => {
               const isSelected = selectedCommand?.shortcut === command.shortcut;
@@ -200,9 +208,6 @@ const CommandPopover: React.FunctionComponent<
                 />
               );
             })}
-            {state.results.length === 0 && (
-              <span className="text-muted">No commands found</span>
-            )}
           </div>
         </div>
       </Stylesheets>

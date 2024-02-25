@@ -21,16 +21,16 @@
 
 @import "@/themes/colors.scss";
 
+.root {
+  height: 100px;
+  width: 200px;
+  overflow-y: auto;
+}
+
 .results {
   display: flex;
   flex-direction: column;
   background-color: $N0;
-
-  height: 100px;
-  width: 200px;
-
-  overflow-y: auto;
-
   color: black;
 }
 
@@ -54,5 +54,25 @@
 
   &__match {
     font-weight: bold;
+  }
+}
+
+.status {
+  display: block;
+
+  padding: 0.5em 0.5em;
+
+  font-size: 0.85em;
+
+  &--error {
+    color: #dc3545;
+  }
+
+  &--empty {
+    color: $N400;
+  }
+
+  &--fetching {
+    color: $N400;
   }
 }
