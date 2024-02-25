@@ -24,6 +24,7 @@ const ReactRefreshTypeScript = require("react-refresh-typescript");
 const tsconfig = JSON5.parse(fs.readFileSync("./tsconfig.json", "utf8"));
 
 const isProd = process.argv.includes("production");
+const isHMR = process.argv.includes("serve");
 
 /** @type import("webpack").Configuration */
 const shared = {
@@ -68,7 +69,7 @@ const shared = {
         exclude: /node_modules\/(?!@pixiebrix)/,
         options: {
           transpileOnly: true,
-          ...(isProd || {
+          ...(isHMR && {
             getCustomTransformers() {
               return {
                 before: [ReactRefreshTypeScript()],

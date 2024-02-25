@@ -83,6 +83,7 @@ function mockHeavyDependencies() {
     };
   }
 }
+const isHMR = process.argv.includes("serve");
 
 const createConfig = (env, options) =>
   mergeWithShared({
@@ -283,7 +284,8 @@ const createConfig = (env, options) =>
         ],
       }),
       new DiscardFilePlugin(),
-      new ReactRefreshWebpackPlugin(),
+
+      isHMR && new ReactRefreshWebpackPlugin(),
     ]),
     module: {
       rules: [
