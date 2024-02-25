@@ -68,9 +68,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
         }
 
         if (activeField) {
-          if (!draftUiSchema[activeField]) {
-            draftUiSchema[activeField] = {};
-          }
+          draftUiSchema[activeField] ||= {};
 
           draftUiSchema[activeField][UI_SCHEMA_ACTIVE] = true;
         }
