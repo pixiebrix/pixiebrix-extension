@@ -18,7 +18,7 @@
 import ActionRegistry from "@/contentScript/selectionTooltip/ActionRegistry";
 import { once } from "lodash";
 import type { Nullishable } from "@/utils/nullishUtils";
-import { render } from "react-dom";
+import { render, unmountComponentAtNode } from "react-dom";
 import React from "react";
 import { tooltipFactory } from "@/contentScript/tooltipDom";
 import {
@@ -102,9 +102,15 @@ function hideTooltip(): void {
  * Completely remove the tooltip from the DOM.
  */
 function destroyTooltip(): void {
-  selectionTooltip?.remove();
-  selectionTooltip = null;
-  hideController.abortAndReset();
+  if (selectionTooltip) {
+    // Cleanly unmount React component to ensure any listeners are cleaned up.
+    // https://react.dev/reference/react-dom/unmountComponentAtNode
+    unmountComponentAtNode(selectionTooltip);
+
+    selectionTooltip.remove();
+    selectionTooltip = null;
+    hideController.abortAndReset();
+  }
 }
 
 function createTooltip(): HTMLElement {
@@ -161,8 +167,8 @@ function getPositionReference(selection: Selection): VirtualElement | Element {
           y,
           left: x,
           top: y,
-          right: elementRect.x + width - activeElement.scrollLeft,
-          bottom: elementRect.y + height - activeElement.scrollTop,
+          right: x + width,
+          bottom: y + height,
         };
       },
     } satisfies VirtualElement;

@@ -23,17 +23,15 @@ import { expectContext } from "@/utils/expectContext";
 import { isSelectableTextControlElement } from "@/types/inputTypes";
 
 /**
- * @file file for contentScript-specific text editor DOM utilities.
+ * @file file for contentScript-specific text editor DOM utilities that require Javascript API calls to editors.
  */
 
 /**
  * Inserts text at the current cursor position in the given element, with support for custom editors, e.g., CKEditor.
  *
- * Status for reference editors to check:
- * - ✅ Vanilla content editable: https://pbx.vercel.app/react-admin/#/products/1/description
- * - ❌ CKEditor 5: https://ckeditor.com/ckeditor-5/demo/feature-rich/
- * - ⚠️ DraftJS: https://draftjs.org/
- * - ⚠️ TinyMCE: https://www.tiny.cloud/docs/demo/basic-example/
+ * Current support:
+ * - Plain content editable (Gmail, etc.)
+ * - CKEditor 4/5
  *
  * @param element the element to insert text into. Can be a text input, textarea, or contenteditable element.
  * @param text the text to insert

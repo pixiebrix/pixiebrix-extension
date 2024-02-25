@@ -30,15 +30,19 @@
   width: 200px;
 
   overflow-y: auto;
+
+  color: black;
 }
 
 .result {
-  text-align: left;
   display: block;
+  text-align: left;
 
-  background-color: $N0;
   border: 0;
   padding: 0.5em 0.5em;
+
+  color: black;
+  background-color: $N0;
 
   &--selected {
     background-color: $P100;

@@ -49,17 +49,22 @@ const COMMAND_KEY = "\\";
 
 export const commandRegistry = new CommandRegistry();
 
+let targetElement: Nullishable<TextEditorElement>;
+
 let commandPopover: Nullishable<HTMLElement>;
 
 const hideController = new RepeatableAbortController();
 
-let targetElement: Nullishable<TextEditorElement>;
-
-async function showPopover(): Promise<void> {
-  if (targetElement == null) {
+async function showPopover(element: HTMLElement): Promise<void> {
+  if (targetElement != null) {
+    // Popover already showing, e.g., because the user typed the command key twice
     return;
   }
 
+  // Required to ensure that the position is available for the first keypress in a row in a content editable.
+  await waitAnimationFrame();
+
+  targetElement = element;
   commandPopover ??= createPopover(targetElement);
   commandPopover.setAttribute("aria-hidden", "false");
   commandPopover.style.setProperty("display", "block");
@@ -148,9 +153,10 @@ function destroyPopover(): void {
 
     commandPopover.remove();
     commandPopover = null;
-
-    hideController.abortAndReset();
+    targetElement = null;
   }
+
+  hideController.abortAndReset();
 }
 
 function getCursorPositionReference(): Nullishable<VirtualElement | Element> {
@@ -177,22 +183,27 @@ function getCursorPositionReference(): Nullishable<VirtualElement | Element> {
           : {
               top: 0,
               left: 0,
+              height: Number.parseInt(
+                window.getComputedStyle(targetElement).lineHeight,
+                10,
+              ),
             };
 
         const x =
-          elementRect.x + positionInTarget.left + targetElement.scrollLeft;
+          elementRect.x + positionInTarget.left - targetElement.scrollLeft;
+
         const y =
-          elementRect.y + positionInTarget.top + targetElement.scrollTop;
+          elementRect.y + positionInTarget.top - targetElement.scrollTop;
 
         return {
-          height: 0,
+          height: positionInTarget.height,
           width: 0,
           x,
           y,
           left: x,
           top: y,
-          right: elementRect.x,
-          bottom: elementRect.y,
+          right: x,
+          bottom: y + positionInTarget.height,
         };
       },
     } satisfies VirtualElement;
@@ -204,7 +215,10 @@ function getCursorPositionReference(): Nullishable<VirtualElement | Element> {
     throw new Error(`Unsupported text control element: ${targetElement.type}`);
   }
 
-  // Content Editable
+  if (!isContentEditableElement(targetElement)) {
+    throw new Error("Expected a content editable");
+  }
+
   // Allows us to measure where the selection is on the page relative to the viewport
   const range = window.getSelection()?.getRangeAt(0);
 
@@ -322,16 +336,12 @@ export const initCommandController = once(() => {
   document.addEventListener(
     "keypress",
     async (event) => {
-      // Required to ensure that the position is available for the first keypress in a row in a content editable.
-      await waitAnimationFrame();
-
       if (
         event.key === COMMAND_KEY &&
         isValidTarget(event.target) &&
         !isTextSelected(event.target)
       ) {
-        targetElement = event.target;
-        await showPopover();
+        await showPopover(event.target);
       }
     },
     { capture: true, passive: true },

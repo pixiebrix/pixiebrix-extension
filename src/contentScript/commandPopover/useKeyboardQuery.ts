@@ -22,7 +22,6 @@ import {
   isContentEditableElement,
 } from "@/types/inputTypes";
 import { useEffect, useRef, useState } from "react";
-import { uuidv4 } from "@/types/helpers";
 
 /**
  * Set of keys that clear the query/hide the popover.
@@ -124,10 +123,6 @@ function useKeyboardQuery({
   const onOffsetRef = useRef(onOffset);
 
   useEffect(() => {
-    // Nonce to assist in debugging listener cleanup bugs
-    const nonce = uuidv4();
-    console.debug("useKeyboardQuery: mount", nonce);
-
     const handleKeyUp = (event: KeyboardEvent) => {
       if (CLEAR_QUERY_KEYS.has(event.key)) {
         setQuery(null);
@@ -148,7 +143,6 @@ function useKeyboardQuery({
       if (SUBMIT_QUERY_KEYS.has(event.key)) {
         event.preventDefault();
         event.stopPropagation();
-        console.debug("useKeyboardQuery: submit", nonce);
         onSubmitRef.current(queryRef.current);
       } else if (event.key === "ArrowUp") {
         event.preventDefault();
@@ -161,23 +155,22 @@ function useKeyboardQuery({
       }
     };
 
-    // Hijacking events for the popover. Needs to be attached to document because editors like CKEditor stop propagation
-    // of the "tab" key for their own purposes (e.g., indentation)
+    // Watch keyup instead of keypress to get backspace
+    document.addEventListener("keyup", handleKeyUp, { passive: true });
+
+    // Hijacking events for the popover. Needs to be attached to document because some editors stop propagation of the
+    // tab/escape keys (e.g., to indent text)
     document.addEventListener("keydown", handleKeyDown, {
       capture: true,
       passive: false,
     });
 
-    // Watch keyup instead of keypress to get backspace
-    element.addEventListener("keyup", handleKeyUp, { passive: true });
-
     return () => {
+      document.removeEventListener("keyup", handleKeyUp);
       document.removeEventListener("keydown", handleKeyDown, {
         // Must match the addEventListener option for `capture`, otherwise won't be removed
         capture: true,
       });
-      element.removeEventListener("keyup", handleKeyUp);
-      console.debug("useKeyboardQuery: unmount", nonce);
     };
   }, [element, setQuery, commandKey, onSubmitRef, onOffsetRef]);
 

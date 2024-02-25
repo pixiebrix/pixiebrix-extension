@@ -156,7 +156,6 @@ export function insertText(element: HTMLElement, value: string): void {
 
   const editor = element.ckeditorInstance;
 
-  // TODO: if inserting text into a formatted section (e.g., bolded) the formatting is currently being lost
   editor.model.change((writer) => {
     const firstPosition = editor.model.document.selection.getFirstPosition();
     if (firstPosition == null) {
