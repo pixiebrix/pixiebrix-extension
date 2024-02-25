@@ -475,7 +475,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     }
 
     if (errors.length > 0) {
-      this.platform.toast.showNotification({
+      this.platform.toasts.showNotification({
         type: "error",
         message: `An error occurred adding ${pluralize(
           errors.length,

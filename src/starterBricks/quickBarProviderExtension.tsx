@@ -230,7 +230,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
 
     await allSettled(promises, {
       catch: (errors) => {
-        this.platform.toast.showNotification({
+        this.platform.toasts.showNotification({
           type: "error",
           message: `An error occurred adding ${pluralize(
             errors.length,

@@ -334,13 +334,13 @@ export class CustomFormRenderer extends RendererABC {
             });
 
             if (!isEmpty(successMessage)) {
-              platform.toast.showNotification({
+              platform.toasts.showNotification({
                 type: "success",
                 message: successMessage,
               });
             }
           } catch (error) {
-            platform.toast.showNotification({
+            platform.toasts.showNotification({
               type: "error",
               message: "Error submitting form",
               error,

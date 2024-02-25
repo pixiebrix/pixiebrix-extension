@@ -29,15 +29,6 @@ import {
 } from "@/starterBricks/types";
 import { type Permissions } from "webextension-polyfill";
 import { checkAvailable } from "@/bricks/available";
-import {
-  removeExtensionPoint,
-  removeExtensions,
-  reservePanels,
-  sidebarShowEvents,
-  updateHeading,
-  upsertPanel,
-  isSidePanelOpen,
-} from "@/contentScript/sidebarController";
 import Mustache from "mustache";
 import { uuidv4 } from "@/types/helpers";
 import { HeadlessModeError } from "@/bricks/errors";
@@ -152,17 +143,17 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   }
 
   clearModComponentInterfaceAndEvents(extensionIds: UUID[]): void {
-    removeExtensions(extensionIds);
+    this.platform.panels.removeComponents(extensionIds);
   }
 
   public override uninstall(): void {
     const extensions = this.modComponents.splice(0);
     this.clearModComponentInterfaceAndEvents(extensions.map((x) => x.id));
-    removeExtensionPoint(this.id);
+    this.platform.panels.unregisterExtensionPoint(this.id);
     console.debug(
       "SidebarStarterBrick:uninstall: stop listening for sidebarShowEvents",
     );
-    sidebarShowEvents.remove(this.runModComponents);
+    this.platform.panels.showEvent.remove(this.runModComponents);
     this.cancelListeners();
   }
 
@@ -174,11 +165,10 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
   public HACK_uninstallExceptExtension(extensionId: UUID): void {
     // Don't call this.clearExtensionInterfaceAndEvents to keep the panel. Instead, mutate this.extensions to exclude id
     remove(this.modComponents, (x) => x.id === extensionId);
-    removeExtensionPoint(this.id, { preserveExtensionIds: [extensionId] });
-    console.debug(
-      "SidebarStarterBrick:HACK_uninstallExceptExtension: stop listening for sidebarShowEvents",
-    );
-    sidebarShowEvents.remove(this.runModComponents);
+    this.platform.panels.unregisterExtensionPoint(this.id, {
+      preserveExtensionIds: [extensionId],
+    });
+    this.platform.panels.showEvent.remove(this.runModComponents);
   }
 
   private async runModComponent(
@@ -201,7 +191,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 
     const heading = Mustache.render(rawHeading, extensionContext);
 
-    updateHeading(modComponent.id, heading);
+    this.platform.panels.updateHeading(modComponent.id, heading);
 
     const initialValues: InitialValues = {
       input: readerContext,
@@ -240,7 +230,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       };
 
       if (error instanceof HeadlessModeError) {
-        upsertPanel(ref, heading, {
+        this.platform.panels.upsertPanel(ref, heading, {
           blockId: error.blockId,
           key: uuidv4(),
           ctxt: error.ctxt,
@@ -249,7 +239,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         });
       } else {
         componentLogger.error(error);
-        upsertPanel(ref, heading, {
+        this.platform.panels.upsertPanel(ref, heading, {
           key: uuidv4(),
           error: serializeError(error),
           ...meta,
@@ -362,7 +352,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
     });
   }
 
-  // Use arrow syntax to avoid having to bind when passing as listener to `sidebarShowEvents.add`
+  // Use arrow syntax to avoid having to bind when passing as an event listener
   runModComponents = async ({ reason }: RunArgs): Promise<void> => {
     if (!(await this.isAvailable())) {
       console.debug(
@@ -371,7 +361,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       );
 
       // Keep sidebar entries up-to-date regardless of trigger policy
-      removeExtensionPoint(this.id);
+      this.platform.panels.unregisterExtensionPoint(this.id);
       return;
     }
 
@@ -386,7 +376,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
 
     // Reserve placeholders in the sidebar for when it becomes visible. `Run` is called from lifecycle.ts on navigation;
     // the sidebar won't be visible yet on initial page load.
-    reservePanels(
+    this.platform.panels.reservePanels(
       this.modComponents.map((extension) => ({
         extensionId: extension.id,
         extensionPointId: this.id,
@@ -394,7 +384,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       })),
     );
 
-    if (!(await isSidePanelOpen())) {
+    if (!(await this.platform.panels.isContainerVisible())) {
       console.debug(
         "SidebarStarterBrick:run Skipping run for %s because sidebar is not visible",
         this.id,
@@ -435,7 +425,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
       // avoid a race condition with the position of the home tab in the sidebar.
       // In the future, we might instead consider gating sidebar content loading based on mods both having been
       // `install`ed and `runComponents` called completed at least once.
-      reservePanels(
+      this.platform.panels.reservePanels(
         this.modComponents.map((components) => ({
           extensionId: components.id,
           extensionPointId: this.id,
@@ -448,9 +438,11 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
         "SidebarStarterBrick:install: listen for sidebarShowEvents",
       );
 
-      sidebarShowEvents.add(this.runModComponents);
+      this.platform.panels.showEvent.add(this.runModComponents, {
+        passive: true,
+      });
     } else {
-      removeExtensionPoint(this.id);
+      this.platform.panels.unregisterExtensionPoint(this.id);
     }
 
     return available;

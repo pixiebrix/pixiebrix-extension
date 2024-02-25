@@ -403,7 +403,7 @@ class TourStepTransformer extends TransformerABC {
     }
 
     try {
-      return await platform.panel({
+      return await platform.panels.showTemporary({
         panelEntryMetadata,
         getPayload,
         target: element,

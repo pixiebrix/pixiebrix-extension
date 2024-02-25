@@ -78,7 +78,7 @@ const groupRegistrationErrorNotification = (platform: PlatformProtocol) =>
       // `batchedFunction` will throttle the calls and coalesce all the errors into a
       // single notification, even if they come from different extensions
       // https://github.com/pixiebrix/pixiebrix-extension/issues/7353
-      platform.toast.showNotification({
+      platform.toasts.showNotification({
         type: "error",
         message: `An error occurred adding ${pluralize(
           errors.flat().length,
@@ -193,7 +193,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     const extensions = this.modComponents.splice(0);
     if (global) {
       for (const extension of extensions) {
-        void getPlatform().contextMenu.unregister(extension.id);
+        void getPlatform().contextMenus.unregister(extension.id);
         getPlatform().selectionTooltip.unregister(extension.id);
       }
     }
@@ -212,7 +212,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     // re-activating a context menu (during re-activation, mod components get new extensionIds.)
 
     for (const extensionId of extensionIds) {
-      void getPlatform().contextMenu.unregister(extensionId);
+      void getPlatform().contextMenus.unregister(extensionId);
       getPlatform().selectionTooltip.unregister(extensionId);
     }
   }
@@ -266,7 +266,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       uniq([...this.documentUrlPatterns, ...(this.permissions?.origins ?? [])]),
     );
 
-    await getPlatform().contextMenu.register({
+    await getPlatform().contextMenus.register({
       extensionId: extension.id,
       contexts: this.contexts ?? ["all"],
       title,
@@ -390,11 +390,11 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
         if (onSuccess) {
           if (typeof onSuccess === "boolean" && onSuccess) {
-            this.platform.toast.showNotification(
+            this.platform.toasts.showNotification(
               DEFAULT_ACTION_RESULTS.success,
             );
           } else {
-            this.platform.toast.showNotification({
+            this.platform.toasts.showNotification({
               ...DEFAULT_ACTION_RESULTS.success,
               ...pick(onSuccess, "message", "type"),
             });
@@ -402,10 +402,10 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
         }
       } catch (error) {
         if (hasSpecificErrorCause(error, CancelError)) {
-          this.platform.toast.showNotification(DEFAULT_ACTION_RESULTS.cancel);
+          this.platform.toasts.showNotification(DEFAULT_ACTION_RESULTS.cancel);
         } else {
           extensionLogger.error(error);
-          this.platform.toast.showNotification({
+          this.platform.toasts.showNotification({
             ...DEFAULT_ACTION_RESULTS.error,
             error, // Include more details in the notification
             reportError: false,

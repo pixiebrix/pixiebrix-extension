@@ -574,7 +574,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
     const message = `An error occurred running ${subject}`;
     console.debug(message, { errors });
 
-    this.platform.toast.showNotification({
+    this.platform.toasts.showNotification({
       type: "error",
       message,
       // Show any information to the user about the error, so they can report/correct it.

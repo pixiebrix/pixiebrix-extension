@@ -48,6 +48,7 @@ import { writeToClipboard } from "@/utils/clipboardUtils";
 import { tooltipActionRegistry } from "@/contentScript/selectionTooltip/tooltipController";
 import { commandRegistry } from "@/contentScript/commandPopover/commandController";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import * as sidebarController from "@/contentScript/sidebarController";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -122,11 +123,9 @@ class ContentScriptPlatform extends PlatformBase {
 
   override form = ephemeralForm;
 
-  override panel = ephemeralPanel;
-
   override runSandboxedJavascript = runUserJs;
 
-  override get template(): PlatformProtocol["template"] {
+  override get templates(): PlatformProtocol["templates"] {
     return {
       async render({
         engine,
@@ -188,7 +187,7 @@ class ContentScriptPlatform extends PlatformBase {
     };
   }
 
-  override get contextMenu(): PlatformProtocol["contextMenu"] {
+  override get contextMenus(): PlatformProtocol["contextMenus"] {
     expectContext("contentScript");
 
     return {
@@ -210,7 +209,7 @@ class ContentScriptPlatform extends PlatformBase {
     return quickBarRegistry;
   }
 
-  override get toast(): PlatformProtocol["toast"] {
+  override get toasts(): PlatformProtocol["toasts"] {
     return {
       showNotification,
       hideNotification,
@@ -228,6 +227,19 @@ class ContentScriptPlatform extends PlatformBase {
   override get clipboard(): PlatformProtocol["clipboard"] {
     return {
       write: writeToClipboard,
+    };
+  }
+
+  override get panels(): PlatformProtocol["panels"] {
+    return {
+      isContainerVisible: async () => sidebarController.isSidePanelOpen(),
+      unregisterExtensionPoint: sidebarController.removeExtensionPoint,
+      removeComponents: sidebarController.removeExtensions,
+      reservePanels: sidebarController.reservePanels,
+      updateHeading: sidebarController.updateHeading,
+      upsertPanel: sidebarController.upsertPanel,
+      showEvent: sidebarController.sidebarShowEvents,
+      showTemporary: ephemeralPanel,
     };
   }
 }

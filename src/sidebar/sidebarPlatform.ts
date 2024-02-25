@@ -50,7 +50,7 @@ class SidebarPlatform extends PlatformBase {
     return this._logger;
   }
 
-  override get toast(): PlatformProtocol["toast"] {
+  override get toasts(): PlatformProtocol["toasts"] {
     return {
       showNotification,
       hideNotification,

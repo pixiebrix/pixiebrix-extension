@@ -22,6 +22,8 @@ import type {
 import { platformCapabilities } from "@/platform/capabilities";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import type { Logger } from "@/types/loggerTypes";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
+import type { RunArgs } from "@/types/runtimeTypes";
 
 /**
  * Implementation of PlatformProtocol that mocks all methods
@@ -35,14 +37,13 @@ export const platformMock: PlatformProtocol = {
   request: jest.fn(),
   runSandboxedJavascript: jest.fn(),
   form: jest.fn(),
-  panel: jest.fn(),
   audio: {
     play: jest.fn(),
   },
   badge: {
     setText: jest.fn(),
   },
-  contextMenu: {
+  contextMenus: {
     register: jest.fn(),
     unregister: jest.fn(),
   },
@@ -50,7 +51,7 @@ export const platformMock: PlatformProtocol = {
     getState: jest.fn(),
     setState: jest.fn(),
   },
-  template: {
+  templates: {
     render: jest.fn(),
     validate: jest.fn(),
   },
@@ -72,10 +73,22 @@ export const platformMock: PlatformProtocol = {
   get logger(): Logger {
     return new ConsoleLogger();
   },
-  get toast(): ToastProtocol {
+  get toasts(): ToastProtocol {
     return {
       showNotification: jest.fn(),
       hideNotification: jest.fn(),
+    };
+  },
+  get panels() {
+    return {
+      isContainerVisible: jest.fn(),
+      unregisterExtensionPoint: jest.fn(),
+      removeComponents: jest.fn(),
+      reservePanels: jest.fn(),
+      updateHeading: jest.fn(),
+      upsertPanel: jest.fn(),
+      showEvent: new SimpleEventTarget<RunArgs>(),
+      showTemporary: jest.fn(),
     };
   },
 };

@@ -225,8 +225,8 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   >();
 
   private readonly notifyError = debounce(
-    (payload: Parameters<PlatformProtocol["toast"]["showNotification"]>[0]) =>
-      this.platform.toast.showNotification({
+    (payload: Parameters<PlatformProtocol["toasts"]["showNotification"]>[0]) =>
+      this.platform.toasts.showNotification({
         type: "error",
         ...payload,
       }),
@@ -235,7 +235,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       leading: true,
       trailing: false,
     },
-  ) as PlatformProtocol["toast"]["showNotification"]; // `debounce` loses the overloads
+  ) as PlatformProtocol["toasts"]["showNotification"]; // `debounce` loses the overloads
 
   public get kind(): "menuItem" {
     return "menuItem";
@@ -716,11 +716,11 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
           if (onSuccess) {
             if (typeof onSuccess === "boolean" && onSuccess) {
-              this.platform.toast.showNotification(
+              this.platform.toasts.showNotification(
                 DEFAULT_ACTION_RESULTS.success,
               );
             } else {
-              this.platform.toast.showNotification({
+              this.platform.toasts.showNotification({
                 ...DEFAULT_ACTION_RESULTS.success,
                 ...pick(onSuccess, "message", "type"),
               });
@@ -728,13 +728,13 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
           }
         } catch (error) {
           if (hasSpecificErrorCause(error, CancelError)) {
-            this.platform.toast.showNotification({
+            this.platform.toasts.showNotification({
               ...DEFAULT_ACTION_RESULTS.cancel,
               ...pick(onCancel, "message", "type"),
             });
           } else {
             extensionLogger.error(error);
-            this.platform.toast.showNotification({
+            this.platform.toasts.showNotification({
               ...DEFAULT_ACTION_RESULTS.error,
               error, // Include more details in the notification
               reportError: false,

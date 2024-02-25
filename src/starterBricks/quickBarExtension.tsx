@@ -190,7 +190,7 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
 
     await allSettled(promises, {
       catch: (errors) => {
-        this.platform.toast.showNotification({
+        this.platform.toasts.showNotification({
           type: "error",
           message: `An error occurred adding ${pluralize(
             errors.length,
@@ -259,10 +259,12 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
           });
         } catch (error) {
           if (hasSpecificErrorCause(error, CancelError)) {
-            this.platform.toast.showNotification(DEFAULT_ACTION_RESULTS.cancel);
+            this.platform.toasts.showNotification(
+              DEFAULT_ACTION_RESULTS.cancel,
+            );
           } else {
             extensionLogger.error(error);
-            this.platform.toast.showNotification({
+            this.platform.toasts.showNotification({
               ...DEFAULT_ACTION_RESULTS.error,
               error, // Include more details in the notification
               reportError: false,

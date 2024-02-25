@@ -21,7 +21,7 @@ import {
 } from "@/platform/capabilities";
 import type { getState, setState } from "@/platform/state/stateController";
 import type { QuickBarRegistryProtocol } from "@/components/quickBar/quickBarRegistry";
-import type { ElementReference } from "@/types/runtimeTypes";
+import type { ElementReference, RunArgs } from "@/types/runtimeTypes";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
@@ -37,6 +37,9 @@ import type { writeToClipboard } from "@/utils/clipboardUtils";
 import type { IconConfig } from "@/types/iconTypes";
 import type { Logger } from "@/types/loggerTypes";
 import type { Notification } from "@/utils/notificationTypes";
+import type { ModComponentRef } from "@/types/modComponentTypes";
+import type { PanelPayload } from "@/types/sidebarTypes";
+import type { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 
 export type AudioProtocol = {
   play(soundEffect: string): Promise<void>;
@@ -181,7 +184,11 @@ export type StateProtocol = {
   setState: typeof setState;
 };
 
-export type TemplateProtocol = {
+/**
+ * The template for text templates, currently using nunjucks and handlebars.
+ * @since 1.8.10
+ */
+export interface TemplateProtocol {
   render: (args: {
     engine: "nunjucks" | "handlebars";
     template: string;
@@ -191,7 +198,69 @@ export type TemplateProtocol = {
 
   // Must also provide a "validate" because nunjucks uses function constructor for compiling the template
   validate: (args: { engine: "nunjucks"; template: string }) => Promise<void>;
-};
+}
+
+/**
+ * Protocol for panels
+ * @since 1.8.10
+ */
+export interface PanelProtocol {
+  /**
+   * Return true if the panel app is open. For example, the Chromium sidePanel
+   */
+  isContainerVisible: () => Promise<boolean>;
+
+  /**
+   * Remove all panels associated with the given extensionPointId.
+   * @param extensionPointId the extension point id (internal or external)
+   * @param options.preserveExtensionIds array of extension ids to keep in the panel. Used to avoid flickering if updating
+   * the extensionPoint for a sidebar extension from the Page Editor
+   */
+  unregisterExtensionPoint: (
+    extensionPointId: RegistryId,
+    options?: { preserveExtensionIds?: UUID[] },
+  ) => void;
+
+  /**
+   * Remove all panels associated with given componentIds.
+   * @param componentIds the component UUIDs to remove
+   */
+  removeComponents: (componentIds: UUID[]) => void;
+
+  /**
+   * Create placeholder panels showing loading indicators
+   */
+  reservePanels: (refs: ModComponentRef[]) => void;
+
+  /**
+   * Update the heading of a panel with the given mod component id
+   * @param componentId mod component id
+   * @param heading the new heading
+   */
+  updateHeading: (componentId: UUID, heading: string) => void;
+
+  /**
+   * Upsert a panel for the given mod component
+   * @param ref the mod component ref
+   * @param heading the new heading for the panel
+   * @param payload the new content for the panel
+   */
+  upsertPanel: (
+    ref: ModComponentRef,
+    heading: string,
+    payload: PanelPayload,
+  ) => void;
+
+  /**
+   * Event fired when the app is shown. For example, the Chromium sidePanel is opened.
+   */
+  showEvent: SimpleEventTarget<RunArgs>;
+
+  /**
+   * Show a temporary panel
+   */
+  showTemporary: (definition: TemporaryPanelDefinition) => Promise<JsonObject>;
+}
 
 /**
  * A protocol for the platform/environment running the mods.
@@ -238,12 +307,6 @@ export interface PlatformProtocol {
   ) => Promise<unknown>;
 
   /**
-   * Show an ephemeral panel.
-   * @param definition
-   */
-  panel: (definition: TemporaryPanelDefinition) => Promise<JsonObject>;
-
-  /**
    * Run sandboxed Javascript. Does not have access to the DOM.
    * @since 1.8.10
    * @param code the function to run
@@ -278,7 +341,7 @@ export interface PlatformProtocol {
    * The context menu protocol for the platform.
    * @since 1.8.10
    */
-  get contextMenu(): ContextMenuProtocol;
+  get contextMenus(): ContextMenuProtocol;
 
   /**
    * The audio protocol for the platform.
@@ -302,7 +365,7 @@ export interface PlatformProtocol {
    * The template engines for the platform.
    * @since 1.8.10
    */
-  get template(): TemplateProtocol;
+  get templates(): TemplateProtocol;
 
   /**
    * The registry for the quick bar.
@@ -326,7 +389,13 @@ export interface PlatformProtocol {
    * Protocol for showing notification toasts to the user
    * @since 1.8.10
    */
-  get toast(): ToastProtocol;
+  get toasts(): ToastProtocol;
+
+  /**
+   * Protocol for showing panels to the user
+   * @since 1.8.10
+   */
+  get panels(): PanelProtocol;
 
   /**
    * The badge, e.g., the toolbar icon in a web extension.
@@ -366,10 +435,6 @@ export class PlatformBase implements PlatformProtocol {
     throw new PlatformCapabilityNotAvailable(this.platformName, "link");
   }
 
-  async panel(_definition: TemporaryPanelDefinition): Promise<JsonObject> {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "panel");
-  }
-
   async request<TData>(
     _integrationConfig: Nullishable<SanitizedIntegrationConfig>,
     _requestConfig: AxiosRequestConfig,
@@ -400,11 +465,11 @@ export class PlatformBase implements PlatformProtocol {
     throw new PlatformCapabilityNotAvailable(this.platformName, "state");
   }
 
-  get template(): TemplateProtocol {
+  get templates(): TemplateProtocol {
     throw new PlatformCapabilityNotAvailable(this.platformName, "template");
   }
 
-  get contextMenu(): ContextMenuProtocol {
+  get contextMenus(): ContextMenuProtocol {
     throw new PlatformCapabilityNotAvailable(this.platformName, "contextMenu");
   }
 
@@ -416,8 +481,12 @@ export class PlatformBase implements PlatformProtocol {
     throw new PlatformCapabilityNotAvailable(this.platformName, "quickBar");
   }
 
-  get toast(): ToastProtocol {
+  get toasts(): ToastProtocol {
     throw new PlatformCapabilityNotAvailable(this.platformName, "toast");
+  }
+
+  get panels(): PanelProtocol {
+    throw new PlatformCapabilityNotAvailable(this.platformName, "panel");
   }
 
   get selectionTooltip(): SelectionTooltipProtocol {
