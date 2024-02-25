@@ -176,7 +176,7 @@ export function getSelectorPreference(selector: string): number {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Just checked
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Just checked
   const tokenCount = tokenized[0]!.length;
 
   if (selector.includes(":nth-child")) {
