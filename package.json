@@ -290,7 +290,7 @@
     "webpack-merge": "^5.10.0",
     "webpack-target-webextension": "^1.1.1",
     "yaml-jest-transform": "^2.0.2",
-    "yaml-loader": "^0.7.0"
+    "yaml-loader": "^0.8.1"
   },
   "webExt": {
     "sourceDir": "dist",
