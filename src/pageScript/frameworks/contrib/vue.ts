@@ -53,7 +53,7 @@ interface Instance {
    * to the properties on its data object.
    * https://v3.vuejs.org/api/instance-properties.html#data
    */
-  $data: Record<string, unknown>;
+  $data: UnknownObject;
 
   /**
    * The parent instance, if the current instance has one.
@@ -85,7 +85,7 @@ function findRelatedComponent(element: HTMLElement): Instance | null {
   return isManaged(element) ? element.__vue__ : null;
 }
 
-function readVueData(instance: Instance): Record<string, unknown> {
+function readVueData(instance: Instance): UnknownObject {
   // TODO: might want to read from $data here also
   return pickBy(
     instance,

@@ -21,7 +21,7 @@ import { initTelemetry, recordEvent } from "@/background/telemetry";
 import { getUID } from "@/telemetry/telemetryHelpers";
 import { allowsTrack, dntConfig } from "@/telemetry/dnt";
 import { gt } from "semver";
-import { getBaseURL } from "@/services/baseService";
+import { getBaseURL } from "@/data/service/baseService";
 import { getExtensionToken, getUserData, isLinked } from "@/auth/token";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import { isEmpty } from "lodash";

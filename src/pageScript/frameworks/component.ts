@@ -17,7 +17,7 @@
 
 import { type ReadProxy } from "@/runtime/pathHelpers";
 
-type ComponentData = Record<string, unknown>;
+type ComponentData = UnknownObject;
 
 export function traverse<T = unknown>(
   next: (current: T) => T | null,

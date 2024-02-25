@@ -34,7 +34,6 @@ import useDebouncedEffect from "@/hooks/useDebouncedEffect";
 
 import { waitAnimationFrame } from "@/utils/domUtils";
 import FieldRuntimeContext from "@/components/fields/schemaFields/FieldRuntimeContext";
-import type { UnknownObject } from "@/types/objectTypes";
 
 type Props = {
   inputMode: FieldInputMode;

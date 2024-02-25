@@ -19,7 +19,6 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Organization } from "@/types/contract";
 import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import type { UnknownObject } from "@/types/objectTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 
 /**

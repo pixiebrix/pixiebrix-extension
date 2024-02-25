@@ -22,14 +22,14 @@ import OnboardingChecklistCard, {
 import ControlRoomOAuthForm from "@/extensionConsole/pages/onboarding/partner/ControlRoomOAuthForm";
 import ControlRoomTokenForm from "@/extensionConsole/pages/onboarding/partner/ControlRoomTokenForm";
 import { selectSettings } from "@/store/settings/settingsSelectors";
-import { appApi } from "@/services/api";
+import { useGetMeQuery } from "@/data/service/api";
 import { useDispatch, useSelector } from "react-redux";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
-import { getBaseURL } from "@/services/baseService";
-import settingsSlice from "@/store/settings/settingsSlice";
+import { getBaseURL } from "@/data/service/baseService";
+import { updateLocalPartnerTheme } from "@/store/settings/settingsSlice";
 import { useLocation } from "react-router";
 import {
   hostnameToUrl,
@@ -115,7 +115,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   // Make sure to use useLocation because the location.search are on the hash route
   const location = useLocation();
   const mode = usePartnerLoginMode();
-  const { data: me } = appApi.endpoints.getMe.useQueryState();
+  const { data: me } = useGetMeQuery();
   const managedStorage = useManagedStorageState();
 
   // Hostname passed from manual flow during manual setup initiated via Control Room link
@@ -143,11 +143,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
 
   useEffect(() => {
     // Ensure the partner branding is applied
-    dispatch(
-      settingsSlice.actions.setPartnerId({
-        partnerId: "automation-anywhere",
-      }),
-    );
+    dispatch(updateLocalPartnerTheme("automation-anywhere"));
   }, [dispatch]);
 
   if (mode === "oauth2") {

@@ -35,6 +35,8 @@ import {
   getCachedAuthData,
 } from "@/background/auth/authStorage";
 import { setToolbarBadge } from "@/background/toolbarBadge";
+import { rememberFocus } from "@/utils/focusTracker";
+import writeToClipboardInFocusedContext from "@/background/clipboard";
 import * as registry from "@/registry/packageRegistry";
 import serviceRegistry from "@/integrations/registry";
 import { getUserData } from "@/auth/token";
@@ -63,6 +65,8 @@ declare global {
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
     GET_CACHED_AUTH: typeof getCachedAuthData;
     SET_TOOLBAR_BADGE: typeof setToolbarBadge;
+    DOCUMENT_RECEIVED_FOCUS: typeof rememberFocus;
+    WRITE_TO_CLIPBOARD_IN_FOCUSED_DOCUMENT: typeof writeToClipboardInFocusedContext;
     REGISTRY_SYNC: typeof registry.syncPackages;
     REGISTRY_CLEAR: typeof registry.clear;
     REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
@@ -94,6 +98,8 @@ export default function registerMessenger(): void {
     DELETE_CACHED_AUTH: deleteCachedAuthData,
     GET_CACHED_AUTH: getCachedAuthData,
     SET_TOOLBAR_BADGE: setToolbarBadge,
+    DOCUMENT_RECEIVED_FOCUS: rememberFocus,
+    WRITE_TO_CLIPBOARD_IN_FOCUSED_DOCUMENT: writeToClipboardInFocusedContext,
     REGISTRY_SYNC: registry.syncPackages,
     REGISTRY_CLEAR: registry.clear,
     REGISTRY_GET_BY_KINDS: registry.getByKinds,

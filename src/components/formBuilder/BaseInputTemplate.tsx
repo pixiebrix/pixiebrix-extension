@@ -28,7 +28,6 @@ import {
 } from "@rjsf/utils";
 import React from "react";
 import { FormControl, type FormControlProps } from "react-bootstrap";
-import { type UnknownObject } from "@/types/objectTypes";
 
 // RJSF's BaseInputTemplateProps is overly permissive. Tightening it up here.
 export interface StrictBaseInputTemplateProps<

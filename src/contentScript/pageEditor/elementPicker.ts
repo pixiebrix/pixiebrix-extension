@@ -500,8 +500,8 @@ export async function selectElement({
     }
 
     default: {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for type `never`
-      throw new Error(`Unexpected mode: ${mode}`);
+      const exhaustiveCheck: never = mode;
+      throw new Error(`Unexpected mode: ${exhaustiveCheck}`);
     }
   }
 }

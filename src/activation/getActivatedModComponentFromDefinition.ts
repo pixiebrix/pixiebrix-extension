@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { UnknownObject } from "@/types/objectTypes";
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
 import { uuidv4 } from "@/types/helpers";
 import { pickModDefinitionMetadata } from "@/modDefinitions/util/pickModDefinitionMetadata";

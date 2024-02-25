@@ -17,7 +17,6 @@
 
 import { type UUID } from "@/types/stringTypes";
 import { type ApiVersion } from "@/types/runtimeTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 
 /**
  * A brick registry id conforming to `@scope/collection/name`

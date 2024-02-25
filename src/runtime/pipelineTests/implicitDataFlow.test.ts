@@ -29,7 +29,6 @@ import {
   testOptions,
 } from "./pipelineTestHelpers";
 import { type ApiVersion, type OutputKey } from "@/types/runtimeTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
 
 beforeEach(() => {

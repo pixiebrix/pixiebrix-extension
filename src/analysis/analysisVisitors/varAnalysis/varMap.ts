@@ -16,7 +16,6 @@
  */
 
 import { cloneDeep, get, set, setWith, toPath } from "lodash";
-import { type UnknownObject } from "@/types/objectTypes";
 import { stripOptionalChaining } from "@/utils/variableUtils";
 
 export enum VarExistence {
@@ -83,7 +82,7 @@ type SetExistenceFromValuesArgs = {
   /**
    * The object containing the context values
    */
-  values: Record<string, unknown>;
+  values: UnknownObject;
 
   /**
    * Parent path for the values.

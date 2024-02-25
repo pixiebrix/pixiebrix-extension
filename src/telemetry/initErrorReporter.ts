@@ -21,7 +21,6 @@ import type { UserData } from "@/auth/authTypes";
 import pMemoize from "p-memoize";
 import { datadogLogs } from "@datadog/browser-logs";
 import type { Nullishable } from "@/utils/nullishUtils";
-import type { UnknownObject } from "@/types/objectTypes";
 import type { LogsEvent } from "@datadog/browser-logs/src/logsEvent.types";
 import {
   cleanDatadogVersionName,

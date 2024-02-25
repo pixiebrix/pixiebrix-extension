@@ -70,7 +70,6 @@ import {
   type PipelineExpression,
   type RunMetadata,
 } from "@/types/runtimeTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineClosureExpression } from "@/utils/expressionUtils";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
 import { isObject } from "@/utils/objectUtils";
@@ -79,6 +78,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
 import { allSettled } from "@/utils/promiseUtils";
+import { getPlatform } from "@/platform/platformContext";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
@@ -342,6 +342,7 @@ async function executeBlockWithValidatedProps(
       const { runId, extensionId, branches } = options.trace;
 
       return block.run(args, {
+        platform: getPlatform(),
         ...commonOptions,
         ...options,
         meta: {

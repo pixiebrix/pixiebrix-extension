@@ -48,7 +48,6 @@ import {
   isNunjucksExpression,
   isVarExpression,
 } from "@/utils/expressionUtils";
-import { type UnknownObject } from "@/types/objectTypes";
 import { MOD_VARIABLE_REFERENCE } from "@/runtime/extendModVariableContext";
 import { joinPathParts } from "@/utils/formUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";

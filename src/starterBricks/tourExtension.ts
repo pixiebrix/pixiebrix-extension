@@ -57,8 +57,11 @@ import { type Brick } from "@/types/brickTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type RunArgs, RunReason } from "@/types/runtimeTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import {
+  CONTENT_SCRIPT_CAPABILITIES,
+  type PlatformCapability,
+} from "@/platform/capabilities";
 
 export type TourConfig = {
   /**
@@ -91,6 +94,8 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     return "tour";
   }
 
+  readonly capabilities: PlatformCapability[] = CONTENT_SCRIPT_CAPABILITIES;
+
   readonly extensionTours = new Map<UUID, RegisteredTour>();
 
   /**
@@ -107,7 +112,7 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
     if (await this.isAvailable()) {
       const { initPopoverPool } = await import(
         /* webpackChunkName: "popoverUtils" */
-        "@/bricks/transformers/temporaryInfo/popoverUtils"
+        "@/contentScript/popoverDom"
       );
 
       await initPopoverPool();
@@ -295,7 +300,7 @@ class RemoteTourExtensionPoint extends TourStarterBrickABC {
 
   public readonly rawConfig: StarterBrickConfig<TourDefinition>;
 
-  public override get defaultOptions(): Record<string, unknown> {
+  public override get defaultOptions(): UnknownObject {
     return this._definition.defaultOptions ?? { allowUserRun: true };
   }
 

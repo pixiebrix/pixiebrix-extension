@@ -64,6 +64,7 @@ import { isLoadedInIframe } from "@/utils/iframeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export type QuickBarProviderConfig = {
   /**
@@ -109,6 +110,8 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     UUID,
     ActionGenerator
   >();
+
+  readonly capabilities: PlatformCapability[] = ["quickBar"];
 
   inputSchema: Schema = propertiesToSchema(
     {

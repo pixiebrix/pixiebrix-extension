@@ -63,6 +63,7 @@ import { isLoadedInIframe } from "@/utils/iframeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
 
@@ -96,6 +97,8 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
   abstract readonly documentUrlPatterns: Manifest.MatchPattern[];
 
   abstract readonly contexts: Menus.ContextType[];
+
+  readonly capabilities: PlatformCapability[] = ["quickBar"];
 
   inputSchema: Schema = propertiesToSchema(
     {
@@ -166,8 +169,8 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
       }
 
       default: {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
+        const exhaustiveCheck: never = this.targetMode;
+        throw new BusinessError(`Unknown targetMode: ${exhaustiveCheck}`);
       }
     }
   }

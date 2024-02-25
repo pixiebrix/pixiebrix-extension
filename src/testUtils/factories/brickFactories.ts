@@ -31,6 +31,7 @@ export const brickFactory = define<Brick>({
   run: jest.fn(),
   isPure: jest.fn(),
   isRootAware: jest.fn(),
+  getRequiredCapabilities: jest.fn().mockResolvedValue([]),
 });
 
 export const brickConfigFactory = define<BrickConfig>({

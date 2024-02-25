@@ -29,7 +29,7 @@ export const foreverPendingPromise = new Promise(() => {});
  * Same as lodash mapValues but supports promises
  */
 export async function asyncMapValues<
-  InputObject extends Record<string, unknown>,
+  InputObject extends UnknownObject,
   OutputValues,
 >(mapping: InputObject, fn: ObjectIterator<InputObject, OutputValues>) {
   const entries = Object.entries(mapping) as Array<
@@ -244,4 +244,19 @@ export async function allSettled<T>(
   }
 
   return { fulfilled, rejected };
+}
+
+/**
+ * Utility to await promises where you only care whether they throw or not
+ * @warning it swallows the error. Use try/catch if you want the error to bubble up
+ */
+export async function isPromiseFulfilled(
+  promise: Promise<unknown>,
+): Promise<boolean> {
+  try {
+    await promise;
+    return true;
+  } catch {
+    return false;
+  }
 }

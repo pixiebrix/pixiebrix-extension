@@ -23,7 +23,6 @@ import {
   type TemplateEngine,
 } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 
 /**
  * @see https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API
@@ -224,6 +223,16 @@ export type BrickConfig = {
  * A pipeline of bricks to execute sequentially
  */
 export type BrickPipeline = BrickConfig[];
+
+/**
+ * Which kinds of bricks are allowed in the pipeline
+ * @see BrickPipeline
+ */
+export enum PipelineFlavor {
+  AllBricks = "allBricks",
+  NoEffect = "noEffect",
+  NoRenderer = "noRenderer",
+}
 
 /**
  * Defines the position of the brick in the extension
