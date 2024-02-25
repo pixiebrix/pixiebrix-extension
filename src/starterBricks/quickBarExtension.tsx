@@ -59,8 +59,8 @@ import makeServiceContextFromDependencies from "@/integrations/util/makeServiceC
 import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
-import { DEFAULT_ACTION_RESULTS } from "@/utils/notify";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
 

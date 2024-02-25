@@ -20,9 +20,9 @@ import styles from "./notify.module.scss";
 import React from "react";
 import { render } from "react-dom";
 import {
+  type DefaultToastOptions,
   toast,
   Toaster,
-  type DefaultToastOptions,
   type ToastOptions,
 } from "react-hot-toast";
 import { uuidv4 } from "@/types/helpers";
@@ -34,34 +34,14 @@ import reportError from "@/telemetry/reportError";
 import { type Except, type RequireAtLeastOne } from "type-fest";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { merge, truncate } from "lodash";
-
 // While correct, the `sidebarDomControllerLite` name implies that it's a small, pure module and it's unlikely to cause issues
 // eslint-disable-next-line local-rules/noCrossBoundaryImports
 import { SIDEBAR_WIDTH_CSS_PROPERTY } from "@/contentScript/sidebarDomControllerLite";
 import ErrorIcon from "@/icons/error.svg?loadAsComponent";
 import WarningIcon from "@/icons/warning.svg?loadAsComponent";
+import type { Notification, NotificationType } from "@/utils/notificationTypes";
 
 const MINIMUM_NOTIFICATION_DURATION_MS = 2000;
-
-export type NotificationType =
-  | "info"
-  | "success"
-  | "error"
-  | "warning"
-  | "loading";
-type Notification = RequireAtLeastOne<
-  {
-    message: string;
-    type?: NotificationType;
-    id?: string;
-    autoDismissTimeMs?: number;
-    error: unknown;
-    dismissable?: boolean;
-    reportError?: boolean;
-    includeErrorDetails?: boolean;
-  },
-  "message" | "error"
->;
 
 type SimpleNotification = string | Except<Notification, "type">;
 
@@ -211,22 +191,6 @@ export function showNotification({
 export function hideNotification(id: string): void {
   toast.remove(id);
 }
-
-export const DEFAULT_ACTION_RESULTS = {
-  error: {
-    message: "Error running action",
-    type: "error",
-    reportError: false,
-  },
-  cancel: {
-    message: "The action was cancelled",
-    type: "info",
-  },
-  success: {
-    message: "Successfully ran action",
-    type: "success",
-  },
-} as const;
 
 export interface MessageConfig {
   message: string;

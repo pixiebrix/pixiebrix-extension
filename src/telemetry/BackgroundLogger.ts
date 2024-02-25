@@ -35,7 +35,7 @@ import reportError from "@/telemetry/reportError";
 class BackgroundLogger implements Logger {
   readonly context: MessageContext;
 
-  constructor(context: MessageContext = null) {
+  constructor(context?: MessageContext) {
     expectContext(
       "extension",
       "BackgroundLogger requires access to the background messenger API",

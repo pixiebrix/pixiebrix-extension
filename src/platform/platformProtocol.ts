@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { showNotification } from "@/utils/notify";
 import {
   type PlatformCapability,
   PlatformCapabilityNotAvailable,
@@ -30,13 +29,14 @@ import type { Nullishable } from "@/utils/nullishUtils";
 import type { FormDefinition } from "@/platform/forms/formTypes";
 import type { UUID } from "@/types/stringTypes";
 import type { RegistryId } from "@/types/registryTypes";
-import type { JsonObject } from "type-fest";
+import type { JsonObject, RequireAtLeastOne } from "type-fest";
 import type { TemporaryPanelDefinition } from "@/platform/panels/panelTypes";
 import type { JavaScriptPayload } from "@/sandbox/messenger/api";
 import type { Menus } from "webextension-polyfill";
 import type { writeToClipboard } from "@/utils/clipboardUtils";
 import type { IconConfig } from "@/types/iconTypes";
 import type { Logger } from "@/types/loggerTypes";
+import type { Notification } from "@/utils/notificationTypes";
 
 export type AudioProtocol = {
   play(soundEffect: string): Promise<void>;
@@ -118,10 +118,12 @@ export interface ToastProtocol {
   /**
    * Show a notification
    */
-  showNotification: typeof showNotification;
+  showNotification: (
+    notification: RequireAtLeastOne<Notification, "message" | "error">,
+  ) => string;
 
   /**
-   * Show a notification
+   * Hide a notification.
    */
   hideNotification: (id: string) => void;
 }

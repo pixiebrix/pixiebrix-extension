@@ -67,7 +67,8 @@ import { initSelectionTooltip } from "@/contentScript/selectionTooltip/tooltipCo
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import type { Except } from "type-fest";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
-import { DEFAULT_ACTION_RESULTS, type MessageConfig } from "@/utils/notify";
+import { type MessageConfig } from "@/utils/notify";
+import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 

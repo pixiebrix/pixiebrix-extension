@@ -40,7 +40,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { type Permissions } from "webextension-polyfill";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { DEFAULT_ACTION_RESULTS, type MessageConfig } from "@/utils/notify";
+import { type MessageConfig } from "@/utils/notify";
 import { getNavigationId } from "@/contentScript/context";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { selectEventData } from "@/telemetry/deployments";
@@ -86,6 +86,7 @@ import {
   type PlatformCapability,
 } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
