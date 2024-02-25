@@ -60,7 +60,7 @@ type MeOrganization = Required<components["schemas"]["Me"]["organization"]> & {
 };
 
 export type Me = Except<
-  Required<components["schemas"]["Me"]>,
+  components["schemas"]["Me"],
   | "flags"
   | "is_onboarded"
   | "organization"

@@ -61,14 +61,17 @@ export function selectUserDataUpdate({
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
 
   return {
-    email,
+    // TODO: Review Required/Partial in Me type
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/7725
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    email: email!,
     organizationId: organization?.id ?? null,
     telemetryOrganizationId: telemetryOrganization?.id ?? null,
     flags,
     organizations,
     groups,
-    partner,
-    enforceUpdateMillis,
+    partner: partner ?? null,
+    enforceUpdateMillis: enforceUpdateMillis ?? null,
     partnerPrincipals,
   };
 }
