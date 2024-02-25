@@ -16,13 +16,9 @@
  */
 
 import {
-  type TextEditorElement,
   isTextControlElement,
-  isSelectableTextControlElement,
-  type SelectableTextEditorElement,
+  type TextEditorElement,
 } from "@/types/inputTypes";
-import { waitAnimationFrame } from "@/utils/domUtils";
-import textFieldEdit from "text-field-edit";
 
 /**
  * Returns the current text content of the element, e.g., to pass to the text command popover handler
@@ -35,81 +31,4 @@ export function getElementText(element: TextEditorElement): string {
   }
 
   return $(element).text();
-}
-
-/**
- * Replaces the text at the current command + query with the given text
- *
- * @param element the text editor element
- * @param text the text to insert
- * @param commandKey the command key, e.g., "\"
- * @param query the query after the command key. With commandKey, used to determine how much text to replace
- */
-export async function replaceAtCommand({
-  element,
-  text,
-  query,
-  commandKey,
-}: {
-  element: SelectableTextEditorElement;
-  text: string;
-  query: string;
-  commandKey: string;
-}): Promise<void> {
-  element.focus();
-
-  if (isSelectableTextControlElement(element)) {
-    const { selectionStart, value } = element;
-    if (selectionStart == null) {
-      return;
-    }
-
-    const commandStart = value.lastIndexOf(commandKey, selectionStart);
-    if (commandStart < 0) {
-      // Could happen if field's value was programmatically altered
-      throw new Error("Command key not found");
-    }
-
-    element.setSelectionRange(commandStart, commandStart + query.length + 1);
-
-    // Ensure the selection update has propagated
-    await waitAnimationFrame();
-
-    textFieldEdit.insert(element, text);
-
-    return;
-  }
-
-  // Content Editable
-  const selection = window.getSelection();
-  const range = selection?.getRangeAt(0);
-
-  if (range?.startContainer.nodeType === Node.TEXT_NODE) {
-    if (range.startOffset !== range.endOffset) {
-      // Shouldn't happen in practice because commandController hides the popover on selection
-      throw new Error("Expected a single cursor position");
-    }
-
-    const { data } = range.startContainer as Text;
-
-    const commandStart = data.lastIndexOf(commandKey, range.startOffset);
-    if (commandStart < 0) {
-      // Could happen if field's value was programmatically altered
-      throw new Error("Command key not found");
-    }
-
-    range.setStart(range.startContainer, commandStart);
-    range.setEnd(range.startContainer, commandStart + query.length + 1);
-
-    // Ensure the selection update has propagated
-    await waitAnimationFrame();
-
-    const parentElement = range?.startContainer.parentElement;
-
-    if (parentElement == null) {
-      throw new Error("Selection has no parent element");
-    }
-
-    textFieldEdit.insert(parentElement, text);
-  }
 }

@@ -18,7 +18,7 @@
 import {
   hasCKEditorClass,
   isCKEditorElement,
-  setCKEditorData,
+  setData,
 } from "@/contrib/ckeditor";
 import { BusinessError } from "@/errors/businessErrors";
 
@@ -42,7 +42,7 @@ describe("CKEditor", () => {
   test("setData throws business error for non CKEditor", () => {
     const element = document.createElement("div");
     expect(() => {
-      setCKEditorData(element, "test");
+      setData(element, "test");
     }).toThrow(BusinessError);
   });
 });

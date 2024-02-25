@@ -33,7 +33,7 @@ import {
   popoverSlice,
   selectSelectedCommand,
 } from "@/contentScript/commandPopover/commandPopoverSlice";
-import { getElementText, replaceAtCommand } from "@/utils/editorUtils";
+import { getElementText } from "@/utils/editorUtils";
 import { isEmpty, truncate } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import reportEvent from "@/telemetry/reportEvent";
@@ -42,6 +42,7 @@ import EmotionShadowRoot from "react-shadow/emotion";
 import { Stylesheets } from "@/components/Stylesheets";
 import type { TextCommand } from "@/platform/platformProtocol";
 import useIsMounted from "@/hooks/useIsMounted";
+import { replaceAtCommand } from "@/contentScript/commandPopover/commandUtils";
 
 // "Every property exists" (via Proxy), TypeScript doesn't offer such type
 // Also strictNullChecks config mismatch
