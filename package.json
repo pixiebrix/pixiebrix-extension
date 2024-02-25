@@ -234,7 +234,7 @@
     "@types/redux-logger": "^3.0.12",
     "@types/redux-persist-webextension-storage": "^1.0.3",
     "@types/redux-state-sync": "^3.1.9",
-    "@types/semver": "^7.5.7",
+    "@types/semver": "^7.5.8",
     "@types/sinonjs__fake-timers": "^8.1.5",
     "@types/use-sync-external-store": "^0.0.6",
     "@types/uuid": "^9.0.8",
