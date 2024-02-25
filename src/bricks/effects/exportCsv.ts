@@ -20,7 +20,6 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { PropError } from "@/errors/businessErrors";
 import { isUnknownObjectArray } from "@/utils/objectUtils";
-import type { UnknownObject } from "@/types/objectTypes";
 import type { PlatformCapability } from "@/platform/capabilities";
 
 export class ExportCsv extends EffectABC {

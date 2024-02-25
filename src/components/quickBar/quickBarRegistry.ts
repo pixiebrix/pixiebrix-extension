@@ -25,6 +25,7 @@ import {
   type GeneratorArgs,
 } from "@/components/quickBar/quickbarTypes";
 import { allSettled } from "@/utils/promiseUtils";
+import { RepeatableAbortController } from "abort-utils";
 
 /**
  * Public interface for the Quick Bar registry.
@@ -59,7 +60,7 @@ class QuickBarRegistry implements QuickBarRegistryProtocol {
    * Abort controller for the currently running action generator.
    * @private
    */
-  private generatorAbortController: AbortController | null = null;
+  private readonly generatorAbortController = new RepeatableAbortController();
 
   /**
    * Mapping from action generator to the rootActionId.
@@ -201,11 +202,10 @@ class QuickBarRegistry implements QuickBarRegistryProtocol {
    */
   async generateActions(args: GeneratorArgs): Promise<void> {
     // Abort previously running generators
-    this.generatorAbortController?.abort();
+    this.generatorAbortController.abortAndReset();
+    const abortSignal = this.generatorAbortController.signal;
 
     // Run all generators in parallel
-    this.generatorAbortController = new AbortController();
-    const abortSignal = this.generatorAbortController.signal;
     await allSettled(
       this.actionGenerators.map(async (x) => x({ ...args, abortSignal })),
       { catch: "ignore" },

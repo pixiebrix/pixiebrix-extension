@@ -73,9 +73,9 @@ async function codeGrantFlow(
       code_challenge_method,
     );
   } else if (code_challenge_method != null) {
+    const exhaustiveCheck: never = code_challenge_method;
     throw new BusinessError(
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check; type is `never`
-      `Unsupported code challenge method: ${code_challenge_method}`,
+      `Unsupported code challenge method: ${exhaustiveCheck}`,
     );
   }
 

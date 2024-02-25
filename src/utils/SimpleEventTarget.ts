@@ -47,8 +47,15 @@ export class SimpleEventTarget<Detail> extends EventTarget {
     return native;
   }
 
-  add(callback: SimpleEventListener<Detail>): void {
-    this.addEventListener(this.coreEvent, this.getNativeListener(callback));
+  add(
+    callback: SimpleEventListener<Detail>,
+    options?: AddEventListenerOptions,
+  ): void {
+    this.addEventListener(
+      this.coreEvent,
+      this.getNativeListener(callback),
+      options,
+    );
   }
 
   remove(callback: SimpleEventListener<Detail>): void {

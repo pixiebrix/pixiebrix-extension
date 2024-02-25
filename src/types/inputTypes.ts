@@ -48,6 +48,8 @@ export type TextInputElement = HTMLInputElement & {
   type: (typeof TEXT_INPUT_CONTENT_TYPES)[number];
 };
 
+export type NativeField = HTMLInputElement | HTMLTextAreaElement;
+
 /**
  * A basic text entry element, e.g., an input or textarea element.
  * @see isTextControlElement
@@ -81,6 +83,19 @@ export type SelectableTextEditorElement =
  */
 // The browser context API uses the terminology "editable": A flag indicating whether the element is editable (text input, textarea, etc.).?
 export type TextEditorElement = TextInputElement | ContentEditableElement;
+
+/**
+ * Returns true if the element is a native HTML input or textarea element.
+ * @param targetOrElement the query element
+ */
+export function isNativeField(
+  targetOrElement: unknown,
+): targetOrElement is NativeField {
+  return (
+    targetOrElement instanceof HTMLInputElement ||
+    targetOrElement instanceof HTMLTextAreaElement
+  );
+}
 
 /**
  * Returns true if the element is a contenteditable HTML element.

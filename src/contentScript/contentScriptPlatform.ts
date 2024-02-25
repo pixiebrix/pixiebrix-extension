@@ -143,8 +143,10 @@ class ContentScriptPlatform extends PlatformBase {
           }
 
           default: {
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-            throw new BusinessError(`Unsupported template engine: ${engine}`);
+            const exhaustiveCheck: never = engine;
+            throw new BusinessError(
+              `Unsupported template engine: ${exhaustiveCheck}`,
+            );
           }
         }
       },

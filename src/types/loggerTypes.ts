@@ -18,7 +18,6 @@
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type ContextName } from "webext-detect-page";
-import { type UnknownObject } from "@/types/objectTypes";
 
 /**
  * Log event metadata for the extensions internal logging infrastructure.

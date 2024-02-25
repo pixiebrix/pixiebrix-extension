@@ -25,7 +25,6 @@ import {
   findOneOf,
   textPredicate,
 } from "@/components/fields/schemaFields/schemaUtils";
-import { type UnknownObject } from "@/types/objectTypes";
 import { defaultBrickConfig } from "@/bricks/util";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import styles from "./ArrayWidget.module.scss";

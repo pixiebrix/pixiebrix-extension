@@ -129,6 +129,6 @@ export function sidebarEntryFactory<T = SidebarEntry>(
     return staticPanelEntryFactory(override as FactoryConfig<StaticPanelEntry>);
   }
 
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- allow never, future-proof for new types
-  throw new Error(`Unknown entry type: ${type}`);
+  const exhaustiveCheck: never = type;
+  throw new Error(`Unknown entry type: ${exhaustiveCheck}`);
 }

@@ -67,6 +67,7 @@ import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
 } from "@/platform/capabilities";
+import { RepeatableAbortController } from "abort-utils";
 
 export type PanelConfig = {
   heading?: string;
@@ -108,7 +109,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
   private readonly collapsedExtensions: Map<UUID, boolean>;
 
-  private cancelController = new AbortController();
+  private readonly cancelController = new RepeatableAbortController();
 
   private uninstalled = false;
 
@@ -204,8 +205,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
     this.$container = null;
 
-    this.cancelController.abort();
-    this.cancelController = new AbortController();
+    this.cancelController.abortAndReset();
   }
 
   async install(): Promise<boolean> {
@@ -557,8 +557,8 @@ class RemotePanelExtensionPoint extends PanelStarterBrickABC {
 
       default: {
         // Type is `never` due to checks above
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        throw new Error(`Unexpected position: ${position}`);
+        const exhaustiveCheck: never = position;
+        throw new Error(`Unexpected position: ${exhaustiveCheck}`);
       }
     }
   }

@@ -22,8 +22,6 @@ import {
 } from "@/testUtils/factories/authFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { TEST_setAuthData } from "@/auth/token";
-import { appApi } from "@/data/service/api";
-import { queryLoadingFactory } from "@/testUtils/rtkQueryFactories";
 
 // In existing code, there was a lot of places mocking both useQueryState and useGetMeQuery. This could in some places
 // yield impossible states due to how `skip` logic in calls like RequireAuth, etc.
@@ -49,8 +47,4 @@ export async function mockAuthenticatedUser(me?: Me): Promise<void> {
 
 export function mockErrorUser(error: unknown): void {
   appApiMock.onGet("/api/me/").reply(500, error);
-}
-
-export function mockLoadingUser(): void {
-  jest.spyOn(appApi, "useGetMeQuery").mockReturnValue(queryLoadingFactory());
 }

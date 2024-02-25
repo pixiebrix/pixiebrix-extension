@@ -34,7 +34,6 @@ import {
   SCHEMA_ALLOW_ANY,
   type UiSchema,
 } from "@/types/schemaTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import {
   type BrickArgs,

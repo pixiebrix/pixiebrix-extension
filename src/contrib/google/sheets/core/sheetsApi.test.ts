@@ -35,6 +35,8 @@ import {
   getCachedAuthData,
   setCachedAuthData,
 } from "@/background/auth/authStorage";
+import { setPlatform } from "@/platform/platformContext";
+import backgroundPlatform from "@/background/backgroundPlatform";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -68,6 +70,11 @@ jest.mock("@/integrations/registry", () => {
       throw new Error(`Integration id not mocked: ${id}`);
     }),
   };
+});
+
+beforeEach(() => {
+  // `sheetsApi` uses the ambient platform context to make requests
+  setPlatform(backgroundPlatform);
 });
 
 describe("error handling", () => {

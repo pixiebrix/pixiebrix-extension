@@ -49,7 +49,6 @@ import {
 } from "@/integrations/autoConfigure";
 import { freshIdentifier } from "@/utils/variableUtils";
 import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type Schema } from "@/types/schemaTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import AsyncStateGate from "@/components/AsyncStateGate";

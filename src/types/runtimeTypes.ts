@@ -16,7 +16,6 @@
  */
 
 import { type ComponentType } from "react";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type SafeHTML, type UUID } from "@/types/stringTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type Primitive } from "type-fest";
@@ -50,6 +49,10 @@ export const VARIABLE_REFERENCE_REGEX = /^@\S+$/;
  * The HTMLElement or Document that the brick is targeting, or that a selector is being evaluated against.
  */
 export type SelectorRoot = HTMLElement | Document;
+
+export function isDocument(root: SelectorRoot): root is Document {
+  return root instanceof Document;
+}
 
 /**
  * A reference to an element on the page.

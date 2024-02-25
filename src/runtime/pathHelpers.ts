@@ -17,7 +17,6 @@
 
 import { identity, toPath } from "lodash";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { type UnknownObject } from "@/types/objectTypes";
 import { cleanValue, isObject } from "@/utils/objectUtils";
 import { joinName } from "@/utils/formUtils";
 
