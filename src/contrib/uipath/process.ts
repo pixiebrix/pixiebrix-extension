@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
@@ -23,8 +22,8 @@ import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export const UIPATH_SERVICE_IDS: RegistryId[] = [
   "uipath/cloud",
@@ -115,6 +114,10 @@ export class RunProcess extends TransformerABC {
     properties: UIPATH_PROPERTIES,
   };
 
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["http"];
+  }
+
   async transform(
     {
       uipath,
@@ -135,25 +138,22 @@ export class RunProcess extends TransformerABC {
       maxWaitMillis: number;
       inputArguments: UnknownObject;
     }>,
-    { logger }: BrickOptions,
+    { logger, platform }: BrickOptions,
   ): Promise<unknown> {
-    const responsePromise = performConfiguredRequestInBackground<JobsResponse>(
-      uipath,
-      {
-        url: "/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs",
-        method: "post",
-        data: {
-          startInfo: {
-            ReleaseKey: releaseKey,
-            Strategy: strategy,
-            JobsCount: jobsCount,
-            RobotIds: robotIds,
-            Source: "Manual",
-            InputArguments: JSON.stringify(inputArguments),
-          },
+    const responsePromise = platform.request<JobsResponse>(uipath, {
+      url: "/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs",
+      method: "post",
+      data: {
+        startInfo: {
+          ReleaseKey: releaseKey,
+          Strategy: strategy,
+          JobsCount: jobsCount,
+          RobotIds: robotIds,
+          Source: "Manual",
+          InputArguments: JSON.stringify(inputArguments),
         },
       },
-    );
+    });
 
     if (!awaitResult) {
       return {};
@@ -168,11 +168,13 @@ export class RunProcess extends TransformerABC {
     }
 
     const poll = async () => {
-      const { data: resultData } =
-        await performConfiguredRequestInBackground<JobsResponse>(uipath, {
+      const { data: resultData } = await platform.request<JobsResponse>(
+        uipath,
+        {
           url: `/odata/Jobs?$filter=Id eq ${startData.value[0].Id}`,
           method: "get",
-        });
+        },
+      );
 
       if (resultData.value.length === 0) {
         logger.error(`UiPath job not found: ${startData.value[0].Id}`);

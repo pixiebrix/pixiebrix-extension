@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 PixieBrix, Inc.
+ * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,7 +25,7 @@ import { SessionValue } from "@/mv3/SessionStorage";
 import reportError from "@/telemetry/reportError";
 import type { Tabs } from "webextension-polyfill";
 import { forEachTab } from "@/utils/extensionUtils";
-import { getApiClient } from "@/services/apiClient";
+import { getApiClient } from "@/data/service/apiClient";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import { StorageItem } from "webext-storage";
 

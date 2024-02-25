@@ -20,7 +20,9 @@ import { type FormPanelEntry } from "@/types/sidebarTypes";
 import useAsyncState from "@/hooks/useAsyncState";
 import Loader from "@/components/Loader";
 import { getErrorMessage } from "@/errors/errorHelpers";
-import { createFrameSource } from "@/bricks/transformers/ephemeralForm/formTransformer";
+import { getConnectedTarget } from "@/sidebar/connectedTarget";
+
+import { createFrameSource } from "@/contentScript/ephemeralForm";
 
 type FormBodyProps = {
   form: FormPanelEntry;
@@ -37,7 +39,8 @@ const FormBody: React.FunctionComponent<FormBodyProps> = ({ form }) => {
     isLoading,
     error,
   } = useAsyncState(
-    async () => createFrameSource(form.nonce, "panel"),
+    async () =>
+      createFrameSource(await getConnectedTarget(), form.nonce, "panel"),
     [form.nonce],
   );
 

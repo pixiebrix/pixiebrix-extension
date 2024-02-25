@@ -64,7 +64,7 @@ export async function validateSchema(
 
   try {
     validation = await validateKind(
-      json as Record<string, unknown>,
+      json as UnknownObject,
       json.kind as keyof typeof KIND_SCHEMAS,
     );
   } catch (error) {

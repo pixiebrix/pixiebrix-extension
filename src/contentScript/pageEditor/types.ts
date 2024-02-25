@@ -31,7 +31,6 @@ import {
 } from "@/starterBricks/menuItemExtension";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type UUID } from "@/types/stringTypes";
 
 export interface DynamicDefinition<

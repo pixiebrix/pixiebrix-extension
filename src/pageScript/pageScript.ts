@@ -50,7 +50,6 @@ import {
   noopProxy,
   type ReadProxy,
 } from "@/runtime/pathHelpers";
-import { type UnknownObject } from "@/types/objectTypes";
 import { initialize } from "./messenger/receiver";
 import { TimeoutError } from "p-timeout";
 import { setCKEditorData } from "@/contrib/ckeditor";

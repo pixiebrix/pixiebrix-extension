@@ -15,14 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type BrickConfig, type BrickPosition } from "@/bricks/types";
+import {
+  type BrickConfig,
+  type BrickPosition,
+  PipelineFlavor,
+} from "@/bricks/types";
 import { type Expression } from "@/types/runtimeTypes";
 import PipelineVisitor, {
   nestedPosition,
   type VisitBlockExtra,
 } from "./PipelineVisitor";
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
-import { PipelineFlavor } from "@/pageEditor/pageEditorTypes";
 import { isExpression, isPipelineExpression } from "@/utils/expressionUtils";
 import { joinPathParts } from "@/utils/formUtils";
 
@@ -94,7 +97,7 @@ abstract class PipelineExpressionVisitor extends PipelineVisitor {
       }
 
       default: {
-        return PipelineFlavor.AllBlocks;
+        return PipelineFlavor.AllBricks;
       }
     }
   }

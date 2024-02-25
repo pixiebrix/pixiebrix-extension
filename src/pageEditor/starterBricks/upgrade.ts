@@ -17,7 +17,6 @@
 
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import blockRegistry from "@/bricks/registry";
-import { type UnknownObject } from "@/types/objectTypes";
 import { cloneDeep } from "lodash";
 import { isSelectField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { type RegistryId } from "@/types/registryTypes";

@@ -17,7 +17,6 @@
 
 import { type JsonObject } from "type-fest";
 import { StorageItem } from "webext-storage";
-import { type UnknownObject } from "@/types/objectTypes";
 
 const localDataStore = new StorageItem<UnknownObject>("LOCAL_DATA_STORE", {
   defaultValue: {},

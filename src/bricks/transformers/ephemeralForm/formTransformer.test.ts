@@ -16,18 +16,18 @@
  */
 
 import { FormTransformer } from "@/bricks/transformers/ephemeralForm/formTransformer";
-
 import { toExpression } from "@/utils/expressionUtils";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
-import { showModal } from "@/bricks/transformers/ephemeralForm/modalUtils";
-import { TEST_cancelAll } from "@/contentScript/ephemeralFormProtocol";
+import { TEST_cancelAll } from "@/platform/forms/formController";
 import * as messenger from "webext-messenger";
+import { showModal } from "@/contentScript/modalDom";
 
 jest.mock("@/utils/iframeUtils");
-jest.mock("@/bricks/transformers/ephemeralForm/modalUtils");
+jest.mock("@/contentScript/modalDom");
+jest.mock("@/contentScript/sidebarDomControllerLite");
 
 const showModalMock = jest.mocked(showModal);
 
@@ -91,7 +91,6 @@ describe("FormTransformer", () => {
     // Exposed via __mocks__/webext-messenger
     (messenger as any).setFrameId(0);
     jest.mocked(isLoadedInIframe).mockReturnValue(false);
-    showModalMock.mockReturnValue(null);
 
     const brickPromise = brick.run(
       unsafeAssumeValidArg({
@@ -124,7 +123,6 @@ describe("FormTransformer", () => {
     // Exposed via __mocks__/webext-messenger
     (messenger as any).setFrameId(1);
     jest.mocked(isLoadedInIframe).mockReturnValue(true);
-    showModalMock.mockReturnValue(null);
 
     const brickPromise = brick.run(
       unsafeAssumeValidArg({
@@ -143,13 +141,14 @@ describe("FormTransformer", () => {
 
     expect(showModalMock).toHaveBeenCalledExactlyOnceWith({
       controller: expect.any(AbortController),
-      // Why is any(String) now working here?
+      // Why is any(String) not working here?
       url: expect.anything(),
     });
 
     const opener = new URL(showModalMock.mock.calls[0][0].url).searchParams.get(
       "opener",
     );
+
     expect(JSON.parse(opener)).toStrictEqual({ tabId: 1, frameId: 1 });
   });
 });

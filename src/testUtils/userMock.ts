@@ -16,38 +16,35 @@
  */
 
 import { type Me } from "@/types/contract";
-import { appApi } from "@/services/api";
 import {
-  queryLoadingFactory,
-  querySuccessFactory,
-} from "@/testUtils/rtkQueryFactories";
-
-import { userFactory } from "@/testUtils/factories/authFactories";
-
-// Instead of monkey-patching RTK Query's Redux State, we might want to instead encourage using setupRedux
-// in the render helper?
+  tokenAuthDataFactory,
+  userFactory,
+} from "@/testUtils/factories/authFactories";
+import { appApiMock } from "@/testUtils/appApiMock";
+import { TEST_setAuthData } from "@/auth/token";
 
 // In existing code, there was a lot of places mocking both useQueryState and useGetMeQuery. This could in some places
 // yield impossible states due to how `skip` logic in calls like RequireAuth, etc.
 
-// Other things we'd need to eventually mock here:
-// - auth.ts:useLinkState
-// - auth:ts:isLinked
-
 export function mockAnonymousUser(): void {
-  (appApi.endpoints.getMe as any).useQueryState = jest.fn(() =>
-    querySuccessFactory({}),
-  );
+  appApiMock.onGet("/api/me/").reply(200, {
+    // Anonymous users still get feature flags
+    flags: [],
+  });
 }
 
-export function mockCachedUser(me?: Me): void {
-  (appApi.endpoints.getMe as any).useQueryState = jest.fn(() =>
-    querySuccessFactory(me ?? userFactory()),
-  );
+export async function mockAuthenticatedUser(me?: Me): Promise<void> {
+  const user = me ?? userFactory();
+  appApiMock.onGet("/api/me/").reply(200, user);
+  const tokenData = tokenAuthDataFactory({
+    email: user.email,
+    user: user.id,
+    flags: user.flags,
+  });
+  // eslint-disable-next-line new-cap
+  await TEST_setAuthData(tokenData);
 }
 
-export function mockLoadingCachedUser(): void {
-  (appApi.endpoints.getMe as any).useQueryState = jest.fn(() =>
-    queryLoadingFactory(),
-  );
+export function mockErrorUser(error: unknown): void {
+  appApiMock.onGet("/api/me/").reply(500, error);
 }

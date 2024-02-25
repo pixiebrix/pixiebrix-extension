@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getBaseURL } from "@/services/baseService";
+import { getBaseURL } from "@/data/service/baseService";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
 import {

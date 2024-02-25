@@ -18,20 +18,20 @@
 import React from "react";
 import NoTabAccessPane from "@/pageEditor/panes/NoTabAccessPane";
 import { render, screen } from "@/pageEditor/testHelpers";
-import useCurrentUrl from "@/pageEditor/hooks/useCurrentUrl";
+import useCurrentInspectedUrl from "@/pageEditor/hooks/useCurrentInspectedUrl";
 import { waitFor } from "@testing-library/react";
 
-jest.mock("@/pageEditor/hooks/useCurrentUrl");
+jest.mock("@/pageEditor/hooks/useCurrentInspectedUrl");
 
 describe("PermissionsPane", () => {
   test("it renders", () => {
-    jest.mocked(useCurrentUrl).mockReturnValue("https://test.url");
+    jest.mocked(useCurrentInspectedUrl).mockReturnValue("https://test.url");
     const { asFragment } = render(<NoTabAccessPane />);
     expect(asFragment()).toMatchSnapshot();
   });
 
   test("it renders right copy when the URL isn't available", async () => {
-    jest.mocked(useCurrentUrl).mockReturnValue(undefined);
+    jest.mocked(useCurrentInspectedUrl).mockReturnValue(undefined);
     render(<NoTabAccessPane />);
 
     await waitFor(() => {

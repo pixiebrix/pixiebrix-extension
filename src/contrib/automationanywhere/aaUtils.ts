@@ -23,7 +23,6 @@ import {
   type Variable,
 } from "@/contrib/automationanywhere/contract";
 import { type JSONSchema7Type } from "json-schema";
-import { type UnknownObject } from "@/types/objectTypes";
 import { mapValues } from "lodash";
 import { type Primitive } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
@@ -162,8 +161,10 @@ function mapBotOutput(value: OutputValue): Primitive {
     }
 
     default: {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-      throw new BusinessError(`Type not supported by PixieBrix: ${value.type}`);
+      const exhaustiveCheck: never = value.type;
+      throw new BusinessError(
+        `Type not supported by PixieBrix: ${exhaustiveCheck}`,
+      );
     }
   }
 }

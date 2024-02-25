@@ -39,6 +39,7 @@ export function isDeploymentActive(extensionLike: {
   _deployment?: ModComponentBase["_deployment"];
 }): boolean {
   return (
+    // Check for null/undefined to preserve backward compatability
     // Prior to extension version 1.4.0, there was no `active` field, because there was no ability to pause deployments
     extensionLike._deployment?.active == null ||
     extensionLike._deployment.active

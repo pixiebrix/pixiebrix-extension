@@ -41,9 +41,9 @@ import { type ModComponentFormState } from "@/pageEditor/starterBricks/formState
 import { selectExtensions } from "@/store/extensionsSelectors";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { getPageState } from "@/contentScript/messenger/strict/api";
-import { thisTab } from "@/pageEditor/utils";
 import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
 import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -184,7 +184,7 @@ async function varAnalysisFactory(
   const variables = await ModVariableNames.collectSchemas(formStates);
 
   // The actual mod variables
-  const modState = await getPageState(thisTab, {
+  const modState = await getPageState(inspectedTab, {
     namespace: "blueprint",
     extensionId: extension.uuid,
     blueprintId: extension.recipe?.id,

@@ -30,9 +30,9 @@ import SchemaTree from "@/components/schemaTree/SchemaTree";
 import useUserAction from "@/hooks/useUserAction";
 import DetailSection from "./DetailSection";
 import { type Schema } from "@/types/schemaTypes";
-import { useGetMarketplaceListingsQuery } from "@/services/api";
+import { useGetMarketplaceListingsQuery } from "@/data/service/api";
 import BrickIcon from "@/components/BrickIcon";
-import { writeTextToClipboard } from "@/utils/clipboardUtils";
+import { writeToClipboard } from "@/utils/clipboardUtils";
 import { type Metadata } from "@/types/registryTypes";
 import { MARKETPLACE_URL } from "@/urlConstants";
 
@@ -94,7 +94,7 @@ const BrickDetail = <T extends Metadata>({
 
   const copyHandler = useUserAction(
     async () => {
-      await writeTextToClipboard({ text: makeArgumentYaml(schema) });
+      await writeToClipboard({ text: makeArgumentYaml(schema) });
     },
     {
       successMessage: "Copied input argument YAML to clipboard",

@@ -37,17 +37,16 @@ import SelectWidget, {
 } from "@/components/form/widgets/SelectWidget";
 import useAsyncState from "@/hooks/useAsyncState";
 import { getAttributeExamples } from "@/contentScript/messenger/api";
-import { thisTab } from "@/pageEditor/utils";
 import { fallbackValue } from "@/utils/asyncStateUtils";
 import { type AttributeExample } from "@/contentScript/pageEditor/types";
 import CollapsibleFieldSection from "@/pageEditor/fields/CollapsibleFieldSection";
 import cx from "classnames";
 import { type Expression, type TemplateEngine } from "@/types/runtimeTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { isTemplateExpression, isVarExpression } from "@/utils/expressionUtils";
 import { joinName } from "@/utils/formUtils";
 import { freshIdentifier } from "@/utils/variableUtils";
 import useAsyncEffect from "use-async-effect";
+import { inspectedTab } from "@/pageEditor/context/connection";
 
 /**
  * Version of SelectorConfig where fields may be expressions.
@@ -220,7 +219,7 @@ const SelectorCard: React.FC<{
     useAsyncState(async () => {
       if (typeof selectorDefinition.selector === "string") {
         return getAttributeExamples(
-          thisTab,
+          inspectedTab,
           compact([rootSelector, selectorDefinition.selector]).join(" "),
         );
       }

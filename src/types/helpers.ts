@@ -83,7 +83,9 @@ export function validateUUID(uuid: unknown): UUID {
   }
 
   if (typeof uuid !== "string") {
-    throw new TypeError("Expected UUID to be a string");
+    throw new TypeError(
+      `Expected UUID to be a string. Instead got: ${typeof uuid}`,
+    );
   }
 
   if (isUUID(uuid)) {
@@ -92,7 +94,7 @@ export function validateUUID(uuid: unknown): UUID {
 
   console.debug("Invalid UUID: %s", uuid);
 
-  throw new Error("Invalid UUID");
+  throw new Error("Invalid UUID", { cause: { uuid, type: typeof uuid } });
 }
 
 /**

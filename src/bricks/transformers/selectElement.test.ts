@@ -19,6 +19,8 @@ import { SelectElement } from "@/bricks/transformers/selectElement";
 import { userSelectElement } from "@/contentScript/pageEditor/elementPicker";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { CancelError } from "@/errors/businessErrors";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 
 jest.mock("@/contentScript/pageEditor/elementPicker");
 
@@ -38,7 +40,10 @@ describe("selectElement", () => {
       shouldSelectSimilar: false,
     });
 
-    const result = await brick.transform();
+    const result = await brick.transform(
+      unsafeAssumeValidArg({}),
+      brickOptionsFactory(),
+    );
 
     expect(result).toEqual({
       elements: [getReferenceForElement(elements[0])],
@@ -50,6 +55,8 @@ describe("selectElement", () => {
 
     userSelectElementMock.mockRejectedValue(new CancelError());
 
-    await expect(async () => brick.transform()).rejects.toThrow(CancelError);
+    await expect(async () =>
+      brick.transform(unsafeAssumeValidArg({}), brickOptionsFactory()),
+    ).rejects.toThrow(CancelError);
   });
 });

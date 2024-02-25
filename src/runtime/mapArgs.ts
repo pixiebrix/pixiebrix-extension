@@ -24,7 +24,6 @@ import {
 import { mapValues, pickBy } from "lodash";
 import { getPropByPath, isSimplePath } from "./pathHelpers";
 import Mustache from "mustache";
-import { type UnknownObject } from "@/types/objectTypes";
 import {
   isDeferExpression,
   isPipelineExpression,

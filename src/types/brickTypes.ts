@@ -21,6 +21,10 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type RegistryId, type Metadata } from "@/types/registryTypes";
+import {
+  CONTENT_SCRIPT_CAPABILITIES,
+  type PlatformCapability,
+} from "@/platform/capabilities";
 
 /**
  * An instance of a re-usable brick.
@@ -52,6 +56,15 @@ export interface Brick extends Metadata {
    * @since 1.7.20
    */
   getOutputSchema?: (config: BrickConfig) => Schema | undefined;
+
+  /**
+   * Return a list of platform capabilities that may be required to run this brick.
+   * @param config
+   * @since 1.8.10
+   */
+  getRequiredCapabilities: (
+    config: BrickConfig,
+  ) => Promise<PlatformCapability[]>;
 
   /**
    * An optional method to generate a JSON schema describing the mod variables set by the brick.
@@ -163,6 +176,22 @@ export abstract class BrickABC implements Brick {
     return true;
   }
 
+  async getRequiredCapabilities(
+    _config: BrickConfig,
+  ): Promise<PlatformCapability[]> {
+    const capabilities: PlatformCapability[] = [];
+
+    if (await this.isRootAware()) {
+      capabilities.push(...CONTENT_SCRIPT_CAPABILITIES);
+    }
+
+    if (await this.isPageStateAware()) {
+      capabilities.push("state");
+    }
+
+    return capabilities;
+  }
+
   async isPageStateAware(): Promise<boolean> {
     // Not a safe default, but it's not important currently if we miss any bricks because we're just using this
     // to determine whether to show Page State information in the Page Editor
@@ -184,7 +213,7 @@ export abstract class BrickABC implements Brick {
   /**
    * Returns a JSON Schema for the shape of a variable introduced by a sub-pipeline.
    * @param _config
-   * @param pipelineName the pipeline name
+   * @param _pipelineName the pipeline name
    * @since 1.8.4
    */
   getPipelineVariableSchema(

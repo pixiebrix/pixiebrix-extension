@@ -20,12 +20,9 @@ import Mustache from "mustache";
 import { identity, mapKeys } from "lodash";
 import { getPropByPath } from "@/runtime/pathHelpers";
 import { type JsonObject } from "type-fest";
-import {
-  renderHandlebarsTemplate,
-  renderNunjucksTemplate,
-} from "@/sandbox/messenger/api";
-import { type UnknownObject } from "@/types/objectTypes";
 import { containsTemplateExpression } from "@/utils/expressionUtils";
+// XXX: should this be using the platform from reducePipeline?
+import { getPlatform } from "@/platform/platformContext";
 
 export type AsyncTemplateRenderer = (
   template: string,
@@ -74,7 +71,8 @@ export function engineRenderer(
           key.replaceAll("-", "_"),
         );
 
-        return renderNunjucksTemplate({
+        return getPlatform().template.render({
+          engine: "nunjucks",
           template,
           context: snakeCased as JsonObject,
           autoescape,
@@ -89,7 +87,8 @@ export function engineRenderer(
           return template;
         }
 
-        return renderHandlebarsTemplate({
+        return getPlatform().template.render({
+          engine: "handlebars",
           template,
           context: ctxt as JsonObject,
           autoescape,

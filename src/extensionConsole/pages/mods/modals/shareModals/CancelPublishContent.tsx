@@ -26,7 +26,7 @@ import { produce } from "immer";
 import {
   useGetEditablePackagesQuery,
   useUpdateRecipeMutation,
-} from "@/services/api";
+} from "@/data/service/api";
 import notify from "@/utils/notify";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { getErrorMessage } from "@/errors/errorHelpers";

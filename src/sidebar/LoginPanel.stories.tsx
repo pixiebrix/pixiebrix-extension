@@ -24,8 +24,7 @@ import { Provider } from "react-redux";
 import settingsSlice from "@/store/settings/settingsSlice";
 import integrationsSlice from "@/integrations/store/integrationsSlice";
 import { authSlice } from "@/auth/authSlice";
-import { appApi } from "@/services/api";
-import { type UnknownObject } from "@/types/objectTypes";
+import { appApi } from "@/data/service/api";
 
 export default {
   title: "Sidebar/LoginPanel",

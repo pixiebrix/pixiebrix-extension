@@ -66,7 +66,6 @@ import {
   checkAvailable,
   getInstalledExtensionPoints,
 } from "@/contentScript/messenger/api";
-import { getCurrentURL, thisTab } from "@/pageEditor/utils";
 import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 import { QuickBarStarterBrickABC } from "@/starterBricks/quickBarExtension";
 import { testMatchPatterns } from "@/bricks/available";
@@ -83,6 +82,10 @@ import { type OptionsArgs } from "@/types/runtimeTypes";
 import { createMigrate } from "redux-persist";
 import { migrations } from "@/store/editorMigrations";
 import { type BaseExtensionPointState } from "@/pageEditor/baseFormStateTypes";
+import {
+  getCurrentInspectedURL,
+  inspectedTab,
+} from "@/pageEditor/context/connection";
 
 export const initialState: EditorState = {
   selectionSeq: 0,
@@ -152,7 +155,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
 >("editor/checkAvailableInstalledExtensions", async (arg, thunkAPI) => {
   const elements = selectNotDeletedElements(thunkAPI.getState());
   const extensions = selectNotDeletedExtensions(thunkAPI.getState());
-  const extensionPoints = await getInstalledExtensionPoints(thisTab);
+  const extensionPoints = await getInstalledExtensionPoints(inspectedTab);
   const installedExtensionPoints = new Map(
     extensionPoints.map((extensionPoint) => [
       extensionPoint.id,
@@ -164,7 +167,7 @@ const checkAvailableInstalledExtensions = createAsyncThunk<
       resolveExtensionInnerDefinitions(extension),
     ),
   );
-  const tabUrl = await getCurrentURL();
+  const tabUrl = await getCurrentInspectedURL();
   const availableExtensionPointIds = resolved
     .filter((x) => {
       const extensionPoint = installedExtensionPoints.get(x.extensionPointId);
@@ -207,7 +210,7 @@ async function isElementAvailable(
   }
 
   return checkAvailable(
-    thisTab,
+    inspectedTab,
     elementExtensionPoint.definition.isAvailable,
     tabUrl,
   );
@@ -223,7 +226,7 @@ const checkAvailableDynamicElements = createAsyncThunk<
   { state: EditorRootState }
 >("editor/checkAvailableDynamicElements", async (arg, thunkAPI) => {
   const elements = selectNotDeletedElements(thunkAPI.getState());
-  const tabUrl = await getCurrentURL();
+  const tabUrl = await getCurrentInspectedURL();
   const availableElementIds = await Promise.all(
     elements.map(async ({ uuid, extensionPoint: elementExtensionPoint }) => {
       const isAvailable = await isElementAvailable(
@@ -247,7 +250,7 @@ const checkActiveElementAvailability = createAsyncThunk<
   void,
   { state: EditorRootState & ModComponentsRootState }
 >("editor/checkDynamicElementAvailability", async (arg, thunkAPI) => {
-  const tabUrl = await getCurrentURL();
+  const tabUrl = await getCurrentInspectedURL();
   const state = thunkAPI.getState();
   // The currently selected element in the page editor
   const activeElement = selectActiveElement(state);

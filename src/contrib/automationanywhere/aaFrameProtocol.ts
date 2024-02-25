@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownObject } from "@/types/objectTypes";
 import { expectContext } from "@/utils/expectContext";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { getCopilotHostData } from "@/contentScript/messenger/api";

@@ -25,6 +25,7 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import PanelContent from "@/pageEditor/PanelContent";
 import InvalidatedContextGate from "@/components/InvalidatedContextGate";
+import TabInspectionGate from "@/pageEditor/context/TabInspectionGate";
 
 // Register the built-in bricks
 registerEditors();
@@ -47,7 +48,9 @@ const UnguardedPanel: React.VoidFunctionComponent = () => {
 
 const Panel: React.VoidFunctionComponent = () => (
   <InvalidatedContextGate contextNameTitleCase="Page Editor">
-    <UnguardedPanel />
+    <TabInspectionGate>
+      <UnguardedPanel />
+    </TabInspectionGate>
   </InvalidatedContextGate>
 );
 

@@ -16,10 +16,10 @@
  */
 
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { type BrickArgs } from "@/types/runtimeTypes";
+import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import type { PlatformCapability } from "@/platform/capabilities";
 
 export class AddLead extends EffectABC {
   constructor() {
@@ -70,11 +70,18 @@ export class AddLead extends EffectABC {
     required: ["salesforce", "LastName", "Company"],
   };
 
-  async effect({
-    salesforce,
-    ...data
-  }: BrickArgs<{ salesforce: SanitizedIntegrationConfig }>): Promise<void> {
-    await performConfiguredRequestInBackground(salesforce, {
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    return ["http"];
+  }
+
+  async effect(
+    {
+      salesforce,
+      ...data
+    }: BrickArgs<{ salesforce: SanitizedIntegrationConfig }>,
+    { platform }: BrickOptions,
+  ): Promise<void> {
+    await platform.request(salesforce, {
       url: "/services/data/v49.0/sobjects/Lead/",
       method: "post",
       data,
