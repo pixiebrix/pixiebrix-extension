@@ -146,7 +146,7 @@ function destroyPopover(): void {
     // listeners via useEffect: https://react.dev/reference/react-dom/unmountComponentAtNode
     unmountComponentAtNode(commandPopover);
 
-    commandPopover?.remove();
+    commandPopover.remove();
     commandPopover = null;
 
     hideController.abortAndReset();

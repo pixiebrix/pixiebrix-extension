@@ -22,6 +22,7 @@ import {
   isContentEditableElement,
 } from "@/types/inputTypes";
 import { useEffect, useRef, useState } from "react";
+import { uuidv4 } from "@/types/helpers";
 
 /**
  * Set of keys that clear the query/hide the popover.
@@ -123,6 +124,10 @@ function useKeyboardQuery({
   const onOffsetRef = useRef(onOffset);
 
   useEffect(() => {
+    // Nonce to assist in debugging listener cleanup bugs
+    const nonce = uuidv4();
+    console.debug("useKeyboardQuery: mount", nonce);
+
     const handleKeyUp = (event: KeyboardEvent) => {
       if (CLEAR_QUERY_KEYS.has(event.key)) {
         setQuery(null);
@@ -143,6 +148,7 @@ function useKeyboardQuery({
       if (SUBMIT_QUERY_KEYS.has(event.key)) {
         event.preventDefault();
         event.stopPropagation();
+        console.debug("useKeyboardQuery: submit", nonce);
         onSubmitRef.current(queryRef.current);
       } else if (event.key === "ArrowUp") {
         event.preventDefault();
@@ -166,10 +172,12 @@ function useKeyboardQuery({
     element.addEventListener("keyup", handleKeyUp, { passive: true });
 
     return () => {
-      console.debug("useKeyboardQuery: unmount");
-
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown, {
+        // Must match the addEventListener option for `capture`, otherwise won't be removed
+        capture: true,
+      });
       element.removeEventListener("keyup", handleKeyUp);
+      console.debug("useKeyboardQuery: unmount", nonce);
     };
   }, [element, setQuery, commandKey, onSubmitRef, onOffsetRef]);
 

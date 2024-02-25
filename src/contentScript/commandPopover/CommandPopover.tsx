@@ -41,6 +41,7 @@ import { Events } from "@/telemetry/events";
 import EmotionShadowRoot from "react-shadow/emotion";
 import { Stylesheets } from "@/components/Stylesheets";
 import type { TextCommand } from "@/platform/platformProtocol";
+import useIsMounted from "@/hooks/useIsMounted";
 
 // "Every property exists" (via Proxy), TypeScript doesn't offer such type
 // Also strictNullChecks config mismatch
@@ -107,6 +108,7 @@ const CommandPopover: React.FunctionComponent<
     element: TextEditorElement;
   } & PopoverActionCallbacks
 > = ({ commandKey, registry, element, onHide }) => {
+  const isMounted = useIsMounted();
   const [state, dispatch] = useReducer(popoverSlice.reducer, initialState);
   const selectedCommand = selectSelectedCommand(state);
   const selectedCommandRef = useRef(selectedCommand);
@@ -121,13 +123,16 @@ const CommandPopover: React.FunctionComponent<
         reportEvent(Events.TEXT_COMMAND_RUN);
         const text = await command.handler(getElementText(element));
         await replaceAtCommand({ commandKey, query, element, text });
-        dispatch(popoverSlice.actions.setCommandSuccess({ text }));
         onHide();
+        if (isMounted()) {
+          // We're setting success state for Storybook. In practice, the popover will be unmounted via onHide()
+          dispatch(popoverSlice.actions.setCommandSuccess({ text }));
+        }
       } catch (error) {
         dispatch(popoverSlice.actions.setCommandError({ error }));
       }
     },
-    [element, commandKey, onHide, dispatch],
+    [element, commandKey, onHide, dispatch, isMounted],
   );
 
   const query = useKeyboardQuery({
