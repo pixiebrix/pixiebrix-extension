@@ -17,13 +17,15 @@
 
 import { once } from "lodash";
 import type { Nullishable } from "@/utils/nullishUtils";
-import { ensureTooltipsContainer } from "@/contentScript/tooltipDom";
+import { tooltipFactory } from "@/contentScript/tooltipDom";
 import { render } from "react-dom";
 import {
   autoUpdate,
   computePosition,
+  flip,
   inline,
   offset,
+  shift,
   type VirtualElement,
 } from "@floating-ui/dom";
 import { getCaretCoordinates } from "@/utils/textAreaUtils";
@@ -32,25 +34,28 @@ import CommandRegistry from "@/contentScript/commandPopover/CommandRegistry";
 import CommandPopover from "@/contentScript/commandPopover/CommandPopover";
 import { onContextInvalidated } from "webext-events";
 import {
-  type TextEditorElement,
-  isSelectableTextControlElement,
   isContentEditableElement,
+  isSelectableTextControlElement,
   isSelectableTextEditorElement,
   isTextControlElement,
+  type SelectableTextEditorElement,
+  type TextEditorElement,
 } from "@/types/inputTypes";
 import { expectContext } from "@/utils/expectContext";
+import { RepeatableAbortController } from "abort-utils";
+import { waitAnimationFrame } from "@/utils/domUtils";
 
-const COMMAND_KEY = "/";
+const COMMAND_KEY = "\\";
 
 export const commandRegistry = new CommandRegistry();
 
 let commandPopover: Nullishable<HTMLElement>;
 
-let cleanupAutoPosition: Nullishable<() => void>;
+const hideController = new RepeatableAbortController();
 
 let targetElement: Nullishable<TextEditorElement>;
 
-function showPopover(): void {
+async function showPopover(): Promise<void> {
   if (targetElement == null) {
     return;
   }
@@ -59,51 +64,89 @@ function showPopover(): void {
   commandPopover.setAttribute("aria-hidden", "false");
   commandPopover.style.setProperty("display", "block");
 
-  void updatePosition();
+  // For now just destroy the tooltip on document/element scroll to avoid gotchas with floating UI's `position: fixed`
+  // strategy. See tooltipController.ts for more details.
+  document.activeElement?.addEventListener(
+    "scroll",
+    () => {
+      destroyPopover();
+    },
+    { passive: true, once: true, signal: hideController.signal },
+  );
+
+  document.addEventListener(
+    "scroll",
+    () => {
+      destroyPopover();
+    },
+    { passive: true, once: true, signal: hideController.signal },
+  );
+
+  // Hide if the user selects somewhere
+  document.addEventListener(
+    "selectionchange",
+    () => {
+      if (targetElement && isTextSelected(targetElement)) {
+        destroyPopover();
+      }
+    },
+    { passive: true, signal: hideController.signal },
+  );
+
+  // Hide on outside click
+  document.addEventListener(
+    "click",
+    (event) => {
+      if (
+        event.target !== commandPopover &&
+        !commandPopover?.contains(event.target as Node)
+      ) {
+        destroyPopover();
+      }
+    },
+    { capture: true, passive: true, signal: hideController.signal },
+  );
+
+  // Try to avoid sticky tool-tip on SPA navigation
+  document.addEventListener(
+    "navigate",
+    () => {
+      destroyPopover();
+    },
+    { capture: true, passive: true, signal: hideController.signal },
+  );
+
+  return updatePosition();
 }
 
 function createPopover(element: TextEditorElement): HTMLElement {
-  const container = ensureTooltipsContainer();
+  if (commandPopover) {
+    throw new Error("Popover already exists");
+  }
 
-  const popover = document.createElement("div");
-  // Using popover attribute should keep it on top of the page
-  // https://developer.chrome.com/blog/introducing-popover-api
-  // https://developer.mozilla.org/en-US/docs/Web/API/Popover_API
-  popover.setAttribute("popover", "");
-  popover.dataset.testid = "pixiebrix-command-tooltip";
-
-  // Must be set before positioning: https://floating-ui.com/docs/computeposition#initial-layout
-  popover.style.setProperty("position", "fixed");
-  popover.style.setProperty("width", "max-content");
-  popover.style.setProperty("height", "max-content");
-  popover.style.setProperty("top", "0");
-  popover.style.setProperty("left", "0");
-  // Override Chrome's based styles for [popover] attribute
-  popover.style.setProperty("margin", "0");
-  popover.style.setProperty("padding", "0");
+  commandPopover = tooltipFactory();
+  commandPopover.dataset.testid = "pixiebrix-command-tooltip";
 
   render(
     <CommandPopover
       registry={commandRegistry}
       element={element}
       onHide={destroyPopover}
+      commandKey={COMMAND_KEY}
     />,
-    popover,
+    commandPopover,
   );
 
-  container.append(popover);
-
-  commandPopover = popover;
   return commandPopover;
 }
 
 function destroyPopover(): void {
-  cleanupAutoPosition?.();
   commandPopover?.remove();
   commandPopover = null;
+  hideController.abortAndReset();
 }
 
-function getPositionReference(): Nullishable<VirtualElement | Element> {
+function getCursorPositionReference(): Nullishable<VirtualElement | Element> {
   // Browsers don't report an accurate selection within inputs/textarea
   if (isSelectableTextControlElement(targetElement)) {
     const textControl = targetElement;
@@ -115,22 +158,32 @@ function getPositionReference(): Nullishable<VirtualElement | Element> {
 
     return {
       getBoundingClientRect() {
+        if (targetElement == null) {
+          // Shouldn't happen in practice because autoUpdate won't call if the element is no longer on the page
+          throw new Error("Target element is null");
+        }
+
         const { selectionStart } = textControl;
 
-        const position = selectionStart
+        const positionInTarget = selectionStart
           ? getCaretCoordinates(textControl, selectionStart)
           : {
               top: 0,
               left: 0,
             };
 
+        const x =
+          elementRect.x + positionInTarget.left + targetElement.scrollLeft;
+        const y =
+          elementRect.y + positionInTarget.top + targetElement.scrollTop;
+
         return {
           height: 0,
           width: 0,
-          x: elementRect.x + position.left,
-          y: elementRect.y + position.top,
-          left: elementRect.x + position.left,
-          top: elementRect.y + position.top,
+          x,
+          y,
+          left: x,
+          top: y,
           right: elementRect.x,
           bottom: elementRect.y,
         };
@@ -165,7 +218,7 @@ async function updatePosition(): Promise<void> {
     return;
   }
 
-  const referenceElement = getPositionReference();
+  const referenceElement = getCursorPositionReference();
 
   if (!referenceElement) {
     return;
@@ -174,7 +227,7 @@ async function updatePosition(): Promise<void> {
   const supportsInline = "getClientRects" in referenceElement;
 
   // Keep anchored on scroll/resize: https://floating-ui.com/docs/computeposition#anchoring
-  cleanupAutoPosition = autoUpdate(
+  const cleanupAutoPosition = autoUpdate(
     referenceElement,
     commandPopover,
     async () => {
@@ -184,15 +237,22 @@ async function updatePosition(): Promise<void> {
       }
 
       const { x, y } = await computePosition(referenceElement, commandPopover, {
-        placement: "right-end",
+        // `top-start` is a nice placement because we don't have to worry about font-size or line-height. It also
+        // reduces the changes of conflicting with native auto-complete/suggestion dropdowns.
+        placement: "top-start",
         strategy: "fixed",
         // Prevent from appearing detached if multiple lines selected: https://floating-ui.com/docs/inline
         middleware: [
           ...(supportsInline ? [inline()] : []),
           offset({
-            mainAxis: 15,
-            crossAxis: 10,
+            // Offset on the horizontal axis to the popover appears "after" COMMAND_KEY
+            mainAxis: 5,
+            crossAxis: 0,
           }),
+          // Using flip/shift to ensure the tooltip is visible in editors like TinyMCE where the editor is in an
+          // iframe. See tooltipController.ts for more details.
+          shift(),
+          flip(),
         ],
       });
       Object.assign(commandPopover.style, {
@@ -201,6 +261,53 @@ async function updatePosition(): Promise<void> {
       });
     },
   );
+
+  hideController.signal.addEventListener(
+    "abort",
+    () => {
+      cleanupAutoPosition();
+    },
+    { once: true, passive: true },
+  );
+}
+
+/**
+ * Return true if target is a valid target element for showing the command popover.
+ *
+ * Read-only elements are not valid targets.
+ *
+ * @see SelectableTextEditorElement
+ */
+function isValidTarget(target: unknown): target is SelectableTextEditorElement {
+  if (!isSelectableTextEditorElement(target)) {
+    return false;
+  }
+
+  if (target.ariaReadOnly === "true") {
+    return false;
+  }
+
+  if (target.contentEditable === "false") {
+    return false;
+  }
+
+  return !(isSelectableTextControlElement(target) && target.readOnly);
+}
+
+function isTextSelected(target: unknown): boolean {
+  if (
+    isSelectableTextControlElement(target) &&
+    target.selectionStart !== target.selectionEnd
+  ) {
+    return true;
+  }
+
+  if (isContentEditableElement(target)) {
+    const range = window.getSelection()?.getRangeAt(0);
+    return range != null && range.toString().length > 0;
+  }
+
+  return false;
 }
 
 export const initCommandController = once(() => {
@@ -208,54 +315,20 @@ export const initCommandController = once(() => {
 
   document.addEventListener(
     "keypress",
-    (event) => {
+    async (event) => {
+      // Required to ensure that the position is available for the first keypress in a row in a content editable.
+      await waitAnimationFrame();
+
       if (
         event.key === COMMAND_KEY &&
-        isSelectableTextEditorElement(event.target)
+        isValidTarget(event.target) &&
+        !isTextSelected(event.target)
       ) {
         targetElement = event.target;
-        showPopover();
+        await showPopover();
       }
     },
     { capture: true, passive: true },
-  );
-
-  // Hide if the user selects text
-  document.addEventListener("selectionchange", () => {
-    if (
-      isSelectableTextControlElement(targetElement) &&
-      targetElement.selectionStart !== targetElement.selectionEnd
-    ) {
-      destroyPopover();
-    } else if (isContentEditableElement(targetElement)) {
-      const range = window.getSelection()?.getRangeAt(0);
-      if (range && range.toString().length > 0) {
-        destroyPopover();
-      }
-    }
-  });
-
-  // Hide on outside click
-  document.addEventListener(
-    "click",
-    (event) => {
-      if (
-        event.target !== commandPopover &&
-        !commandPopover?.contains(event.target as Node)
-      ) {
-        destroyPopover();
-      }
-    },
-    { capture: true, passive: true },
-  );
-
-  // Try to avoid sticky tool-tip on SPA navigation
-  document.addEventListener(
-    "navigate",
-    () => {
-      destroyPopover();
-    },
-    { passive: true },
   );
 
   onContextInvalidated.addListener(() => {

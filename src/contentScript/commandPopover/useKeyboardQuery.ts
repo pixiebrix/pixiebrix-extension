@@ -128,8 +128,10 @@ function useKeyboardQuery({
       }
 
       if (SUBMIT_QUERY_KEYS.has(event.key)) {
+        // FIXME: not getting event for "Tab" for CKEditor
         event.preventDefault();
         event.stopPropagation();
+        // FIXME: text command not working for CKEditor
         onSubmitRef.current();
       } else if (event.key === "ArrowUp") {
         event.preventDefault();

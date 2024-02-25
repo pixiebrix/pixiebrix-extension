@@ -20,7 +20,7 @@ import { once } from "lodash";
 import type { Nullishable } from "@/utils/nullishUtils";
 import { render } from "react-dom";
 import React from "react";
-import { ensureTooltipsContainer } from "@/contentScript/tooltipDom";
+import { tooltipFactory } from "@/contentScript/tooltipDom";
 import {
   autoUpdate,
   computePosition,
@@ -34,7 +34,6 @@ import { getCaretCoordinates } from "@/utils/textAreaUtils";
 import SelectionToolbar from "@/contentScript/selectionTooltip/SelectionToolbar";
 import { expectContext } from "@/utils/expectContext";
 import { onContextInvalidated } from "webext-events";
-import { MAX_Z_INDEX } from "@/domConstants";
 import { isNativeField } from "@/types/inputTypes";
 import { onAbort, RepeatableAbortController } from "abort-utils";
 
@@ -67,7 +66,7 @@ async function showTooltip(): Promise<void> {
     () => {
       hideTooltip();
     },
-    { passive: true, once: true },
+    { passive: true, once: true, signal: hideController.signal },
   );
 
   document.addEventListener(
@@ -75,7 +74,16 @@ async function showTooltip(): Promise<void> {
     () => {
       hideTooltip();
     },
-    { passive: true, once: true },
+    { passive: true, once: true, signal: hideController.signal },
+  );
+
+  // Try to avoid sticky tool-tip on SPA navigation
+  document.addEventListener(
+    "navigate",
+    () => {
+      destroyTooltip();
+    },
+    { passive: true, once: true, signal: hideController.signal },
   );
 
   return updatePosition();
@@ -100,43 +108,17 @@ function destroyTooltip(): void {
 }
 
 function createTooltip(): HTMLElement {
-  const container = ensureTooltipsContainer();
+  if (selectionTooltip) {
+    throw new Error("Tooltip already exists");
+  }
 
-  const popover = document.createElement("div");
-  // TODO: figure out how to use with the popover API. Just setting "popover" attribute doesn't promote the element to
-  //  the top layer. I believe we need to call showPopover() on it. We also need it to work with floating UI so we
-  //  can target a virtual element with offset. See https://github.com/floating-ui/floating-ui/issues/1842
-  // Using popover attribute should keep it on top of the page
-  // https://developer.chrome.com/blog/introducing-popover-api
-  // https://developer.mozilla.org/en-US/docs/Web/API/Popover_API
-  popover.setAttribute("popover", "manual");
-  popover.dataset.testid = "pixiebrix-selection-tooltip";
-  popover.style.setProperty("z-index", (MAX_Z_INDEX - 1).toString());
-
-  // Must be set before positioning: https://floating-ui.com/docs/computeposition#initial-layout
-  // We were getting placement glitches when using "absolute" positioning. The downside of "fixed" is that the
-  // positioning on scroll doesn't "just work". See comments in updatePosition
-  popover.style.setProperty("position", "fixed");
-  popover.style.setProperty("width", "max-content");
-  popover.style.setProperty("top", "0");
-  popover.style.setProperty("left", "0");
-  // Override Chrome's base styles for [popover] attribute and provide a consistent look across applications that
-  // override the browser defaults (e.g., Zendesk)
-  popover.style.setProperty("margin", "0");
-  popover.style.setProperty("padding", "0");
-  popover.style.setProperty("border-radius", "5px");
-  // Can't use colors file because the element is being rendered directly on the host
-  popover.style.setProperty("background-color", "#ffffff"); // $S0 color
-  popover.style.setProperty("border", "2px solid #a8a1b4"); // $N200 color
+  selectionTooltip = tooltipFactory();
+  selectionTooltip.dataset.testid = "pixiebrix-selection-tooltip";
 
   render(
     <SelectionToolbar registry={tooltipActionRegistry} onHide={hideTooltip} />,
-    popover,
+    selectionTooltip,
   );
-
-  container.append(popover);
-
-  selectionTooltip = popover;
 
   return selectionTooltip;
 }
@@ -231,7 +213,8 @@ async function updatePosition(): Promise<void> {
             // Using flip/shift to ensure the tooltip is visible in editors like TinyMCE where the editor is in an
             // iframe. https://floating-ui.com/docs/middleware. We probably don't want the tooltip to shift/move
             // on scroll, though. However, it's a bit tricky because we're using `position: fixed`. See createTooltip
-            // for more context.
+            // for more context. If we do implement recalculating position on scroll, we might be able to use the hide
+            // middleware to hide the tooltip.
             flip(),
             shift(),
           ],
@@ -290,15 +273,6 @@ export const initSelectionTooltip = once(() => {
       } else {
         hideTooltip();
       }
-    },
-    { passive: true },
-  );
-
-  // Try to avoid sticky tool-tip on SPA navigation
-  document.addEventListener(
-    "navigate",
-    () => {
-      destroyTooltip();
     },
     { passive: true },
   );
