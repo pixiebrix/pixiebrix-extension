@@ -283,7 +283,7 @@ function isValidTarget(target: unknown): target is SelectableTextEditorElement {
     return false;
   }
 
-  if (target.ariaReadOnly === "true") {
+  if (target.ariaReadOnly === "true" || target.ariaDisabled === "true") {
     return false;
   }
 
