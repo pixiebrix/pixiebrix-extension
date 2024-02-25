@@ -214,6 +214,25 @@ describe("Tabs", () => {
 
       expect(screen.queryByText("Mods")).not.toBeInTheDocument();
     });
+
+    test("selecting another tab closes the mod launcher", async () => {
+      await setupPanelsAndRender({
+        sidebarEntries: {
+          panels: [panel],
+          staticPanels: [MOD_LAUNCHER],
+        },
+      });
+
+      await userEvent.click(
+        screen.getByRole("button", { name: "Open Mod Launcher" }),
+      );
+
+      expect(screen.getByText("Mods")).toBeInTheDocument();
+
+      await userEvent.click(screen.getByRole("tab", { name: /panel test 1/i }));
+
+      expect(screen.queryByText("Mods")).not.toBeInTheDocument();
+    });
   });
 
   describe("Persistent Panels", () => {
