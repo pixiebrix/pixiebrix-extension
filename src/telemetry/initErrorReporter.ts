@@ -74,7 +74,7 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
       clientToken: CLIENT_TOKEN,
       service: "pixiebrix-browser-extension",
       env: ENVIRONMENT,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- The manifest has it
       version: cleanDatadogVersionName(version_name!),
       site: "datadoghq.com",
       forwardErrorsToLogs: false,
@@ -107,7 +107,7 @@ async function initErrorReporter(): Promise<Nullishable<ErrorReporter>> {
         event.error.stack = event.error.stack?.replaceAll(
           // Include the slash because location.origin does not have a trailing slash but the ENV does
           location.origin + "/",
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- Webpack enforces its presence
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Webpack enforces its presence
           process.env.SOURCE_MAP_PUBLIC_PATH!,
         );
 

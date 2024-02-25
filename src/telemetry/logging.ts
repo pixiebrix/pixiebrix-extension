@@ -336,7 +336,7 @@ export function flattenStackForDatadog(stack: string, cause?: unknown): string {
   }
 
   // Drop spaces from cause’s title or else Datadog will clip the title
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const errorTitle = cause.stack.split("\n", 1).at(0)!;
   const causeStack = cause.stack.replace(
     errorTitle,
@@ -504,7 +504,7 @@ export async function getLoggingConfig(): Promise<LoggingConfig> {
     return lastValue;
   } catch {
     // The context was probably invalidated. Logging utilities shouldn't throw errors
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Incomplete types
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Incomplete types
     return lastValue ?? loggingConfig.defaultValue!;
   }
 }

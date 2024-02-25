@@ -63,7 +63,7 @@ export function selectUserDataUpdate({
   return {
     // TODO: Review Required/Partial in Me type
     // https://github.com/pixiebrix/pixiebrix-extension/issues/7725
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
     email: email!,
     organizationId: organization?.id ?? null,
     telemetryOrganizationId: telemetryOrganization?.id ?? null,
@@ -119,5 +119,5 @@ export function selectExtensionAuthState({
  */
 export async function flagOn(flag: string): Promise<boolean> {
   const authData = await readAuthData();
-  return Boolean(authData.flags?.includes(flag));
+  return authData.flags?.includes(flag) ?? false;
 }
