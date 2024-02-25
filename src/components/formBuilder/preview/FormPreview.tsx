@@ -68,8 +68,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
         }
 
         if (activeField) {
-          draftUiSchema[activeField] ||= {};
-
+          draftUiSchema[activeField] ??= {};
           draftUiSchema[activeField][UI_SCHEMA_ACTIVE] = true;
         }
 
@@ -146,10 +145,8 @@ const FormPreview: React.FC<FormPreviewProps> = ({
             value[UI_WIDGET] === "select" &&
             propertySchema.oneOf !== undefined
           ) {
-            if (propertySchema.default == null) {
-              // Setting the default value for preview to hide an empty option
-              propertySchema.default = "";
-            }
+            // Setting the default value for preview to hide an empty option
+            propertySchema.default ??= "";
 
             if (!propertySchema.oneOf?.length) {
               propertySchema.oneOf = [{ const: "" }];

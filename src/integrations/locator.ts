@@ -157,7 +157,7 @@ class LazyLocatorFactory {
   async refresh(): Promise<void> {
     // Avoid multiple concurrent requests. Could potentially replace with debouncer with both leading/trailing: true
     // For example: https://github.com/sindresorhus/promise-fun/issues/15
-    this._refreshPromise = this._refreshPromise ?? this._refresh();
+    this._refreshPromise ??= this._refresh();
     try {
       await this._refreshPromise;
     } finally {

@@ -44,7 +44,7 @@ export const ADD_IFRAME_CONFIG: Config = {
  * @param config the DOMPurify config
  */
 function sanitize(html: string, config?: Config): SafeHTML {
-  DOMPurify ||= createDOMPurify(window);
+  DOMPurify ??= createDOMPurify(window);
 
   return DOMPurify.sanitize(html, config ?? {}) as SafeHTML;
 }
