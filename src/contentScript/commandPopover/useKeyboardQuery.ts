@@ -128,10 +128,8 @@ function useKeyboardQuery({
       }
 
       if (SUBMIT_QUERY_KEYS.has(event.key)) {
-        // FIXME: not getting event for "Tab" for CKEditor
         event.preventDefault();
         event.stopPropagation();
-        // FIXME: text command not working for CKEditor
         onSubmitRef.current();
       } else if (event.key === "ArrowUp") {
         event.preventDefault();
@@ -144,8 +142,9 @@ function useKeyboardQuery({
       }
     };
 
-    // Hijacking events for the popover
-    element.addEventListener("keydown", handleKeyDown, {
+    // Hijacking events for the popover. Needs to be attached to document because editors like CKEditor stop propagation
+    // of the "tab" key for their own purposes (e.g., indentation)
+    document.addEventListener("keydown", handleKeyDown, {
       capture: true,
       passive: false,
     });
@@ -154,7 +153,7 @@ function useKeyboardQuery({
     element.addEventListener("keyup", handleKeyUp, { passive: true });
 
     return () => {
-      element.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown);
       element.removeEventListener("keyup", handleKeyUp);
     };
   }, [element, setQuery, commandKey, onSubmitRef, onOffsetRef]);
