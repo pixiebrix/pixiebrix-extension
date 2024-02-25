@@ -135,6 +135,11 @@ const Tabs: React.FC = () => {
     !closedTabs[modLauncherEventKey];
 
   const onSelect = (eventKey: string) => {
+    // Automatically close the mod launcher if it's open, the + button will be shown instead
+    if (isModLauncherOpen) {
+      dispatch(sidebarSlice.actions.closeTab(modLauncherEventKey));
+    }
+
     reportEvent(Events.VIEW_SIDEBAR_PANEL, {
       ...selectEventData(getExtensionFromEventKey(eventKey)),
       initialLoad: false,
@@ -150,8 +155,6 @@ const Tabs: React.FC = () => {
       source: "modLauncher open button",
     });
 
-    // TODO: In the future we'll want to open multiple tabs instead
-    // https://github.com/pixiebrix/pixiebrix-extension/issues/6549#issuecomment-1742961879
     if (!isModLauncherOpen) {
       dispatch(sidebarSlice.actions.openTab(modLauncherEventKey));
     }
