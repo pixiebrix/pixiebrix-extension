@@ -41,7 +41,6 @@ import {
   type NormalizedAvailability,
   type ReaderConfig,
 } from "@/bricks/types";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { hasInnerExtensionPointRef } from "@/registry/internal";
 import { normalizePipelineForEditor } from "./pipelineMapping";

@@ -23,7 +23,6 @@ import { type RunArgs } from "@/types/runtimeTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Metadata } from "@/types/registryTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type PlatformCapability } from "@/platform/capabilities";
 
 export type StarterBrickType =

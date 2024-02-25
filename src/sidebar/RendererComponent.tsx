@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type PanelRunMeta } from "@/types/sidebarTypes";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { type RegistryId } from "@/types/registryTypes";

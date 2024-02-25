@@ -43,7 +43,7 @@ export type ResolvedBrickConfig = {
  *
  * @see brickOptionsFactory
  */
-export function unsafeAssumeValidArg<T extends Record<string, unknown>>(
+export function unsafeAssumeValidArg<T extends UnknownObject>(
   value: unknown,
 ): BrickArgs<T> {
   return value as BrickArgs<T>;

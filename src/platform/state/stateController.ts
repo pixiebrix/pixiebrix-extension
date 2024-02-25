@@ -53,8 +53,8 @@ function mergeState(
     }
 
     default: {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never type
-      throw new BusinessError(`Unknown merge strategy: ${strategy}`);
+      const exhaustiveCheck: never = strategy;
+      throw new BusinessError(`Unknown merge strategy: ${exhaustiveCheck}`);
     }
   }
 }

@@ -237,8 +237,10 @@ export async function runRendererBlock({
         controller.abort();
       }
     } else {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-      throw new Error(`Support for previewing in ${location} not implemented`);
+      const exhaustiveCheck: never = location;
+      throw new Error(
+        `Support for previewing in ${exhaustiveCheck} not implemented`,
+      );
     }
   }
 }

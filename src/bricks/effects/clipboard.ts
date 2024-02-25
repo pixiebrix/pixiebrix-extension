@@ -130,8 +130,8 @@ export class CopyToClipboard extends EffectABC {
       }
 
       default: {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Invalid content type: ${contentType}`);
+        const exhaustiveCheck: never = contentType;
+        throw new BusinessError(`Invalid content type: ${exhaustiveCheck}`);
       }
     }
   }

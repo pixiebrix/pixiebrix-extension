@@ -69,7 +69,7 @@ export class DetectElement extends TransformerABC {
   async transform(
     { selector, isRootAware }: BrickArgs,
     { root }: BrickOptions,
-  ): Promise<Record<string, unknown>> {
+  ): Promise<UnknownObject> {
     const $result = $safeFindElementsWithRootMode({
       selector,
       isRootAware,

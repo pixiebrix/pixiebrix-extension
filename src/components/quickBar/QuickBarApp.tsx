@@ -42,7 +42,6 @@ import { animatorStyle, searchStyle } from "./quickBarTheme";
 import QuickBarResults from "./QuickBarResults";
 import useActionGenerators from "@/components/quickBar/useActionGenerators";
 import useActions from "@/components/quickBar/useActions";
-import FocusLock from "react-focus-lock";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import defaultActions, {
   pageEditorAction,
@@ -50,6 +49,8 @@ import defaultActions, {
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { flagOn } from "@/auth/authUtils";
 import { onContextInvalidated } from "webext-events";
+import StopPropagation from "@/components/StopPropagation";
+import useScrollLock from "@/hooks/useScrollLock";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -95,6 +96,8 @@ const KBarComponent: React.FC = () => {
   const { showing } = useKBar((state) => ({
     showing: state.visualState !== VisualState.hidden,
   }));
+
+  useScrollLock(showing);
 
   // Save the selection at the time the quick bar is shown so it can be used in quick bar actions even after the user
   // types in the quick bar search box. Restore the selection when the quick bar is hidden.
@@ -142,14 +145,18 @@ const KBarComponent: React.FC = () => {
           <EmotionShadowRoot.div
             data-testid="quickBar"
             className="cke_editable"
+            mode="closed"
             contentEditable
             suppressContentEditableWarning
           >
             <Stylesheets href={faStyleSheet} mountOnLoad>
-              <FocusLock>
-                <KBarSearch style={searchStyle} />
-                <QuickBarResults />
-              </FocusLock>
+              <StopPropagation onKeyPress onKeyDown onKeyUp onInput>
+                {/* Avoid black scrollbars on dark sites #7695 */}
+                <div style={{ colorScheme: "light" }}>
+                  <KBarSearch style={searchStyle} />
+                  <QuickBarResults />
+                </div>
+              </StopPropagation>
             </Stylesheets>
           </EmotionShadowRoot.div>
         </KBarAnimator>
@@ -159,10 +166,13 @@ const KBarComponent: React.FC = () => {
 };
 
 export const QuickBarApp: React.FC = () => (
-  /* Disable exit animation due to #3724. `enterMs` is required too */
   <KBarProvider
     options={{
+      disableDocumentLock: true,
+
+      /* Disable exit animation due to #3724. `enterMs` is required too */
       animations: { enterMs: 300, exitMs: 0 },
+
       // Setting `toggleShortcut` to same as the Chrome-level PixieBrix `toggle-quick-bar` command shortcut defined
       // in manifest.json. However, it generally won't take effect. (And KBar does not support disabling it's shortcut)
       //

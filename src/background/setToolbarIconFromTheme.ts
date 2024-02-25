@@ -17,16 +17,28 @@
 
 import { browserAction } from "@/mv3/api";
 import axios from "axios";
+import type { ThemeAssets } from "@/themes/themeUtils";
+import { DEFAULT_THEME } from "@/themes/themeTypes";
 
-export default async function activateBrowserActionIcon(url?: string | null) {
-  const imageData = await getImageData(url);
+export default async function setToolbarIconFromTheme({
+  logo: { small: smallLogo },
+  toolbarIcon,
+  themeName,
+}: Pick<ThemeAssets, "logo" | "toolbarIcon" | "themeName">) {
+  if (toolbarIcon) {
+    const imageData = await getImageData(toolbarIcon);
 
-  if (imageData) {
-    browserAction.setIcon({ imageData });
-  } else {
-    // This re-sets the colored manifest icons
+    if (imageData) {
+      browserAction.setIcon({ imageData });
+      return;
+    }
+  }
+
+  if (themeName === DEFAULT_THEME) {
     const { icons: path } = browser.runtime.getManifest();
     browserAction.setIcon({ path });
+  } else {
+    browserAction.setIcon({ path: smallLogo });
   }
 }
 

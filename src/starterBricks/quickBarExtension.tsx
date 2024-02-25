@@ -169,8 +169,8 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
       }
 
       default: {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
+        const exhaustiveCheck: never = this.targetMode;
+        throw new BusinessError(`Unknown targetMode: ${exhaustiveCheck}`);
       }
     }
   }

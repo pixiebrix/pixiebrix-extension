@@ -30,7 +30,6 @@ import DescriptionField from "@/components/formBuilder/DescriptionField";
 import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
-import { type UnknownObject } from "@/types/objectTypes";
 import { cloneDeep } from "lodash";
 import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
 

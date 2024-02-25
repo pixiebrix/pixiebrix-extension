@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Type to be preferred over a plain `object`
- * https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/ban-types.md
- */
-export type UnknownObject = Record<string, unknown>;
+.scrollLocked {
+  overflow: hidden !important;
+}
+
+.hadScrollbar {
+  scrollbar-gutter: stable !important;
+}

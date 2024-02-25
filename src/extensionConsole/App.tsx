@@ -133,11 +133,14 @@ const AuthenticatedContent: React.VFC = () => {
 };
 
 const Layout = () => {
-  const { logo } = useTheme();
+  const {
+    activeTheme: { logo },
+    isLoading: themeIsLoading,
+  } = useTheme();
 
   return (
     <div>
-      <Navbar logo={logo} />
+      {!themeIsLoading && <Navbar logo={logo} />}
       <Container fluid className="page-body-wrapper">
         {/* It is guaranteed that under RequireAuth the user has a valid API token (either PixieBrix token or partner JWT). */}
         <ErrorBoundary ErrorComponent={IDBErrorDisplay}>

@@ -52,7 +52,6 @@ import {
 import { excludeUndefined } from "@/utils/objectUtils";
 import { boolean } from "@/utils/typeUtils";
 import { $safeFind } from "@/utils/domUtils";
-import { type UnknownObject } from "@/types/objectTypes";
 
 /**
  * @throws InputValidationError if brickArgs does not match the input schema for brick
@@ -214,8 +213,8 @@ export async function selectBlockRootElement(
     }
 
     default: {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check
-      throw new BusinessError(`Invalid rootMode: ${rootMode}`);
+      const exhaustiveCheck: never = rootMode;
+      throw new BusinessError(`Invalid rootMode: ${exhaustiveCheck}`);
     }
   }
 

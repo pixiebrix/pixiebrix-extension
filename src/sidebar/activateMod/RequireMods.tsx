@@ -31,7 +31,6 @@ import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUti
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
 import type { ModActivationConfig } from "@/types/modTypes";
-import type { UnknownObject } from "@/types/objectTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
 export type RequiredModDefinition = {

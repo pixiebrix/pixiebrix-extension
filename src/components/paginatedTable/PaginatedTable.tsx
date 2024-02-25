@@ -36,14 +36,14 @@ type RowProps = {
   style?: CSSProperties | undefined;
 };
 interface TableProps<
-  Row extends Record<string, unknown>,
+  Row extends UnknownObject,
   Actions extends Record<string, Action>,
 > {
   data: Row[];
   columns: Array<Column<Row>>;
   actions?: Actions;
   initialPageSize?: number;
-  rowProps?: (row: Record<string, unknown>) => RowProps;
+  rowProps?: (row: UnknownObject) => RowProps;
   showSearchFilter: boolean;
 
   /**
@@ -107,7 +107,7 @@ function setSearchParams(
   });
 }
 
-function findPageIndex<TRow extends Record<string, unknown>>({
+function findPageIndex<TRow extends UnknownObject>({
   record,
   rows,
   pageSize,
@@ -128,7 +128,7 @@ function findPageIndex<TRow extends Record<string, unknown>>({
 }
 
 function PaginatedTable<
-  Row extends Record<string, unknown>,
+  Row extends UnknownObject,
   Actions extends Record<string, Action>,
 >({
   data,

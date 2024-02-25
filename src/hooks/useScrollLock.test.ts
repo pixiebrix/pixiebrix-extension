@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,42 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Browsers also add base styling for [popover] attribute. E.g., Chrome adds a system border.
+import { renderHook } from "@testing-library/react-hooks";
+import useScrollLock from "./useScrollLock";
 
-@import "@/themes/colors.scss";
+describe("useScrollLock", () => {
+  const html = document.documentElement;
+  it("should add scrollLocked class to document", () => {
+    renderHook(() => {
+      useScrollLock(true);
+    });
+    expect(html).toHaveClass("scrollLocked");
+    expect(html).not.toHaveClass("hadScrollbar");
+  });
 
-.toolbar {
-  background-color: $S0;
-  display: flex;
-
-  height: 30px;
-  font-size: 16px;
-
-  padding-left: 3px;
-  padding-right: 3px;
-}
-
-.toolbarItem {
-  background-color: $S0;
-  color: black;
-  border-radius: 0;
-  border: 0;
-  cursor: pointer;
-
-  vertical-align: middle;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    background-color: $P100;
-  }
-
-  &:active {
-    background-color: $P300;
-  }
-}
-
-svg {
-  vertical-align: middle;
-}
+  it("should remove scrollLocked class from document", () => {
+    renderHook(() => {
+      useScrollLock(false);
+    });
+    expect(html).not.toHaveClass("scrollLocked");
+    expect(html).not.toHaveClass("h≈≈adScrollbar");
+  });
+});

@@ -19,8 +19,11 @@ import React from "react";
 import SidebarBody from "@/sidebar/SidebarBody";
 import { render } from "@/sidebar/testHelpers";
 import useConnectedTargetUrl from "@/sidebar/hooks/useConnectedTargetUrl";
+import useTheme from "@/hooks/useTheme";
+import { initialTheme } from "@/themes/themeStore";
 
 jest.mock("@/sidebar/hooks/useConnectedTargetUrl");
+jest.mock("@/hooks/useTheme");
 jest.mock("@/contentScript/messenger/strict/api", () => ({
   ensureExtensionPointsInstalled: jest.fn(),
   getReservedSidebarEntries: jest.fn().mockResolvedValue({
@@ -31,6 +34,12 @@ jest.mock("@/contentScript/messenger/strict/api", () => ({
 }));
 
 describe("SidebarBody", () => {
+  beforeEach(() => {
+    jest
+      .mocked(useTheme)
+      .mockReturnValue({ activeTheme: initialTheme, isLoading: false });
+  });
+
   test("it renders", async () => {
     jest
       .mocked(useConnectedTargetUrl)
