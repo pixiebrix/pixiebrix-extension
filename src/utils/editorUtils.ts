@@ -21,9 +21,10 @@ import {
   isSelectableTextControlElement,
   type SelectableTextEditorElement,
 } from "@/types/inputTypes";
+import { waitAnimationFrame } from "@/utils/domUtils";
 
 /**
- * Returns the current text content of the element to pass to the command handler
+ * Returns the current text content of the element, e.g., to pass to the text command popover handler
  * @param element the text editor element
  */
 export function getElementText(element: TextEditorElement): string {
@@ -36,22 +37,22 @@ export function getElementText(element: TextEditorElement): string {
 }
 
 /**
- * Replaces the text at the current command with the given text
- *
- * NOTE: currently, replaces all text from the command key to the next space. In the future, we might consider
- * only replacing the command key + query.
+ * Replaces the text at the current command + query with the given text
  *
  * @param element the text editor element
  * @param text the text to insert
- * @param commandKey the command key, e.g., "/"
+ * @param commandKey the command key, e.g., "\"
+ * @param query the query after the command key. With commandKey, used to determine how much text to replace
  */
 export async function replaceAtCommand({
   element,
   text,
+  query,
   commandKey,
 }: {
   element: SelectableTextEditorElement;
   text: string;
+  query: string;
   commandKey: string;
 }): Promise<void> {
   element.focus();
@@ -68,11 +69,11 @@ export async function replaceAtCommand({
       throw new Error("Command key not found");
     }
 
-    const endIndex = value.indexOf(" ", commandStart);
-    element.setSelectionRange(
-      commandStart,
-      endIndex >= 0 ? endIndex : value.length,
-    );
+    element.setSelectionRange(commandStart, commandStart + query.length + 1);
+
+    // TODO: switch to https://www.npmjs.com/package/text-field-edit
+
+    await waitAnimationFrame();
     document.execCommand("insertText", false, text);
 
     return;
@@ -83,6 +84,11 @@ export async function replaceAtCommand({
   const range = selection?.getRangeAt(0);
 
   if (range?.startContainer.nodeType === Node.TEXT_NODE) {
+    if (range.startOffset !== range.endOffset) {
+      // Shouldn't happen in practice because commandController hides the popover on selection
+      throw new Error("Expected a single cursor position");
+    }
+
     const { data } = range.startContainer as Text;
 
     const commandStart = data.lastIndexOf(commandKey, range.startOffset);
@@ -91,14 +97,17 @@ export async function replaceAtCommand({
       throw new Error("Command key not found");
     }
 
-    const endIndex = data.indexOf(" ", commandStart);
     range.setStart(range.startContainer, commandStart);
-    range.setEnd(range.startContainer, endIndex >= 0 ? endIndex : data.length);
+    range.setEnd(range.startContainer, commandStart + query.length + 1);
 
-    // FIXME: this is not deleting the contents of the range or inserting the text
-    range.deleteContents();
+    // TODO: switch to https://www.npmjs.com/package/text-field-edit
 
+    // Wait for range update to propagate
+    await waitAnimationFrame();
     document.execCommand("delete", false);
+
+    // Wait for deletion to propagate
+    await waitAnimationFrame();
     document.execCommand("insertText", false, text);
   }
 }

@@ -73,6 +73,7 @@ const ResultItem: React.FunctionComponent<{
 }> = ({ isSelected, disabled, command, onClick, query, commandKey }) => {
   const elementRef = useRef<HTMLButtonElement>(null);
 
+  // Auto-scroll as the user navigates with the arrow keys
   useLayoutEffect(() => {
     if (isSelected) {
       elementRef.current?.scrollIntoViewIfNeeded();
@@ -101,25 +102,25 @@ const ResultItem: React.FunctionComponent<{
 
 const CommandPopover: React.FunctionComponent<
   {
-    commandKey?: string;
+    commandKey: string;
     registry: CommandRegistry;
     element: TextEditorElement;
   } & PopoverActionCallbacks
-> = ({ commandKey = "/", registry, element, onHide }) => {
+> = ({ commandKey, registry, element, onHide }) => {
   const [state, dispatch] = useReducer(popoverSlice.reducer, initialState);
   const selectedCommand = selectSelectedCommand(state);
   const selectedCommandRef = useRef(selectedCommand);
   const commands = useCommandRegistry(registry);
 
   const fillAtCursor = useCallback(
-    async (command: TextCommand) => {
+    async ({ command, query }: { command: TextCommand; query: string }) => {
       // Async thunks don't work with React useReducer so write async logic as a hook
       // https://github.com/reduxjs/redux-toolkit/issues/754
       dispatch(popoverSlice.actions.setCommandLoading({ command }));
       try {
         reportEvent(Events.TEXT_COMMAND_RUN);
         const text = await command.handler(getElementText(element));
-        await replaceAtCommand({ commandKey, element, text });
+        await replaceAtCommand({ commandKey, query, element, text });
         dispatch(popoverSlice.actions.setCommandSuccess({ text }));
         onHide();
       } catch (error) {
@@ -133,9 +134,9 @@ const CommandPopover: React.FunctionComponent<
     element,
     commandKey,
     // OK to pass handlers directly because hook uses useRef
-    async onSubmit() {
+    async onSubmit(query) {
       if (selectedCommandRef.current != null) {
-        await fillAtCursor(selectedCommandRef.current);
+        await fillAtCursor({ command: selectedCommandRef.current, query });
       }
     },
     onOffset(offset: number) {
@@ -188,7 +189,7 @@ const CommandPopover: React.FunctionComponent<
                   commandKey={commandKey}
                   query={state.query ?? ""}
                   onClick={async () => {
-                    await fillAtCursor(command);
+                    await fillAtCursor({ command, query: query ?? "" });
                   }}
                 />
               );

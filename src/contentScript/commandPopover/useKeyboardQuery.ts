@@ -23,24 +23,37 @@ import {
 } from "@/types/inputTypes";
 import { useEffect, useRef, useState } from "react";
 
+/**
+ * Set of keys that clear the query/hide the popover.
+ */
 const CLEAR_QUERY_KEYS = new Set<string>([" ", "Escape"]);
+
+/**
+ * Set of keys that submit the query.
+ */
 const SUBMIT_QUERY_KEYS = new Set<string>(["Enter", "Tab"]);
 
+/**
+ * Find the query from the text, or returns null if not found
+ * @param text the text to search
+ * @param startPosition the start position to search for the commandKey
+ * @param commandKey the command key initiating the query
+ */
 function selectActiveQueryFromText({
   text,
-  start,
+  cursorPosition,
   commandKey,
 }: {
   text: string;
-  start: number;
+  cursorPosition: number;
   commandKey: string;
 }): Nullishable<string> {
   // To support RTL in the future, will need to conditionally switch to indexOf?
-  const queryStart = text.lastIndexOf(commandKey, start);
+  const queryStart = text.lastIndexOf(commandKey, cursorPosition);
 
   if (queryStart >= 0) {
     // Exclude the commandKey from the query
-    return text.slice(queryStart + 1, start);
+    return text.slice(queryStart + 1, cursorPosition);
   }
 
   return null;
@@ -48,8 +61,8 @@ function selectActiveQueryFromText({
 
 /**
  * Select the active query based on the current cursor position/selection
- * @param field
- * @param commandKey
+ * @param element the element to select the query from
+ * @param commandKey the command key initiating the query, e.g., `\`
  */
 function selectActiveQuery({
   element,
@@ -63,7 +76,7 @@ function selectActiveQuery({
     if (selectionStart != null) {
       return selectActiveQueryFromText({
         text: value,
-        start: selectionStart,
+        cursorPosition: selectionStart,
         commandKey,
       });
     }
@@ -76,7 +89,7 @@ function selectActiveQuery({
 
       return selectActiveQueryFromText({
         text: data,
-        start: range.startOffset,
+        cursorPosition: range.startOffset,
         commandKey,
       });
     }
@@ -93,14 +106,14 @@ function selectActiveQuery({
  * @param onOffset callback to offset the selected command
  */
 function useKeyboardQuery({
-  commandKey = "/",
+  commandKey = "\\",
   element,
   onSubmit,
   onOffset,
 }: {
   commandKey?: string;
   element: TextEditorElement;
-  onSubmit: () => void;
+  onSubmit: (query: string) => void;
   onOffset: (offset: number) => void;
 }): Nullishable<string> {
   const [query, setQuery] = useState<Nullishable<string>>(null);
@@ -121,7 +134,7 @@ function useKeyboardQuery({
       }
     };
 
-    const handleKeyDown = (event: KeyboardEvent) => {
+    const handleKeyDown = async (event: KeyboardEvent) => {
       // No active query, so let the user type normally
       if (queryRef.current == null) {
         return;
@@ -130,7 +143,7 @@ function useKeyboardQuery({
       if (SUBMIT_QUERY_KEYS.has(event.key)) {
         event.preventDefault();
         event.stopPropagation();
-        onSubmitRef.current();
+        onSubmitRef.current(queryRef.current);
       } else if (event.key === "ArrowUp") {
         event.preventDefault();
         event.stopPropagation();
@@ -153,6 +166,8 @@ function useKeyboardQuery({
     element.addEventListener("keyup", handleKeyUp, { passive: true });
 
     return () => {
+      console.debug("useKeyboardQuery: unmount");
+
       document.removeEventListener("keydown", handleKeyDown);
       element.removeEventListener("keyup", handleKeyUp);
     };

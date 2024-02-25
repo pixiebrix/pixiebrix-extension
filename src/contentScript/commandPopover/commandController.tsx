@@ -18,7 +18,7 @@
 import { once } from "lodash";
 import type { Nullishable } from "@/utils/nullishUtils";
 import { tooltipFactory } from "@/contentScript/tooltipDom";
-import { render } from "react-dom";
+import { render, unmountComponentAtNode } from "react-dom";
 import {
   autoUpdate,
   computePosition,
@@ -141,9 +141,16 @@ function createPopover(element: TextEditorElement): HTMLElement {
 }
 
 function destroyPopover(): void {
-  commandPopover?.remove();
-  commandPopover = null;
-  hideController.abortAndReset();
+  if (commandPopover) {
+    // Cleanly unmount React component before removing from the DOM because useKeyboardQuery attaches document event
+    // listeners via useEffect: https://react.dev/reference/react-dom/unmountComponentAtNode
+    unmountComponentAtNode(commandPopover);
+
+    commandPopover?.remove();
+    commandPopover = null;
+
+    hideController.abortAndReset();
+  }
 }
 
 function getCursorPositionReference(): Nullishable<VirtualElement | Element> {
