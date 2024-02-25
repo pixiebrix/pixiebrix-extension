@@ -104,17 +104,8 @@ export function hasCKEditorClass(element: HTMLElement): boolean {
 export function selectCKEditorElement(
   element: HTMLElement,
 ): Nullishable<HTMLElement> {
-  let currentElement: Nullishable<HTMLElement> = element;
-
-  while (currentElement != null) {
-    if (hasCKEditorClass(currentElement)) {
-      return currentElement;
-    }
-
-    currentElement = currentElement.parentElement;
-  }
-
-  return null;
+  // Likely faster than repeatedly calling hasCKEditorClass
+  return element.closest<HTMLElement>(".ck-editor__editable");
 }
 
 /**
