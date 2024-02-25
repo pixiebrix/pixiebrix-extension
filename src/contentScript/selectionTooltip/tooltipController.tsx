@@ -77,6 +77,15 @@ async function showTooltip(): Promise<void> {
     { passive: true, once: true, signal: hideController.signal },
   );
 
+  // Pressing "Backspace" or "Delete" should hide the tooltip. Those don't register as selection changes
+  document.activeElement?.addEventListener(
+    "keydown",
+    () => {
+      hideTooltip();
+    },
+    { passive: true, once: true, signal: hideController.signal },
+  );
+
   // Try to avoid sticky tool-tip on SPA navigation
   document.addEventListener(
     "navigate",
@@ -90,7 +99,7 @@ async function showTooltip(): Promise<void> {
 }
 
 /**
- * Hide the tooltip.
+ * Hide the tooltip. Safe to call multiple times, even if the tooltip is already hidden.
  */
 function hideTooltip(): void {
   selectionTooltip?.setAttribute("aria-hidden", "true");

@@ -125,6 +125,9 @@ function useKeyboardQuery({
   useEffect(() => {
     const handleKeyUp = (event: KeyboardEvent) => {
       if (CLEAR_QUERY_KEYS.has(event.key)) {
+        // Stop propagation to prevent the event from reaching the editor, e.g., to close the editor window
+        event.preventDefault();
+        event.stopPropagation();
         setQuery(null);
       } else {
         const activeQuery = selectActiveQuery({ element, commandKey });
@@ -155,20 +158,26 @@ function useKeyboardQuery({
       }
     };
 
-    // Watch keyup instead of keypress to get backspace
-    document.addEventListener("keyup", handleKeyUp, { passive: true });
-
     // Hijacking events for the popover. Needs to be attached to document because some editors stop propagation of the
     // tab/escape keys (e.g., to indent text)
+
+    // Watch keyup instead of keypress to get backspace
+    document.addEventListener("keyup", handleKeyUp, {
+      capture: true,
+      passive: true,
+    });
+
     document.addEventListener("keydown", handleKeyDown, {
       capture: true,
       passive: false,
     });
 
     return () => {
-      document.removeEventListener("keyup", handleKeyUp);
+      // Must match the addEventListener option for `capture`, otherwise won't be removed
+      document.removeEventListener("keyup", handleKeyUp, {
+        capture: true,
+      });
       document.removeEventListener("keydown", handleKeyDown, {
-        // Must match the addEventListener option for `capture`, otherwise won't be removed
         capture: true,
       });
     };
