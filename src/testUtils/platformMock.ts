@@ -30,6 +30,7 @@ import { validateSemVerString } from "@/types/helpers";
  * Implementation of PlatformProtocol that mocks all methods
  */
 export const platformMock: PlatformProtocol = {
+  platformName: "mock",
   version: validateSemVerString("0.0.0"),
   capabilities: platformCapabilities,
   open: jest.fn(),

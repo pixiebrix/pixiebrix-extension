@@ -19,6 +19,10 @@ import {
   type PlatformProtocol,
   uninitializedPlatform,
 } from "@/platform/platformProtocol";
+import {
+  type PlatformCapability,
+  PlatformCapabilityNotAvailableError,
+} from "@/platform/capabilities";
 
 /**
  * @file defines an explicit platform protocol
@@ -39,4 +43,17 @@ export function getPlatform(): PlatformProtocol {
  */
 export function setPlatform(platformProtocol: PlatformProtocol): void {
   platform = platformProtocol;
+}
+
+/**
+ * Assert that the global platform supports a capability.
+ * @param capability the capability to assert
+ */
+export function assertPlatformCapability(capability: PlatformCapability): void {
+  if (!platform.capabilities.includes(capability)) {
+    throw new PlatformCapabilityNotAvailableError(
+      platform.platformName,
+      capability,
+    );
+  }
 }

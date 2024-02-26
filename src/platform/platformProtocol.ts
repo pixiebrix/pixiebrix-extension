@@ -17,7 +17,7 @@
 
 import {
   type PlatformCapability,
-  PlatformCapabilityNotAvailable,
+  PlatformCapabilityNotAvailableError,
 } from "@/platform/capabilities";
 import type { getState, setState } from "@/platform/state/stateController";
 import type { QuickBarRegistryProtocol } from "@/components/quickBar/quickBarRegistry";
@@ -301,6 +301,14 @@ export interface PanelProtocol {
  * - Web App: has access to Web APIs
  */
 export interface PlatformProtocol {
+  /**
+   * The platform name.
+   */
+  readonly platformName: string;
+
+  /**
+   * The platform version. For the extension, corresponds to the extension version.
+   */
   readonly version: SemVerString;
 
   /**
@@ -449,14 +457,14 @@ export class PlatformBase implements PlatformProtocol {
   ) {}
 
   alert(_message: unknown): void {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "alert");
+    throw new PlatformCapabilityNotAvailableError(this.platformName, "alert");
   }
 
   prompt(
     _message: string | undefined,
     _default: string | undefined,
   ): string | null {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "alert");
+    throw new PlatformCapabilityNotAvailableError(this.platformName, "alert");
   }
 
   async form(
@@ -467,87 +475,99 @@ export class PlatformBase implements PlatformProtocol {
       modId?: RegistryId;
     },
   ): Promise<unknown> {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "form");
+    throw new PlatformCapabilityNotAvailableError(this.platformName, "form");
   }
 
   async open(_url: URL): Promise<void> {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "link");
+    throw new PlatformCapabilityNotAvailableError(this.platformName, "link");
   }
 
   async request<TData>(
     _integrationConfig: Nullishable<SanitizedIntegrationConfig>,
     _requestConfig: AxiosRequestConfig,
   ): Promise<RemoteResponse<TData>> {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "http");
+    throw new PlatformCapabilityNotAvailableError(this.platformName, "http");
   }
 
   async runSandboxedJavascript(_args: JavaScriptPayload): Promise<unknown> {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "sandbox");
+    throw new PlatformCapabilityNotAvailableError(this.platformName, "sandbox");
   }
 
   async userSelectElementRefs(): Promise<ElementReference[]> {
-    throw new PlatformCapabilityNotAvailable(
+    throw new PlatformCapabilityNotAvailableError(
       this.platformName,
       "contentScript",
     );
   }
 
   get logger(): Logger {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "logs");
+    throw new PlatformCapabilityNotAvailableError(this.platformName, "logs");
   }
 
   get debugger(): DebuggerProtocol {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "debugger");
+    throw new PlatformCapabilityNotAvailableError(
+      this.platformName,
+      "debugger",
+    );
   }
 
   get audio(): AudioProtocol {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "audio");
+    throw new PlatformCapabilityNotAvailableError(this.platformName, "audio");
   }
 
   get state(): StateProtocol {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "state");
+    throw new PlatformCapabilityNotAvailableError(this.platformName, "state");
   }
 
   get templates(): TemplateProtocol {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "template");
+    throw new PlatformCapabilityNotAvailableError(
+      this.platformName,
+      "template",
+    );
   }
 
   get contextMenus(): ContextMenuProtocol {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "contextMenu");
+    throw new PlatformCapabilityNotAvailableError(
+      this.platformName,
+      "contextMenu",
+    );
   }
 
   get badge(): BadgeProtocol {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "badge");
+    throw new PlatformCapabilityNotAvailableError(this.platformName, "badge");
   }
 
   get quickBar(): QuickBarRegistryProtocol {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "quickBar");
+    throw new PlatformCapabilityNotAvailableError(
+      this.platformName,
+      "quickBar",
+    );
   }
 
   get toasts(): ToastProtocol {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "toast");
+    throw new PlatformCapabilityNotAvailableError(this.platformName, "toast");
   }
 
   get panels(): PanelProtocol {
-    throw new PlatformCapabilityNotAvailable(this.platformName, "panel");
+    throw new PlatformCapabilityNotAvailableError(this.platformName, "panel");
   }
 
   get selectionTooltip(): SelectionTooltipProtocol {
-    throw new PlatformCapabilityNotAvailable(
+    throw new PlatformCapabilityNotAvailableError(
       this.platformName,
       "selectionTooltip",
     );
   }
 
   get commandPopover(): CommandPopoverProtocol {
-    throw new PlatformCapabilityNotAvailable(
+    throw new PlatformCapabilityNotAvailableError(
       this.platformName,
       "commandPopover",
     );
   }
 
   get clipboard(): ClipboardProtocol {
-    throw new PlatformCapabilityNotAvailable(
+    throw new PlatformCapabilityNotAvailableError(
       this.platformName,
       "clipboardWrite",
     );
