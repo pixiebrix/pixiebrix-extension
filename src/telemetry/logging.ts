@@ -336,7 +336,7 @@ export function flattenStackForDatadog(stack: string, cause?: unknown): string {
   }
 
   // Drop spaces from cause’s title or else Datadog will clip the title
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
   const errorTitle = cause.stack.split("\n", 1).at(0)!;
   const causeStack = cause.stack.replace(
     errorTitle,
@@ -417,9 +417,7 @@ export async function reportToApplicationErrorTelemetry(
 
   const details = await selectExtraContext(error);
 
-  if (error.stack) {
-    error.stack = flattenStackForDatadog(error.stack, error.cause);
-  }
+  error.stack &&= flattenStackForDatadog(error.stack, error.cause);
 
   reporter.error({
     message,
