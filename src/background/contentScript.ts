@@ -51,14 +51,14 @@ function onMessage(
   message: unknown,
   sender: Runtime.MessageSender,
 ): Promise<unknown> | undefined {
-  if (!isRemoteProcedureCallRequest(message)) {
+  if (
+    !isRemoteProcedureCallRequest(message) ||
+    sender.id !== browser.runtime.id
+  ) {
     return; // Don't handle message
   }
 
-  if (
-    message.type === ENSURE_CONTENT_SCRIPT_READY &&
-    sender.id === browser.runtime.id
-  ) {
+  if (message.type === ENSURE_CONTENT_SCRIPT_READY) {
     const key = makeSenderKey(sender);
 
     try {
@@ -73,7 +73,7 @@ function onMessage(
     return Promise.resolve();
   }
 
-  if (message.type === "WHO_AM_I" && sender.id === browser.runtime.id) {
+  if (message.type === "WHO_AM_I") {
     return Promise.resolve(sender);
   }
 
