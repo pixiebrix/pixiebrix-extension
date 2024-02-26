@@ -25,6 +25,7 @@ import {
   type SecretsConfig,
   type IntegrationDefinition,
 } from "@/integrations/integrationTypes";
+import { stringToBase64 } from "uint8array-extras";
 
 describe("UserDefinedIntegration", () => {
   test("includes version", () => {
@@ -118,7 +119,7 @@ describe("UserDefinedIntegration.authenticateBasicRequest", () => {
     expect(config.baseURL).toBe("https://harvest.greenhouse.io");
 
     expect(config.headers).toStrictEqual({
-      Authorization: `Basic ${btoa("topsecret:")}`,
+      Authorization: `Basic ${stringToBase64("topsecret:")}`,
     });
   });
 

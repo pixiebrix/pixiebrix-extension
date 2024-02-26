@@ -140,9 +140,7 @@ export async function updateDynamicElement({
 export async function enableOverlay(selector: string): Promise<void> {
   expectContext("contentScript");
 
-  if (_overlay == null) {
-    _overlay = new Overlay();
-  }
+  _overlay ??= new Overlay();
 
   const elements = $safeFind(selector).toArray();
   if (elements.length > 0) {

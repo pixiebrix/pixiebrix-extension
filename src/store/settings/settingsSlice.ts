@@ -117,9 +117,7 @@ const settingsSlice = createSlice({
     },
     recordUpdatePromptTimestamp(state) {
       // Don't overwrite the old timestamp
-      if (state.updatePromptTimestamp == null) {
-        state.updatePromptTimestamp = Date.now();
-      }
+      state.updatePromptTimestamp ??= Date.now();
     },
     resetUpdatePromptTimestamp(state) {
       state.updatePromptTimestamp = null;

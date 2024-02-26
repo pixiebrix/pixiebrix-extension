@@ -79,7 +79,7 @@ function popoverFactory(initialUrl: URL): HTMLElement {
   // Pass to the EphemeralPanel for useTemporaryPanelDefinition
   decoratedUrl.searchParams.set("frameNonce", frameNonce);
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- It's being created here, it can't be missing
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- It's being created here, it can't be missing
   const tooltip = $(html`
     <div role="tooltip" data-popover-id="${frameNonce}" style="display: none;">
       <iframe
@@ -109,7 +109,7 @@ function popoverFactory(initialUrl: URL): HTMLElement {
         void popperMap.get(tooltip)?.update();
       },
     },
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- It's being created here, it can't be missing
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- It's being created here, it can't be missing
     tooltip.querySelector("iframe")!,
   );
 
