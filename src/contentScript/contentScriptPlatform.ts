@@ -20,14 +20,17 @@ import {
   type PlatformProtocol,
 } from "@/platform/platformProtocol";
 import { hideNotification, showNotification } from "@/utils/notify";
-import { setToolbarBadge, traces } from "@/background/messenger/strict/api";
+import {
+  clearExtensionDebugLogs,
+  setToolbarBadge,
+  traces,
+} from "@/background/messenger/strict/api";
 import { getState, setState } from "@/platform/state/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { expectContext } from "@/utils/expectContext";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import {
-  clearExtensionDebugLogs,
   ensureContextMenu,
   openTab,
   performConfiguredRequestInBackground,

@@ -24,15 +24,17 @@ import type { PlatformCapability } from "@/platform/capabilities";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { validateSemVerString } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
-import { traces } from "@/background/messenger/strict/api";
-import { clearExtensionDebugLogs } from "@/background/messenger/api";
+import {
+  traces,
+  clearExtensionDebugLogs,
+} from "@/background/messenger/strict/api";
 
 /**
  * The extension page platform.
  *
  * Extension pages generally don't run bricks. However:
  * - The sidebar runs bricks, e.g., in PanelBody
- * - The Extension Console and Page Editor instantiate bricks to access the brick instance methods
+ * - The Extension Console and Page Editor instantiate bricks to access the brick instance method and clear traces
  */
 class ExtensionPagePlatform extends PlatformBase {
   override capabilities: PlatformCapability[] = [
@@ -61,7 +63,7 @@ class ExtensionPagePlatform extends PlatformBase {
     return this._logger;
   }
 
-  // Support tracing for bricks run in the sidebar. See PanelBody.tsx
+  // Support tracing for bricks run in the sidebar and clearing logs in Page Editor/Extension Console. See PanelBody.tsx
   override get debugger(): PlatformProtocol["debugger"] {
     return {
       async clear(componentId: UUID): Promise<void> {
