@@ -17,7 +17,7 @@
 
 import { setCKEditorData } from "@/pageScript/messenger/api";
 import { getSelectorForElement } from "@/contentScript/elementReference";
-import { hasCKEditorClass } from "@/contrib/ckeditor";
+import { hasCKEditorClass } from "@/contrib/ckeditor/ckeditorDom";
 import { boolean } from "@/utils/typeUtils";
 
 export type FieldElement =

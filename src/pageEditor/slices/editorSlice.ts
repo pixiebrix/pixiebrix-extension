@@ -588,9 +588,7 @@ export const editorSlice = createSlice({
 
       const element = state.elements[elementIndex];
       const recipeId = element.recipe.id;
-      if (!state.deletedElementsByRecipeId[recipeId]) {
-        state.deletedElementsByRecipeId[recipeId] = [];
-      }
+      state.deletedElementsByRecipeId[recipeId] ??= [];
 
       state.deletedElementsByRecipeId[recipeId].push(element);
       state.elements.splice(elementIndex, 1);

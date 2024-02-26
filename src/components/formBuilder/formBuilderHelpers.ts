@@ -123,8 +123,8 @@ export const moveStringInArray = (
   }
 
   const toIndex = direction === "up" ? fromIndex - 1 : fromIndex + 1;
-  // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-non-null-assertion -- checked with indexOf
-  [copy[fromIndex], copy[toIndex]] = [copy[toIndex]!, copy[fromIndex]!];
+  // eslint-disable-next-line security/detect-object-injection -- checked with indexOf
+  [copy[fromIndex], copy[toIndex]] = [copy[toIndex], copy[fromIndex]];
   return copy;
 };
 
@@ -248,10 +248,7 @@ export const produceSchemaOnUiTypeChange = (
     }
 
     if (uiWidget) {
-      if (!draft.uiSchema[propertyName]) {
-        draft.uiSchema[propertyName] = {};
-      }
-
+      draft.uiSchema[propertyName] ??= {};
       draft.uiSchema[propertyName][UI_WIDGET] = uiWidget;
     } else if (draft.uiSchema[propertyName]) {
       delete draft.uiSchema[propertyName][UI_WIDGET];
@@ -307,9 +304,7 @@ export const normalizeSchema = (rjsfSchemaDraft: Draft<RJSFSchema>) => {
     rjsfSchemaDraft.schema.required = [];
   }
 
-  if (rjsfSchemaDraft.schema.properties == null) {
-    rjsfSchemaDraft.schema.properties = {};
-  }
+  rjsfSchemaDraft.schema.properties ??= {};
 };
 
 export const getNormalizedUiOrder = (

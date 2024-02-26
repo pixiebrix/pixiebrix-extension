@@ -46,19 +46,19 @@ function makeTargetKey(target: Target): string {
   return JSON.stringify({ tabId: target.tabId, frameId: target.frameId });
 }
 
-/**
- * Runtime message handler to handle ENSURE_CONTENT_SCRIPT_READY messages sent from the contentScript
- */
 // eslint-disable-next-line @typescript-eslint/promise-function-async -- Message handlers must return undefined to "pass through", not Promise<undefined>
-function onContentScriptReadyMessage(
+function onMessage(
   message: unknown,
   sender: Runtime.MessageSender,
-): Promise<void> | undefined {
+): Promise<unknown> | undefined {
   if (
-    isRemoteProcedureCallRequest(message) &&
-    message.type === ENSURE_CONTENT_SCRIPT_READY &&
-    sender.id === browser.runtime.id
+    !isRemoteProcedureCallRequest(message) ||
+    sender.id !== browser.runtime.id
   ) {
+    return; // Don't handle message
+  }
+
+  if (message.type === ENSURE_CONTENT_SCRIPT_READY) {
     const key = makeSenderKey(sender);
 
     try {
@@ -71,6 +71,10 @@ function onContentScriptReadyMessage(
 
     // Indicate we handled the message
     return Promise.resolve();
+  }
+
+  if (message.type === "WHO_AM_I") {
+    return Promise.resolve(sender);
   }
 
   // Don't return anything to indicate this didn't handle the message
@@ -162,5 +166,5 @@ async function ensureContentScriptWithoutTimeout(
 }
 
 export function initContentScriptReadyListener() {
-  browser.runtime.onMessage.addListener(onContentScriptReadyMessage);
+  browser.runtime.onMessage.addListener(onMessage);
 }

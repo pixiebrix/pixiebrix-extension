@@ -21,24 +21,28 @@
 
 @import "@/themes/colors.scss";
 
+.root {
+  height: 100px;
+  width: 200px;
+  overflow-y: auto;
+}
+
 .results {
   display: flex;
   flex-direction: column;
   background-color: $N0;
-
-  height: 100px;
-  width: 200px;
-
-  overflow-y: auto;
+  color: black;
 }
 
 .result {
-  text-align: left;
   display: block;
+  text-align: left;
 
-  background-color: $N0;
   border: 0;
   padding: 0.5em 0.5em;
+
+  color: black;
+  background-color: $N0;
 
   &--selected {
     background-color: $P100;
@@ -50,5 +54,25 @@
 
   &__match {
     font-weight: bold;
+  }
+}
+
+.status {
+  display: block;
+
+  padding: 0.5em 0.5em;
+
+  font-size: 0.85em;
+
+  &--error {
+    color: #dc3545;
+  }
+
+  &--empty {
+    color: $N400;
+  }
+
+  &--fetching {
+    color: $N400;
   }
 }
