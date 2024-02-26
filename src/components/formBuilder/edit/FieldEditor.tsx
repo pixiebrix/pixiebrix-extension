@@ -212,9 +212,7 @@ const FieldEditor: React.FC<{
     target: { value: nextIsRequired },
   }: React.ChangeEvent<CheckBoxLike>) => {
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
-      if (!draft.schema.required) {
-        draft.schema.required = [];
-      }
+      draft.schema.required ||= [];
 
       if (nextIsRequired) {
         draft.schema.required.push(propertyName);

@@ -43,6 +43,7 @@ import { isAbsoluteUrl, safeParseUrl } from "@/utils/urlUtils";
 import { missingProperties } from "@/utils/schemaUtils";
 import { type SetRequired } from "type-fest";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { stringToBase64 } from "uint8array-extras";
 
 type RequestConfig = SetRequired<AxiosRequestConfig, "url">;
 
@@ -309,7 +310,7 @@ class UserDefinedIntegration<
       requestConfig.baseURL = baseURL;
       draft.headers = {
         ...draft.headers,
-        Authorization: `Basic ${btoa(
+        Authorization: `Basic ${stringToBase64(
           [basic.username, basic.password].join(":"),
         )}`,
         ...headers,

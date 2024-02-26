@@ -300,7 +300,7 @@ function commonPanelStructure(
   }: PanelStructureState = {} as PanelStructureState,
 ): [Element | string, PanelStructureState] {
   const proto = $items.get(0);
-  inHeader = inHeader || HEADER_TAGS.includes(proto.tagName.toLowerCase());
+  inHeader ||= HEADER_TAGS.includes(proto.tagName.toLowerCase());
 
   const common = newElement(proto.tagName);
 

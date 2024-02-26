@@ -104,6 +104,15 @@ module.exports = {
       // NOTE: If you add more rules, add the tests to eslint-local-rules/noRestrictedSyntax.ts
     ],
 
+    // We want to have a default case to check for `never`
+    "@typescript-eslint/switch-exhaustiveness-check": [
+      "error",
+      {
+        allowDefaultCaseForExhaustiveSwitch: true,
+        requireDefaultForNonUnion: true,
+      },
+    ],
+
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/restrict-template-expressions": [
       "error",

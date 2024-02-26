@@ -117,7 +117,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
           !configId ||
           !isEqual(existingIntegrationConfig?.config, secretsConfig)
         ) {
-          configId = configId ?? uuidv4();
+          configId ??= uuidv4();
           const newIntegrationConfig = {
             id: configId,
             integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,

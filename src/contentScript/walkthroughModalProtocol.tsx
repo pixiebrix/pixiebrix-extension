@@ -20,9 +20,7 @@ import pDefer, { type DeferredPromise } from "p-defer";
 let modal: DeferredPromise<void> | null = null;
 
 export async function registerWalkthroughModal() {
-  if (!modal) {
-    modal = pDefer();
-  }
+  modal ??= pDefer();
 
   return modal.promise;
 }
