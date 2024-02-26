@@ -31,6 +31,7 @@ import {
 import { onContextInvalidated } from "webext-events";
 import { logPromiseDuration } from "@/utils/promiseUtils";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
+import { type Runtime } from "webextension-polyfill";
 
 // eslint-disable-next-line prefer-destructuring -- process.env substitution
 const DEBUG = process.env.DEBUG;
@@ -68,13 +69,14 @@ async function initContentScript() {
   }
 
   // Do not use the Messenger, it cannot appear in this bundle
-  const context = await browser.runtime.sendMessage({ type: "WHO_AM_I" });
+  const context: Runtime.MessageSender | undefined =
+    await browser.runtime.sendMessage({ type: "WHO_AM_I" });
   if (!context) {
     console.error(
-      "contentScript: Nobody answered the WHO_AM_I context check. Loading might fail later.",
+      "contentScript: nobody answered the WHO_AM_I context check. Loading might fail later.",
     );
   } else if (!("tab" in context)) {
-    console.warn(`contentScript: not available in tabless iframes`, {
+    console.warn("contentScript: not available in tabless iframes", {
       context,
     });
     return;
