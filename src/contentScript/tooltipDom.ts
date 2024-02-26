@@ -66,22 +66,24 @@ export function tooltipFactory(): HTMLElement {
   // https://developer.chrome.com/blog/introducing-popover-api
   // https://developer.mozilla.org/en-US/docs/Web/API/Popover_API
   popover.setAttribute("popover", "manual");
-  popover.style.setProperty("z-index", (MAX_Z_INDEX - 1).toString());
 
-  // Must be set before positioning: https://floating-ui.com/docs/computeposition#initial-layout
-  popover.style.setProperty("position", "fixed");
-  popover.style.setProperty("width", "max-content");
-  popover.style.setProperty("height", "max-content");
-  popover.style.setProperty("top", "0");
-  popover.style.setProperty("left", "0");
-  // Override Chrome's base styles for [popover] attribute and provide a consistent look across applications that
-  // override the browser defaults (e.g., Zendesk)
-  popover.style.setProperty("margin", "0");
-  popover.style.setProperty("padding", "0");
-  popover.style.setProperty("border-radius", "5px");
-  // Can't use colors file because the element is being rendered directly on the host
-  popover.style.setProperty("background-color", "#ffffff"); // $S0 color
-  popover.style.setProperty("border", "2px solid #a8a1b4"); // $N200 color
+  Object.assign(popover.style, {
+    "z-index": (MAX_Z_INDEX - 1).toString(),
+    // Must be set before positioning: https://floating-ui.com/docs/computeposition#initial-layout
+    position: "fixed",
+    width: "max-content",
+    height: "max-content",
+    top: "0",
+    left: "0",
+    // Override Chrome's base styles for [popover] attribute and provide a consistent look across applications that
+    // override the browser defaults (e.g., Zendesk)
+    margin: "0",
+    padding: "0",
+    "border-radius": "5px",
+    // Can't use colors file because the element is being rendered directly on the host
+    "background-color": "#ffffff",
+    border: "2px solid #a8a1b4",
+  });
 
   container.append(popover);
 

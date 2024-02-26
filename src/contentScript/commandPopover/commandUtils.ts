@@ -16,6 +16,7 @@
  */
 
 import {
+  isNativeField,
   isSelectableTextControlElement,
   type SelectableTextEditorElement,
 } from "@/types/inputTypes";
@@ -70,6 +71,11 @@ export async function replaceAtCommand({
       element,
       text,
     });
+  }
+
+  if (isNativeField(element)) {
+    // Application error because the caller shouldn't call for an invalid field
+    throw new Error(`Input type not supported: ${element.type}`);
   }
 
   // Content Editable

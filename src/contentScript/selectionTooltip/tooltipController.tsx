@@ -16,7 +16,7 @@
  */
 
 import ActionRegistry from "@/contentScript/selectionTooltip/ActionRegistry";
-import { once } from "lodash";
+import { debounce, once } from "lodash";
 import type { Nullishable } from "@/utils/nullishUtils";
 import { render, unmountComponentAtNode } from "react-dom";
 import React from "react";
@@ -58,42 +58,38 @@ async function showTooltip(): Promise<void> {
   selectionTooltip.setAttribute("aria-hidden", "false");
   selectionTooltip.style.setProperty("display", "block");
 
-  // For now just hide the tooltip on document/element scroll to avoid gotchas with floating UI's `position: fixed`
-  // strategy. See updatePosition for more context. Without this, the tooltip moves with the scroll to keep its position
-  // in the viewport fixed.
-  document.activeElement?.addEventListener(
-    "scroll",
-    () => {
-      hideTooltip();
-    },
-    { passive: true, once: true, signal: hideController.signal },
-  );
+  // For now hide the tooltip on document/element scroll to avoid gotchas with floating UI's `position: fixed` strategy.
+  // See updatePosition for more context. Without this, the tooltip moves with the scroll to keep its position in the
+  // viewport fixed.
 
-  document.addEventListener(
+  for (const elementEventType of [
     "scroll",
-    () => {
-      hideTooltip();
-    },
-    { passive: true, once: true, signal: hideController.signal },
-  );
-
-  // Pressing "Backspace" or "Delete" should hide the tooltip. Those don't register as selection changes
-  document.activeElement?.addEventListener(
+    // Pressing "Backspace" or "Delete" should hide the tooltip. Those don't register as selection changes
     "keydown",
-    () => {
-      hideTooltip();
-    },
-    { passive: true, once: true, signal: hideController.signal },
-  );
+  ]) {
+    document.activeElement?.addEventListener(
+      elementEventType,
+      () => {
+        hideTooltip();
+      },
+      { passive: true, once: true, signal: hideController.signal },
+    );
+  }
 
-  // Try to avoid sticky tool-tip on SPA navigation
-  document.addEventListener(
+  for (const documentEventType of [
+    "scroll",
+    "selectstart",
+    // Avoid sticky tool-tip on SPA navigation
     "navigate",
-    () => {
-      destroyTooltip();
-    },
-    { passive: true, once: true, signal: hideController.signal },
-  );
+  ]) {
+    document.addEventListener(
+      documentEventType,
+      () => {
+        hideTooltip();
+      },
+      { passive: true, once: true, signal: hideController.signal },
+    );
+  }
 
   return updatePosition();
 }
@@ -281,14 +277,22 @@ export const initSelectionTooltip = once(() => {
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
   document.addEventListener(
     "selectionchange",
-    async () => {
-      const selection = window.getSelection();
-      if (isSelectionValid(selection)) {
-        await showTooltip();
-      } else {
-        hideTooltip();
-      }
-    },
+    // Debounce to avoid slowing drag of selection
+    debounce(
+      async () => {
+        const selection = window.getSelection();
+        if (isSelectionValid(selection)) {
+          await showTooltip();
+        } else {
+          // It should be showing because the controller hide on selectionstart. But safe to hide in case
+          hideTooltip();
+        }
+      },
+      60,
+      {
+        trailing: true,
+      },
+    ),
     { passive: true },
   );
 

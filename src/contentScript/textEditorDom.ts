@@ -15,15 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectCKEditorElement } from "@/contrib/ckeditor";
-import { insertCKEditorData } from "@/pageScript/messenger/api";
+import * as ckeditorDom from "@/contrib/ckeditor/ckeditorDom";
+import * as pageScript from "@/pageScript/messenger/api";
 import { getSelectorForElement } from "@/contentScript/elementReference";
 import textFieldEdit from "text-field-edit";
 import { expectContext } from "@/utils/expectContext";
-import { isSelectableTextControlElement } from "@/types/inputTypes";
 
 /**
- * @file file for contentScript-specific text editor DOM utilities that require Javascript API calls to editors.
+ * @file Text Editor DOM utilities that might call the pageScript.
+ *
+ * Historically, we've preferred to use `contentScript` except for calls that must be made from the `pageScript`. The
+ * advantage is that 1) we don't have pageScript injection coldstart, and 2) there's less of a chance of the host page
+ * interfering with our calls.
+ *
+ * However, we might consider consolidating the logic in the pageScript to simplify calling conventions.
  */
 
 /**
@@ -48,15 +53,10 @@ export async function insertAtCursorWithCustomEditorSupport({
     "contentScript context required for editor JavaScript integrations",
   );
 
-  if (isSelectableTextControlElement(element)) {
-    textFieldEdit.insert(element, text);
-    return;
-  }
-
-  const ckeditor = selectCKEditorElement(element);
+  const ckeditor = ckeditorDom.selectCKEditorElement(element);
 
   if (ckeditor) {
-    await insertCKEditorData({
+    await pageScript.insertCKEditorData({
       selector: getSelectorForElement(ckeditor),
       value: text,
     });
@@ -64,14 +64,9 @@ export async function insertAtCursorWithCustomEditorSupport({
     return;
   }
 
-  // Ensure window is focused so, so that when calling from the sidebar, the browser will show the cursor and
-  // the user can keep typing
+  // `textFieldEdit` handles focus required to insert the text. But, force focus to enable the user to keep typing
   window.focus();
-
-  // Ensure the element has focus, so that text is inserted at the cursor position
-  if (document.activeElement !== element) {
-    element.focus();
-  }
+  element.focus();
 
   textFieldEdit.insert(element, text);
 }

@@ -16,11 +16,11 @@
  */
 
 import {
-  hasCKEditorClass,
   isCKEditorElement,
   setData,
-} from "@/contrib/ckeditor";
+} from "@/contrib/ckeditor/ckeditorProtocol";
 import { BusinessError } from "@/errors/businessErrors";
+import { hasCKEditorClass } from "@/contrib/ckeditor/ckeditorDom";
 
 describe("CKEditor", () => {
   test("it detects CKEditor instances", () => {

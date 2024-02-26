@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BusinessError } from "@/errors/businessErrors";
+/** @file CKEditor methods that call JS methods on the CKEditor instance */
+
 import { expectContext } from "@/utils/expectContext";
-import type { Nullishable } from "@/utils/nullishUtils";
+import { BusinessError } from "@/errors/businessErrors";
 
 /**
  * https://ckeditor.com/docs/ckeditor5/latest/api/module_engine_model_position-Position.html
@@ -85,27 +86,6 @@ interface CKEditor5Instance {
       };
     };
   };
-}
-
-/**
- * Returns true if the element appears to be a CKEditor 5 instance based on its class name.
- * Can be called from either the contentScript or web/pageScript context.
- * @see isCKEditorElement
- * @see CKEditor5Instance
- */
-export function hasCKEditorClass(element: HTMLElement): boolean {
-  return element.classList.contains("ck-editor__editable");
-}
-
-/**
- * Returns the CKEditor element that contains the given element, or null if the element is not in a CKEditor instance.
- * Can be called from either the contentScript or web/pageScript context.
- */
-export function selectCKEditorElement(
-  element: HTMLElement,
-): Nullishable<HTMLElement> {
-  // Likely faster than repeatedly calling hasCKEditorClass
-  return element.closest<HTMLElement>(".ck-editor__editable");
 }
 
 /**

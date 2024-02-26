@@ -123,6 +123,8 @@ function useKeyboardQuery({
   const onOffsetRef = useRef(onOffset);
 
   useEffect(() => {
+    const unmountController = new AbortController();
+
     const handleKeyUp = (event: KeyboardEvent) => {
       if (CLEAR_QUERY_KEYS.has(event.key)) {
         // Stop propagation to prevent the event from reaching the editor, e.g., to close the editor window
@@ -164,22 +166,16 @@ function useKeyboardQuery({
     // Watch keyup instead of keypress to get backspace
     document.addEventListener("keyup", handleKeyUp, {
       capture: true,
-      passive: true,
+      signal: unmountController.signal,
     });
 
     document.addEventListener("keydown", handleKeyDown, {
       capture: true,
-      passive: false,
+      signal: unmountController.signal,
     });
 
     return () => {
-      // Must match the addEventListener option for `capture`, otherwise won't be removed
-      document.removeEventListener("keyup", handleKeyUp, {
-        capture: true,
-      });
-      document.removeEventListener("keydown", handleKeyDown, {
-        capture: true,
-      });
+      unmountController.abort();
     };
   }, [element, setQuery, commandKey, onSubmitRef, onOffsetRef]);
 
