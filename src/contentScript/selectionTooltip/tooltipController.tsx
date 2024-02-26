@@ -67,13 +67,11 @@ async function showTooltip(): Promise<void> {
     // Pressing "Backspace" or "Delete" should hide the tooltip. Those don't register as selection changes
     "keydown",
   ]) {
-    document.activeElement?.addEventListener(
-      elementEventType,
-      () => {
-        hideTooltip();
-      },
-      { passive: true, once: true, signal: hideController.signal },
-    );
+    document.activeElement?.addEventListener(elementEventType, hideTooltip, {
+      passive: true,
+      once: true,
+      signal: hideController.signal,
+    });
   }
 
   for (const documentEventType of [
@@ -82,13 +80,11 @@ async function showTooltip(): Promise<void> {
     // Avoid sticky tool-tip on SPA navigation
     "navigate",
   ]) {
-    document.addEventListener(
-      documentEventType,
-      () => {
-        hideTooltip();
-      },
-      { passive: true, once: true, signal: hideController.signal },
-    );
+    document.addEventListener(documentEventType, hideTooltip, {
+      passive: true,
+      once: true,
+      signal: hideController.signal,
+    });
   }
 
   return updatePosition();
