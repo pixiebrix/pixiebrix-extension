@@ -31,6 +31,10 @@ import { watchNavigation } from "@/pageEditor/protocol";
 import { initToaster } from "@/utils/notify";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
+import { setPlatform } from "@/platform/platformContext";
+import extensionPagePlatform from "@/mv3/extensionPagePlatform";
+
+setPlatform(extensionPagePlatform);
 
 void initMessengerLogging();
 void initRuntimeLogging();

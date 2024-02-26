@@ -22,12 +22,13 @@ import {
 import { hideNotification, showNotification } from "@/utils/notify";
 import type { PlatformCapability } from "@/platform/capabilities";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { validateSemVerString } from "@/types/helpers";
+import { SemVerString } from "@/types/registryTypes";
 
 /**
- * Sidebar platform capabilities. In general, brick execution occurs in the context of the host page.
+ * The Page Editor platform. The Page Editor doesn't run bricks, but does instantiate user-defined bricks for
+ * access to the Brick instance methods.
  */
-class SidebarPlatform extends PlatformBase {
+class ExtensionPagePlatform extends PlatformBase {
   override capabilities: PlatformCapability[] = [
     "dom",
     "alert",
@@ -36,15 +37,11 @@ class SidebarPlatform extends PlatformBase {
   ];
 
   private readonly _logger = new BackgroundLogger({
-    // Match the Chromium extension API name: https://developer.chrome.com/docs/extensions/reference/api/sidePanel
-    platformName: "sidePanel",
+    platformName: "extension",
   });
 
   constructor() {
-    super(
-      "sidePanel",
-      validateSemVerString(browser.runtime.getManifest().version),
-    );
+    super("extension", browser.runtime.getManifest().version as SemVerString);
   }
 
   override alert = window.alert;
@@ -62,5 +59,5 @@ class SidebarPlatform extends PlatformBase {
   }
 }
 
-const sidebarPlatform = new SidebarPlatform();
-export default sidebarPlatform;
+const extensionPagePlatform = new ExtensionPagePlatform();
+export default extensionPagePlatform;

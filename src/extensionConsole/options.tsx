@@ -31,6 +31,10 @@ import { initTelemetry } from "@/background/messenger/api";
 import { initMessengerLogging } from "@/development/messengerLogging";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
+import { setPlatform } from "@/platform/platformContext";
+import extensionPagePlatform from "@/mv3/extensionPagePlatform";
+
+setPlatform(extensionPagePlatform);
 
 function init(): void {
   render(<App />, document.querySelector("#container"));

@@ -49,6 +49,7 @@ import { tooltipActionRegistry } from "@/contentScript/selectionTooltip/tooltipC
 import { commandRegistry } from "@/contentScript/commandPopover/commandController";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import * as sidebarController from "@/contentScript/sidebarController";
+import { validateSemVerString } from "@/types/helpers";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -79,7 +80,10 @@ class ContentScriptPlatform extends PlatformBase {
   });
 
   constructor() {
-    super("contentScript");
+    super(
+      "contentScript",
+      validateSemVerString(browser.runtime.getManifest().version),
+    );
   }
 
   override capabilities: PlatformCapability[] = [

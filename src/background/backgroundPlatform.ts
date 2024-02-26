@@ -26,6 +26,7 @@ import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
 import { performConfiguredRequest } from "@/background/requests";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import { validateSemVerString } from "@/types/helpers";
 
 /**
  * Background platform implementation. Currently, just makes API requests.
@@ -41,7 +42,10 @@ class BackgroundPlatform extends PlatformBase {
   });
 
   constructor() {
-    super("background");
+    super(
+      "background",
+      validateSemVerString(browser.runtime.getManifest().version),
+    );
   }
 
   override get logger(): PlatformProtocol["logger"] {

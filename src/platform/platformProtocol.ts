@@ -28,7 +28,7 @@ import type { RemoteResponse } from "@/types/contract";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { FormDefinition } from "@/platform/forms/formTypes";
 import type { UUID } from "@/types/stringTypes";
-import type { RegistryId } from "@/types/registryTypes";
+import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import type { JsonObject, RequireAtLeastOne } from "type-fest";
 import type { TemporaryPanelDefinition } from "@/platform/panels/panelTypes";
 import type { JavaScriptPayload } from "@/sandbox/messenger/api";
@@ -40,6 +40,7 @@ import type { Notification } from "@/utils/notificationTypes";
 import type { ModComponentRef } from "@/types/modComponentTypes";
 import type { PanelPayload } from "@/types/sidebarTypes";
 import type { SimpleEventTarget } from "@/utils/SimpleEventTarget";
+import { validateSemVerString } from "@/types/helpers";
 
 export type AudioProtocol = {
   play(soundEffect: string): Promise<void>;
@@ -273,6 +274,8 @@ export interface PanelProtocol {
  * - Web App: has access to Web APIs
  */
 export interface PlatformProtocol {
+  readonly version: SemVerString;
+
   /**
    * The capabilities of the platform. Used for static analysis of mods.
    */
@@ -407,7 +410,10 @@ export interface PlatformProtocol {
 export class PlatformBase implements PlatformProtocol {
   readonly capabilities: readonly PlatformCapability[] = [];
 
-  constructor(readonly platformName: string) {}
+  constructor(
+    readonly platformName: string,
+    readonly version: SemVerString,
+  ) {}
 
   alert(_message: unknown): void {
     throw new PlatformCapabilityNotAvailable(this.platformName, "alert");
@@ -514,4 +520,7 @@ export class PlatformBase implements PlatformProtocol {
 /**
  * A platform protocol with no available capabilities.
  */
-export const uninitializedPlatform = new PlatformBase("uninitialized");
+export const uninitializedPlatform = new PlatformBase(
+  "uninitialized",
+  validateSemVerString("0.0.0"),
+);

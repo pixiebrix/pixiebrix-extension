@@ -29,7 +29,7 @@ import { HeadlessModeError } from "@/bricks/errors";
 import { engineRenderer } from "@/runtime/renderers";
 import { type TraceExitData, type TraceRecordMeta } from "@/telemetry/trace";
 import { type JsonObject } from "type-fest";
-import { uuidv4, validateSemVerString } from "@/types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { mapArgs } from "@/runtime/mapArgs";
 import {
   type ApiVersionOptions,
@@ -885,7 +885,7 @@ async function getStepLogger(
   if (resolvedConfig && !version) {
     // Built-in bricks don't have a version number. Use the browser extension version to identify bugs introduced
     // during browser extension releases
-    version = validateSemVerString(browser.runtime.getManifest().version);
+    version = getPlatform().version;
   }
 
   return pipelineLogger.childLogger({

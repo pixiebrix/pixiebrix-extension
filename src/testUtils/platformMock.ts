@@ -24,11 +24,13 @@ import ConsoleLogger from "@/utils/ConsoleLogger";
 import type { Logger } from "@/types/loggerTypes";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import type { RunArgs } from "@/types/runtimeTypes";
+import { validateSemVerString } from "@/types/helpers";
 
 /**
  * Implementation of PlatformProtocol that mocks all methods
  */
 export const platformMock: PlatformProtocol = {
+  version: validateSemVerString("0.0.0"),
   capabilities: platformCapabilities,
   open: jest.fn(),
   alert: jest.fn(),
