@@ -51,7 +51,8 @@
     "tabs",
     "webNavigation",
     "contextMenus",
-    "<all_urls>"
+    "<all_urls>",
+    "alarms"
   ],
   "devtools_page": "devtools.html",
   "externally_connectable": {
@@ -98,7 +99,11 @@
     }
   },
   "background": {
-    "scripts": ["backgroundCanary.js", "background.js"]
+    "scripts": [
+      "backgroundCanary.js",
+      "background.js",
+      "webext-storage-cache.js"
+    ]
   },
   "options_ui": {
     "page": "options.html",

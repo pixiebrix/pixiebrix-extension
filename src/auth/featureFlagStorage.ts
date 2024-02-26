@@ -15,27 +15,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { StorageItem } from "webext-storage";
 import { getApiClient } from "@/data/service/apiClient";
 import { type components } from "@/types/swagger";
 import { once } from "lodash";
 import { addListener } from "@/auth/authStorage";
+import { CachedFunction } from "webext-storage-cache";
 
-const TIME_TO_EXPIRATION_MS = 30_000; // 30 seconds
+const featureFlags = new CachedFunction("getFeatureFlags", {
+  async updater(): Promise<string[]> {
+    const client = await getApiClient();
+    const { data, status, statusText } =
+      await client.get<components["schemas"]["Me"]>("/api/me/");
 
-const featureFlagStorage = new StorageItem("featureFlags", {
-  defaultValue: {
-    flags: [] as string[],
-    lastFetchedTime: 0,
+    if (status >= 400) {
+      console.debug(`Failed to fetch feature flags: ${status} ${statusText}`);
+      return [];
+    }
+
+    return [...(data.flags ?? [])];
+  },
+  maxAge: {
+    seconds: 30,
   },
 });
 
-export async function TEST_setFeatureFlags(flags: string[]): Promise<void> {
-  await featureFlagStorage.set({ flags, lastFetchedTime: Date.now() });
+export async function resetFeatureFlags(): Promise<void> {
+  await featureFlags.delete();
 }
 
-export async function resetFeatureFlags(): Promise<void> {
-  await featureFlagStorage.set({ flags: [], lastFetchedTime: 0 });
+export async function TEST_overrideFeatureFlags(
+  flags: string[],
+): Promise<void> {
+  await featureFlags.applyOverride(undefined, flags);
 }
 
 /**
@@ -43,25 +54,7 @@ export async function resetFeatureFlags(): Promise<void> {
  * @param flag the feature flag to check
  */
 export async function flagOn(flag: string): Promise<boolean> {
-  const { flags: cachedFlags = [], lastFetchedTime = 0 } =
-    (await featureFlagStorage.get()) ?? {};
-  let flags = cachedFlags;
-  if (Date.now() - lastFetchedTime > TIME_TO_EXPIRATION_MS) {
-    const client = await getApiClient();
-    const { data, status } =
-      await client.get<components["schemas"]["Me"]>("/api/me/");
-    if (status >= 400) {
-      console.debug("Failed to fetch feature flags");
-    } else {
-      const newFlags = [...(data.flags ?? [])];
-      await featureFlagStorage.set({
-        flags: newFlags,
-        lastFetchedTime: Date.now(),
-      });
-      flags = newFlags;
-    }
-  }
-
+  const flags = await featureFlags.get();
   return flags.includes(flag);
 }
 

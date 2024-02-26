@@ -18,7 +18,7 @@
 import {
   flagOn,
   resetFeatureFlags,
-  TEST_setFeatureFlags,
+  TEST_overrideFeatureFlags,
 } from "@/auth/featureFlagStorage";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { TEST_setAuthData, TEST_triggerListeners } from "@/auth/authStorage";
@@ -39,7 +39,7 @@ describe("featureFlags", () => {
 
   it("returns true if flag is present", async () => {
     // eslint-disable-next-line new-cap
-    await TEST_setFeatureFlags([
+    await TEST_overrideFeatureFlags([
       "test-flag",
       "test-other-flag",
       "test-other-flag-2",
@@ -49,7 +49,7 @@ describe("featureFlags", () => {
 
   it("returns false if flag is not present", async () => {
     // eslint-disable-next-line new-cap
-    await TEST_setFeatureFlags(["test-other-flag", "test-other-flag-2"]);
+    await TEST_overrideFeatureFlags(["test-other-flag", "test-other-flag-2"]);
     await expect(flagOn("test-flag")).resolves.toBe(false);
   });
 
@@ -64,7 +64,7 @@ describe("featureFlags", () => {
 
   it("does not fetch if flags have been updated recently", async () => {
     // eslint-disable-next-line new-cap
-    await TEST_setFeatureFlags(["test-flag"]);
+    await TEST_overrideFeatureFlags(["test-flag"]);
     await expect(flagOn("test-flag")).resolves.toBe(true);
     expect(appApiMock.history.get).toHaveLength(0);
   });

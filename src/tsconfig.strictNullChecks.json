@@ -33,8 +33,6 @@
     "./auth/authSelectors.ts",
     "./auth/authSlice.ts",
     "./auth/authTypes.ts",
-    "./auth/featureFlagStorage.ts",
-    "./auth/featureFlagStorage.test.ts",
     "./background/setToolbarIconFromTheme.ts",
     "./background/setToolbarIconFromTheme.test.ts",
     "./background/auth/authStorage.ts",
