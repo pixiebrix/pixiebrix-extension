@@ -23,6 +23,7 @@ import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { type Timestamp } from "@/types/stringTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
+import { waitFor } from "@testing-library/react";
 
 describe("renders DefaultPanel", () => {
   it("renders Page Editor call to action", () => {
@@ -31,8 +32,8 @@ describe("renders DefaultPanel", () => {
     expect(screen.getByText("Get started with PixieBrix")).not.toBeNull();
   });
 
-  it("renders restricted user content", () => {
-    appApiMock.onGet("/api/me").reply(200, {
+  it("renders restricted user content", async () => {
+    appApiMock.onGet("/api/me/").reply(200, {
       flags: ["restricted-marketplace"],
     });
 
@@ -49,6 +50,10 @@ describe("renders DefaultPanel", () => {
       },
     });
 
-    expect(screen.getByText("No panels activated for the page")).not.toBeNull();
+    await waitFor(async () => {
+      expect(
+        await screen.findByText("No panels activated for the page"),
+      ).toBeVisible();
+    });
   });
 });

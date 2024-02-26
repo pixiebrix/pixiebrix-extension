@@ -27,7 +27,9 @@ import { TEST_setAuthData } from "@/auth/authStorage";
 // yield impossible states due to how `skip` logic in calls like RequireAuth, etc.
 
 export function mockAnonymousUser(): void {
-  appApiMock.onGet("/api/me/").reply(401);
+  appApiMock.onGet("/api/me/").reply(200, {
+    flags: [],
+  });
 }
 
 export async function mockAuthenticatedUser(me?: Me): Promise<void> {
