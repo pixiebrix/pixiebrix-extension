@@ -61,14 +61,17 @@ export function selectUserDataUpdate({
   const groups = group_memberships.map(({ id, name }) => ({ id, name }));
 
   return {
-    email,
-    organizationId: organization?.id,
-    telemetryOrganizationId: telemetryOrganization?.id,
+    // TODO: Review Required/Partial in Me type
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/7725
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+    email: email!,
+    organizationId: organization?.id ?? null,
+    telemetryOrganizationId: telemetryOrganization?.id ?? null,
     flags,
     organizations,
     groups,
-    partner,
-    enforceUpdateMillis,
+    partner: partner ?? null,
+    enforceUpdateMillis: enforceUpdateMillis ?? null,
     partnerPrincipals,
   };
 }
@@ -80,7 +83,7 @@ export function selectExtensionAuthState({
   organization,
   telemetry_organization,
   is_onboarded: isOnboarded,
-  test_account: isTestAccount,
+  test_account: isTestAccount = false,
   flags = [],
   milestones = [],
   organization_memberships: organizationMemberships = [],
@@ -116,5 +119,5 @@ export function selectExtensionAuthState({
  */
 export async function flagOn(flag: string): Promise<boolean> {
   const authData = await readAuthData();
-  return authData.flags?.includes(flag);
+  return authData.flags?.includes(flag) ?? false;
 }

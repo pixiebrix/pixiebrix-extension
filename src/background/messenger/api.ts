@@ -26,7 +26,6 @@ import type { RemoteResponse } from "@/types/contract";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
 export const getAvailableVersion = getMethod("GET_AVAILABLE_VERSION", bg);
-export const getUID = getMethod("GET_UID", bg);
 export const getPartnerPrincipals = getMethod("GET_PARTNER_PRINCIPALS", bg);
 export const launchAuthIntegration = getMethod("LAUNCH_AUTH_INTEGRATION", bg);
 export const setPartnerCopilotData = getNotifier(
@@ -92,16 +91,6 @@ export const performConfiguredRequestInBackground = getMethod(
 
 // Use this instead: `import reportError from "@/telemetry/reportError"`
 // export const recordError = getNotifier("RECORD_ERROR", bg);
-// Use this instead: `import reportEvent from "@/telemetry/reportEvent"`
-// export const recordEvent = getNotifier("RECORD_EVENT", bg);
-
-export const recordLog = getNotifier("RECORD_LOG", bg);
-export const clearLogs = getMethod("CLEAR_LOGS", bg);
-export const clearLog = getMethod("CLEAR_LOG", bg);
-export const clearExtensionDebugLogs = getMethod(
-  "CLEAR_EXTENSION_DEBUG_LOGS",
-  bg,
-);
 
 export const initTelemetry = getNotifier("INIT_TELEMETRY", bg);
 export const sendDeploymentAlert = getNotifier("SEND_DEPLOYMENT_ALERT", bg);
