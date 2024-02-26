@@ -38,7 +38,6 @@ import {
   runBlockPreview,
   resetTab,
   runRendererBlock,
-  navigateTab,
 } from "@/contentScript/pageEditor";
 import { runBrick } from "@/contentScript/executor";
 import {
@@ -63,7 +62,6 @@ declare global {
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
     RESET_TAB: typeof resetTab;
-    NAVIGATE_TAB: typeof navigateTab;
 
     TOGGLE_QUICK_BAR: typeof toggleQuickBar;
 
@@ -102,7 +100,6 @@ export default function registerMessenger(): void {
     REACTIVATE_TAB: reactivateTab,
     REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
     RESET_TAB: resetTab,
-    NAVIGATE_TAB: navigateTab,
 
     TOGGLE_QUICK_BAR: toggleQuickBar,
 
