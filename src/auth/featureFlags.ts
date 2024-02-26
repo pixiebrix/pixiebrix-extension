@@ -19,7 +19,7 @@ import { StorageItem } from "webext-storage";
 import { getApiClient } from "@/data/service/apiClient";
 import { type components } from "@/types/swagger";
 
-const TIME_TO_EXPIRATION_MS = 1000 * 30; // 30 seconds
+const TIME_TO_EXPIRATION_MS = 30_000; // 30 seconds
 
 const featureFlagStorage = new StorageItem("featureFlags", {
   defaultValue: {
