@@ -185,24 +185,6 @@ export function hideSidebar(): void {
 }
 
 /**
- * Reload the sidebar and its content.
- *
- * Known limitations:
- * - Does not reload ephemeral forms
- */
-export async function reloadSidebar(): Promise<void> {
-  console.debug("sidebarController:reloadSidebar");
-
-  // Hide and reshow to force a full-refresh of the sidebar
-
-  if (sidebarMv2.isSidebarFrameVisible()) {
-    hideSidebar();
-  }
-
-  await showSidebar();
-}
-
-/**
  * @param activateOptions options controlling the visible panel in the sidebar
  */
 export async function updateSidebar(
