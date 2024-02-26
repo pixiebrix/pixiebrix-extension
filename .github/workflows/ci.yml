@@ -181,3 +181,24 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
       - uses: pre-commit/action@v3.0.1
+
+  end-to-end-tests:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Run end to end tests
+        # remove "|| exit 0" when these tests are ready to be used in CI
+        run: npm run test:end-to-end || exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: end-to-end-tests-report
+          path: end-to-end-tests/.report
+          retention-days: 5
