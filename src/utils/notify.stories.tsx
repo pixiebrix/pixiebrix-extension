@@ -19,7 +19,7 @@ import React from "react";
 import { type ComponentStory, type ComponentMeta } from "@storybook/react";
 import { Button } from "react-bootstrap";
 import { initToaster, showNotification } from "./notify";
-import { NotificationType } from "@/utils/notificationTypes";
+import type { NotificationType } from "@/utils/notificationTypes";
 
 const notificationTypes = ["info", "success", "error", "warning", "loading"];
 initToaster();
