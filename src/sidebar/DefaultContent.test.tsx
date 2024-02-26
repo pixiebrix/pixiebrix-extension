@@ -50,10 +50,8 @@ describe("renders DefaultPanel", () => {
       },
     });
 
-    await waitFor(async () => {
-      expect(
-        await screen.findByText("No panels activated for the page"),
-      ).toBeVisible();
-    });
+    await expect(
+      screen.findByText("No panels activated for the page"),
+    ).resolves.toBeVisible();
   });
 });
