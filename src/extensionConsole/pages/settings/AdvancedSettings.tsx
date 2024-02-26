@@ -21,7 +21,7 @@ import styles from "./SettingsCard.module.scss";
 import { Button, Card, Form } from "react-bootstrap";
 import { useConfiguredHost } from "@/data/service/baseService";
 import React, { useCallback } from "react";
-import { clearCachedAuthSecrets, clearPartnerAuth } from "@/auth/token";
+import { clearCachedAuthSecrets, clearPartnerAuth } from "@/auth/authStorage";
 import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
 import settingsSlice, {

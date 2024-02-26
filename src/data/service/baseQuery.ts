@@ -45,7 +45,7 @@ type QueryArgs = {
   /**
    * Optional additional metadata to pass through to the result.
    */
-  meta?: unknown;
+  meta?: UnknownObject;
 
   /**
    * Optional URL parameters to be sent with the request

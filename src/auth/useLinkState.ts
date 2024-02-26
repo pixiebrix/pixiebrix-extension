@@ -19,7 +19,7 @@ import {
   addListener as addAuthListener,
   isLinked,
   removeListener as removeAuthListener,
-} from "@/auth/token";
+} from "@/auth/authStorage";
 import useAsyncState from "@/hooks/useAsyncState";
 import { useEffect } from "react";
 

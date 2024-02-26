@@ -31,13 +31,13 @@ import {
 } from "@/testUtils/factories/logFactories";
 import { array } from "cooky-cutter";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
-import { flagOn } from "@/auth/authUtils";
 import type { ErrorObject } from "serialize-error";
+import { flagOn } from "@/auth/featureFlags";
 
 // Disable automatic __mocks__ resolution
 jest.mock("@/telemetry/logging", () => jest.requireActual("./logging.ts"));
 
-jest.mock("@/auth/authUtils", () => ({
+jest.mock("@/auth/featureFlags", () => ({
   flagOn: jest.fn().mockRejectedValue(new Error("Not mocked")),
 }));
 

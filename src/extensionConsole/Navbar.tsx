@@ -27,7 +27,7 @@ import {
   addListener as addAuthListener,
   readPartnerAuthData,
   removeListener as removeAuthListener,
-} from "@/auth/token";
+} from "@/auth/authStorage";
 import { useSelector } from "react-redux";
 import { toggleSidebar } from "./toggleSidebar";
 import { type SettingsState } from "@/store/settings/settingsTypes";

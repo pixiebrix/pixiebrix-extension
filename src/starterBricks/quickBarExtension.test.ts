@@ -51,12 +51,8 @@ const rootReaderId = validateRegistryId("test/root-reader");
 
 mockAnimationsApi();
 
-jest.mock("@/auth/token", () => ({
-  __esModule: true,
-  ...jest.requireActual("@/auth/token"),
-  readAuthData: jest.fn().mockResolvedValue({
-    flags: [],
-  }),
+jest.mock("@/auth/featureFlags", () => ({
+  flagOn: jest.fn().mockReturnValue(false),
 }));
 
 const starterBrickFactory = (definitionOverrides: UnknownObject = {}) =>

@@ -16,8 +16,7 @@
  */
 
 import { useMemo } from "react";
-import { selectFlags } from "@/auth/authSelectors";
-import { useSelector } from "react-redux";
+import { useGetFeatureFlagsQuery } from "@/data/service/api";
 
 const RESTRICTED_PREFIX = "restricted";
 
@@ -46,7 +45,9 @@ type Restrict = {
  * For permit/restrict, features will be restricted in the fetching/loading state
  */
 function useFlags(): Restrict {
-  const flags = useSelector(selectFlags);
+  const { data: flags } = useGetFeatureFlagsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
 
   return useMemo(() => {
     const flagSet = new Set(flags);

@@ -23,7 +23,7 @@ import axios, {
 } from "axios";
 import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import serviceRegistry from "@/integrations/registry";
-import { getExtensionToken } from "@/auth/token";
+import { getExtensionToken } from "@/auth/authStorage";
 import { locator } from "@/background/locator";
 import { isEmpty } from "lodash";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";

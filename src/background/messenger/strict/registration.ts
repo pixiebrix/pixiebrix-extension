@@ -39,7 +39,7 @@ import { rememberFocus } from "@/utils/focusTracker";
 import writeToClipboardInFocusedContext from "@/background/clipboard";
 import * as registry from "@/registry/packageRegistry";
 import serviceRegistry from "@/integrations/registry";
-import { getUserData } from "@/auth/token";
+import { getUserData } from "@/auth/authStorage";
 import {
   clearExtensionDebugLogs,
   clearLog,

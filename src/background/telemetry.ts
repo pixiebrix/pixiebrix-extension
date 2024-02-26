@@ -17,7 +17,7 @@
 
 import { type JsonObject } from "type-fest";
 import { compact, debounce, throttle, uniq } from "lodash";
-import { isLinked } from "@/auth/token";
+import { isLinked } from "@/auth/authStorage";
 import { getModComponentState } from "@/store/extensionsStorage";
 import {
   getLinkedApiClient,

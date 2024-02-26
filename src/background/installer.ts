@@ -22,7 +22,7 @@ import { getUUID } from "@/telemetry/telemetryHelpers";
 import { allowsTrack, dntConfig } from "@/telemetry/dnt";
 import { gt } from "semver";
 import { getBaseURL } from "@/data/service/baseService";
-import { getExtensionToken, getUserData, isLinked } from "@/auth/token";
+import { getExtensionToken, getUserData, isLinked } from "@/auth/authStorage";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import { isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";

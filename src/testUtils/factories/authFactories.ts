@@ -97,10 +97,6 @@ export const authStateFactory = define<AuthState>({
     const groups: AuthState["groups"] = [];
     return groups;
   },
-  flags() {
-    const flags: AuthState["flags"] = [];
-    return flags;
-  },
   milestones(): Milestone[] {
     return [];
   },
@@ -148,9 +144,6 @@ export const tokenAuthDataFactory = define<TokenAuthData>({
   email: emailFactory,
   user: uuidSequence,
   hostname: "app.pixiebrix.com",
-  flags(): string[] {
-    return [];
-  },
   organizations(): UserData["organizations"] {
     return [];
   },
