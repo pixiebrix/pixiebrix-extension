@@ -15,23 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { cleanDatadogVersionName } from "@/telemetry/telemetryHelpers";
+import { uuidv4 } from "@/types/helpers";
 
-// Disable automatic __mocks__ resolution #6799
-jest.mock("@/telemetry/telemetryHelpers", () =>
-  jest.requireActual("./telemetryHelpers.ts"),
-);
-
-describe("cleanDatadogVersionName", () => {
-  it("cleans local build version name", () => {
-    expect(
-      cleanDatadogVersionName("1.8.8-alpha.1-local+2024-01-14T18:13:07.744Z"),
-    ).toBe("1.8.8-alpha.1-local");
-  });
-
-  it("cleans CI build name", () => {
-    expect(cleanDatadogVersionName("1.8.8-alpha+293128")).toBe(
-      "1.8.8-alpha_293128",
-    );
-  });
-});
+export const getUUID = jest.fn().mockResolvedValue(uuidv4());
