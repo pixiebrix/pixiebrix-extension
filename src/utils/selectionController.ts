@@ -18,7 +18,7 @@
 import { getCommonAncestor } from "@/utils/inference/selectorInference";
 
 function getSelection(): Selection {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Firefox-only iframe-only "null"
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Firefox-only iframe-only "null"
   return window.getSelection()!;
 }
 

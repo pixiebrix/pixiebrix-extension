@@ -255,8 +255,8 @@
     "css-loader": "^6.10.0",
     "css-minimizer-webpack-plugin": "^6.0.0",
     "dotenv": "^16.4.5",
-    "eslint": "^8.56.0",
-    "eslint-config-pixiebrix": "^0.34.1",
+    "eslint": "^8.57.0",
+    "eslint-config-pixiebrix": "^0.36.2",
     "eslint-plugin-local-rules": "^2.0.1",
     "fake-indexeddb": "^5.0.2",
     "identity-obj-proxy": "^3.0.0",
@@ -294,7 +294,7 @@
     "webpack-merge": "^5.10.0",
     "webpack-target-webextension": "^1.1.1",
     "yaml-jest-transform": "^2.0.2",
-    "yaml-loader": "^0.7.0"
+    "yaml-loader": "^0.8.1"
   },
   "webExt": {
     "sourceDir": "dist",

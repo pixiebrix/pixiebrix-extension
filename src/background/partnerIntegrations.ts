@@ -33,6 +33,7 @@ import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
+import { stringToBase64 } from "uint8array-extras";
 
 const TEN_HOURS = 1000 * 60 * 60 * 10;
 
@@ -208,7 +209,7 @@ export async function _refreshPartnerToken(): Promise<void> {
     // On 401, throw the error. In the future, we might consider clearing the partnerAuth. However, currently that
     // would trigger a re-login, which may not be desirable at arbitrary times.
     const { data } = await axios.post(context.tokenUrl, params, {
-      headers: { Authorization: `Basic ${btoa(context.client_id)} ` },
+      headers: { Authorization: `Basic ${stringToBase64(context.client_id)} ` },
     });
 
     // Store for use direct calls to the partner API

@@ -18,6 +18,7 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { propertiesToSchema } from "@/validators/generic";
+import { stringToBase64 } from "uint8array-extras";
 
 export class Base64Encode extends TransformerABC {
   override defaultOutputKey = "encoded";
@@ -47,7 +48,7 @@ export class Base64Encode extends TransformerABC {
   async transform({
     stringToEncode,
   }: BrickArgs<{ stringToEncode: string }>): Promise<string> {
-    return btoa(stringToEncode);
+    return stringToBase64(stringToEncode);
   }
 }
 
@@ -75,6 +76,6 @@ export class Base64Decode extends TransformerABC {
   async transform({
     encodedData,
   }: BrickArgs<{ encodedData: string }>): Promise<string> {
-    return btoa(encodedData);
+    return stringToBase64(encodedData);
   }
 }

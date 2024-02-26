@@ -99,9 +99,7 @@ async function upgradeBlock(blockConfig: BrickConfig): Promise<void> {
     }),
   );
 
-  if (blockConfig.if) {
-    blockConfig.if = upgradeStringToExpression(blockConfig.if, templateEngine);
-  }
+  blockConfig.if &&= upgradeStringToExpression(blockConfig.if, templateEngine);
 
   // Top-level `templateEngine` not supported in v3
   delete blockConfig.templateEngine;
