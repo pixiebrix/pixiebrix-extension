@@ -32,7 +32,7 @@ export async function TEST_setFeatureFlags(flags: string[]): Promise<void> {
   await featureFlagStorage.set({ flags, lastFetchedTime: Date.now() });
 }
 
-export async function TEST_resetFeatureFlags(): Promise<void> {
+export async function resetFeatureFlags(): Promise<void> {
   await featureFlagStorage.set({ flags: [], lastFetchedTime: 0 });
 }
 

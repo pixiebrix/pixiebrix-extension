@@ -28,7 +28,7 @@ import {
   mapAppUserToTelemetryUser,
 } from "@/telemetry/telemetryHelpers";
 import type { UserData } from "@/auth/authTypes";
-import { flagOn } from "@/auth/featureFlags";
+import { flagOn } from "@/auth/featureFlagStorage";
 
 const environment = process.env.ENVIRONMENT;
 const applicationId = process.env.DATADOG_APPLICATION_ID;

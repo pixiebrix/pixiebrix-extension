@@ -40,7 +40,7 @@ import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 
 const rootReader = new RootReader();
 
-jest.mock("@/auth/featureFlags", () => ({
+jest.mock("@/auth/featureFlagStorage", () => ({
   flagOn: jest.fn().mockReturnValue(false),
 }));
 

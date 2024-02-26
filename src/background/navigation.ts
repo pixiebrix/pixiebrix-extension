@@ -23,7 +23,7 @@ import { isScriptableUrl } from "webext-content-scripts";
 import { debounce } from "lodash";
 import { canAccessTab as canInjectTab, getTabUrl } from "webext-tools";
 import { getTargetState } from "@/contentScript/ready";
-import { flagOn } from "@/auth/featureFlags";
+import { flagOn } from "@/auth/featureFlagStorage";
 
 export function reactivateEveryTab(): void {
   console.debug("Reactivate all tabs");

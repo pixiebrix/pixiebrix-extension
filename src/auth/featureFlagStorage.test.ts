@@ -17,9 +17,9 @@
 
 import {
   flagOn,
-  TEST_resetFeatureFlags,
+  resetFeatureFlags,
   TEST_setFeatureFlags,
-} from "@/auth/featureFlags";
+} from "@/auth/featureFlagStorage";
 import { appApiMock } from "@/testUtils/appApiMock";
 
 describe("featureFlags", () => {
@@ -32,7 +32,7 @@ describe("featureFlags", () => {
 
   afterEach(async () => {
     // eslint-disable-next-line new-cap
-    await TEST_resetFeatureFlags();
+    await resetFeatureFlags();
   });
 
   it("returns true if flag is present", async () => {

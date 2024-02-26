@@ -42,7 +42,7 @@ import { type UUID } from "@/types/stringTypes";
 import { deleteDatabase } from "@/utils/idbUtils";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { StorageItem } from "webext-storage";
-import { flagOn } from "@/auth/featureFlags";
+import { flagOn } from "@/auth/featureFlagStorage";
 
 const DATABASE_NAME = "LOG";
 const ENTRY_OBJECT_STORE = "entries";

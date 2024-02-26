@@ -51,7 +51,7 @@ const rootReaderId = validateRegistryId("test/root-reader");
 
 mockAnimationsApi();
 
-jest.mock("@/auth/featureFlags", () => ({
+jest.mock("@/auth/featureFlagStorage", () => ({
   flagOn: jest.fn().mockReturnValue(false),
 }));
 

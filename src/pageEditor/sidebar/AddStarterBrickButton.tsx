@@ -31,7 +31,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import { inspectedTab } from "@/pageEditor/context/connection";
-import { flagOn } from "@/auth/featureFlags";
+import { flagOn } from "@/auth/featureFlagStorage";
 
 const sortedStarterBricks = sortBy(
   [...ADAPTERS.values()],

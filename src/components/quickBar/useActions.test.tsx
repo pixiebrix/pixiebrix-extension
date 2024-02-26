@@ -25,7 +25,7 @@ import defaultActions, {
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { initQuickBarApp } from "@/components/quickBar/QuickBarApp";
 
-jest.mock("@/auth/featureFlags", () => ({
+jest.mock("@/auth/featureFlagStorage", () => ({
   flagOn: jest.fn().mockReturnValue(false),
 }));
 
