@@ -101,11 +101,11 @@ describe("featureFlags", () => {
 
   it("fetches flags again if auth is reset in between calls", async () => {
     appApiMock.onGet("/api/me/").reply(200, {
-      flags: ["test-flag"],
+      flags: ["test-flag", "secret-flag"],
     });
 
-    await expect(flagOn("test-flag")).resolves.toBe(true);
-    await expect(flagOn("test-flag")).resolves.toBe(true);
+    await expect(flagOn("secret-flag")).resolves.toBe(true);
+    await expect(flagOn("secret-flag")).resolves.toBe(true);
     expect(appApiMock.history.get).toHaveLength(1);
 
     const authData = tokenAuthDataFactory();
@@ -114,8 +114,13 @@ describe("featureFlags", () => {
     // eslint-disable-next-line new-cap
     TEST_triggerListeners(authData);
 
-    await expect(flagOn("test-flag")).resolves.toBe(true);
-    await expect(flagOn("test-flag")).resolves.toBe(true);
+    // New user doesn't have secret flag
+    appApiMock.onGet("/api/me/").reply(200, {
+      flags: ["test-flag"],
+    });
+
+    await expect(flagOn("secret-flag")).resolves.toBe(false);
+    await expect(flagOn("secret-flag")).resolves.toBe(false);
     expect(appApiMock.history.get).toHaveLength(2);
   });
 });
