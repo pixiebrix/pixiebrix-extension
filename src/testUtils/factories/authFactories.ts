@@ -122,13 +122,13 @@ export const userFactory = define<Me>({
   id: uuidSequence,
   email: emailFactory,
   scope: (n: number) => `@user${n}`,
-  flags: () => [] as Me["flags"],
+  flags: (): Me["flags"] => [],
   is_onboarded: true,
   organization: null,
   telemetry_organization: null,
-  organization_memberships: () => [] as Me["organization_memberships"],
-  group_memberships: () => [] as Me["group_memberships"],
-  milestones: () => [] as Me["milestones"],
+  organization_memberships: (): Me["organization_memberships"] => [],
+  group_memberships: (): Me["group_memberships"] => [],
+  milestones: (): Me["milestones"] => [],
 });
 
 export const partnerUserFactory = extend<Me, Me>(userFactory, {

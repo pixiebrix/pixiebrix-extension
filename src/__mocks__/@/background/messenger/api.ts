@@ -21,13 +21,10 @@
 import { backgroundTarget as bg, getMethod } from "webext-messenger";
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
-import { uuidv4 } from "@/types/helpers";
 import { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
 // Bypass auto-mocks
 export * from "../../../../background/messenger/api";
-
-export const getUID = jest.fn().mockResolvedValue(uuidv4());
 
 export const pong = jest.fn(() => ({
   timestamp: Date.now(),

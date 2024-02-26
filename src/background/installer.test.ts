@@ -39,6 +39,8 @@ jest.mock("@/auth/token", () => ({
   getUserData: jest.fn().mockResolvedValue(null),
 }));
 
+jest.mock("@/background/telemetry");
+
 jest.mock("@/store/syncFlags", () => ({
   syncFlagOn: jest.fn().mockResolvedValue(false),
 }));
