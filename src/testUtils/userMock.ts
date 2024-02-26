@@ -28,6 +28,7 @@ import { TEST_setAuthData } from "@/auth/authStorage";
 
 export function mockAnonymousUser(): void {
   appApiMock.onGet("/api/me/").reply(200, {
+    // Anonymous users still get feature flags
     flags: [],
   });
 }
