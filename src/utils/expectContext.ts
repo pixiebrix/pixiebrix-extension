@@ -62,15 +62,21 @@ const contextMap = {
 } as const;
 
 /**
+ * Throws an error if the current context is not the expected one.
+ *
+ * For cross-platform capabilities, use assertPlatformCapability
+ *
  * @example expectContext('extension')
  * @example expectContext('extension', WrongContextError)
  * @example expectContext('extension', 'Wrong context and this is my custom error')
  * @example expectContext('extension', new Error('Wrong context and this is my custom error'))
+ * @see assertPlatformCapability
  */
 export function expectContext(
   context: keyof typeof contextMap,
   error?: ErrorBaseType,
 ): void {
+  // eslint-disable-next-line security/detect-object-injection -- type-checked
   const isContext = contextMap[context];
   if (!isContext) {
     throw new TypeError(`Context "${context}" not found`);

@@ -47,7 +47,15 @@ export function setPlatform(platformProtocol: PlatformProtocol): void {
 
 /**
  * Assert that the global platform supports a capability.
- * @param capability the capability to assert
+ *
+ * For web-extension context checks, use expectContext
+ *
+ * Use instead of expectContext for platform capabilities.
+ *
+ * @param capability the platform capability to assert
+ * @see expectContext
+ * @throws PlatformCapabilityNotAvailableError if the capability is not available
+ * @since 1.8.10
  */
 export function assertPlatformCapability(capability: PlatformCapability): void {
   if (!platform.capabilities.includes(capability)) {
