@@ -321,7 +321,7 @@ export const initTelemetry = throttle(init, 30 * 60 * 1000, {
 });
 
 /**
- * @deprecate Only allowed in @/background files. Otherwise use: `import reportEvent from "@/telemetry/reportEvent"`
+ * @deprecated Only allowed in @/background files. Otherwise use: `import reportEvent from "@/telemetry/reportEvent"`
  */
 export async function recordEvent({
   event,
