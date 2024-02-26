@@ -48,9 +48,7 @@ export function ensureElementUIState(
 }
 
 export function ensureNodeUIState(state: Draft<ElementUIState>, nodeId: UUID) {
-  if (!state.nodeUIStates[nodeId]) {
-    state.nodeUIStates[nodeId] = makeInitialNodeUIState(nodeId);
-  }
+  state.nodeUIStates[nodeId] ??= makeInitialNodeUIState(nodeId);
 }
 
 export function syncElementNodeUIStates(

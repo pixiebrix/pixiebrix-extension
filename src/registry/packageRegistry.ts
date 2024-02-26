@@ -139,7 +139,7 @@ export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
 
     return Object.entries(groupBy(bricks, (x) => x.id)).map(
       ([, versions]) =>
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- there's at least one element per group
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- there's at least one element per group
         latestVersion(versions)!,
     );
   } finally {

@@ -168,7 +168,7 @@ export async function isLinked(): Promise<boolean> {
  * Return non-sensitive PixieBrix user profile data.
  * @see getExtensionAuth
  */
-export async function getUserData(): Promise<Partial<UserData>> {
+export async function getUserData(): Promise<UserData> {
   expectContext("extension");
   const data = await readAuthData();
   return omit(data, "token");

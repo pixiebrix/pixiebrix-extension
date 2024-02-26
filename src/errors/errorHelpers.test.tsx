@@ -73,6 +73,7 @@ function testStore() {
 const TEST_MESSAGE = "Test message";
 
 function createUncaughtRejection(reason: string | Error) {
+  // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- We want to test both
   const promise = Promise.reject(reason);
   // eslint-disable-next-line promise/prefer-await-to-then -- Test only
   promise.catch(() => {}); // Or else it will crash Node

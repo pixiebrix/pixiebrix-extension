@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison -- It seems to be the correct option for now */
 import React from "react";
 import { type BlockInfo } from "@/pageEditor/uiState/uiStateTypes";
 import { KnownSources } from "@/analysis/analysisVisitors/varAnalysis/varAnalysis";
@@ -19,49 +20,38 @@ const SourceLabel: React.FunctionComponent<SourceLabelProps> = ({
 }) => {
   const [kind] = source.split(":");
   let label: string;
-  if (
-    [
-      KnownSources.INPUT,
-      KnownSources.OPTIONS,
-      KnownSources.SERVICE,
-      KnownSources.MOD,
-    ].includes(kind)
-  ) {
-    switch (kind) {
-      case KnownSources.INPUT: {
-        label = `Starter Brick: ${extensionPointLabel}`;
-        break;
-      }
-
-      case KnownSources.OPTIONS: {
-        label = "Mod Options";
-        break;
-      }
-
-      case KnownSources.MOD: {
-        label = "Mod Variables";
-        break;
-      }
-
-      case KnownSources.SERVICE: {
-        label = "Integrations";
-        break;
-      }
-
-      default: {
-        throw new Error(`Unexpected kind: ${kind}`);
-      }
+  switch (kind) {
+    case KnownSources.INPUT: {
+      label = `Starter Brick: ${extensionPointLabel}`;
+      break;
     }
-  } else {
-    const blockConfig = blocksInfo.find((block) => block.path === source)
-      ?.blockConfig;
-    if (blockConfig == null) {
-      label = source;
-    } else {
-      label =
-        blockConfig.label ??
-        allBlocks.get(blockConfig.id)?.block?.name ??
-        source;
+
+    case KnownSources.OPTIONS: {
+      label = "Mod Options";
+      break;
+    }
+
+    case KnownSources.MOD: {
+      label = "Mod Variables";
+      break;
+    }
+
+    case KnownSources.SERVICE: {
+      label = "Integrations";
+      break;
+    }
+
+    default: {
+      const blockConfig = blocksInfo.find((block) => block.path === source)
+        ?.blockConfig;
+      if (blockConfig == null) {
+        label = source;
+      } else {
+        label =
+          blockConfig.label ??
+          allBlocks.get(blockConfig.id)?.block?.name ??
+          source;
+      }
     }
   }
 

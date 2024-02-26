@@ -24,6 +24,7 @@ import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import type { ModActivationConfig } from "@/types/modTypes";
 import { isEmpty, uniq } from "lodash";
 import deepEquals from "fast-deep-equal";
+import { base64ToString, stringToBase64 } from "uint8array-extras";
 
 const ACTIVATE_PATH = "/activate";
 
@@ -62,14 +63,14 @@ export function createActivationRelativeUrl(
     nextUrl?: string;
   } = {},
 ): string {
-  if (mods.length === 0) {
+  const [firstMod] = mods;
+  if (!firstMod) {
     throw new Error("Expected at least one mod to activate");
   }
 
   const searchParams = new URLSearchParams();
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- known to be non-empty due to check above
-  const { initialOptions } = mods[0]!;
+  const { initialOptions } = firstMod;
 
   // In 1.8.8, which introduces initial options, we only support a single set of initial options
   if (mods.some((mod) => !deepEquals(mod.initialOptions, initialOptions))) {
@@ -83,7 +84,10 @@ export function createActivationRelativeUrl(
 
   // Only add options if they are present
   if (mods.some((x) => !isEmpty(x.initialOptions))) {
-    searchParams.set("activateOptions", btoa(JSON.stringify(initialOptions)));
+    searchParams.set(
+      "activateOptions",
+      stringToBase64(JSON.stringify(initialOptions)),
+    );
   }
 
   if (nextUrl) {
@@ -137,7 +141,7 @@ function parseEncodedOptions(
     return {};
   }
 
-  const json = JSON.parse(atob(encodedOptions));
+  const json = JSON.parse(base64ToString(encodedOptions));
 
   if (typeof json !== "object") {
     throw new TypeError(`Invalid options: ${typeof json}`);

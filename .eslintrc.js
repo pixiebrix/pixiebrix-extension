@@ -1,6 +1,15 @@
 const { readFileSync } = require("fs");
 const { resolve } = require("path");
 
+const boundaries = [
+  "background",
+  "contentScript",
+  "pageEditor",
+  "extensionConsole",
+  "sidebar",
+  "pageScript",
+];
+
 module.exports = {
   root: true,
   extends: [
@@ -22,14 +31,8 @@ module.exports = {
     "local-rules/noCrossBoundaryImports": [
       "warn",
       {
-        boundaries: [
-          "background",
-          "contentScript",
-          "pageEditor",
-          "extensionConsole",
-          "sidebar",
-          "pageScript",
-        ],
+        // This rule is customized below for files in "src/platform"
+        boundaries,
         allowedGlobs: ["**/messenger/**", "**/*.scss*"],
       },
     ],
@@ -104,6 +107,15 @@ module.exports = {
       // NOTE: If you add more rules, add the tests to eslint-local-rules/noRestrictedSyntax.ts
     ],
 
+    // We want to have a default case to check for `never`
+    "@typescript-eslint/switch-exhaustiveness-check": [
+      "error",
+      {
+        allowDefaultCaseForExhaustiveSwitch: true,
+        requireDefaultForNonUnion: true,
+      },
+    ],
+
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/restrict-template-expressions": [
       "error",
@@ -139,6 +151,20 @@ module.exports = {
       rules: {
         "unicorn/prefer-spread": "off",
         "local-rules/noCrossBoundaryImports": "off",
+      },
+    },
+    {
+      files: ["./src/platform/**"],
+      rules: {
+        "local-rules/noCrossBoundaryImports": [
+          // Turn into error
+          "error",
+          {
+            boundaries,
+            // Do not allow Messenger imports either
+            allowedGlobs: ["**/*.scss*"],
+          },
+        ],
       },
     },
     {

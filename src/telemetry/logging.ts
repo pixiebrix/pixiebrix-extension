@@ -263,7 +263,7 @@ export async function getLogEntries(
       .transaction(ENTRY_OBJECT_STORE, "readonly")
       .objectStore(ENTRY_OBJECT_STORE);
 
-    let indexKey: IndexKey;
+    let indexKey: IndexKey | undefined;
     for (const key of INDEX_KEYS) {
       // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
       if (context[key] != null) {
@@ -320,7 +320,7 @@ const warnAboutDisabledDNT = once(() => {
 
 const THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES = new Set([502, 503, 504]);
 const THROTTLE_RATE_MS = 60_000; // 1 minute
-let lastAxiosServerErrorTimestamp: number = null;
+let lastAxiosServerErrorTimestamp: number | null = null;
 
 /**
  * Create a fake stacktrace for Datadog that don't natively support Error.cause.
@@ -337,7 +337,8 @@ export function flattenStackForDatadog(stack: string, cause?: unknown): string {
   }
 
   // Drop spaces from cause’s title or else Datadog will clip the title
-  const [errorTitle] = cause.stack.split("\n", 1);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+  const errorTitle = cause.stack.split("\n", 1).at(0)!;
   const causeStack = cause.stack.replace(
     errorTitle,
     errorTitle.replaceAll(" ", "-"),
@@ -376,7 +377,8 @@ export async function reportToApplicationErrorTelemetry(
   // Throttle certain Axios status codes because they are redundant with our platform alerts
   if (
     isAxiosError(error) &&
-    THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES.has(error.response?.status)
+    error.response?.status &&
+    THROTTLE_AXIOS_SERVER_ERROR_STATUS_CODES.has(error.response.status)
   ) {
     // JS allows subtracting dates directly but TS complains, so get the date as a number in milliseconds:
     // https://github.com/microsoft/TypeScript/issues/8260
@@ -416,7 +418,7 @@ export async function reportToApplicationErrorTelemetry(
 
   const details = await selectExtraContext(error);
 
-  error.stack = flattenStackForDatadog(error.stack, error.cause);
+  error.stack &&= flattenStackForDatadog(error.stack, error.cause);
 
   reporter.error({
     message,
@@ -501,7 +503,8 @@ export async function getLoggingConfig(): Promise<LoggingConfig> {
     return lastValue;
   } catch {
     // The context was probably invalidated. Logging utilities shouldn't throw errors
-    return lastValue ?? loggingConfig.defaultValue;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Incomplete types
+    return lastValue ?? loggingConfig.defaultValue!;
   }
 }
 

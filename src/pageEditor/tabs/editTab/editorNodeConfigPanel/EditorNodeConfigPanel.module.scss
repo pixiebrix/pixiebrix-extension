@@ -14,24 +14,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+@import "@/themes/colors.scss";
 
-import { cleanDatadogVersionName } from "@/telemetry/telemetryHelpers";
+.coreFields {
+  container-name: EditorNodeConfigPanelHeader;
+  container-type: inline-size;
+}
 
-// Disable automatic __mocks__ resolution #6799
-jest.mock("@/telemetry/telemetryHelpers", () =>
-  jest.requireActual("./telemetryHelpers.ts"),
-);
-
-describe("cleanDatadogVersionName", () => {
-  it("cleans local build version name", () => {
-    expect(
-      cleanDatadogVersionName("1.8.8-alpha.1-local+2024-01-14T18:13:07.744Z"),
-    ).toBe("1.8.8-alpha.1-local");
-  });
-
-  it("cleans CI build name", () => {
-    expect(cleanDatadogVersionName("1.8.8-alpha+293128")).toBe(
-      "1.8.8-alpha_293128",
-    );
-  });
-});
+@container EditorNodeConfigPanelHeader (min-width: 700px) {
+  .coreFields > :first-child {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .coreFields label {
+    /* Replicate fitLabelWidth */
+    min-width: fit-content;
+    flex-grow: 0;
+  }
+}
