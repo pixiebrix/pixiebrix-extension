@@ -21,6 +21,8 @@ import {
   TEST_setFeatureFlags,
 } from "@/auth/featureFlagStorage";
 import { appApiMock } from "@/testUtils/appApiMock";
+import { TEST_setAuthData, TEST_triggerListeners } from "@/auth/authStorage";
+import { tokenAuthDataFactory } from "@/testUtils/factories/authFactories";
 
 describe("featureFlags", () => {
   beforeEach(async () => {
@@ -31,8 +33,8 @@ describe("featureFlags", () => {
   });
 
   afterEach(async () => {
-    // eslint-disable-next-line new-cap
     await resetFeatureFlags();
+    jest.useRealTimers();
   });
 
   it("returns true if flag is present", async () => {
@@ -92,6 +94,26 @@ describe("featureFlags", () => {
     jest.advanceTimersByTime(31_000);
 
     await expect(flagOn("test-flag")).resolves.toBe(true);
+    await expect(flagOn("test-flag")).resolves.toBe(true);
+    await expect(flagOn("test-flag")).resolves.toBe(true);
+    expect(appApiMock.history.get).toHaveLength(2);
+  });
+
+  it("fetches flags again if auth is reset in between calls", async () => {
+    appApiMock.onGet("/api/me/").reply(200, {
+      flags: ["test-flag"],
+    });
+
+    await expect(flagOn("test-flag")).resolves.toBe(true);
+    await expect(flagOn("test-flag")).resolves.toBe(true);
+    expect(appApiMock.history.get).toHaveLength(1);
+
+    const authData = tokenAuthDataFactory();
+    // eslint-disable-next-line new-cap
+    await TEST_setAuthData(authData);
+    // eslint-disable-next-line new-cap
+    TEST_triggerListeners(authData);
+
     await expect(flagOn("test-flag")).resolves.toBe(true);
     await expect(flagOn("test-flag")).resolves.toBe(true);
     expect(appApiMock.history.get).toHaveLength(2);

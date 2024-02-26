@@ -18,6 +18,8 @@
 import { StorageItem } from "webext-storage";
 import { getApiClient } from "@/data/service/apiClient";
 import { type components } from "@/types/swagger";
+import { once } from "lodash";
+import { addListener } from "@/auth/authStorage";
 
 const TIME_TO_EXPIRATION_MS = 30_000; // 30 seconds
 
@@ -62,3 +64,11 @@ export async function flagOn(flag: string): Promise<boolean> {
 
   return flags.includes(flag);
 }
+
+const init = once(() => {
+  addListener(async () => {
+    await resetFeatureFlags();
+  });
+});
+
+init();
