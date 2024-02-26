@@ -163,6 +163,8 @@ const PanelBody: React.FunctionComponent<{
       }
 
       try {
+        const platform = getPlatform();
+
         // In most cases reactivate would have already been called for the payload == null branch. But confirm it here
         dispatch(slice.actions.reactivate());
 
@@ -178,7 +180,7 @@ const PanelBody: React.FunctionComponent<{
 
         const block = await blockRegistry.lookup(blockId);
 
-        const logger = getPlatform().logger.childLogger({
+        const logger = platform.logger.childLogger({
           ...context,
           blockId,
         });
@@ -186,7 +188,7 @@ const PanelBody: React.FunctionComponent<{
         const branches = tracePath ? mapPathToTraceBranches(tracePath) : [];
 
         const body = await block.run(unsafeAssumeValidArg(args), {
-          platform: getPlatform(),
+          platform,
           ctxt: brickArgsContext,
           root: null,
           meta: {

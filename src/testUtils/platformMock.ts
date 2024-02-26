@@ -81,6 +81,15 @@ export const platformMock: PlatformProtocol = {
       hideNotification: jest.fn(),
     };
   },
+  get debugger() {
+    return {
+      clear: jest.fn(),
+      traces: {
+        enter: jest.fn(),
+        exit: jest.fn(),
+      },
+    };
+  },
   get panels() {
     return {
       isContainerVisible: jest.fn(),

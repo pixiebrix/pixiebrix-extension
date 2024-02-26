@@ -20,13 +20,14 @@ import {
   type PlatformProtocol,
 } from "@/platform/platformProtocol";
 import { hideNotification, showNotification } from "@/utils/notify";
-import { setToolbarBadge } from "@/background/messenger/strict/api";
+import { setToolbarBadge, traces } from "@/background/messenger/strict/api";
 import { getState, setState } from "@/platform/state/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { expectContext } from "@/utils/expectContext";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import {
+  clearExtensionDebugLogs,
   ensureContextMenu,
   openTab,
   performConfiguredRequestInBackground,
@@ -50,6 +51,7 @@ import { commandRegistry } from "@/contentScript/commandPopover/commandControlle
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import * as sidebarController from "@/contentScript/sidebarController";
 import { validateSemVerString } from "@/types/helpers";
+import type { UUID } from "@/types/stringTypes";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -91,6 +93,7 @@ class ContentScriptPlatform extends PlatformBase {
     "pageScript",
     "contentScript",
     "logs",
+    "debugger",
     "alert",
     "form",
     "panel",
@@ -207,6 +210,21 @@ class ContentScriptPlatform extends PlatformBase {
 
   override get logger(): PlatformProtocol["logger"] {
     return this._logger;
+  }
+
+  override get debugger(): PlatformProtocol["debugger"] {
+    return {
+      async clear(componentId: UUID): Promise<void> {
+        await Promise.all([
+          traces.clear(componentId),
+          clearExtensionDebugLogs(componentId),
+        ]);
+      },
+      traces: {
+        enter: traces.addEntry,
+        exit: traces.addExit,
+      },
+    };
   }
 
   override get quickBar(): PlatformProtocol["quickBar"] {

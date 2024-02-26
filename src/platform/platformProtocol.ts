@@ -41,6 +41,7 @@ import type { ModComponentRef } from "@/types/modComponentTypes";
 import type { PanelPayload } from "@/types/sidebarTypes";
 import type { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { validateSemVerString } from "@/types/helpers";
+import type { TraceEntryData, TraceExitData } from "@/telemetry/trace";
 
 export type AudioProtocol = {
   play(soundEffect: string): Promise<void>;
@@ -130,6 +131,32 @@ export interface ToastProtocol {
    * Hide a notification.
    */
   hideNotification: (id: string) => void;
+}
+
+/**
+ * The tracing protocol.
+ * @since 1.8.10
+ */
+export interface TraceProtocol {
+  enter: (data: TraceEntryData) => void;
+  exit: (data: TraceExitData) => void;
+}
+
+/**
+ * The trace/debugger protocol.
+ * @since 1.8.10
+ */
+export interface DebuggerProtocol {
+  /**
+   * Clear debug/trace entries for the given component.
+   *
+   * Awaitable to allow the caller to ensure the entries are cleared before continuing.
+   *
+   * @param componentId the mod component id
+   */
+  clear: (componentId: UUID) => Promise<void>;
+
+  traces: TraceProtocol;
 }
 
 export type TextCommand = {
@@ -401,6 +428,12 @@ export interface PlatformProtocol {
   get panels(): PanelProtocol;
 
   /**
+   * Protocol for debugging/tracing mods.
+   * @since 1.8.10
+   */
+  get debugger(): DebuggerProtocol;
+
+  /**
    * The badge, e.g., the toolbar icon in a web extension.
    * @since 1.8.10
    */
@@ -461,6 +494,10 @@ export class PlatformBase implements PlatformProtocol {
 
   get logger(): Logger {
     throw new PlatformCapabilityNotAvailable(this.platformName, "logs");
+  }
+
+  get debugger(): DebuggerProtocol {
+    throw new PlatformCapabilityNotAvailable(this.platformName, "debugger");
   }
 
   get audio(): AudioProtocol {

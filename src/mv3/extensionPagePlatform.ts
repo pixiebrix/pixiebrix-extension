@@ -22,11 +22,17 @@ import {
 import { hideNotification, showNotification } from "@/utils/notify";
 import type { PlatformCapability } from "@/platform/capabilities";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
-import { SemVerString } from "@/types/registryTypes";
+import { validateSemVerString } from "@/types/helpers";
+import type { UUID } from "@/types/stringTypes";
+import { traces } from "@/background/messenger/strict/api";
+import { clearExtensionDebugLogs } from "@/background/messenger/api";
 
 /**
- * The Page Editor platform. The Page Editor doesn't run bricks, but does instantiate user-defined bricks for
- * access to the Brick instance methods.
+ * The extension page platform.
+ *
+ * Extension pages generally don't run bricks. However:
+ * - The sidebar runs bricks, e.g., in PanelBody
+ * - The Extension Console and Page Editor instantiate bricks to access the brick instance methods
  */
 class ExtensionPagePlatform extends PlatformBase {
   override capabilities: PlatformCapability[] = [
@@ -34,6 +40,7 @@ class ExtensionPagePlatform extends PlatformBase {
     "alert",
     "toast",
     "logs",
+    "debugger",
   ];
 
   private readonly _logger = new BackgroundLogger({
@@ -41,7 +48,10 @@ class ExtensionPagePlatform extends PlatformBase {
   });
 
   constructor() {
-    super("extension", browser.runtime.getManifest().version as SemVerString);
+    super(
+      "extension",
+      validateSemVerString(browser.runtime.getManifest().version),
+    );
   }
 
   override alert = window.alert;
@@ -49,6 +59,22 @@ class ExtensionPagePlatform extends PlatformBase {
 
   override get logger() {
     return this._logger;
+  }
+
+  // Support tracing for bricks run in the sidebar. See PanelBody.tsx
+  override get debugger(): PlatformProtocol["debugger"] {
+    return {
+      async clear(componentId: UUID): Promise<void> {
+        await Promise.all([
+          traces.clear(componentId),
+          clearExtensionDebugLogs(componentId),
+        ]);
+      },
+      traces: {
+        enter: traces.addEntry,
+        exit: traces.addExit,
+      },
+    };
   }
 
   override get toasts(): PlatformProtocol["toasts"] {

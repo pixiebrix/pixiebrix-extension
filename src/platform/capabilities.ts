@@ -35,6 +35,8 @@ export const platformCapabilities = [
   "toast",
   // Runtime logs
   "logs",
+  // Runtime debugging/tracing
+  "debugger",
   // Run sandboxed Javascript code. Sandboxed JS does not have access to the DOM.
   "sandbox",
   // Write to the clipboard

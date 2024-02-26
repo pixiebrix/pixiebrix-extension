@@ -33,8 +33,8 @@ import { validateSemVerString } from "@/types/helpers";
  * @since 1.8.10
  */
 class BackgroundPlatform extends PlatformBase {
-  // For now, the only capability we have the background is to run API requests.
-  // In MV2, the background page has a DOM. In MV3, the background must use EventPages for DOM access
+  // In MV2, the background page has a DOM. In MV3, the background must use EventPages for DOM access. So for now,
+  // we don't include "dom" in the capabilities.
   override capabilities: PlatformCapability[] = ["http", "logs"];
 
   private readonly _logger = new BackgroundLogger({
