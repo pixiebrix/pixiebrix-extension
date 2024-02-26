@@ -53,7 +53,7 @@ void initRuntimeLogging();
 
 // See note in `@/contentScript/ready.ts` for further details about the lifecycle of content scripts
 async function initContentScript() {
-  const context = top === self ? "" : `in frame ${location.href}`;
+  const urlInfo = top === self ? "" : `in frame ${location.href}`;
   const uuid = uuidv4();
 
   if (isInstalledInThisSession()) {
@@ -62,12 +62,25 @@ async function initContentScript() {
     // Prior to 1.7.31 we had been using `webext-dynamic-content-scripts` which can inject the same content script
     // multiple times: https://github.com/pixiebrix/pixiebrix-extension/pull/5743
     console.warn(
-      `contentScript: was requested twice in the same context, skipping content script initialization ${context}`,
+      `contentScript: was requested twice in the same context, skipping content script initialization ${urlInfo}`,
     );
     return;
   }
 
-  console.debug(`contentScript: importing ${uuid} ${context}`);
+  // Do not use the Messenger, it cannot appear in this bundle
+  const context = await browser.runtime.sendMessage({ type: "WHO_AM_I" });
+  if (!context) {
+    console.error(
+      "contentScript: Nobody answered the WHO_AM_I context check. Loading might fail later.",
+    );
+  } else if (!("tab" in context)) {
+    console.warn(`contentScript: not available in tabless iframes`, {
+      context,
+    });
+    return;
+  }
+
+  console.debug(`contentScript: importing ${uuid} ${urlInfo}`);
 
   setInstalledInThisSession();
 
