@@ -366,6 +366,7 @@
     "./mods/hooks/useMarketplaceUrl.ts",
     "./mv3/SessionStorage.ts",
     "./mv3/api.ts",
+    "./mv3/extensionPagePlatform.ts",
     "./pageEditor/NonScriptablePage.tsx",
     "./pageEditor/baseFormStateTypes.ts",
     "./pageEditor/components/LoginCard.tsx",
