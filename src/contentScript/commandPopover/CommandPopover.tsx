@@ -31,6 +31,7 @@ import stylesUrl from "./CommandPopover.scss?loadAsUrl";
 import {
   initialState,
   popoverSlice,
+  type PopoverState,
   selectSelectedCommand,
 } from "@/contentScript/commandPopover/commandPopoverSlice";
 import { getElementText } from "@/utils/editorUtils";
@@ -101,6 +102,37 @@ const ResultItem: React.FunctionComponent<{
   );
 };
 
+const StatusBar: React.FunctionComponent<{
+  activeCommand?: PopoverState["activeCommand"];
+  results: PopoverState["results"];
+}> = ({ activeCommand, results }) => {
+  if (activeCommand?.state.isFetching) {
+    return (
+      <div role="status" className="status status--fetching">
+        Running command: {activeCommand.command.title}
+      </div>
+    );
+  }
+
+  if (activeCommand?.state.isError) {
+    return (
+      <div role="status" className="status status--error">
+        Error running last command
+      </div>
+    );
+  }
+
+  if (results.length === 0) {
+    return (
+      <div role="status" className="status status--empty">
+        No matches found
+      </div>
+    );
+  }
+
+  return null;
+};
+
 const CommandPopover: React.FunctionComponent<
   {
     commandKey: string;
@@ -164,33 +196,11 @@ const CommandPopover: React.FunctionComponent<
     dispatch(popoverSlice.actions.search({ commands, query }));
   }, [query, commands, dispatch]);
 
-  let status = null;
-
-  if (state.activeCommand?.state.isFetching) {
-    status = (
-      <div role="status" className="status status--fetching">
-        Running command: {state.activeCommand.command.title}
-      </div>
-    );
-  } else if (state.activeCommand?.state.isError) {
-    status = (
-      <div role="status" className="status status--error">
-        Error running last command
-      </div>
-    );
-  } else if (state.results.length === 0) {
-    status = (
-      <div role="status" className="status status--empty">
-        No matches found
-      </div>
-    );
-  }
-
   return (
     <ShadowRoot mode="open">
       <Stylesheets href={[stylesUrl]}>
         <div role="menu" aria-label="Text command menu" className="root">
-          {status}
+          <StatusBar {...state} />
           <div className="results">
             {state.results.map((command) => {
               const isSelected = selectedCommand?.shortcut === command.shortcut;
