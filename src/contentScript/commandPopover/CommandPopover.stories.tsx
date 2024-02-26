@@ -29,7 +29,10 @@ export default {
   component: CommandPopover,
 } as ComponentMeta<typeof CommandPopover>;
 
-const Template: ComponentStory<typeof CommandPopover> = ({ registry }) => {
+const Template: ComponentStory<typeof CommandPopover> = ({
+  registry,
+  commandKey,
+}) => {
   const elementRef = useRef(null);
   const [element, setElement] = useState<Nullishable<HTMLElement>>(null);
 
@@ -46,6 +49,7 @@ const Template: ComponentStory<typeof CommandPopover> = ({ registry }) => {
       {element && (
         <div>
           <CommandPopover
+            commandKey={commandKey}
             registry={registry}
             element={element}
             onHide={action("hide")}
@@ -104,6 +108,7 @@ commandRegistry.register(slowErrorCommand);
  */
 export const Demo = Template.bind({});
 Demo.args = {
+  commandKey: "\\",
   registry: commandRegistry,
   onHide: action("onHide"),
   // XXX: fix Storybook parameter type instead of passing undefined

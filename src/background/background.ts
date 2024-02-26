@@ -51,7 +51,6 @@ import {
   initManagedStorage,
   watchDelayedStorageInitialization,
 } from "@/store/enterprise/managedStorage";
-import activateBrowserActionIcon from "./activateBrowserActionIcon";
 import { setPlatform } from "@/platform/platformContext";
 import backgroundPlatform from "@/background/backgroundPlatform";
 
@@ -80,7 +79,6 @@ initContextMenus();
 initContentScriptReadyListener();
 initBrowserCommands();
 initDeploymentUpdater();
-void activateBrowserActionIcon(); // Keep here #7645
 initTheme();
 initStarterMods();
 initPartnerTokenRefresh();

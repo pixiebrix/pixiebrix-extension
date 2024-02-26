@@ -177,8 +177,8 @@ export function selectExtensionPointIntegrations({
     } as Schema;
   }
 
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- future-proofing
-  throw new Error(`Unknown ModDependencyApiVersion: ${apiVersion}`);
+  const exhaustiveCheck: never = apiVersion;
+  throw new Error(`Unknown ModDependencyApiVersion: ${exhaustiveCheck}`);
 }
 
 /**

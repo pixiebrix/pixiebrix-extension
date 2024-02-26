@@ -24,6 +24,8 @@ import logo from "@img/logo.svg";
 import logoSmall from "@img/logo-small.svg";
 import aaLogo from "@img/aa-logo.svg";
 import aaLogoSmall from "@img/aa-logo-small.svg";
+import { StorageItem } from "webext-storage";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export const isValidThemeName = (themeName: string): themeName is ThemeName =>
   THEME_NAMES.includes(themeName);
@@ -46,6 +48,19 @@ export const THEME_LOGOS: ThemeLogoMap = {
     regular: aaLogo,
     small: aaLogoSmall,
   },
+};
+
+export type ThemeAssets = {
+  logo: ThemeLogo;
+  showSidebarLogo: boolean;
+  /** URL to a png or a svg */
+  customSidebarLogo: Nullishable<string>;
+  /** URL to a svg */
+  toolbarIcon: Nullishable<string>;
+  /** The base theme name **/
+  themeName: ThemeName;
+  /** Internal attribute that tracks when the active theme was last fetched and calculated for re-fetching purposes **/
+  lastFetched: Nullishable<number>;
 };
 
 // Note: this function is re-used in the app. Should not reference
@@ -80,9 +95,14 @@ export const setThemeFavicon = (themeName: ThemeName): void => {
   }
 
   if (themeName === "default") {
+    // FIXME: The favicon isn't reset back to the default after being set to AA.
+    //  The page needs to be reloaded to reset the favicon
+    //  https://github.com/pixiebrix/pixiebrix-extension/issues/7685
     favicon.removeAttribute("href");
   } else {
     const { small: icon } = getThemeLogo(themeName);
     favicon.setAttribute("href", icon);
   }
 };
+
+export const themeStorage = new StorageItem<ThemeAssets>("THEME");

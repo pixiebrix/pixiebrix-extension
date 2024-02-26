@@ -25,7 +25,7 @@ function getIconMap(resolve: RequireContext): Map<string, string> {
   const icons = new Map<string, string>();
   for (const url of resolve.keys()) {
     // `.split()` will always create an array with at least one item
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
     const iconName = url.split("/").pop()!.replace(".svg", "");
     icons.set(iconName, String(resolve(url)));
   }

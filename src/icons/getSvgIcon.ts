@@ -49,7 +49,7 @@ export default async function getSvgIcon({
   svgTextElement.find("title").remove();
 
   // We just created an element, it can't be "undefined". `!` is fine
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
   return svgTextElement
     .filter("svg") // There might also be comment nodes, so they need to be filtered out
     .attr({

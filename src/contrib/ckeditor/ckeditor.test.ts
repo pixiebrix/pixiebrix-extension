@@ -16,11 +16,11 @@
  */
 
 import {
-  hasCKEditorClass,
   isCKEditorElement,
-  setCKEditorData,
-} from "@/contrib/ckeditor";
+  setData,
+} from "@/contrib/ckeditor/ckeditorProtocol";
 import { BusinessError } from "@/errors/businessErrors";
+import { hasCKEditorClass } from "@/contrib/ckeditor/ckeditorDom";
 
 describe("CKEditor", () => {
   test("it detects CKEditor instances", () => {
@@ -42,7 +42,7 @@ describe("CKEditor", () => {
   test("setData throws business error for non CKEditor", () => {
     const element = document.createElement("div");
     expect(() => {
-      setCKEditorData(element, "test");
+      setData(element, "test");
     }).toThrow(BusinessError);
   });
 });

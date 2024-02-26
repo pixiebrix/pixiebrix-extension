@@ -32,6 +32,7 @@ import {
   SET_COMPONENT_DATA,
   type FrameworkAdapter,
   CKEDITOR_SET_VALUE,
+  CKEDITOR_INSERT_TEXT,
 } from "@/pageScript/messenger/constants";
 import adapters from "@/pageScript/frameworks/adapters";
 import {
@@ -52,7 +53,7 @@ import {
 } from "@/runtime/pathHelpers";
 import { initialize } from "./messenger/receiver";
 import { TimeoutError } from "p-timeout";
-import { setCKEditorData } from "@/contrib/ckeditor";
+import * as ckeditor from "@/contrib/ckeditor/ckeditorProtocol";
 import { awaitValue } from "@/utils/promiseUtils";
 import { findSingleElement } from "@/utils/domUtils";
 import { uuidv4 } from "@/types/helpers";
@@ -272,7 +273,15 @@ attachListener(
   CKEDITOR_SET_VALUE,
   async ({ selector, value }: { selector: string; value: string }) => {
     const element = findSingleElement(selector);
-    setCKEditorData(element, value);
+    ckeditor.setData(element, value);
+  },
+);
+
+attachListener(
+  CKEDITOR_INSERT_TEXT,
+  async ({ selector, value }: { selector: string; value: string }) => {
+    const element = findSingleElement(selector);
+    ckeditor.insertText(element, value);
   },
 );
 

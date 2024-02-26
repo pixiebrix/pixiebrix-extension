@@ -16,22 +16,26 @@
  */
 
 import ActionRegistry from "@/contentScript/selectionTooltip/ActionRegistry";
-import { once } from "lodash";
+import { debounce, once } from "lodash";
 import type { Nullishable } from "@/utils/nullishUtils";
-import { render } from "react-dom";
+import { render, unmountComponentAtNode } from "react-dom";
 import React from "react";
-import { ensureTooltipsContainer } from "@/contentScript/tooltipDom";
+import { tooltipFactory } from "@/contentScript/tooltipDom";
 import {
   autoUpdate,
   computePosition,
+  flip,
   inline,
   offset,
+  shift,
   type VirtualElement,
 } from "@floating-ui/dom";
 import { getCaretCoordinates } from "@/utils/textAreaUtils";
 import SelectionToolbar from "@/contentScript/selectionTooltip/SelectionToolbar";
 import { expectContext } from "@/utils/expectContext";
 import { onContextInvalidated } from "webext-events";
+import { isNativeField } from "@/types/inputTypes";
+import { onAbort, RepeatableAbortController } from "abort-utils";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
@@ -39,9 +43,12 @@ export const tooltipActionRegistry = new ActionRegistry();
 
 let selectionTooltip: Nullishable<HTMLElement>;
 
-let cleanupAutoPosition: () => void;
+/**
+ * AbortController fired when the popover is hidden/destroyed.
+ */
+const hideController = new RepeatableAbortController();
 
-function showTooltip(): void {
+async function showTooltip(): Promise<void> {
   if (tooltipActionRegistry.actions.size === 0) {
     // No registered actions to show
     return;
@@ -51,58 +58,83 @@ function showTooltip(): void {
   selectionTooltip.setAttribute("aria-hidden", "false");
   selectionTooltip.style.setProperty("display", "block");
 
-  void updatePosition();
+  // For now hide the tooltip on document/element scroll to avoid gotchas with floating UI's `position: fixed` strategy.
+  // See updatePosition for more context. Without this, the tooltip moves with the scroll to keep its position in the
+  // viewport fixed.
+
+  for (const elementEventType of [
+    "scroll",
+    // Pressing "Backspace" or "Delete" should hide the tooltip. Those don't register as selection changes
+    "keydown",
+  ]) {
+    document.activeElement?.addEventListener(elementEventType, hideTooltip, {
+      passive: true,
+      once: true,
+      signal: hideController.signal,
+    });
+  }
+
+  for (const documentEventType of [
+    "scroll",
+    "selectstart",
+    // Avoid sticky tool-tip on SPA navigation
+    "navigate",
+  ]) {
+    document.addEventListener(documentEventType, hideTooltip, {
+      passive: true,
+      once: true,
+      signal: hideController.signal,
+    });
+  }
+
+  return updatePosition();
 }
 
+/**
+ * Hide the tooltip. Safe to call multiple times, even if the tooltip is already hidden.
+ */
 function hideTooltip(): void {
   selectionTooltip?.setAttribute("aria-hidden", "true");
   selectionTooltip?.style.setProperty("display", "none");
-  cleanupAutoPosition?.();
+  hideController.abortAndReset();
+}
+
+/**
+ * Completely remove the tooltip from the DOM.
+ */
+function destroyTooltip(): void {
+  if (selectionTooltip) {
+    // Cleanly unmount React component to ensure any listeners are cleaned up.
+    // https://react.dev/reference/react-dom/unmountComponentAtNode
+    unmountComponentAtNode(selectionTooltip);
+
+    selectionTooltip.remove();
+    selectionTooltip = null;
+    hideController.abortAndReset();
+  }
 }
 
 function createTooltip(): HTMLElement {
-  const container = ensureTooltipsContainer();
+  if (selectionTooltip) {
+    throw new Error("Tooltip already exists");
+  }
 
-  const popover = document.createElement("div");
-  // Using popover attribute should keep it on top of the page
-  // https://developer.chrome.com/blog/introducing-popover-api
-  // https://developer.mozilla.org/en-US/docs/Web/API/Popover_API
-  popover.setAttribute("popover", "");
-  popover.dataset.testid = "pixiebrix-selection-tooltip";
-
-  // Must be set before positioning: https://floating-ui.com/docs/computeposition#initial-layout
-  popover.style.setProperty("position", "fixed");
-  popover.style.setProperty("width", "max-content");
-  popover.style.setProperty("top", "0");
-  popover.style.setProperty("left", "0");
-  // Override Chrome's based styles for [popover] attribute
-  popover.style.setProperty("margin", "0");
-  popover.style.setProperty("padding", "0");
+  selectionTooltip = tooltipFactory();
+  selectionTooltip.dataset.testid = "pixiebrix-selection-tooltip";
 
   render(
     <SelectionToolbar registry={tooltipActionRegistry} onHide={hideTooltip} />,
-    popover,
+    selectionTooltip,
   );
 
-  container.append(popover);
-
-  selectionTooltip = popover;
   return selectionTooltip;
 }
 
-function destroyTooltip(): void {
-  selectionTooltip?.remove();
-  selectionTooltip = null;
-}
-
 function getPositionReference(selection: Selection): VirtualElement | Element {
-  // Browsers don't report an accurate selection within inputs/textarea
-  const tagName = document.activeElement?.tagName;
-  if (tagName === "TEXTAREA" || tagName === "INPUT") {
-    const activeElement = document.activeElement as
-      | HTMLTextAreaElement
-      | HTMLInputElement;
+  const { activeElement } = document;
 
+  // Browsers don't report an accurate selection within inputs/textarea
+  if (isNativeField(activeElement)) {
     const elementRect = activeElement.getBoundingClientRect();
 
     return {
@@ -126,15 +158,18 @@ function getPositionReference(selection: Selection): VirtualElement | Element {
           bottomCaret.top - topCaret.top + bottomCaret.height,
         );
 
+        const x = elementRect.x + topCaret.left - activeElement.scrollLeft;
+        const y = elementRect.y + topCaret.top - activeElement.scrollTop;
+
         return {
           height,
           width,
-          x: elementRect.x + topCaret.left,
-          y: elementRect.y + topCaret.top,
-          left: elementRect.x + topCaret.left,
-          top: elementRect.y + topCaret.top,
-          right: elementRect.x + width,
-          bottom: elementRect.y + height,
+          x,
+          y,
+          left: x,
+          top: y,
+          right: x + width,
+          bottom: y + height,
         };
       },
     } satisfies VirtualElement;
@@ -163,7 +198,7 @@ async function updatePosition(): Promise<void> {
   const supportsInline = "getClientRects" in referenceElement;
 
   // Keep anchored on scroll/resize: https://floating-ui.com/docs/computeposition#anchoring
-  cleanupAutoPosition = autoUpdate(
+  const cleanupAutoPosition = autoUpdate(
     referenceElement,
     selectionTooltip,
     async () => {
@@ -178,8 +213,18 @@ async function updatePosition(): Promise<void> {
         {
           placement: "top",
           strategy: "fixed",
-          // Prevent from appearing detached if multiple lines selected: https://floating-ui.com/docs/inline
-          middleware: [...(supportsInline ? [inline()] : []), offset(10)],
+          // `inline` prevents from appearing detached if multiple lines selected: https://floating-ui.com/docs/inline
+          middleware: [
+            ...(supportsInline ? [inline()] : []),
+            offset(10),
+            // Using flip/shift to ensure the tooltip is visible in editors like TinyMCE where the editor is in an
+            // iframe. https://floating-ui.com/docs/middleware. We probably don't want the tooltip to shift/move
+            // on scroll, though. However, it's a bit tricky because we're using `position: fixed`. See createTooltip
+            // for more context. If we do implement recalculating position on scroll, we might be able to use the hide
+            // middleware to hide the tooltip.
+            flip(),
+            shift(),
+          ],
         },
       );
       Object.assign(selectionTooltip.style, {
@@ -188,11 +233,15 @@ async function updatePosition(): Promise<void> {
       });
     },
   );
+
+  onAbort(hideController.signal, () => {
+    cleanupAutoPosition();
+  });
 }
 
 /**
  * Return true if selection is valid for showing a tooltip.
- * @param selection
+ * @param selection current selection from the Selection API
  */
 function isSelectionValid(selection: Nullishable<Selection>): boolean {
   if (!selection) {
@@ -224,33 +273,32 @@ export const initSelectionTooltip = once(() => {
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
   document.addEventListener(
     "selectionchange",
-    () => {
-      const selection = window.getSelection();
-      if (isSelectionValid(selection)) {
-        showTooltip();
-      } else {
-        hideTooltip();
-      }
-    },
+    // Debounce to avoid slowing drag of selection
+    debounce(
+      async () => {
+        const selection = window.getSelection();
+        if (isSelectionValid(selection)) {
+          await showTooltip();
+        } else {
+          // It should be showing because the controller hide on selectionstart. But safe to hide in case
+          hideTooltip();
+        }
+      },
+      60,
+      {
+        trailing: true,
+      },
+    ),
     { passive: true },
   );
 
-  // Try to avoid sticky tool-tip on SPA navigation
-  document.addEventListener(
-    "navigate",
-    () => {
-      destroyTooltip();
-    },
-    { passive: true },
-  );
-
-  tooltipActionRegistry.onChange.add(() => {
+  tooltipActionRegistry.onChange.add(async () => {
     const isShowing = selectionTooltip?.checkVisibility();
     destroyTooltip();
 
     // Allow live updates from the Page Editor
     if (isShowing) {
-      showTooltip();
+      await showTooltip();
     }
   });
 

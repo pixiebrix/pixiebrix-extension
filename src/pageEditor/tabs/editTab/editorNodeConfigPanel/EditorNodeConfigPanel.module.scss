@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,43 +14,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-// Browsers also add base styling for [popover] attribute. E.g., Chrome adds a system border.
-
 @import "@/themes/colors.scss";
 
-.toolbar {
-  background-color: $S0;
-  display: flex;
-
-  height: 30px;
-  font-size: 16px;
-
-  padding-left: 3px;
-  padding-right: 3px;
+.coreFields {
+  container-name: EditorNodeConfigPanelHeader;
+  container-type: inline-size;
 }
 
-.toolbarItem {
-  background-color: $S0;
-  color: black;
-  border-radius: 0;
-  border: 0;
-  cursor: pointer;
-
-  vertical-align: middle;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    background-color: $P100;
+@container EditorNodeConfigPanelHeader (min-width: 700px) {
+  .coreFields > :first-child {
+    display: flex;
+    flex-wrap: wrap;
   }
-
-  &:active {
-    background-color: $P300;
+  .coreFields label {
+    /* Replicate fitLabelWidth */
+    min-width: fit-content;
+    flex-grow: 0;
   }
-}
-
-svg {
-  vertical-align: middle;
 }

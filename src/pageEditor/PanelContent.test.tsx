@@ -26,13 +26,6 @@ import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
-// This mock is required because of coupling between useTheme and Options store, which is problematic to mock
-// EditorLayout -> Modals -> AddBlockModal -> useGetTheme -> persistor -> @/store/optionsStore
-jest.mock("@/pageEditor/EditorLayout", () => ({
-  __esModule: true,
-  default: () => <div>EditorLayout</div>,
-}));
-
 jest.mock("@/contentScript/messenger/api");
 
 jest.mock("redux-persist/integration/react", () => ({
