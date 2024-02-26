@@ -1,0 +1,99 @@
+/*
+ * Copyright (C) 2024 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import {
+  flagOn,
+  TEST_resetFeatureFlags,
+  TEST_setFeatureFlags,
+} from "@/auth/featureFlags";
+import { appApiMock } from "@/testUtils/appApiMock";
+
+describe("featureFlags", () => {
+  beforeEach(async () => {
+    appApiMock.reset();
+    appApiMock.onGet("/api/me/").reply(200, {
+      flags: [],
+    });
+  });
+
+  afterEach(async () => {
+    // eslint-disable-next-line new-cap
+    await TEST_resetFeatureFlags();
+  });
+
+  it("returns true if flag is present", async () => {
+    // eslint-disable-next-line new-cap
+    await TEST_setFeatureFlags([
+      "test-flag",
+      "test-other-flag",
+      "test-other-flag-2",
+    ]);
+    await expect(flagOn("test-flag")).resolves.toBe(true);
+  });
+
+  it("returns false if flag is not present", async () => {
+    // eslint-disable-next-line new-cap
+    await TEST_setFeatureFlags(["test-other-flag", "test-other-flag-2"]);
+    await expect(flagOn("test-flag")).resolves.toBe(false);
+  });
+
+  it("fetches flags on initial storage state", async () => {
+    appApiMock.onGet("/api/me/").reply(200, {
+      flags: ["test-flag"],
+    });
+
+    await expect(flagOn("test-flag")).resolves.toBe(true);
+    expect(appApiMock.history.get).toHaveLength(1);
+  });
+
+  it("does not fetch if flags have been updated recently", async () => {
+    // eslint-disable-next-line new-cap
+    await TEST_setFeatureFlags(["test-flag"]);
+    await expect(flagOn("test-flag")).resolves.toBe(true);
+    expect(appApiMock.history.get).toHaveLength(0);
+  });
+
+  it("only fetches once if multiple calls are made within the timeout", async () => {
+    appApiMock.onGet("/api/me/").reply(200, {
+      flags: ["test-flag"],
+    });
+
+    await expect(flagOn("test-flag")).resolves.toBe(true);
+    await expect(flagOn("test-flag")).resolves.toBe(true);
+    await expect(flagOn("test-flag")).resolves.toBe(true);
+    expect(appApiMock.history.get).toHaveLength(1);
+  });
+
+  it("fetches flags again if a call is made after the timeout", async () => {
+    jest.useFakeTimers();
+
+    appApiMock.onGet("/api/me/").reply(200, {
+      flags: ["test-flag"],
+    });
+
+    await expect(flagOn("test-flag")).resolves.toBe(true);
+    await expect(flagOn("test-flag")).resolves.toBe(true);
+    expect(appApiMock.history.get).toHaveLength(1);
+
+    jest.advanceTimersByTime(31_000);
+
+    await expect(flagOn("test-flag")).resolves.toBe(true);
+    await expect(flagOn("test-flag")).resolves.toBe(true);
+    await expect(flagOn("test-flag")).resolves.toBe(true);
+    expect(appApiMock.history.get).toHaveLength(2);
+  });
+});

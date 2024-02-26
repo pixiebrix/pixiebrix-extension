@@ -28,6 +28,14 @@ const featureFlagStorage = new StorageItem("featureFlags", {
   },
 });
 
+export async function TEST_setFeatureFlags(flags: string[]): Promise<void> {
+  await featureFlagStorage.set({ flags, lastFetchedTime: Date.now() });
+}
+
+export async function TEST_resetFeatureFlags(): Promise<void> {
+  await featureFlagStorage.set({ flags: [], lastFetchedTime: 0 });
+}
+
 /**
  * Returns true if the specified flag is on for the current user.
  * @param flag the feature flag to check

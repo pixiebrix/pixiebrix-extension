@@ -23,7 +23,6 @@ import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { type Timestamp } from "@/types/stringTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { waitFor } from "@testing-library/react";
 
 describe("renders DefaultPanel", () => {
   it("renders Page Editor call to action", () => {
