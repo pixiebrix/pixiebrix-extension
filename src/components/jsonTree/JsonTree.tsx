@@ -174,7 +174,7 @@ const CopyDataButton: React.FunctionComponent<{ data: unknown }> = ({
   </AsyncButton>
 );
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- why is this rule triggering here?
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const emptyObject = {} as const;
 
 /**
