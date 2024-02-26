@@ -24,6 +24,8 @@ export const GET_ELEMENT_INFO = "@@pixiebrix/script/GET_ELEMENT_INFO";
 
 export const CKEDITOR_SET_VALUE = "@@pixiebrix/script/CKEDITOR_SET_VALUE";
 
+export const CKEDITOR_INSERT_TEXT = "@@pixiebrix/script/CKEDITOR_INSERT_TEXT";
+
 const KNOWN_ADAPTERS = ["react", "emberjs", "angularjs", "vue"] as const;
 export const KNOWN_READERS = [...KNOWN_ADAPTERS, "jquery"] as const;
 
