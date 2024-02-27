@@ -55,8 +55,9 @@ import axios from "axios";
 
 setPlatform(contentScriptPlatform);
 
-// XXX: ideally would enforce via webpack config or eslint. Enforcing via transformRequest requires including
-// axios in the content script bundle even though it won't/shouldn't be called.
+// XXX: ideally would enforce via webpack config or eslint. Enforcing via transformRequest requires importing
+// axios in the content script bundle even though it should never be called. Could we somehow conditionally import
+// checking for process.env.DEBUG?
 axios.defaults.transformRequest = () => {
   // The content Script is subject to the CSP of the page, so PixieBrix should call from background script instead
   throw new Error(
