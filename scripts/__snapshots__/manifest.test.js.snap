@@ -67,24 +67,16 @@ exports[`customizeManifest mv2 1`] = `
       ],
       "matches": [
         "https://*.pixiebrix.com/*",
-        "http://127.0.0.1:8000/*",
-        "http://127.0.0.1/*",
-        "http://localhost/*",
-        "http://localhost:8000/*",
       ],
       "run_at": "document_end",
     },
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval' http://localhost:8097; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https: ws://localhost:8097/; object-src 'self'; img-src 'self' data: https: https://pixiebrix-marketplace-dev.s3.amazonaws.com; style-src 'self' 'unsafe-inline' https:; frame-src 'self' https:;",
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' https:;",
   "description": "Customize, extend, and integrate your favorite SaaS apps without writing a line of code!",
   "devtools_page": "devtools.html",
   "externally_connectable": {
     "matches": [
       "https://*.pixiebrix.com/*",
-      "http://127.0.0.1:8000/*",
-      "http://127.0.0.1/*",
-      "http://localhost/*",
-      "http://localhost:8000/*",
     ],
   },
   "homepage_url": "https://www.pixiebrix.com",
@@ -96,7 +88,7 @@ exports[`customizeManifest mv2 1`] = `
   },
   "manifest_version": 2,
   "minimum_chrome_version": "95.0",
-  "name": "PixieBrix - Development",
+  "name": "PixieBrix",
   "optional_permissions": [
     "clipboardWrite",
   ],
@@ -209,16 +201,12 @@ exports[`customizeManifest mv3 1`] = `
       ],
       "matches": [
         "https://*.pixiebrix.com/*",
-        "http://127.0.0.1:8000/*",
-        "http://127.0.0.1/*",
-        "http://localhost/*",
-        "http://localhost:8000/*",
       ],
       "run_at": "document_end",
     },
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self' http://localhost:8097; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https: ws://localhost:8097/; object-src 'self'; img-src 'self' data: https: https://pixiebrix-marketplace-dev.s3.amazonaws.com; style-src 'self' 'unsafe-inline' https:; frame-src 'self' https:;",
+    "extension_pages": "script-src 'self'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' https:;",
     "sandbox": "sandbox allow-scripts allow-forms; script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';",
   },
   "description": "Customize, extend, and integrate your favorite SaaS apps without writing a line of code!",
@@ -226,10 +214,6 @@ exports[`customizeManifest mv3 1`] = `
   "externally_connectable": {
     "matches": [
       "https://*.pixiebrix.com/*",
-      "http://127.0.0.1:8000/*",
-      "http://127.0.0.1/*",
-      "http://localhost/*",
-      "http://localhost:8000/*",
     ],
   },
   "homepage_url": "https://www.pixiebrix.com",
@@ -244,7 +228,7 @@ exports[`customizeManifest mv3 1`] = `
   },
   "manifest_version": 3,
   "minimum_chrome_version": "116.0",
-  "name": "PixieBrix - Development",
+  "name": "PixieBrix",
   "optional_permissions": [
     "clipboardWrite",
   ],
