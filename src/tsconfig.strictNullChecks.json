@@ -639,6 +639,8 @@
     "./vendors/reactPerformanceTesting/utils/pushTask.ts",
     "./vendors/reactPerformanceTesting/utils/shouldTrack.ts",
     "./vendors/reactPerformanceTesting/utils/symbols.ts",
-    "./vendors/validateUuid.ts"
+    "./vendors/validateUuid.ts",
+    "./integrations/store/integrationsSlice.test.ts",
+    "./store/settings/settingsSlice.test.ts"
   ]
 }
