@@ -16,6 +16,7 @@
  */
 
 import {
+  fetchFeatureFlags,
   flagOn,
   resetFeatureFlags,
   TEST_overrideFeatureFlags,
@@ -23,9 +24,14 @@ import {
 import { appApiMock } from "@/testUtils/appApiMock";
 import { TEST_setAuthData, TEST_triggerListeners } from "@/auth/authStorage";
 import { tokenAuthDataFactory } from "@/testUtils/factories/authFactories";
+import { fetchFeatureFlagsInBackground } from "@/background/messenger/api";
 
 describe("featureFlags", () => {
   beforeEach(async () => {
+    // Wire up the real fetch function so we can mock the api responses
+    jest
+      .mocked(fetchFeatureFlagsInBackground)
+      .mockImplementation(fetchFeatureFlags);
     appApiMock.reset();
     appApiMock.onGet("/api/me/").reply(200, {
       flags: [],

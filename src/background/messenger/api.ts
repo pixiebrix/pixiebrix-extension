@@ -108,3 +108,8 @@ export const collectPerformanceDiagnostics = getMethod(
   "COLLECT_PERFORMANCE_DIAGNOSTICS",
   bg,
 );
+
+export const fetchFeatureFlagsInBackground = getMethod(
+  "FETCH_FEATURE_FLAGS",
+  bg,
+);

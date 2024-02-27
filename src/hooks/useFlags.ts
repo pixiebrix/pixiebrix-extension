@@ -46,7 +46,7 @@ type Restrict = {
  */
 function useFlags(): Restrict {
   const { data: flags } = useGetFeatureFlagsQuery(undefined, {
-    refetchOnMountOrArgChange: true,
+    refetchOnMountOrArgChange: 30, // Max-age 30 seconds
   });
 
   return useMemo(() => {
