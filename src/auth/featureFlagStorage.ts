@@ -17,23 +17,27 @@
 
 import { getApiClient } from "@/data/service/apiClient";
 import { type components } from "@/types/swagger";
-import { once } from "lodash";
 import { addListener } from "@/auth/authStorage";
 import { CachedFunction } from "webext-storage-cache";
+import { expectContext } from "@/utils/expectContext";
+import { fetchFeatureFlagsInBackground } from "@/background/messenger/api";
+
+export async function fetchFeatureFlags(): Promise<string[]> {
+  expectContext("background");
+  const client = await getApiClient();
+  const { data, status, statusText } =
+    await client.get<components["schemas"]["Me"]>("/api/me/");
+
+  if (status >= 400) {
+    console.warn(`Failed to fetch feature flags: ${status} ${statusText}`);
+    return [];
+  }
+
+  return [...(data.flags ?? [])];
+}
 
 const featureFlags = new CachedFunction("getFeatureFlags", {
-  async updater(): Promise<string[]> {
-    const client = await getApiClient();
-    const { data, status, statusText } =
-      await client.get<components["schemas"]["Me"]>("/api/me/");
-
-    if (status >= 400) {
-      console.debug(`Failed to fetch feature flags: ${status} ${statusText}`);
-      return [];
-    }
-
-    return [...(data.flags ?? [])];
-  },
+  updater: fetchFeatureFlagsInBackground,
   maxAge: {
     seconds: 30,
   },
@@ -58,10 +62,6 @@ export async function flagOn(flag: string): Promise<boolean> {
   return flags.includes(flag);
 }
 
-const init = once(() => {
-  addListener(async () => {
-    await resetFeatureFlags();
-  });
+addListener(async () => {
+  await resetFeatureFlags();
 });
-
-init();

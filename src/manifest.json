@@ -99,11 +99,7 @@
     }
   },
   "background": {
-    "scripts": [
-      "backgroundCanary.js",
-      "background.js",
-      "webext-storage-cache.js"
-    ]
+    "scripts": ["backgroundCanary.js", "background.js"]
   },
   "options_ui": {
     "page": "options.html",

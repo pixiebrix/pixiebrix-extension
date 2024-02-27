@@ -47,6 +47,7 @@ import {
   recordError,
   recordLog,
 } from "@/telemetry/logging";
+import { fetchFeatureFlags } from "@/auth/featureFlagStorage";
 
 expectContext("background");
 
@@ -72,6 +73,7 @@ declare global {
     REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
     REGISTRY_FIND: typeof registry.find;
     QUERY_TABS: typeof browser.tabs.query;
+    FETCH_FEATURE_FLAGS: typeof fetchFeatureFlags;
 
     CLEAR_SERVICE_CACHE: typeof serviceRegistry.clear;
     GET_USER_DATA: typeof getUserData;
@@ -105,6 +107,7 @@ export default function registerMessenger(): void {
     REGISTRY_GET_BY_KINDS: registry.getByKinds,
     REGISTRY_FIND: registry.find,
     QUERY_TABS: browser.tabs.query,
+    FETCH_FEATURE_FLAGS: fetchFeatureFlags,
 
     CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
     GET_USER_DATA: getUserData,
