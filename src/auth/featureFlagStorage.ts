@@ -46,7 +46,7 @@ export async function resetFeatureFlags(): Promise<void> {
 export async function TEST_overrideFeatureFlags(
   flags: string[],
 ): Promise<void> {
-  await featureFlags.applyOverride(undefined, flags);
+  await featureFlags.applyOverride([], flags);
 }
 
 /**

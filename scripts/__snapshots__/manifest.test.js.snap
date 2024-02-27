@@ -7,6 +7,7 @@ exports[`customizeManifest mv2 1`] = `
     "scripts": [
       "backgroundCanary.js",
       "background.js",
+      "webext-storage-cache.js",
     ],
   },
   "browser_action": {
@@ -111,6 +112,7 @@ exports[`customizeManifest mv2 1`] = `
     "webNavigation",
     "contextMenus",
     "<all_urls>",
+    "alarms",
   ],
   "sandbox": {
     "pages": [
@@ -257,6 +259,7 @@ exports[`customizeManifest mv3 1`] = `
     "tabs",
     "webNavigation",
     "contextMenus",
+    "alarms",
     "devtools",
     "scripting",
     "sidePanel",
