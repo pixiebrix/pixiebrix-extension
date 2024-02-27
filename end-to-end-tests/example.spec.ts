@@ -16,7 +16,7 @@ test.describe("create-react-app", () => {
 
     // Expects page to have a heading with the name of Installation.
     await expect(
-      page.getByRole("heading", { name: "Transsaction Table" }),
+      page.getByRole("heading", { name: "Transaction Table" }),
     ).toBeVisible();
   });
 });
