@@ -7,7 +7,6 @@ exports[`customizeManifest mv2 1`] = `
     "scripts": [
       "backgroundCanary.js",
       "background.js",
-      "webext-storage-cache.js",
     ],
   },
   "browser_action": {
