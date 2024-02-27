@@ -38,11 +38,13 @@ export interface ActionButton {
   icon?: IconProp;
 }
 
+const emptyArray = [] as const;
+
 const EditorTabLayout: React.FC<{
   tabs: TabItem[];
   actionButtons?: ActionButton[];
   defaultTabName?: string;
-}> = ({ tabs, actionButtons = [], defaultTabName }) => {
+}> = ({ tabs, actionButtons = emptyArray, defaultTabName }) => {
   const [activeTabName, setActiveTabName] = useState(
     defaultTabName ?? tabs[0].name,
   );

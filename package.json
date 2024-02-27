@@ -5,6 +5,7 @@
   "scripts": {
     "test": "TZ=UTC jest",
     "test:watch": "TZ=UTC jest --watchAll",
+    "test:e2e": "playwright test",
     "lint": "npm run lint:full -- --rule '{\"import/no-cycle\": \"off\"}'",
     "lint:fast": "ESLINT_NO_IMPORTS=1 eslint src --ext js,jsx,ts,tsx --quiet",
     "lint:full": "eslint src --ext js,jsx,ts,tsx --quiet --report-unused-disable-directives",
@@ -180,6 +181,7 @@
   },
   "devDependencies": {
     "@fortawesome/fontawesome-common-types": "^0.2.36",
+    "@playwright/test": "^1.41.2",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.11",
     "@shopify/eslint-plugin": "^44.0.0",
     "@shopify/jest-dom-mocks": "^5.0.0",
@@ -222,6 +224,7 @@
     "@types/mark.js": "^8.11.12",
     "@types/marked": "^6.0.0",
     "@types/mustache": "^4.2.5",
+    "@types/node": "^20.11.20",
     "@types/nunjucks": "^3.2.6",
     "@types/object-hash": "^2.1.1",
     "@types/papaparse": "^5.3.14",

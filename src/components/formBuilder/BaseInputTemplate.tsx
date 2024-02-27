@@ -98,6 +98,8 @@ function getValue(
   return value || value === 0 ? value : "";
 }
 
+const emptyArray: string[] = [] as const;
+
 export default function BaseInputTemplate<
   T = HTMLInputElement,
   S extends StrictRJSFSchema = RJSFSchema,
@@ -117,7 +119,7 @@ export default function BaseInputTemplate<
   autofocus,
   options,
   schema,
-  rawErrors = [],
+  rawErrors = emptyArray,
   children,
   extraProps,
 }: StrictBaseInputTemplateProps<T, S, F>) {

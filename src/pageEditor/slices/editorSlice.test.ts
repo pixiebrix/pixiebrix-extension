@@ -19,6 +19,7 @@ import {
   editorSlice,
   actions,
   initialState,
+  persistEditorConfig,
 } from "@/pageEditor/slices/editorSlice";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
@@ -40,6 +41,8 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { toExpression } from "@/utils/expressionUtils";
+import { getMaxMigrationsVersion } from "@/store/migratePersistedState";
+import { migrations } from "@/store/editorMigrations";
 
 function getTabState(
   state: EditorState,
@@ -242,5 +245,12 @@ describe("Add/Remove Bricks", () => {
       "type",
       "editor/cloneActiveExtension/fulfilled",
     );
+  });
+});
+
+describe("persistEditorConfig", () => {
+  test("version is the highest migration version", () => {
+    const maxVersion = getMaxMigrationsVersion(migrations);
+    expect(persistEditorConfig.version).toBe(maxVersion);
   });
 });
