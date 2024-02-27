@@ -42,10 +42,7 @@ export function QuickbarButton() {
           onClick={async () => {
             try {
               dispatch(
-                SettingsSlice.actions.setFlag({
-                  flag: "isFloatingActionButtonEnabled",
-                  value: false,
-                }),
+                SettingsSlice.actions.setFloatingActionButtonEnabled(false),
               );
               reportEvent(Events.FLOATING_QUICK_BAR_BUTTON_ON_SCREEN_HIDE);
             } catch (error) {

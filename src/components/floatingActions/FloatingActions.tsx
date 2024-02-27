@@ -22,7 +22,7 @@ import React from "react";
 import styles from "./FloatingActions.scss?loadAsUrl";
 import ReactDOM from "react-dom";
 import { QuickbarButton } from "@/components/floatingActions/QuickbarButton";
-import store from "@/components/floatingActions/store";
+import store, { persistor } from "@/components/floatingActions/store";
 import Draggable from "react-draggable";
 import dragIcon from "@/icons/drag-handle.svg";
 import reportEvent from "@/telemetry/reportEvent";
@@ -30,6 +30,8 @@ import { Events } from "@/telemetry/events";
 import { Provider, useSelector } from "react-redux";
 import { selectSettings } from "@/store/settings/settingsSelectors";
 import { FLOATING_ACTION_BUTTON_CONTAINER_ID } from "@/components/floatingActions/floatingActionsConstants";
+import { PersistGate } from "redux-persist/integration/react";
+import Loader from "@/components/Loader";
 
 // Putting this outside the component since it doesn't need to trigger a re-render
 let dragReported = false;
@@ -70,11 +72,13 @@ function FloatingActions() {
 function FloatingActionsContainer() {
   return (
     <Provider store={store}>
-      <EmotionShadowRoot.div>
-        <Stylesheets href={[bootstrap, styles]}>
-          <FloatingActions />
-        </Stylesheets>
-      </EmotionShadowRoot.div>
+      <PersistGate loading={<Loader />} persistor={persistor}>
+        <EmotionShadowRoot.div>
+          <Stylesheets href={[bootstrap, styles]}>
+            <FloatingActions />
+          </Stylesheets>
+        </EmotionShadowRoot.div>
+      </PersistGate>
     </Provider>
   );
 }
