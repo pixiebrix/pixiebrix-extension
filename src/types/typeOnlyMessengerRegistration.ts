@@ -32,8 +32,6 @@
  * This file is only for methods that are common but not yet fully ready to be strictNullChecked.
  */
 
-import { type SerializedError } from "@/types/messengerTypes";
-import { type MessageContext } from "@/types/loggerTypes";
 import { type JsonObject } from "type-fest";
 import { type Event } from "@/telemetry/events";
 
@@ -41,12 +39,6 @@ declare global {
   interface MessengerMethods {
     // Temporary duplicate type for a background method used by the sidebar.
     // NOTE: Changes to those functions must be reflected here.
-    RECORD_ERROR: (
-      serializedError: SerializedError,
-      context: MessageContext,
-      data?: JsonObject,
-    ) => Promise<void>;
-
     RECORD_EVENT: (event: {
       event: Event;
       data: JsonObject | undefined;

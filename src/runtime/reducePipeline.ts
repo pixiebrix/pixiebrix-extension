@@ -17,12 +17,11 @@
 
 import { type Logger } from "@/types/loggerTypes";
 import { castArray, isPlainObject, once } from "lodash";
+import { requestRun, sendDeploymentAlert } from "@/background/messenger/api";
 import {
   clearExtensionDebugLogs,
-  requestRun,
-  sendDeploymentAlert,
-} from "@/background/messenger/api";
-import { traces } from "@/background/messenger/strict/api";
+  traces,
+} from "@/background/messenger/strict/api";
 import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/bricks/errors";

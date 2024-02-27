@@ -38,6 +38,7 @@ import {
 } from "@/types/modDefinitionTypes";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 type MeGroup = NonNullable<
   components["schemas"]["Me"]["group_memberships"]
@@ -273,8 +274,8 @@ export type ErrorItem = Except<
   components["schemas"]["ErrorItem"],
   "user" | "user_extension"
 > & {
-  deployment: UUID | null;
-  organization: UUID | null;
+  deployment: Nullishable<UUID>;
+  organization: Nullishable<UUID>;
   user_agent_extension_version: SemVerString;
 };
 
