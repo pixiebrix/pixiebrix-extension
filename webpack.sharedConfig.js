@@ -19,14 +19,18 @@ const fs = require("node:fs");
 const path = require("node:path");
 const JSON5 = require("json5");
 const { merge } = require("webpack-merge");
+const ReactRefreshTypeScript = require("react-refresh-typescript");
 
 const tsconfig = JSON5.parse(fs.readFileSync("./tsconfig.json", "utf8"));
+
+const isProd = process.argv.includes("production");
+const isHMR = process.argv.includes("serve");
 
 /** @type import("webpack").Configuration */
 const shared = {
   stats: {
     preset: "errors-warnings",
-    entrypoints: process.argv.includes("production"),
+    entrypoints: isProd,
     timings: true,
   },
   watchOptions: {
@@ -65,6 +69,13 @@ const shared = {
         exclude: /node_modules\/(?!@pixiebrix)/,
         options: {
           transpileOnly: true,
+          ...(isHMR && {
+            getCustomTransformers() {
+              return {
+                before: [ReactRefreshTypeScript()],
+              };
+            },
+          }),
         },
       },
       {
