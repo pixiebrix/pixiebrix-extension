@@ -25,6 +25,8 @@ import notify from "@/utils/notify";
 import AsyncButton from "@/components/AsyncButton";
 import Pagination from "@/components/pagination/Pagination";
 
+const defaultLevelOptions = ["debug", "info", "warn", "error"] as const;
+
 const LogToolbar: React.FunctionComponent<{
   level: MessageLevel;
   levelOptions?: MessageLevel[];
@@ -47,7 +49,7 @@ const LogToolbar: React.FunctionComponent<{
   clear,
   refresh,
   // Don't support "trace" by default
-  levelOptions = ["debug", "info", "warn", "error"],
+  levelOptions = defaultLevelOptions,
 }) => {
   const onClear = () => {
     try {
