@@ -295,7 +295,7 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
   }
 
   cancelObservers(): void {
-    console.trace("TriggerExtensionPoint:cancelObservers", {
+    console.debug("TriggerExtensionPoint:cancelObservers", {
       id: this.id,
       instanceNonce: this.instanceNonce,
     });

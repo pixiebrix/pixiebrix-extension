@@ -32,12 +32,15 @@ interface FormPreviewFieldTemplateProps extends FieldTemplateProps {
   setActiveField: SetActiveField;
 }
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- Static
+const emptyArray: string[] = [] as const;
+
 // RJSF Bootstrap 4 implementation ref https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/bootstrap-4/src/FieldTemplate/FieldTemplate.tsx
 const FieldTemplate = ({
   id,
   children,
   displayLabel,
-  rawErrors = [],
+  rawErrors = emptyArray,
   rawHelp,
   hidden,
   rawDescription,

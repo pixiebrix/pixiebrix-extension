@@ -32,8 +32,10 @@ type TemplateWidgetProps = CustomFieldWidgetProps & {
   snippets?: Snippet[];
 };
 
+const emptyArray = [] as const;
+
 const TemplateWidget: React.FC<TemplateWidgetProps> = ({
-  snippets = [],
+  snippets = emptyArray,
   rows = 4,
   ...props
 }) => {

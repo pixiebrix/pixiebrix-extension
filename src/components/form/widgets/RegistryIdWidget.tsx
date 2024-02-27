@@ -40,10 +40,12 @@ const editorRoles = new Set<number>([
   UserRole.manager,
 ]);
 
+const emptyObject = {} as const;
+
 const RegistryIdWidget: React.VFC<{
   name: string;
   selectStyles?: StylesConfig;
-}> = ({ name, selectStyles = {} }) => {
+}> = ({ name, selectStyles = emptyObject }) => {
   const [{ value }, , { setValue }] = useField<RegistryId>(name);
   const { scope: userScope, organizations } = useSelector(selectAuth);
   const organizationScopes = organizations
