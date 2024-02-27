@@ -46,7 +46,7 @@ export function sanitizeIntegrationConfig(
     ) {
       // Safe because we're getting from Object.entries
       // eslint-disable-next-line security/detect-object-injection
-      result[key] = config[key];
+      result[key] = value;
     }
   }
 
