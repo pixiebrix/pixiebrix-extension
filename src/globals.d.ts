@@ -188,10 +188,8 @@ interface Promise<T> {
    * @returns A Promise for the completion of the callback.
    */
   catch<TResult = never>(
-    onrejected?:
-      | ((reason: unknown) => TResult | PromiseLike<TResult>)
-      | undefined
-      | null,
+    onrejected?: // eslint-disable-next-line local-rules/preferNullishable -- Importing here is not worth it
+    ((reason: unknown) => TResult | PromiseLike<TResult>) | undefined | null,
   ): Promise<T | TResult>;
 }
 

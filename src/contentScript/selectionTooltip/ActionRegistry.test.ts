@@ -60,9 +60,9 @@ describe("actionRegistry", () => {
       handler() {},
     });
 
-    expect(listener).toBeCalledTimes(1);
+    expect(listener).toHaveBeenCalledTimes(1);
 
     registry.unregister(componentId);
-    expect(listener).toBeCalledTimes(2);
+    expect(listener).toHaveBeenCalledTimes(2);
   });
 });

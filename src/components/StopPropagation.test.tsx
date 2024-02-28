@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions -- Test only */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
