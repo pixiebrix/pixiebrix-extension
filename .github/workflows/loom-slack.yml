@@ -46,6 +46,7 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         if: ${{ needs.search.outputs.link && env.STATUS == 'OPEN' }}
         with:
+          header: loom # Unique identifier to update comment over time
           message: |
             When the PR is merged, the [first loom link found on this PR](${{ needs.search.outputs.link }}) will be posted to `#sprint-demo` on Slack. _Do not edit this comment manually._
 
@@ -53,6 +54,7 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         if: ${{ ! needs.search.outputs.link && env.STATUS == 'OPEN' }}
         with:
+          header: loom # Unique identifier to update comment over time
           message: |
             No loom links were found in the first post. Please add one there if you'd like to it to appear on Slack.
 

@@ -60,6 +60,7 @@ jobs:
       - if: steps.stats.outputs.changes > 1000
         uses: marocchino/sticky-pull-request-comment@v2
         with:
+          recreate: true
           message: |
             ## ⚠️ Large diff for package-lock.json
 
