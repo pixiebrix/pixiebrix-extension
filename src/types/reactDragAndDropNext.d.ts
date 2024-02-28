@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Nullishable } from "@/utils/nullishUtils";
-
 // `react-beautiful-dnd-next` is the old version of rbd used by their tree package
 // Grabbed the old typings from https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react-beautiful-dnd/v11/index.d.ts
 
 declare module "react-beautiful-dnd-next" {
+  import { type Nullishable } from "@/utils/nullishUtils";
+
   export type Id = string;
   export type DraggableId = Id;
   export type DroppableId = Id;

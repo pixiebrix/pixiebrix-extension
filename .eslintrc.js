@@ -70,13 +70,6 @@ module.exports = {
     "@typescript-eslint/no-unsafe-member-access": "warn",
     "@typescript-eslint/no-unsafe-return": "warn",
 
-    "@typescript-eslint/switch-exhaustiveness-check": [
-      "error",
-      {
-        requireDefaultForNonUnion: true,
-      },
-    ],
-
     "no-restricted-imports": [
       "error",
       // If they're not specific to the extension, add them to the shared config instead:
