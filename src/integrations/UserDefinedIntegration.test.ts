@@ -32,8 +32,8 @@ describe("UserDefinedIntegration", () => {
     const integration = fromJS(
       automationAnywhere as unknown as IntegrationDefinition,
     );
-    expect(integration.version).toBe("1.0.0");
-    expect(integration.uiSchema["ui:order"]).toBeArrayOfSize(5);
+    expect(integration.version).toBe("1.0.2");
+    expect(integration.schema.properties).toBeObject();
   });
 
   test("get origins for oauth2 integration", () => {

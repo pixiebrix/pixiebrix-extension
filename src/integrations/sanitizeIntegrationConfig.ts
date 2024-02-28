@@ -34,13 +34,19 @@ export function sanitizeIntegrationConfig(
 ): SanitizedConfig {
   const result: SanitizedConfig = {} as SanitizedConfig;
   for (const [key, type] of Object.entries(inputProperties(service.schema))) {
+    // eslint-disable-next-line security/detect-object-injection
+    const value = config[key];
+
     if (
       typeof type !== "boolean" &&
-      (!type.$ref || !REF_SECRETS.includes(type.$ref))
+      (!type.$ref || !REF_SECRETS.includes(type.$ref)) &&
+      // Explicitly check for undefined to be safe, even though we should never see it in practice
+      // because it's not valid JSON. We could just check "key in config" instead.
+      value !== undefined
     ) {
       // Safe because we're getting from Object.entries
       // eslint-disable-next-line security/detect-object-injection
-      result[key] = config[key] ?? null;
+      result[key] = value;
     }
   }
 
