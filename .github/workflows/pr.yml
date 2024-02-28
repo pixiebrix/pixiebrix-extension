@@ -15,12 +15,12 @@ jobs:
         run: |
           npm run build:strictNullChecks -- --explainFiles > LOG || {
             if grep -q "keyof MessengerMethods" LOG; then
-              grep -zoP "\nsrc/(background|contentScript)/messenger/api.ts(\n  .+)+" LOG > REASON
+              grep -Pazo "\nsrc/(background|contentScript)/messenger/api.ts(\n  .+)+" LOG > REASON
               cat REASON
               {
                 echo 'reason<<EOF'
-                cat REASON
-                echo # linebreak
+                # Drop null character at the end caused by -z
+                cat REASON | tr -d '\0'
                 echo 'EOF'
               } >> "$GITHUB_OUTPUT"
               exit 1
@@ -40,13 +40,13 @@ jobs:
           message: |
             It looks like one of the non-strict `messenger/api.ts` files ended up being imported by one of the strict files. Don't be fooled by "just a few type errors", this hides hundreds of type errors.
 
+            See details and solutions in: https://github.com/pixiebrix/pixiebrix-extension/issues/6526#issuecomment-1926391817
+
             There might be further information about how the non-strict Messenger files are ending up in the strict config:
 
             ```
-             ${{ toJSON (steps.tsc.outputs.reason) }}
+             ${{ steps.tsc.outputs.reason }}
             ```
-
-            See details and solutions in: https://github.com/pixiebrix/pixiebrix-extension/issues/6526#issuecomment-1926391817
 
   strictNullChecks:
     runs-on: ubuntu-latest
