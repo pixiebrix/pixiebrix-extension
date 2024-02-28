@@ -26,8 +26,13 @@ import InputValidationErrorDetail from "./InputValidationErrorDetail";
 import NetworkErrorDetail from "./NetworkErrorDetail";
 import OutputValidationErrorDetail from "./OutputValidationErrorDetail";
 import { ClientRequestError } from "@/errors/clientRequestErrors";
-import { ProxiedRemoteServiceError } from "@/errors/businessErrors";
+import {
+  MultipleElementsFoundError,
+  NoElementsFoundError,
+  ProxiedRemoteServiceError,
+} from "@/errors/businessErrors";
 import RemoteApiErrorDetail from "@/components/errors/RemoteApiErrorDetail";
+import InvalidSelectorErrorDetail from "@/components/errors/InvalidSelectorErrorDetail";
 
 type ErrorDetails = {
   title: string;
@@ -35,6 +40,29 @@ type ErrorDetails = {
 };
 
 export default function getErrorDetails(error: ErrorObject): ErrorDetails {
+  const noElementsFoundError = selectSpecificError(error, NoElementsFoundError);
+  if (noElementsFoundError) {
+    return {
+      title: "No elements found for selector",
+      detailsElement: (
+        <InvalidSelectorErrorDetail error={noElementsFoundError} />
+      ),
+    };
+  }
+
+  const multipleElementsFoundError = selectSpecificError(
+    error,
+    MultipleElementsFoundError,
+  );
+  if (multipleElementsFoundError) {
+    return {
+      title: "Multiple elements found for selector",
+      detailsElement: (
+        <InvalidSelectorErrorDetail error={multipleElementsFoundError} />
+      ),
+    };
+  }
+
   const inputValidationError = selectSpecificError(error, InputValidationError);
   if (inputValidationError) {
     return {
