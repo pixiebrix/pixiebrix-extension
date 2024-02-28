@@ -56,12 +56,6 @@ export function removeListener(handler: AuthListener): void {
   authChanges.remove(handler);
 }
 
-export function onUserAuthChangedHandler(
-  handler: () => void | Promise<void>,
-): AuthListener {
-  return (auth) => {};
-}
-
 function triggerListeners(
   auth: Partial<TokenAuthData | PartnerAuthData>,
 ): void {
