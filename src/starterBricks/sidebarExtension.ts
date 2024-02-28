@@ -480,7 +480,7 @@ class RemotePanelExtensionPoint extends SidebarStarterBrickABC {
   constructor(platform: PlatformProtocol, config: StarterBrickConfig) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    super(cloned.metadata, platform);
+    super(platform, cloned.metadata);
     this.rawConfig = cloned;
     this.definition = cloned.definition;
   }

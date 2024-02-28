@@ -122,8 +122,8 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     return { heading: "Custom Panel" };
   }
 
-  protected constructor(metadata: Metadata, platform: PlatformProtocol) {
-    super(metadata, platform);
+  protected constructor(platform: PlatformProtocol, metadata: Metadata) {
+    super(platform, metadata);
     this.$container = null;
     this.collapsedExtensions = new Map();
     this.cancelRemovalMonitor = new Map();
@@ -519,7 +519,7 @@ class RemotePanelExtensionPoint extends PanelStarterBrickABC {
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    super(cloned.metadata, platform);
+    super(platform, cloned.metadata);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable } = cloned.definition;

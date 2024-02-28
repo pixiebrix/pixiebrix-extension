@@ -251,8 +251,8 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     return { caption: "Custom Menu Item" };
   }
 
-  protected constructor(metadata: Metadata, platform: PlatformProtocol) {
-    super(metadata, platform);
+  protected constructor(platform: PlatformProtocol, metadata: Metadata) {
+    super(platform, metadata);
     this.menus = new Map<UUID, HTMLElement>();
     this.removed = new Set<UUID>();
     this.cancelDependencyObservers = new Map<UUID, () => void>();
@@ -1014,7 +1014,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
   ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    super(cloned.metadata, platform);
+    super(platform, cloned.metadata);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable } = cloned.definition;

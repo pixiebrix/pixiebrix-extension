@@ -164,8 +164,8 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
   // 1) more fine-grained control during testing, and
   // 2) contexts like the PageEditor to inspect the starter brick as if it were running on another platform
   protected constructor(
-    metadata: Metadata,
     public readonly platform: PlatformProtocol,
+    metadata: Metadata,
   ) {
     this.id = validateRegistryId(metadata.id);
     this.name = metadata.name;
