@@ -2,15 +2,13 @@ const { readFileSync } = require("fs");
 const { resolve } = require("path");
 const noRestrictedImports = require("eslint-config-pixiebrix/no-restricted-imports");
 
-// Clone object to avoid modifying the original
-// eslint-disable-next-line unicorn/prevent-abbreviations
-const noRestrictedImportsForSrcFolder = structuredClone(noRestrictedImports);
-
-noRestrictedImportsForSrcFolder.patterns.push({
-  group: ["./*"],
-  message:
-    'Use root-based imports (`import "@/something"`) instead of relative imports.',
-});
+function extendNoRestrictedImports({ patterns = [], paths = [] }) {
+  // Clone object to avoid modifying the original
+  const customized = structuredClone(noRestrictedImports);
+  customized.patterns.push(...patterns);
+  customized.paths.push(...paths);
+  return customized;
+}
 
 const boundaries = [
   "background",
@@ -174,7 +172,18 @@ module.exports = {
     {
       files: ["./src/*"],
       rules: {
-        "no-restricted-imports": ["error", noRestrictedImportsForSrcFolder],
+        "no-restricted-imports": [
+          "error",
+          extendNoRestrictedImports({
+            patterns: [
+              {
+                group: ["./*"],
+                message:
+                  'Use root-based imports (`import "@/something"`) instead of relative imports.',
+              },
+            ],
+          }),
+        ],
       },
     },
   ],
