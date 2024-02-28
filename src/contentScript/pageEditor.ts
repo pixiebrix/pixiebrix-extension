@@ -250,11 +250,3 @@ export async function resetTab(): Promise<void> {
   await clearDynamicElements({});
   await reactivateTab();
 }
-
-/**
- * Navigate to the given URL.
- * @param url the url to navigate to
- */
-export async function navigateTab({ url }: { url: string }): Promise<void> {
-  window.location.href = url;
-}

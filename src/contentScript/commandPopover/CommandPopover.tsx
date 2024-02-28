@@ -38,16 +38,11 @@ import { getElementText } from "@/utils/editorUtils";
 import { isEmpty } from "lodash";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import EmotionShadowRoot from "react-shadow/emotion";
+import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { Stylesheets } from "@/components/Stylesheets";
 import useIsMounted from "@/hooks/useIsMounted";
 import { replaceAtCommand } from "@/contentScript/commandPopover/commandUtils";
 import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
-
-// "Every property exists" (via Proxy), TypeScript doesn't offer such type
-// Also strictNullChecks config mismatch
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
-const ShadowRoot = EmotionShadowRoot.div!;
 
 type PopoverActionCallbacks = {
   onHide: () => void;
@@ -197,7 +192,7 @@ const CommandPopover: React.FunctionComponent<
   }, [query, commands, dispatch]);
 
   return (
-    <ShadowRoot mode="open">
+    <EmotionShadowRoot mode="open">
       <Stylesheets href={[stylesUrl]}>
         <div role="menu" aria-label="Text command menu" className="root">
           <StatusBar {...state} />
@@ -221,7 +216,7 @@ const CommandPopover: React.FunctionComponent<
           </div>
         </div>
       </Stylesheets>
-    </ShadowRoot>
+    </EmotionShadowRoot>
   );
 };
 

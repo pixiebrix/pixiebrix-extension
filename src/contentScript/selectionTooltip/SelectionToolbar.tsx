@@ -27,12 +27,7 @@ import useDocumentSelection from "@/hooks/useDocumentSelection";
 import type { Nullishable } from "@/utils/nullishUtils";
 import useActionRegistry from "@/contentScript/selectionTooltip/useActionRegistry";
 import { Stylesheets } from "@/components/Stylesheets";
-import EmotionShadowRoot from "react-shadow/emotion";
-
-// "Every property exists" (via Proxy), TypeScript doesn't offer such type
-// Also strictNullChecks config mismatch
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
-const ShadowRoot = EmotionShadowRoot.div!;
+import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 
 const ICON_SIZE_PX = 16;
 
@@ -90,7 +85,7 @@ const SelectionToolbar: React.FC<
 
   // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menu_role
   return (
-    <ShadowRoot mode="open">
+    <EmotionShadowRoot mode="open">
       <Stylesheets href={[stylesUrl]}>
         <div
           role="menu"
@@ -108,7 +103,7 @@ const SelectionToolbar: React.FC<
           ))}
         </div>
       </Stylesheets>
-    </ShadowRoot>
+    </EmotionShadowRoot>
   );
 };
 
