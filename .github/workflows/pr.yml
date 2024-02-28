@@ -72,11 +72,15 @@ jobs:
 
             There are ${{ steps.stats.outputs.changes }} line changes in package-lock.json. This should not happen unless you're updating a lot of dependencies at once. Regenerating the lockfile should not be necessary.
 
-            If you're seeing Vercel deployment failures, this is likely the cause. Run these commands to reset these changes:
+            If you're seeing Vercel deployment failures, this is likely the cause.
+
+            Run these commands to reset these changes:
 
             ```sh
             git checkout origin/main -- package-lock.json
             npm install
             ```
+
+            You might want to click on "Update branch" first so that the results are accurate.
       - if: steps.stats.outputs.changes > 1000
         run: exit 1
