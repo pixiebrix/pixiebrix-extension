@@ -38,6 +38,7 @@ import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
+import { urlsMatch } from "@/utils/urlUtils";
 
 export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
   "@pixiebrix/automation-anywhere/run-bot",
@@ -206,9 +207,8 @@ export class RunBot extends TransformerABC {
 
       const { partnerPrincipals = [] } = await getUserData();
 
-      const principal = partnerPrincipals.find(
-        ({ controlRoomUrl }) =>
-          controlRoomUrl.href === service.config.controlRoomUrl,
+      const principal = partnerPrincipals.find(({ controlRoomUrl }) =>
+        urlsMatch(controlRoomUrl, service.config.controlRoomUrl),
       );
       if (!principal) {
         throw new PropError(

@@ -22,15 +22,21 @@ import {
 import { appApiMock } from "@/testUtils/appApiMock";
 import { TEST_setAuthData } from "@/auth/authStorage";
 import type { components } from "@/types/swagger";
+import { getLinkedApiClient } from "@/data/service/apiClient";
 
 // In existing code, there was a lot of places mocking both useQueryState and useGetMeQuery. This could in some places
 // yield impossible states due to how `skip` logic in calls like RequireAuth, etc.
 
-export function mockAnonymousUser(): void {
+export async function mockAnonymousUser(): Promise<void> {
+  // We need to restore the real implementation here to test linked/unlinked extension behavior
+  //  See: src/__mocks__/@/data/service/apiClient.js
+  jest.mocked(getLinkedApiClient).mockImplementation(getLinkedApiClient);
   appApiMock.onGet("/api/me/").reply(200, {
     // Anonymous users still get feature flags
     flags: [],
   });
+  // eslint-disable-next-line new-cap
+  await TEST_setAuthData({});
 }
 
 export async function mockAuthenticatedUserApiResponse(

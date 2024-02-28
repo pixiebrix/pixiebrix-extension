@@ -79,3 +79,13 @@ export function isValidUrl(
     return false;
   }
 }
+
+export function withoutTrailingSlash(url: string): string {
+  return url.replace(/\/$/, "");
+}
+
+export function urlsMatch(url1: string | URL, url2: string | URL): boolean {
+  const href1 = typeof url1 === "string" ? url1 : url1.href;
+  const href2 = typeof url2 === "string" ? url2 : url2.href;
+  return withoutTrailingSlash(href1) === withoutTrailingSlash(href2);
+}

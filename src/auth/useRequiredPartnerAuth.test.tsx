@@ -125,7 +125,7 @@ describe("useRequiredPartnerAuth", () => {
       isLoading: false,
     });
 
-    mockAnonymousUser();
+    await mockAnonymousUser();
 
     const { result, waitFor } = renderHook(() => useRequiredPartnerAuth());
 

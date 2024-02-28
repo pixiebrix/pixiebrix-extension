@@ -39,7 +39,10 @@ import {
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { type ActionFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { parsePackage } from "@/registry/packageRegistry";
-import { registry } from "@/background/messenger/strict/api";
+import {
+  fetchFeatureFlagsInBackground,
+  registry,
+} from "@/background/messenger/strict/api";
 import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
@@ -54,6 +57,10 @@ import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFa
 
 import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
 import { type RegistryPackage } from "@/types/contract";
+import {
+  fetchFeatureFlags,
+  resetFeatureFlags,
+} from "@/auth/featureFlagStorage";
 
 setContext("background");
 const axiosMock = new MockAdapter(axios);
@@ -81,6 +88,7 @@ jest.mock("@/auth/authStorage", () => ({
   }),
   isLinked: jest.fn().mockResolvedValue(true),
   async updateUserData() {},
+  addListener: jest.fn(),
 }));
 
 jest.mock("@/background/installer", () => ({
@@ -135,6 +143,12 @@ beforeEach(async () => {
   isUpdateAvailableMock.mockClear();
 
   resetManagedStorage();
+
+  // Wire up the real fetch function so that we can mock the api responses
+  jest
+    .mocked(fetchFeatureFlagsInBackground)
+    .mockImplementation(fetchFeatureFlags);
+  await resetFeatureFlags();
 });
 
 describe("updateDeployments", () => {

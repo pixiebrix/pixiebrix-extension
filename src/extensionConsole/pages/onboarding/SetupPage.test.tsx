@@ -75,7 +75,7 @@ beforeEach(async () => {
 
 describe("SetupPage", () => {
   test("anonymous user with no partner", async () => {
-    mockAnonymousUser();
+    await mockAnonymousUser();
 
     render(
       <MemoryRouter>
@@ -117,7 +117,7 @@ describe("SetupPage", () => {
 
   test("Start URL for OAuth2 flow", async () => {
     const user = userEvent.setup();
-    mockAnonymousUser();
+    await mockAnonymousUser();
 
     location.href =
       "chrome-extension://abc123/options.html#/start?hostname=mycontrolroom.com";
@@ -155,7 +155,7 @@ describe("SetupPage", () => {
   });
 
   test("Start URL with Community Edition hostname if user is unauthenticated", async () => {
-    mockAnonymousUser();
+    await mockAnonymousUser();
 
     const history = createHashHistory();
     // Hostname comes as hostname, not URL
@@ -225,7 +225,7 @@ describe("SetupPage", () => {
   test("Managed Storage OAuth2 partner user", async () => {
     const controlRoomUrl = "https://notarealcontrolroom.com";
 
-    mockAnonymousUser();
+    await mockAnonymousUser();
 
     await browser.storage.managed.set({
       partnerId: "automation-anywhere",

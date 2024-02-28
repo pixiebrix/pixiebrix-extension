@@ -59,7 +59,7 @@ describe("SidebarApp", () => {
   });
 
   test("renders not connected", async () => {
-    mockAnonymousUser();
+    await mockAnonymousUser();
     useLinkStateMock.mockReturnValue({
       hasToken: false,
       tokenLoading: false,

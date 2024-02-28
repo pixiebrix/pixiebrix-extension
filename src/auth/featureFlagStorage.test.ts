@@ -28,7 +28,7 @@ import { fetchFeatureFlagsInBackground } from "@/background/messenger/strict/api
 
 describe("featureFlags", () => {
   beforeEach(async () => {
-    // Wire up the real fetch function so we can mock the api responses
+    // Wire up the real fetch function so that we can mock the api responses
     jest
       .mocked(fetchFeatureFlagsInBackground)
       .mockImplementation(fetchFeatureFlags);
