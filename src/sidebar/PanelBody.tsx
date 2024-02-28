@@ -18,7 +18,7 @@
 import React, { useReducer } from "react";
 import Loader from "@/components/Loader";
 import blockRegistry from "@/bricks/registry";
-import EmotionShadowRoot from "react-shadow/emotion";
+import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { getErrorMessage, selectSpecificError } from "@/errors/errorHelpers";
 import {
   isRendererErrorPayload,

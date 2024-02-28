@@ -26,7 +26,7 @@ import {
   useKBar,
   VisualState,
 } from "kbar";
-import EmotionShadowRoot from "react-shadow/emotion";
+import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import faStyleSheet from "@fortawesome/fontawesome-svg-core/styles.css?loadAsUrl";
 import { expectContext } from "@/utils/expectContext";
 import { once } from "lodash";
@@ -142,7 +142,7 @@ const KBarComponent: React.FC = () => {
               To support react-select and any future potential emotion components we used the
               emotion variant of the react-shadow library.
             */}
-          <EmotionShadowRoot.div
+          <EmotionShadowRoot
             data-testid="quickBar"
             className="cke_editable"
             mode="closed"
@@ -158,7 +158,7 @@ const KBarComponent: React.FC = () => {
                 </div>
               </StopPropagation>
             </Stylesheets>
-          </EmotionShadowRoot.div>
+          </EmotionShadowRoot>
         </KBarAnimator>
       </KBarPositioner>
     </KBarPortal>
