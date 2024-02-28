@@ -37,15 +37,9 @@ const EditorNodeConfigPanel: React.FC = () => {
   const {
     blockId: brickId,
     path: brickFieldName,
-    blockConfig,
-  } = useSelector(selectActiveNodeInfo) ?? {};
-  const { comments } = blockConfig ?? {};
-
+    blockConfig: { comments },
+  } = useSelector(selectActiveNodeInfo);
   const { data: brickInfo } = useAsyncState(async () => {
-    if (brickId == null) {
-      return null;
-    }
-
     const brick = await blockRegistry.lookup(brickId);
     return {
       block: brick,
