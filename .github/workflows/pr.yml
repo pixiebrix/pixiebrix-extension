@@ -20,7 +20,7 @@ jobs:
               {
                 echo 'reason<<EOF'
                 # Drop null character at the end caused by -z
-                cat REASON | tr -d '\0'
+                cat REASON | sed 's/.$/\n/'
                 echo 'EOF'
               } >> "$GITHUB_OUTPUT"
               exit 1
