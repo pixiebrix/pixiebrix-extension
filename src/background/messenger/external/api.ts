@@ -22,7 +22,7 @@
 
 import { _liftBackground as liftExternal } from "@/background/externalProtocol";
 import * as local from "@/background/messenger/external/_implementation";
-import { readPartnerAuthData } from "@/auth/token";
+import { readPartnerAuthData } from "@/auth/authStorage";
 
 export const connectPage = liftExternal("CONNECT_PAGE", async () =>
   browser.runtime.getManifest(),

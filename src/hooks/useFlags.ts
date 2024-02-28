@@ -15,9 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useMemo } from "react";
-import { selectFlags } from "@/auth/authSelectors";
-import { useSelector } from "react-redux";
+import { useEffect, useMemo } from "react";
+import { useGetFeatureFlagsQuery } from "@/data/service/api";
+import {
+  addListener as addAuthStorageListener,
+  removeListener as removeAuthStorageListener,
+} from "@/auth/authStorage";
 
 const RESTRICTED_PREFIX = "restricted";
 
@@ -46,7 +49,19 @@ type Restrict = {
  * For permit/restrict, features will be restricted in the fetching/loading state
  */
 function useFlags(): Restrict {
-  const flags = useSelector(selectFlags);
+  const { data: flags, refetch } = useGetFeatureFlagsQuery();
+
+  useEffect(() => {
+    const listener = () => {
+      void refetch();
+    };
+
+    addAuthStorageListener(listener);
+
+    return () => {
+      removeAuthStorageListener(listener);
+    };
+  }, [refetch]);
 
   return useMemo(() => {
     const flagSet = new Set(flags);

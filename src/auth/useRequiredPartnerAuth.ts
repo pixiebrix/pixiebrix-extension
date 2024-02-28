@@ -24,7 +24,7 @@ import {
   addListener as addAuthListener,
   readPartnerAuthData,
   removeListener as removeAuthListener,
-} from "@/auth/token";
+} from "@/auth/authStorage";
 import { useEffect } from "react";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/data/service/constants";
 import { type AuthState } from "@/auth/authTypes";

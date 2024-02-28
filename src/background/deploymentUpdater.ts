@@ -19,7 +19,7 @@ import { type Deployment, type Me } from "@/types/contract";
 import { isEmpty, partition } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { getUUID } from "@/telemetry/telemetryHelpers";
-import { isLinked, readAuthData, updateUserData } from "@/auth/token";
+import { isLinked, readAuthData, updateUserData } from "@/auth/authStorage";
 import reportEvent from "@/telemetry/reportEvent";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import {

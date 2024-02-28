@@ -19,7 +19,7 @@ import serviceRegistry from "@/integrations/registry";
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { performConfiguredRequest } from "./requests";
-import * as token from "@/auth/token";
+import * as token from "@/auth/authStorage";
 import Locator, * as locator from "@/integrations/locator";
 import { validateRegistryId } from "@/types/helpers";
 import enrichAxiosErrors from "@/utils/enrichAxiosErrors";
@@ -55,7 +55,7 @@ jest.mock("@/background/auth/getToken", () => ({
   __esModule: true,
   getToken: jest.fn().mockResolvedValue({ token: "iamatoken" }),
 }));
-jest.mock("@/auth/token");
+jest.mock("@/auth/authStorage");
 jest.mock("@/integrations/locator");
 
 // Use real version of pixiebrixConfigurationFactory

@@ -20,7 +20,7 @@ import { flatten, isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import { type RegistryId } from "@/types/registryTypes";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
-import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
+import { readPartnerAuthData, setPartnerAuth } from "@/auth/authStorage";
 import serviceRegistry from "@/integrations/registry";
 import axios from "axios";
 import { getBaseURL } from "@/data/service/baseService";

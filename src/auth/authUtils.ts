@@ -17,7 +17,6 @@
 
 import { type Me } from "@/types/contract";
 import { type UserDataUpdate, type AuthState } from "@/auth/authTypes";
-import { readAuthData } from "@/auth/token";
 
 // Used by the app
 function selectOrganizations(
@@ -52,7 +51,6 @@ export function selectUserDataUpdate({
   telemetry_organization: telemetryOrganization,
   organization_memberships: organizationMemberships = [],
   group_memberships = [],
-  flags = [],
   partner,
   enforce_update_millis: enforceUpdateMillis,
   partner_principals: partnerPrincipals = [],
@@ -67,7 +65,6 @@ export function selectUserDataUpdate({
     email: email!,
     organizationId: organization?.id ?? null,
     telemetryOrganizationId: telemetryOrganization?.id ?? null,
-    flags,
     organizations,
     groups,
     partner: partner ?? null,
@@ -84,7 +81,6 @@ export function selectExtensionAuthState({
   telemetry_organization,
   is_onboarded: isOnboarded,
   test_account: isTestAccount = false,
-  flags = [],
   milestones = [],
   organization_memberships: organizationMemberships = [],
   group_memberships = [],
@@ -106,18 +102,8 @@ export function selectExtensionAuthState({
     telemetryOrganizationId: telemetry_organization?.id,
     organizations,
     groups,
-    flags,
     milestones,
     partner,
     enforceUpdateMillis,
   };
-}
-
-/**
- * Returns true if the specified flag is on for the current user.
- * @param flag the feature flag to check
- */
-export async function flagOn(flag: string): Promise<boolean> {
-  const authData = await readAuthData();
-  return authData.flags?.includes(flag) ?? false;
 }

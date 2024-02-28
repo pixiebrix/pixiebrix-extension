@@ -19,11 +19,10 @@ import React from "react";
 import { render, screen } from "@/sidebar/testHelpers";
 import DefaultPanel from "./DefaultPanel";
 import extensionsSlice from "@/store/extensionsSlice";
-import { authSlice } from "@/auth/authSlice";
-import { type AuthState } from "@/auth/authTypes";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
 import { type Timestamp } from "@/types/stringTypes";
+import { appApiMock } from "@/testUtils/appApiMock";
 
 describe("renders DefaultPanel", () => {
   it("renders Page Editor call to action", () => {
@@ -32,7 +31,11 @@ describe("renders DefaultPanel", () => {
     expect(screen.getByText("Get started with PixieBrix")).not.toBeNull();
   });
 
-  it("renders restricted user content", () => {
+  it("renders restricted user content", async () => {
+    appApiMock.onGet("/api/me/").reply(200, {
+      flags: ["restricted-marketplace"],
+    });
+
     render(<DefaultPanel />, {
       setupRedux(dispatch) {
         dispatch(
@@ -43,15 +46,11 @@ describe("renders DefaultPanel", () => {
             },
           }),
         );
-
-        dispatch(
-          authSlice.actions.setAuth({
-            flags: ["restricted-marketplace"],
-          } as AuthState),
-        );
       },
     });
 
-    expect(screen.getByText("No panels activated for the page")).not.toBeNull();
+    await expect(
+      screen.findByText("No panels activated for the page"),
+    ).resolves.toBeVisible();
   });
 });

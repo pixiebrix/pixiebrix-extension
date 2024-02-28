@@ -73,10 +73,19 @@ export const appApi = createApi({
       query: () => ({
         url: "/api/me/",
         method: "get",
-        // The /api/me/ endpoint returns a blank result if not authenticated
-        requireLinked: false,
       }),
       providesTags: ["Me"],
+    }),
+    getFeatureFlags: builder.query<string[], void>({
+      query: () => ({
+        url: "/api/me/",
+        method: "get",
+        // The /api/me/ endpoint returns an object with only feature flags if not authenticated
+        requireLinked: false,
+      }),
+      transformResponse: (response: components["schemas"]["Me"]) => [
+        ...(response.flags ?? []),
+      ],
     }),
     getDatabases: builder.query<Database[], void>({
       query: () => ({ url: "/api/databases/", method: "get" }),
@@ -170,7 +179,7 @@ export const appApi = createApi({
       }),
     }),
     getMarketplaceListing: builder.query<
-      MarketplaceListing,
+      MarketplaceListing | undefined,
       { packageId: RegistryId }
     >({
       query: (params) => ({
@@ -432,6 +441,7 @@ export const appApi = createApi({
 
 export const {
   useGetMeQuery,
+  useGetFeatureFlagsQuery,
   useGetDatabasesQuery,
   useCreateDatabaseMutation,
   useAddDatabaseToGroupMutation,

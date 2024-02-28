@@ -21,7 +21,7 @@ import {
   userFactory,
 } from "@/testUtils/factories/authFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { TEST_setAuthData } from "@/auth/token";
+import { TEST_setAuthData } from "@/auth/authStorage";
 
 // In existing code, there was a lot of places mocking both useQueryState and useGetMeQuery. This could in some places
 // yield impossible states due to how `skip` logic in calls like RequireAuth, etc.
@@ -39,7 +39,6 @@ export async function mockAuthenticatedUser(me?: Me): Promise<void> {
   const tokenData = tokenAuthDataFactory({
     email: user.email,
     user: user.id,
-    flags: user.flags,
   });
   // eslint-disable-next-line new-cap
   await TEST_setAuthData(tokenData);

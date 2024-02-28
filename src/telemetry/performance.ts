@@ -19,13 +19,16 @@ import { datadogRum } from "@datadog/browser-rum";
 import { getDNT } from "@/telemetry/dnt";
 import { getBaseURL } from "@/data/service/baseService";
 import { expectContext, forbidContext } from "@/utils/expectContext";
-import { addListener as addAuthListener, readAuthData } from "@/auth/token";
-import { flagOn } from "@/auth/authUtils";
+import {
+  addListener as addAuthListener,
+  readAuthData,
+} from "@/auth/authStorage";
 import {
   cleanDatadogVersionName,
   mapAppUserToTelemetryUser,
 } from "@/telemetry/telemetryHelpers";
 import type { UserData } from "@/auth/authTypes";
+import { flagOn } from "@/auth/featureFlagStorage";
 
 const environment = process.env.ENVIRONMENT;
 const applicationId = process.env.DATADOG_APPLICATION_ID;

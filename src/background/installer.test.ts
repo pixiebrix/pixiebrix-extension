@@ -20,7 +20,7 @@ import {
   openInstallPage,
   handleInstall,
 } from "@/background/installer";
-import * as auth from "@/auth/token";
+import * as auth from "@/auth/authStorage";
 import { locator } from "@/background/locator";
 import { uuidv4 } from "@/types/helpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -33,17 +33,13 @@ jest.mock("@/data/service/baseService", () => ({
   getBaseURL: jest.fn().mockResolvedValue("https://app.pixiebrix.com"),
 }));
 
-jest.mock("@/auth/token", () => ({
+jest.mock("@/auth/authStorage", () => ({
   isLinked: jest.fn().mockResolvedValue(false),
   getExtensionToken: jest.fn().mockResolvedValue(null),
   getUserData: jest.fn().mockResolvedValue(null),
 }));
 
 jest.mock("@/background/telemetry");
-
-jest.mock("@/store/syncFlags", () => ({
-  syncFlagOn: jest.fn().mockResolvedValue(false),
-}));
 
 jest.mock("@/background/locator", () => ({
   locator: {

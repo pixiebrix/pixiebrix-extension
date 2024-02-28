@@ -25,13 +25,13 @@ import {
   isLinked,
   TEST_clearListeners,
   TEST_triggerListeners,
-} from "@/auth/token";
+} from "@/auth/authStorage";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { tabFactory } from "@/testUtils/factories/browserFactories";
 
-jest.mock("@/auth/token", () => ({
+jest.mock("@/auth/authStorage", () => ({
   __esModule: true,
-  ...jest.requireActual("@/auth/token"),
+  ...jest.requireActual("@/auth/authStorage"),
   isLinked: jest.fn(),
 }));
 

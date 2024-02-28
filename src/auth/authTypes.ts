@@ -57,10 +57,6 @@ export type UserData = Partial<{
    */
   telemetryOrganizationId: UUID | null;
   /**
-   * Feature flags
-   */
-  flags: string[];
-  /**
    * Organizations the user is a member of
    */
   organizations: Array<{
@@ -108,7 +104,6 @@ export const USER_DATA_UPDATE_KEYS: Array<keyof UserDataUpdate> = [
   "telemetryOrganizationId",
   "organizations",
   "groups",
-  "flags",
   "enforceUpdateMillis",
   "partner",
   "partnerPrincipals",
@@ -234,11 +229,6 @@ export type AuthState = {
     id: UUID;
     name: string;
   }>;
-
-  /**
-   * List of feature flags for the user.
-   */
-  readonly flags: string[];
 
   /**
    * List of milestones for the user. A Milestone represents progress through the PixieBrix product.

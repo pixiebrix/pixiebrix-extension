@@ -103,6 +103,7 @@ exports[`customizeManifest mv2 1`] = `
     "webNavigation",
     "contextMenus",
     "<all_urls>",
+    "alarms",
   ],
   "sandbox": {
     "pages": [
@@ -241,6 +242,7 @@ exports[`customizeManifest mv3 1`] = `
     "tabs",
     "webNavigation",
     "contextMenus",
+    "alarms",
     "devtools",
     "scripting",
     "sidePanel",

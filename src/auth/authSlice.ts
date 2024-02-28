@@ -33,7 +33,6 @@ export const authSlice = createSlice({
       return {
         ...payload,
         scope: isEmpty(payload.scope) ? null : payload.scope,
-        flags: Array.isArray(payload.flags) ? payload.flags : [],
         organizations: Array.isArray(payload.organizations)
           ? payload.organizations
           : [],

@@ -21,7 +21,7 @@ import {
   showSidebar,
   sidePanelOnClose,
 } from "@/contentScript/sidebarController";
-import { isLinked } from "@/auth/token";
+import { isLinked } from "@/auth/authStorage";
 import {
   getActivatingMods,
   setActivatingMods,

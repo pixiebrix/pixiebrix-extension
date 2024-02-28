@@ -24,7 +24,7 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { updateDeployments } from "@/background/deploymentUpdater";
 import reportEvent from "@/telemetry/reportEvent";
-import { isLinked, readAuthData } from "@/auth/token";
+import { isLinked, readAuthData } from "@/auth/authStorage";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { isUpdateAvailable } from "@/background/installer";
 import {
@@ -73,7 +73,7 @@ jest.mock("@/telemetry/reportEvent");
 jest.mock("@/sidebar/messenger/api", () => {});
 jest.mock("@/contentScript/messenger/api");
 
-jest.mock("@/auth/token", () => ({
+jest.mock("@/auth/authStorage", () => ({
   getExtensionToken: async () => "TESTTOKEN",
   getAuthHeaders: jest.fn().mockResolvedValue({}),
   readAuthData: jest.fn().mockResolvedValue({

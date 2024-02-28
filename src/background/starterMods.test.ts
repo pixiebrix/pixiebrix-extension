@@ -25,7 +25,7 @@ import {
 } from "@/store/extensionsStorage";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
-import { isLinked } from "@/auth/token";
+import { isLinked } from "@/auth/authStorage";
 import { refreshRegistries } from "./refreshRegistries";
 import {
   type ActivatedModComponent,
@@ -42,7 +42,7 @@ import { remoteIntegrationConfigurationFactory } from "@/testUtils/factories/int
 
 const axiosMock = new MockAdapter(axios);
 
-jest.mock("@/auth/token", () => ({
+jest.mock("@/auth/authStorage", () => ({
   async getAuthHeaders() {
     return {};
   },
