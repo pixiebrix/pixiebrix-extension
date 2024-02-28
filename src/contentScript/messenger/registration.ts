@@ -49,7 +49,6 @@ import {
   runMapArgs,
   runRendererPipeline,
 } from "@/contentScript/pipelineProtocol";
-import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
 import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
 import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
@@ -62,8 +61,6 @@ declare global {
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
     RESET_TAB: typeof resetTab;
-
-    TOGGLE_QUICK_BAR: typeof toggleQuickBar;
 
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
@@ -100,8 +97,6 @@ export default function registerMessenger(): void {
     REACTIVATE_TAB: reactivateTab,
     REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
     RESET_TAB: resetTab,
-
-    TOGGLE_QUICK_BAR: toggleQuickBar,
 
     INSERT_PANEL: insertPanel,
     INSERT_BUTTON: insertButton,

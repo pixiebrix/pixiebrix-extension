@@ -44,6 +44,7 @@ import {
 import { closeWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
 import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughModal";
 import { registerMethods } from "webext-messenger";
+import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 
 declare global {
   interface MessengerMethods {
@@ -71,6 +72,7 @@ declare global {
     PANEL_GET_DEFINITION: typeof getPanelDefinition;
     WALKTHROUGH_MODAL_CLOSE: typeof closeWalkthroughModal;
     WALKTHROUGH_MODAL_SHOW: typeof showWalkthroughModal;
+    TOGGLE_QUICK_BAR: typeof toggleQuickBar;
   }
 }
 export default function registerMessenger(): void {
@@ -99,5 +101,6 @@ export default function registerMessenger(): void {
     PANEL_GET_DEFINITION: getPanelDefinition,
     WALKTHROUGH_MODAL_CLOSE: closeWalkthroughModal,
     WALKTHROUGH_MODAL_SHOW: showWalkthroughModal,
+    TOGGLE_QUICK_BAR: toggleQuickBar,
   });
 }
