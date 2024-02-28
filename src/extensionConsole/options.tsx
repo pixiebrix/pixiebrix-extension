@@ -32,7 +32,7 @@ import { initMessengerLogging } from "@/development/messengerLogging";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { setPlatform } from "@/platform/platformContext";
-import extensionPagePlatform from "@/mv3/extensionPagePlatform";
+import extensionPagePlatform from "@/extensionPages/extensionPagePlatform";
 
 setPlatform(extensionPagePlatform);
 

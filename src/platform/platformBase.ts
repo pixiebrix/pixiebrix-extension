@@ -43,6 +43,13 @@ import type { PlatformProtocol } from "@/platform/platformProtocol";
 import type { PanelProtocol } from "@/platform/platformTypes/panelProtocol";
 import type { QuickBarProtocol } from "@/platform/platformTypes/quickBarProtocol";
 
+/**
+ * Base protocol with no capabilities implemented.
+ *
+ * Override this class to implement platform capabilities.
+ *
+ * @since 1.8.10
+ */
 export class PlatformBase implements PlatformProtocol {
   readonly capabilities: readonly PlatformCapability[] = [];
 

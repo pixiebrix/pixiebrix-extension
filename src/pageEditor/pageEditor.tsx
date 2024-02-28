@@ -32,7 +32,7 @@ import { initToaster } from "@/utils/notify";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
 import { setPlatform } from "@/platform/platformContext";
-import extensionPagePlatform from "@/mv3/extensionPagePlatform";
+import extensionPagePlatform from "@/extensionPages/extensionPagePlatform";
 
 setPlatform(extensionPagePlatform);
 
