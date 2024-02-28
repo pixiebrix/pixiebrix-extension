@@ -57,9 +57,16 @@ jobs:
           echo "ADDED=$ADDED"
           echo "TOTAL_CHANGES=$TOTAL_CHANGES"
           echo "changes=$TOTAL_CHANGES" >> $GITHUB_OUTPUT
+      - if: steps.stats.outputs.changes <= 1000
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: lockfile # Unique identifier for the comment
+          hide: true
+
       - if: steps.stats.outputs.changes > 1000
         uses: marocchino/sticky-pull-request-comment@v2
         with:
+          header: lockfile # Unique identifier for the comment
           recreate: true
           message: |
             ## ⚠️ Large diff for package-lock.json
