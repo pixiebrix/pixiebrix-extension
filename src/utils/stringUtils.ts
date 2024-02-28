@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Nullish } from "./nullishUtils";
+import { type Nullish } from "./nullishUtils";
 
 /**
  * If a string contains an emoji, returns an object that contains the separated emoji and the remaining string.

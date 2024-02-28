@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// eslint-disable-next-line no-restricted-imports -- All roads lead here
 import EmotionShadowRoot from "react-shadow/emotion";
 
 // "Every property exists" (via Proxy), TypeScript doesn't offer such type
