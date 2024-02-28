@@ -40,7 +40,6 @@ describe("featureFlags", () => {
 
   afterEach(async () => {
     await resetFeatureFlags();
-    jest.useRealTimers();
   });
 
   it("returns true if flag is present", async () => {
@@ -75,7 +74,7 @@ describe("featureFlags", () => {
     expect(appApiMock.history.get).toHaveLength(0);
   });
 
-  it("only fetches once if multiple calls are made within the timeout", async () => {
+  it("only fetches once if multiple calls are made", async () => {
     appApiMock.onGet("/api/me/").reply(200, {
       flags: ["test-flag"],
     });
@@ -84,25 +83,6 @@ describe("featureFlags", () => {
     await expect(flagOn("test-flag")).resolves.toBe(true);
     await expect(flagOn("test-flag")).resolves.toBe(true);
     expect(appApiMock.history.get).toHaveLength(1);
-  });
-
-  it("fetches flags again if a call is made after the timeout", async () => {
-    jest.useFakeTimers();
-
-    appApiMock.onGet("/api/me/").reply(200, {
-      flags: ["test-flag"],
-    });
-
-    await expect(flagOn("test-flag")).resolves.toBe(true);
-    await expect(flagOn("test-flag")).resolves.toBe(true);
-    expect(appApiMock.history.get).toHaveLength(1);
-
-    jest.advanceTimersByTime(31_000);
-
-    await expect(flagOn("test-flag")).resolves.toBe(true);
-    await expect(flagOn("test-flag")).resolves.toBe(true);
-    await expect(flagOn("test-flag")).resolves.toBe(true);
-    expect(appApiMock.history.get).toHaveLength(2);
   });
 
   it("fetches flags again if auth is reset in between calls", async () => {

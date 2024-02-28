@@ -17,7 +17,7 @@
 
 import { getApiClient } from "@/data/service/apiClient";
 import { type components } from "@/types/swagger";
-import { addListener } from "@/auth/authStorage";
+import { addListener as addAuthStorageListener } from "@/auth/authStorage";
 import { CachedFunction } from "webext-storage-cache";
 import { expectContext } from "@/utils/expectContext";
 import { fetchFeatureFlagsInBackground } from "@/background/messenger/api";
@@ -32,9 +32,6 @@ export async function fetchFeatureFlags(): Promise<readonly string[]> {
 
 const featureFlags = new CachedFunction("getFeatureFlags", {
   updater: fetchFeatureFlagsInBackground,
-  maxAge: {
-    seconds: 30,
-  },
 });
 
 export async function resetFeatureFlags(): Promise<void> {
@@ -56,6 +53,6 @@ export async function flagOn(flag: string): Promise<boolean> {
   return flags.includes(flag);
 }
 
-addListener(async () => {
+addAuthStorageListener(async () => {
   await resetFeatureFlags();
 });

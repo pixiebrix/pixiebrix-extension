@@ -20,6 +20,8 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import { render, renderHook } from "@/pageEditor/testHelpers";
 import useFlags from "@/hooks/useFlags";
 import { waitForEffect } from "@/testUtils/testHelpers";
+import { TEST_setAuthData, TEST_triggerListeners } from "@/auth/authStorage";
+import { tokenAuthDataFactory } from "@/testUtils/factories/authFactories";
 
 const TestComponent: React.FC<{ name: string }> = ({ name, children }) => {
   const { flagOn } = useFlags();
@@ -36,10 +38,6 @@ const TestComponent: React.FC<{ name: string }> = ({ name, children }) => {
 describe("useFlags", () => {
   beforeEach(async () => {
     appApiMock.reset();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
   });
 
   it("only fetches once for multiple instances of the hook in nested/sibling components", async () => {
@@ -74,14 +72,17 @@ describe("useFlags", () => {
     expect(appApiMock.history.get).toHaveLength(1);
   });
 
-  it("re-fetches flags after the cache timeout expires", async () => {
-    jest.useFakeTimers();
-
+  it("re-fetches flags when the auth data changes", async () => {
     appApiMock.onGet("/api/me/").reply(200, {
       flags: ["test-flag-parent", "test-flag-child1"],
     });
 
-    const { rerender } = render(
+    const tokenData = tokenAuthDataFactory();
+
+    // eslint-disable-next-line new-cap
+    await TEST_setAuthData(tokenData);
+
+    render(
       <TestComponent name="parent">
         <TestComponent name="child1" />
         <TestComponent name="child2" />
@@ -92,21 +93,12 @@ describe("useFlags", () => {
     // Make sure we only fetched once
     expect(appApiMock.history.get).toHaveLength(1);
 
-    jest.advanceTimersByTime(31_000);
-
-    // Mount another component instance (grandchild1), so that another
-    // subscriber is added to the query in the hook
-    rerender(
-      <TestComponent name="parent">
-        <TestComponent name="child1">
-          <TestComponent name="grandchild1" />
-        </TestComponent>
-        <TestComponent name="child2" />
-      </TestComponent>,
-    );
+    // Simulate a change in auth data
+    // eslint-disable-next-line new-cap
+    TEST_triggerListeners(tokenData);
 
     await waitForEffect();
-    // Should have fetched again since time has been advanced past the 30s timeout
+    // Should have fetched again since the auth data has changed
     expect(appApiMock.history.get).toHaveLength(2);
   });
 
