@@ -27,7 +27,6 @@ import {
 } from "@/auth/authStorage";
 import { useEffect } from "react";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/data/service/constants";
-import { type AuthState } from "@/auth/authTypes";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import { type RegistryId } from "@/types/registryTypes";
@@ -36,6 +35,10 @@ import {
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
 import useAsyncState from "@/hooks/useAsyncState";
+import { type UserPartner } from "@/data/model/UserPartner";
+import { type ControlRoom } from "@/data/model/ControlRoom";
+import { type UserMilestone } from "@/data/model/UserMilestone";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Map from partner keys to partner service IDs
@@ -94,7 +97,7 @@ function decidePartnerIntegrationIds({
 }: {
   authIntegrationIdOverride: RegistryId | null;
   authMethodOverride: SettingsState["authMethod"];
-  partnerId: AuthState["partner"]["theme"] | null;
+  partnerId: string | null;
 }): Set<RegistryId> {
   if (authIntegrationIdOverride) {
     return new Set<RegistryId>([authIntegrationIdOverride]);
@@ -139,14 +142,23 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     managedState;
 
   // Prefer the latest remote data, but use local data to avoid blocking page load
-  const { partner, organization } = me ?? localAuth;
+  let partner: Nullishable<UserPartner> = null;
+  let controlRoom: Nullishable<ControlRoom> = null;
+  const userMilestones: UserMilestone[] = [];
 
-  // `organization?.control_room?.id` can only be set when authenticated or the auth is cached. For unauthorized users,
-  // the organization will be null on result of useGetMeQuery
-  const hasControlRoom =
-    Boolean(organization?.control_room?.id) || Boolean(managedControlRoomUrl);
-  const isCommunityEditionUser = (me?.milestones ?? []).some(
-    ({ key }) => key === "aa_community_edition_register",
+  if (me) {
+    partner = me.partner;
+    controlRoom = me.primaryOrganization?.controlRoom ?? null;
+    userMilestones.push(...me.userMilestones);
+  } else if (localAuth) {
+    partner = localAuth.partner;
+    controlRoom = localAuth.organization?.control_room ?? null;
+    userMilestones.push(...localAuth.milestones);
+  }
+
+  const hasControlRoom = controlRoom != null || Boolean(managedControlRoomUrl);
+  const isCommunityEditionUser = userMilestones.some(
+    ({ milestoneName }) => milestoneName === "aa_community_edition_register",
   );
   const hasPartner =
     Boolean(partner) ||
@@ -156,7 +168,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   const partnerId =
     partnerIdOverride ??
     managedPartnerId ??
-    partner?.theme ??
+    partner?.partnerTheme ??
     (hasControlRoom || isCommunityEditionUser ? "automation-anywhere" : null);
 
   const partnerIntegrationIds = decidePartnerIntegrationIds({
@@ -213,7 +225,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
 
   const requiresIntegration =
     // Primary organization has a partner and linked control room
-    (hasPartner && Boolean(organization?.control_room)) ||
+    (hasPartner && controlRoom != null) ||
     // Partner Automation Anywhere is configured in managed storage (e.g., set by Bot Agent installer)
     managedPartnerId === "automation-anywhere" ||
     // Community edition users are required to be linked until they join an organization
@@ -227,7 +239,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     // if any, but don't require a partner integration configuration.
     return {
       hasPartner,
-      partnerKey: partner?.theme,
+      partnerKey: partner?.partnerTheme,
       requiresIntegration: false,
       hasConfiguredIntegration: false,
       isLoading: false,
@@ -237,7 +249,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
 
   return {
     hasPartner,
-    partnerKey: partner?.theme ?? managedPartnerId,
+    partnerKey: partner?.partnerTheme ?? managedPartnerId,
     requiresIntegration,
     hasConfiguredIntegration:
       requiresIntegration &&

@@ -50,10 +50,8 @@ export function transformUserOrganizationMembershipRoleResponse(
     }
 
     default: {
-      throw new Error(
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- future-proofing
-        `Invalid user organization membership role: ${response}`,
-      );
+      const role: never = response;
+      throw new Error(`Invalid user organization membership role: ${role}`);
     }
   }
 }
@@ -83,10 +81,8 @@ export function convertToLegacyUserRole(
     }
 
     default: {
-      throw new Error(
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- future-proofing
-        `Invalid user organization membership role: ${userOrganizationMembershipRole}`,
-      );
+      const role: never = userOrganizationMembershipRole;
+      throw new Error(`Invalid user organization membership role: ${role}`);
     }
   }
 }

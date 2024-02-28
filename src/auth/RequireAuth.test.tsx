@@ -17,9 +17,12 @@
 
 import React from "react";
 import RequireAuth from "@/auth/RequireAuth";
-import { mockAuthenticatedUser, mockErrorUser } from "@/testUtils/userMock";
+import {
+  mockAuthenticatedUserApiResponse,
+  mockErrorUser,
+} from "@/testUtils/userMock";
 import { render, screen } from "@/pageEditor/testHelpers";
-import { userFactory } from "@/testUtils/factories/authFactories";
+import { meApiResponseFactory } from "@/testUtils/factories/authFactories";
 import { waitFor } from "@testing-library/react";
 
 const MockLoginPage: React.VFC = () => <div>Login</div>;
@@ -30,7 +33,7 @@ beforeEach(() => {
 
 describe("RequireAuth", () => {
   test("authenticated user", async () => {
-    await mockAuthenticatedUser(userFactory());
+    await mockAuthenticatedUserApiResponse(meApiResponseFactory());
 
     render(
       <RequireAuth LoginPage={MockLoginPage}>

@@ -331,8 +331,8 @@ describe("Automation Anywhere - RunBot", () => {
     getUserDataMock.mockResolvedValue({
       partnerPrincipals: [
         {
-          control_room_url: EE_CONTROL_ROOM_URL,
-          control_room_user_id: CONTROL_ROOM_USER_ID,
+          controlRoomUrl: new URL(EE_CONTROL_ROOM_URL),
+          controlRoomUserId: CONTROL_ROOM_USER_ID,
         },
       ],
     });

@@ -18,11 +18,11 @@
 import { useSelector } from "react-redux";
 import { selectMilestones } from "@/auth/authSelectors";
 import { useMemo } from "react";
-import { type Milestone } from "@/types/contract";
 import { appApi } from "@/data/service/api";
+import { type UserMilestone } from "@/data/model/UserMilestone";
 
 type MilestoneHelpers = {
-  getMilestone: (milestoneKey: string) => Milestone;
+  getMilestone: (milestoneKey: string) => UserMilestone | undefined;
   hasMilestone: (milestoneKey: string) => boolean;
   hasEveryMilestone: (milestoneKeys: string[]) => boolean;
   isFetching: boolean;
@@ -34,21 +34,24 @@ function useMilestones(): MilestoneHelpers {
   const cachedMilestones = useSelector(selectMilestones);
   const [refetch, { data: me, isFetching, isLoading }] =
     appApi.useLazyGetMeQuery();
-  const milestones = me ? me.milestones : cachedMilestones;
+  const milestones = me ? me.userMilestones : cachedMilestones;
 
   return useMemo(() => {
-    const milestonesByKey = new Map(
-      (milestones ?? []).map((milestone) => [milestone.key, milestone]),
+    const milestonesByName = new Map(
+      (milestones ?? []).map((milestone) => [
+        milestone.milestoneName,
+        milestone,
+      ]),
     );
 
-    const getMilestone = (milestoneKey: string) =>
-      milestonesByKey.get(milestoneKey);
+    const getMilestone = (milestoneName: string) =>
+      milestonesByName.get(milestoneName);
 
-    const hasMilestone = (milestoneKey: string) =>
-      milestonesByKey.has(milestoneKey);
+    const hasMilestone = (milestoneName: string) =>
+      milestonesByName.has(milestoneName);
 
-    const hasEveryMilestone = (milestoneKeys: string[]) =>
-      milestoneKeys.every((milestoneKey) => hasMilestone(milestoneKey));
+    const hasEveryMilestone = (milestoneNames: string[]) =>
+      milestoneNames.every((milestoneName) => hasMilestone(milestoneName));
 
     return {
       getMilestone,

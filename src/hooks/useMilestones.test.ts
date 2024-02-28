@@ -18,22 +18,29 @@
 import useMilestones from "@/hooks/useMilestones";
 import { renderHook } from "@/testUtils/renderWithCommonStore";
 import { authSlice } from "@/auth/authSlice";
-import { type AuthState } from "@/auth/authTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { selectExtensionAuthState } from "@/auth/authUtils";
+import { meApiResponseFactory } from "@/testUtils/factories/authFactories";
+import { transformUserMilestoneResponse } from "@/data/model/UserMilestone";
+import { type components } from "@/types/swagger";
+import { transformMeResponse } from "@/data/model/Me";
 
-import { userFactory } from "@/testUtils/factories/authFactories";
-
-const renderUseMilestones = (milestones: AuthState["milestones"]) => {
-  const user = userFactory({
-    milestones,
+const renderUseMilestones = (
+  milestoneApiResponses: components["schemas"]["Me"]["milestones"],
+) => {
+  const user = meApiResponseFactory({
+    milestones: milestoneApiResponses,
   });
 
   appApiMock.onGet("/api/me/").reply(200, user);
 
   return renderHook(() => useMilestones(), {
     setupRedux(dispatch) {
-      dispatch(authSlice.actions.setAuth(selectExtensionAuthState(user)));
+      dispatch(
+        authSlice.actions.setAuth(
+          selectExtensionAuthState(transformMeResponse(user)),
+        ),
+      );
     },
   });
 };
@@ -87,23 +94,29 @@ describe("useMilestones", () => {
   });
 
   test("get milestone", () => {
-    const test_milestone = {
+    const test_milestone_response = {
       key: "test_milestone_1",
-      value: "foo",
+      metadata: {
+        value: "foo",
+      },
     };
     const {
       result: {
         current: { getMilestone },
       },
     } = renderUseMilestones([
-      test_milestone,
+      test_milestone_response,
       {
         key: "test_milestone_2",
-        value: "bar",
+        metadata: {
+          value: "bar",
+        },
       },
     ]);
 
-    expect(getMilestone("test_milestone_1")).toBe(test_milestone);
+    expect(getMilestone("test_milestone_1")).toStrictEqual(
+      transformUserMilestoneResponse(test_milestone_response),
+    );
     expect(getMilestone("does_not_exist")).toBeUndefined();
   });
 });

@@ -21,11 +21,14 @@ import integrationsSlice from "@/integrations/store/integrationsSlice";
 import settingsSlice from "@/store/settings/settingsSlice";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
-import { mockAnonymousUser, mockAuthenticatedUser } from "@/testUtils/userMock";
 import {
-  partnerUserFactory,
-  userFactory,
-  userOrganizationFactory,
+  mockAnonymousUser,
+  mockAuthenticatedUserApiResponse,
+} from "@/testUtils/userMock";
+import {
+  meWithPartnerApiResponseFactory,
+  meApiResponseFactory,
+  meOrganizationApiResponseFactory,
 } from "@/testUtils/factories/authFactories";
 import { renderHook } from "@/pageEditor/testHelpers";
 import { integrationConfigFactory } from "@/testUtils/factories/integrationFactories";
@@ -46,7 +49,7 @@ beforeEach(() => {
 
 describe("useRequiredPartnerAuth", () => {
   test("no partner", async () => {
-    await mockAuthenticatedUser(userFactory());
+    await mockAuthenticatedUserApiResponse(meApiResponseFactory());
 
     const { result, waitFor } = renderHook(() => useRequiredPartnerAuth());
 
@@ -63,7 +66,7 @@ describe("useRequiredPartnerAuth", () => {
   });
 
   test("require partner via settings screen", async () => {
-    await mockAuthenticatedUser(userFactory());
+    await mockAuthenticatedUserApiResponse(meApiResponseFactory());
 
     const { result, waitFor } = renderHook(() => useRequiredPartnerAuth(), {
       setupRedux(dispatch) {
@@ -91,9 +94,9 @@ describe("useRequiredPartnerAuth", () => {
   });
 
   test("requires integration", async () => {
-    await mockAuthenticatedUser(
-      partnerUserFactory({
-        organization: userOrganizationFactory({
+    await mockAuthenticatedUserApiResponse(
+      meWithPartnerApiResponseFactory({
+        organization: meOrganizationApiResponseFactory({
           control_room: {
             id: uuidv4(),
             url: "https://control-room.example.com",
@@ -139,8 +142,8 @@ describe("useRequiredPartnerAuth", () => {
   });
 
   test("requires integration for CE user", async () => {
-    await mockAuthenticatedUser(
-      partnerUserFactory({
+    await mockAuthenticatedUserApiResponse(
+      meWithPartnerApiResponseFactory({
         milestones: [{ key: "aa_community_edition_register" }],
       }),
     );
@@ -160,8 +163,8 @@ describe("useRequiredPartnerAuth", () => {
   });
 
   test("does not require integration for CE user once partner is removed", async () => {
-    await mockAuthenticatedUser(
-      userFactory({
+    await mockAuthenticatedUserApiResponse(
+      meApiResponseFactory({
         milestones: [{ key: "aa_community_edition_register" }],
       }),
     );
@@ -181,9 +184,9 @@ describe("useRequiredPartnerAuth", () => {
   });
 
   test("has required integration", async () => {
-    await mockAuthenticatedUser(
-      partnerUserFactory({
-        organization: userOrganizationFactory({
+    await mockAuthenticatedUserApiResponse(
+      meWithPartnerApiResponseFactory({
+        organization: meOrganizationApiResponseFactory({
           control_room: {
             id: uuidv4(),
             url: "https://control-room.example.com",

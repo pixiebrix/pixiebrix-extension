@@ -22,12 +22,18 @@ import {
   isValidThemeName,
   type ThemeAssets,
 } from "@/themes/themeUtils";
-import { type Me, type OrganizationTheme } from "@/types/contract";
 import { isUUID } from "@/types/helpers";
 import { getApiClient } from "@/data/service/apiClient";
 import reportError from "@/telemetry/reportError";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { getSettingsState } from "@/store/settings/settingsStorage";
+import type { components } from "@/types/swagger";
+import {
+  type OrganizationTheme,
+  transformOrganizationThemeResponse,
+} from "@/data/model/OrganizationTheme";
+import { type Me, transformMeResponse } from "@/data/model/Me";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 export const initialTheme: ThemeAssets = {
   logo: getThemeLogo(DEFAULT_THEME),
@@ -57,39 +63,43 @@ export async function getActiveTheme(): Promise<ThemeAssets> {
     const client = await getApiClient();
     const [
       { partnerId: managedPartnerId, managedOrganizationId },
-      { data: meData },
+      { data: meResponse },
       { partnerId: settingsPartnerId },
     ] = await Promise.all([
       // Enterprise managed storage, if provided, always takes precedence over the user's theme settings
       readManagedStorage(),
-      client.get<Me>("/api/me/"),
+      client.get<components["schemas"]["Me"]>("/api/me/"),
       getSettingsState(),
     ]);
 
-    let organizationTheme: OrganizationTheme;
+    const meData: Me = transformMeResponse(meResponse);
+
+    let organizationTheme: Nullishable<OrganizationTheme> = null;
     if (managedOrganizationId && isUUID(managedOrganizationId)) {
-      const { data } = await client.get<OrganizationTheme>(
+      const { data } = await client.get<
+        components["schemas"]["OrganizationTheme"]
+      >(
         // Is an unauthenticated endpoint
         `/api/organizations/${managedOrganizationId}/theme/`,
       );
-      organizationTheme = data;
-    } else if (meData.organization?.theme) {
-      organizationTheme = meData.organization?.theme;
+      organizationTheme = transformOrganizationThemeResponse(data);
+    } else if (meData.primaryOrganization?.organizationTheme) {
+      organizationTheme = meData.primaryOrganization?.organizationTheme;
     }
 
     const activeThemeName =
       managedPartnerId ??
-      meData.partner?.theme ??
+      meData.partner?.partnerTheme ??
       settingsPartnerId ??
       DEFAULT_THEME;
 
     return {
       logo: getThemeLogo(activeThemeName),
       showSidebarLogo: organizationTheme
-        ? Boolean(organizationTheme.show_sidebar_logo)
+        ? Boolean(organizationTheme.showSidebarHeaderLogo)
         : true,
-      customSidebarLogo: organizationTheme?.logo || null,
-      toolbarIcon: organizationTheme?.toolbar_icon || null,
+      customSidebarLogo: organizationTheme?.logoUrl?.href || null,
+      toolbarIcon: organizationTheme?.toolbarIconUrl?.href || null,
       themeName: isValidThemeName(activeThemeName)
         ? activeThemeName
         : DEFAULT_THEME,

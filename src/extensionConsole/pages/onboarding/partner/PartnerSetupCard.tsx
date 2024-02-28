@@ -129,7 +129,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   const controlRoomUrl =
     managedStorage.data?.controlRoomUrl ??
     hostnameToUrl(hostname) ??
-    me?.organization?.control_room?.url ??
+    me?.primaryOrganization?.controlRoom?.controlRoomUrl?.href ??
     "";
 
   const { data: installUrl } = usePartnerAppStartUrl(controlRoomUrl);
@@ -166,34 +166,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
     );
   }
 
-  if (!me?.id) {
-    return (
-      <OnboardingChecklistCard title="Set up your account">
-        <OnboardingStep
-          number={1}
-          title="Browser Extension installed"
-          completed
-        />
-        <OnboardingStep
-          number={2}
-          title="Link the extension to a PixieBrix account"
-          active
-        >
-          <Button
-            className="btn btn-primary mt-2"
-            // The async state for installUrl will be ready by the time the button is rendered/clicked
-            href={installUrl}
-            data-testid="link-account-btn"
-          >
-            <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
-          </Button>
-        </OnboardingStep>
-        <OnboardingStep number={3} title="Connect your AARI account" />
-      </OnboardingChecklistCard>
-    );
-  }
-
-  return (
+  return me ? (
     <OnboardingChecklistCard title="Set up your account">
       <OnboardingStep
         number={1}
@@ -211,6 +184,29 @@ const PartnerSetupCard: React.FunctionComponent = () => {
           key={controlRoomUrl}
         />
       </OnboardingStep>
+    </OnboardingChecklistCard>
+  ) : (
+    <OnboardingChecklistCard title="Set up your account">
+      <OnboardingStep
+        number={1}
+        title="Browser Extension installed"
+        completed
+      />
+      <OnboardingStep
+        number={2}
+        title="Link the extension to a PixieBrix account"
+        active
+      >
+        <Button
+          className="btn btn-primary mt-2"
+          // The async state for installUrl will be ready by the time the button is rendered/clicked
+          href={installUrl}
+          data-testid="link-account-btn"
+        >
+          <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
+        </Button>
+      </OnboardingStep>
+      <OnboardingStep number={3} title="Connect your AARI account" />
     </OnboardingChecklistCard>
   );
 };

@@ -21,12 +21,15 @@ import { render } from "@/sidebar/testHelpers";
 import { authActions } from "@/auth/authSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { MemoryRouter } from "react-router";
-import { mockAnonymousUser, mockAuthenticatedUser } from "@/testUtils/userMock";
+import {
+  mockAnonymousUser,
+  mockAuthenticatedUserApiResponse,
+} from "@/testUtils/userMock";
 import useLinkState from "@/auth/useLinkState";
 import {
   authStateFactory,
-  partnerUserFactory,
-  userFactory,
+  meWithPartnerApiResponseFactory,
+  meApiResponseFactory,
 } from "@/testUtils/factories/authFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 
@@ -75,7 +78,7 @@ describe("SidebarApp", () => {
 
   test("renders not connected partner view", async () => {
     // Is this a real state? The use in meQueryState couldn't be set if hasToken is `false`
-    await mockAuthenticatedUser(partnerUserFactory());
+    await mockAuthenticatedUserApiResponse(meWithPartnerApiResponseFactory());
     useLinkStateMock.mockReturnValue({
       hasToken: false,
       tokenLoading: false,
@@ -93,7 +96,7 @@ describe("SidebarApp", () => {
   });
 
   test("renders", async () => {
-    await mockAuthenticatedUser(userFactory());
+    await mockAuthenticatedUserApiResponse(meApiResponseFactory());
 
     const { asFragment } = render(
       <MemoryRouter>

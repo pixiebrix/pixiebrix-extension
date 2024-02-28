@@ -25,11 +25,11 @@ import { getActiveTheme } from "@/themes/themeStore";
 import { type AxiosError } from "axios";
 import reportError from "@/telemetry/reportError";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { mockAuthenticatedUser } from "@/testUtils/userMock";
+import { mockAuthenticatedUserApiResponse } from "@/testUtils/userMock";
 import {
-  partnerUserFactory,
-  userFactory,
-  userOrganizationFactory,
+  meWithPartnerApiResponseFactory,
+  meApiResponseFactory,
+  meOrganizationApiResponseFactory,
 } from "@/testUtils/factories/authFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 
@@ -52,7 +52,7 @@ describe("getActiveTheme", () => {
           toolbar_icon: "some_managed_icon.svg",
         });
 
-      await mockAuthenticatedUser(userFactory());
+      await mockAuthenticatedUserApiResponse(meApiResponseFactory());
 
       await browser.storage.managed.set({
         partnerId: "automation-anywhere",
@@ -92,9 +92,9 @@ describe("getActiveTheme", () => {
 
   describe("the user has a primary organization defined and managed storage not present", () => {
     beforeEach(async () => {
-      await mockAuthenticatedUser(
-        partnerUserFactory({
-          organization: userOrganizationFactory({
+      await mockAuthenticatedUserApiResponse(
+        meWithPartnerApiResponseFactory({
+          organization: meOrganizationApiResponseFactory({
             theme: {
               show_sidebar_logo: true,
               logo: "myPrimaryOrglogo.svg",
@@ -125,7 +125,7 @@ describe("getActiveTheme", () => {
 
   describe("local settings defines a partner value; managed storage and user org/partner not present", () => {
     beforeEach(async () => {
-      await mockAuthenticatedUser(userFactory());
+      await mockAuthenticatedUserApiResponse(meApiResponseFactory());
 
       // `initialSettingsState` partnerId is by default null
       await saveSettingsState({
@@ -151,7 +151,7 @@ describe("getActiveTheme", () => {
 
   describe("no other theme data sources are present", () => {
     beforeEach(async () => {
-      await mockAuthenticatedUser(userFactory());
+      await mockAuthenticatedUserApiResponse(meApiResponseFactory());
 
       // `initialSettingsState` partnerId is by default null
       await saveSettingsState(initialSettingsState);

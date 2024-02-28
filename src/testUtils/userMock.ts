@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Me } from "@/types/contract";
 import {
   tokenAuthDataFactory,
-  userFactory,
+  meApiResponseFactory,
 } from "@/testUtils/factories/authFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { TEST_setAuthData } from "@/auth/authStorage";
+import type { components } from "@/types/swagger";
 
 // In existing code, there was a lot of places mocking both useQueryState and useGetMeQuery. This could in some places
 // yield impossible states due to how `skip` logic in calls like RequireAuth, etc.
@@ -33,8 +33,10 @@ export function mockAnonymousUser(): void {
   });
 }
 
-export async function mockAuthenticatedUser(me?: Me): Promise<void> {
-  const user = me ?? userFactory();
+export async function mockAuthenticatedUserApiResponse(
+  me?: components["schemas"]["Me"],
+): Promise<void> {
+  const user = me ?? meApiResponseFactory();
   appApiMock.onGet("/api/me/").reply(200, user);
   const tokenData = tokenAuthDataFactory({
     email: user.email,

@@ -31,9 +31,7 @@ import {
   isInitialized as isManagedStorageInitialized,
 } from "@/store/enterprise/managedStorage";
 import { Events } from "@/telemetry/events";
-
 import { DEFAULT_SERVICE_URL, UNINSTALL_URL } from "@/urlConstants";
-
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 
@@ -184,7 +182,7 @@ export async function requirePartnerAuth(): Promise<void> {
 
     console.debug("requirePartnerAuth", userData);
 
-    if (userData.partner?.theme === "automation-anywhere") {
+    if (userData.partner?.partnerTheme === "automation-anywhere") {
       const configs = await serviceLocator.locateAllForService(
         CONTROL_ROOM_TOKEN_INTEGRATION_ID,
       );

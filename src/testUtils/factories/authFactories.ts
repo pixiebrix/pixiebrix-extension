@@ -24,15 +24,17 @@ import {
   type UserData,
 } from "@/auth/authTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { type Me, type Milestone, UserRole } from "@/types/contract";
+import { UserRole } from "@/types/contract";
 import { type AuthData } from "@/integrations/integrationTypes";
+import { UserMilestone } from "@/data/model/UserMilestone";
+import type { components } from "@/types/swagger";
 
 function emailFactory(n: number): string {
   return `user${n}@test.com`;
 }
 
 /**
- * @see userOrganizationFactory
+ * @see meOrganizationApiResponseFactory
  */
 export const organizationStateFactory = define<AuthUserOrganization>({
   id: uuidSequence,
@@ -47,7 +49,7 @@ export const organizationStateFactory = define<AuthUserOrganization>({
 });
 
 /**
- * @see userFactory
+ * @see meApiResponseFactory
  */
 export const authStateFactory = define<AuthState>({
   userId: uuidSequence,
@@ -97,12 +99,14 @@ export const authStateFactory = define<AuthState>({
     const groups: AuthState["groups"] = [];
     return groups;
   },
-  milestones(): Milestone[] {
+  milestones(): UserMilestone[] {
     return [];
   },
 });
 
-export const userOrganizationFactory = define<Me["organization"]>({
+export const meOrganizationApiResponseFactory = define<
+  components["schemas"]["Me"]["organization"]
+>({
   id: uuidSequence,
   name(n: number): string {
     return `Test Organization ${n}`;
@@ -114,20 +118,24 @@ export const userOrganizationFactory = define<Me["organization"]>({
   theme: null,
 });
 
-export const userFactory = define<Me>({
+export const meApiResponseFactory = define<components["schemas"]["Me"]>({
   id: uuidSequence,
   email: emailFactory,
   scope: (n: number) => `@user${n}`,
-  flags: (): Me["flags"] => [],
+  flags: (): components["schemas"]["Me"]["flags"] => [],
   is_onboarded: true,
   organization: null,
   telemetry_organization: null,
-  organization_memberships: (): Me["organization_memberships"] => [],
-  group_memberships: (): Me["group_memberships"] => [],
-  milestones: (): Me["milestones"] => [],
+  organization_memberships:
+    (): components["schemas"]["Me"]["organization_memberships"] => [],
+  group_memberships: (): components["schemas"]["Me"]["group_memberships"] => [],
+  milestones: (): components["schemas"]["Me"]["milestones"] => [],
 });
 
-export const partnerUserFactory = extend<Me, Me>(userFactory, {
+export const meWithPartnerApiResponseFactory = extend<
+  components["schemas"]["Me"],
+  components["schemas"]["Me"]
+>(meApiResponseFactory, {
   partner: () => ({
     name: "Automation Anywhere",
     theme: "automation-anywhere",

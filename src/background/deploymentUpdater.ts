@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Deployment, type Me } from "@/types/contract";
+import { type Deployment } from "@/types/contract";
 import { isEmpty, partition } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { getUUID } from "@/telemetry/telemetryHelpers";
@@ -67,6 +67,9 @@ import { type OptionsArgs } from "@/types/runtimeTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { Events } from "@/telemetry/events";
 import { allSettled } from "@/utils/promiseUtils";
+import type { components } from "@/types/swagger";
+import { type Me, transformMeResponse } from "@/data/model/Me";
+import { flagOn } from "@/auth/featureFlagStorage";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
@@ -456,15 +459,16 @@ export async function updateDeployments(): Promise<void> {
     return;
   }
 
-  const { data: profile, status: profileResponseStatus } =
-    await client.get<Me>("/api/me/");
+  const { data: profileResponse, status: profileResponseStatus } =
+    await client.get<components["schemas"]["Me"]>("/api/me/");
+  const meData: Me = transformMeResponse(profileResponse);
 
   const { isSnoozed, isUpdateOverdue, updatePromptTimestamp } =
     selectUpdatePromptState(
       { settings },
       {
         now,
-        enforceUpdateMillis: profile.enforce_update_millis,
+        enforceUpdateMillis: meData.enforceUpdateMillis,
       },
     );
 
@@ -478,7 +482,7 @@ export async function updateDeployments(): Promise<void> {
   }
 
   // Ensure the user's flags and telemetry information is up-to-date
-  void updateUserData(selectUserDataUpdate(profile));
+  void updateUserData(selectUserDataUpdate(meData));
 
   const { data: deployments, status: deploymentResponseStatus } =
     await client.post<Deployment[]>("/api/deployments/", {
@@ -502,12 +506,12 @@ export async function updateDeployments(): Promise<void> {
   // Using the restricted-uninstall flag as a proxy for whether the user is a restricted user. The flag currently
   // corresponds to whether the user is a restricted user vs. developer
   const updatedDeployments = await selectUpdatedDeployments(deployments, {
-    restricted: profile.flags.includes("restricted-uninstall"),
+    restricted: await flagOn("restricted-uninstall"),
   });
 
   if (
     isSnoozed &&
-    profile.enforce_update_millis &&
+    meData.enforceUpdateMillis &&
     updatePromptTimestamp == null &&
     (isUpdateAvailable() || updatedDeployments.length > 0)
   ) {
@@ -523,9 +527,7 @@ export async function updateDeployments(): Promise<void> {
 
   if (
     isUpdateAvailable() &&
-    // `restricted-version` is an implicit flag from the MeSerializer
-    (profile.flags.includes("restricted-version") ||
-      profile.enforce_update_millis)
+    ((await flagOn("restricted-version")) || meData.enforceUpdateMillis)
   ) {
     console.info("Extension update available from the web store");
     // Have the user update their browser extension. (Since the new version might impact the deployment activation)

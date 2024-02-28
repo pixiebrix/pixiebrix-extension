@@ -37,7 +37,7 @@ import {
   defaultModDefinitionFactory,
   getModDefinitionWithBuiltInIntegrationConfigs,
 } from "@/testUtils/factories/modDefinitionFactories";
-import { userOrganizationFactory } from "@/testUtils/factories/authFactories";
+import { meOrganizationApiResponseFactory } from "@/testUtils/factories/authFactories";
 import { remoteIntegrationConfigurationFactory } from "@/testUtils/factories/integrationFactories";
 
 const axiosMock = new MockAdapter(axios);
@@ -91,7 +91,7 @@ describe("debouncedInstallStarterMods", () => {
     axiosMock.onGet("/api/services/shared/?meta=1").reply(200, [
       remoteIntegrationConfigurationFactory(),
       remoteIntegrationConfigurationFactory({
-        organization: userOrganizationFactory(),
+        organization: meOrganizationApiResponseFactory(),
       }),
       remoteIntegrationConfigurationFactory({ user: uuidv4() }),
     ]);

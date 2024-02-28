@@ -114,7 +114,7 @@ const useOnboardingTabs = (tableInstance: TableInstance<ModViewItem>) => {
   const onboardingModId = getMilestone("first_time_public_blueprint_install")
     ?.metadata?.blueprintId as RegistryId;
 
-  const isFreemiumUser = !me?.organization;
+  const isFreemiumUser = !me?.primaryOrganization;
 
   const hasSomeModEngagement = modViewItems?.some((modViewItem) => {
     if (modViewItem.sharing.source.type === "Personal") {

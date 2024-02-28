@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { Me, PackageVersionUpdates } from "@/types/contract";
+import type { PackageVersionUpdates } from "@/types/contract";
 import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import reportError from "@/telemetry/reportError";
 import {
@@ -40,6 +40,7 @@ import { collectModOptions } from "@/store/extensionsUtils";
 import type { ModComponentState } from "@/store/extensionsTypes";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
+import { flagOn } from "@/auth/featureFlagStorage";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
@@ -65,12 +66,10 @@ export async function autoModUpdatesEnabled(): Promise<boolean> {
   }
 
   try {
-    const { data: profile } = await client.get<Me>("/api/me/");
-
-    return profile.flags.includes("automatic-mod-updates");
+    return await flagOn("automatic-mod-updates");
   } catch (error) {
     console.debug(
-      "Skipping automatic mod updates because /api/me/ request failed",
+      "Skipping automatic mod updates because feature flags request failed",
     );
     reportError(error);
     return false;

@@ -21,18 +21,27 @@ export type UserMilestone = {
   /**
    * A lower-snake-case, human-readible identifier for the Milestone, e.g. "first_time_extension_install"
    */
-  milestoneIdentifier: string;
+  milestoneName: string;
   /**
    * Optional additional information to provide context about the Milestone
    */
-  metadata: Record<string, unknown>;
+  metadata: UnknownObject;
 };
 
 export function transformUserMilestoneResponse(
   response: components["schemas"]["Me"]["milestones"][number],
 ): UserMilestone {
   return {
-    milestoneIdentifier: response.key,
+    milestoneName: response.key,
     metadata: response.metadata ?? {},
+  };
+}
+
+export function transformUserMilestoneRequest(
+  milestone: UserMilestone,
+): components["schemas"]["Me"]["milestones"][number] {
+  return {
+    key: milestone.milestoneName,
+    metadata: milestone.metadata,
   };
 }
