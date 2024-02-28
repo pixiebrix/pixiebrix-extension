@@ -36,6 +36,7 @@
     "./auth/authStorage.ts",
     "./auth/authTypes.ts",
     "./auth/authUtils.ts",
+    "./auth/featureFlagStorage.ts",
     "./auth/useLinkState.ts",
     "./background/auth/authStorage.ts",
     "./background/auth/codeGrantFlow.ts",

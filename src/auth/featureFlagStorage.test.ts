@@ -24,7 +24,7 @@ import {
 import { appApiMock } from "@/testUtils/appApiMock";
 import { TEST_setAuthData, TEST_triggerListeners } from "@/auth/authStorage";
 import { tokenAuthDataFactory } from "@/testUtils/factories/authFactories";
-import { fetchFeatureFlagsInBackground } from "@/background/messenger/api";
+import { fetchFeatureFlagsInBackground } from "@/background/messenger/strict/api";
 
 describe("featureFlags", () => {
   beforeEach(async () => {
