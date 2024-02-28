@@ -38,3 +38,45 @@ jobs:
               });
               process.exitCode = 1;
             }
+  lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: package-lock.json
+      - name: Detect changes
+        id: stats
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          STAT="$(git diff --numstat origin/${{ github.base_ref }}..HEAD -- package-lock.json)"
+          DELETED=$(echo $STAT | cut -d " " -f 1)
+          ADDED=$(echo $STAT | cut -d " " -f 2)
+          TOTAL_CHANGES=$((DELETED + ADDED))
+          echo "STAT=$STAT"
+          echo "DELETED=$DELETED"
+          echo "ADDED=$ADDED"
+          echo "TOTAL_CHANGES=$TOTAL_CHANGES"
+          echo "changes=$TOTAL_CHANGES" >> $GITHUB_OUTPUT
+      - if: steps.stats.outputs.changes <= 1000
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: lockfile # Unique identifier for the comment
+          hide: true
+      - if: steps.stats.outputs.changes > 1000
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: lockfile # Unique identifier for the comment
+          recreate: true
+          message: |
+            ## ⚠️ Large diff for package-lock.json
+
+            There are ${{ steps.stats.outputs.changes }} line changes in package-lock.json. This should not happen unless you're updating a lot of dependencies at once. Regenerating the lockfile should not be necessary.
+
+            If you're seeing Vercel deployment failures, this is likely the cause. Run these commands to reset these changes:
+
+            ```sh
+            git checkout origin/main -- package-lock.json
+            npm install
+            ```
+      - if: steps.stats.outputs.changes > 1000
+        run: exit 1
