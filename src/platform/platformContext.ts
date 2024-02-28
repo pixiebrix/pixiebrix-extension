@@ -15,10 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { type PlatformProtocol } from "@/platform/platformProtocol";
 import {
-  type PlatformProtocol,
-  uninitializedPlatform,
-} from "@/platform/platformProtocol";
+  type PlatformCapability,
+  PlatformCapabilityNotAvailableError,
+} from "@/platform/capabilities";
+import { PlatformBase } from "@/platform/platformBase";
+import { validateSemVerString } from "@/types/helpers";
+
+/**
+ * A platform protocol with no available capabilities.
+ */
+export const uninitializedPlatform = new PlatformBase(
+  "uninitialized",
+  validateSemVerString("0.0.0"),
+);
 
 /**
  * @file defines an explicit platform protocol
@@ -27,7 +38,7 @@ import {
 let platform: PlatformProtocol = uninitializedPlatform;
 
 /**
- * Get the current platform.
+ * Get the current global platform. Prefer injecting via constructor/options vs. using the global platform.
  */
 export function getPlatform(): PlatformProtocol {
   return platform;
@@ -39,4 +50,25 @@ export function getPlatform(): PlatformProtocol {
  */
 export function setPlatform(platformProtocol: PlatformProtocol): void {
   platform = platformProtocol;
+}
+
+/**
+ * Assert that the global platform supports a capability.
+ *
+ * For web-extension context checks, use expectContext
+ *
+ * Use instead of expectContext for platform capabilities.
+ *
+ * @param capability the platform capability to assert
+ * @see expectContext
+ * @throws PlatformCapabilityNotAvailableError if the capability is not available
+ * @since 1.8.10
+ */
+export function assertPlatformCapability(capability: PlatformCapability): void {
+  if (!platform.capabilities.includes(capability)) {
+    throw new PlatformCapabilityNotAvailableError(
+      platform.platformName,
+      capability,
+    );
+  }
 }

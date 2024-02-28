@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line no-restricted-imports
-import MemoryRegistry from "../registry/memoryRegistry";
+import MemoryRegistry from "@/registry/memoryRegistry";
 import { fromJS } from "@/bricks/transformers/brickFactory";
 import { type BrickType } from "@/runtime/runtimeTypes";
 import getType from "@/runtime/getType";

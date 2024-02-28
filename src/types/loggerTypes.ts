@@ -48,6 +48,11 @@ export type MessageContext = {
   readonly serviceVersion?: SemVerString;
   readonly authId?: UUID;
   readonly pageName?: ContextName | "unknown";
+  /**
+   * The platform name
+   * @since 1.8.10
+   */
+  readonly platformName?: string;
 };
 
 export interface Logger {

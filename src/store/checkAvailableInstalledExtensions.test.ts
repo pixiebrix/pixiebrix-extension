@@ -37,6 +37,7 @@ import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFa
 import { standaloneModDefinitionFactory } from "@/testUtils/factories/modComponentFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { getCurrentInspectedURL } from "@/pageEditor/context/connection";
+import { getPlatform } from "@/platform/platformContext";
 
 jest.mock("@/contentScript/messenger/api");
 
@@ -85,6 +86,7 @@ describe("checkAvailableInstalledExtensions", () => {
       },
     }) as StarterBrickConfig<MenuDefinition>;
     const availableButtonExtensionPoint = new RemoteMenuItemExtensionPoint(
+      getPlatform(),
       availableButtonStarterBrickConfig,
     );
 
@@ -108,6 +110,7 @@ describe("checkAvailableInstalledExtensions", () => {
       },
     }) as StarterBrickConfig<QuickBarDefinition>;
     const availableQuickbarExtensionPoint = new RemoteQuickBarExtensionPoint(
+      getPlatform(),
       availableQuickbarStarterBrickConfig,
     );
     jest

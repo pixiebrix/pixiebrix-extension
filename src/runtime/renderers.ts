@@ -71,7 +71,7 @@ export function engineRenderer(
           key.replaceAll("-", "_"),
         );
 
-        return getPlatform().template.render({
+        return getPlatform().templates.render({
           engine: "nunjucks",
           template,
           context: snakeCased as JsonObject,
@@ -87,7 +87,7 @@ export function engineRenderer(
           return template;
         }
 
-        return getPlatform().template.render({
+        return getPlatform().templates.render({
           engine: "handlebars",
           template,
           context: ctxt as JsonObject,

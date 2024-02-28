@@ -53,7 +53,6 @@ import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { HeadlessModeError } from "@/bricks/errors";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import {
   inputProperties,
@@ -379,7 +378,8 @@ class UserDefinedBrick extends BrickABC {
         return renderer.run(continuation.args, {
           ...options,
           ctxt: continuation.ctxt,
-          logger: new BackgroundLogger(continuation.loggerContext),
+          // XXX: should this a fresh logger for the platform?
+          logger: options.logger.childLogger(continuation.loggerContext),
         });
       }
 

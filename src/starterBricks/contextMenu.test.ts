@@ -34,6 +34,7 @@ import {
   uninstallContextMenu,
   ensureContextMenu,
 } from "@/background/messenger/api";
+import { getPlatform } from "@/platform/platformContext";
 
 const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);
 const ensureContextMenuMock = jest.mocked(ensureContextMenu);
@@ -87,7 +88,7 @@ beforeEach(() => {
 
 describe("contextMenu", () => {
   it("should add extension once", async () => {
-    const starterBrick = fromJS(extensionPointFactory()());
+    const starterBrick = fromJS(getPlatform(), extensionPointFactory()());
     const modComponent = extensionFactory();
 
     starterBrick.registerModComponent(modComponent);
@@ -97,20 +98,20 @@ describe("contextMenu", () => {
   });
 
   it("should include context menu props in schema", async () => {
-    const starterBrick = fromJS(extensionPointFactory()());
+    const starterBrick = fromJS(getPlatform(), extensionPointFactory()());
     const reader = await starterBrick.defaultReader();
     expect(reader.outputSchema.properties).toHaveProperty("selectionText");
   });
 
   it("should include context menu props in preview", async () => {
-    const starterBrick = fromJS(extensionPointFactory()());
+    const starterBrick = fromJS(getPlatform(), extensionPointFactory()());
     const reader = await starterBrick.previewReader();
     const value = await reader.read(document);
     expect(value).toHaveProperty("selectionText");
   });
 
   it("should register context menu on run", async () => {
-    const starterBrick = fromJS(extensionPointFactory()());
+    const starterBrick = fromJS(getPlatform(), extensionPointFactory()());
     const modComponent = extensionFactory();
 
     starterBrick.registerModComponent(modComponent);
@@ -130,7 +131,7 @@ describe("contextMenu", () => {
   });
 
   it("should remove from UI from all tabs on sync", async () => {
-    const starterBrick = fromJS(extensionPointFactory()());
+    const starterBrick = fromJS(getPlatform(), extensionPointFactory()());
     const modComponent = extensionFactory();
     starterBrick.registerModComponent(modComponent);
 
