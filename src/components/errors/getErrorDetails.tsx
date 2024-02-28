@@ -43,7 +43,6 @@ type ErrorDetails = {
 export default function getErrorDetails(error: ErrorObject): ErrorDetails {
   const noElementsFoundError = selectSpecificError(error, NoElementsFoundError);
   if (noElementsFoundError) {
-    console.log({ noElementsFoundError, error });
     return {
       title: "No elements found for selector",
       detailsElement: (
@@ -57,7 +56,6 @@ export default function getErrorDetails(error: ErrorObject): ErrorDetails {
     MultipleElementsFoundError,
   );
   if (multipleElementsFoundError) {
-    console.log({ multipleElementsFoundError });
     return {
       title: "Multiple elements found for selector",
       detailsElement: (
