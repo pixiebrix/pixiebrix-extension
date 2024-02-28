@@ -657,7 +657,6 @@
     "./vendors/reactPerformanceTesting/utils/shouldTrack.ts",
     "./vendors/reactPerformanceTesting/utils/symbols.ts",
     "./vendors/validateUuid.ts",
-    "./components/errors/MultipleElementsFoundErrorDetail.tsx",
-    "./components/errors/NoElementsFoundErrorDetail.tsx"
+    "./components/errors/InvalidSelectorErrorDetail.tsx"
   ]
 }
