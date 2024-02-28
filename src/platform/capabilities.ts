@@ -33,6 +33,10 @@ export const platformCapabilities = [
   "panel",
   // Show a non-blocking notification/toast
   "toast",
+  // Runtime logs
+  "logs",
+  // Runtime debugging/tracing
+  "debugger",
   // Run sandboxed Javascript code. Sandboxed JS does not have access to the DOM.
   "sandbox",
   // Write to the clipboard
@@ -80,8 +84,8 @@ export const PAGE_SCRIPT_CAPABILITIES: PlatformCapability[] = [
 /**
  * Runtime Error indicating a capability is not available on the platform.
  */
-export class PlatformCapabilityNotAvailable extends Error {
-  override name = "PlatformCapabilityNotAvailable";
+export class PlatformCapabilityNotAvailableError extends Error {
+  override name = "PlatformCapabilityNotAvailableError";
 
   constructor(
     readonly platformName: string,

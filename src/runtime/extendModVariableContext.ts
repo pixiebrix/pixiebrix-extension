@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expectContext } from "@/utils/expectContext";
 import { getState } from "@/platform/state/stateController";
 import { type RegistryId } from "@/types/registryTypes";
 import apiVersionOptions, {
@@ -24,6 +23,7 @@ import apiVersionOptions, {
 import { pickBy } from "lodash";
 import { type ApiVersion } from "@/types/runtimeTypes";
 import { validateUUID } from "@/types/helpers";
+import { assertPlatformCapability } from "@/platform/platformContext";
 
 /**
  * Variable for accessing the mod Page State.
@@ -114,7 +114,7 @@ function extendModVariableContext<T extends UnknownObject = UnknownObject>(
     options: Pick<ApiVersionOptions, "extendModVariable">;
   },
 ): ExtendedContext<T> {
-  expectContext("contentScript");
+  assertPlatformCapability("state");
 
   // For backward compatability, don't overwrite for older versions of the runtime. It should generally be safe, but
   // there may be some edge cases especially with implicit data flow.

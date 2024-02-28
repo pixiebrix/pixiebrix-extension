@@ -44,11 +44,12 @@ import {
   throwBrick,
   ThrowBrick,
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import notify from "@/utils/notify";
+import { showNotification } from "@/utils/notify";
 import { notifyContextInvalidated } from "@/errors/contextInvalidated";
 import reportError from "@/telemetry/reportError";
 import { screen } from "@testing-library/react";
 import type { Trigger } from "@/starterBricks/triggerExtensionTypes";
+import { getPlatform } from "@/platform/platformContext";
 
 // Avoid errors being interpreted as context invalidated error
 browser.runtime.id = "abcxyz";
@@ -74,7 +75,7 @@ jest.mock("@/errors/contextInvalidated", () => {
 jest.mock("@/utils/notify");
 
 const reportErrorMock = jest.mocked(reportError);
-const notifyErrorMock = jest.mocked(notify.error);
+const showNotificationMock = jest.mocked(showNotification);
 const notifyContextInvalidatedMock = jest.mocked(notifyContextInvalidated);
 
 const extensionPointFactory = (definitionOverrides: UnknownObject = {}) =>
@@ -124,7 +125,7 @@ beforeEach(() => {
   window.document.body.innerHTML = "";
   document.body.innerHTML = "";
   reportErrorMock.mockReset();
-  notifyErrorMock.mockReset();
+  showNotificationMock.mockReset();
   notifyContextInvalidatedMock.mockReset();
   blockRegistry.clear();
   blockRegistry.register([rootReader, new InvalidContextReader(), throwBrick]);
@@ -137,6 +138,7 @@ describe("triggerExtension", () => {
     "runs page load trigger",
     async (trigger) => {
       const extensionPoint = fromJS(
+        getPlatform(),
         extensionPointFactory({
           trigger,
         })(),
@@ -161,6 +163,7 @@ describe("triggerExtension", () => {
     hidden = true;
 
     const extensionPoint = fromJS(
+      getPlatform(),
       extensionPointFactory({
         trigger: "load",
         background: false,
@@ -195,6 +198,7 @@ describe("triggerExtension", () => {
     hidden = false;
 
     const extensionPoint = fromJS(
+      getPlatform(),
       extensionPointFactory({
         trigger: "load",
         background: false,
@@ -225,6 +229,7 @@ describe("triggerExtension", () => {
       ).body.innerHTML;
 
       const extensionPoint = fromJS(
+        getPlatform(),
         extensionPointFactory({
           trigger: "click",
           attachMode,
@@ -276,6 +281,7 @@ describe("triggerExtension", () => {
       ).body.innerHTML;
 
       const extensionPoint = fromJS(
+        getPlatform(),
         extensionPointFactory({
           trigger: "click",
           targetMode,
@@ -310,6 +316,7 @@ describe("triggerExtension", () => {
     ).body.innerHTML;
 
     const extensionPoint = fromJS(
+      getPlatform(),
       extensionPointFactory({
         trigger: "click",
         targetMode: "root",
@@ -343,6 +350,7 @@ describe("triggerExtension", () => {
     ).body.innerHTML;
 
     const extensionPoint = fromJS(
+      getPlatform(),
       extensionPointFactory({
         trigger: "keypress",
         rootSelector: "input",
@@ -374,6 +382,7 @@ describe("triggerExtension", () => {
     ).body.innerHTML;
 
     const extensionPoint = fromJS(
+      getPlatform(),
       extensionPointFactory({
         trigger: "hover",
         rootSelector: "button",
@@ -404,6 +413,7 @@ describe("triggerExtension", () => {
 
   it("includes selection change reader schema", async () => {
     const extensionPoint = fromJS(
+      getPlatform(),
       extensionPointFactory({
         trigger: "selectionchange",
       })(),
@@ -419,6 +429,7 @@ describe("triggerExtension", () => {
 
   it("includes custom event schema", async () => {
     const extensionPoint = fromJS(
+      getPlatform(),
       extensionPointFactory({
         trigger: "custom",
       })(),
@@ -432,6 +443,7 @@ describe("triggerExtension", () => {
 
   it("includes keyboard event schema", async () => {
     const extensionPoint = fromJS(
+      getPlatform(),
       extensionPointFactory({
         trigger: "keypress",
       })(),
@@ -445,6 +457,7 @@ describe("triggerExtension", () => {
 
   it("excludes event for mouse click", async () => {
     const extensionPoint = fromJS(
+      getPlatform(),
       extensionPointFactory({
         trigger: "click",
       })(),
@@ -458,6 +471,7 @@ describe("triggerExtension", () => {
     "smoke test for preview %s",
     async (trigger) => {
       const extensionPoint = fromJS(
+        getPlatform(),
         extensionPointFactory({
           trigger,
         })(),
@@ -476,6 +490,7 @@ describe("triggerExtension", () => {
 
   it("ignores context invalidated error for non user-action trigger in reader", async () => {
     const extensionPoint = fromJS(
+      getPlatform(),
       extensionPointFactory({
         trigger: "load",
         reader: () => [InvalidContextReader.BRICK_ID],
@@ -491,7 +506,7 @@ describe("triggerExtension", () => {
     await extensionPoint.install();
     await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
-    expect(notifyErrorMock).not.toHaveBeenCalled();
+    expect(showNotificationMock).not.toHaveBeenCalled();
   });
 
   it("shows context invalidated for user action if showErrors: true", async () => {
@@ -500,6 +515,7 @@ describe("triggerExtension", () => {
     ).body.innerHTML;
 
     const extensionPoint = fromJS(
+      getPlatform(),
       extensionPointFactory({
         trigger: "click",
         rootSelector: "button",
@@ -524,7 +540,7 @@ describe("triggerExtension", () => {
     await tick();
 
     // Should not be called directly
-    expect(notifyErrorMock).not.toHaveBeenCalled();
+    expect(showNotificationMock).not.toHaveBeenCalled();
 
     // It's a user action, so it should show on each user action
     expect(notifyContextInvalidatedMock).toHaveBeenCalledTimes(2);
@@ -532,6 +548,7 @@ describe("triggerExtension", () => {
 
   it("reports only the first brick error for reportMode: once", async () => {
     const extensionPoint = fromJS(
+      getPlatform(),
       extensionPointFactory({
         trigger: "load",
         reportMode: "once",
@@ -556,7 +573,8 @@ describe("triggerExtension", () => {
 
     expect(reportErrorMock).toHaveBeenCalledTimes(1);
 
-    expect(notifyErrorMock).toHaveBeenCalledExactlyOnceWith({
+    expect(showNotificationMock).toHaveBeenCalledExactlyOnceWith({
+      type: "error",
       message: "An error occurred running a trigger",
       reportError: false,
       error: expect.toBeObject(),
@@ -565,6 +583,7 @@ describe("triggerExtension", () => {
 
   it("reports all brick errors for reportMode: all, showErrors: true", async () => {
     const extensionPoint = fromJS(
+      getPlatform(),
       extensionPointFactory({
         trigger: "load",
         reportMode: "all",
@@ -588,11 +607,12 @@ describe("triggerExtension", () => {
     await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     expect(reportErrorMock).toHaveBeenCalledTimes(2);
-    expect(notifyErrorMock).toHaveBeenCalledTimes(2);
+    expect(showNotificationMock).toHaveBeenCalledTimes(2);
   });
 
   it("does not display error notifications for reportMode: all, showErrors: default", async () => {
     const extensionPoint = fromJS(
+      getPlatform(),
       extensionPointFactory({
         trigger: "load",
         reportMode: "all",
@@ -617,7 +637,7 @@ describe("triggerExtension", () => {
     await extensionPoint.runModComponents({ reason: RunReason.MANUAL });
 
     expect(reportErrorMock).toHaveBeenCalledTimes(2);
-    expect(notifyErrorMock).toHaveBeenCalledTimes(0);
+    expect(showNotificationMock).toHaveBeenCalledTimes(0);
   });
 });
 

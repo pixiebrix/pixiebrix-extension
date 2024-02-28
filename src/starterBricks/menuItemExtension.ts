@@ -35,17 +35,12 @@ import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
-import { type Logger } from "@/types/loggerTypes";
 import { type Metadata } from "@/types/registryTypes";
 import { propertiesToSchema } from "@/validators/generic";
 import { type Permissions } from "webextension-polyfill";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import notify, {
-  DEFAULT_ACTION_RESULTS,
-  type MessageConfig,
-  showNotification,
-} from "@/utils/notify";
+import { type MessageConfig } from "@/utils/notify";
 import { getNavigationId } from "@/contentScript/context";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { selectEventData } from "@/telemetry/deployments";
@@ -59,7 +54,6 @@ import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import sanitize from "@/utils/sanitize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/domConstants";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import reportError from "@/telemetry/reportError";
 import pluralize from "@/utils/pluralize";
 import {
@@ -91,6 +85,8 @@ import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
 } from "@/platform/capabilities";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -229,13 +225,17 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   >();
 
   private readonly notifyError = debounce(
-    notify.error,
+    (payload: Parameters<PlatformProtocol["toasts"]["showNotification"]>[0]) =>
+      this.platform.toasts.showNotification({
+        type: "error",
+        ...payload,
+      }),
     MENU_INSTALL_ERROR_DEBOUNCE_MS,
     {
       leading: true,
       trailing: false,
     },
-  ) as typeof notify.error; // `debounce` loses the overloads
+  ) as PlatformProtocol["toasts"]["showNotification"]; // `debounce` loses the overloads
 
   public get kind(): "menuItem" {
     return "menuItem";
@@ -251,8 +251,8 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     return { caption: "Custom Menu Item" };
   }
 
-  protected constructor(metadata: Metadata, logger: Logger) {
-    super(metadata, logger);
+  protected constructor(platform: PlatformProtocol, metadata: Metadata) {
+    super(platform, metadata);
     this.menus = new Map<UUID, HTMLElement>();
     this.removed = new Set<UUID>();
     this.cancelDependencyObservers = new Map<UUID, () => void>();
@@ -716,9 +716,11 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
           if (onSuccess) {
             if (typeof onSuccess === "boolean" && onSuccess) {
-              showNotification(DEFAULT_ACTION_RESULTS.success);
+              this.platform.toasts.showNotification(
+                DEFAULT_ACTION_RESULTS.success,
+              );
             } else {
-              showNotification({
+              this.platform.toasts.showNotification({
                 ...DEFAULT_ACTION_RESULTS.success,
                 ...pick(onSuccess, "message", "type"),
               });
@@ -726,13 +728,13 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
           }
         } catch (error) {
           if (hasSpecificErrorCause(error, CancelError)) {
-            showNotification({
+            this.platform.toasts.showNotification({
               ...DEFAULT_ACTION_RESULTS.cancel,
               ...pick(onCancel, "message", "type"),
             });
           } else {
             extensionLogger.error(error);
-            showNotification({
+            this.platform.toasts.showNotification({
               ...DEFAULT_ACTION_RESULTS.error,
               error, // Include more details in the notification
               reportError: false,
@@ -1006,10 +1008,13 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
     };
   }
 
-  constructor(config: StarterBrickConfig<MenuDefinition>) {
+  constructor(
+    platform: PlatformProtocol,
+    config: StarterBrickConfig<MenuDefinition>,
+  ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    super(cloned.metadata, new BackgroundLogger());
+    super(platform, cloned.metadata);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable } = cloned.definition;
@@ -1164,6 +1169,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
 }
 
 export function fromJS(
+  platform: PlatformProtocol,
   config: StarterBrickConfig<MenuDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
@@ -1172,5 +1178,5 @@ export function fromJS(
     throw new Error(`Expected type=menuItem, got ${type as string}`);
   }
 
-  return new RemoteMenuItemExtensionPoint(config);
+  return new RemoteMenuItemExtensionPoint(platform, config);
 }

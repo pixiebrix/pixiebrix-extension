@@ -102,6 +102,7 @@ type IndexKey = keyof Except<
   | "blockVersion"
   | "serviceVersion"
   | "extensionLabel"
+  | "platformName"
 >;
 
 const INDEX_KEYS = [

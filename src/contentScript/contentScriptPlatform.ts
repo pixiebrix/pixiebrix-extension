@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { type PlatformProtocol } from "@/platform/platformProtocol";
+import { hideNotification, showNotification } from "@/utils/notify";
 import {
-  PlatformBase,
-  type PlatformProtocol,
-} from "@/platform/platformProtocol";
-import { showNotification } from "@/utils/notify";
-import { setToolbarBadge } from "@/background/messenger/strict/api";
+  clearExtensionDebugLogs,
+  setToolbarBadge,
+  traces,
+} from "@/background/messenger/strict/api";
 import { getState, setState } from "@/platform/state/stateController";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import { expectContext } from "@/utils/expectContext";
@@ -47,6 +48,11 @@ import { registerHandler } from "@/contentScript/contextMenus";
 import { writeToClipboard } from "@/utils/clipboardUtils";
 import { tooltipActionRegistry } from "@/contentScript/selectionTooltip/tooltipController";
 import { commandRegistry } from "@/contentScript/commandPopover/commandController";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import * as sidebarController from "@/contentScript/sidebarController";
+import { validateSemVerString } from "@/types/helpers";
+import type { UUID } from "@/types/stringTypes";
+import { PlatformBase } from "@/platform/platformBase";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -72,14 +78,23 @@ async function userSelectElementRefs(): Promise<ElementReference[]> {
 }
 
 class ContentScriptPlatform extends PlatformBase {
+  private readonly _logger = new BackgroundLogger({
+    platformName: "contentScript",
+  });
+
   constructor() {
-    super("contentScript");
+    super(
+      "contentScript",
+      validateSemVerString(browser.runtime.getManifest().version),
+    );
   }
 
   override capabilities: PlatformCapability[] = [
     "dom",
     "pageScript",
     "contentScript",
+    "logs",
+    "debugger",
     "alert",
     "form",
     "panel",
@@ -108,8 +123,6 @@ class ContentScriptPlatform extends PlatformBase {
   override alert = window.alert.bind(window);
   override prompt = window.prompt.bind(window);
 
-  override notify = showNotification;
-
   override userSelectElementRefs = userSelectElementRefs;
 
   // Perform requests via the background so 1/ the host pages CSP doesn't conflict, and 2/ credentials aren't
@@ -118,11 +131,9 @@ class ContentScriptPlatform extends PlatformBase {
 
   override form = ephemeralForm;
 
-  override panel = ephemeralPanel;
-
   override runSandboxedJavascript = runUserJs;
 
-  override get template(): PlatformProtocol["template"] {
+  override get templates(): PlatformProtocol["templates"] {
     return {
       async render({
         engine,
@@ -184,7 +195,7 @@ class ContentScriptPlatform extends PlatformBase {
     };
   }
 
-  override get contextMenu(): PlatformProtocol["contextMenu"] {
+  override get contextMenus(): PlatformProtocol["contextMenus"] {
     expectContext("contentScript");
 
     return {
@@ -198,8 +209,34 @@ class ContentScriptPlatform extends PlatformBase {
     };
   }
 
+  override get logger(): PlatformProtocol["logger"] {
+    return this._logger;
+  }
+
+  override get debugger(): PlatformProtocol["debugger"] {
+    return {
+      async clear(componentId: UUID): Promise<void> {
+        await Promise.all([
+          traces.clear(componentId),
+          clearExtensionDebugLogs(componentId),
+        ]);
+      },
+      traces: {
+        enter: traces.addEntry,
+        exit: traces.addExit,
+      },
+    };
+  }
+
   override get quickBar(): PlatformProtocol["quickBar"] {
     return quickBarRegistry;
+  }
+
+  override get toasts(): PlatformProtocol["toasts"] {
+    return {
+      showNotification,
+      hideNotification,
+    };
   }
 
   override get selectionTooltip(): PlatformProtocol["selectionTooltip"] {
@@ -213,6 +250,19 @@ class ContentScriptPlatform extends PlatformBase {
   override get clipboard(): PlatformProtocol["clipboard"] {
     return {
       write: writeToClipboard,
+    };
+  }
+
+  override get panels(): PlatformProtocol["panels"] {
+    return {
+      isContainerVisible: async () => sidebarController.isSidePanelOpen(),
+      unregisterExtensionPoint: sidebarController.removeExtensionPoint,
+      removeComponents: sidebarController.removeExtensions,
+      reservePanels: sidebarController.reservePanels,
+      updateHeading: sidebarController.updateHeading,
+      upsertPanel: sidebarController.upsertPanel,
+      showEvent: sidebarController.sidebarShowEvents,
+      showTemporary: ephemeralPanel,
     };
   }
 }

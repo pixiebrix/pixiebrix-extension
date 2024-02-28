@@ -21,21 +21,16 @@ import { pull, remove } from "lodash";
 import {
   type ActionGenerator,
   type ActionsChangeHandler,
-  type CustomAction,
   type GeneratorArgs,
 } from "@/components/quickBar/quickbarTypes";
 import { allSettled } from "@/utils/promiseUtils";
 import { RepeatableAbortController } from "abort-utils";
+import type {
+  CustomAction,
+  QuickBarProtocol,
+} from "@/platform/platformTypes/quickBarProtocol";
 
-/**
- * Public interface for the Quick Bar registry.
- */
-export interface QuickBarRegistryProtocol {
-  addAction(action: CustomAction): void;
-  knownGeneratorRootIds: Set<string>;
-}
-
-class QuickBarRegistry implements QuickBarRegistryProtocol {
+class QuickBarRegistry implements QuickBarProtocol {
   /**
    * Current set of actions, including static and generated actions.
    * @see actionGenerators
