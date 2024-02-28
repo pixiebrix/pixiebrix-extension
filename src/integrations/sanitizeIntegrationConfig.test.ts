@@ -25,24 +25,39 @@ const aaIntegration = fromJS(
 );
 
 describe("sanitizeIntegrationConfig", () => {
-  it("sanitizes config with secret", () => {
+  it("excludes secrets", () => {
     const config = {
-      controlRoomUrl: "https://controlroom.example.com",
-      username: "user",
+      apiKey: "123",
       password: "pass",
     };
     const sanitizedConfig = sanitizeIntegrationConfig(aaIntegration, config);
-    expect(sanitizedConfig).toEqual({
-      controlRoomUrl: config.controlRoomUrl,
-      username: config.username,
-    });
+    expect(sanitizedConfig).toBeEmptyObject();
   });
 
-  it("sanitizes config with optional field", () => {
+  it("excludes unset fields", () => {
+    const config = {};
+    const sanitizedConfig = sanitizeIntegrationConfig(aaIntegration, config);
+    expect(sanitizedConfig).toBeEmptyObject();
+  });
+
+  it("excludes undefined fields", () => {
+    // @ts-expect-error -- intentionally testing undefined
+    const config = { username: undefined };
+    const sanitizedConfig = sanitizeIntegrationConfig(aaIntegration, config);
+    expect(sanitizedConfig).toBeEmptyObject();
+  });
+
+  it("includes null fields", () => {
+    // @ts-expect-error -- intentionally testing null
+    const config = { username: null };
+    const sanitizedConfig = sanitizeIntegrationConfig(aaIntegration, config);
+    expect(sanitizedConfig).toEqual({ username: null });
+  });
+
+  it("includes set non-secret fields", () => {
     const config = {
       controlRoomUrl: "https://controlroom.example.com",
       username: "user",
-      apiKey: "pass",
       folderId: "12345",
     };
     const sanitizedConfig = sanitizeIntegrationConfig(aaIntegration, config);
