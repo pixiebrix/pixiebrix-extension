@@ -1,6 +1,52 @@
 name: PR
 on: pull_request
 jobs:
+  # TODO: remove after https://github.com/pixiebrix/pixiebrix-extension/issues/6526
+  strictNullMessenger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: npm
+      - run: npm ci
+      - id: tsc
+        run: |
+          npm run build:strictNullChecks -- --explainFiles > LOG || {
+            if grep -q "keyof MessengerMethods" LOG; then
+              grep -Pazo "\nsrc/(background|contentScript)/messenger/api.ts(\n  .+)+" LOG > REASON
+              cat REASON
+              {
+                echo 'reason<<EOF'
+                # Drop null character at the end caused by -z
+                cat REASON | sed 's/.$/\n/'
+                echo 'EOF'
+              } >> "$GITHUB_OUTPUT"
+              exit 1
+            fi
+          }
+      - name: Hide previous comment if resolved
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: strictNullChecksMessenger # Unique identifier for the comment
+          hide: true
+      - name: Add comment with more info if failed
+        if: failure()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: strictNullChecksMessenger # Unique identifier for the comment
+          recreate: true
+          message: |
+            It looks like one of the non-strict `messenger/api.ts` files ended up being imported by one of the strict files. Don't be fooled by "just a few type errors", this hides hundreds of type errors.
+
+            See details and solutions in: https://github.com/pixiebrix/pixiebrix-extension/issues/6526#issuecomment-1926391817
+
+            There might be further information about how the non-strict Messenger files are ending up in the strict config:
+
+            ```
+             ${{ steps.tsc.outputs.reason }}
+            ```
   strictNullChecks:
     runs-on: ubuntu-latest
     steps:
