@@ -25,14 +25,7 @@ import { fetchFeatureFlagsInBackground } from "@/background/messenger/api";
 export async function fetchFeatureFlags(): Promise<readonly string[]> {
   expectContext("background");
   const client = await getApiClient();
-  const { data, status, statusText } =
-    await client.get<components["schemas"]["Me"]>("/api/me/");
   const { data } = await client.get<components["schemas"]["Me"]>("/api/me/");
-
-  if (status >= 400) {
-    console.warn(`Failed to fetch feature flags: ${status} ${statusText}`);
-    return [];
-  }
 
   return data.flags ?? [];
 }
