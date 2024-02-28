@@ -16,11 +16,14 @@
  */
 
 import React from "react";
-import { type NoElementsFoundError } from "@/errors/businessErrors";
+import {
+  type NoElementsFoundError,
+  type MultipleElementsFoundError,
+} from "@/errors/businessErrors";
 import styles from "./ErrorDetail.module.scss";
 
-const NoElementsFoundErrorDetail: React.FunctionComponent<{
-  error: NoElementsFoundError;
+const InvalidSelectorErrorDetail: React.FunctionComponent<{
+  error: MultipleElementsFoundError | NoElementsFoundError;
 }> = ({ error: { message, selector } }) => (
   <div className={styles.root}>
     <div className={styles.column}>
@@ -34,4 +37,4 @@ const NoElementsFoundErrorDetail: React.FunctionComponent<{
   </div>
 );
 
-export default NoElementsFoundErrorDetail;
+export default InvalidSelectorErrorDetail;

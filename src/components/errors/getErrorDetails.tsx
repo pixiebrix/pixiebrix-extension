@@ -32,8 +32,7 @@ import {
   ProxiedRemoteServiceError,
 } from "@/errors/businessErrors";
 import RemoteApiErrorDetail from "@/components/errors/RemoteApiErrorDetail";
-import MultipleElementsFoundErrorDetail from "@/components/errors/MultipleElementsFoundErrorDetail";
-import NoElementsFoundErrorDetail from "@/components/errors/NoElementsFoundErrorDetail";
+import InvalidSelectorErrorDetail from "@/components/errors/InvalidSelectorErrorDetail";
 
 type ErrorDetails = {
   title: string;
@@ -46,7 +45,7 @@ export default function getErrorDetails(error: ErrorObject): ErrorDetails {
     return {
       title: "No elements found for selector",
       detailsElement: (
-        <NoElementsFoundErrorDetail error={noElementsFoundError} />
+        <InvalidSelectorErrorDetail error={noElementsFoundError} />
       ),
     };
   }
@@ -59,7 +58,7 @@ export default function getErrorDetails(error: ErrorObject): ErrorDetails {
     return {
       title: "Multiple elements found for selector",
       detailsElement: (
-        <MultipleElementsFoundErrorDetail error={multipleElementsFoundError} />
+        <InvalidSelectorErrorDetail error={multipleElementsFoundError} />
       ),
     };
   }
