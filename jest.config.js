@@ -21,6 +21,7 @@ const config = {
   modulePaths: ["/src"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "yaml", "yml", "json"],
   modulePathIgnorePatterns: ["<rootDir>/headers.json", "<rootDir>/dist/"],
+  testPathIgnorePatterns: ["/end-to-end-tests"],
   transform: {
     "^.+\\.[jt]sx?$": "@swc/jest",
     "^.+\\.mjs$": "@swc/jest",
