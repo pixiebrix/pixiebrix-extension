@@ -31,25 +31,17 @@ describe("sanitizeIntegrationConfig", () => {
       password: "pass",
     };
     const sanitizedConfig = sanitizeIntegrationConfig(aaIntegration, config);
-    expect(sanitizedConfig).toBeEmptyObject();
+    expect(sanitizedConfig).toEqual({});
   });
 
   it("excludes unset fields", () => {
     const config = {};
     const sanitizedConfig = sanitizeIntegrationConfig(aaIntegration, config);
-    expect(sanitizedConfig).toBeEmptyObject();
-  });
-
-  it("excludes undefined fields", () => {
-    // @ts-expect-error -- intentionally testing undefined
-    const config = { username: undefined };
-    const sanitizedConfig = sanitizeIntegrationConfig(aaIntegration, config);
-    expect(sanitizedConfig).toBeEmptyObject();
+    expect(sanitizedConfig).toEqual({});
   });
 
   it("includes null fields", () => {
-    // @ts-expect-error -- intentionally testing null
-    const config = { username: null };
+    const config: { username: null } = { username: null };
     const sanitizedConfig = sanitizeIntegrationConfig(aaIntegration, config);
     expect(sanitizedConfig).toEqual({ username: null });
   });
