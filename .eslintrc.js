@@ -1,5 +1,16 @@
 const { readFileSync } = require("fs");
 const { resolve } = require("path");
+const noRestrictedImports = require("eslint-config-pixiebrix/no-restricted-imports");
+
+// Clone object to avoid modifying the original
+// eslint-disable-next-line unicorn/prevent-abbreviations
+const noRestrictedImportsForSrcFolder = structuredClone(noRestrictedImports);
+
+noRestrictedImportsForSrcFolder.patterns.push({
+  group: ["./*"],
+  message:
+    'Use root-based imports (`import "@/something"`) instead of relative imports.',
+});
 
 const boundaries = [
   "background",
@@ -26,8 +37,8 @@ module.exports = {
     "local-rules/noInvalidDataTestId": "error",
     "local-rules/noExpressionLiterals": "error",
     "local-rules/notBothLabelAndLockableProps": "error",
-    "local-rules/preferNullish": "warn",
-    "local-rules/preferNullishable": "warn",
+    "local-rules/preferNullish": "error",
+    "local-rules/preferNullishable": "error",
     "local-rules/noCrossBoundaryImports": [
       "warn",
       {
@@ -60,16 +71,19 @@ module.exports = {
     "@typescript-eslint/no-unsafe-assignment": "warn",
     "@typescript-eslint/no-unsafe-member-access": "warn",
     "@typescript-eslint/no-unsafe-return": "warn",
+
+    "@typescript-eslint/switch-exhaustiveness-check": [
+      "error",
+      {
+        requireDefaultForNonUnion: true,
+      },
+    ],
+
     "no-restricted-syntax": [
       "error",
       // If they're not specific to the extension, add them to the shared config instead:
       // https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/no-restricted-syntax.js
       ...require("eslint-config-pixiebrix/no-restricted-syntax"),
-      {
-        selector: "CallExpression[callee.property.name='allSettled']",
-        message:
-          'For safety and convenience, use this instead: import { allSettled } from "@/utils/promiseUtils";',
-      },
       {
         message:
           'Use `getExtensionConsoleUrl` instead of `browser.runtime.getURL("options.html")` because it automatically handles paths/routes',
@@ -77,21 +91,6 @@ module.exports = {
           "CallExpression[callee.object.property.name='runtime'][callee.property.name='getURL'][arguments.0.value='options.html']",
       },
       // NOTE: If you add more rules, add the tests to eslint-local-rules/noRestrictedSyntax.ts
-    ],
-
-    // We want to have a default case to check for `never`
-    "@typescript-eslint/switch-exhaustiveness-check": [
-      "error",
-      {
-        allowDefaultCaseForExhaustiveSwitch: true,
-        requireDefaultForNonUnion: true,
-      },
-    ],
-
-    // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
-    "@typescript-eslint/restrict-template-expressions": [
-      "error",
-      { allowNever: true },
     ],
   },
   overrides: [
@@ -155,7 +154,7 @@ module.exports = {
       },
     },
     {
-      // Settings for regular ts files that should only apply to react component rests
+      // Settings for regular ts files that should only apply to react component tests
       files: ["**/!(*.test)*.ts?(x)", "**/*.ts"],
       rules: {
         "testing-library/render-result-naming-convention": "off",
@@ -170,6 +169,12 @@ module.exports = {
         "@typescript-eslint/no-unsafe-call": "off",
         "@typescript-eslint/no-unsafe-assignment": "off",
         "@typescript-eslint/no-unsafe-return": "off",
+      },
+    },
+    {
+      files: ["./src/*"],
+      rules: {
+        "no-restricted-imports": ["error", noRestrictedImportsForSrcFolder],
       },
     },
   ],

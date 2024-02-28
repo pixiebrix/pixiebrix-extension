@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Nullish } from "./nullishUtils";
+
 /**
  * If a string contains an emoji, returns an object that contains the separated emoji and the remaining string.
  * @param value
@@ -71,7 +73,7 @@ export function smartAppendPeriod(string: string): string {
  * Returns true if the value is nullish, not a string, or a string that is empty or only contains whitespace.
  * @param value
  */
-export function isNullOrBlank(value: null | undefined): true;
+export function isNullOrBlank(value: Nullish): true;
 export function isNullOrBlank(value: string): boolean;
 export function isNullOrBlank(value: unknown): false;
 export function isNullOrBlank(value: unknown): boolean {

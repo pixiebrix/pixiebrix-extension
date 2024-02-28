@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// eslint-disable-next-line local-rules/preferNullish -- It's a me, Mario
 export type Nullish = null | undefined;
 
+// eslint-disable-next-line local-rules/preferNullish -- It's a me, Mario
 export type Nullishable<T> = T | Nullish;
 
 /**
