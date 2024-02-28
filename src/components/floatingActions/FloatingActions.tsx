@@ -73,11 +73,11 @@ function FloatingActionsContainer() {
   return (
     <Provider store={store}>
       <PersistGate loading={<Loader />} persistor={persistor}>
-        <EmotionShadowRoot.div>
+        <EmotionShadowRoot>
           <Stylesheets href={[bootstrap, styles]}>
             <FloatingActions />
           </Stylesheets>
-        </EmotionShadowRoot.div>
+        </EmotionShadowRoot>
       </PersistGate>
     </Provider>
   );

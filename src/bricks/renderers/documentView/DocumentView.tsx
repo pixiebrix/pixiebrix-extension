@@ -52,7 +52,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({
   return (
     // Wrap in a React context provider that passes BrickOptions down to any embedded bricks
     <DocumentContext.Provider value={{ options, onAction }}>
-      <EmotionShadowRoot.div className="h-100">
+      <EmotionShadowRoot className="h-100">
         <StylesheetsContext.Provider value={{ stylesheets }}>
           <Stylesheets href={stylesheets}>
             {body.map((documentElement, index) => {
@@ -72,7 +72,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({
             })}
           </Stylesheets>
         </StylesheetsContext.Provider>
-      </EmotionShadowRoot.div>
+      </EmotionShadowRoot>
     </DocumentContext.Provider>
   );
 };

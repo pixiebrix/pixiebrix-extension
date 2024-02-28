@@ -85,7 +85,7 @@ const EphemeralFormContent: React.FC<{
 
   return (
     <ErrorBoundary>
-      <EmotionShadowRoot.div>
+      <EmotionShadowRoot>
         <Stylesheets href={stylesheets}>
           <JsonSchemaForm
             // Deep clone the schema because otherwise the schema is not extensible, which
@@ -119,7 +119,7 @@ const EphemeralFormContent: React.FC<{
             </div>
           </JsonSchemaForm>
         </Stylesheets>
-      </EmotionShadowRoot.div>
+      </EmotionShadowRoot>
     </ErrorBoundary>
   );
 };
