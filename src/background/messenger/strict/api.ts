@@ -68,3 +68,8 @@ export const clearExtensionDebugLogs = getMethod(
   "CLEAR_EXTENSION_DEBUG_LOGS",
   bg,
 );
+
+export const fetchFeatureFlagsInBackground = getMethod(
+  "FETCH_FEATURE_FLAGS",
+  bg,
+);

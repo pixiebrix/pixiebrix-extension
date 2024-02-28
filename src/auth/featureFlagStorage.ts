@@ -20,7 +20,7 @@ import { type components } from "@/types/swagger";
 import { addListener as addAuthStorageListener } from "@/auth/authStorage";
 import { CachedFunction } from "webext-storage-cache";
 import { expectContext } from "@/utils/expectContext";
-import { fetchFeatureFlagsInBackground } from "@/background/messenger/api";
+import { fetchFeatureFlagsInBackground } from "@/background/messenger/strict/api";
 
 export async function fetchFeatureFlags(): Promise<readonly string[]> {
   expectContext("background");
