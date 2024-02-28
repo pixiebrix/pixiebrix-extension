@@ -24,34 +24,34 @@ import {
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
-} from "@/contentScript/lifecycle";
-import { insertPanel } from "@/contentScript/pageEditor/insertPanel";
-import { insertButton } from "@/contentScript/pageEditor/insertButton";
+} from "@/contentScript/lifecycle"; // 275 errors
+import { insertPanel } from "@/contentScript/pageEditor/insertPanel"; // 300 errors
+import { insertButton } from "@/contentScript/pageEditor/insertButton"; // 300 errors
 import {
   clearDynamicElements,
   disableOverlay,
   enableOverlay,
   runExtensionPointReader,
   updateDynamicElement,
-} from "@/contentScript/pageEditor/dynamic";
+} from "@/contentScript/pageEditor/dynamic"; // 300 errors
 import {
   runBlockPreview,
   resetTab,
   runRendererBlock,
-} from "@/contentScript/pageEditor";
-import { runBrick } from "@/contentScript/executor";
+} from "@/contentScript/pageEditor"; // 300 errors
+import { runBrick } from "@/contentScript/executor"; // 290 errors
 import {
   cancelSelect,
   selectElement,
-} from "@/contentScript/pageEditor/elementPicker";
+} from "@/contentScript/pageEditor/elementPicker"; // 290 errors
 import {
   runHeadlessPipeline,
   runMapArgs,
   runRendererPipeline,
-} from "@/contentScript/pipelineProtocol";
-import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
-import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
-import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
+} from "@/contentScript/pipelineProtocol"; // Background/messenger import
+import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore"; // 248 errors
+import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation"; // 246 errors
+import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect"; // Background/messenger import
 
 expectContext("contentScript");
 
