@@ -347,6 +347,7 @@
     "./integrations/constants.ts",
     "./integrations/integrationTypes.ts",
     "./integrations/sanitizeIntegrationConfig.ts",
+    "./integrations/sanitizeIntegrationConfig.test.ts",
     "./integrations/store/integrationsMigrations.ts",
     "./integrations/store/integrationsSelectors.ts",
     "./integrations/store/integrationsSlice.ts",
