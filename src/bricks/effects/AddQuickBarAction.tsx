@@ -24,13 +24,13 @@ import {
   type BrickOptions,
   type PipelineExpression,
 } from "@/types/runtimeTypes";
-import { type CustomAction } from "@/components/quickBar/quickbarTypes";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { uniq } from "lodash";
+import { CustomAction } from "@/platform/platformTypes/quickBarProtocol";
 
 type ActionConfig = {
   /**

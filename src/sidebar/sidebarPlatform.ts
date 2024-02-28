@@ -15,14 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  PlatformBase,
-  type PlatformProtocol,
-} from "@/platform/platformProtocol";
+import { type PlatformProtocol } from "@/platform/platformProtocol";
 import { hideNotification, showNotification } from "@/utils/notify";
 import type { PlatformCapability } from "@/platform/capabilities";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { validateSemVerString } from "@/types/helpers";
+import { PlatformBase } from "@/platform/platformBase";
 
 /**
  * Sidebar platform capabilities. In general, brick execution occurs in the context of the host page.

@@ -18,7 +18,8 @@
 import type { UUID } from "@/types/stringTypes";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { remove } from "lodash";
-import type { TextCommand } from "@/platform/platformProtocol";
+
+import { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
 
 /**
  * Registry for slash commands

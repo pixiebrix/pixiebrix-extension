@@ -15,24 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Action } from "kbar";
-import { type UUID } from "@/types/stringTypes";
-import { type RegistryId } from "@/types/registryTypes";
-
-/**
- * `kbar` action with additional metadata about the source of the action.
- */
-export type CustomAction = Action & {
-  /**
-   * The extension point that added this action.
-   */
-  extensionPointId?: RegistryId;
-  /**
-   * The ModComponentBase that added the action.
-   * @see ModComponentBase
-   */
-  extensionId?: UUID;
-};
+import { CustomAction } from "@/platform/platformTypes/quickBarProtocol";
 
 /**
  * Handler for when the set of registered actions changes

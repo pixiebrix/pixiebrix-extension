@@ -15,16 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type {
-  PlatformProtocol,
-  ToastProtocol,
-} from "@/platform/platformProtocol";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { platformCapabilities } from "@/platform/capabilities";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import type { Logger } from "@/types/loggerTypes";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import type { RunArgs } from "@/types/runtimeTypes";
 import { validateSemVerString } from "@/types/helpers";
+import { ToastProtocol } from "@/platform/platformTypes/toastProtocol";
 
 /**
  * Implementation of PlatformProtocol that mocks all methods

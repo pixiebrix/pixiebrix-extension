@@ -15,14 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type PlatformProtocol,
-  uninitializedPlatform,
-} from "@/platform/platformProtocol";
+import { type PlatformProtocol } from "@/platform/platformProtocol";
 import {
   type PlatformCapability,
   PlatformCapabilityNotAvailableError,
 } from "@/platform/capabilities";
+import { PlatformBase } from "@/platform/platformBase";
+import { validateSemVerString } from "@/types/helpers";
+
+/**
+ * A platform protocol with no available capabilities.
+ */
+export const uninitializedPlatform = new PlatformBase(
+  "uninitialized",
+  validateSemVerString("0.0.0"),
+);
 
 /**
  * @file defines an explicit platform protocol

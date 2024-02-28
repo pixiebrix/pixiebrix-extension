@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  PlatformBase,
-  type PlatformProtocol,
-} from "@/platform/platformProtocol";
+import { type PlatformProtocol } from "@/platform/platformProtocol";
 import { hideNotification, showNotification } from "@/utils/notify";
 import {
   clearExtensionDebugLogs,
@@ -55,6 +52,7 @@ import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import * as sidebarController from "@/contentScript/sidebarController";
 import { validateSemVerString } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
+import { PlatformBase } from "@/platform/platformBase";
 
 /**
  * @file Platform definition for mods running in a content script

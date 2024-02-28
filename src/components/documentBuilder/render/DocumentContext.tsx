@@ -25,7 +25,8 @@ import {
   type SelectorRoot,
 } from "@/types/runtimeTypes";
 import { UNSET_UUID } from "@/types/helpers";
-import { uninitializedPlatform } from "@/platform/platformProtocol";
+
+import { uninitializedPlatform } from "@/platform/platformContext";
 
 type DocumentState = {
   onAction: (action: { type: string; detail: JsonObject }) => void;

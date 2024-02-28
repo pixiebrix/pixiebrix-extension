@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  PlatformBase,
-  type PlatformProtocol,
-} from "@/platform/platformProtocol";
+import { type PlatformProtocol } from "@/platform/platformProtocol";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
@@ -27,6 +24,7 @@ import type { RemoteResponse } from "@/types/contract";
 import { performConfiguredRequest } from "@/background/requests";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { validateSemVerString } from "@/types/helpers";
+import { PlatformBase } from "@/platform/platformBase";
 
 /**
  * Background platform implementation. Currently, just makes API requests.

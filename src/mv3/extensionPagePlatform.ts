@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  PlatformBase,
-  type PlatformProtocol,
-} from "@/platform/platformProtocol";
+import { type PlatformProtocol } from "@/platform/platformProtocol";
 import { hideNotification, showNotification } from "@/utils/notify";
 import type { PlatformCapability } from "@/platform/capabilities";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
@@ -28,6 +25,7 @@ import {
   traces,
   clearExtensionDebugLogs,
 } from "@/background/messenger/strict/api";
+import { PlatformBase } from "@/platform/platformBase";
 
 /**
  * The extension page platform.

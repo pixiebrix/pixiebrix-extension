@@ -40,9 +40,9 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import EmotionShadowRoot from "react-shadow/emotion";
 import { Stylesheets } from "@/components/Stylesheets";
-import type { TextCommand } from "@/platform/platformProtocol";
 import useIsMounted from "@/hooks/useIsMounted";
 import { replaceAtCommand } from "@/contentScript/commandPopover/commandUtils";
+import { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
 
 // "Every property exists" (via Proxy), TypeScript doesn't offer such type
 // Also strictNullChecks config mismatch
