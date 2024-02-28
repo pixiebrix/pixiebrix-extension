@@ -82,6 +82,7 @@ declare global {
     CLEAR_EXTENSION_DEBUG_LOGS: typeof clearExtensionDebugLogs;
   }
 }
+import { fetchFeatureFlagsInBackground } from "@/background/messenger/api";
 
 export default function registerMessenger(): void {
   registerMethods({
