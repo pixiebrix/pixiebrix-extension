@@ -1,5 +1,14 @@
 const { readFileSync } = require("fs");
 const { resolve } = require("path");
+const noRestrictedImports = require("eslint-config-pixiebrix/no-restricted-imports");
+
+function extendNoRestrictedImports({ patterns = [], paths = [] }) {
+  // Clone object to avoid modifying the original
+  const customized = structuredClone(noRestrictedImports);
+  customized.patterns.push(...patterns);
+  customized.paths.push(...paths);
+  return customized;
+}
 
 const boundaries = [
   "background",
@@ -26,8 +35,8 @@ module.exports = {
     "local-rules/noInvalidDataTestId": "error",
     "local-rules/noExpressionLiterals": "error",
     "local-rules/notBothLabelAndLockableProps": "error",
-    "local-rules/preferNullish": "warn",
-    "local-rules/preferNullishable": "warn",
+    "local-rules/preferNullish": "error",
+    "local-rules/preferNullishable": "error",
     "local-rules/noCrossBoundaryImports": [
       "warn",
       {
@@ -60,66 +69,34 @@ module.exports = {
     "@typescript-eslint/no-unsafe-assignment": "warn",
     "@typescript-eslint/no-unsafe-member-access": "warn",
     "@typescript-eslint/no-unsafe-return": "warn",
+
+    "no-restricted-imports": [
+      "error",
+      // If they're not specific to the extension, add them to the shared config instead:
+      // https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/no-restricted-imports.js
+      extendNoRestrictedImports({
+        patterns: [
+          {
+            group: ["react-shadow/emotion"],
+            message:
+              'Use this instead: import EmotionShadowRoot from "@/components/EmotionShadowRoot"',
+          },
+        ],
+      }),
+    ],
+
     "no-restricted-syntax": [
       "error",
-      {
-        selector:
-          "TSTypeReference[typeName.name='Record'][typeParameters.params.0.type=TSStringKeyword][typeParameters.params.1.type=TSUnknownKeyword]",
-        message: "Use `UnknownObject` instead of `Record<string, unknown>`",
-      },
-      {
-        selector: "CallExpression[callee.property.name='allSettled']",
-        message:
-          'For safety and convenience, use this instead: import { allSettled } from "@/utils/promiseUtils";',
-      },
-      {
-        message:
-          "Bootstrap columns should not be used if there's a single column. Use a plain `div` or drop the wrapper altogether if not needed. You might also consider using one of the classes 'max-550', 'max-750', or 'max-950' to limit the width of the body.",
-        selector:
-          "JSXElement[openingElement.name.name='Row'] > JSXText:first-child + JSXElement:nth-last-child(2)",
-      },
-      {
-        message:
-          "Use the `uuid` module instead because crypto.randomUUID is not available in http: contexts",
-        selector: 'MemberExpression > Identifier[name="randomUUID"]',
-      },
+      // If they're not specific to the extension, add them to the shared config instead:
+      // https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/no-restricted-syntax.js
+      ...require("eslint-config-pixiebrix/no-restricted-syntax"),
       {
         message:
           'Use `getExtensionConsoleUrl` instead of `browser.runtime.getURL("options.html")` because it automatically handles paths/routes',
         selector:
           "CallExpression[callee.object.property.name='runtime'][callee.property.name='getURL'][arguments.0.value='options.html']",
       },
-      {
-        message: "Use `jest.mocked(fn)` instead of `fn as jest.Mock`.",
-        selector: "TSAsExpression TSQualifiedName[right.name='Mock']",
-      },
-      {
-        message:
-          "Use `jest.mocked(fn)` instead of `fn as jest.MockedFunction`.",
-        selector: "TSAsExpression TSQualifiedName[right.name='MockedFunction']",
-      },
-      {
-        message:
-          "Unless the code is using .then(), calling `.mockResolvedValue(undefined)` is the same as leaving it out",
-        selector:
-          "CallExpression[callee.property.name='mockResolvedValue'][arguments.0.name='undefined'][arguments.0.type='Identifier']",
-      },
       // NOTE: If you add more rules, add the tests to eslint-local-rules/noRestrictedSyntax.ts
-    ],
-
-    // We want to have a default case to check for `never`
-    "@typescript-eslint/switch-exhaustiveness-check": [
-      "error",
-      {
-        allowDefaultCaseForExhaustiveSwitch: true,
-        requireDefaultForNonUnion: true,
-      },
-    ],
-
-    // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
-    "@typescript-eslint/restrict-template-expressions": [
-      "error",
-      { allowNever: true },
     ],
   },
   overrides: [
@@ -183,7 +160,7 @@ module.exports = {
       },
     },
     {
-      // Settings for regular ts files that should only apply to react component rests
+      // Settings for regular ts files that should only apply to react component tests
       files: ["**/!(*.test)*.ts?(x)", "**/*.ts"],
       rules: {
         "testing-library/render-result-naming-convention": "off",
@@ -198,6 +175,23 @@ module.exports = {
         "@typescript-eslint/no-unsafe-call": "off",
         "@typescript-eslint/no-unsafe-assignment": "off",
         "@typescript-eslint/no-unsafe-return": "off",
+      },
+    },
+    {
+      files: ["./src/*"],
+      rules: {
+        "no-restricted-imports": [
+          "error",
+          extendNoRestrictedImports({
+            patterns: [
+              {
+                group: ["./*"],
+                message:
+                  'Use root-based imports (`import "@/something"`) instead of relative imports.',
+              },
+            ],
+          }),
+        ],
       },
     },
   ],

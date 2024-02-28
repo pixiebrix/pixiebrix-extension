@@ -79,6 +79,7 @@ export type SelectorConfig = CommonSelector & {
 export type SelectorConfigMap = Record<string, string | SelectorConfig>;
 
 type Result =
+  // eslint-disable-next-line local-rules/preferNullishable -- Clearer this way
   | string
   | number
   | boolean

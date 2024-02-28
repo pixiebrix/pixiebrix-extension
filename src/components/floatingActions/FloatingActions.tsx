@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import EmotionShadowRoot from "react-shadow/emotion";
+import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { Stylesheets } from "@/components/Stylesheets";
 import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import React from "react";
@@ -73,11 +73,11 @@ function FloatingActionsContainer() {
   return (
     <Provider store={store}>
       <PersistGate loading={<Loader />} persistor={persistor}>
-        <EmotionShadowRoot.div>
+        <EmotionShadowRoot>
           <Stylesheets href={[bootstrap, styles]}>
             <FloatingActions />
           </Stylesheets>
-        </EmotionShadowRoot.div>
+        </EmotionShadowRoot>
       </PersistGate>
     </Provider>
   );

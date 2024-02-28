@@ -72,7 +72,7 @@ exports[`FormPreview it renders markdown in description 1`] = `
                 value=""
               />
               <div
-                class="field-description text-muted"
+                class="field-description mt-1 text-muted"
               >
                 <div>
                   <p>

@@ -19,6 +19,7 @@ import React, { forwardRef, useMemo } from "react";
 import { type ActionId, type ActionImpl, KBarResults, useMatches } from "kbar";
 import { theme, groupNameStyle } from "./quickBarTheme";
 import { useGetActionNameAndIcon } from "@/components/quickBar/utils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 const ResultItem = forwardRef(
   (
@@ -29,7 +30,7 @@ const ResultItem = forwardRef(
     }: {
       action: ActionImpl;
       active: boolean;
-      currentRootActionId: ActionId | undefined | null;
+      currentRootActionId: Nullishable<ActionId>;
     },
     ref: React.Ref<HTMLDivElement>,
   ) => {

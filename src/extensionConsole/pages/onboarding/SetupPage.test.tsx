@@ -109,8 +109,6 @@ describe("SetupPage", () => {
       expect(screen.queryByTestId("loader")).toBeNull();
     });
 
-    screen.debug();
-
     expect(screen.getByText("Connect your AARI account")).not.toBeNull();
   });
 

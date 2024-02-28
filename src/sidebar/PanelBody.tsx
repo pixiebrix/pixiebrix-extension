@@ -18,7 +18,7 @@
 import React, { useReducer } from "react";
 import Loader from "@/components/Loader";
 import blockRegistry from "@/bricks/registry";
-import EmotionShadowRoot from "react-shadow/emotion";
+import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { getErrorMessage, selectSpecificError } from "@/errors/errorHelpers";
 import {
   isRendererErrorPayload,
@@ -61,14 +61,14 @@ const BodyContainer: React.FC<
   BodyProps & { onAction: (action: SubmitPanelAction) => void }
 > = ({ blockId, body, onAction, meta }) => (
   // Use a shadow dom to prevent the webpage styles from affecting the sidebar
-  <EmotionShadowRoot.div className="full-height" data-testid={blockId}>
+  <EmotionShadowRoot className="full-height" data-testid={blockId}>
     <RendererComponent
       blockId={blockId}
       body={body}
       meta={meta}
       onAction={onAction}
     />
-  </EmotionShadowRoot.div>
+  </EmotionShadowRoot>
 );
 
 type State = {
