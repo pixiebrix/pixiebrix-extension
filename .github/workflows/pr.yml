@@ -43,7 +43,7 @@ jobs:
             There might be further information about how the non-strict Messenger files are ending up in the strict config:
 
             ```
-            ${{ steps.tsc.outputs.reason }}
+             ${{ toJSON (steps.tsc.outputs.reason) }}
             ```
 
             See details and solutions in: https://github.com/pixiebrix/pixiebrix-extension/issues/6526#issuecomment-1926391817
