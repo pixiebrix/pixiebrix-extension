@@ -642,6 +642,8 @@
     "./vendors/reactPerformanceTesting/utils/symbols.ts",
     "./vendors/validateUuid.ts",
     "./integrations/store/integrationsSlice.test.ts",
-    "./store/settings/settingsSlice.test.ts"
+    "./store/settings/settingsSlice.test.ts",
+    "./components/errors/MultipleElementsFoundErrorDetail.tsx",
+    "./components/errors/NoElementsFoundErrorDetail.tsx"
   ]
 }
