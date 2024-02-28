@@ -25,7 +25,7 @@ import {
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
 
-import { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
+import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
 
 export type PopoverState = {
   /**

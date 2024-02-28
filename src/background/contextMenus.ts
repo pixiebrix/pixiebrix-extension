@@ -37,7 +37,7 @@ import {
 import { allSettled, memoizeUntilSettled } from "@/utils/promiseUtils";
 import { ContextError } from "@/errors/genericErrors";
 import { selectEventData } from "@/telemetry/deployments";
-import { SelectionMenuOptions } from "@/platform/platformTypes/contextMenuProtocol";
+import type { SelectionMenuOptions } from "@/platform/platformTypes/contextMenuProtocol";
 
 const MENU_PREFIX = "pixiebrix-";
 

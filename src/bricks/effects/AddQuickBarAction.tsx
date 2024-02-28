@@ -30,7 +30,7 @@ import { EffectABC } from "@/types/bricks/effectTypes";
 import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { uniq } from "lodash";
-import { CustomAction } from "@/platform/platformTypes/quickBarProtocol";
+import type { CustomAction } from "@/platform/platformTypes/quickBarProtocol";
 
 type ActionConfig = {
   /**

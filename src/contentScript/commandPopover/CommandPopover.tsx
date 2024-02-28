@@ -42,7 +42,7 @@ import EmotionShadowRoot from "react-shadow/emotion";
 import { Stylesheets } from "@/components/Stylesheets";
 import useIsMounted from "@/hooks/useIsMounted";
 import { replaceAtCommand } from "@/contentScript/commandPopover/commandUtils";
-import { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
+import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
 
 // "Every property exists" (via Proxy), TypeScript doesn't offer such type
 // Also strictNullChecks config mismatch

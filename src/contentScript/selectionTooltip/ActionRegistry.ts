@@ -20,8 +20,7 @@ import type { IconConfig } from "@/types/iconTypes";
 import { splitStartingEmoji } from "@/utils/stringUtils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import type { Nullishable } from "@/utils/nullishUtils";
-
-import {
+import type {
   SelectionTooltipProtocol,
   TextSelectionAction,
 } from "@/platform/platformTypes/selectionTooltipProtocol";

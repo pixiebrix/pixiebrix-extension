@@ -22,7 +22,7 @@ import type { Logger } from "@/types/loggerTypes";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import type { RunArgs } from "@/types/runtimeTypes";
 import { validateSemVerString } from "@/types/helpers";
-import { ToastProtocol } from "@/platform/platformTypes/toastProtocol";
+import type { ToastProtocol } from "@/platform/platformTypes/toastProtocol";
 
 /**
  * Implementation of PlatformProtocol that mocks all methods

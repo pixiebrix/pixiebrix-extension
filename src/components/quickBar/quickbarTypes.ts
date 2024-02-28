@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CustomAction } from "@/platform/platformTypes/quickBarProtocol";
+import type { CustomAction } from "@/platform/platformTypes/quickBarProtocol";
 
 /**
  * Handler for when the set of registered actions changes
