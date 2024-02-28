@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Input validation error 1`] = `
+exports[`getErrorDetails Input validation error 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -239,7 +239,7 @@ exports[`Input validation error 1`] = `
 </DocumentFragment>
 `;
 
-exports[`Network error 1`] = `
+exports[`getErrorDetails Network error 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -564,7 +564,7 @@ exports[`Network error 1`] = `
 </DocumentFragment>
 `;
 
-exports[`RemoteApiErrorDetail 1`] = `
+exports[`getErrorDetails RemoteApiErrorDetail 1`] = `
 <DocumentFragment>
   <div
     class="root"
@@ -666,7 +666,7 @@ exports[`RemoteApiErrorDetail 1`] = `
 </DocumentFragment>
 `;
 
-exports[`Template render error 1`] = `
+exports[`getErrorDetails Template render error 1`] = `
 <DocumentFragment>
   <div>
     <span>
