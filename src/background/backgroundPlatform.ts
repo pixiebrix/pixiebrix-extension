@@ -15,25 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PlatformBase } from "@/platform/platformProtocol";
+import { type PlatformProtocol } from "@/platform/platformProtocol";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
 import { performConfiguredRequest } from "@/background/requests";
+import BackgroundLogger from "@/telemetry/BackgroundLogger";
+import { validateSemVerString } from "@/types/helpers";
+import { PlatformBase } from "@/platform/platformBase";
 
 /**
  * Background platform implementation. Currently, just makes API requests.
  * @since 1.8.10
  */
 class BackgroundPlatform extends PlatformBase {
-  // For now, the only capability we have the background is to run API requests.
-  // In MV2, the background page has a DOM. In MV3, the background must use EventPages for DOM access
-  override capabilities: PlatformCapability[] = ["http"];
+  // In MV2, the background page has a DOM. In MV3, the background must use EventPages for DOM access. So for now,
+  // we don't include "dom" in the capabilities.
+  override capabilities: PlatformCapability[] = ["http", "logs"];
+
+  private readonly _logger = new BackgroundLogger({
+    platformName: "background",
+  });
 
   constructor() {
-    super("background");
+    super(
+      "background",
+      validateSemVerString(browser.runtime.getManifest().version),
+    );
+  }
+
+  override get logger(): PlatformProtocol["logger"] {
+    return this._logger;
   }
 
   override async request<TData>(

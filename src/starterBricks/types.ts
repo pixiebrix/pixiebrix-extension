@@ -31,6 +31,7 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import { type Brick } from "@/types/brickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type PlatformCapability } from "@/platform/capabilities";
+import { type PlatformProtocol } from "@/platform/platformProtocol";
 
 /**
  * Follows the semantics of lodash's debounce: https://lodash.com/docs/4.17.15#debounce
@@ -159,12 +160,20 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
     return {};
   }
 
-  protected constructor(metadata: Metadata, logger: Logger) {
+  // Support injecting the platform via constructor to allow platforms to allow:
+  // 1) more fine-grained control during testing, and
+  // 2) contexts like the PageEditor to inspect the starter brick as if it were running on another platform
+  protected constructor(
+    public readonly platform: PlatformProtocol,
+    metadata: Metadata,
+  ) {
     this.id = validateRegistryId(metadata.id);
     this.name = metadata.name;
     this.description = metadata.description;
     this.instanceNonce = uuidv4();
-    this.logger = logger.childLogger({ extensionPointId: this.id });
+    this.logger = this.platform.logger.childLogger({
+      extensionPointId: this.id,
+    });
   }
 
   /**

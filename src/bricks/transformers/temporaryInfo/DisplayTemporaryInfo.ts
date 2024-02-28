@@ -141,7 +141,7 @@ class DisplayTemporaryInfo extends TransformerABC {
       return result;
     };
 
-    return platform.panel({
+    return platform.panels.showTemporary({
       panelEntryMetadata,
       getPayload,
       location,

@@ -23,7 +23,7 @@ import type { Nullishable } from "@/utils/nullishUtils";
 import type {
   SelectionTooltipProtocol,
   TextSelectionAction,
-} from "@/platform/platformProtocol";
+} from "@/platform/platformTypes/selectionTooltipProtocol";
 
 /**
  * A registered text selection action.

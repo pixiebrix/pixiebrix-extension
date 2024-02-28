@@ -18,17 +18,13 @@
 import { type Logger } from "@/types/loggerTypes";
 import { castArray, isPlainObject, once } from "lodash";
 import { requestRun, sendDeploymentAlert } from "@/background/messenger/api";
-import {
-  clearExtensionDebugLogs,
-  traces,
-} from "@/background/messenger/strict/api";
 import { hideNotification, showNotification } from "@/utils/notify";
 import { serializeError } from "serialize-error";
 import { HeadlessModeError } from "@/bricks/errors";
 import { engineRenderer } from "@/runtime/renderers";
 import { type TraceExitData, type TraceRecordMeta } from "@/telemetry/trace";
 import { type JsonObject } from "type-fest";
-import { uuidv4, validateSemVerString } from "@/types/helpers";
+import { uuidv4 } from "@/types/helpers";
 import { mapArgs } from "@/runtime/mapArgs";
 import {
   type ApiVersionOptions,
@@ -77,7 +73,6 @@ import { type RegistryProtocol } from "@/registry/memoryRegistry";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
-import { allSettled } from "@/utils/promiseUtils";
 import { getPlatform } from "@/platform/platformContext";
 
 // Introduce a layer of indirection to avoid cyclical dependency between runtime and registry
@@ -532,15 +527,17 @@ function selectTraceRecordMeta(
 }
 
 /**
- * Return true if tracing is enabled based on the given tracing options
- * @see traces.addEntry
- * @see traces.addExit
+ * Return true if tracing is enabled based on the given tracing options and the platform
  */
 function selectTraceEnabled({
   runId,
   blockInstanceId,
 }: Pick<TraceMetadata, "runId" | "blockInstanceId">): boolean {
-  return Boolean(runId) && Boolean(blockInstanceId);
+  return (
+    Boolean(runId) &&
+    Boolean(blockInstanceId) &&
+    getPlatform().capabilities.includes("debugger")
+  );
 }
 
 async function runBlock(
@@ -567,7 +564,7 @@ async function runBlock(
 
   if (type === "renderer" && headless) {
     if (selectTraceEnabled(trace)) {
-      traces.addExit({
+      getPlatform().debugger.traces.exit({
         ...trace,
         extensionId: logger.context.extensionId,
         blockId: block.id,
@@ -699,7 +696,7 @@ export async function blockReducer(
     await lazyRenderArgs();
 
     // Always add the trace entry, even if the brick didn't run
-    traces.addEntry({
+    getPlatform().debugger.traces.enter({
       ...traceMeta,
       timestamp: new Date().toISOString(),
       templateContext: context as JsonObject,
@@ -725,7 +722,7 @@ export async function blockReducer(
     logger.debug(`Skipping stage ${blockConfig.id} because condition not met`);
 
     if (traceEnabled) {
-      traces.addExit({
+      getPlatform().debugger.traces.exit({
         ...preconfiguredTraceExit,
         output: null,
         skippedRun: true,
@@ -765,7 +762,7 @@ export async function blockReducer(
   }
 
   if (traceEnabled) {
-    traces.addExit({
+    getPlatform().debugger.traces.exit({
       ...preconfiguredTraceExit,
       output: output as JsonObject,
       skippedRun: false,
@@ -827,8 +824,8 @@ function throwBlockError(
     throw error;
   }
 
-  if (runId && blockConfig.instanceId) {
-    traces.addExit({
+  if (selectTraceEnabled({ runId, blockInstanceId: blockConfig.instanceId })) {
+    getPlatform().debugger.traces.exit({
       runId,
       branches,
       extensionId: logger.context.extensionId,
@@ -884,7 +881,7 @@ async function getStepLogger(
   if (resolvedConfig && !version) {
     // Built-in bricks don't have a version number. Use the browser extension version to identify bugs introduced
     // during browser extension releases
-    version = validateSemVerString(browser.runtime.getManifest().version);
+    version = getPlatform().version;
   }
 
   return pipelineLogger.childLogger({
@@ -904,16 +901,17 @@ export async function reduceExtensionPipeline(
   initialValues: InitialValues,
   partialOptions: Partial<ReduceOptions> = {},
 ): Promise<unknown> {
+  const platform = getPlatform();
   const pipelineLogger = partialOptions.logger ?? new ConsoleLogger();
 
-  // `await` promises to avoid race condition where the calls here delete debug entries from this call to reducePipeline
-  await allSettled(
-    [
-      traces.clear(pipelineLogger.context.extensionId),
-      clearExtensionDebugLogs(pipelineLogger.context.extensionId),
-    ],
-    { catch: "ignore" },
-  );
+  if (platform.capabilities.includes("debugger")) {
+    try {
+      // `await` promise to avoid race condition where the calls here delete entries from this call to reducePipeline
+      await platform.debugger.clear(pipelineLogger.context.extensionId);
+    } catch {
+      // NOP
+    }
+  }
 
   return reducePipeline(pipeline, initialValues, {
     ...partialOptions,
