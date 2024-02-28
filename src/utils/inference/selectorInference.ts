@@ -36,7 +36,7 @@ import { escapeSingleQuotes, matchesAnyPattern } from "@/utils/stringUtils";
 import { $safeFind } from "@/utils/domUtils";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { getAttributeSelectorRegex } from "@/utils/inference/selectorInferenceUtils";
-import { assertNotNullish } from "@/utils/nullishUtils";
+import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
 
 /** Valid selector that never returns any element (no `<selectnothing>` element exists) */
 const NON_EXISTENT_TAG_NAME = "selectnothing";
@@ -580,7 +580,7 @@ export function getCommonAncestor(...args: HTMLElement[]): HTMLElement | null {
 
   const [node, ...otherNodes] = args;
 
-  let currentNode: HTMLElement | undefined | null = node;
+  let currentNode: Nullishable<HTMLElement> = node;
 
   while (currentNode) {
     // eslint-disable-next-line @typescript-eslint/no-loop-func, @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Called immediately
