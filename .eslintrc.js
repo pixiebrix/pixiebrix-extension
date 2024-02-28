@@ -77,6 +77,21 @@ module.exports = {
       },
     ],
 
+    "no-restricted-imports": [
+      "error",
+      // If they're not specific to the extension, add them to the shared config instead:
+      // https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/no-restricted-imports.js
+      extendNoRestrictedImports({
+        patterns: [
+          {
+            group: ["react-shadow/emotion"],
+            message:
+              'Use this instead: import EmotionShadowRoot from "@/components/EmotionShadowRoot"',
+          },
+        ],
+      }),
+    ],
+
     "no-restricted-syntax": [
       "error",
       // If they're not specific to the extension, add them to the shared config instead:
