@@ -201,15 +201,12 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   private readonly cancelController = new RepeatableAbortController();
 
   /**
-   * An event emitter where each event name is the extension ID to cancel observers for.
-   *
-   * It uses `EventTarget` rather than `SimpleEventTarget` because it can handle multiple event
-   * names. This pairs well with the `once: true` logic, to automatically cancel and remove the listener.
+   * Map from extension id to callback to cancel observers for its dependencies.
    *
    * @see MenuItemStarterBrickConfig.dependencies
    * @private
    */
-  private readonly observers = new EventTarget();
+  private readonly cancelDependencyObservers: Map<UUID, () => void>;
 
   /**
    * True if the extension point has been uninstalled
@@ -226,14 +223,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     UUID,
     WeakSet<HTMLElement>
   >();
-
-  private addObserver(extensionId: UUID, callback: () => void): void {
-    this.observers.addEventListener(extensionId, callback, { once: true });
-  }
-
-  private cancelObservers(extensionId: UUID): void {
-    this.observers.dispatchEvent(new CustomEvent(extensionId));
-  }
 
   private readonly notifyError = debounce(
     (payload: Parameters<PlatformProtocol["toasts"]["showNotification"]>[0]) =>
@@ -266,6 +255,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     super(platform, metadata);
     this.menus = new Map<UUID, HTMLElement>();
     this.removed = new Set<UUID>();
+    this.cancelDependencyObservers = new Map<UUID, () => void>();
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -363,7 +353,16 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     }
 
     for (const extension of extensions) {
-      this.cancelObservers(extension.id);
+      const clear = this.cancelDependencyObservers.get(extension.id);
+      if (clear) {
+        try {
+          clear();
+        } catch {
+          console.error("Error cancelling dependency observer");
+        }
+      }
+
+      this.cancelDependencyObservers.delete(extension.id);
     }
   }
 
@@ -784,7 +783,11 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   ): void {
     const { dependencies = [] } = extension.config;
 
-    this.cancelObservers(extension.id);
+    // Clean up old observers
+    if (this.cancelDependencyObservers.has(extension.id)) {
+      this.cancelDependencyObservers.get(extension.id)();
+      this.cancelDependencyObservers.delete(extension.id);
+    }
 
     if (dependencies.length > 0) {
       const rerun = once(() => {
@@ -796,8 +799,8 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       });
 
       const observer = new MutationObserver(rerun);
+
       const abortController = new AbortController();
-      onAbort(abortController, observer);
 
       let elementCount = 0;
       for (const dependency of dependencies) {
@@ -825,7 +828,13 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         `Observing ${elementCount} element(s) for extension: ${extension.id}`,
       );
 
-      this.addObserver(extension.id, () => {
+      this.cancelDependencyObservers.set(extension.id, () => {
+        try {
+          observer.disconnect();
+        } catch (error) {
+          console.error("Error cancelling mutation observer", error);
+        }
+
         abortController.abort();
       });
     } else {
