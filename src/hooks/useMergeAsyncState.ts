@@ -69,7 +69,7 @@ function useMergeAsyncState<
 
   // Memoize the entire object to avoid re-rendering downstream components, especially if `merge` was passed as an
   // arrow function so memoizedMerge is a new reference on every render.
-  return useMemoCompare(result, deepEquals);
+  return useMemoCompare<typeof result>(result, deepEquals);
 }
 
 export default useMergeAsyncState;

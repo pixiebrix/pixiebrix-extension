@@ -82,7 +82,7 @@ export class FormData extends TransformerABC {
     const result = $elements
       .find<HTMLInputElement | HTMLTextAreaElement>(":input")
       .get()
-      .map((input) => {
+      .map((input): [string, string | boolean] | undefined => {
         if (!input.name) {
           return;
         }

@@ -15,19 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { type UserDefinedBrick } from "@/bricks/transformers/brickFactory";
 import { type BrickType } from "@/runtime/runtimeTypes";
 import { type Metadata } from "@/types/registryTypes";
 
-export default async function getType<T extends Metadata>(
-  // HACK: including Integration and StarterBrick here is a hack to fix some call-sites. This method can only return
-  // block types
-  block: T,
+// HACK: including Integration and StarterBrick here is a hack to fix some call-sites. This method can only return
+// block types
+export default async function getType(
+  block: Metadata,
 ): Promise<BrickType | null> {
   if ("inferType" in block && typeof block.inferType === "function") {
     // For YAML-based blocks, can't use the method to determine the type because only the "run" method is available.
     // The inferType method is provided ExternalBlock, which is the class used for YAML-based blocks (which have
     // kind: component) in their YAML
-    return block.inferType();
+    return (block as UserDefinedBrick).inferType();
   }
 
   if ("read" in block) {

@@ -40,7 +40,11 @@ const STORAGE_KEY = validateReduxStorageKey("persist:editor");
  */
 export async function getEditorState(): Promise<EditorState | undefined> {
   // eslint-disable-next-line unicorn/no-useless-undefined -- Required by types
-  return readReduxStorage(STORAGE_KEY, migrations, undefined);
+  return readReduxStorage<EditorState | undefined>(
+    STORAGE_KEY,
+    migrations,
+    undefined,
+  );
 }
 
 /**

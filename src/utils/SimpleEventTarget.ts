@@ -27,7 +27,10 @@ type SimpleEventListener<Detail> = (detail: Detail) => void;
  */
 export class SimpleEventTarget<Detail> extends EventTarget {
   coreEvent = "DEFAULT";
-  private readonly weakEvents = new WeakMap();
+  private readonly weakEvents = new WeakMap<
+    SimpleEventListener<Detail>,
+    EventListener
+  >();
 
   // Permanently map simplified callbacks to native listeners.
   // This acts as a memoization/deduplication which matches the native behavior.

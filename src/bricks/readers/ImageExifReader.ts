@@ -36,7 +36,9 @@ async function getData(img: HTMLImageElement): Promise<ArrayBuffer> {
     return blob.arrayBuffer();
   }
 
-  const response = await axios.get(img.src, { responseType: "arraybuffer" });
+  const response = await axios.get<ArrayBuffer>(img.src, {
+    responseType: "arraybuffer",
+  });
   if (response.status !== 200) {
     throw new Error(`Error fetching image ${img.src}: ${response.statusText}`);
   }

@@ -81,13 +81,14 @@ export async function initRuntimeLogging(): Promise<void> {
     }
 
     globalThis.console = new Proxy(globalThis.console, {
-      get(target: typeof globalThis.console, prop: string | symbol) {
-        // @ts-expect-error -- proxy
+      get(
+        target: typeof globalThis.console,
+        prop: keyof typeof globalThis.console,
+      ) {
         if (!enableRuntimeLogging && typeof target[prop] === "function") {
           return noop;
         }
 
-        // @ts-expect-error -- proxy
         return target[prop];
       },
     });
