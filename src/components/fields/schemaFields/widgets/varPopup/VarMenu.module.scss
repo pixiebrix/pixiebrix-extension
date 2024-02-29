@@ -42,21 +42,19 @@ $max-menu-height: 300px;
   top: 0;
   bottom: 0;
 
-  :global(.active:not(.hover)) {
+  :global(.active):not(:hover) {
     background-color: $color-active;
-
     ul {
       background-color: white;
     }
   }
 
-  :global(.hover) {
-    background-color: $color-hover !important;
-    cursor: pointer;
-
+  // Highlight the exact item being hovered, but
+  // don't highlight it when its children are hovered
+  li:hover:not(:has(li:hover)) {
+    background-color: $color-hover;
     ul {
       background-color: white;
-      cursor: none;
     }
   }
 
