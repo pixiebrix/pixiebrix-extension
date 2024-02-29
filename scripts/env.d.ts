@@ -16,3 +16,4 @@
  */
 
 export function loadEnv(): void;
+export function parseEnv(): void;
