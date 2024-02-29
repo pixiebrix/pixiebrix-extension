@@ -119,7 +119,7 @@ class MemoryRegistry<
 
   private deserialize: ((raw: unknown) => Item) | null;
 
-  onCacheChanged = new SimpleEventTarget();
+  onChange = new SimpleEventTarget();
 
   constructor(kinds: Kind[], deserialize: ((raw: unknown) => Item) | null) {
     this.kinds = new Set(kinds);
@@ -265,7 +265,7 @@ class MemoryRegistry<
       source: "internal",
       notify: false,
     });
-    this.onCacheChanged.emit();
+    this.onChange.emit();
 
     this._cacheInitialized = true;
 
@@ -304,7 +304,7 @@ class MemoryRegistry<
     }
 
     if (changed && notify) {
-      this.onCacheChanged.emit();
+      this.onChange.emit();
     }
   }
 
@@ -332,7 +332,7 @@ class MemoryRegistry<
     // Need to clear the whole thing, including built-ins. Listeners will often can all() to repopulate the cache.
     this._cacheInitialized = false;
     this._cache.clear();
-    this.onCacheChanged.emit();
+    this.onChange.emit();
   }
 
   /**

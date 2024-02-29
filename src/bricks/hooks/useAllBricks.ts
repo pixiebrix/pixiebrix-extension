@@ -22,10 +22,10 @@ import { useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
 
 const subscribe = (callback: () => void) => {
-  brickRegistry.onCacheChanged.add(callback);
+  brickRegistry.onChange.add(callback);
 
   return () => {
-    brickRegistry.onCacheChanged.remove(callback);
+    brickRegistry.onChange.remove(callback);
   };
 };
 

@@ -43,7 +43,7 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
     // Can't reference "this" before the call to "super"
     this.setDeserialize(partial(fromJS, this));
 
-    this.onCacheChanged.add(() => {
+    this.onChange.add(() => {
       this.typeCachePromise = null;
     });
   }
