@@ -79,7 +79,7 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
         title: "Permanently Delete Brick",
         message: `Permanently delete ${
           name ?? "brick"
-        } from the server? This action cannot be undone`,
+        } from the server? This action cannot be undone.`,
         cancelCaption: "Cancel",
         submitCaption: "Permanently Delete",
         submitVariant: "danger",
