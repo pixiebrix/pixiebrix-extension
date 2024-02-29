@@ -25,6 +25,7 @@ import {
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
+import type { Manifest } from "webextension-polyfill/namespaces/manifest";
 
 /**
  * Return permissions required to activate a deployment.
@@ -39,6 +40,11 @@ import { type IntegrationDependency } from "@/integrations/integrationTypes";
 export async function checkDeploymentPermissions(
   deployment: Deployment,
   locate: Locate,
+  {
+    optionalPermissions,
+  }: {
+    optionalPermissions: Manifest.OptionalPermission[];
+  },
 ): Promise<PermissionsStatus> {
   const modDefinition = deployment.package.config;
   const localAuths = await findLocalDeploymentConfiguredIntegrationDependencies(
@@ -56,5 +62,7 @@ export async function checkDeploymentPermissions(
       })),
   );
 
-  return checkModDefinitionPermissions(modDefinition, integrationDependencies);
+  return checkModDefinitionPermissions(modDefinition, integrationDependencies, {
+    optionalPermissions,
+  });
 }

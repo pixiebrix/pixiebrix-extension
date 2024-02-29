@@ -67,6 +67,8 @@ import { type OptionsArgs } from "@/types/runtimeTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { Events } from "@/telemetry/events";
 import { allSettled } from "@/utils/promiseUtils";
+import { Manifest } from "webextension-polyfill";
+import OptionalPermission = Manifest.OptionalPermission;
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
@@ -549,10 +551,21 @@ export async function updateDeployments(): Promise<void> {
     return;
   }
 
+  // Not strictly required to use the clipboard brick, so allow it to auto-install. Behind a feature flag
+  // in case it causes problems for enterprise customers. Could use browser.runtime.getManifest().optional_permissions
+  // here, but that also technically supports the URL type so the types don't match
+  const optionalPermissions: OptionalPermission[] = profile.flags.includes(
+    "deployment-permissions-strict",
+  )
+    ? []
+    : ["clipboardWrite"];
+
   const deploymentRequirements = await Promise.all(
     updatedDeployments.map(async (deployment) => ({
       deployment,
-      ...(await checkDeploymentPermissions(deployment, locateAllForService)),
+      ...(await checkDeploymentPermissions(deployment, locateAllForService, {
+        optionalPermissions,
+      })),
     })),
   );
 
