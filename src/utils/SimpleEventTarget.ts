@@ -39,7 +39,8 @@ export class SimpleEventTarget<Detail> extends EventTarget {
     callback: SimpleEventListener<Detail>,
   ): EventListener {
     if (this.weakEvents.has(callback)) {
-      return this.weakEvents.get(callback);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Just checked
+      return this.weakEvents.get(callback)!;
     }
 
     const native = (event: CustomEvent<Detail>) => {

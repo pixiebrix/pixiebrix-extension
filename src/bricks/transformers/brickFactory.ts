@@ -136,7 +136,7 @@ function validateBrickDefinition(
 /**
  * A non-native (i.e., non-JS) Brick. Typically defined in YAML/JSON.
  */
-export class UserDefinedBrick extends BrickABC {
+class UserDefinedBrick extends BrickABC {
   readonly apiVersion: ApiVersion;
 
   readonly inputSchema: Schema;

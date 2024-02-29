@@ -88,7 +88,7 @@ export class FormData extends TransformerABC {
         }
 
         if (!isCheckbox(input)) {
-          return [input.name, $(input).val()];
+          return [input.name, input.value];
         }
 
         // Cast `"on"` to `true`, un-checked to `false`
