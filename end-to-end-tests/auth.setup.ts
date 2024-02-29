@@ -20,7 +20,7 @@ import { expect, test as setup } from "@playwright/test";
 // eslint-disable-next-line no-restricted-imports -- we're not importing from src/
 import { loadEnv } from "../scripts/env";
 
-process.env.ENV_FILE = ".env.development";
+process.env.ENV_FILE ??= ".env.development";
 loadEnv();
 
 const authFile = "end-to-end-tests/.auth/user.json";

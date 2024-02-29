@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 import { loadEnv } from "./scripts/env";
 
-process.env.ENV_FILE = ".env.development";
+process.env.ENV_FILE ??= ".env.development";
 loadEnv();
 
 /**
