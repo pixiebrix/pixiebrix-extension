@@ -17,12 +17,14 @@
 
 import axios from "axios";
 // Re-export utility methods directly, skip automatic __mocks__ resolution #6799
-export { absoluteApiUrl } from "../../../../data/service/apiClient";
+export { absoluteApiUrl } from "../../../data/service/apiClient";
 
 // A mock of @/data/service/apiClient that doesn't use the local browser state. For use with msw in Storybook.
 // See .storybook/preview.js for more information
 
-export const getLinkedApiClient = jest.fn(async () => axios);
+export const getLinkedApiClient = jest.fn(async () => {
+  console.log("in mock getLinkedApiClient");
+  return axios;
+});
 export const getApiClient = jest.fn(async () => axios);
-export const maybeGetApiClient = jest.fn(async () => axios);
 export const maybeGetLinkedApiClient = jest.fn(async () => axios);

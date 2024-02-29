@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import DefaultSetupCard from "@/extensionConsole/pages/onboarding/DefaultSetupCard";
 import { getBaseURL } from "@/data/service/baseService";
@@ -74,6 +74,8 @@ const SetupPage: React.FunctionComponent = () => {
 
     return getBaseURL();
   }, []);
+
+  // console.log("*** render SetupPage", {baseURL, isLoading, isPartnerLoading, error, hasPartner, hasConfiguredIntegration, authMethod, isStartUrl, location})
 
   if (isLoading || isPartnerLoading) {
     return <Loader />;

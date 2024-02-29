@@ -27,15 +27,22 @@ import {
   INTERNAL_reset as resetManagedStorage,
   readManagedStorage,
 } from "@/store/enterprise/managedStorage";
-import { render } from "@/extensionConsole/testHelpers";
+import { render } from "@/pageEditor/testHelpers";
 import settingsSlice from "@/store/settings/settingsSlice";
 import {
+  cleanUpUserMocks,
   mockAnonymousUser,
   mockAuthenticatedUserApiResponse,
 } from "@/testUtils/userMock";
 import { meWithPartnerApiResponseFactory } from "@/testUtils/factories/authFactories";
 import notify from "@/utils/notify";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
+import { fetchFeatureFlagsInBackground } from "@/background/messenger/strict/api";
+import {
+  fetchFeatureFlags,
+  resetFeatureFlags,
+} from "@/auth/featureFlagStorage";
+import { appApiMock } from "@/testUtils/appApiMock";
 
 // Mock notify to assert success/failure because I was having issues writing assertions over the history.
 jest.mock("@/utils/notify");
@@ -65,12 +72,19 @@ jest.mock("p-memoize", () => {
 
 jest.mock("@/data/service/baseService", () => ({
   getInstallURL: jest.fn().mockResolvedValue("https://app.pixiebrix.com"),
+  getBaseURL: jest.fn().mockResolvedValue("https://app.pixiebrix.com"),
 }));
+
+// jest.mock("@/data/service/apiClient");
 
 beforeEach(async () => {
   jest.clearAllMocks();
   resetManagedStorage();
   await browser.storage.managed.clear();
+});
+
+afterAll(async () => {
+  // await cleanUpUserMocks();
 });
 
 describe("SetupPage", () => {

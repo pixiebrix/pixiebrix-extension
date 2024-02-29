@@ -18,6 +18,7 @@
 import { RegistryId } from "@/types/registryTypes";
 import { getMethod, backgroundTarget as bg } from "webext-messenger";
 
+// Bypass auto-mocks
 export * from "../../../../../background/messenger/strict/api";
 
 export const registry = {
@@ -25,7 +26,7 @@ export const registry = {
   getByKinds: jest.fn().mockResolvedValue([]),
   find: jest.fn().mockImplementation(async (id: RegistryId) => {
     throw new Error(
-      `Find not implemented in registry mock (looking up "${id}"). See __mocks__/background/messenger/api for more information.`,
+      `Find not implemented in registry mock (looking up "${id}"). See __mocks__/background/messenger/strict/api for more information.`,
     );
   }),
   clear: getMethod("REGISTRY_CLEAR", bg),
