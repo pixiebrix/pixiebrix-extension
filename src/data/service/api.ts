@@ -48,7 +48,6 @@ import {
 import baseQuery from "@/data/service/baseQuery";
 import type { ModComponentBase } from "@/types/modComponentTypes";
 import { InstalledDeployment } from "@/utils/deploymentUtils";
-import { ExtensionNotLinkedError } from "@/errors/genericErrors";
 
 export const appApi = createApi({
   reducerPath: "appApi",
@@ -449,12 +448,6 @@ export const appApi = createApi({
         method: "post",
         data,
       }),
-      transformErrorResponse(error) {
-        if (error instanceof ExtensionNotLinkedError) {
-          return [];
-        }
-        throw error;
-      },
       providesTags: ["Deployments"],
     }),
   }),

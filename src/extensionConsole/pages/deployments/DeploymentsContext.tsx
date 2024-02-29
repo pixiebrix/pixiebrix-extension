@@ -48,6 +48,17 @@ import {
 import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
 import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 import { useGetDeploymentsQuery } from "@/data/service/api";
+import { deserializeError } from "serialize-error";
+
+function getError(deploymentsError: unknown, permissionsError: unknown) {
+  if (deploymentsError) {
+    if (deserializeError(deploymentsError).name === "ExtensionNotLinkedError") {
+      return null;
+    }
+    return deploymentsError;
+  }
+  return permissionsError;
+}
 
 export type DeploymentsState = {
   /**
@@ -216,7 +227,7 @@ function useDeployments(): DeploymentsState {
     updateExtension,
     extensionUpdateRequired,
     isLoading: isLoadingDeployments || isLoadingPermissions,
-    error: deploymentsError ?? permissionsError,
+    error: getError(deploymentsError, permissionsError),
     isAutoDeploying,
   };
 }

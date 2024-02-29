@@ -22,18 +22,7 @@ export { absoluteApiUrl } from "../../../../data/service/apiClient";
 // A mock of @/data/service/apiClient that doesn't use the local browser state. For use with msw in Storybook.
 // See .storybook/preview.js for more information
 
-export async function getLinkedApiClient() {
-  return axios;
-}
-
-export async function getApiClient() {
-  return axios;
-}
-
-export async function maybeGetApiClient() {
-  return axios;
-}
-
-export async function maybeGetLinkedApiClient() {
-  return axios;
-}
+export const getLinkedApiClient = jest.fn(async () => axios);
+export const getApiClient = jest.fn(async () => axios);
+export const maybeGetApiClient = jest.fn(async () => axios);
+export const maybeGetLinkedApiClient = jest.fn(async () => axios);

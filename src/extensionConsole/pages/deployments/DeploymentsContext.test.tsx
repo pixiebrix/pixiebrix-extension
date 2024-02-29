@@ -25,21 +25,17 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import userEvent from "@testing-library/user-event";
-import {
-  getLinkedApiClient,
-  maybeGetLinkedApiClient,
-} from "@/data/service/apiClient";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type ModComponentState } from "@/store/extensionsTypes";
-
+import { getLinkedApiClient } from "@/data/service/apiClient";
 import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
+import { ExtensionNotLinkedError } from "@/errors/genericErrors";
 
 const axiosMock = new MockAdapter(axios);
+axiosMock.onGet("/api/me/").reply(200, []);
 
-jest.mock("@/data/service/apiClient");
+const getLinkedApiClientMock = jest.mocked(getLinkedApiClient);
 
-jest.mocked(getLinkedApiClient).mockResolvedValue(axios.create());
-jest.mocked(maybeGetLinkedApiClient).mockResolvedValue(axios.create());
 const requestPermissionsMock = jest.mocked(browser.permissions.request);
 
 const Component: React.FC = () => {
@@ -58,12 +54,15 @@ const Component: React.FC = () => {
 
 describe("DeploymentsContext", () => {
   beforeEach(() => {
-    requestPermissionsMock.mockClear();
-    axiosMock.reset();
+    jest.clearAllMocks();
+    axiosMock.resetHistory();
+
+    getLinkedApiClientMock.mockResolvedValue(axios);
   });
 
   it("don't error on activating empty list of deployments", async () => {
     axiosMock.onPost("/api/deployments/").reply(200, []);
+
     render(
       <DeploymentsProvider>
         <Component />
@@ -72,6 +71,8 @@ describe("DeploymentsContext", () => {
 
     expect(screen.queryAllByTestId("Component")).toHaveLength(1);
     expect(screen.queryAllByTestId("Error")).toHaveLength(0);
+
+    await waitForEffect();
 
     await waitFor(() => {
       // initial fetch with no installed deployments
@@ -164,5 +165,37 @@ describe("DeploymentsContext", () => {
     // Still no changes in deployments, so no new fetch even after remount
     await waitForEffect();
     expect(axiosMock.history.post).toHaveLength(2);
+  });
+
+  it("unlinked extension error is ignored", async () => {
+    getLinkedApiClientMock.mockRejectedValue(new ExtensionNotLinkedError());
+    axiosMock.onPost("/api/deployments/").reply(200, [deploymentFactory()]);
+    requestPermissionsMock.mockResolvedValue(true);
+
+    render(
+      <DeploymentsProvider>
+        <Component />
+      </DeploymentsProvider>,
+    );
+
+    await waitForEffect();
+    // deployments are not fetched because extensin is not linked
+    expect(axiosMock.history.post).toHaveLength(0);
+  });
+
+  it("other deployment errors are preserved", async () => {
+    axiosMock.onPost("/api/deployments/").reply(500);
+    requestPermissionsMock.mockResolvedValue(true);
+
+    render(
+      <DeploymentsProvider>
+        <Component />
+      </DeploymentsProvider>,
+    );
+
+    await waitFor(() => {
+      expect(axiosMock.history.post).toHaveLength(1);
+    });
+    expect(screen.getByTestId("Error")).toBeInTheDocument();
   });
 });
