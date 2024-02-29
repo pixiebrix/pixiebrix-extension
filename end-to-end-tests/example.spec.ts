@@ -19,6 +19,15 @@ import { test, expect } from "@playwright/test";
 
 test.describe("create-react-app", () => {
   test("basic auth smoke test", async ({ page }) => {
+    if (
+      !process.env.SERVICE_URL ||
+      !process.env.E2E_TEST_USER_EMAIL_UNAFFILIATED
+    ) {
+      throw new Error(
+        "SERVICE_URL and E2E_TEST_USER_PASSWORD_UNAFFILIATED are required",
+      );
+    }
+
     await page.goto(process.env.SERVICE_URL);
     await expect(
       page.getByText(process.env.E2E_TEST_USER_EMAIL_UNAFFILIATED),

@@ -26,10 +26,15 @@ loadEnv();
 const authFile = "end-to-end-tests/.auth/user.json";
 
 setup("authenticate", async ({ page }) => {
-  console.log(
-    process.env.E2E_TEST_USER_EMAIL_UNAFFILIATED,
-    process.env.E2E_TEST_USER_PASSWORD_UNAFFILIATED,
-  );
+  if (
+    !process.env.E2E_TEST_USER_EMAIL_UNAFFILIATED ||
+    !process.env.E2E_TEST_USER_PASSWORD_UNAFFILIATED
+  ) {
+    throw new Error(
+      "E2E_TEST_USER_EMAIL_UNAFFILIATED and E2E_TEST_USER_PASSWORD_UNAFFILIATED are required",
+    );
+  }
+
   await page.goto(`${process.env.SERVICE_URL}/login/email`);
   await page
     .getByLabel("Email")
