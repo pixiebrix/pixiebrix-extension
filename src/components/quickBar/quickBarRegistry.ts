@@ -29,6 +29,7 @@ import type {
   CustomAction,
   QuickBarProtocol,
 } from "@/platform/platformTypes/quickBarProtocol";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 
 class QuickBarRegistry implements QuickBarProtocol {
   /**
@@ -41,9 +42,8 @@ class QuickBarRegistry implements QuickBarProtocol {
 
   /**
    * Registry of action listeners, called when the set of actions changes.
-   * @private
    */
-  private readonly listeners: ActionsChangeHandler[] = [];
+  readonly changeEvent = new SimpleEventTarget<CustomAction[]>();
 
   /**
    * Registry of action generators. The generators are called when the user types in the Quick Bar.
@@ -74,15 +74,12 @@ class QuickBarRegistry implements QuickBarProtocol {
 
   /**
    * Helper method to notify all action listeners that the set of actions changed.
-   * @private
    */
   private notifyListeners() {
     // Need to copy the array because the registry mutates the array in-place, and listeners might be keeping a
     // reference to the argument passed to them
     const copy = [...this.actions];
-    for (const listener of this.listeners) {
-      listener(copy);
-    }
+    this.changeEvent.emit(copy);
   }
 
   /**
@@ -149,22 +146,6 @@ class QuickBarRegistry implements QuickBarProtocol {
   removeAction(actionId: string): void {
     remove(this.actions, (x) => x.id === actionId);
     this.notifyListeners();
-  }
-
-  /**
-   * Add an action change handler.
-   * @param handler the action change handler
-   */
-  addListener(handler: ActionsChangeHandler): void {
-    this.listeners.push(handler);
-  }
-
-  /**
-   * Remove an action change handler.
-   * @param handler the action change handler
-   */
-  removeListener(handler: ActionsChangeHandler): void {
-    pull(this.listeners, handler);
   }
 
   /**
