@@ -23,6 +23,8 @@ import { loadEnv } from "../scripts/env.mjs";
 process.env.ENV_FILE = ".env.development";
 loadEnv();
 
+const authFile = "end-to-end-tests/.auth/user.json";
+
 setup("authenticate", async ({ page }) => {
   console.log(
     process.env.E2E_TEST_USER_EMAIL_UNAFFILIATED,
@@ -36,4 +38,6 @@ setup("authenticate", async ({ page }) => {
     .getByLabel("Password")
     .fill(process.env.E2E_TEST_USER_PASSWORD_UNAFFILIATED);
   await page.getByRole("button", { name: "Log in" }).click();
+  await page.waitForURL(`${process.env.SERVICE_URL}`);
+  await page.context().storageState({ path: authFile });
 });
