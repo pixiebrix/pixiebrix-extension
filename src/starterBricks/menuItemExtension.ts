@@ -792,8 +792,8 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       });
 
       const observer = new MutationObserver(rerun);
-
       const abortController = new AbortController();
+      onAbort(abortController, observer);
 
       let elementCount = 0;
       for (const dependency of dependencies) {
@@ -824,12 +824,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       this.cancelDependencyObservers.addEventListener(
         extension.id,
         () => {
-          try {
-            observer.disconnect();
-          } catch (error) {
-            console.error("Error cancelling mutation observer", error);
-          }
-
           abortController.abort();
         },
         { once: true },
