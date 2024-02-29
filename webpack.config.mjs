@@ -84,7 +84,7 @@ function mockHeavyDependencies() {
   }
 }
 
-const isHMR = process.env.HMR === "true";
+const isHMR = Boolean(process.env.HMR);
 
 const createConfig = (env, options) =>
   mergeWithShared({

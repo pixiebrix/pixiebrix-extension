@@ -23,7 +23,7 @@ const { merge } = require("webpack-merge");
 const tsconfig = JSON5.parse(fs.readFileSync("./tsconfig.json", "utf8"));
 
 const isProd = process.argv.includes("production");
-const isHMR = process.env.HMR === "true";
+const isHMR = Boolean(process.env.HMR);
 
 /** @type import("webpack").Configuration */
 const shared = {
