@@ -20,7 +20,6 @@ import { type RegistryId } from "@/types/registryTypes";
 import { pull, remove } from "lodash";
 import {
   type ActionGenerator,
-  type ActionsChangeHandler,
   type GeneratorArgs,
 } from "@/components/quickBar/quickbarTypes";
 import { allSettled } from "@/utils/promiseUtils";
