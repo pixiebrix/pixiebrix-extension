@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test as setup } from "@playwright/test";
+import { expect, test as setup } from "@playwright/test";
 // @ts-expect-error -- TODO: figure out why import is not working
 // eslint-disable-next-line no-restricted-imports
 import { loadEnv } from "../scripts/env.mjs";
@@ -39,5 +39,8 @@ setup("authenticate", async ({ page }) => {
     .fill(process.env.E2E_TEST_USER_PASSWORD_UNAFFILIATED);
   await page.getByRole("button", { name: "Log in" }).click();
   await page.waitForURL(`${process.env.SERVICE_URL}`);
+  await expect(
+    page.getByText(process.env.E2E_TEST_USER_EMAIL_UNAFFILIATED),
+  ).toBeVisible();
   await page.context().storageState({ path: authFile });
 });
