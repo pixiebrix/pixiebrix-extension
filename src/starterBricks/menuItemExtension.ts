@@ -363,11 +363,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     }
 
     for (const extension of extensions) {
-      try {
-        this.cancelObservers(extension.id);
-      } catch {
-        console.error("Error cancelling dependency observer");
-      }
+      this.cancelObservers(extension.id);
     }
   }
 
