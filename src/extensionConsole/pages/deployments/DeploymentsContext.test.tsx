@@ -16,7 +16,7 @@
  */
 
 import React, { useContext } from "react";
-import { render, screen } from "@/extensionConsole/testHelpers";
+import { render, screen, waitFor } from "@/extensionConsole/testHelpers";
 import DeploymentsContext, {
   DeploymentsProvider,
 } from "@/extensionConsole/pages/deployments/DeploymentsContext";
@@ -59,6 +59,7 @@ const Component: React.FC = () => {
 describe("DeploymentsContext", () => {
   beforeEach(() => {
     requestPermissionsMock.mockClear();
+    axiosMock.reset();
   });
 
   it("don't error on activating empty list of deployments", async () => {
@@ -69,12 +70,23 @@ describe("DeploymentsContext", () => {
       </DeploymentsProvider>,
     );
 
-    await waitForEffect();
-
     expect(screen.queryAllByTestId("Component")).toHaveLength(1);
     expect(screen.queryAllByTestId("Error")).toHaveLength(0);
 
+    await waitFor(() => {
+      // initial fetch with no installed deployments
+      expect(axiosMock.history.post).toHaveLength(1);
+    });
+
     await userEvent.click(screen.getByText("Update"));
+
+    await waitFor(() => {
+      // No change in activated deployments, so no new fetch
+      expect(axiosMock.history.post).toHaveLength(1);
+    });
+
+    // Permissions only requested once because user clicked update once
+    expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
   });
 
   it("activate single deployment from empty state", async () => {
@@ -87,20 +99,70 @@ describe("DeploymentsContext", () => {
       </DeploymentsProvider>,
     );
 
-    await waitForEffect();
-
     expect(screen.queryAllByTestId("Component")).toHaveLength(1);
     expect(screen.queryAllByTestId("Error")).toHaveLength(0);
 
-    axiosMock.reset();
+    await waitFor(() => {
+      // initial fetch with no installed deployments
+      expect(axiosMock.history.post).toHaveLength(1);
+    });
 
     await userEvent.click(screen.getByText("Update"));
 
+    await waitFor(() => {
+      // refetch after deployment activation
+      expect(axiosMock.history.post).toHaveLength(2);
+    });
+
+    // Permissions only requested once because user has clicked update once
     expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
-    // No additional requests should be made
-    expect(axiosMock.history.get).toHaveLength(0);
 
     const { options } = getReduxStore().getState();
     expect((options as ModComponentState).extensions).toHaveLength(1);
+  });
+
+  it("remounting the DeploymentsProvider doesn't refetch the deployments", async () => {
+    axiosMock.onPost("/api/deployments/").reply(200, [deploymentFactory()]);
+    requestPermissionsMock.mockResolvedValue(true);
+
+    const { rerender } = render(
+      <DeploymentsProvider>
+        <Component />
+      </DeploymentsProvider>,
+    );
+
+    await waitFor(() => {
+      // initial fetch with no installed deployments
+      expect(axiosMock.history.post).toHaveLength(1);
+    });
+
+    await userEvent.click(screen.getByText("Update"));
+
+    await waitFor(() => {
+      // refetch after deployment activation
+      expect(axiosMock.history.post).toHaveLength(2);
+    });
+
+    // Permissions only requested once because user has clicked update once
+    expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
+
+    rerender(
+      <DeploymentsProvider key="force-remount">
+        <Component />
+      </DeploymentsProvider>,
+    );
+
+    // No changes in deployments, so no new fetch even after remount
+    await waitForEffect();
+    expect(axiosMock.history.post).toHaveLength(2);
+
+    await userEvent.click(screen.getByText("Update"));
+
+    // Permissions requested twice because user has clicked update twice
+    expect(requestPermissionsMock).toHaveBeenCalledTimes(2);
+
+    // Still no changes in deployments, so no new fetch even after remount
+    await waitForEffect();
+    expect(axiosMock.history.post).toHaveLength(2);
   });
 });

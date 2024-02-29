@@ -35,6 +35,7 @@ import {
   type RecipeResponse,
   type RemoteIntegrationConfig,
   UserRole,
+  Deployment,
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
@@ -46,6 +47,8 @@ import {
 } from "@/types/modDefinitionTypes";
 import baseQuery from "@/data/service/baseQuery";
 import type { ModComponentBase } from "@/types/modComponentTypes";
+import { InstalledDeployment } from "@/utils/deploymentUtils";
+import { ExtensionNotLinkedError } from "@/errors/genericErrors";
 
 export const appApi = createApi({
   reducerPath: "appApi",
@@ -67,6 +70,7 @@ export const appApi = createApi({
     "PackageVersion",
     "StarterBlueprints",
     "ZapierKey",
+    "Deployments",
   ],
   endpoints: (builder) => ({
     getMe: builder.query<Me, void>({
@@ -436,6 +440,23 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["Me"],
     }),
+    getDeployments: builder.query<
+      Deployment[],
+      { uid: UUID; version: string; active: InstalledDeployment[] }
+    >({
+      query: (data) => ({
+        url: "/api/deployments/",
+        method: "post",
+        data,
+      }),
+      transformErrorResponse(error) {
+        if (error instanceof ExtensionNotLinkedError) {
+          return [];
+        }
+        throw error;
+      },
+      providesTags: ["Deployments"],
+    }),
   }),
 });
 
@@ -468,5 +489,6 @@ export const {
   useListPackageVersionsQuery,
   useGetStarterBlueprintsQuery,
   useCreateMilestoneMutation,
+  useGetDeploymentsQuery,
   util,
 } = appApi;

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Deployment } from "@/types/contract";
 import React, { useCallback, useMemo } from "react";
 import {
   ensurePermissionsFromUserGesture,
@@ -30,8 +29,6 @@ import { getUUID } from "@/telemetry/telemetryHelpers";
 import { services } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { type Dispatch } from "@reduxjs/toolkit";
-import { type ModComponentBase } from "@/types/modComponentTypes";
-import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import useFlags from "@/hooks/useFlags";
 import {
   checkExtensionUpdateRequired,
@@ -50,31 +47,7 @@ import {
 } from "@/utils/extensionUtils";
 import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
 import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
-
-/**
- * Fetch deployments, or return empty array if the extension is not linked to the PixieBrix API.
- */
-async function fetchDeployments(
-  installedExtensions: ModComponentBase[],
-): Promise<Deployment[]> {
-  const client = await maybeGetLinkedApiClient();
-
-  if (!client) {
-    // Not authenticated
-    return [];
-  }
-
-  const { data: deployments } = await client.post<Deployment[]>(
-    "/api/deployments/",
-    {
-      uid: await getUUID(),
-      version: getExtensionVersion(),
-      active: selectInstalledDeployments(installedExtensions),
-    },
-  );
-
-  return deployments;
-}
+import { useGetDeploymentsQuery } from "@/data/service/api";
 
 export type DeploymentsState = {
   /**
@@ -118,13 +91,35 @@ function useDeployments(): DeploymentsState {
   const installedExtensions = useSelector(selectExtensions);
   const { restrict } = useFlags();
 
-  const { data, isLoading, error } = useAsyncState(async () => {
+  const { data: uuid } = useAsyncState(async () => {
+    return await getUUID();
+  }, []);
+
+  const {
+    data: deployments,
+    isLoading: isLoadingDeployments,
+    error: deploymentsError,
+  } = useGetDeploymentsQuery(
+    {
+      uid: uuid,
+      version: getExtensionVersion(),
+      active: selectInstalledDeployments(installedExtensions),
+    },
+    { skip: !uuid },
+  );
+
+  const {
+    data: permissions,
+    isLoading: isLoadingPermissions,
+    error: permissionsError,
+  } = useAsyncState(async () => {
+    if (!deployments) {
+      return null;
+    }
+
     // `refreshRegistries` to ensure user has the latest brick definitions. `refreshRegistries` uses
-    // memoizedUntilSettled to avoid excessive calls
-    const [deployments] = await Promise.all([
-      fetchDeployments(installedExtensions),
-      refreshRegistries(),
-    ]);
+    // memoizedUntilSettled to avoid excessive calls.
+    await refreshRegistries();
 
     // Log performance to determine if we're having issues with messenger/IDB performance
     const { permissions } = mergePermissionsStatuses(
@@ -138,22 +133,15 @@ function useDeployments(): DeploymentsState {
       ),
     );
 
-    return {
-      deployments,
-      permissions,
-    };
-  }, [installedExtensions]);
-
-  // Don't default to [] here to avoid re-render
-  const { deployments } = data ?? {};
+    return permissions;
+  }, [installedExtensions, deployments]);
 
   const [updatedDeployments, extensionUpdateRequired] = useMemo(() => {
     const isUpdated = makeUpdatedFilter(installedExtensions, {
       restricted: restrict("uninstall"),
     });
 
-    const updatedDeployments =
-      deployments == null ? null : deployments.filter((x) => isUpdated(x));
+    const updatedDeployments = deployments?.filter((x) => isUpdated(x)) ?? null;
 
     return [
       updatedDeployments,
@@ -175,8 +163,6 @@ function useDeployments(): DeploymentsState {
     // Always reset. So even if there's an error, the user at least has a grace period before PixieBrix starts
     // notifying them to update again
     dispatch(settingsSlice.actions.resetUpdatePromptTimestamp());
-
-    const { deployments, permissions } = data ?? {};
 
     if (deployments == null) {
       notify.error("Deployments have not been fetched");
@@ -215,7 +201,7 @@ function useDeployments(): DeploymentsState {
     } catch (error) {
       notify.error({ message: "Error updating team deployments", error });
     }
-  }, [data, dispatch, installedExtensions]);
+  }, [deployments, permissions, dispatch, installedExtensions]);
 
   const updateExtension = useCallback(async () => {
     await reloadIfNewVersionIsReady();
@@ -229,8 +215,8 @@ function useDeployments(): DeploymentsState {
     update: handleUpdateFromUserGesture,
     updateExtension,
     extensionUpdateRequired,
-    isLoading,
-    error,
+    isLoading: isLoadingDeployments || isLoadingPermissions,
+    error: deploymentsError ?? permissionsError,
     isAutoDeploying,
   };
 }
@@ -256,6 +242,7 @@ const DeploymentsContext = React.createContext<DeploymentsState>(defaultValue);
  */
 export const DeploymentsProvider: React.FC = ({ children }) => {
   const deployments = useDeployments();
+
   return (
     <DeploymentsContext.Provider value={deployments}>
       {children}

@@ -134,7 +134,7 @@ export function checkExtensionUpdateRequired(
 /**
  * Deployment installed on the client. A deployment may be installed but not active (see DeploymentContext.active)
  */
-type InstalledDeployment = {
+export type InstalledDeployment = {
   deployment: UUID;
   blueprint: RegistryId;
   blueprintVersion: string;
