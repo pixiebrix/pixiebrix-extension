@@ -201,12 +201,15 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   private readonly cancelController = new RepeatableAbortController();
 
   /**
-   * Map from extension id to callback to cancel observers for its dependencies.
+   * An event emitter where each event name is the extension ID to cancel observers for.
+   *
+   * It uses `EventTarget` rather than `SimpleEventTarget` because it can handle multiple event
+   * names. This pairs well with the `once: true` logic, to automatically cancel and remove the listener.
    *
    * @see MenuItemStarterBrickConfig.dependencies
    * @private
    */
-  private readonly cancelDependencyObservers = new EventTarget();
+  private readonly observers = new EventTarget();
 
   /**
    * True if the extension point has been uninstalled
@@ -223,6 +226,14 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     UUID,
     WeakSet<HTMLElement>
   >();
+
+  private addObserver(extensionId: UUID, callback: () => void): void {
+    this.observers.addEventListener(extensionId, callback, { once: true });
+  }
+
+  private cancelObservers(extensionId: UUID): void {
+    this.observers.dispatchEvent(new CustomEvent(extensionId));
+  }
 
   private readonly notifyError = debounce(
     (payload: Parameters<PlatformProtocol["toasts"]["showNotification"]>[0]) =>
@@ -353,9 +364,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
     for (const extension of extensions) {
       try {
-        this.cancelDependencyObservers.dispatchEvent(
-          new CustomEvent(extension.id),
-        );
+        this.cancelObservers(extension.id);
       } catch {
         console.error("Error cancelling dependency observer");
       }
@@ -779,8 +788,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   ): void {
     const { dependencies = [] } = extension.config;
 
-    // Clean up old observers
-    this.cancelDependencyObservers.dispatchEvent(new CustomEvent(extension.id));
+    this.cancelObservers(extension.id);
 
     if (dependencies.length > 0) {
       const rerun = once(() => {
@@ -821,13 +829,9 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         `Observing ${elementCount} element(s) for extension: ${extension.id}`,
       );
 
-      this.cancelDependencyObservers.addEventListener(
-        extension.id,
-        () => {
-          abortController.abort();
-        },
-        { once: true },
-      );
+      this.addObserver(extension.id, () => {
+        abortController.abort();
+      });
     } else {
       console.debug(`Extension has no dependencies: ${extension.id}`);
     }
