@@ -83,7 +83,8 @@ function mockHeavyDependencies() {
     };
   }
 }
-const isHMR = process.argv.includes("serve");
+
+const isHMR = process.env.HMR === "true";
 
 const createConfig = (env, options) =>
   mergeWithShared({

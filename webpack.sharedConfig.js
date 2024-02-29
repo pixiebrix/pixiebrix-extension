@@ -19,12 +19,11 @@ const fs = require("node:fs");
 const path = require("node:path");
 const JSON5 = require("json5");
 const { merge } = require("webpack-merge");
-const ReactRefreshTypeScript = require("react-refresh-typescript");
 
 const tsconfig = JSON5.parse(fs.readFileSync("./tsconfig.json", "utf8"));
 
 const isProd = process.argv.includes("production");
-const isHMR = process.argv.includes("serve");
+const isHMR = process.env.HMR === "true";
 
 /** @type import("webpack").Configuration */
 const shared = {
@@ -72,7 +71,8 @@ const shared = {
           ...(isHMR && {
             getCustomTransformers() {
               return {
-                before: [ReactRefreshTypeScript()],
+                // Keep `require` here to avoid breaking the app for now
+                before: [require("react-refresh-typescript")()],
               };
             },
           }),
