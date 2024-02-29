@@ -22,6 +22,7 @@ import { expectContext } from "@/utils/expectContext";
 import { type RegistryId } from "@/types/registryTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 
 type Source =
   // From the remote brick registry
@@ -45,26 +46,10 @@ export class DoesNotExistError extends Error {
   }
 }
 
-export type RegistryChangeListener = {
-  onCacheChanged: () => void;
-};
-
-type DatabaseChangeListener = {
-  onChanged: () => void;
-};
-
 /**
  * `backgroundRegistry` database change listeners.
  */
-// TODO: Use SimpleEventTarget instead
-// eslint-disable-next-line local-rules/persistBackgroundData -- Functions
-const databaseChangeListeners: DatabaseChangeListener[] = [];
-
-function notifyDatabaseListeners() {
-  for (const listener of databaseChangeListeners) {
-    listener.onChanged();
-  }
-}
+const databaseChangeListeners = new SimpleEventTarget();
 
 /**
  * Replace IDB with remote packages and notify listeners.
@@ -73,7 +58,7 @@ export const syncRemotePackages = memoizeUntilSettled(async () => {
   expectContext("extension");
 
   await backgroundRegistry.syncRemote();
-  notifyDatabaseListeners();
+  databaseChangeListeners.emit();
 });
 
 /**
@@ -83,7 +68,7 @@ export const clearPackages = async () => {
   expectContext("extension");
 
   await backgroundRegistry.clear();
-  notifyDatabaseListeners();
+  databaseChangeListeners.emit();
 };
 
 /**
@@ -134,17 +119,15 @@ class MemoryRegistry<
 
   private deserialize: ((raw: unknown) => Item) | null;
 
-  private listeners: RegistryChangeListener[] = [];
+  onCacheChanged = new SimpleEventTarget();
 
   constructor(kinds: Kind[], deserialize: ((raw: unknown) => Item) | null) {
     this.kinds = new Set(kinds);
     this.deserialize = deserialize;
 
-    databaseChangeListeners.push({
-      onChanged: () => {
-        // If database changes, clear the cache to force reloading user-defined bricks
-        this.clear();
-      },
+    databaseChangeListeners.add(() => {
+      // If database changes, clear the cache to force reloading user-defined bricks
+      this.clear();
     });
   }
 
@@ -158,28 +141,6 @@ class MemoryRegistry<
     }
 
     this.deserialize = deserialize;
-  }
-
-  /**
-   * Add a change listener
-   * @param listener the change listener
-   */
-  addListener(listener: RegistryChangeListener): void {
-    this.listeners.push(listener);
-  }
-
-  /**
-   * Remove a change listener
-   * @param listener the change listener
-   */
-  removeListener(listener: RegistryChangeListener): void {
-    this.listeners = this.listeners.filter((x) => x !== listener);
-  }
-
-  private notifyAll() {
-    for (const listener of this.listeners) {
-      listener.onCacheChanged();
-    }
   }
 
   /**
@@ -304,7 +265,7 @@ class MemoryRegistry<
       source: "internal",
       notify: false,
     });
-    this.notifyAll();
+    this.onCacheChanged.emit();
 
     this._cacheInitialized = true;
 
@@ -343,7 +304,7 @@ class MemoryRegistry<
     }
 
     if (changed && notify) {
-      this.notifyAll();
+      this.onCacheChanged.emit();
     }
   }
 
@@ -371,7 +332,7 @@ class MemoryRegistry<
     // Need to clear the whole thing, including built-ins. Listeners will often can all() to repopulate the cache.
     this._cacheInitialized = false;
     this._cache.clear();
-    this.notifyAll();
+    this.onCacheChanged.emit();
   }
 
   /**
