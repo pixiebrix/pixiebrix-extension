@@ -81,6 +81,7 @@ jest.mock("@/auth/authStorage", () => ({
   }),
   isLinked: jest.fn().mockResolvedValue(true),
   async updateUserData() {},
+  addListener: jest.fn(),
 }));
 
 jest.mock("@/background/installer", () => ({
