@@ -1,5 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
+// @ts-expect-error -- TODO: figure out why import is not working
 import { loadEnv } from "./scripts/env.mjs";
 
 /**
