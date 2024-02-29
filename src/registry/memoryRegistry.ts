@@ -49,7 +49,7 @@ export class DoesNotExistError extends Error {
 /**
  * `backgroundRegistry` database change listeners.
  */
-const databaseChangeListeners = new SimpleEventTarget();
+const packageRegistryChange = new SimpleEventTarget();
 
 /**
  * Replace IDB with remote packages and notify listeners.
@@ -58,7 +58,7 @@ export const syncRemotePackages = memoizeUntilSettled(async () => {
   expectContext("extension");
 
   await backgroundRegistry.syncRemote();
-  databaseChangeListeners.emit();
+  packageRegistryChange.emit();
 });
 
 /**
@@ -68,7 +68,7 @@ export const clearPackages = async () => {
   expectContext("extension");
 
   await backgroundRegistry.clear();
-  databaseChangeListeners.emit();
+  packageRegistryChange.emit();
 };
 
 /**
@@ -125,7 +125,7 @@ class MemoryRegistry<
     this.kinds = new Set(kinds);
     this.deserialize = deserialize;
 
-    databaseChangeListeners.add(() => {
+    packageRegistryChange.add(() => {
       // If database changes, clear the cache to force reloading user-defined bricks
       this.clear();
     });
