@@ -16,14 +16,13 @@
  */
 
 import { test as setup } from "@playwright/test";
-import { config } from "dotenv";
+import { loadEnv } from "../scripts/env.mjs";
 
-config({ path: "../../.env.development" });
+loadEnv();
+
 setup("authenticate", async ({ page }) => {
-  console.log(process.env.CHROME_MANIFEST_KEY);
-  // TODO - how to get the service url to work without using the baseURL in config
-  // await page.goto(`${process.env.SERVICE_URL}/login`);
-  await page.goto("https://app.pixiebrix.com/login/email");
+  console.log(process.env.SERVICE_URL);
+  await page.goto(`${process.env.SERVICE_URL}/login/email`);
   await page.getByLabel("Email").fill("username");
   await page.getByLabel("Password").fill("password");
   await page.getByRole("button", { name: "Log in" }).click();
