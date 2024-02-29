@@ -62,6 +62,7 @@ export class SimpleEventTarget<Detail> extends EventTarget {
     this.removeEventListener(this.coreEvent, this.getNativeListener(callback));
   }
 
+  // TODO: Enforce detail, unless it's `undefined`
   emit(detail?: Detail): void {
     this.dispatchEvent(new CustomEvent(this.coreEvent, { detail }));
   }

@@ -15,16 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type { CustomAction } from "@/platform/platformTypes/quickBarProtocol";
-
-/**
- * Handler for when the set of registered actions changes
- *
- * @see QuickBarRegistry.addListener
- * @see QuickBarRegistry.removeListener
- */
-export type ActionsChangeHandler = (activeActions: CustomAction[]) => void;
-
 /**
  * Shape of arguments passed to action generators for dynamic QuickBar action generator.
  *

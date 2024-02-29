@@ -286,7 +286,10 @@ const createConfig = (env, options) =>
       }),
       new DiscardFilePlugin(),
 
-      isHMR && new ReactRefreshWebpackPlugin(),
+      isHMR &&
+        new ReactRefreshWebpackPlugin({
+          overlay: false,
+        }),
     ]),
     module: {
       rules: [
