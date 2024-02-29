@@ -16,9 +16,9 @@
  */
 
 import { expect, test as setup } from "@playwright/test";
-// @ts-expect-error -- TODO: figure out why import is not working
-// eslint-disable-next-line no-restricted-imports
-import { loadEnv } from "../scripts/env.mjs";
+
+// eslint-disable-next-line no-restricted-imports -- we're not importing from src/
+import { loadEnv } from "../scripts/env";
 
 process.env.ENV_FILE = ".env.development";
 loadEnv();
