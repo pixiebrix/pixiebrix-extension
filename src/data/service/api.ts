@@ -35,7 +35,7 @@ import {
   type RecipeResponse,
   type RemoteIntegrationConfig,
   UserRole,
-  Deployment,
+  type Deployment,
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
@@ -47,7 +47,7 @@ import {
 } from "@/types/modDefinitionTypes";
 import baseQuery from "@/data/service/baseQuery";
 import type { ModComponentBase } from "@/types/modComponentTypes";
-import { InstalledDeployment } from "@/utils/deploymentUtils";
+import { type InstalledDeployment } from "@/utils/deploymentUtils";
 
 export const appApi = createApi({
   reducerPath: "appApi",

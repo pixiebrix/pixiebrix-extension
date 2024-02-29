@@ -49,14 +49,17 @@ import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
 import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 import { useGetDeploymentsQuery } from "@/data/service/api";
 import { deserializeError } from "serialize-error";
+import { isEqual } from "lodash";
 
 function getError(deploymentsError: unknown, permissionsError: unknown) {
   if (deploymentsError) {
     if (deserializeError(deploymentsError).name === "ExtensionNotLinkedError") {
       return null;
     }
+
     return deploymentsError;
   }
+
   return permissionsError;
 }
 
@@ -101,10 +104,13 @@ function useDeployments(): DeploymentsState {
   const dispatch = useDispatch<Dispatch>();
   const installedExtensions = useSelector(selectExtensions);
   const { restrict } = useFlags();
+  const activeExtensions = selectInstalledDeployments(installedExtensions);
+  const activeExtensionsRef = React.useRef(activeExtensions);
+  if (!isEqual(activeExtensions, activeExtensionsRef.current)) {
+    activeExtensionsRef.current = activeExtensions;
+  }
 
-  const { data: uuid } = useAsyncState(async () => {
-    return await getUUID();
-  }, []);
+  const { data: uuid } = useAsyncState(async () => getUUID(), []);
 
   const {
     data: deployments,
@@ -114,9 +120,12 @@ function useDeployments(): DeploymentsState {
     {
       uid: uuid,
       version: getExtensionVersion(),
-      active: selectInstalledDeployments(installedExtensions),
+      active: activeExtensionsRef.current,
     },
-    { skip: !uuid },
+    {
+      skip: !uuid,
+      refetchOnMountOrArgChange: 60,
+    },
   );
 
   const {

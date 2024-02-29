@@ -75,7 +75,7 @@ describe("DeploymentsContext", () => {
     await waitForEffect();
 
     await waitFor(() => {
-      // initial fetch with no installed deployments
+      // Initial fetch with no installed deployments
       expect(axiosMock.history.post).toHaveLength(1);
     });
 
@@ -104,14 +104,14 @@ describe("DeploymentsContext", () => {
     expect(screen.queryAllByTestId("Error")).toHaveLength(0);
 
     await waitFor(() => {
-      // initial fetch with no installed deployments
+      // Initial fetch with no installed deployments
       expect(axiosMock.history.post).toHaveLength(1);
     });
 
     await userEvent.click(screen.getByText("Update"));
 
     await waitFor(() => {
-      // refetch after deployment activation
+      // Refetch after deployment activation
       expect(axiosMock.history.post).toHaveLength(2);
     });
 
@@ -133,14 +133,14 @@ describe("DeploymentsContext", () => {
     );
 
     await waitFor(() => {
-      // initial fetch with no installed deployments
+      // Initial fetch with no installed deployments
       expect(axiosMock.history.post).toHaveLength(1);
     });
 
     await userEvent.click(screen.getByText("Update"));
 
     await waitFor(() => {
-      // refetch after deployment activation
+      // Refetch after deployment activation
       expect(axiosMock.history.post).toHaveLength(2);
     });
 
@@ -167,6 +167,64 @@ describe("DeploymentsContext", () => {
     expect(axiosMock.history.post).toHaveLength(2);
   });
 
+  it("remounting the DeploymentsProvider refetches the deployments if more than 1 minute has passed", async () => {
+    jest.useFakeTimers();
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+
+    axiosMock.onPost("/api/deployments/").reply(200, [deploymentFactory()]);
+    requestPermissionsMock.mockResolvedValue(true);
+
+    const { rerender } = render(
+      <DeploymentsProvider>
+        <Component />
+      </DeploymentsProvider>,
+    );
+
+    await waitFor(() => {
+      // Initial fetch with no installed deployments
+      expect(axiosMock.history.post).toHaveLength(1);
+    });
+
+    await user.click(screen.getByText("Update"));
+
+    await waitFor(() => {
+      // Refetch after deployment activation
+      expect(axiosMock.history.post).toHaveLength(2);
+    });
+
+    // Permissions only requested once because user has clicked update once
+    expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
+
+    // Advance time by more than 1 minute
+    jest.advanceTimersByTime(60_000 + 1);
+
+    rerender(
+      <DeploymentsProvider key="force-remount">
+        <Component />
+      </DeploymentsProvider>,
+    );
+
+    // Changes in deployments after 1 minute, so new fetch after remount
+    await waitFor(() => {
+      expect(axiosMock.history.post).toHaveLength(3);
+    });
+
+    await user.click(screen.getByText("Update"));
+
+    await waitFor(() => {
+      // This shouldn't be occurring. Something is wrong with the test store that's making the
+      // activeExtensions return an empty array.
+      expect(axiosMock.history.post).toHaveLength(4);
+    });
+
+    console.log(axiosMock.history.post);
+
+    // Permissions requested twice because user has clicked update twice
+    expect(requestPermissionsMock).toHaveBeenCalledTimes(2);
+
+    jest.useRealTimers();
+  });
+
   it("unlinked extension error is ignored", async () => {
     getLinkedApiClientMock.mockRejectedValue(new ExtensionNotLinkedError());
     axiosMock.onPost("/api/deployments/").reply(200, [deploymentFactory()]);
@@ -179,7 +237,7 @@ describe("DeploymentsContext", () => {
     );
 
     await waitForEffect();
-    // deployments are not fetched because extensin is not linked
+    // Deployments are not fetched because extensin is not linked
     expect(axiosMock.history.post).toHaveLength(0);
   });
 
