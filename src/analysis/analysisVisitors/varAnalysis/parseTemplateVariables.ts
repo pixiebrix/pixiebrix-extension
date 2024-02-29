@@ -328,7 +328,7 @@ function getVariableName(variable: Variable, path = ""): string {
 }
 
 function parseTemplateVariables(template: string): string[] {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- Only used once
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Only used once
   const ast = parser.parse(template, true);
   return traverse(ast)
     .filter((x) => x.parent == null)
