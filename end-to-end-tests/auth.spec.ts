@@ -20,12 +20,20 @@ import { test as setup } from "@playwright/test";
 // eslint-disable-next-line no-restricted-imports
 import { loadEnv } from "../scripts/env.mjs";
 
+process.env.ENV_FILE = ".env.development";
 loadEnv();
 
 setup("authenticate", async ({ page }) => {
-  console.log(process.env.SERVICE_URL);
+  console.log(
+    process.env.E2E_TEST_USER_EMAIL_UNAFFILIATED,
+    process.env.E2E_TEST_USER_PASSWORD_UNAFFILIATED,
+  );
   await page.goto(`${process.env.SERVICE_URL}/login/email`);
-  await page.getByLabel("Email").fill("username");
-  await page.getByLabel("Password").fill("password");
+  await page
+    .getByLabel("Email")
+    .fill(process.env.E2E_TEST_USER_EMAIL_UNAFFILIATED);
+  await page
+    .getByLabel("Password")
+    .fill(process.env.E2E_TEST_USER_PASSWORD_UNAFFILIATED);
   await page.getByRole("button", { name: "Log in" }).click();
 });

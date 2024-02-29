@@ -7,6 +7,7 @@ import { loadEnv } from "./scripts/env.mjs";
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
+process.env.ENV_FILE = ".env.development";
 loadEnv();
 
 /**
