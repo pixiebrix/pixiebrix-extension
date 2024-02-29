@@ -17,7 +17,7 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { checkAvailable } from "@/bricks/available";
-import { castArray, cloneDeep, debounce, once, pick } from "lodash";
+import { castArray, cloneDeep, debounce, pick } from "lodash";
 import {
   type InitialValues,
   reduceExtensionPipeline,
@@ -130,12 +130,6 @@ export type MenuItemStarterBrickConfig = {
   if?: BrickConfig | BrickPipeline;
 
   /**
-   * (Experimental) re-install the menu if an off the selectors change.
-   * @see if
-   */
-  dependencies?: string[];
-
-  /**
    * True if caption is determined dynamically (using the reader and templating)
    */
   dynamicCaption?: boolean;
@@ -201,14 +195,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   private readonly cancelController = new RepeatableAbortController();
 
   /**
-   * Map from extension id to callback to cancel observers for its dependencies.
-   *
-   * @see MenuItemStarterBrickConfig.dependencies
-   * @private
-   */
-  private readonly cancelDependencyObservers: Map<UUID, () => void>;
-
-  /**
    * True if the extension point has been uninstalled
    * @private
    */
@@ -255,7 +241,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     super(platform, metadata);
     this.menus = new Map<UUID, HTMLElement>();
     this.removed = new Set<UUID>();
-    this.cancelDependencyObservers = new Map<UUID, () => void>();
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -270,13 +255,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         default: "false",
       },
       if: actionSchema,
-      dependencies: {
-        type: "array",
-        items: {
-          type: "string",
-        },
-        minItems: 1,
-      },
       action: actionSchema,
       icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
       shadowDOM: {
@@ -350,19 +328,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       } catch (error) {
         this.logger.error(error);
       }
-    }
-
-    for (const extension of extensions) {
-      const clear = this.cancelDependencyObservers.get(extension.id);
-      if (clear) {
-        try {
-          clear();
-        } catch {
-          console.error("Error cancelling dependency observer");
-        }
-      }
-
-      this.cancelDependencyObservers.delete(extension.id);
     }
   }
 
@@ -636,7 +601,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       });
 
       if (!show) {
-        this.watchDependencies(extension);
         return;
       }
     }
@@ -762,8 +726,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       this.addMenuItem($menu, $menuItem);
     }
 
-    this.watchDependencies(extension);
-
     if (process.env.DEBUG) {
       onNodeRemoved(
         $menuItem.get(0),
@@ -775,70 +737,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         },
         this.cancelController.signal,
       );
-    }
-  }
-
-  watchDependencies(
-    extension: ResolvedModComponent<MenuItemStarterBrickConfig>,
-  ): void {
-    const { dependencies = [] } = extension.config;
-
-    // Clean up old observers
-    if (this.cancelDependencyObservers.has(extension.id)) {
-      this.cancelDependencyObservers.get(extension.id)();
-      this.cancelDependencyObservers.delete(extension.id);
-    }
-
-    if (dependencies.length > 0) {
-      const rerun = once(() => {
-        console.debug("Dependency changed, re-running extension");
-        void this.runModComponents({
-          reason: RunReason.DEPENDENCY_CHANGED,
-          extensionIds: [extension.id],
-        });
-      });
-
-      const observer = new MutationObserver(rerun);
-
-      const abortController = new AbortController();
-
-      let elementCount = 0;
-      for (const dependency of dependencies) {
-        const $dependency = $safeFind(dependency);
-        if ($dependency.length > 0) {
-          for (const element of $dependency) {
-            elementCount++;
-            observer.observe(element, {
-              childList: true,
-              subtree: true,
-            });
-          }
-        } else {
-          void awaitElementOnce(
-            dependency,
-            abortController.signal,
-            // eslint-disable-next-line promise/prefer-await-to-then -- TODO: Maybe refactor
-          ).then(() => {
-            rerun();
-          });
-        }
-      }
-
-      console.debug(
-        `Observing ${elementCount} element(s) for extension: ${extension.id}`,
-      );
-
-      this.cancelDependencyObservers.set(extension.id, () => {
-        try {
-          observer.disconnect();
-        } catch (error) {
-          console.error("Error cancelling mutation observer", error);
-        }
-
-        abortController.abort();
-      });
-    } else {
-      console.debug(`Extension has no dependencies: ${extension.id}`);
     }
   }
 
