@@ -206,7 +206,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
    * @see MenuItemStarterBrickConfig.dependencies
    * @private
    */
-  private readonly cancelDependencyObservers: Map<UUID, () => void>;
+  private readonly cancelDependencyObservers = new EventTarget();
 
   /**
    * True if the extension point has been uninstalled
@@ -255,7 +255,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     super(platform, metadata);
     this.menus = new Map<UUID, HTMLElement>();
     this.removed = new Set<UUID>();
-    this.cancelDependencyObservers = new Map<UUID, () => void>();
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -353,16 +352,13 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     }
 
     for (const extension of extensions) {
-      const clear = this.cancelDependencyObservers.get(extension.id);
-      if (clear) {
-        try {
-          clear();
-        } catch {
-          console.error("Error cancelling dependency observer");
-        }
+      try {
+        this.cancelDependencyObservers.dispatchEvent(
+          new CustomEvent(extension.id),
+        );
+      } catch {
+        console.error("Error cancelling dependency observer");
       }
-
-      this.cancelDependencyObservers.delete(extension.id);
     }
   }
 
@@ -784,10 +780,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     const { dependencies = [] } = extension.config;
 
     // Clean up old observers
-    if (this.cancelDependencyObservers.has(extension.id)) {
-      this.cancelDependencyObservers.get(extension.id)();
-      this.cancelDependencyObservers.delete(extension.id);
-    }
+    this.cancelDependencyObservers.dispatchEvent(new CustomEvent(extension.id));
 
     if (dependencies.length > 0) {
       const rerun = once(() => {
@@ -828,15 +821,19 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         `Observing ${elementCount} element(s) for extension: ${extension.id}`,
       );
 
-      this.cancelDependencyObservers.set(extension.id, () => {
-        try {
-          observer.disconnect();
-        } catch (error) {
-          console.error("Error cancelling mutation observer", error);
-        }
+      this.cancelDependencyObservers.addEventListener(
+        extension.id,
+        () => {
+          try {
+            observer.disconnect();
+          } catch (error) {
+            console.error("Error cancelling mutation observer", error);
+          }
 
-        abortController.abort();
-      });
+          abortController.abort();
+        },
+        { once: true },
+      );
     } else {
       console.debug(`Extension has no dependencies: ${extension.id}`);
     }
