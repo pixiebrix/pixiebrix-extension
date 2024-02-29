@@ -193,20 +193,14 @@ export enum RunReason {
    */
   MANUAL = 3,
   /**
-   * Experimental: a declared dependency of the StarterBrick changed.
-   *
-   * See MenuItemStarterBrickABC
-   */
-  DEPENDENCY_CHANGED = 4,
-  /**
    * The SPA mutated without navigating
    */
-  MUTATION = 5,
+  MUTATION = 4,
   /**
    * Page Editor updated the ModComponent
    * @since 1.7.19
    */
-  PAGE_EDITOR = 6,
+  PAGE_EDITOR = 5,
 }
 
 /**
