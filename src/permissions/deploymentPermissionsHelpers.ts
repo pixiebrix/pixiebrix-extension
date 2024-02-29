@@ -25,7 +25,7 @@ import {
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
-import type { Manifest } from "webextension-polyfill/namespaces/manifest";
+import type { Manifest } from "webextension-polyfill";
 
 /**
  * Return permissions required to activate a deployment.
