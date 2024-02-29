@@ -47,6 +47,7 @@ jest.mock("@/auth/authStorage", () => ({
     return {};
   },
   isLinked: jest.fn().mockResolvedValue(true),
+  addListener: jest.fn(),
 }));
 
 jest.mock("@/utils/extensionUtils");
