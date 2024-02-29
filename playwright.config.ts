@@ -3,10 +3,6 @@ import { defineConfig, devices } from "@playwright/test";
 // @ts-expect-error -- TODO: figure out why import is not working
 import { loadEnv } from "./scripts/env.mjs";
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
 process.env.ENV_FILE = ".env.development";
 loadEnv();
 
@@ -47,6 +43,7 @@ export default defineConfig({
         // Use auth state prepared by auth.setup.ts
         storageState: "end-to-end-tests/.auth/user.json",
       },
+      dependencies: ["setup"],
     },
     //
     // {
