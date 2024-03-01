@@ -27,7 +27,7 @@ import {
   isPipelineElement,
 } from "@/components/documentBuilder/documentBuilderTypes";
 import ForEachElement from "@/bricks/transformers/controlFlow/ForEachElement";
-import { castArray, pickBy } from "lodash";
+import { castArray, pick, pickBy } from "lodash";
 import { type AnalysisAnnotation } from "@/analysis/analysisTypes";
 import { PIPELINE_BLOCKS_FIELD_NAME } from "./consts";
 import TourStepTransformer from "@/bricks/transformers/tourStep/tourStep";
@@ -45,6 +45,8 @@ import { joinPathParts } from "@/utils/formUtils";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import MapValues from "@/bricks/transformers/controlFlow/MapValues";
 import AddTextCommand from "@/bricks/effects/AddTextCommand";
+import { type PackageUpsertResponse } from "@/types/contract";
+import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 
 export function getIdForElement(
   element: ModComponentBase | ModComponentFormState,
@@ -267,5 +269,16 @@ export function selectPageEditorDimensions() {
     pageEditorHeight: window.innerHeight,
     pageEditorOrientation:
       window.innerWidth > window.innerHeight ? "landscape" : "portrait",
+  };
+}
+
+export function selectModMetadata(
+  unsavedModDefinition: UnsavedModDefinition,
+  response: PackageUpsertResponse,
+): ModComponentBase["_recipe"] {
+  return {
+    ...unsavedModDefinition.metadata,
+    sharing: pick(response, ["public", "organizations"]),
+    ...pick(response, ["updated_at"]),
   };
 }

@@ -19,7 +19,6 @@ import React, { useCallback } from "react";
 import {
   PACKAGE_REGEX,
   testIsSemVerString,
-  uuidv4,
   validateRegistryId,
   validateSemVerString,
 } from "@/types/helpers";
@@ -28,282 +27,37 @@ import {
   selectActiveElement,
   selectActiveRecipeId,
   selectDirtyMetadataForRecipeId,
-  selectDirtyRecipeOptionDefinitions,
   selectEditorModalVisibilities,
-  selectKeepLocalCopyOnCreateRecipe,
 } from "@/pageEditor/slices/editorSelectors";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { Button, Modal } from "react-bootstrap";
 import { selectScope } from "@/auth/authSelectors";
-import {
-  buildNewMod,
-  generateScopeBrickId,
-} from "@/pageEditor/panes/save/saveHelpers";
+import { generateScopeBrickId } from "@/pageEditor/panes/save/saveHelpers";
 import { RequireScope } from "@/auth/RequireScope";
 import Form, {
   type OnSubmit,
   type RenderBody,
   type RenderSubmit,
 } from "@/components/form/Form";
-import { useCreateRecipeMutation } from "@/data/service/api";
-import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
-import extensionsSlice from "@/store/extensionsSlice";
 import notify from "@/utils/notify";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { produce } from "immer";
 import { object, string } from "yup";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { collectModOptions } from "@/store/extensionsUtils";
-import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
-import useDeactivateMod from "@/pageEditor/hooks/useDeactivateMod";
 import RegistryIdWidget from "@/components/form/widgets/RegistryIdWidget";
 import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
-import { type PackageUpsertResponse } from "@/types/contract";
-import { pick } from "lodash";
 import {
   useAllModDefinitions,
   useOptionalModDefinition,
 } from "@/modDefinitions/modDefinitionHooks";
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
-import {
-  type ModDefinition,
-  type UnsavedModDefinition,
-} from "@/types/modDefinitionTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
 import { type RegistryId } from "@/types/registryTypes";
-import { type ModComponentBase } from "@/types/modComponentTypes";
-import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
-import reportEvent from "@/telemetry/reportEvent";
-import { Events } from "@/telemetry/events";
-import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
-import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
-import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
-import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
-
-const { actions: modComponentActions } = extensionsSlice;
-
-function selectModMetadata(
-  unsavedModDefinition: UnsavedModDefinition,
-  response: PackageUpsertResponse,
-): ModComponentBase["_recipe"] {
-  return {
-    ...unsavedModDefinition.metadata,
-    sharing: pick(response, ["public", "organizations"]),
-    ...pick(response, ["updated_at"]),
-  };
-}
-
-function useSaveCallbacks({
-  activeModComponent,
-}: {
-  activeModComponent: ModComponentFormState;
-}) {
-  const dispatch = useDispatch();
-  const [createMod] = useCreateRecipeMutation();
-  const upsertModComponentFormState = useUpsertModComponentFormState();
-  const removeModComponentFromStorage = useRemoveModComponentFromStorage();
-  const deactivateMod = useDeactivateMod();
-  const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
-    selectGetCleanComponentsAndDirtyFormStatesForMod,
-  );
-  const dirtyModOptions = useSelector(selectDirtyRecipeOptionDefinitions);
-  const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
-  const compareModComponentCountsToModDefinition =
-    useCompareModComponentCounts();
-  const checkModStarterBrickInvariants = useCheckModStarterBrickInvariants();
-
-  const createModFromComponent = useCallback(
-    (
-      modComponentFormState: ModComponentFormState,
-      modMetadata: ModMetadataFormState,
-      // eslint-disable-next-line @typescript-eslint/promise-function-async -- permissions check must be called in the user gesture context, `async-await` can break the call chain
-    ) =>
-      // eslint-disable-next-line promise/prefer-await-to-then -- permissions check must be called in the user gesture context, `async-await` can break the call chain
-      ensureElementPermissionsFromUserGesture(modComponentFormState).then(
-        async (hasPermissions) => {
-          if (!hasPermissions) {
-            return;
-          }
-
-          let modComponent = produce(activeModComponent, (draft) => {
-            draft.uuid = uuidv4();
-          });
-
-          const newModDefinition = buildNewMod({
-            cleanModComponents: [],
-            dirtyModComponentFormStates: [modComponent],
-            dirtyModMetadata: modMetadata,
-          });
-
-          const modComponentDefinitionCountsMatch =
-            compareModComponentCountsToModDefinition(newModDefinition);
-          const modComponentStarterBricksMatch =
-            await checkModStarterBrickInvariants(newModDefinition);
-
-          if (
-            !modComponentDefinitionCountsMatch ||
-            !modComponentStarterBricksMatch
-          ) {
-            // Not including modDefinition because it can be 1.5MB+ in some rare cases
-            // See discussion: https://github.com/pixiebrix/pixiebrix-extension/pull/7629/files#r1492864349
-            reportEvent(Events.PAGE_EDITOR_MOD_SAVE_ERROR, {
-              modId: newModDefinition.metadata.id,
-              modComponentDefinitionCountsMatch,
-              modComponentStarterBricksMatch,
-            });
-            dispatch(editorActions.showSaveDataIntegrityErrorModal());
-            return false;
-          }
-
-          const upsertResponse = await createMod({
-            recipe: newModDefinition,
-            organizations: [],
-            public: false,
-          }).unwrap();
-
-          modComponent = produce(modComponent, (draft) => {
-            draft.recipe = selectModMetadata(newModDefinition, upsertResponse);
-          });
-
-          dispatch(editorActions.addElement(modComponent));
-
-          await upsertModComponentFormState({
-            element: modComponent,
-            options: {
-              // Don't push to cloud since we're saving it with the recipe
-              pushToCloud: false,
-              // Permissions are already checked above
-              checkPermissions: false,
-              // Need to provide user feedback
-              notifySuccess: true,
-              reactivateEveryTab: true,
-            },
-            modId: newModDefinition.metadata.id,
-          });
-
-          if (!keepLocalCopy) {
-            await removeModComponentFromStorage({
-              extensionId: activeModComponent.uuid,
-            });
-          }
-
-          reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
-            modId: newModDefinition.metadata.id,
-          });
-        },
-      ),
-    [
-      activeModComponent,
-      compareModComponentCountsToModDefinition,
-      checkModStarterBrickInvariants,
-      createMod,
-      dispatch,
-      upsertModComponentFormState,
-      keepLocalCopy,
-      removeModComponentFromStorage,
-    ],
-  );
-
-  const createModFromMod = useCallback(
-    async (modDefinition: ModDefinition, metadata: ModMetadataFormState) => {
-      const modId = modDefinition.metadata.id;
-      const { cleanModComponents, dirtyModComponentFormStates } =
-        getCleanComponentsAndDirtyFormStatesForMod(modId);
-
-      // eslint-disable-next-line security/detect-object-injection -- new recipe IDs are sanitized in the form validation
-      const modOptions = dirtyModOptions[modId];
-
-      const newModDefinition = buildNewMod({
-        sourceMod: modDefinition,
-        cleanModComponents,
-        dirtyModComponentFormStates,
-        dirtyModOptions: modOptions,
-        dirtyModMetadata: metadata,
-      });
-
-      const modComponentDefinitionCountsMatch =
-        compareModComponentCountsToModDefinition(newModDefinition);
-      const modComponentStarterBricksMatch =
-        await checkModStarterBrickInvariants(newModDefinition);
-
-      if (
-        !modComponentDefinitionCountsMatch ||
-        !modComponentStarterBricksMatch
-      ) {
-        // Not including modDefinition because it can be 1.5MB+ in some rare cases
-        // See discussion: https://github.com/pixiebrix/pixiebrix-extension/pull/7629/files#r1492864349
-        reportEvent(Events.PAGE_EDITOR_MOD_SAVE_ERROR, {
-          modId: newModDefinition.metadata.id,
-          modComponentDefinitionCountsMatch,
-          modComponentStarterBricksMatch,
-        });
-        dispatch(editorActions.showSaveDataIntegrityErrorModal());
-        return false;
-      }
-
-      const upsertResponse = await createMod({
-        recipe: newModDefinition,
-        organizations: [],
-        public: false,
-      }).unwrap();
-
-      const savedModDefinition: ModDefinition = {
-        ...newModDefinition,
-        sharing: {
-          public: upsertResponse.public,
-          organizations: upsertResponse.organizations,
-        },
-        updated_at: upsertResponse.updated_at,
-      };
-
-      if (!keepLocalCopy) {
-        await deactivateMod({ modId, shouldShowConfirmation: false });
-      }
-
-      const modComponents = [
-        ...dirtyModComponentFormStates,
-        ...cleanModComponents,
-      ];
-
-      dispatch(
-        modComponentActions.installMod({
-          modDefinition: savedModDefinition,
-          configuredDependencies: collectExistingConfiguredDependenciesForMod(
-            savedModDefinition,
-            modComponents,
-          ),
-          optionsArgs: collectModOptions(modComponents),
-          screen: "pageEditor",
-          isReinstall: false,
-        }),
-      );
-      dispatch(editorActions.selectRecipeId(savedModDefinition.metadata.id));
-
-      reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
-        copiedFrom: modId,
-        modId: savedModDefinition.metadata.id,
-      });
-    },
-    [
-      getCleanComponentsAndDirtyFormStatesForMod,
-      dirtyModOptions,
-      compareModComponentCountsToModDefinition,
-      checkModStarterBrickInvariants,
-      createMod,
-      keepLocalCopy,
-      dispatch,
-      deactivateMod,
-    ],
-  );
-
-  return {
-    createModFromComponent,
-    createModFromMod,
-  };
-}
+import useCreateModFromModComponent from "@/pageEditor/hooks/useCreateModFromModComponent";
+import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
 
 function useInitialFormState({
   activeMod,
@@ -379,8 +133,10 @@ function useFormSchema() {
 
 const CreateModModalBody: React.FC = () => {
   const dispatch = useDispatch();
-
   const activeModComponent = useSelector(selectActiveElement);
+  const { createModFromMod } = useCreateModFromMod();
+  const { createModFromComponent } =
+    useCreateModFromModComponent(activeModComponent);
 
   // `selectActiveRecipeId` returns the mod id if a mod is selected. Assumption: if the CreateModal
   // is open, and a mod is active, then we're performing a "Save as New" on that mod.
@@ -398,9 +154,6 @@ const CreateModModalBody: React.FC = () => {
   const initialModMetadataFormState = useInitialFormState({
     activeElement: activeModComponent,
     activeMod,
-  });
-  const { createModFromComponent, createModFromMod } = useSaveCallbacks({
-    activeModComponent,
   });
 
   const onSubmit: OnSubmit<ModMetadataFormState> = async (values, helpers) => {
