@@ -16,21 +16,13 @@
  */
 
 import { test, expect } from "@playwright/test";
+import { E2E_TEST_USER_EMAIL_UNAFFILIATED, SERVICE_URL } from "./env";
 
 test.describe("create-react-app", () => {
   test("basic auth smoke test", async ({ page }) => {
-    if (
-      !process.env.SERVICE_URL ||
-      !process.env.E2E_TEST_USER_EMAIL_UNAFFILIATED
-    ) {
-      throw new Error(
-        "SERVICE_URL and E2E_TEST_USER_PASSWORD_UNAFFILIATED are required",
-      );
-    }
-
-    await page.goto(process.env.SERVICE_URL);
+    await page.goto(SERVICE_URL);
     await expect(
-      page.getByText(process.env.E2E_TEST_USER_EMAIL_UNAFFILIATED),
+      page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
     ).toBeVisible();
   });
 
