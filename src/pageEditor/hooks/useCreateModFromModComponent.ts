@@ -16,10 +16,7 @@
  */
 
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
-import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
-import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
 import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
-import { buildNewMod } from "@/pageEditor/panes/save/saveHelpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import reportEvent from "@/telemetry/reportEvent";
 import { uuidv4 } from "@/types/helpers";
@@ -33,6 +30,7 @@ import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModCompo
 import { selectModMetadata } from "@/pageEditor/utils";
 import { selectKeepLocalCopyOnCreateRecipe } from "@/pageEditor/slices/editorSelectors";
 import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
+import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 
 function useCreateModFromModComponent(
   activeModComponent: ModComponentFormState,
@@ -40,11 +38,9 @@ function useCreateModFromModComponent(
   const dispatch = useDispatch();
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
   const [createMod] = useCreateRecipeMutation();
-  const compareModComponentCountsToModDefinition =
-    useCompareModComponentCounts();
-  const checkModStarterBrickInvariants = useCheckModStarterBrickInvariants();
   const upsertModComponentFormState = useUpsertModComponentFormState();
   const removeModComponentFromStorage = useRemoveModComponentFromStorage();
+  const { buildAndValidateMod } = useBuildAndValidateMod();
 
   const createModFromComponent = useCallback(
     (
@@ -63,73 +59,59 @@ function useCreateModFromModComponent(
             draft.uuid = uuidv4();
           });
 
-          const newModDefinition = buildNewMod({
-            cleanModComponents: [],
-            dirtyModComponentFormStates: [modComponent],
-            dirtyModMetadata: modMetadata,
-          });
-
-          const modComponentDefinitionCountsMatch =
-            compareModComponentCountsToModDefinition(newModDefinition);
-          const modComponentStarterBricksMatch =
-            await checkModStarterBrickInvariants(newModDefinition);
-
-          if (
-            !modComponentDefinitionCountsMatch ||
-            !modComponentStarterBricksMatch
-          ) {
-            // Not including modDefinition because it can be 1.5MB+ in some rare cases
-            // See discussion: https://github.com/pixiebrix/pixiebrix-extension/pull/7629/files#r1492864349
-            reportEvent(Events.PAGE_EDITOR_MOD_SAVE_ERROR, {
-              modId: newModDefinition.metadata.id,
-              modComponentDefinitionCountsMatch,
-              modComponentStarterBricksMatch,
+          try {
+            const newModDefinition = await buildAndValidateMod({
+              cleanModComponents: [],
+              dirtyModComponentFormStates: [modComponent],
+              dirtyModMetadata: modMetadata,
             });
-            dispatch(editorActions.showSaveDataIntegrityErrorModal());
+
+            const upsertResponse = await createMod({
+              recipe: newModDefinition,
+              organizations: [],
+              public: false,
+            }).unwrap();
+
+            modComponent = produce(modComponent, (draft) => {
+              draft.recipe = selectModMetadata(
+                newModDefinition,
+                upsertResponse,
+              );
+            });
+
+            dispatch(editorActions.addElement(modComponent));
+
+            await upsertModComponentFormState({
+              element: modComponent,
+              options: {
+                // Don't push to cloud since we're saving it with the recipe
+                pushToCloud: false,
+                // Permissions are already checked above
+                checkPermissions: false,
+                // Need to provide user feedback
+                notifySuccess: true,
+                reactivateEveryTab: true,
+              },
+              modId: newModDefinition.metadata.id,
+            });
+
+            if (!keepLocalCopy) {
+              await removeModComponentFromStorage({
+                extensionId: activeModComponent.uuid,
+              });
+            }
+
+            reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
+              modId: newModDefinition.metadata.id,
+            });
+          } catch {
             return false;
           }
-
-          const upsertResponse = await createMod({
-            recipe: newModDefinition,
-            organizations: [],
-            public: false,
-          }).unwrap();
-
-          modComponent = produce(modComponent, (draft) => {
-            draft.recipe = selectModMetadata(newModDefinition, upsertResponse);
-          });
-
-          dispatch(editorActions.addElement(modComponent));
-
-          await upsertModComponentFormState({
-            element: modComponent,
-            options: {
-              // Don't push to cloud since we're saving it with the recipe
-              pushToCloud: false,
-              // Permissions are already checked above
-              checkPermissions: false,
-              // Need to provide user feedback
-              notifySuccess: true,
-              reactivateEveryTab: true,
-            },
-            modId: newModDefinition.metadata.id,
-          });
-
-          if (!keepLocalCopy) {
-            await removeModComponentFromStorage({
-              extensionId: activeModComponent.uuid,
-            });
-          }
-
-          reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
-            modId: newModDefinition.metadata.id,
-          });
         },
       ),
     [
       activeModComponent,
-      compareModComponentCountsToModDefinition,
-      checkModStarterBrickInvariants,
+      buildAndValidateMod,
       createMod,
       dispatch,
       upsertModComponentFormState,
