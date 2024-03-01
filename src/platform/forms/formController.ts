@@ -18,7 +18,7 @@
 import { type FormDefinition } from "@/platform/forms/formTypes";
 import { type UUID } from "@/types/stringTypes";
 import pDefer, { type DeferredPromise } from "p-defer";
-import { CancelError } from "@/errors/businessErrors";
+import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type FormPanelEntry } from "@/types/sidebarTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
@@ -75,8 +75,14 @@ export async function registerForm({
 
   if (forms.has(nonce)) {
     // This should never happen, but if it does, it's a bug.
-    console.warn("A form was already registered with nonce %s", nonce);
+    throw new Error(`Form with nonce already exists: ${nonce}`);
   }
+
+  [...forms.values()].forEach((form) => {
+    if (form.extensionId === extensionId) {
+      throw new BusinessError(`Form is already registered for mod component`);
+    }
+  });
 
   forms.set(nonce, {
     extensionId,
