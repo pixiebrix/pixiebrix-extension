@@ -187,11 +187,12 @@ export class GoogleSheetsLookup extends TransformerABC {
     const matchData = returnAllRows
       ? rows
       : rows.filter((x) => x.at(columnIndex) === query);
-    const matchRecords = matchData.map((row) =>
-      Object.fromEntries(
-        zip(headers, row).filter(([rowHeader]) => !isNullOrBlank(rowHeader)),
-      ),
-    );
+    const matchRecords = matchData.map((row) => {
+      const entries = zip(headers as string[], row).filter(
+        ([rowHeader]) => !isNullOrBlank(rowHeader),
+      );
+      return Object.fromEntries(entries);
+    });
 
     if (multi || returnAllRows) {
       return matchRecords;

@@ -178,7 +178,7 @@ class VarMap {
       this.map,
       [...pathParts, SELF_EXISTENCE],
       existence,
-      (currentNode) => {
+      (currentNode: Record<string | symbol, unknown> | null) => {
         if (currentNode == null) {
           return createNode(existence);
         }
@@ -242,7 +242,7 @@ class VarMap {
           this.map,
           [source, ...toPath(parentPath), key, SELF_EXISTENCE],
           VarExistence.DEFINITELY,
-          (x) => x ?? createNode(VarExistence.DEFINITELY),
+          (x: unknown) => x ?? createNode(VarExistence.DEFINITELY),
         );
       }
     }
