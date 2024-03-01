@@ -80,6 +80,8 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import collectExistingConfiguredDependenciesForMod from "@/integrations/util/collectExistingConfiguredDependenciesForMod";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
+import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
+import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
 
 const { actions: modComponentActions } = extensionsSlice;
 
@@ -109,6 +111,9 @@ function useSaveCallbacks({
   );
   const dirtyModOptions = useSelector(selectDirtyRecipeOptionDefinitions);
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
+  const compareModComponentCountsToModDefinition =
+    useCompareModComponentCounts();
+  const checkModStarterBrickInvariants = useCheckModStarterBrickInvariants();
 
   const createModFromComponent = useCallback(
     (
@@ -126,20 +131,45 @@ function useSaveCallbacks({
           let modComponent = produce(activeModComponent, (draft) => {
             draft.uuid = uuidv4();
           });
+
           const newModDefinition = buildNewMod({
             cleanModComponents: [],
             dirtyModComponentFormStates: [modComponent],
             dirtyModMetadata: modMetadata,
           });
+
+          const modComponentDefinitionCountsMatch =
+            compareModComponentCountsToModDefinition(newModDefinition);
+          const modComponentStarterBricksMatch =
+            await checkModStarterBrickInvariants(newModDefinition);
+
+          if (
+            !modComponentDefinitionCountsMatch ||
+            !modComponentStarterBricksMatch
+          ) {
+            // Not including modDefinition because it can be 1.5MB+ in some rare cases
+            // See discussion: https://github.com/pixiebrix/pixiebrix-extension/pull/7629/files#r1492864349
+            reportEvent(Events.PAGE_EDITOR_MOD_SAVE_ERROR, {
+              modId: newModDefinition.metadata.id,
+              modComponentDefinitionCountsMatch,
+              modComponentStarterBricksMatch,
+            });
+            dispatch(editorActions.showSaveDataIntegrityErrorModal());
+            return false;
+          }
+
           const upsertResponse = await createMod({
             recipe: newModDefinition,
             organizations: [],
             public: false,
           }).unwrap();
+
           modComponent = produce(modComponent, (draft) => {
             draft.recipe = selectModMetadata(newModDefinition, upsertResponse);
           });
+
           dispatch(editorActions.addElement(modComponent));
+
           await upsertModComponentFormState({
             element: modComponent,
             options: {
@@ -153,6 +183,7 @@ function useSaveCallbacks({
             },
             modId: newModDefinition.metadata.id,
           });
+
           if (!keepLocalCopy) {
             await removeModComponentFromStorage({
               extensionId: activeModComponent.uuid,
@@ -166,9 +197,11 @@ function useSaveCallbacks({
       ),
     [
       activeModComponent,
-      upsertModComponentFormState,
+      compareModComponentCountsToModDefinition,
+      checkModStarterBrickInvariants,
       createMod,
       dispatch,
+      upsertModComponentFormState,
       keepLocalCopy,
       removeModComponentFromStorage,
     ],
@@ -190,6 +223,26 @@ function useSaveCallbacks({
         dirtyModOptions: modOptions,
         dirtyModMetadata: metadata,
       });
+
+      const modComponentDefinitionCountsMatch =
+        compareModComponentCountsToModDefinition(newModDefinition);
+      const modComponentStarterBricksMatch =
+        await checkModStarterBrickInvariants(newModDefinition);
+
+      if (
+        !modComponentDefinitionCountsMatch ||
+        !modComponentStarterBricksMatch
+      ) {
+        // Not including modDefinition because it can be 1.5MB+ in some rare cases
+        // See discussion: https://github.com/pixiebrix/pixiebrix-extension/pull/7629/files#r1492864349
+        reportEvent(Events.PAGE_EDITOR_MOD_SAVE_ERROR, {
+          modId: newModDefinition.metadata.id,
+          modComponentDefinitionCountsMatch,
+          modComponentStarterBricksMatch,
+        });
+        dispatch(editorActions.showSaveDataIntegrityErrorModal());
+        return false;
+      }
 
       const upsertResponse = await createMod({
         recipe: newModDefinition,
@@ -237,6 +290,8 @@ function useSaveCallbacks({
     [
       getCleanComponentsAndDirtyFormStatesForMod,
       dirtyModOptions,
+      compareModComponentCountsToModDefinition,
+      checkModStarterBrickInvariants,
       createMod,
       keepLocalCopy,
       dispatch,
