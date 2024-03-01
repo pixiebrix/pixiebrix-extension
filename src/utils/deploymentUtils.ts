@@ -71,8 +71,8 @@ export const makeUpdatedFilter =
     if (restricted) {
       return (
         !deploymentMatch ||
-        new Date(deploymentMatch._deployment.timestamp) <
-          new Date(deployment.updated_at)
+        new Date(deploymentMatch._deployment?.timestamp ?? "") <
+          new Date(deployment.updated_at ?? "")
       );
     }
 
@@ -89,7 +89,10 @@ export const makeUpdatedFilter =
 
     if (
       blueprintMatch &&
-      gte(blueprintMatch._recipe.version, deployment.package.version)
+      gte(
+        blueprintMatch._recipe?.version ?? "",
+        deployment.package.version ?? "",
+      )
     ) {
       // The unrestricted user already has the blueprint (or a newer version of the blueprint), so don't prompt
       return false;
@@ -100,8 +103,8 @@ export const makeUpdatedFilter =
     }
 
     return (
-      new Date(deploymentMatch._deployment.timestamp) <
-      new Date(deployment.updated_at)
+      new Date(deploymentMatch._deployment?.timestamp ?? "") <
+      new Date(deployment.updated_at ?? "")
     );
   };
 
@@ -146,11 +149,15 @@ export function selectInstalledDeployments(
   return uniqBy(
     extensions
       .filter((x) => x._deployment?.id != null)
-      .map((x) => ({
-        deployment: x._deployment.id,
-        blueprint: x._recipe?.id,
-        blueprintVersion: x._recipe?.version,
-      })),
+      .map(
+        (x) =>
+          ({
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- _deployment is checked above
+            deployment: x._deployment!.id,
+            blueprint: x._recipe?.id,
+            blueprintVersion: x._recipe?.version,
+          }) as InstalledDeployment,
+      ),
     (x) => x.deployment,
   );
 }
@@ -187,7 +194,7 @@ export async function findLocalDeploymentConfiguredIntegrationDependencies(
   );
   // Integrations in the deployment that are bound to a team credential
   const teamBoundIntegrationIds = new Set(
-    deployment.bindings.map((x) => x.auth.service_id),
+    deployment.bindings?.map((x) => x.auth.service_id) ?? [],
   );
   const unboundIntegrations = deploymentIntegrations.filter(
     ({ integrationId }) =>
@@ -221,7 +228,7 @@ export async function mergeDeploymentIntegrationDependencies(
     deployment.package.config,
   );
   const teamBoundIntegrationIds = new Set(
-    deployment.bindings.map((x) => x.auth.service_id),
+    deployment.bindings?.map((x) => x.auth.service_id) ?? [],
   );
 
   const pixiebrixIntegration = deploymentIntegrations.find(
@@ -255,7 +262,8 @@ export async function mergeDeploymentIntegrationDependencies(
     );
 
   const deploymentBindingConfigs = Object.fromEntries(
-    deployment.bindings.map(({ auth, key }) => [auth.service_id, auth.id]),
+    deployment.bindings?.map(({ auth, key }) => [auth.service_id, auth.id]) ??
+      [],
   );
   const teamIntegrationDependencies: IntegrationDependency[] =
     deploymentIntegrations
