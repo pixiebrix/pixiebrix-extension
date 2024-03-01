@@ -31,9 +31,19 @@ import {
 import extensionsSlice, {
   actions as extensionsActions,
 } from "@/store/extensionsSlice";
-import { versionedModDefinitionWithResolvedModComponents } from "@/testUtils/factories/modDefinitionFactories";
+import {
+  modComponentDefinitionFactory,
+  modDefinitionFactory,
+  versionedModDefinitionWithResolvedModComponents,
+} from "@/testUtils/factories/modDefinitionFactories";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import produce from "immer";
+import { type Draft } from "immer";
+import { type ModComponentState } from "@/store/extensionsTypes";
+import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import { array } from "cooky-cutter";
+import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
+import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 
 jest.mock("@/pageEditor/starterBricks/base", () => ({
   ...jest.requireActual("@/pageEditor/starterBricks/base"),
@@ -130,7 +140,7 @@ describe("useBuildAndValidateMod", () => {
           dispatch(
             extensionsActions.installMod({
               modDefinition,
-              screen: "extensionConsole",
+              screen: "pageEditor",
               isReinstall: false,
             }),
           );
@@ -159,4 +169,44 @@ describe("useBuildAndValidateMod", () => {
       });
     },
   );
+
+  it("built mod has the wrong number of mod components", async () => {
+    const modMetadata = modMetadataFactory();
+    const installedModDefinition = modDefinitionFactory({
+      metadata: modMetadata,
+      extensionPoints: array(modComponentDefinitionFactory, 1),
+    });
+
+    const dirtyFormState1 = formStateFactory({
+      recipe: modMetadata,
+    });
+
+    const { result, getReduxStore } = renderHook(
+      () => useBuildAndValidateMod(),
+      {
+        setupRedux(dispatch) {
+          dispatch(
+            extensionsActions.installMod({
+              modDefinition: installedModDefinition,
+              screen: "pageEditor",
+              isReinstall: false,
+            }),
+          );
+          dispatch(editorActions.addElement(dirtyFormState1));
+        },
+      },
+    );
+
+    const state = getReduxStore().getState().options as ModComponentState;
+
+    await act(async () => {
+      await expect(
+        result.current.buildAndValidateMod({
+          sourceMod: installedModDefinition,
+          cleanModComponents: state.extensions.slice(1),
+          dirtyModComponentFormStates: [dirtyFormState1],
+        }),
+      ).rejects.toThrow("Mod save failed due to data integrity error");
+    });
+  });
 });
