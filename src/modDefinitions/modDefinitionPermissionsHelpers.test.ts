@@ -71,6 +71,7 @@ describe("checkModDefinitionPermissions", () => {
 
     expect(containsMock).toHaveBeenCalledExactlyOnceWith({
       origins: starterBrick.permissions.origins,
+      // `clipboardWrite` is included in the declared permissions, but not in the call to contains
       permissions: [...starterBrick.permissions.permissions],
     });
   });
