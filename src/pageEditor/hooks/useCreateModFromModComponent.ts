@@ -105,7 +105,7 @@ function useCreateModFromModComponent(
               modId: newModDefinition.metadata.id,
             });
           } catch {
-            return false;
+            // Error is already handled by buildAndValidateMod. Re-thrown to prevent further processing.
           }
         },
       ),
