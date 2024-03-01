@@ -90,13 +90,14 @@ export async function checkModDefinitionPermissions(
   modDefinition: Pick<ModDefinition, "definitions" | "extensionPoints">,
   configuredDependencies: IntegrationDependency[],
   {
-    optionalPermissions,
+    optionalPermissions = [],
   }: {
     optionalPermissions?: Manifest.OptionalPermission[];
   } = {},
 ): Promise<PermissionsStatus> {
   const extensionDefinitions =
     await resolveRecipeInnerDefinitions(modDefinition);
+
   const permissions = await collectModComponentDefinitionPermissions(
     extensionDefinitions,
     configuredDependencies,
