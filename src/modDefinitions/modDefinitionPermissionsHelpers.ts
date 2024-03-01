@@ -90,7 +90,7 @@ export async function checkModDefinitionPermissions(
   modDefinition: Pick<ModDefinition, "definitions" | "extensionPoints">,
   configuredDependencies: IntegrationDependency[],
   {
-    optionalPermissions,
+    optionalPermissions = [],
   }: {
     optionalPermissions?: Manifest.OptionalPermission[];
   } = {},
