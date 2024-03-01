@@ -346,7 +346,7 @@ function selectModComponentDefinition(
   return extensionPoint;
 }
 
-type ModParts = {
+export type ModParts = {
   sourceMod?: ModDefinition;
   cleanModComponents: UnresolvedModComponent[];
   dirtyModComponentFormStates: ModComponentFormState[];
