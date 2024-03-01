@@ -121,7 +121,10 @@ const store = configureStore({
   },
   middleware(getDefaultMiddleware) {
     /* eslint-disable unicorn/prefer-spread -- It's not Array#concat, can't use spread */
-    return getDefaultMiddleware(defaultMiddlewareConfig)
+    return getDefaultMiddleware({
+      ...defaultMiddlewareConfig,
+      immutableCheck: false,
+    })
       .concat(appApi.middleware)
       .concat(modDefinitionsMiddleware)
       .concat(routerMiddleware(hashHistory))
