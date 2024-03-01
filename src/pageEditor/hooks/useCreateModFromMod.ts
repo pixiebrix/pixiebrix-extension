@@ -33,6 +33,7 @@ import { Events } from "@/telemetry/events";
 import { actions as modComponentActions } from "@/store/extensionsSlice";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
+import { BusinessError } from "@/errors/businessErrors";
 
 function useCreateModFromMod() {
   const dispatch = useDispatch();
@@ -87,6 +88,8 @@ function useCreateModFromMod() {
           ...cleanModComponents,
         ];
 
+        console.log("Install Mod:::");
+
         dispatch(
           modComponentActions.installMod({
             modDefinition: savedModDefinition,
@@ -105,8 +108,10 @@ function useCreateModFromMod() {
           copiedFrom: modId,
           modId: savedModDefinition.metadata.id,
         });
-      } catch {
-        // Error is already handled by buildAndValidateMod. Re-thrown to prevent further processing.
+      } catch (error) {
+        if (error instanceof BusinessError) {
+          // Error is already handled by buildAndValidateMod. Re-thrown to prevent further processing.
+        } else throw error;
       }
     },
     [
