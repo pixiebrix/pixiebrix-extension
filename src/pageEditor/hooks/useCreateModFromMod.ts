@@ -88,8 +88,6 @@ function useCreateModFromMod() {
           ...cleanModComponents,
         ];
 
-        console.log("Install Mod:::");
-
         dispatch(
           modComponentActions.installMod({
             modDefinition: savedModDefinition,
@@ -110,8 +108,8 @@ function useCreateModFromMod() {
         });
       } catch (error) {
         if (error instanceof BusinessError) {
-          // Error is already handled by buildAndValidateMod. Re-thrown to prevent further processing.
-        } else throw error;
+          // Error is already handled by buildAndValidateMod.
+        } else throw error; // Other errors can be thrown during mod installation
       }
     },
     [

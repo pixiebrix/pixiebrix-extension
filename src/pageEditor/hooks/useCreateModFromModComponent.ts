@@ -31,6 +31,7 @@ import { selectModMetadata } from "@/pageEditor/utils";
 import { selectKeepLocalCopyOnCreateRecipe } from "@/pageEditor/slices/editorSelectors";
 import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveModComponentFromStorage";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
+import { BusinessError } from "@/errors/businessErrors";
 
 function useCreateModFromModComponent(
   activeModComponent: ModComponentFormState,
@@ -104,8 +105,10 @@ function useCreateModFromModComponent(
             reportEvent(Events.PAGE_EDITOR_MOD_CREATE, {
               modId: newModDefinition.metadata.id,
             });
-          } catch {
-            // Error is already handled by buildAndValidateMod. Re-thrown to prevent further processing.
+          } catch (error) {
+            if (error instanceof BusinessError) {
+              // Error is already handled by buildAndValidateMod.
+            } else throw error; // Other errors can be thrown during mod installation
           }
         },
       ),
