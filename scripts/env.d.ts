@@ -15,10 +15,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-interface process {
-  env: {
-    // Default environment variable used in github CI
-    // https://docs.github.com/en/actions/learn-github-actions/variables#default-environment-variables
-    CI?: string;
-  };
-}
+export function loadEnv(): void;
+export function parseEnv(): void;
