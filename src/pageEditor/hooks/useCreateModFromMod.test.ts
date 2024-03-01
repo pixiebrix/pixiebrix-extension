@@ -52,13 +52,7 @@ describe("useCreateModFromMod", () => {
     });
 
     await act(async () => {
-      await result.current.createModFromMod(
-        {
-          ...definition,
-          updated_at: validateTimestamp("2021-10-07T12:52:16.189Z"),
-        },
-        metadata,
-      );
+      await result.current.createModFromMod(definition, metadata);
     });
 
     expect(appApiMock.history.post).toHaveLength(1);
