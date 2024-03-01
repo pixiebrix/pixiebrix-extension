@@ -97,6 +97,7 @@ export async function checkModDefinitionPermissions(
 ): Promise<PermissionsStatus> {
   const extensionDefinitions =
     await resolveRecipeInnerDefinitions(modDefinition);
+
   const permissions = await collectModComponentDefinitionPermissions(
     extensionDefinitions,
     configuredDependencies,
