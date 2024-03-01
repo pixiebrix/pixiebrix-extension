@@ -38,7 +38,6 @@ import {
 } from "@/testUtils/factories/modDefinitionFactories";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import produce from "immer";
-import { type Draft } from "immer";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
 import { array } from "cooky-cutter";
