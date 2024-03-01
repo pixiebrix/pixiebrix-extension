@@ -92,7 +92,6 @@ const registryFindMock = jest.mocked(registry.find);
 
 const isLinkedMock = jest.mocked(isLinked);
 const readAuthDataMock = jest.mocked(readAuthData);
-const getManifestMock = jest.mocked(browser.runtime.getManifest);
 const openOptionsPageMock = jest.mocked(browser.runtime.openOptionsPage);
 const browserManagedStorageMock = jest.mocked(browser.storage.managed.get);
 const refreshRegistriesMock = jest.mocked(refreshRegistries);
@@ -106,6 +105,7 @@ async function clearEditorReduxState() {
 
 beforeEach(async () => {
   jest.resetModules();
+  jest.clearAllMocks();
 
   // Reset local states
   await Promise.all([
@@ -113,27 +113,15 @@ beforeEach(async () => {
     clearEditorReduxState(),
   ]);
 
-  isLinkedMock.mockClear();
-  readAuthDataMock.mockClear();
-
-  getSettingsStateMock.mockClear();
-  saveSettingsStateMock.mockClear();
-
   getSettingsStateMock.mockResolvedValue({
     nextUpdate: undefined,
   } as any);
 
   browserManagedStorageMock.mockResolvedValue({});
-  jest.mocked(browser.tabs.create).mockClear();
 
   readAuthDataMock.mockResolvedValue({
     organizationId: "00000000-00000000-00000000-00000000",
   } as any);
-
-  getManifestMock.mockClear();
-  refreshRegistriesMock.mockClear();
-  openOptionsPageMock.mockClear();
-  isUpdateAvailableMock.mockClear();
 
   resetManagedStorage();
 });
@@ -237,6 +225,42 @@ describe("updateDeployments", () => {
 
     expect(extensions).toHaveLength(1);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(1);
+  });
+
+  test("can activate clipboardWrite automatically by default", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    // XXX: would be better to adjust mocking to allow integration test with checkDeploymentPermissions
+    jest.mocked(checkDeploymentPermissions).mockResolvedValueOnce({
+      hasPermissions: true,
+      permissions: {
+        permissions: ["clipboardWrite"],
+      },
+    });
+
+    const deployment = deploymentFactory();
+    deployment.package.config.extensionPoints[0].permissions.permissions = [
+      "clipboardWrite",
+    ];
+
+    axiosMock.onGet().reply(200, {
+      flags: [],
+    });
+
+    axiosMock.onPost().reply(201, [deployment]);
+
+    await updateDeployments();
+
+    const { extensions } = await getModComponentState();
+
+    expect(jest.mocked(checkDeploymentPermissions).mock.calls[0]).toStrictEqual(
+      [
+        expect.anything(),
+        expect.anything(),
+        { optionalPermissions: ["clipboardWrite"] },
+      ],
+    );
+
+    expect(extensions).toHaveLength(1);
   });
 
   test("ignore other user extensions", async () => {
@@ -397,6 +421,39 @@ describe("updateDeployments", () => {
     await updateDeployments();
 
     const { extensions } = await getModComponentState();
+
+    expect(extensions).toHaveLength(0);
+    expect(openOptionsPageMock.mock.calls).toHaveLength(1);
+  });
+
+  test("opens options page in strict permission mode if optional permission missing", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    // XXX: would be better to adjust mocking to allow integration test with checkDeploymentPermissions
+    jest.mocked(checkDeploymentPermissions).mockResolvedValueOnce({
+      hasPermissions: false,
+      permissions: {
+        permissions: ["clipboardWrite"],
+      },
+    });
+
+    const deployment = deploymentFactory();
+    deployment.package.config.extensionPoints[0].permissions.permissions = [
+      "clipboardWrite",
+    ];
+
+    axiosMock.onGet().reply(200, {
+      flags: ["deployment-permissions-strict"],
+    });
+
+    axiosMock.onPost().reply(201, [deployment]);
+
+    await updateDeployments();
+
+    const { extensions } = await getModComponentState();
+
+    expect(jest.mocked(checkDeploymentPermissions).mock.calls[0]).toStrictEqual(
+      [expect.anything(), expect.anything(), { optionalPermissions: [] }],
+    );
 
     expect(extensions).toHaveLength(0);
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);

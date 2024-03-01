@@ -132,7 +132,11 @@ function useDeployments(): DeploymentsState {
         "useDeployments:checkDeploymentPermissions",
         Promise.all(
           deployments.map(async (deployment) =>
-            checkDeploymentPermissions(deployment, services.locateAllForId),
+            checkDeploymentPermissions(deployment, services.locateAllForId, {
+              // In the UI context, always prompt the user to accept permissions to ensure they get the full
+              // functionality of the mod
+              optionalPermissions: [],
+            }),
           ),
         ),
       ),
