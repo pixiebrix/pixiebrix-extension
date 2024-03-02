@@ -120,7 +120,7 @@ function decidePartnerIntegrationIds({
  * - Integration required, using partner JWT for authentication
  */
 function useRequiredPartnerAuth(): RequiredPartnerState {
-  const { hasToken, tokenLoading, tokenError } = useLinkState();
+  const { hasToken, tokenLoading } = useLinkState();
   const {
     isLoading: isMeLoading,
     data: me,
@@ -253,7 +253,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
       Boolean(partnerConfiguration) &&
       !isMissingPartnerJwt,
     isLoading: isMeLoading || tokenLoading,
-    error: meError ?? tokenError,
+    error: meError,
   };
 }
 
