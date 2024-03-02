@@ -149,8 +149,8 @@ function decideIsMissingPartnerJwt({
  * - Integration required, using partner JWT for authentication
  */
 function useRequiredPartnerAuth(): RequiredPartnerState {
-  const { data: isLinked, isLoading: isLinkedLoading } = useLinkState();
   const partnerAuthState = usePartnerAuthData();
+  const { data: isLinked, isLoading: isLinkedLoading } = useLinkState();
 
   const {
     isLoading: isMeLoading,
@@ -158,6 +158,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     error: meError,
   } = useGetMeQuery(undefined, {
     refetchOnMountOrArgChange: true,
+    // Skip because useGetMeQuery throws an error if the user is not linked
     skip: !isLinked,
   });
 
@@ -177,8 +178,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   // Prefer the latest remote data, but use local data to avoid blocking page load
   const { partner, organization } = me ?? localAuth;
 
-  // `organization?.control_room?.id` can only be set when authenticated or the auth is cached. For unauthorized users,
-  // the organization will be null on result of useGetMeQuery
+  // `organization?.control_room?.id` can only be set when authenticated or the auth is cached
   const hasControlRoom =
     Boolean(organization?.control_room?.id) || Boolean(managedControlRoomUrl);
 
@@ -238,6 +238,21 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     // User has overridden local settings
     authMethodOverride === "partner-oauth2" ||
     authMethodOverride === "partner-token";
+
+  console.debug("useRequiredPartnerAuth", {
+    partnerAuthState,
+    hasPartner,
+    requiresIntegration,
+    isMeLoading,
+    isLinkedLoading,
+    meError,
+    partnerKey: partner?.theme ?? managedPartnerId,
+    hasConfiguredIntegration: {
+      requiresIntegration,
+      partnerConfiguration,
+      isMissingPartnerJwt,
+    },
+  });
 
   return {
     hasPartner,
