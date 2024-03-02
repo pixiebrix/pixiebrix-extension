@@ -124,7 +124,7 @@ export async function pollUntilTruthy<T>(
     maxWaitMillis?: number;
     intervalMillis?: number;
     signal?: AbortSignal;
-  },
+  } = {},
 ): Promise<T | undefined> {
   const endBy = Date.now() + maxWaitMillis;
   do {
