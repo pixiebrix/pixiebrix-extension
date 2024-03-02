@@ -48,7 +48,7 @@ type RequireAuthProps = {
 const useRequiredAuth = () => {
   const dispatch = useDispatch();
   const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
-  const { hasToken, tokenLoading, tokenError } = useLinkState();
+  const { hasToken, tokenLoading } = useLinkState();
 
   const {
     isLoading: meLoading,
@@ -108,7 +108,6 @@ const useRequiredAuth = () => {
   return {
     isAccountUnlinked,
     hasToken,
-    tokenError,
     hasCachedLoggedIn,
     isLoading: tokenLoading || meLoading,
     meError,
@@ -136,7 +135,6 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
 
   const {
     isAccountUnlinked,
-    tokenError,
     hasCachedLoggedIn,
     isLoading: isRequiredAuthLoading,
     meError,
@@ -184,10 +182,6 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   // `useRequiredAuth` handles 401 and other auth-related errors. Rethrow any other errors, e.g., internal server error
   if (meError && !ignoreApiError) {
     throw meError;
-  }
-
-  if (tokenError) {
-    throw tokenError;
   }
 
   return <>{children}</>;
