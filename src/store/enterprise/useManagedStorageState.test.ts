@@ -41,7 +41,12 @@ describe("useManagedStorageState", () => {
     );
     await waitForNextUpdate();
     expect(result.current).toStrictEqual({
-      data: { partnerId: "taco-bell" },
+      data: {
+        // `jest-webextension-mock`'s storage is shared across sources, the call ends up with the managed storage
+        // and the local storage mixed together. See https://github.com/clarkbw/jest-webextension-mock/issues/183
+        managedStorageInitTimestamp: expect.any(String),
+        partnerId: "taco-bell",
+      },
       isLoading: false,
     });
   });
