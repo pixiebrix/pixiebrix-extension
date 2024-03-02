@@ -29,6 +29,7 @@ import {
   userFactory,
 } from "@/testUtils/factories/authFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
 jest.mock("@/auth/useLinkState");
 
@@ -48,20 +49,12 @@ describe("SidebarApp", () => {
     appApiMock.onGet("/api/marketplace/listings/").reply(200, []);
     appApiMock.onGet("/api/extensions/").reply(200, []);
 
-    useLinkStateMock.mockReturnValue({
-      hasToken: true,
-      tokenLoading: false,
-      tokenError: null,
-    });
+    useLinkStateMock.mockReturnValue(valueToAsyncState(true));
   });
 
   test("renders not connected", async () => {
     mockAnonymousUser();
-    useLinkStateMock.mockReturnValue({
-      hasToken: false,
-      tokenLoading: false,
-      tokenError: null,
-    });
+    useLinkStateMock.mockReturnValue(valueToAsyncState(false));
 
     const { asFragment } = render(
       <MemoryRouter>
@@ -75,11 +68,7 @@ describe("SidebarApp", () => {
 
   test("renders connected partner view", async () => {
     await mockAuthenticatedUser(partnerUserFactory());
-    useLinkStateMock.mockReturnValue({
-      hasToken: true,
-      tokenLoading: false,
-      tokenError: false,
-    });
+    useLinkStateMock.mockReturnValue(valueToAsyncState(true));
 
     const { asFragment } = render(
       <MemoryRouter>

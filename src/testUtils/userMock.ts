@@ -24,6 +24,7 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import { TEST_setAuthData } from "@/auth/authStorage";
 import { selectUserDataUpdate } from "@/auth/authUtils";
 import useLinkState from "@/auth/useLinkState";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
 // In existing code, there was a lot of places mocking both useQueryState and useGetMeQuery. This could in some places
 // yield impossible states due to how `skip` logic in calls like RequireAuth, etc.
@@ -35,11 +36,7 @@ export function mockAnonymousUser(): void {
     // Anonymous users still get feature flags
     flags: [],
   });
-  useLinkStateMock.mockReturnValue({
-    hasToken: false,
-    tokenLoading: false,
-    tokenError: false,
-  });
+  useLinkStateMock.mockReturnValue(valueToAsyncState(false));
 }
 
 export async function mockAuthenticatedUser(me?: Me): Promise<void> {
@@ -51,20 +48,14 @@ export async function mockAuthenticatedUser(me?: Me): Promise<void> {
   });
   // eslint-disable-next-line new-cap
   await TEST_setAuthData(tokenData);
-  useLinkStateMock.mockReturnValue({
-    hasToken: true,
-    tokenLoading: false,
-    tokenError: false,
-  });
+  useLinkStateMock.mockReturnValue(valueToAsyncState(true));
 }
 
 export function mockErrorUser(error: unknown): void {
   appApiMock.onGet("/api/me/").reply(500, error);
-  useLinkStateMock.mockReturnValue({
-    hasToken: true,
-    tokenLoading: false,
-    tokenError: false,
-  });
+  // `useLinkStateMock` is partially independent of calls to `/api/me/`. It's possible for the extension to be
+  // linked (i.e., have a valid token), but that the `/api/me/` call fails do to a server issue
+  useLinkStateMock.mockReturnValue(valueToAsyncState(true));
 }
 
 async function cleanUpUserMocks() {

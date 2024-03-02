@@ -120,14 +120,14 @@ function decidePartnerIntegrationIds({
  * - Integration required, using partner JWT for authentication
  */
 function useRequiredPartnerAuth(): RequiredPartnerState {
-  const { hasToken, tokenLoading } = useLinkState();
+  const { data: isLinked, isLoading: isLinkedLoading } = useLinkState();
   const {
     isLoading: isMeLoading,
     data: me,
     error: meError,
   } = useGetMeQuery(undefined, {
     refetchOnMountOrArgChange: true,
-    skip: !hasToken,
+    skip: !isLinked,
   });
 
   const localAuth = useSelector(selectAuth);
@@ -252,7 +252,7 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
       requiresIntegration &&
       Boolean(partnerConfiguration) &&
       !isMissingPartnerJwt,
-    isLoading: isMeLoading || tokenLoading,
+    isLoading: isMeLoading || isLinkedLoading,
     error: meError,
   };
 }

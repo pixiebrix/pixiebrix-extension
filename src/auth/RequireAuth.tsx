@@ -48,7 +48,7 @@ type RequireAuthProps = {
 const useRequiredAuth = () => {
   const dispatch = useDispatch();
   const hasCachedLoggedIn = useSelector(selectIsLoggedIn);
-  const { hasToken, tokenLoading } = useLinkState();
+  const { data: isLinked, isLoading: isLinkedLoading } = useLinkState();
 
   const {
     isLoading: meLoading,
@@ -58,7 +58,7 @@ const useRequiredAuth = () => {
   } = useGetMeQuery(undefined, {
     // Only call /api/me/ if the extension is "linked" is with an Authorization token. If not, the session id will
     // be passed in the header which leads to inconsistent results depending on whether the session is still valid
-    skip: !hasToken,
+    skip: !isLinked,
   });
 
   useEffect(() => {
@@ -103,13 +103,13 @@ const useRequiredAuth = () => {
   const isAccountUnlinked =
     isBadToken ||
     (!hasCachedLoggedIn && !meLoading) ||
-    (!hasToken && !tokenLoading);
+    (!isLinked && !isLinkedLoading);
 
   return {
     isAccountUnlinked,
-    hasToken,
+    hasToken: isLinked,
     hasCachedLoggedIn,
-    isLoading: tokenLoading || meLoading,
+    isLoading: isLinkedLoading || meLoading,
     meError,
   };
 };
