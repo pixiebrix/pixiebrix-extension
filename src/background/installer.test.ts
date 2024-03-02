@@ -56,9 +56,9 @@ const getUserData = jest.mocked(auth.getUserData);
 const locateAllForServiceMock = jest.mocked(locator.locateAllForService);
 const browserManagedStorageMock = jest.mocked(browser.storage.managed.get);
 
-afterEach(() => {
+afterEach(async () => {
   jest.clearAllMocks();
-  resetManagedStorage();
+  await resetManagedStorage();
 });
 
 describe("openInstallPage", () => {
