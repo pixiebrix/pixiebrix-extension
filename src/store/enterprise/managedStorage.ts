@@ -63,7 +63,8 @@ export const initializationTimestamp = new StorageItem<Timestamp>(
   "managedStorageInitTimestamp",
 );
 
-const manageStorageStateChanges = new SimpleEventTarget<ManagedStorageState>();
+export const manageStorageStateChanges =
+  new SimpleEventTarget<ManagedStorageState>();
 
 /**
  * Read managed storage immediately, returns {} if managed storage is unavailable/uninitialized.
@@ -287,31 +288,16 @@ export function getSnapshot(): Nullishable<ManagedStorageState> {
 }
 
 /**
- * Subscribe to changes in the managed storage state.
- *
- * @param callback to receive the updated state.
- * @see useManagedStorageState
- */
-export function subscribe(
-  callback: (state: ManagedStorageState) => void,
-): () => void {
-  expectContext("extension");
-
-  manageStorageStateChanges.add(callback);
-
-  return () => {
-    manageStorageStateChanges.remove(callback);
-  };
-}
-
-/**
- * Clear the initializationTimestamp. For use in onStartup in the background script.
+ * Clear the initializationTimestamp. For use in background script installer.
  *
  * After switchover to MV3, won't be required if we switch initializationTimestamp to in-memory session storage, because
- * that's automatically reset across browser sessions.
+ * session storage is automatically reset across browser sessions.
  */
 export async function resetInitializationTimestamp(): Promise<void> {
-  expectContext("background");
+  expectContext(
+    "background",
+    "resetInitializationTimestamp should only be called from background session initialization code",
+  );
   await initializationTimestamp.remove();
 }
 

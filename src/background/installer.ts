@@ -33,16 +33,21 @@ import {
   initManagedStorage,
 } from "@/store/enterprise/managedStorage";
 import { Events } from "@/telemetry/events";
-
 import { DEFAULT_SERVICE_URL, UNINSTALL_URL } from "@/urlConstants";
-
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import { SessionValue } from "@/mv3/SessionStorage";
+import { allSettled } from "@/utils/promiseUtils";
 
 /**
  * The latest version of PixieBrix available in the Chrome Web Store, or null if the version hasn't been fetched.
  */
 let _availableVersion: string | null = null;
+
+const initialized = new SessionValue<boolean>(
+  "installerInitialized",
+  import.meta.url,
+);
 
 /**
  * Returns true if this appears to be a Chrome Web Store install and/or the user has an app URL where they're
@@ -215,7 +220,7 @@ export async function requirePartnerAuth(): Promise<void> {
 }
 
 // Exported for testing
-export async function handleInstall({
+export async function showInstallPage({
   reason,
   previousVersion,
 }: Runtime.OnInstalledDetailsType): Promise<void> {
@@ -293,7 +298,9 @@ export async function handleInstall({
   }
 }
 
-function onUpdateAvailable({ version }: Runtime.OnUpdateAvailableDetailsType) {
+function setAvailableVersion({
+  version,
+}: Runtime.OnUpdateAvailableDetailsType): void {
   _availableVersion = version;
 }
 
@@ -322,14 +329,44 @@ async function setUninstallURL(): Promise<void> {
   await browser.runtime.setUninstallURL(url.href);
 }
 
-function initInstaller() {
-  browser.runtime.onStartup.addListener(async () => {
+/**
+ * Run initialization that should occur once per extension session.
+ */
+async function initSessionOnce(): Promise<void> {
+  // Using our own session value vs. webext-events because onExtensionStart has a 100ms delay
+  // https://github.com/fregante/webext-events/blob/main/source/on-extension-start.ts#L56
+
+  // Can't use onStartup because it doesn't mean "on extension start", but "on browser profile start".
+  // Events registered onStartup won't run when the user first installs or when they re-enable the extension.
+  // See: https://developer.chrome.com/docs/extensions/reference/api/runtime#event-onStartup
+
+  if (await initialized.get()) {
+    // Session already initialized
+    return;
+  }
+
+  console.debug("Running extension session initialization");
+
+  const storagePromise = (async () => {
     await resetManagedStorageInitializationState();
     await initManagedStorage();
-  });
-  browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
-  browser.runtime.onInstalled.addListener(handleInstall);
-  browser.runtime.onStartup.addListener(initTelemetry);
+  })();
+
+  const telemetryPromise = (async () => {
+    if (await isLinked()) {
+      // Init telemetry is a no-op if not linked. So calling without being linked just delays the throttle
+      await initTelemetry();
+    }
+  })();
+
+  await allSettled([storagePromise, telemetryPromise], { catch: "ignore" });
+}
+
+function initInstaller(): void {
+  void initSessionOnce();
+
+  browser.runtime.onInstalled.addListener(showInstallPage);
+  browser.runtime.onUpdateAvailable.addListener(setAvailableVersion);
 
   dntConfig.onChanged(() => {
     void setUninstallURL();

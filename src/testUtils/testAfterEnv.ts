@@ -49,7 +49,6 @@ browser.tabs.onRemoved = {
   hasListeners: jest.fn(),
 };
 
-// FIXME: getting test errors Cannot read properties of undefined (reading 'onChanged')
 // `jest-webextension-mock` is missing mocks for onChanged: https://github.com/clarkbw/jest-webextension-mock/issues/170
 // `webext-storage` uses the chrome namespace: https://github.com/fregante/webext-storage/blob/main/source/storage-item.ts#L63
 chrome.storage.onChanged = {

@@ -17,6 +17,7 @@
 
 export default {
   runtime: {
+    id: "abcxyz",
     getManifest: () => ({
       homepage_url: "https://www.pixiebrix.com/",
     }),
