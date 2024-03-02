@@ -239,21 +239,6 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     authMethodOverride === "partner-oauth2" ||
     authMethodOverride === "partner-token";
 
-  console.debug("useRequiredPartnerAuth", {
-    partnerAuthState,
-    hasPartner,
-    requiresIntegration,
-    isMeLoading,
-    isLinkedLoading,
-    meError,
-    partnerKey: partner?.theme ?? managedPartnerId,
-    hasConfiguredIntegration: {
-      requiresIntegration,
-      partnerConfiguration,
-      isMissingPartnerJwt,
-    },
-  });
-
   return {
     hasPartner,
     partnerKey: partner?.theme ?? managedPartnerId,

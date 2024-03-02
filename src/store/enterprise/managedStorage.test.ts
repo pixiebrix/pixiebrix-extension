@@ -22,8 +22,9 @@ import {
 } from "@/store/enterprise/managedStorage";
 
 beforeEach(async () => {
+  jest.clearAllMocks();
   // eslint-disable-next-line new-cap -- test helper method
-  INTERNAL_reset();
+  await INTERNAL_reset();
   await browser.storage.managed.clear();
 });
 
@@ -35,6 +36,9 @@ describe("readManagedStorage", () => {
   it("reads managed storage", async () => {
     await browser.storage.managed.set({ partnerId: "taco-bell" });
     await expect(readManagedStorage()).resolves.toStrictEqual({
+      // `jest-webextension-mock`'s storage is shared across sources, the call ends up with the managed storage
+      // and the local storage mixed together. See https://github.com/clarkbw/jest-webextension-mock/issues/183
+      managedStorageInitTimestamp: expect.any(String),
       partnerId: "taco-bell",
     });
   });

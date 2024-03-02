@@ -28,6 +28,9 @@ import { pollUntilTruthy } from "@/utils/promiseUtils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import type { Nullishable } from "@/utils/nullishUtils";
 import { RepeatableAbortController } from "abort-utils";
+import { StorageItem } from "webext-storage";
+import type { Timestamp } from "@/types/stringTypes";
+import { PromiseCancelled } from "@/errors/genericErrors";
 
 // 1.8.9: bumped to 4.5s because 2s was too short: https://github.com/pixiebrix/pixiebrix-extension/issues/7618
 //   Privacy Badger uses 4.5s timeout, but thinks policy should generally be available within 2.5s. In installer.ts,
@@ -46,6 +49,19 @@ let managedStorageSnapshot: Nullishable<ManagedStorageState>;
 
 // Used only for testing
 const controller = new RepeatableAbortController();
+
+/**
+ * The initialization timestamp of managed storage, or null/undefined if it hasn't been initialized yet for the
+ * current browser session. Introduced to avoid waiting MAX_MANAGED_STORAGE_WAIT_MILLIS on every page.
+ *
+ * Currently, using StorageItem because it's compatible with MV2 and MV3. After the switchover to MV3 can use
+ * in-memory session storage directly.
+ *
+ * @since 1.8.10
+ */
+const initializationTimestamp = new StorageItem<Timestamp>(
+  "managedStorageInitTimestamp",
+);
 
 const manageStorageStateChanges = new SimpleEventTarget<ManagedStorageState>();
 
@@ -87,6 +103,8 @@ async function readPopulatedManagedStorage(): Promise<
  * @see waitForInitialManagedStorage
  */
 export async function watchDelayedStorageInitialization(): Promise<void> {
+  expectContext("background");
+
   const values = await readPopulatedManagedStorage();
 
   if (values != null) {
@@ -110,8 +128,8 @@ export async function watchDelayedStorageInitialization(): Promise<void> {
         manageStorageStateChanges.emit(managedStorageSnapshot);
       }
     },
-    // Most likely there's no policy. So only check once every 2 seconds to not consume resources
-    2000,
+    // Most likely there's no policy. So only check once every 2.5 seconds to not consume resources
+    2500,
   );
 }
 
@@ -124,19 +142,47 @@ export async function watchDelayedStorageInitialization(): Promise<void> {
 // uBlock (still) contains a workaround to automatically reload the extension on initial install
 // - https://github.com/gorhill/uBlock/commit/32bd47f05368557044dd3441dcaa414b7b009b39
 const waitForInitialManagedStorage = pMemoize(async () => {
-  // Returns undefined if the promise times out
-  managedStorageSnapshot = await pollUntilTruthy<
-    Nullishable<ManagedStorageState>
-  >(readPopulatedManagedStorage, {
-    maxWaitMillis: MAX_MANAGED_STORAGE_WAIT_MILLIS,
-  });
+  if (await initializationTimestamp.get()) {
+    // The extension has waited already this session, so don't wait again
+    console.debug("Managed storage already initialized this session");
+    managedStorageSnapshot = (await readManagedStorageImmediately()) ?? {};
+  } else {
+    console.debug(
+      `Managed storage not initialized yet, polling for ${MAX_MANAGED_STORAGE_WAIT_MILLIS}ms`,
+    );
+    const waitController = new AbortController();
+    // Skip polling if it becomes initialized while waiting
+    initializationTimestamp.onChanged(
+      waitController.abort,
+      waitController.signal,
+    );
 
-  console.info("Found managed storage settings", {
-    managedStorageState: managedStorageSnapshot,
-  });
+    try {
+      managedStorageSnapshot = await pollUntilTruthy<
+        Nullishable<ManagedStorageState>
+      >(readPopulatedManagedStorage, {
+        maxWaitMillis: MAX_MANAGED_STORAGE_WAIT_MILLIS,
+        signal: waitController.signal,
+      });
 
-  // After timeout, assume there's no policy set, so assign an empty value
-  managedStorageSnapshot ??= {};
+      // `pollUntilTruthy` returns undefined after maxWaitMillis. After timeout, assume there's no policy set,
+      // so assign an empty value
+      managedStorageSnapshot ??= {};
+
+      console.info("Found managed storage settings", {
+        managedStorageSnapshot,
+      });
+    } catch (error) {
+      if (error instanceof PromiseCancelled) {
+        managedStorageSnapshot = (await readManagedStorageImmediately()) ?? {};
+      } else {
+        throw error;
+      }
+    }
+
+    // Set timestamp so other callsites know they don't have to wait again
+    await initializationTimestamp.set(new Date().toISOString() as Timestamp);
+  }
 
   manageStorageStateChanges.emit(managedStorageSnapshot);
 
@@ -259,9 +305,20 @@ export function subscribe(
 }
 
 /**
+ * Clear the initializationTimestamp. For use in onStartup in the background script.
+ *
+ * After switchover to MV3, won't be required if we switch initializationTimestamp to in-memory session storage, because
+ * that's automatically reset across browser sessions.
+ */
+export async function resetInitializationTimestamp(): Promise<void> {
+  expectContext("background");
+  await initializationTimestamp.remove();
+}
+
+/**
  * Helper method for resetting the module for testing.
  */
-export function INTERNAL_reset(): void {
+export async function INTERNAL_reset(): Promise<void> {
   controller.abortAndReset();
   managedStorageSnapshot = undefined;
 
@@ -269,4 +326,5 @@ export function INTERNAL_reset(): void {
   initializationInterval = undefined;
 
   pMemoizeClear(waitForInitialManagedStorage);
+  await resetInitializationTimestamp();
 }

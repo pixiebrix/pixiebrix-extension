@@ -29,6 +29,8 @@ import { expectContext } from "@/utils/expectContext";
 import {
   readManagedStorage,
   isInitialized as isManagedStorageInitialized,
+  resetInitializationTimestamp as resetManagedStorageInitializationState,
+  initManagedStorage,
 } from "@/store/enterprise/managedStorage";
 import { Events } from "@/telemetry/events";
 
@@ -321,9 +323,14 @@ async function setUninstallURL(): Promise<void> {
 }
 
 function initInstaller() {
+  browser.runtime.onStartup.addListener(async () => {
+    await resetManagedStorageInitializationState();
+    await initManagedStorage();
+  });
   browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
   browser.runtime.onInstalled.addListener(handleInstall);
   browser.runtime.onStartup.addListener(initTelemetry);
+
   dntConfig.onChanged(() => {
     void setUninstallURL();
   });
