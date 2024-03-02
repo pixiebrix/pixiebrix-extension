@@ -22,28 +22,57 @@ import {
 } from "@/testUtils/factories/authFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { TEST_setAuthData } from "@/auth/authStorage";
+import { selectUserDataUpdate } from "@/auth/authUtils";
+import useLinkState from "@/auth/useLinkState";
 
 // In existing code, there was a lot of places mocking both useQueryState and useGetMeQuery. This could in some places
 // yield impossible states due to how `skip` logic in calls like RequireAuth, etc.
+
+const useLinkStateMock = jest.mocked(useLinkState);
 
 export function mockAnonymousUser(): void {
   appApiMock.onGet("/api/me/").reply(200, {
     // Anonymous users still get feature flags
     flags: [],
   });
+  useLinkStateMock.mockReturnValue({
+    hasToken: false,
+    tokenLoading: false,
+    tokenError: false,
+  });
 }
 
 export async function mockAuthenticatedUser(me?: Me): Promise<void> {
   const user = me ?? userFactory();
   appApiMock.onGet("/api/me/").reply(200, user);
+  const authData = selectUserDataUpdate(user);
   const tokenData = tokenAuthDataFactory({
-    email: user.email,
-    user: user.id,
+    ...authData,
   });
   // eslint-disable-next-line new-cap
   await TEST_setAuthData(tokenData);
+  useLinkStateMock.mockReturnValue({
+    hasToken: true,
+    tokenLoading: false,
+    tokenError: false,
+  });
 }
 
 export function mockErrorUser(error: unknown): void {
   appApiMock.onGet("/api/me/").reply(500, error);
+  useLinkStateMock.mockReturnValue({
+    hasToken: true,
+    tokenLoading: false,
+    tokenError: false,
+  });
 }
+
+async function cleanUpUserMocks() {
+  console.log("TEST");
+  useLinkStateMock.mockReset();
+  appApiMock.reset();
+  // eslint-disable-next-line new-cap
+  await TEST_setAuthData({});
+}
+
+afterAll(cleanUpUserMocks);

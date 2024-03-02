@@ -26,7 +26,7 @@ import { useEffect } from "react";
 type LinkState = {
   hasToken: boolean | undefined;
   tokenLoading: boolean;
-  tokenError: unknown;
+  tokenError: boolean;
 };
 
 /**

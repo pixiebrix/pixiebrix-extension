@@ -143,6 +143,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
   } = useRequiredAuth();
 
   const {
+    hasPartner,
     requiresIntegration,
     hasConfiguredIntegration,
     isLoading: isPartnerAuthLoading,
@@ -169,6 +170,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({
       isAccountUnlinked,
       requiresIntegration,
       hasConfiguredIntegration,
+      hasPartner,
     });
 
     return <LoginPage />;
