@@ -24,7 +24,6 @@ import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { TEST_cancelAll } from "@/platform/forms/formController";
 import * as messenger from "webext-messenger";
 import { showModal } from "@/contentScript/modalDom";
-import { waitForEffect } from "@/testUtils/testHelpers";
 
 jest.mock("@/utils/iframeUtils");
 jest.mock("@/contentScript/modalDom");
