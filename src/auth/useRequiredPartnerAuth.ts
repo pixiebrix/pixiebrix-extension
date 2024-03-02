@@ -20,12 +20,6 @@ import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
 import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
 import { selectSettings } from "@/store/settings/settingsSelectors";
-import {
-  addListener as addAuthListener,
-  readPartnerAuthData,
-  removeListener as removeAuthListener,
-} from "@/auth/authStorage";
-import { useCallback, useEffect } from "react";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/data/service/constants";
 import { type AuthState } from "@/auth/authTypes";
 import { type SettingsState } from "@/store/settings/settingsTypes";
@@ -35,8 +29,8 @@ import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
-import useAsyncState from "@/hooks/useAsyncState";
 import useLinkState from "@/auth/useLinkState";
+import usePartnerAuthData from "@/auth/usePartnerAuthData";
 
 /**
  * Map from partner keys to partner service IDs
@@ -113,6 +107,41 @@ function decidePartnerIntegrationIds({
 }
 
 /**
+ * Returns true if a required partner JWT is missing
+ */
+function decideIsMissingPartnerJwt({
+  authMethodOverride,
+  hasControlRoom,
+  managedPartnerId,
+  partnerAuthData,
+}: {
+  authMethodOverride: string;
+  hasControlRoom: boolean;
+  managedPartnerId: string;
+  partnerAuthData: unknown;
+}): boolean {
+  if (authMethodOverride === "pixiebrix-token") {
+    // User forced pixiebrix-token authentication via Advanced Settings > Authentication Method
+    return false;
+  }
+
+  // Require partner OAuth2 if:
+  // - A Control Room URL is configured - on the cached organization or in managed storage
+  // - The partner is Automation Anywhere in managed storage. (This is necessary, because the control room URL is
+  //   not known at bot agent install time for registry HKLM hive installs)
+  // - The user used Advanced Settings > Authentication Method to force partner OAuth2
+  if (
+    hasControlRoom ||
+    managedPartnerId === "automation-anywhere" ||
+    authMethodOverride === "partner-oauth2"
+  ) {
+    return partnerAuthData == null;
+  }
+
+  return false;
+}
+
+/**
  * Hook for determining if the extension has required integrations for the partner.
  *
  * Covers both:
@@ -121,6 +150,8 @@ function decidePartnerIntegrationIds({
  */
 function useRequiredPartnerAuth(): RequiredPartnerState {
   const { data: isLinked, isLoading: isLinkedLoading } = useLinkState();
+  const partnerAuthState = usePartnerAuthData();
+
   const {
     isLoading: isMeLoading,
     data: me,
@@ -150,14 +181,17 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   // the organization will be null on result of useGetMeQuery
   const hasControlRoom =
     Boolean(organization?.control_room?.id) || Boolean(managedControlRoomUrl);
+
   const isCommunityEditionUser = (me?.milestones ?? []).some(
     ({ key }) => key === "aa_community_edition_register",
   );
+
   const hasPartner =
     Boolean(partner) ||
     Boolean(managedPartnerId) ||
     hasControlRoom ||
     (Boolean(me?.partner) && isCommunityEditionUser);
+
   const partnerId =
     partnerIdOverride ??
     managedPartnerId ??
@@ -170,55 +204,16 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     partnerId,
   });
 
+  const isMissingPartnerJwt = decideIsMissingPartnerJwt({
+    authMethodOverride,
+    hasControlRoom,
+    managedPartnerId,
+    partnerAuthData: partnerAuthState.data,
+  });
+
   const partnerConfiguration = integrationConfigs.find((integrationConfig) =>
     partnerIntegrationIds.has(integrationConfig.integrationId),
   );
-
-  const getIsMissingPartnerJwt = useCallback<
-    () => Promise<boolean>
-  >(async () => {
-    if (authMethodOverride === "pixiebrix-token") {
-      // User forced pixiebrix-token authentication via Advanced Settings > Authentication Method
-      return false;
-    }
-
-    // Require partner OAuth2 if:
-    // - A Control Room URL is configured - on the cached organization or in managed storage
-    // - The partner is Automation Anywhere in managed storage. (This is necessary, because the control room URL is
-    //   not known at bot agent install time for registry HKLM hive installs)
-    // - The user used Advanced Settings > Authentication Method to force partner OAuth2
-    if (
-      hasControlRoom ||
-      managedPartnerId === "automation-anywhere" ||
-      authMethodOverride === "partner-oauth2"
-    ) {
-      // Future improvement: check that the Control Room URL from readPartnerAuthData matches the expected
-      // Control Room URL
-      const { token: partnerToken } = await readPartnerAuthData();
-      return partnerToken == null;
-    }
-
-    return false;
-  }, [authMethodOverride, hasControlRoom, managedPartnerId]);
-
-  // WARNING: the logic in this method must match the logic in usePartnerLoginMode
-  // `_` prefix so lint doesn't yell for unused variables in the destructuring
-  const { data: isMissingPartnerJwt, refetch: refreshPartnerJwtState } =
-    useAsyncState(getIsMissingPartnerJwt, [getIsMissingPartnerJwt]);
-
-  useEffect(() => {
-    // Listen for token invalidation
-    const handler = async () => {
-      console.debug("Auth state changed, checking for token");
-      refreshPartnerJwtState();
-    };
-
-    addAuthListener(handler);
-
-    return () => {
-      removeAuthListener(handler);
-    };
-  }, [refreshPartnerJwtState]);
 
   const requiresIntegration =
     // Primary organization has a partner and linked control room
