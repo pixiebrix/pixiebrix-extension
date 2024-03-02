@@ -20,12 +20,6 @@ import { useSelector } from "react-redux";
 import { selectAuth } from "@/auth/authSelectors";
 import { selectIntegrationConfigs } from "@/integrations/store/integrationsSelectors";
 import { selectSettings } from "@/store/settings/settingsSelectors";
-import {
-  addListener as addAuthListener,
-  readPartnerAuthData,
-  removeListener as removeAuthListener,
-} from "@/auth/authStorage";
-import { useEffect } from "react";
 import { AUTOMATION_ANYWHERE_PARTNER_KEY } from "@/data/service/constants";
 import { type AuthState } from "@/auth/authTypes";
 import { type SettingsState } from "@/store/settings/settingsTypes";
@@ -35,7 +29,8 @@ import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
-import useAsyncState from "@/hooks/useAsyncState";
+import useLinkState from "@/auth/useLinkState";
+import usePartnerAuthData from "@/auth/usePartnerAuthData";
 
 /**
  * Map from partner keys to partner service IDs
@@ -112,6 +107,41 @@ function decidePartnerIntegrationIds({
 }
 
 /**
+ * Returns true if a required partner JWT is missing
+ */
+function decideIsMissingPartnerJwt({
+  authMethodOverride,
+  hasControlRoom,
+  managedPartnerId,
+  partnerAuthData,
+}: {
+  authMethodOverride: string;
+  hasControlRoom: boolean;
+  managedPartnerId: string;
+  partnerAuthData: unknown;
+}): boolean {
+  if (authMethodOverride === "pixiebrix-token") {
+    // User forced pixiebrix-token authentication via Advanced Settings > Authentication Method
+    return false;
+  }
+
+  // Require partner OAuth2 if:
+  // - A Control Room URL is configured - on the cached organization or in managed storage
+  // - The partner is Automation Anywhere in managed storage. (This is necessary, because the control room URL is
+  //   not known at bot agent install time for registry HKLM hive installs)
+  // - The user used Advanced Settings > Authentication Method to force partner OAuth2
+  if (
+    hasControlRoom ||
+    managedPartnerId === "automation-anywhere" ||
+    authMethodOverride === "partner-oauth2"
+  ) {
+    return partnerAuthData == null;
+  }
+
+  return false;
+}
+
+/**
  * Hook for determining if the extension has required integrations for the partner.
  *
  * Covers both:
@@ -119,12 +149,19 @@ function decidePartnerIntegrationIds({
  * - Integration required, using partner JWT for authentication
  */
 function useRequiredPartnerAuth(): RequiredPartnerState {
-  // Prefer the most recent /api/me/ data from the server
+  const partnerAuthState = usePartnerAuthData();
+  const { data: isLinked, isLoading: isLinkedLoading } = useLinkState();
+
   const {
-    isLoading,
+    isLoading: isMeLoading,
     data: me,
-    error,
-  } = useGetMeQuery(undefined, { refetchOnMountOrArgChange: true });
+    error: meError,
+  } = useGetMeQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    // Skip because useGetMeQuery throws an error if the user is not linked
+    skip: !isLinked,
+  });
+
   const localAuth = useSelector(selectAuth);
   const {
     authIntegrationId: authIntegrationIdOverride,
@@ -141,86 +178,19 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
   // Prefer the latest remote data, but use local data to avoid blocking page load
   const { partner, organization } = me ?? localAuth;
 
-  // `organization?.control_room?.id` can only be set when authenticated or the auth is cached. For unauthorized users,
-  // the organization will be null on result of useGetMeQuery
+  // `organization?.control_room?.id` can only be set when authenticated or the auth is cached
   const hasControlRoom =
     Boolean(organization?.control_room?.id) || Boolean(managedControlRoomUrl);
+
   const isCommunityEditionUser = (me?.milestones ?? []).some(
     ({ key }) => key === "aa_community_edition_register",
   );
+
   const hasPartner =
     Boolean(partner) ||
     Boolean(managedPartnerId) ||
     hasControlRoom ||
     (Boolean(me?.partner) && isCommunityEditionUser);
-  const partnerId =
-    partnerIdOverride ??
-    managedPartnerId ??
-    partner?.theme ??
-    (hasControlRoom || isCommunityEditionUser ? "automation-anywhere" : null);
-
-  const partnerIntegrationIds = decidePartnerIntegrationIds({
-    authIntegrationIdOverride,
-    authMethodOverride,
-    partnerId,
-  });
-
-  const partnerConfiguration = integrationConfigs.find((integrationConfig) =>
-    partnerIntegrationIds.has(integrationConfig.integrationId),
-  );
-
-  // WARNING: the logic in this method must match the logic in usePartnerLoginMode
-  // `_` prefix so lint doesn't yell for unused variables in the destructuring
-  const { data: isMissingPartnerJwt, refetch: refreshPartnerJwtState } =
-    useAsyncState(async () => {
-      if (authMethodOverride === "pixiebrix-token") {
-        // User forced pixiebrix-token authentication via Advanced Settings > Authentication Method
-        return false;
-      }
-
-      // Require partner OAuth2 if:
-      // - A Control Room URL is configured - on the cached organization or in managed storage
-      // - The partner is Automation Anywhere in managed storage. (This is necessary, because the control room URL is
-      //   not known at bot agent install time for registry HKLM hive installs)
-      // - The user used Advanced Settings > Authentication Method to force partner OAuth2
-      if (
-        hasControlRoom ||
-        managedPartnerId === "automation-anywhere" ||
-        authMethodOverride === "partner-oauth2"
-      ) {
-        // Future improvement: check that the Control Room URL from readPartnerAuthData matches the expected
-        // Control Room URL
-        const { token: partnerToken } = await readPartnerAuthData();
-        return partnerToken == null;
-      }
-
-      return false;
-    }, [authMethodOverride, localAuth, hasControlRoom, managedPartnerId]);
-
-  useEffect(() => {
-    // Listen for token invalidation
-    const handler = async () => {
-      console.debug("Auth state changed, checking for token");
-      refreshPartnerJwtState();
-    };
-
-    addAuthListener(handler);
-
-    return () => {
-      removeAuthListener(handler);
-    };
-  }, [refreshPartnerJwtState]);
-
-  const requiresIntegration =
-    // Primary organization has a partner and linked control room
-    (hasPartner && Boolean(organization?.control_room)) ||
-    // Partner Automation Anywhere is configured in managed storage (e.g., set by Bot Agent installer)
-    managedPartnerId === "automation-anywhere" ||
-    // Community edition users are required to be linked until they join an organization
-    (me?.partner && isCommunityEditionUser) ||
-    // User has overridden local settings
-    authMethodOverride === "partner-oauth2" ||
-    authMethodOverride === "partner-token";
 
   if (authMethodOverride === "pixiebrix-token") {
     // User forced pixiebrix-token authentication via Advanced Settings > Authentication Method. Keep the theme,
@@ -235,6 +205,55 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     };
   }
 
+  const partnerId =
+    partnerIdOverride ??
+    managedPartnerId ??
+    partner?.theme ??
+    (hasControlRoom || isCommunityEditionUser ? "automation-anywhere" : null);
+
+  const partnerIntegrationIds = decidePartnerIntegrationIds({
+    authIntegrationIdOverride,
+    authMethodOverride,
+    partnerId,
+  });
+
+  const isMissingPartnerJwt = decideIsMissingPartnerJwt({
+    authMethodOverride,
+    hasControlRoom,
+    managedPartnerId,
+    partnerAuthData: partnerAuthState.data,
+  });
+
+  const partnerConfiguration = integrationConfigs.find((integrationConfig) =>
+    partnerIntegrationIds.has(integrationConfig.integrationId),
+  );
+
+  const requiresIntegration =
+    // Primary organization has a partner and linked control room
+    (hasPartner && Boolean(organization?.control_room)) ||
+    // Partner Automation Anywhere is configured in managed storage (e.g., set by Bot Agent installer)
+    managedPartnerId === "automation-anywhere" ||
+    // Community edition users are required to be linked until they join an organization
+    (me?.partner && isCommunityEditionUser) ||
+    // User has overridden local settings
+    authMethodOverride === "partner-oauth2" ||
+    authMethodOverride === "partner-token";
+
+  console.debug("useRequiredPartnerAuth", {
+    partnerAuthState,
+    hasPartner,
+    requiresIntegration,
+    isMeLoading,
+    isLinkedLoading,
+    meError,
+    partnerKey: partner?.theme ?? managedPartnerId,
+    hasConfiguredIntegration: {
+      requiresIntegration,
+      partnerConfiguration,
+      isMissingPartnerJwt,
+    },
+  });
+
   return {
     hasPartner,
     partnerKey: partner?.theme ?? managedPartnerId,
@@ -243,8 +262,8 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
       requiresIntegration &&
       Boolean(partnerConfiguration) &&
       !isMissingPartnerJwt,
-    isLoading,
-    error,
+    isLoading: isMeLoading || isLinkedLoading,
+    error: meError,
   };
 }
 

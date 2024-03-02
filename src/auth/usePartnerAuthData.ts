@@ -17,11 +17,12 @@
 
 import {
   addListener as addAuthListener,
+  readPartnerAuthData,
   removeListener as removeAuthListener,
-  isLinked,
 } from "@/auth/authStorage";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 import type { AsyncState } from "@/types/sliceTypes";
+import type { PartnerAuthData } from "@/auth/authTypes";
 
 // NOTE: can't share subscribe methods across generators currently for useAsyncExternalStore, because it maintains
 // a map of subscriptions to state controllers. See https://github.com/pixiebrix/pixiebrix-extension/issues/7789
@@ -34,15 +35,11 @@ const subscribe = (callback: () => void) => {
 };
 
 /**
- * Hook to watch the isLinked state, and automatically update if extension becomes linked/unlinked.
- * @see isLinked
+ * Use the current partner auth data. Automatically listens for changes and updates the state.
+ * @see readPartnerAuthData
  */
-function useLinkState(): AsyncState<boolean> {
-  // Using useAsyncExternalStore shares state/async calls across components in the tree.
-  // In the future, we might consider including the state in the Redux Store or React Context and gating
-  // on the state being available. Given how fast the `isLinked` call should resolve in practice, there's
-  // little benefit to exposing AsyncState for components to perform optimistic rendering on isLoading.
-  return useAsyncExternalStore(subscribe, isLinked);
+function usePartnerAuthData(): AsyncState<Partial<PartnerAuthData>> {
+  return useAsyncExternalStore(subscribe, readPartnerAuthData);
 }
 
-export default useLinkState;
+export default usePartnerAuthData;

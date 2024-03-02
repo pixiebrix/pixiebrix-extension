@@ -22,28 +22,48 @@ import {
 } from "@/testUtils/factories/authFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { TEST_setAuthData } from "@/auth/authStorage";
+import { selectUserDataUpdate } from "@/auth/authUtils";
+import useLinkState from "@/auth/useLinkState";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
 // In existing code, there was a lot of places mocking both useQueryState and useGetMeQuery. This could in some places
 // yield impossible states due to how `skip` logic in calls like RequireAuth, etc.
+
+const useLinkStateMock = jest.mocked(useLinkState);
 
 export function mockAnonymousUser(): void {
   appApiMock.onGet("/api/me/").reply(200, {
     // Anonymous users still get feature flags
     flags: [],
   });
+  useLinkStateMock.mockReturnValue(valueToAsyncState(false));
 }
 
 export async function mockAuthenticatedUser(me?: Me): Promise<void> {
   const user = me ?? userFactory();
   appApiMock.onGet("/api/me/").reply(200, user);
+  const authData = selectUserDataUpdate(user);
   const tokenData = tokenAuthDataFactory({
-    email: user.email,
-    user: user.id,
+    ...authData,
   });
   // eslint-disable-next-line new-cap
   await TEST_setAuthData(tokenData);
+  useLinkStateMock.mockReturnValue(valueToAsyncState(true));
 }
 
 export function mockErrorUser(error: unknown): void {
   appApiMock.onGet("/api/me/").reply(500, error);
+  // `useLinkStateMock` is partially independent of calls to `/api/me/`. It's possible for the extension to be
+  // linked (i.e., have a valid token), but that the `/api/me/` call fails do to a server issue
+  useLinkStateMock.mockReturnValue(valueToAsyncState(true));
 }
+
+async function cleanUpUserMocks() {
+  console.log("TEST");
+  useLinkStateMock.mockReset();
+  appApiMock.reset();
+  // eslint-disable-next-line new-cap
+  await TEST_setAuthData({});
+}
+
+afterAll(cleanUpUserMocks);
