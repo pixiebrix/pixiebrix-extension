@@ -59,7 +59,7 @@ const controller = new RepeatableAbortController();
  *
  * @since 1.8.10
  */
-const initializationTimestamp = new StorageItem<Timestamp>(
+export const initializationTimestamp = new StorageItem<Timestamp>(
   "managedStorageInitTimestamp",
 );
 
