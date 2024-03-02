@@ -192,6 +192,19 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     hasControlRoom ||
     (Boolean(me?.partner) && isCommunityEditionUser);
 
+  if (authMethodOverride === "pixiebrix-token") {
+    // User forced pixiebrix-token authentication via Advanced Settings > Authentication Method. Keep the theme,
+    // if any, but don't require a partner integration configuration.
+    return {
+      hasPartner,
+      partnerKey: partner?.theme,
+      requiresIntegration: false,
+      hasConfiguredIntegration: false,
+      isLoading: false,
+      error: undefined,
+    };
+  }
+
   const partnerId =
     partnerIdOverride ??
     managedPartnerId ??
@@ -225,19 +238,6 @@ function useRequiredPartnerAuth(): RequiredPartnerState {
     // User has overridden local settings
     authMethodOverride === "partner-oauth2" ||
     authMethodOverride === "partner-token";
-
-  if (authMethodOverride === "pixiebrix-token") {
-    // User forced pixiebrix-token authentication via Advanced Settings > Authentication Method. Keep the theme,
-    // if any, but don't require a partner integration configuration.
-    return {
-      hasPartner,
-      partnerKey: partner?.theme,
-      requiresIntegration: false,
-      hasConfiguredIntegration: false,
-      isLoading: false,
-      error: undefined,
-    };
-  }
 
   return {
     hasPartner,
