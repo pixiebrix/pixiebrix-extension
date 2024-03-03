@@ -168,8 +168,10 @@ export async function watchForDelayedStorageInitialization(): Promise<void> {
 const waitForInitialManagedStorage = pMemoize(async () => {
   if (await initializationTimestamp.get()) {
     // The extension has waited already this session in another context (typically the background worker)
-    console.debug("Managed storage already initialized this session");
-    managedStorageSnapshot = (await readManagedStorageImmediately()) ?? {};
+    console.debug(
+      "Managed storage has already been awaited in this session, reading managed storage immediately",
+    );
+    managedStorageSnapshot = await readManagedStorageImmediately();
   } else {
     console.debug(
       `Managed storage not initialized yet, polling for ${MAX_MANAGED_STORAGE_WAIT_MILLIS}ms`,
@@ -194,16 +196,20 @@ const waitForInitialManagedStorage = pMemoize(async () => {
         signal: mergeSignals(initializedController.signal, controller.signal),
       });
 
-      // `pollUntilTruthy` returns undefined after maxWaitMillis. After timeout, assume there's no policy set,
-      // so assign an empty value
-      managedStorageSnapshot ??= {};
-
-      console.info("Found managed storage settings", {
-        managedStorageSnapshot,
-      });
+      if (managedStorageSnapshot == null) {
+        // `pollUntilTruthy` returns undefined after maxWaitMillis. After timeout, assume there's no policy set
+        console.info(
+          "Managed storage initialization timed out, assuming no policy set",
+        );
+        managedStorageSnapshot = {};
+      } else {
+        console.debug("Found managed storage settings", {
+          managedStorageSnapshot,
+        });
+      }
     } catch (error) {
       if (error instanceof PromiseCancelled) {
-        managedStorageSnapshot = (await readManagedStorageImmediately()) ?? {};
+        managedStorageSnapshot = await readManagedStorageImmediately();
       } else {
         throw error;
       }
@@ -237,9 +243,9 @@ export const initManagedStorage = once(async () => {
           managedStorageStateChange.emit(managedStorageSnapshot);
         }
       },
-      {
-        signal: controller.signal,
-      },
+      // `browser.storage.onChanged` does not support an abort signal, despite what the Typescript types say
+      // https://developer.chrome.com/docs/extensions/reference/api/storage#event-onChanged
+      // { signal: controller.signal },
     );
   } catch (error) {
     // Handle Opera: https://github.com/pixiebrix/pixiebrix-extension/issues/4069
