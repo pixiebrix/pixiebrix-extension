@@ -132,7 +132,7 @@ export async function watchForDelayedStorageInitialization(): Promise<void> {
     return;
   }
 
-  // Abort on managed storage change, because it indicates that it must be initialized
+  // Abort on managed storage change, because change indicates that managed storage must be initialized
   const changeController = new AbortController();
   browser.storage.onChanged.addListener(async (_changes, area) => {
     if (area === "managed") {
@@ -148,7 +148,7 @@ export async function watchForDelayedStorageInitialization(): Promise<void> {
       intervalMillis: 2500,
     });
   } catch {
-    // NOP - most likely was aborted
+    // NOP - most likely was aborted. managedStorageSnapshot will get set by change handler
   }
 
   if (values != null) {
@@ -175,23 +175,23 @@ const waitForInitialManagedStorage = pMemoize(async () => {
       `Managed storage not initialized yet, polling for ${MAX_MANAGED_STORAGE_WAIT_MILLIS}ms`,
     );
 
-    // Controller that observes initializationTimestamp to see if another context finishes waiting in order
+    // Controller that observes initializationTimestamp to see if another context finished waiting in order
     // to quit waiting early. For example:
     // 1. Background worker starts waiting
     // 2. Extension Console starts waiting
     // 3. Background worker finishes waiting and sets initializationTimestamp
     // 4. Abort signal fires, enabling Extension Console to quit waiting early
-    const waitController = new AbortController();
+    const initializedController = new AbortController();
     initializationTimestamp.onChanged(() => {
-      waitController.abort(new PromiseCancelled());
-    }, waitController.signal);
+      initializedController.abort(new PromiseCancelled());
+    }, initializedController.signal);
 
     try {
       managedStorageSnapshot = await pollUntilTruthy<
         Nullishable<ManagedStorageState>
       >(readPopulatedManagedStorage, {
         maxWaitMillis: MAX_MANAGED_STORAGE_WAIT_MILLIS,
-        signal: waitController.signal,
+        signal: mergeSignals(initializedController.signal, controller.signal),
       });
 
       // `pollUntilTruthy` returns undefined after maxWaitMillis. After timeout, assume there's no policy set,
