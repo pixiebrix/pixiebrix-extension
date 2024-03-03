@@ -27,27 +27,22 @@ import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import { isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import {
-  readManagedStorage,
-  isInitialized as isManagedStorageInitialized,
-  resetInitializationTimestamp as resetManagedStorageInitializationState,
   initManagedStorage,
+  isInitialized as isManagedStorageInitialized,
+  readManagedStorage,
+  resetInitializationTimestamp as resetManagedStorageInitializationState,
+  watchForDelayedStorageInitialization,
 } from "@/store/enterprise/managedStorage";
 import { Events } from "@/telemetry/events";
 import { DEFAULT_SERVICE_URL, UNINSTALL_URL } from "@/urlConstants";
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
-import { SessionValue } from "@/mv3/SessionStorage";
-import { allSettled } from "@/utils/promiseUtils";
+import { oncePerSession } from "@/mv3/SessionStorage";
 
 /**
  * The latest version of PixieBrix available in the Chrome Web Store, or null if the version hasn't been fetched.
  */
 let _availableVersion: string | null = null;
-
-const initialized = new SessionValue<boolean>(
-  "installerInitialized",
-  import.meta.url,
-);
 
 /**
  * Returns true if this appears to be a Chrome Web Store install and/or the user has an app URL where they're
@@ -329,41 +324,34 @@ async function setUninstallURL(): Promise<void> {
   await browser.runtime.setUninstallURL(url.href);
 }
 
-/**
- * Run initialization that should occur once per extension session.
- */
-async function initSessionOnce(): Promise<void> {
-  // Using our own session value vs. webext-events because onExtensionStart has a 100ms delay
-  // https://github.com/fregante/webext-events/blob/main/source/on-extension-start.ts#L56
-
-  // Can't use onStartup because it doesn't mean "on extension start", but "on browser profile start".
-  // Events registered onStartup won't run when the user first installs or when they re-enable the extension.
-  // See: https://developer.chrome.com/docs/extensions/reference/api/runtime#event-onStartup
-
-  if (await initialized.get()) {
-    // Session already initialized
-    return;
-  }
-
-  console.debug("Running extension session initialization");
-
-  const storagePromise = (async () => {
+// Using our own session value vs. webext-events because onExtensionStart has a 100ms delay
+// https://github.com/fregante/webext-events/blob/main/source/on-extension-start.ts#L56
+// eslint-disable-next-line local-rules/persistBackgroundData -- using SessionMp via oncePerSession
+const initManagedStorageOnce = oncePerSession(
+  "initManagedStorage",
+  import.meta.url,
+  async () => {
     await resetManagedStorageInitializationState();
     await initManagedStorage();
-  })();
+    void watchForDelayedStorageInitialization();
+  },
+);
 
-  const telemetryPromise = (async () => {
+// eslint-disable-next-line local-rules/persistBackgroundData -- using SessionMp via oncePerSession
+const initTelemetryOnce = oncePerSession(
+  "initTelemetry",
+  import.meta.url,
+  async () => {
     if (await isLinked()) {
       // Init telemetry is a no-op if not linked. So calling without being linked just delays the throttle
       await initTelemetry();
     }
-  })();
-
-  await allSettled([storagePromise, telemetryPromise], { catch: "ignore" });
-}
+  },
+);
 
 function initInstaller(): void {
-  void initSessionOnce();
+  void initManagedStorageOnce();
+  void initTelemetryOnce();
 
   browser.runtime.onInstalled.addListener(showInstallPage);
   browser.runtime.onUpdateAvailable.addListener(setAvailableVersion);

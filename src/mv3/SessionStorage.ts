@@ -26,6 +26,7 @@ import { expectContext } from "@/utils/expectContext";
 import { type OmitIndexSignature, type JsonValue } from "type-fest";
 import { type ManualStorageKey } from "@/utils/storageUtils";
 import { once } from "lodash";
+import pMemoize from "p-memoize";
 
 // Just like chrome.storage.session, this must be "global"
 // eslint-disable-next-line local-rules/persistBackgroundData -- MV2-only
@@ -56,6 +57,17 @@ export class SessionMap<Value extends JsonValue> {
 
   private getRawStorageKey(secondaryKey: string): ManualStorageKey {
     return `${this.key}::${this.url}::${secondaryKey}` as ManualStorageKey;
+  }
+
+  async has(secondaryKey: string): Promise<boolean> {
+    this.validateContext();
+    const rawStorageKey = this.getRawStorageKey(secondaryKey);
+    if (!hasSession) {
+      return storage.has(rawStorageKey);
+    }
+
+    const result = await browser.storage.session.get(rawStorageKey);
+    return rawStorageKey in result;
   }
 
   async get(secondaryKey: string): Promise<Value | undefined> {
@@ -113,3 +125,13 @@ export class SessionValue<Value extends OmitIndexSignature<JsonValue>> {
     await this.map.set("#value", value);
   }
 }
+
+export const oncePerSession = (
+  key: string,
+  url: string,
+  fn: () => Promise<unknown>,
+) =>
+  pMemoize(fn, {
+    // `fn` has no arguments, so only one value is stored
+    cache: new SessionMap(key, url),
+  });

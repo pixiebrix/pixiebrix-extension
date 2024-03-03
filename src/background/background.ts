@@ -47,22 +47,12 @@ import { initRuntimeLogging } from "@/development/runtimeLogging";
 import initWalkthroughModalTrigger from "@/background/walkthroughModalTrigger";
 import { initSidePanel } from "./sidePanel";
 import initRestrictUnauthenticatedUrlAccess from "@/background/restrictUnauthenticatedUrlAccess";
-import {
-  initManagedStorage,
-  watchDelayedStorageInitialization,
-} from "@/store/enterprise/managedStorage";
 import { setPlatform } from "@/platform/platformContext";
 import backgroundPlatform from "@/background/backgroundPlatform";
 
 // The background "platform" currently is used to execute API requests from Google Sheets/Automation Anywhere.
 // In the future, it might also run other background tasks from mods (e.g., background intervals)
 setPlatform(backgroundPlatform);
-
-// Try to initialize managed storage as early as possible because it impacts background behavior
-// Call watchDelayedStorageInitialization to handle case where storage is not immediately available within timeout.
-// We might consider putting watchStorageInitialization in initManagedStorage, but having a non-terminating
-// interval complicates testing.
-void initManagedStorage().then(async () => watchDelayedStorageInitialization());
 
 void initLocator();
 void initMessengerLogging();

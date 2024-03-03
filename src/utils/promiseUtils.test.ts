@@ -218,7 +218,7 @@ describe("pollUntilTruthy", () => {
   it("doesn't call generator if already aborted", async () => {
     const generator = jest.fn().mockResolvedValue(true);
     const controller = new AbortController();
-    controller.abort();
+    controller.abort(new PromiseCancelled());
 
     const pollPromise = pollUntilTruthy(generator, {
       signal: controller.signal,
@@ -237,7 +237,7 @@ describe("pollUntilTruthy", () => {
       signal: controller.signal,
     });
 
-    controller.abort();
+    controller.abort(new PromiseCancelled());
     deferred.resolve(true);
 
     expect(generator).toHaveBeenCalledOnce();

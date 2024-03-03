@@ -19,7 +19,6 @@ import { isEmpty, negate, type ObjectIterator } from "lodash";
 import pMemoize from "p-memoize";
 import { TimeoutError } from "p-timeout";
 import { sleep } from "@/utils/timeUtils";
-import { PromiseCancelled } from "@/errors/genericErrors";
 
 /**
  * A promise that never resolves.
@@ -112,7 +111,7 @@ export async function awaitValue<T>(
  * @param maxWaitMillis the maximum time to wait for the value
  * @param intervalMillis time between each call to looper
  * @param signal an AbortSignal to cancel the polling. Checked per interval.
- * @throws PromiseCancelled if the signal is aborted
+ * @throws Error if the signal is aborted. Throw's the signal's abort reason
  */
 export async function pollUntilTruthy<T>(
   looper: (...args: unknown[]) => Promise<T> | T,
@@ -126,20 +125,19 @@ export async function pollUntilTruthy<T>(
     signal?: AbortSignal;
   } = {},
 ): Promise<T | undefined> {
+  // See example of signal logic:
+  // https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/throwIfAborted#aborting_a_polling_operation
+
   const endBy = Date.now() + maxWaitMillis;
   do {
     // Check at beginning of loop to avoid unnecessary compute
-    if (signal?.aborted) {
-      throw new PromiseCancelled();
-    }
+    signal?.throwIfAborted();
 
     // eslint-disable-next-line no-await-in-loop -- It's a retry loop
     const result = await looper();
 
     // Prefer cancellation to result
-    if (signal?.aborted) {
-      throw new PromiseCancelled();
-    }
+    signal?.throwIfAborted();
 
     if (result) {
       return result;

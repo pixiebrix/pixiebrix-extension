@@ -19,7 +19,7 @@ import { useSyncExternalStore } from "use-sync-external-store/shim";
 import {
   getSnapshot,
   initManagedStorage,
-  manageStorageStateChanges,
+  managedStorageStateChange,
 } from "@/store/enterprise/managedStorage";
 import { useEffect } from "react";
 import type { ManagedStorageState } from "@/store/enterprise/managedStorageTypes";
@@ -36,10 +36,10 @@ type HookState = {
 function subscribe(callback: () => void): () => void {
   expectContext("extension");
 
-  manageStorageStateChanges.add(callback);
+  managedStorageStateChange.add(callback);
 
   return () => {
-    manageStorageStateChanges.remove(callback);
+    managedStorageStateChange.remove(callback);
   };
 }
 

@@ -27,7 +27,7 @@ import pMemoize, { pMemoizeClear } from "p-memoize";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import type { Nullishable } from "@/utils/nullishUtils";
-import { RepeatableAbortController } from "abort-utils";
+import { mergeSignals, RepeatableAbortController } from "abort-utils";
 import { StorageItem } from "webext-storage";
 import type { Timestamp } from "@/types/stringTypes";
 import { PromiseCancelled } from "@/errors/genericErrors";
@@ -36,11 +36,6 @@ import { PromiseCancelled } from "@/errors/genericErrors";
 //   Privacy Badger uses 4.5s timeout, but thinks policy should generally be available within 2.5s. In installer.ts,
 //   skip waiting for managed storage before linking the Extension if the user appears to be installing from the CWS.
 const MAX_MANAGED_STORAGE_WAIT_MILLIS = 4500;
-
-/**
- * Interval for checking managed storage initialization that takes longer than MAX_MANAGED_STORAGE_WAIT_MILLIS seconds.
- */
-let initializationInterval: ReturnType<typeof setTimeout> | undefined;
 
 /**
  * The managedStorageState, or undefined if it hasn't been initialized yet.
@@ -52,10 +47,14 @@ const controller = new RepeatableAbortController();
 
 /**
  * The initialization timestamp of managed storage, or null/undefined if it hasn't been initialized yet for the
- * current browser session. Introduced to avoid waiting MAX_MANAGED_STORAGE_WAIT_MILLIS on every page.
+ * current browser session. Available from all extension contexts.
  *
- * Currently, using StorageItem because it's compatible with MV2 and MV3. After the switchover to MV3 can use
- * in-memory session storage directly.
+ * Uses StorageItem instead of SessionValue in order to be available to all extension contexts. The background
+ * script clears the timestamp on session startup. After the switchover to MV3 can use SessionValue directly.
+ **
+ * Introduced to avoid waiting MAX_MANAGED_STORAGE_WAIT_MILLIS on every page.
+ *
+ * @see
  *
  * @since 1.8.10
  */
@@ -63,7 +62,10 @@ export const initializationTimestamp = new StorageItem<Timestamp>(
   "managedStorageInitTimestamp",
 );
 
-export const manageStorageStateChanges =
+/**
+ * Event for managed storage state changes. Also emitted when managed storage is initialized.
+ */
+export const managedStorageStateChange =
   new SimpleEventTarget<ManagedStorageState>();
 
 /**
@@ -94,44 +96,65 @@ async function readPopulatedManagedStorage(): Promise<
 }
 
 /**
- * Watch for managed storage initialization that occurs after waitForInitialManagedStorage.
+ * Clear the initializationTimestamp. For use in background script installer.
+ *
+ * After switchover to MV3, won't be required if we switch initializationTimestamp to in-memory session storage, because
+ * session storage is automatically reset across browser sessions.
+ */
+export async function resetInitializationTimestamp(): Promise<void> {
+  expectContext(
+    "background",
+    "Should only be called from background session initialization code",
+  );
+  await initializationTimestamp.remove();
+}
+
+/**
+ * Background method to watch for managed storage initialization that takes longer than MAX_MANAGED_STORAGE_WAIT_MILLIS.
  *
  * We can't use `browser.storage.onChanged` because it doesn't fire on initialization.
  *
  * Required because other modules are using the values in managedStorageSnapshot vs. calling browser.storage.managed.get
- * directly.
+ * directly, so we need to ensure `managedStorageSnapshot` contains the values of manages storage.
  *
  * @see waitForInitialManagedStorage
  */
-export async function watchDelayedStorageInitialization(): Promise<void> {
-  expectContext("background");
+export async function watchForDelayedStorageInitialization(): Promise<void> {
+  expectContext(
+    "background",
+    "Should only be called from background session initialization code",
+  );
 
-  const values = await readPopulatedManagedStorage();
+  let values = await readPopulatedManagedStorage();
 
   if (values != null) {
-    // Already initialized
+    // NOP - already initialized
     return;
   }
 
-  // Use setInterval instead of pollUntilTruthy to clear on browser.storage.onChanged. pollUntilTruthy doesn't
-  // currently directly support an abort signal.
-  initializationInterval = setInterval(
-    async () => {
-      const values = await readPopulatedManagedStorage();
-      if (values != null) {
-        managedStorageSnapshot = values;
+  // Abort on managed storage change, because it indicates that it must be initialized
+  const changeController = new AbortController();
+  browser.storage.onChanged.addListener(async (_changes, area) => {
+    if (area === "managed") {
+      changeController.abort();
+    }
+  });
 
-        if (initializationInterval) {
-          clearInterval(initializationInterval);
-          initializationInterval = undefined;
-        }
+  try {
+    values = await pollUntilTruthy(readPopulatedManagedStorage, {
+      signal: mergeSignals(changeController.signal, controller.signal),
+      // If `waitForInitialManagedStorage` didn't find a policy, then there's most likely no policy.
+      // So only check once every 2.5 seconds to not consume resources
+      intervalMillis: 2500,
+    });
+  } catch {
+    // NOP - most likely was aborted
+  }
 
-        manageStorageStateChanges.emit(managedStorageSnapshot);
-      }
-    },
-    // Most likely there's no policy. So only check once every 2.5 seconds to not consume resources
-    2500,
-  );
+  if (values != null) {
+    managedStorageSnapshot = values;
+    managedStorageStateChange.emit(managedStorageSnapshot);
+  }
 }
 
 // It's possible that managed storage is not available on the initial installation event
@@ -144,19 +167,24 @@ export async function watchDelayedStorageInitialization(): Promise<void> {
 // - https://github.com/gorhill/uBlock/commit/32bd47f05368557044dd3441dcaa414b7b009b39
 const waitForInitialManagedStorage = pMemoize(async () => {
   if (await initializationTimestamp.get()) {
-    // The extension has waited already this session, so don't wait again
+    // The extension has waited already this session in another context (typically the background worker)
     console.debug("Managed storage already initialized this session");
     managedStorageSnapshot = (await readManagedStorageImmediately()) ?? {};
   } else {
     console.debug(
       `Managed storage not initialized yet, polling for ${MAX_MANAGED_STORAGE_WAIT_MILLIS}ms`,
     );
+
+    // Controller that observes initializationTimestamp to see if another context finishes waiting in order
+    // to quit waiting early. For example:
+    // 1. Background worker starts waiting
+    // 2. Extension Console starts waiting
+    // 3. Background worker finishes waiting and sets initializationTimestamp
+    // 4. Abort signal fires, enabling Extension Console to quit waiting early
     const waitController = new AbortController();
-    // Skip polling if it becomes initialized while waiting
-    initializationTimestamp.onChanged(
-      waitController.abort,
-      waitController.signal,
-    );
+    initializationTimestamp.onChanged(() => {
+      waitController.abort(new PromiseCancelled());
+    }, waitController.signal);
 
     try {
       managedStorageSnapshot = await pollUntilTruthy<
@@ -185,7 +213,7 @@ const waitForInitialManagedStorage = pMemoize(async () => {
     await initializationTimestamp.set(new Date().toISOString() as Timestamp);
   }
 
-  manageStorageStateChanges.emit(managedStorageSnapshot);
+  managedStorageStateChange.emit(managedStorageSnapshot);
 
   return managedStorageSnapshot;
 });
@@ -201,24 +229,21 @@ export const initManagedStorage = once(async () => {
     // `onChanged` is only called when the policy changes, not on initialization
     // `browser.storage.managed.onChanged` might also exist, but it's not available in testing
     // See: https://github.com/clarkbw/jest-webextension-mock/issues/170
-    browser.storage.onChanged.addListener(async (changes, area) => {
-      if (area === "managed") {
-        // If browser.storage.onChanged fires, it means storage must already be initialized
-        if (initializationInterval) {
-          clearInterval(initializationInterval);
-          initializationInterval = undefined;
+    browser.storage.onChanged.addListener(
+      async (changes, area) => {
+        if (area === "managed") {
+          // If browser.storage.onChanged fires, it means storage must already be initialized
+          managedStorageSnapshot = await readManagedStorageImmediately();
+          managedStorageStateChange.emit(managedStorageSnapshot);
         }
-
-        managedStorageSnapshot = await readManagedStorageImmediately();
-        manageStorageStateChanges.emit(managedStorageSnapshot);
-      }
-    });
+      },
+      {
+        signal: controller.signal,
+      },
+    );
   } catch (error) {
     // Handle Opera: https://github.com/pixiebrix/pixiebrix-extension/issues/4069
-    console.warn(
-      "Not listening for managed storage changes because managed storage is not supported",
-      { error },
-    );
+    console.warn("Managed storage is not supported in your browser", { error });
   }
 
   await waitForInitialManagedStorage();
@@ -288,28 +313,11 @@ export function getSnapshot(): Nullishable<ManagedStorageState> {
 }
 
 /**
- * Clear the initializationTimestamp. For use in background script installer.
- *
- * After switchover to MV3, won't be required if we switch initializationTimestamp to in-memory session storage, because
- * session storage is automatically reset across browser sessions.
- */
-export async function resetInitializationTimestamp(): Promise<void> {
-  expectContext(
-    "background",
-    "resetInitializationTimestamp should only be called from background session initialization code",
-  );
-  await initializationTimestamp.remove();
-}
-
-/**
  * Helper method for resetting the module for testing.
  */
 export async function INTERNAL_reset(): Promise<void> {
   controller.abortAndReset();
   managedStorageSnapshot = undefined;
-
-  clearInterval(initializationInterval);
-  initializationInterval = undefined;
 
   pMemoizeClear(waitForInitialManagedStorage);
   await resetInitializationTimestamp();
