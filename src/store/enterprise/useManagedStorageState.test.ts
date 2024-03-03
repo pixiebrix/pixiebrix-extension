@@ -49,8 +49,9 @@ describe("useManagedStorageState", () => {
           data: {},
           isLoading: false,
         });
-        // Must be longer than MAX_MANAGED_STORAGE_WAIT_MILLIS
       },
+      // XXX: figure out how to use fake timers to avoid slowing down test suite
+      // Must be longer than MAX_MANAGED_STORAGE_WAIT_MILLIS
       { timeout: 5000 },
     );
   });

@@ -322,7 +322,7 @@ export function getSnapshot(): Nullishable<ManagedStorageState> {
  * Helper method for resetting the module for testing.
  */
 export async function INTERNAL_reset(): Promise<void> {
-  controller.abortAndReset(new Error("Internal test cleanup"));
+  controller.abortAndReset(new PromiseCancelled("Internal test cleanup"));
   managedStorageSnapshot = undefined;
   pMemoizeClear(waitForInitialManagedStorage);
   await resetInitializationTimestamp();
