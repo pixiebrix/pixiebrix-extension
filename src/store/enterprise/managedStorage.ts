@@ -173,7 +173,7 @@ const waitForInitialManagedStorage = pMemoize(async () => {
     managedStorageSnapshot = await readManagedStorageImmediately();
   } else {
     console.debug(
-      `Managed storage not initialized yet, polling for ${MAX_MANAGED_STORAGE_WAIT_MILLIS}ms`,
+      `Managed storage not awaited yet, polling for ${MAX_MANAGED_STORAGE_WAIT_MILLIS}ms`,
     );
 
     // Controller that observes initializationTimestamp to see if another context finished waiting in order
@@ -183,6 +183,7 @@ const waitForInitialManagedStorage = pMemoize(async () => {
     // 3. Background worker finishes waiting and sets initializationTimestamp
     // 4. Abort signal fires, enabling Extension Console to quit waiting early
     const initializedController = new AbortController();
+
     initializationTimestamp.onChanged(() => {
       initializedController.abort(new PromiseCancelled());
     }, initializedController.signal);
@@ -214,7 +215,7 @@ const waitForInitialManagedStorage = pMemoize(async () => {
       }
     }
 
-    // Set timestamp so other callsites know they don't have to wait again
+    // Set timestamp so other callsites know they don't have to wait again. OK to set multiple times
     await initializationTimestamp.set(new Date().toISOString() as Timestamp);
   }
 
@@ -321,9 +322,8 @@ export function getSnapshot(): Nullishable<ManagedStorageState> {
  * Helper method for resetting the module for testing.
  */
 export async function INTERNAL_reset(): Promise<void> {
-  controller.abortAndReset();
+  controller.abortAndReset(new Error("Internal test cleanup"));
   managedStorageSnapshot = undefined;
-
   pMemoizeClear(waitForInitialManagedStorage);
   await resetInitializationTimestamp();
 }
