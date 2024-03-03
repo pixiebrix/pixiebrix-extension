@@ -326,7 +326,7 @@ async function setUninstallURL(): Promise<void> {
 
 // Using our own session value vs. webext-events because onExtensionStart has a 100ms delay
 // https://github.com/fregante/webext-events/blob/main/source/on-extension-start.ts#L56
-// eslint-disable-next-line local-rules/persistBackgroundData -- using SessionMp via oncePerSession
+// eslint-disable-next-line local-rules/persistBackgroundData -- using SessionMap via oncePerSession
 const initManagedStorageOncePerSession = oncePerSession(
   "initManagedStorage",
   import.meta.url,
@@ -337,7 +337,7 @@ const initManagedStorageOncePerSession = oncePerSession(
   },
 );
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- using SessionMp via oncePerSession
+// eslint-disable-next-line local-rules/persistBackgroundData -- using SessionMap via oncePerSession
 const initTelemetryOncePerSession = oncePerSession(
   "initTelemetry",
   import.meta.url,
