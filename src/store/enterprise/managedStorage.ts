@@ -54,8 +54,7 @@ const controller = new RepeatableAbortController();
  **
  * Introduced to avoid waiting MAX_MANAGED_STORAGE_WAIT_MILLIS on every page.
  *
- * @see
- *
+ * @see initManagedStorageOncePerSession
  * @since 1.8.10
  */
 export const initializationTimestamp = new StorageItem<Timestamp>(
