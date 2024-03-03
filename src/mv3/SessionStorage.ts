@@ -67,7 +67,9 @@ export class SessionMap<Value extends JsonValue> {
     }
 
     const result = await browser.storage.session.get(rawStorageKey);
-    return rawStorageKey in result;
+    // OK to use `undefined` because undefined is not a valid storage value
+    // eslint-disable-next-line security/detect-object-injection -- `getRawStorageKey` ensures the format
+    return result[rawStorageKey] !== undefined;
   }
 
   async get(secondaryKey: string): Promise<Value | undefined> {
