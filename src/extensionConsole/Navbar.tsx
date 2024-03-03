@@ -38,7 +38,7 @@ import useLinkState from "@/auth/useLinkState";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 
-// NOTE: can't share subscribe methods across generators currently for useAsyncExternalStore, because it maintains
+// NOTE: can't share subscribe methods across generators currently for useAsyncExternalStore because it maintains
 // a map of subscriptions to state controllers. See https://github.com/pixiebrix/pixiebrix-extension/issues/7789
 const subscribe = (callback: () => void) => {
   addAuthListener(callback);

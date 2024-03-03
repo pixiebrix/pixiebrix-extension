@@ -66,7 +66,7 @@ jest.mock("@/data/service/baseService", () => ({
 
 beforeEach(async () => {
   jest.clearAllMocks();
-  resetManagedStorage();
+  await resetManagedStorage();
   await browser.storage.managed.clear();
 });
 

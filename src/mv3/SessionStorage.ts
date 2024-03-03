@@ -26,6 +26,7 @@ import { expectContext } from "@/utils/expectContext";
 import { type OmitIndexSignature, type JsonValue } from "type-fest";
 import { type ManualStorageKey } from "@/utils/storageUtils";
 import { once } from "lodash";
+import pMemoize from "p-memoize";
 
 // Just like chrome.storage.session, this must be "global"
 // eslint-disable-next-line local-rules/persistBackgroundData -- MV2-only
@@ -58,6 +59,20 @@ export class SessionMap<Value extends JsonValue> {
     return `${this.key}::${this.url}::${secondaryKey}` as ManualStorageKey;
   }
 
+  async has(secondaryKey: string): Promise<boolean> {
+    this.validateContext();
+    const rawStorageKey = this.getRawStorageKey(secondaryKey);
+    if (!hasSession) {
+      return storage.has(rawStorageKey);
+    }
+
+    const result = await browser.storage.session.get(rawStorageKey);
+    // OK to check for undefined because it's not a valid JsonValue. The `set` method calls `delete` if
+    // the caller tries to set `undefined`.
+    // eslint-disable-next-line security/detect-object-injection -- `getRawStorageKey` ensures the format
+    return result[rawStorageKey] !== undefined;
+  }
+
   async get(secondaryKey: string): Promise<Value | undefined> {
     this.validateContext();
     const rawStorageKey = this.getRawStorageKey(secondaryKey);
@@ -72,6 +87,13 @@ export class SessionMap<Value extends JsonValue> {
 
   async set(secondaryKey: string, value: Value): Promise<void> {
     this.validateContext();
+
+    // `undefined` is invalid because it's not a JsonValue. Because Typescript doesn't enforce null vs. undefined
+    // in files without strict null checks, check for it here and delete
+    if (value === undefined) {
+      await this.delete(secondaryKey);
+      return;
+    }
 
     const rawStorageKey = this.getRawStorageKey(secondaryKey);
     if (hasSession) {
@@ -109,7 +131,34 @@ export class SessionValue<Value extends OmitIndexSignature<JsonValue>> {
     return this.map.get("#value");
   }
 
+  async unset(): Promise<void> {
+    await this.map.delete("#value");
+  }
+
   async set(value: Value): Promise<void> {
     await this.map.set("#value", value);
   }
 }
+
+/**
+ * Helper to run a method at most once per session from the background page.
+ * @param key the SessionMap key
+ * @param url the ImportMeta.url of the file
+ * @param fn the function to run once per session
+ */
+export const oncePerSession = (
+  key: string,
+  url: string,
+  fn: () => Promise<unknown>,
+) =>
+  pMemoize(
+    async () => {
+      await fn();
+      // SessionMap expects a JsonValue
+      return true;
+    },
+    {
+      // `fn` has no arguments, so only one value is stored
+      cache: new SessionMap(key, url),
+    },
+  );
