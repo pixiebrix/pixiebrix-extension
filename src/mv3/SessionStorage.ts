@@ -67,7 +67,8 @@ export class SessionMap<Value extends JsonValue> {
     }
 
     const result = await browser.storage.session.get(rawStorageKey);
-    // OK to use `undefined` because undefined is not a valid storage value
+    // OK to check for undefined because it's not a valid JsonValue. The `set` method calls `delete` if
+    // the caller tries to set `undefined`.
     // eslint-disable-next-line security/detect-object-injection -- `getRawStorageKey` ensures the format
     return result[rawStorageKey] !== undefined;
   }
@@ -86,6 +87,13 @@ export class SessionMap<Value extends JsonValue> {
 
   async set(secondaryKey: string, value: Value): Promise<void> {
     this.validateContext();
+
+    // `undefined` is invalid because it's not a JsonValue. Because Typescript doesn't enforce null vs. undefined
+    // in files without strict null checks, check for it here and delete
+    if (value === undefined) {
+      await this.delete(secondaryKey);
+      return;
+    }
 
     const rawStorageKey = this.getRawStorageKey(secondaryKey);
     if (hasSession) {
@@ -123,6 +131,10 @@ export class SessionValue<Value extends OmitIndexSignature<JsonValue>> {
     return this.map.get("#value");
   }
 
+  async unset(): Promise<void> {
+    await this.map.delete("#value");
+  }
+
   async set(value: Value): Promise<void> {
     await this.map.set("#value", value);
   }
@@ -139,7 +151,14 @@ export const oncePerSession = (
   url: string,
   fn: () => Promise<unknown>,
 ) =>
-  pMemoize(fn, {
-    // `fn` has no arguments, so only one value is stored
-    cache: new SessionMap(key, url),
-  });
+  pMemoize(
+    async () => {
+      await fn();
+      // SessionMap expects a JsonValue
+      return true;
+    },
+    {
+      // `fn` has no arguments, so only one value is stored
+      cache: new SessionMap(key, url),
+    },
+  );
