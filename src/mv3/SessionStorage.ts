@@ -126,6 +126,12 @@ export class SessionValue<Value extends OmitIndexSignature<JsonValue>> {
   }
 }
 
+/**
+ * Helper to run a method at most once per session from the background page.
+ * @param key the SessionMap key
+ * @param url the ImportMeta.url of the file
+ * @param fn the function to run once per session
+ */
 export const oncePerSession = (
   key: string,
   url: string,
