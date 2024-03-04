@@ -98,32 +98,32 @@ type ContentProps = {
 async function createYupValidationSchema(
   integration: Integration,
 ): Promise<Yup.AnyObjectSchema> {
-  // Dereference because buildYup doesn't support $ref:
-  // https://github.com/kristianmandrup/schema-to-yup?tab=readme-ov-file#refs
-  const schema = await dereference(
-    {
-      type: "object",
-      properties: {
-        organization: {
-          type: "string",
-        },
-        label: {
-          type: "string",
-          // @ts-expect-error -- expects JSONSchema7 type `required: string[]`
-          // (one level up), but only works with JSONSchema4 `required: boolean`
-          required: true,
-        },
-        config: integration.schema,
-      },
-      required: ["config"],
-    },
-    {
-      // Include secrets, so they can be validated
-      sanitizeIntegrationDefinitions: false,
-    },
-  );
-
   try {
+    // Dereference because buildYup doesn't support $ref:
+    // https://github.com/kristianmandrup/schema-to-yup?tab=readme-ov-file#refs
+    const schema = await dereference(
+      {
+        type: "object",
+        properties: {
+          organization: {
+            type: "string",
+          },
+          label: {
+            type: "string",
+            // @ts-expect-error -- expects JSONSchema7 type `required: string[]`
+            // (one level up), but only works with JSONSchema4 `required: boolean`
+            required: true,
+          },
+          config: integration.schema,
+        },
+        required: ["config"],
+      },
+      {
+        // Include secrets, so they can be validated
+        sanitizeIntegrationDefinitions: false,
+      },
+    );
+
     // The de-referenced schema is frozen, buildYup can mutate it, so we need to "unfreeze" the schema
     return buildYup(cloneDeep(schema), {
       errMessages: getValidationErrMessages(
