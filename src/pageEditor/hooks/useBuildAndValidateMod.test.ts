@@ -22,8 +22,7 @@ import {
   lookupExtensionPoint,
 } from "@/pageEditor/starterBricks/base";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { renderHook } from "@/pageEditor/testHelpers";
-import { act } from "@testing-library/react-hooks";
+import { hookAct, renderHook } from "@/pageEditor/testHelpers";
 import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
@@ -146,7 +145,7 @@ describe("useBuildAndValidateMod", () => {
         },
       });
 
-      await act(async () => {
+      await hookAct(async () => {
         const newMod = await result.current.buildAndValidateMod({
           sourceMod: modDefinition,
           // Only pass in the unchanged clean mod components
@@ -198,7 +197,7 @@ describe("useBuildAndValidateMod", () => {
 
     const state = getReduxStore().getState().options as ModComponentState;
 
-    await act(async () => {
+    await hookAct(async () => {
       await expect(
         result.current.buildAndValidateMod({
           sourceMod: installedModDefinition,

@@ -15,19 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { appApiMock } from "@/testUtils/appApiMock";
-import {
-  modComponentDefinitionFactory,
-  modDefinitionFactory,
-} from "@/testUtils/factories/modDefinitionFactories";
+import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
+import useCreateModFromModComponent from "@/pageEditor/hooks/useCreateModFromModComponent";
 import { hookAct, renderHook, waitFor } from "@/pageEditor/testHelpers";
-import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
+import { appApiMock } from "@/testUtils/appApiMock";
 import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
-import { actions as extensionsActions } from "@/store/extensionsSlice";
+import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { array } from "cooky-cutter";
-import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
 
 const reportEventMock = jest.mocked(reportEvent);
 jest.mock("@/telemetry/trace");
@@ -37,7 +32,7 @@ jest.mock("@/pageEditor/hooks/useCompareModComponentCounts", () =>
 );
 const compareModComponentCountsMock = jest.mocked(useCompareModComponentCounts);
 
-describe("useCreateModFromMod", () => {
+describe("useCreateModFromModComponent", () => {
   beforeEach(() => {
     appApiMock.reset();
     compareModComponentCountsMock.mockClear();
@@ -45,73 +40,45 @@ describe("useCreateModFromMod", () => {
 
   it("saves with no dirty changes", async () => {
     const metadata = modMetadataFactory();
-    const definition = modDefinitionFactory({
-      metadata,
-    });
+    const menuItemFormState = menuItemFormStateFactory({ recipe: metadata });
 
     appApiMock
       .onPost("/api/bricks/")
       .reply(200, { updated_at: "2024-01-01T00:00:00Z" });
 
-    const { result } = renderHook(() => useCreateModFromMod(), {
-      setupRedux(dispatch) {
-        dispatch(
-          extensionsActions.installMod({
-            modDefinition: definition,
-            screen: "pageEditor",
-            isReinstall: false,
-          }),
-        );
-      },
-    });
+    const { result } = renderHook(() =>
+      useCreateModFromModComponent(menuItemFormState),
+    );
 
     await hookAct(async () => {
-      await result.current.createModFromMod(definition, metadata);
+      await result.current.createModFromComponent(menuItemFormState, metadata);
     });
 
     expect(appApiMock.history.post).toHaveLength(1);
+
     await waitFor(() => {
       expect(reportEventMock).toHaveBeenCalledWith(
-        Events.STARTER_BRICK_ACTIVATE,
+        Events.PAGE_EDITOR_MOD_CREATE,
         expect.any(Object),
       );
     });
-
-    expect(reportEventMock).toHaveBeenCalledWith(
-      Events.MOD_ACTIVATE,
-      expect.any(Object),
-    );
   });
 
   it("does not throw an error if the mod fails an invariant check", async () => {
     compareModComponentCountsMock.mockReturnValue(() => false);
-    const modMetadata = modMetadataFactory();
-    const installedModDefinition = modDefinitionFactory({
-      metadata: modMetadata,
-      extensionPoints: array(modComponentDefinitionFactory, 2),
-    });
+    const metadata = modMetadataFactory();
+    const menuItemFormState = menuItemFormStateFactory({ recipe: metadata });
 
     appApiMock
       .onPost("/api/bricks/")
       .reply(200, { updated_at: "2024-01-01T00:00:00Z" });
 
-    const { result } = renderHook(() => useCreateModFromMod(), {
-      setupRedux(dispatch) {
-        dispatch(
-          extensionsActions.installMod({
-            modDefinition: installedModDefinition,
-            screen: "pageEditor",
-            isReinstall: false,
-          }),
-        );
-      },
-    });
+    const { result } = renderHook(() =>
+      useCreateModFromModComponent(menuItemFormState),
+    );
 
     await hookAct(async () => {
-      await result.current.createModFromMod(
-        installedModDefinition,
-        modMetadata,
-      );
+      await result.current.createModFromComponent(menuItemFormState, metadata);
     });
 
     expect(appApiMock.history.post).toHaveLength(0);
