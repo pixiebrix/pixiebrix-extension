@@ -24,7 +24,7 @@ import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 import type { AsyncState } from "@/types/sliceTypes";
 import type { PartnerAuthData } from "@/auth/authTypes";
 
-// NOTE: can't share subscribe methods across generators currently for useAsyncExternalStore, because it maintains
+// NOTE: can't share subscribe methods across generators currently for useAsyncExternalStore because it maintains
 // a map of subscriptions to state controllers. See https://github.com/pixiebrix/pixiebrix-extension/issues/7789
 const subscribe = (callback: () => void) => {
   addAuthListener(callback);

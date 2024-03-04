@@ -23,21 +23,49 @@ test("SessionMap", async () => {
 
   await map.set("alpha", 1);
   await expect(map.get("alpha")).resolves.toBe(1);
+  await expect(map.has("alpha")).resolves.toBeTrue();
 
   // Other props should be left untouched
   await expect(map.get("beta")).resolves.toBeUndefined();
 
+  await map.delete("alpha");
+  await expect(map.get("alpha")).resolves.toBeUndefined();
+  await expect(map.has("alpha")).resolves.toBeFalse();
+});
+
+test("SessionMap accepts undefined", async () => {
+  const map = new SessionMap("jester", import.meta.url);
+  await expect(map.get("alpha")).resolves.toBeUndefined();
+
+  await map.set("alpha", 1);
+  await expect(map.get("alpha")).resolves.toBe(1);
+  await expect(map.has("alpha")).resolves.toBeTrue();
+
+  // `undefined` is a type-error because it's not a JsonValue. Keeping this test just to document the current behavior.
   await map.set("alpha", undefined);
   await expect(map.get("alpha")).resolves.toBeUndefined();
+  // SessionMap will unset the value
+  await expect(map.has("alpha")).resolves.toBeFalse();
 });
 
 test("SessionValue", async () => {
-  const map = new SessionValue("jester", import.meta.url);
-  await expect(map.get()).resolves.toBeUndefined();
+  const value = new SessionValue("jester", import.meta.url);
+  await expect(value.get()).resolves.toBeUndefined();
 
-  await map.set(1);
-  await expect(map.get()).resolves.toBe(1);
+  await value.set(1);
+  await expect(value.get()).resolves.toBe(1);
 
-  await map.set(undefined);
-  await expect(map.get()).resolves.toBeUndefined();
+  await value.unset();
+  await expect(value.get()).resolves.toBeUndefined();
+});
+
+test("SessionValue allows setting undefined", async () => {
+  const value = new SessionValue("jester", import.meta.url);
+
+  await value.set(1);
+  await expect(value.get()).resolves.toBe(1);
+
+  // `undefined` is a type-error because it's not a JsonValue. Keeping this test just to document the current behavior.
+  await value.set(undefined);
+  await expect(value.get()).resolves.toBeUndefined();
 });
