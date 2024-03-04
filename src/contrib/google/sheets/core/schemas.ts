@@ -24,11 +24,12 @@ export const SPREADSHEET_FIELD_DESCRIPTION =
   "Select a Google Sheet. The first row in your sheet MUST contain headings.";
 
 /**
- * `$ref` schema for a Google Sheet input. The $ref form is used in field definitions.
+ * `$ref` schema for a Google Sheet input. In general, use SHEET_FIELD_SCHEMA directly instead.
  * @see SHEET_FIELD_SCHEMA
  */
 export const SHEET_FIELD_REF_SCHEMA: Schema = {
   $ref: "https://app.pixiebrix.com/schemas/googleSheetId#",
+  // XXX: provide base type in-case $ref cannot be dereferenced. Why is this necessary?
   type: "string",
 };
 

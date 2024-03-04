@@ -35,6 +35,7 @@ import { keyAuthIntegrationDefinitionFactory } from "@/testUtils/factories/integ
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { ContextError } from "@/errors/genericErrors";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 beforeEach(() => {
   integrationRegistry.clear();
@@ -177,16 +178,16 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       },
     ];
 
-    let _error: unknown;
+    let actualError: unknown;
 
     try {
       await reducePipeline(pipeline, simpleInput({}), testOptions(apiVersion));
     } catch (error) {
-      _error = error;
+      actualError = error;
     }
 
-    expect(_error).toBeInstanceOf(ContextError);
-    const contextError = _error as ContextError;
+    expect(actualError).toBeInstanceOf(ContextError);
+    const contextError = actualError as ContextError;
     expect(contextError.cause).toBeInstanceOf(InputValidationError);
     const inputValidationError = contextError.cause as InputValidationError;
     expect(inputValidationError.errors).toStrictEqual([
@@ -202,6 +203,61 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         instanceLocation: "#/config",
         keyword: "required",
         keywordLocation: "#/properties/config/required",
+      },
+    ]);
+  });
+
+  test("validate multiple database configuration", async () => {
+    class DatabaseBrick extends BrickABC {
+      static BRICK_ID = validateRegistryId("test/database");
+      constructor() {
+        super(DatabaseBrick.BRICK_ID, "Database Brick");
+      }
+
+      inputSchema = propertiesToSchema(
+        {
+          db1: {
+            $ref: "https://app.pixiebrix.com/schemas/database#",
+          },
+          db2: {
+            $ref: "https://app.pixiebrix.com/schemas/database#",
+          },
+        },
+        ["db1", "db2"],
+      );
+
+      async run() {}
+    }
+
+    brickRegistry.register([new DatabaseBrick()]);
+
+    const pipeline = [
+      {
+        id: DatabaseBrick.BRICK_ID,
+        config: {
+          db1: autoUUIDSequence(),
+        },
+      },
+    ];
+
+    let actualError: unknown;
+
+    try {
+      await reducePipeline(pipeline, simpleInput({}), testOptions(apiVersion));
+    } catch (error) {
+      actualError = error;
+    }
+
+    expect(actualError).toBeInstanceOf(ContextError);
+    const contextError = actualError as ContextError;
+    expect(contextError.cause).toBeInstanceOf(InputValidationError);
+    const inputValidationError = contextError.cause as InputValidationError;
+    expect(inputValidationError.errors).toStrictEqual([
+      {
+        error: 'Instance does not have required property "db2".',
+        instanceLocation: "#",
+        keyword: "required",
+        keywordLocation: "#/required",
       },
     ]);
   });

@@ -24,7 +24,6 @@ import {
 import { type Schema } from "@/types/schemaTypes";
 import integrationRegistry from "@/integrations/registry";
 import { cloneDeep, pickBy, trimEnd } from "lodash";
-import urljoin from "url-join";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import {
   type FileInfo,
@@ -68,8 +67,6 @@ const BUILT_IN_SCHEMAS: Readonly<Record<string, ValidatorSchema>> =
     "https://app.pixiebrix.com/schemas/googleSheetId": googleSheetIdSchema,
   } as unknown as Record<string, ValidatorSchema>);
 
-const BASE_SCHEMA_URI = "https://app.pixiebrix.com/schemas/";
-
 const REF_SECRETS = ["https://app.pixiebrix.com/schemas/key"];
 
 export const KIND_SCHEMAS: Readonly<Record<string, ValidatorSchema>> =
@@ -82,53 +79,65 @@ export const KIND_SCHEMAS: Readonly<Record<string, ValidatorSchema>> =
   } as unknown as Record<string, ValidatorSchema>);
 
 /**
- * $ref resolver that fetches the integration definition from the integration definition registry.
+ * $ref resolver factory that fetches the integration definition from the integration definition registry.
+ * @param sanitize true to exclude properties associated with secrets
  */
-// eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const integrationDefinitionResolver: ResolverOptions = {
-  order: 1,
-  canRead: /^https:\/\/app\.pixiebrix\.com\/schemas\/services\/\S+/i,
-  async read(file: FileInfo) {
-    // https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API#making_matching_groups_repeated
-    const pattern = new URLPattern({ pathname: "/schemas/services/:id+" });
-    const result = pattern.exec(file.url);
+function integrationResolverFactory({
+  sanitize,
+}: {
+  sanitize: boolean;
+}): ResolverOptions {
+  return {
+    order: 1,
+    canRead: /^https:\/\/app\.pixiebrix\.com\/schemas\/services\/\S+/i,
+    async read(file: FileInfo) {
+      // https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API#making_matching_groups_repeated
+      const pattern = new URLPattern({ pathname: "/schemas/services/:id+" });
+      const result = pattern.exec(file.url);
 
-    if (!result) {
-      throw new Error(`Invalid integration URL ${file.url}`);
-    }
+      if (!result) {
+        throw new Error(`Invalid integration URL ${file.url}`);
+      }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- linter and compiler disagree
-    const integrationId = result.pathname.groups.id!;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- linter and compiler disagree
+      const integrationId = result.pathname.groups.id!;
 
-    try {
-      const integrationDefinition = await integrationRegistry.lookup(
-        validateRegistryId(integrationId),
-      );
+      try {
+        const integrationDefinition = await integrationRegistry.lookup(
+          validateRegistryId(integrationId),
+        );
 
-      // TODO: provide option on whether or not to include secrets/sanitize. Configuration forms need secrets
-      const sanitizedProperties = pickBy(
-        inputProperties(integrationDefinition.schema),
-        // `includes` type is annoyingly narrow: https://github.com/microsoft/TypeScript/issues/26255
-        (x: JSONSchema7) =>
-          x.$ref == null || !REF_SECRETS.includes(trimEnd(x.$ref, "#")),
-      );
+        if (sanitize) {
+          const sanitizedProperties = pickBy(
+            inputProperties(integrationDefinition.schema),
+            // `includes` type is annoyingly narrow: https://github.com/microsoft/TypeScript/issues/26255
+            (x: JSONSchema7) =>
+              x.$ref == null || !REF_SECRETS.includes(trimEnd(x.$ref, "#")),
+          );
 
-      return {
-        // Don't include $id because it might occur multiple times and $RefParser.dereference breaks on duplicate ids
-        type: "object",
-        // Strip out the properties containing secrets because those will be excluded as this point
-        properties: sanitizedProperties,
-        required: (integrationDefinition.schema.required ?? []).filter(
-          (x) => x in sanitizedProperties,
-        ),
-      };
-    } catch (error) {
-      console.warn("Error resolving integration definition schema", error);
-      // Don't block on failure
-      return minimalSchemaFactory();
-    }
-  },
-} as const;
+          return {
+            $id: file.url,
+            type: "object",
+            // Strip out the properties containing secrets because those are excluded during runtime execution
+            properties: sanitizedProperties,
+            required: (integrationDefinition.schema.required ?? []).filter(
+              (x) => x in sanitizedProperties,
+            ),
+          };
+        }
+
+        return {
+          ...integrationDefinition.schema,
+          $id: file.url,
+        };
+      } catch (error) {
+        console.warn("Error resolving integration definition schema", error);
+        // Don't block on lookup failure
+        return minimalSchemaFactory();
+      }
+    },
+  };
+}
 
 /**
  * Schema resolver that resolves the schemas from BUILT_IN_SCHEMA_URLS.
@@ -149,26 +158,36 @@ const builtInSchemaResolver: ResolverOptions = {
       return other;
     }
 
-    throw new Error(`Unknown file ${file.url}`);
+    throw new Error(`Unknown schema: ${file.url}`);
   },
 } as const;
 
 /**
  * Returns a new copy of schema with all $ref de-referenced.
  * @param schema the original schema that may contain $ref
+ * @param sanitizeIntegrationDefinitions remove properties associated with secrets from integration definitions.
+ *   Should generally be set to true when using for runtime validation, but false when using for UI entry validation.
  * @see $RefParser.dereference
  */
-export async function dereference(schema: Schema): Promise<Schema> {
+export async function dereference(
+  schema: Schema,
+  {
+    sanitizeIntegrationDefinitions,
+  }: {
+    sanitizeIntegrationDefinitions: boolean;
+  },
+): Promise<Schema> {
   // $RefParser.dereference modifies the schema in place
   const clone = cloneDeep(schema);
 
   try {
     return await ($RefParser.dereference(clone, {
-      // Disable built-in resolvers
-      // https://apitools.dev/json-schema-ref-parser/docs/options.html
       resolve: {
-        integrationDefinitionResolver,
+        integrationDefinitionResolver: integrationResolverFactory({
+          sanitize: sanitizeIntegrationDefinitions,
+        }),
         builtInSchemaResolver,
+        // Disable built-in resolvers: https://apitools.dev/json-schema-ref-parser/docs/options.html
         http: false,
         file: false,
       },
@@ -197,13 +216,16 @@ export async function validateBrickInputOutput(
   schema: Schema,
   instance: unknown,
 ): Promise<ValidationResult> {
-  const dereferenced = await dereference(schema);
+  // XXX: we might consider using resolve and adding the schemas to the validator vs. de-referencing
+  // The problem is that the validator in errors change, so we'd have to double-check our translation from
+  // validation errors to field paths for the Page Editor.
+  // https://apitools.dev/json-schema-ref-parser/docs/ref-parser.html#resolveschema-options-callback
 
-  const validator = new Validator({
-    $id: urljoin(BASE_SCHEMA_URI, "block"),
-    ...dereferenced,
-  } as ValidatorSchema);
+  const dereferenced = await dereference(schema, {
+    sanitizeIntegrationDefinitions: true,
+  });
 
+  const validator = new Validator(dereferenced as ValidatorSchema);
   return validator.validate(instance ?? null);
 }
 
@@ -223,14 +245,16 @@ export function validatePackageDefinition(
   const schema = KIND_SCHEMAS[kind];
 
   if (schema == null) {
-    // `strictNullChecks` isn't satisfied with the kind parameter type
+    // `strictNullChecks` isn't satisfied with the keyof parameter type
     throw new Error(`Unknown kind: ${kind}`);
   }
 
   const validator = new Validator(schema);
 
+  // Add the schemas synchronously
   for (const builtIn of Object.values(BUILT_IN_SCHEMAS)) {
     if (builtIn !== schema) {
+      // `validate` throws if there are multiple schemas registered with the same $id
       validator.addSchema(builtIn);
     }
   }

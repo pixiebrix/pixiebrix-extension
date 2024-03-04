@@ -45,7 +45,10 @@ import selectEvent from "react-select-event";
 import { type FormikValues } from "formik";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import { toExpression } from "@/utils/expressionUtils";
-import { SHEET_FIELD_SCHEMA } from "@/contrib/google/sheets/core/schemas";
+import {
+  SHEET_FIELD_REF_SCHEMA,
+  SHEET_FIELD_SCHEMA,
+} from "@/contrib/google/sheets/core/schemas";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/hooks/auth");
@@ -204,28 +207,32 @@ beforeEach(() => {
 
 describe("getToggleOptions", () => {
   // Sanity check getToggleOptions returning expected values, because that would cause problems in the snapshot tests
-  it("should include file picker and variable toggle options", async () => {
-    const result = getToggleOptions({
-      fieldSchema: SHEET_FIELD_SCHEMA,
-      customToggleModes: [],
-      isRequired: true,
-      allowExpressions: true,
-      isObjectProperty: false,
-      isArrayItem: false,
-    });
+  // Should show toggle for both $ref and $id schemas
+  it.each([SHEET_FIELD_SCHEMA, SHEET_FIELD_REF_SCHEMA])(
+    "should include file picker and variable toggle options",
+    async (fieldSchema) => {
+      const result = getToggleOptions({
+        fieldSchema,
+        customToggleModes: [],
+        isRequired: true,
+        allowExpressions: true,
+        isObjectProperty: false,
+        isArrayItem: false,
+      });
 
-    expect(result).toEqual([
-      // The Google File Picker
-      expect.objectContaining({
-        Widget: SpreadsheetPickerWidget,
-        value: "string",
-      }),
-      // Variable
-      expect.objectContaining({
-        value: "var",
-      }),
-    ]);
-  });
+      expect(result).toEqual([
+        // The Google File Picker
+        expect.objectContaining({
+          Widget: SpreadsheetPickerWidget,
+          value: "string",
+        }),
+        // Variable
+        expect.objectContaining({
+          value: "var",
+        }),
+      ]);
+    },
+  );
 });
 
 function expectTab1Selected() {

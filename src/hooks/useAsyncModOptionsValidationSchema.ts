@@ -39,7 +39,11 @@ export async function getOptionsValidationSchema(
   }
 
   // NOTE: sometimes this schema comes in as a non-extensible object. Dereference clones the object for us.
-  const dereferencedSchema = await dereference(optionsDefinitionSchema);
+  const dereferencedSchema = await dereference(optionsDefinitionSchema, {
+    // Include secrets (if any), so they can be validated. As of 1.8.10, there's no "secret" mod input type
+    // exposed via the Page Editor, though.
+    sanitizeIntegrationDefinitions: false,
+  });
 
   const yupSchema = buildYup(dereferencedSchema);
   // Yup will produce an ugly "null is not type of x" validation error instead of an

@@ -123,22 +123,28 @@ const ModalContent: React.FC<ContentProps> = ({
   }, [integration]);
 
   const validationSchemaState = useAsyncState<Yup.AnyObjectSchema>(async () => {
-    const schema = await dereference({
-      type: "object",
-      properties: {
-        organization: {
-          type: "string",
+    const schema = await dereference(
+      {
+        type: "object",
+        properties: {
+          organization: {
+            type: "string",
+          },
+          label: {
+            type: "string",
+            // @ts-expect-error -- expects JSONSchema7 type `required: string[]`
+            // (one level up), but only works with JSONSchema4 `required: boolean`
+            required: true,
+          },
+          config: integration.schema,
         },
-        label: {
-          type: "string",
-          // @ts-expect-error -- expects JSONSchema7 type `required: string[]`
-          // (one level up), but only works with JSONSchema4 `required: boolean`
-          required: true,
-        },
-        config: integration.schema,
+        required: ["config"],
       },
-      required: ["config"],
-    });
+      {
+        // Include secrets, so they can be validated
+        sanitizeIntegrationDefinitions: false,
+      },
+    );
 
     try {
       // The de-referenced schema is frozen, buildYup can mutate it, so we need to "unfreeze" the schema
