@@ -439,6 +439,7 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["Me"],
     }),
+    // Post request not used to mutate data on the backend, just to fetch data
     getDeployments: builder.query<
       Deployment[],
       { uid: UUID; version: string; active: InstalledDeployment[] }
