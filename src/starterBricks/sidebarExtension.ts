@@ -19,7 +19,6 @@ import {
   type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-import { propertiesToSchema } from "@/validators/generic";
 import {
   type CustomEventOptions,
   type DebounceOptions,
@@ -56,6 +55,7 @@ import makeServiceContextFromDependencies from "@/integrations/util/makeServiceC
 import { RepeatableAbortController } from "abort-utils";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export type SidebarConfig = {
   heading: string;

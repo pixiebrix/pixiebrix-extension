@@ -25,12 +25,11 @@ import { Link } from "react-router-dom";
 import { getBaseURL } from "@/data/service/baseService";
 import {
   addListener as addAuthListener,
-  removeListener as removeAuthListener,
   readPartnerAuthData,
+  removeListener as removeAuthListener,
 } from "@/auth/authStorage";
 import { useSelector } from "react-redux";
 import { toggleSidebar } from "./toggleSidebar";
-import { type SettingsState } from "@/store/settings/settingsTypes";
 import cx from "classnames";
 import { selectAuth } from "@/auth/authSelectors";
 import { type ThemeLogo } from "@/themes/themeUtils";
@@ -73,12 +72,8 @@ const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
 
   const adminConsoleUrl = useAdminConsoleUrl();
 
-  const mode = useSelector<{ settings: SettingsState }, string>(
-    ({ settings }) => settings.mode,
-  );
-
-  // Allow `isLinkedLoading` to optimistically show the toggle
-  const showNavbarToggle = mode === "local" || isLinked || isLinkedLoading;
+  // Only show sidebar toggle if the extension is linked. Allow `isLinkedLoading` to optimistically show the toggle
+  const showNavbarToggle = isLinked || isLinkedLoading;
 
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">

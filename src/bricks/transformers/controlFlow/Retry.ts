@@ -22,10 +22,10 @@ import {
   type PipelineExpression,
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { sleep } from "@/utils/timeUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 class Retry extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/retry");

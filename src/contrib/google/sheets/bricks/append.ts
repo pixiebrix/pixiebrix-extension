@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { propertiesToSchema } from "@/validators/generic";
 import { isEmpty, isEqual, unary, uniq } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import { normalizeHeader } from "@/contrib/google/sheets/core/sheetsHelpers";
@@ -33,6 +32,7 @@ import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 type CellValue = string | number | null;
 

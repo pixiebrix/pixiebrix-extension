@@ -16,7 +16,6 @@
  */
 
 import { RendererABC } from "@/types/bricks/rendererTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import makeDataTable, {
   type ColumnDefinition,
   type Row,
@@ -26,6 +25,7 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type SafeHTML } from "@/types/stringTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 function makeLinkRenderer(href: string) {
   return (value: unknown, row: Row) => {

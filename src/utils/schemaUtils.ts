@@ -72,15 +72,41 @@ export function missingProperties(
 }
 
 /**
+ * Convert JSON Schema properties value to a top-level JSON Schema.
+ * @see inputProperties
+ */
+export function propertiesToSchema(
+  properties: SchemaProperties,
+  required: string[],
+): Schema {
+  return {
+    $schema: "https://json-schema.org/draft/2019-09/schema#",
+    type: "object",
+    properties,
+    required,
+  };
+}
+
+/**
  * Return the names of top-level properties in a JSON Schema or object.
- * @param inputSchema the schema or object
+ * @param inputSchema the input schema
+ * @see propertiesToSchema
  */
 export function inputProperties(inputSchema: Schema): SchemaProperties {
-  if (
-    typeof inputSchema === "object" &&
-    "properties" in inputSchema &&
-    inputSchema.properties != null
-  ) {
+  // NOTE: returning the argument is UNSAFE and is not consistent with the parameter type `Schema`.
+  // In the past, PixieBrix definitions have supported shorthand of providing the properties directly.
+
+  // Handle unchecked casts of invalid user-provided definitions
+  if (inputSchema == null || typeof inputSchema !== "object") {
+    return {} as SchemaProperties;
+  }
+
+  // It looks like a Schema, even if `properties` property is not provided
+  if ("$schema" in inputSchema || inputSchema.type === "object") {
+    return inputSchema.properties ?? {};
+  }
+
+  if (inputSchema.properties != null) {
     return inputSchema.properties;
   }
 

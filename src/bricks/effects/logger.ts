@@ -18,8 +18,8 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { realConsole } from "@/development/runtimeLogging";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 type Level = "debug" | "info" | "warn" | "error";
 

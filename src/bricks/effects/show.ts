@@ -18,11 +18,11 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import {
   $safeFindElementsWithRootMode,
   IS_ROOT_AWARE_BRICK_PROPS,
 } from "@/bricks/rootModeHelpers";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class ShowEffect extends EffectABC {
   constructor() {
