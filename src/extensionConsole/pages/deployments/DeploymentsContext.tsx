@@ -31,6 +31,7 @@ import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { type Dispatch } from "@reduxjs/toolkit";
 import useFlags from "@/hooks/useFlags";
 import {
+  type InstalledDeployment,
   checkExtensionUpdateRequired,
   makeUpdatedFilter,
   selectInstalledDeployments,
@@ -50,6 +51,7 @@ import { activateDeployments } from "@/extensionConsole/pages/deployments/activa
 import { useGetDeploymentsQuery } from "@/data/service/api";
 import { deserializeError } from "serialize-error";
 import { isEqual } from "lodash";
+import useMemoCompare from "@/hooks/useMemoCompare";
 
 function getError(deploymentsError: unknown, permissionsError: unknown) {
   if (deploymentsError) {
@@ -104,11 +106,10 @@ function useDeployments(): DeploymentsState {
   const dispatch = useDispatch<Dispatch>();
   const installedExtensions = useSelector(selectExtensions);
   const { restrict } = useFlags();
-  const activeExtensions = selectInstalledDeployments(installedExtensions);
-  const activeExtensionsRef = React.useRef(activeExtensions);
-  if (!isEqual(activeExtensions, activeExtensionsRef.current)) {
-    activeExtensionsRef.current = activeExtensions;
-  }
+  const activeExtensions = useMemoCompare<InstalledDeployment[]>(
+    selectInstalledDeployments(installedExtensions),
+    isEqual,
+  );
 
   const { data: uuid } = useAsyncState(async () => getUUID(), []);
 
@@ -120,7 +121,7 @@ function useDeployments(): DeploymentsState {
     {
       uid: uuid,
       version: getExtensionVersion(),
-      active: activeExtensionsRef.current,
+      active: activeExtensions,
     },
     {
       skip: !uuid,
