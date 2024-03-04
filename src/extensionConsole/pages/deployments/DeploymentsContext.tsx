@@ -124,8 +124,8 @@ function useDeployments(): DeploymentsState {
       active: activeExtensions,
     },
     {
-      skip: !uuid,
-      refetchOnMountOrArgChange: 60,
+      skip: !uuid, // Avoid fetching deployments until we have a UUID
+      refetchOnMountOrArgChange: 60, // 1 minute
     },
   );
 
