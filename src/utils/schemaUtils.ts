@@ -93,13 +93,13 @@ export function propertiesToSchema(
  * @see propertiesToSchema
  */
 export function inputProperties(inputSchema: Schema): SchemaProperties {
-  // Dynamic checks to handle bad casts of user-provided definitions
-  if (inputSchema == null || typeof inputSchema !== "object") {
-    throw new Error("Expected object");
-  }
-
   // NOTE: returning the argument is UNSAFE and is not consistent with the parameter type `Schema`.
   // In the past, PixieBrix definitions have supported shorthand of providing the properties directly.
+
+  // Handle unchecked casts of invalid user-provided definitions
+  if (inputSchema == null || typeof inputSchema !== "object") {
+    return {} as SchemaProperties;
+  }
 
   // It looks like a Schema, even it properties are not provided
   if ("$schema" in inputSchema || inputSchema.type === "object") {

@@ -141,6 +141,10 @@ describe("unionSchemaDefinitionTypes", () => {
 });
 
 describe("inputProperties", () => {
+  it("returns empty object for null", () => {
+    expect(inputProperties(null as any)).toStrictEqual({});
+  });
+
   it("returns properties if present", () => {
     expect(inputProperties(fooObjectSchema)).toStrictEqual(
       fooObjectSchema.properties,
