@@ -24,7 +24,6 @@ import { allowsTrack } from "@/telemetry/dnt";
 import {
   getErrorMessage,
   hasSpecificErrorCause,
-  isErrorObject,
   isSpecificError,
 } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
@@ -323,38 +322,6 @@ const THROTTLE_RATE_MS = 60_000; // 1 minute
 let lastAxiosServerErrorTimestamp: number | null = null;
 
 /**
- * Create a fake stacktrace for Datadog that don't natively support Error.cause.
- */
-export function flattenStackForDatadog(stack: string, cause?: unknown): string {
-  // TODO: remove once Datadog supports natively: https://github.com/DataDog/browser-sdk/issues/2569
-
-  // The logic was originally written for Rollbar, which later introduced native support for Error.cause:
-  // https://github.com/pixiebrix/pixiebrix-extension/pull/3011/files
-
-  // Some stack validation to avoid runtime errors while submitting errors
-  if (!isErrorObject(cause) || !cause.stack?.includes("\n")) {
-    return stack;
-  }
-
-  // Drop spaces from cause’s title or else Datadog will clip the title
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
-  const errorTitle = cause.stack.split("\n", 1).at(0)!;
-  const causeStack = cause.stack.replace(
-    errorTitle,
-    errorTitle.replaceAll(" ", "-"),
-  );
-
-  // Add a fake stacktrace line in order to preserve the cause’s title. Datadog does not support
-  // the standard `caused by: Error: Some message\n` line and would misinterpret the stacktrace.
-  // XXX: this isn't quite right for Datadog. In the Datadog UI, the fake line ends up as
-  // "BY.js:0:0) Error:-Error-Message" That's OK for now because it's by and large a cosmetic limitation.
-  return flattenStackForDatadog(
-    stack + `\n    at CAUSED (BY.js:0:0) ${causeStack}`,
-    cause.cause,
-  );
-}
-
-/**
  * Do not use this function directly. Use `reportError` instead: `import reportError from "@/telemetry/reportError"`
  * It's only exported for testing.
  */
@@ -417,8 +384,6 @@ export async function reportToApplicationErrorTelemetry(
   }
 
   const details = await selectExtraContext(error);
-
-  error.stack &&= flattenStackForDatadog(error.stack, error.cause);
 
   reporter.error({
     message,
