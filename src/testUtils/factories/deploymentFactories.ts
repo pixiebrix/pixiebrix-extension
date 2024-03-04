@@ -18,28 +18,22 @@
 import { define, derive } from "cooky-cutter";
 import { type Deployment } from "@/types/contract";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { validateTimestamp } from "@/types/helpers";
-import { type RegistryId } from "@/types/registryTypes";
-import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import {
+  validateRegistryId,
+  validateSemVerString,
+  validateTimestamp,
+} from "@/types/helpers";
 
 // Deployments are returned from the API, but their shape is determined by the registry and ModDefinition type.
 
+// TODO: would be nice to generate this from a package config object but I'm not sure how to do this
 export const deploymentPackageFactory = define<Deployment["package"]>({
   id: uuidSequence,
-  name: derive<Deployment["package"], string>(
-    ({ config }) => config.metadata.name,
-    "config",
-  ),
-  version: derive<Deployment["package"], string>(
-    ({ config }) => config.metadata.version,
-    "config",
-  ),
-  package_id: derive<Deployment["package"], RegistryId>(
-    ({ config }) => config.metadata.id,
-    "config",
-  ),
-  config: defaultModDefinitionFactory,
+  name: "Test Starter Brick",
+  version: (n: number) => validateSemVerString(`1.0.${n}`),
+  package_id: (n: number) => validateRegistryId(`test/starter-brick-${n}`),
 });
+
 export const deploymentFactory = define<Deployment>({
   id: uuidSequence,
   name: (n: number) => `Deployment ${n}`,

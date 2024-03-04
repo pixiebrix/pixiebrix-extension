@@ -20,6 +20,7 @@ import useFlags from "@/hooks/useFlags";
 import useModPermissions from "@/mods/hooks/useModPermissions";
 import { type Deployment } from "@/types/contract";
 import { type ModComponentBase } from "@/types/modComponentTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import notify from "@/utils/notify";
 import { type Dispatch } from "@reduxjs/toolkit";
 import { useState } from "react";
@@ -33,12 +34,17 @@ type UseAutoDeployReturn = {
   isAutoDeploying: boolean;
 };
 
-function useAutoDeploy(
-  // Deployments can be undefined if they are still being loaded
-  deployments: Deployment[] | undefined,
-  installedExtensions: ModComponentBase[],
-  { extensionUpdateRequired }: { extensionUpdateRequired: boolean },
-): UseAutoDeployReturn {
+function useAutoDeploy({
+  deployments,
+  deploymentsModDefinitionMap,
+  installedExtensions,
+  extensionUpdateRequired,
+}: {
+  deployments: Deployment[] | undefined;
+  deploymentsModDefinitionMap: Map<Deployment["package"]["id"], ModDefinition>;
+  installedExtensions: ModComponentBase[];
+  extensionUpdateRequired: boolean;
+}): UseAutoDeployReturn {
   const dispatch = useDispatch<Dispatch>();
   // `true` until deployments have been fetched and activated
   const [
@@ -82,7 +88,12 @@ function useAutoDeploy(
       // Attempt to automatically deploy the deployments
       try {
         setIsActivationInProgress(true);
-        await activateDeployments(dispatch, deployments, installedExtensions);
+        await activateDeployments({
+          dispatch,
+          deployments,
+          deploymentsModDefinitionMap,
+          installed: installedExtensions,
+        });
         notify.success("Updated team deployments");
       } catch (error) {
         notify.error({ message: "Error updating team deployments", error });

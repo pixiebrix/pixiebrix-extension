@@ -98,13 +98,29 @@ describe("makeUpdatedFilter", () => {
   );
 
   test("matched blueprint for restricted user", () => {
-    const deployment = deploymentFactory();
+    const modDefinition = defaultModDefinitionFactory({
+      extensionPoints: [
+        modComponentDefinitionFactory({
+          services: {
+            [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+            [validateOutputKey("bar")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+          },
+        }),
+      ],
+    });
+    const deployment = deploymentFactory({
+      package: deploymentPackageFactory({
+        name: modDefinition.metadata.name,
+        version: modDefinition.metadata.version,
+        package_id: modDefinition.metadata.id,
+      }),
+    });
 
     const extensions = [
       modComponentFactory({
         _deployment: undefined,
         _recipe: {
-          ...deployment.package.config.metadata,
+          ...modDefinition.metadata,
           updated_at: validateTimestamp(deployment.updated_at),
           // `sharing` doesn't impact the predicate. Pass an arbitrary value
           sharing: undefined,
@@ -117,13 +133,29 @@ describe("makeUpdatedFilter", () => {
   });
 
   test("matched blueprint for unrestricted user / developer", () => {
-    const deployment = deploymentFactory();
+    const modDefinition = defaultModDefinitionFactory({
+      extensionPoints: [
+        modComponentDefinitionFactory({
+          services: {
+            [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+            [validateOutputKey("bar")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+          },
+        }),
+      ],
+    });
+    const deployment = deploymentFactory({
+      package: deploymentPackageFactory({
+        name: modDefinition.metadata.name,
+        version: modDefinition.metadata.version,
+        package_id: modDefinition.metadata.id,
+      }),
+    });
 
     const extensions = [
       modComponentFactory({
         _deployment: undefined,
         _recipe: {
-          ...deployment.package.config.metadata,
+          ...modDefinition.metadata,
           // The factory produces version "1.0.1"
           version: validateSemVerString("1.0.1"),
           updated_at: validateTimestamp(deployment.updated_at),
@@ -198,40 +230,39 @@ describe("isDeploymentActive", () => {
 
 describe("getIntegrationIds", () => {
   test("find unique integration ids", async () => {
-    const deployment = deploymentFactory({
-      package: deploymentPackageFactory({
-        config: defaultModDefinitionFactory({
-          extensionPoints: [
-            modComponentDefinitionFactory({
-              services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-                [validateOutputKey("bar")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-              },
-            }),
-          ],
+    const modDefinition = defaultModDefinitionFactory({
+      extensionPoints: [
+        modComponentDefinitionFactory({
+          services: {
+            [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+            [validateOutputKey("bar")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+          },
         }),
-      }),
+      ],
     });
 
-    expect(
-      getModDefinitionIntegrationIds(deployment.package.config),
-    ).toStrictEqual([CONTROL_ROOM_OAUTH_INTEGRATION_ID]);
+    expect(getModDefinitionIntegrationIds(modDefinition)).toStrictEqual([
+      CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+    ]);
   });
 });
 
 describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
   test("missing personal integration", async () => {
+    const modDefinition = defaultModDefinitionFactory({
+      extensionPoints: [
+        modComponentDefinitionFactory({
+          services: {
+            [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+          },
+        }),
+      ],
+    });
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
-        config: defaultModDefinitionFactory({
-          extensionPoints: [
-            modComponentDefinitionFactory({
-              services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-              },
-            }),
-          ],
-        }),
+        name: modDefinition.metadata.name,
+        version: modDefinition.metadata.version,
+        package_id: modDefinition.metadata.id,
       }),
     });
 

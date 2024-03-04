@@ -23,14 +23,21 @@ import { type Deployment } from "@/types/contract";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { mergeDeploymentIntegrationDependencies } from "@/utils/deploymentUtils";
 import { type Dispatch } from "@reduxjs/toolkit";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 
 const { actions } = extensionsSlice;
 
-async function activateDeployment(
-  dispatch: Dispatch,
-  deployment: Deployment,
-  installed: ModComponentBase[],
-): Promise<void> {
+async function activateDeployment({
+  dispatch,
+  deployment,
+  deploymentModDefinition,
+  installed,
+}: {
+  dispatch: Dispatch;
+  deployment: Deployment;
+  deploymentModDefinition: ModDefinition;
+  installed: ModComponentBase[];
+}): Promise<void> {
   let isReinstall = false;
 
   // Clear existing installations of the blueprint
@@ -50,12 +57,13 @@ async function activateDeployment(
   // Install the blueprint with the service definition
   dispatch(
     actions.installMod({
-      modDefinition: deployment.package.config,
+      modDefinition: deploymentModDefinition,
       deployment,
-      configuredDependencies: await mergeDeploymentIntegrationDependencies(
+      configuredDependencies: await mergeDeploymentIntegrationDependencies({
         deployment,
-        services.locateAllForId,
-      ),
+        deploymentModDefinition,
+        locate: services.locateAllForId,
+      }),
       // Assume validation on the backend for options
       optionsArgs: deployment.options_config,
       screen: "extensionConsole",
@@ -68,18 +76,31 @@ async function activateDeployment(
   });
 }
 
-export async function activateDeployments(
-  dispatch: Dispatch,
-  deployments: Deployment[],
-  installed: ModComponentBase[],
-): Promise<void> {
+export async function activateDeployments({
+  dispatch,
+  deployments,
+  deploymentsModDefinitionMap,
+  installed,
+}: {
+  dispatch: Dispatch;
+  deployments: Deployment[];
+  deploymentsModDefinitionMap: Map<Deployment["package"]["id"], ModDefinition>;
+  installed: ModComponentBase[];
+}): Promise<void> {
   // Activate as many as we can
   const errors = [];
 
   for (const deployment of deployments) {
     try {
       // eslint-disable-next-line no-await-in-loop -- modifies redux state
-      await activateDeployment(dispatch, deployment, installed);
+      await activateDeployment({
+        dispatch,
+        deployment,
+        deploymentModDefinition: deploymentsModDefinitionMap.get(
+          deployment.package.id,
+        ),
+        installed,
+      });
     } catch (error) {
       errors.push(error);
     }

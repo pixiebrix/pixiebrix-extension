@@ -50,6 +50,8 @@ import {
 } from "@/utils/extensionUtils";
 import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
 import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
+import { getRequestHeadersByAPIVersion } from "@/data/service/apiVersioning";
+import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
 
 /**
  * Fetch deployments, or return empty array if the extension is not linked to the PixieBrix API.
@@ -70,6 +72,9 @@ async function fetchDeployments(
       uid: await getUUID(),
       version: getExtensionVersion(),
       active: selectInstalledDeployments(installedExtensions),
+    },
+    {
+      headers: getRequestHeadersByAPIVersion("1.1"),
     },
   );
 
@@ -126,13 +131,23 @@ function useDeployments(): DeploymentsState {
       refreshRegistries(),
     ]);
 
+    // TODO: May be able to use RTK query instead of manually caching after merging in Graham's RTK query PR:
+    //  https://github.com/pixiebrix/pixiebrix-extension/pull/7777/
+    const deploymentsModDefinitionMap =
+      await fetchDeploymentModDefinitions(deployments);
+
     // Log performance to determine if we're having issues with messenger/IDB performance
     const { permissions } = mergePermissionsStatuses(
       await logPromiseDuration(
         "useDeployments:checkDeploymentPermissions",
         Promise.all(
           deployments.map(async (deployment) =>
-            checkDeploymentPermissions(deployment, services.locateAllForId, {
+            checkDeploymentPermissions({
+              deployment,
+              deploymentModDefinition: deploymentsModDefinitionMap.get(
+                deployment.package.id,
+              ),
+              locate: services.locateAllForId,
               // In the UI context, always prompt the user to accept permissions to ensure they get the full
               // functionality of the mod
               optionalPermissions: [],
@@ -144,12 +159,13 @@ function useDeployments(): DeploymentsState {
 
     return {
       deployments,
+      deploymentsModDefinitionMap,
       permissions,
     };
   }, [installedExtensions]);
 
   // Don't default to [] here to avoid re-render
-  const { deployments } = data ?? {};
+  const { deployments, deploymentsModDefinitionMap } = data ?? {};
 
   const [updatedDeployments, extensionUpdateRequired] = useMemo(() => {
     const isUpdated = makeUpdatedFilter(installedExtensions, {
@@ -161,15 +177,19 @@ function useDeployments(): DeploymentsState {
 
     return [
       updatedDeployments,
-      checkExtensionUpdateRequired(updatedDeployments),
+      checkExtensionUpdateRequired({
+        deployments: updatedDeployments,
+        deploymentsModDefinitionMap,
+      }),
     ];
-  }, [restrict, installedExtensions, deployments]);
+  }, [restrict, installedExtensions, deployments, deploymentsModDefinitionMap]);
 
-  const { isAutoDeploying } = useAutoDeploy(
-    updatedDeployments,
+  const { isAutoDeploying } = useAutoDeploy({
+    deployments: updatedDeployments,
+    deploymentsModDefinitionMap,
     installedExtensions,
-    { extensionUpdateRequired },
-  );
+    extensionUpdateRequired,
+  });
 
   const handleUpdateFromUserGesture = useCallback(async () => {
     // IMPORTANT: can't do a fetch or any potentially stalling operation (including IDB calls) because the call to
@@ -198,7 +218,9 @@ function useDeployments(): DeploymentsState {
       return;
     }
 
-    if (checkExtensionUpdateRequired(deployments)) {
+    if (
+      checkExtensionUpdateRequired({ deployments, deploymentsModDefinitionMap })
+    ) {
       void browser.runtime.requestUpdateCheck();
       notify.warning(
         "You must update the PixieBrix browser extension to activate the deployment",
@@ -214,12 +236,17 @@ function useDeployments(): DeploymentsState {
     }
 
     try {
-      await activateDeployments(dispatch, deployments, installedExtensions);
+      await activateDeployments({
+        dispatch,
+        deployments,
+        deploymentsModDefinitionMap,
+        installed: installedExtensions,
+      });
       notify.success("Updated team deployments");
     } catch (error) {
       notify.error({ message: "Error updating team deployments", error });
     }
-  }, [data, dispatch, installedExtensions]);
+  }, [data, dispatch, installedExtensions, deploymentsModDefinitionMap]);
 
   const updateExtension = useCallback(async () => {
     await reloadIfNewVersionIsReady();

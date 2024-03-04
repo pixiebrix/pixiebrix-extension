@@ -26,6 +26,7 @@ import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPer
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import type { Manifest } from "webextension-polyfill";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 
 /**
  * Return permissions required to activate a deployment.
@@ -37,19 +38,23 @@ import type { Manifest } from "webextension-polyfill";
  * @see collectExtensionDefinitionPermissions
  * @see mergePermissionsStatuses
  */
-export async function checkDeploymentPermissions(
-  deployment: Deployment,
-  locate: Locate,
-  {
-    optionalPermissions,
-  }: {
-    optionalPermissions: Manifest.OptionalPermission[];
-  },
-): Promise<PermissionsStatus> {
-  const modDefinition = deployment.package.config;
+export async function checkDeploymentPermissions({
+  deployment,
+  deploymentModDefinition,
+  locate,
+  optionalPermissions,
+}: {
+  deployment: Deployment;
+  deploymentModDefinition: ModDefinition;
+  locate: Locate;
+  optionalPermissions: Manifest.OptionalPermission[];
+}): Promise<PermissionsStatus> {
   const localAuths = await findLocalDeploymentConfiguredIntegrationDependencies(
-    deployment,
-    locate,
+    {
+      deployment,
+      deploymentModDefinition,
+      locate,
+    },
   );
 
   const integrationDependencies: IntegrationDependency[] = localAuths.flatMap(
@@ -62,7 +67,11 @@ export async function checkDeploymentPermissions(
       })),
   );
 
-  return checkModDefinitionPermissions(modDefinition, integrationDependencies, {
-    optionalPermissions,
-  });
+  return checkModDefinitionPermissions(
+    deploymentModDefinition,
+    integrationDependencies,
+    {
+      optionalPermissions,
+    },
+  );
 }

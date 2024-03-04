@@ -29,8 +29,9 @@ import {
   type Milestone,
   type Organization,
   type Package,
+  type PackageConfigDetail,
   type PackageUpsertResponse,
-  type PackageVersion,
+  type PackageVersionDeprecated,
   type PendingInvitation,
   type RecipeResponse,
   type RemoteIntegrationConfig,
@@ -357,6 +358,19 @@ export const appApi = createApi({
       query: ({ id }) => ({ url: `/api/bricks/${id}/`, method: "get" }),
       providesTags: (result, error, { id }) => [{ type: "Package", id }],
     }),
+    getPackageViaRegistryId: builder.query<
+      PackageConfigDetail,
+      { registryId: RegistryId; version?: string }
+    >({
+      query: ({ registryId, version }) => ({
+        url: `/api/registry/bricks/${encodeURIComponent(registryId)}/`,
+        method: "get",
+        params: { version },
+      }),
+      providesTags: (result, error, { registryId }) => [
+        { type: "Package", id: registryId },
+      ],
+    }),
     createPackage: builder.mutation<PackageUpsertResponse, UnknownObject>({
       query(data) {
         return {
@@ -396,7 +410,10 @@ export const appApi = createApi({
         "EditablePackages",
       ],
     }),
-    listPackageVersions: builder.query<PackageVersion[], { id: UUID }>({
+    listPackageVersions: builder.query<
+      PackageVersionDeprecated[],
+      { id: UUID }
+    >({
       query: ({ id }) => ({
         url: `/api/bricks/${id}/versions/`,
         method: "get",
@@ -462,6 +479,7 @@ export const {
   useUpdateRecipeMutation,
   useGetInvitationsQuery,
   useGetPackageQuery,
+  useGetPackageViaRegistryIdQuery,
   useCreatePackageMutation,
   useUpdatePackageMutation,
   useDeletePackageMutation,

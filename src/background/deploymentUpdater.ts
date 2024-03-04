@@ -64,10 +64,14 @@ import { type UUID } from "@/types/stringTypes";
 import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { Events } from "@/telemetry/events";
 import { allSettled } from "@/utils/promiseUtils";
 import type { Manifest } from "webextension-polyfill";
+import { getRequestHeadersByAPIVersion } from "@/data/service/apiVersioning";
+import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
+import { services } from "@/background/messenger/api";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
@@ -219,11 +223,17 @@ async function uninstallRecipe(
   return { options, editor };
 }
 
-async function installDeployment(
-  optionsState: ModComponentState,
-  editorState: EditorState | undefined,
-  deployment: Deployment,
-): Promise<{
+async function installDeployment({
+  optionsState,
+  editorState,
+  deployment,
+  deploymentModDefinition,
+}: {
+  optionsState: ModComponentState;
+  editorState: EditorState | undefined;
+  deployment: Deployment;
+  deploymentModDefinition: ModDefinition;
+}): Promise<{
   options: ModComponentState;
   editor: EditorState | undefined;
 }> {
@@ -248,12 +258,13 @@ async function installDeployment(
   options = optionsReducer(
     options,
     optionsActions.installMod({
-      modDefinition: deployment.package.config,
+      modDefinition: deploymentModDefinition,
       deployment,
-      configuredDependencies: await mergeDeploymentIntegrationDependencies(
+      configuredDependencies: await mergeDeploymentIntegrationDependencies({
         deployment,
-        locateAllForService,
-      ),
+        deploymentModDefinition,
+        locate: services.locateAllForId,
+      }),
       // Assume backend properly validates the options
       optionsArgs: deployment.options_config as OptionsArgs,
       screen: "background",
@@ -272,8 +283,15 @@ async function installDeployment(
 /**
  * Install all deployments
  * @param deployments deployments that PixieBrix already has permission to run
+ * @param deploymentsModDefinitionMap map of deployment package UUIDs to mod definitions
  */
-async function installDeployments(deployments: Deployment[]): Promise<void> {
+async function installDeployments({
+  deployments,
+  deploymentsModDefinitionMap,
+}: {
+  deployments: Deployment[];
+  deploymentsModDefinitionMap: Map<Deployment["package"]["id"], ModDefinition>;
+}): Promise<void> {
   let [optionsState, editorState] = await Promise.all([
     getModComponentState(),
     getEditorState(),
@@ -281,11 +299,14 @@ async function installDeployments(deployments: Deployment[]): Promise<void> {
 
   for (const deployment of deployments) {
     // eslint-disable-next-line no-await-in-loop -- running reducer, need to update states serially
-    const result = await installDeployment(
+    const result = await installDeployment({
       optionsState,
       editorState,
       deployment,
-    );
+      deploymentModDefinition: deploymentsModDefinitionMap.get(
+        deployment.package.id,
+      ),
+    });
     optionsState = result.options;
     editorState = result.editor;
   }
@@ -296,6 +317,7 @@ async function installDeployments(deployments: Deployment[]): Promise<void> {
 
 type DeploymentConstraint = {
   deployment: Deployment;
+  deploymentModDefinition: ModDefinition;
   hasPermissions: boolean;
   extensionVersion: SemVer;
 };
@@ -310,6 +332,7 @@ type DeploymentConstraint = {
  */
 async function canAutomaticallyInstall({
   deployment,
+  deploymentModDefinition,
   hasPermissions,
   extensionVersion,
 }: DeploymentConstraint): Promise<boolean> {
@@ -317,16 +340,17 @@ async function canAutomaticallyInstall({
     return false;
   }
 
-  const requiredRange = deployment.package.config.metadata.extensionVersion;
+  const requiredRange = deploymentModDefinition.metadata.extensionVersion;
   if (requiredRange && !satisfies(extensionVersion, requiredRange)) {
     return false;
   }
 
   const personalConfigs =
-    await findLocalDeploymentConfiguredIntegrationDependencies(
+    await findLocalDeploymentConfiguredIntegrationDependencies({
       deployment,
-      locateAllForService,
-    );
+      deploymentModDefinition,
+      locate: locateAllForService,
+    });
   return personalConfigs.every(({ configs }) => configs.length === 1);
 }
 
@@ -482,15 +506,21 @@ export async function updateDeployments(): Promise<void> {
   void updateUserData(selectUserDataUpdate(profile));
 
   const { data: deployments, status: deploymentResponseStatus } =
-    await client.post<Deployment[]>("/api/deployments/", {
-      uid: await getUUID(),
-      version: getExtensionVersion(),
-      active: selectInstalledDeployments(extensions),
-      campaignIds,
-    });
+    await client.post<Deployment[]>(
+      "/api/deployments/",
+      {
+        uid: await getUUID(),
+        version: getExtensionVersion(),
+        active: selectInstalledDeployments(extensions),
+        campaignIds,
+      },
+      {
+        headers: getRequestHeadersByAPIVersion("1.1"),
+      },
+    );
 
   if (deploymentResponseStatus >= 400) {
-    // Our server is active up, check again later
+    // Our server is acting up, check again later
     console.debug(
       "Skipping deployments update because /api/deployments/ request failed",
     );
@@ -550,7 +580,11 @@ export async function updateDeployments(): Promise<void> {
     return;
   }
 
-  // `clipboardWrite` is no strictly required to use the clipboard brick, so allow it to auto-install.
+  const deploymentsModDefinitionMap =
+    await fetchDeploymentModDefinitions(deployments);
+  console.log(deploymentsModDefinitionMap);
+
+  // `clipboardWrite` is not strictly required to use the clipboard brick, so allow it to auto-install.
   // Behind a feature flag in case it causes problems for enterprise customers.
   // Could use browser.runtime.getManifest().optional_permissions here, but that also technically supports the Origin
   // type so the types wouldn't match with checkDeploymentPermissions
@@ -562,7 +596,12 @@ export async function updateDeployments(): Promise<void> {
   const deploymentRequirements = await Promise.all(
     updatedDeployments.map(async (deployment) => ({
       deployment,
-      ...(await checkDeploymentPermissions(deployment, locateAllForService, {
+      ...(await checkDeploymentPermissions({
+        deployment,
+        deploymentModDefinition: deploymentsModDefinitionMap.get(
+          deployment.package.id,
+        ),
+        locate: locateAllForService,
         optionalPermissions,
       })),
     })),
@@ -574,6 +613,9 @@ export async function updateDeployments(): Promise<void> {
       isAutomatic: await canAutomaticallyInstall({
         ...requirement,
         extensionVersion,
+        deploymentModDefinition: deploymentsModDefinitionMap.get(
+          requirement.deployment.package.id,
+        ),
       }),
     })),
   );
@@ -584,7 +626,10 @@ export async function updateDeployments(): Promise<void> {
 
   if (automatic.length > 0) {
     try {
-      await installDeployments(automatic.map((x) => x.deployment));
+      await installDeployments({
+        deployments: automatic.map((x) => x.deployment),
+        deploymentsModDefinitionMap,
+      });
     } catch (error) {
       reportError(error);
       automaticError = true;
