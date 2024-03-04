@@ -55,6 +55,13 @@ async function showTooltip(): Promise<void> {
   }
 
   selectionTooltip ??= createTooltip();
+
+  Object.assign(selectionTooltip.style, {
+    border: "0",
+    "box-shadow":
+      "rgba(15, 15, 15, 0.05) 0px 0px 0px 1px, rgba(15, 15, 15, 0.1) 0px 3px 6px, rgba(15, 15, 15, 0.2) 0px 9px 24px",
+  });
+
   selectionTooltip.setAttribute("aria-hidden", "false");
   selectionTooltip.style.setProperty("display", "block");
 
@@ -273,7 +280,9 @@ export const initSelectionTooltip = once(() => {
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
   document.addEventListener(
     "selectionchange",
-    // Debounce to avoid slowing drag of selection
+    // Debounce to:
+    // - avoid slowing drag of selection
+    // - simulate "selectionend" event (which doesn't exist)
     debounce(
       async () => {
         const selection = window.getSelection();
@@ -289,7 +298,7 @@ export const initSelectionTooltip = once(() => {
         trailing: true,
       },
     ),
-    { passive: true },
+    { passive: true, signal: onContextInvalidated.signal },
   );
 
   tooltipActionRegistry.onChange.add(async () => {

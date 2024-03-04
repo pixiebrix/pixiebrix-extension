@@ -16,7 +16,6 @@
  */
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { serializeError } from "serialize-error";
 import {
@@ -27,6 +26,7 @@ import {
 } from "@/types/runtimeTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 class TryExcept extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/try-catch");

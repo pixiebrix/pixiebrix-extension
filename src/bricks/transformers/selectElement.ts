@@ -17,12 +17,12 @@
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
 } from "@/platform/capabilities";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class SelectElement extends TransformerABC {
   constructor() {

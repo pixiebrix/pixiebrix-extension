@@ -7,6 +7,8 @@ env:
   PUBLIC_RELEASE: ${{ github.ref == 'refs/heads/main' }}
   # Staging URL, also directly used by webpack
   SERVICE_URL: https://app-stg.pixiebrix.com/
+  E2E_TEST_USER_EMAIL_UNAFFILIATED: ${{ secrets.E2E_TEST_USER_EMAIL_UNAFFILIATED }}
+  E2E_TEST_USER_PASSWORD_UNAFFILIATED: ${{ secrets.E2E_TEST_USER_PASSWORD_UNAFFILIATED }}
 
 jobs:
   test:
@@ -36,7 +38,7 @@ jobs:
         with:
           name: extension-test-coverage
       - name: Upload coverage to Codecov
-        uses: Wandalen/wretry.action@v1.4.4
+        uses: Wandalen/wretry.action@v1.4.5
         with:
           action: codecov/codecov-action@v3
           with: |

@@ -18,7 +18,6 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { getState, setState } from "@/platform/state/stateController";
 import {
   type BrickArgs,
@@ -33,6 +32,7 @@ import { isEmpty } from "lodash";
 import { PropError } from "@/errors/businessErrors";
 import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 /**
  * Map to keep track of the current execution nonce for each Mod Variable. Used to ignore stale request results.

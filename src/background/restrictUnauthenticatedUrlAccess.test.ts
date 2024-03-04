@@ -65,7 +65,7 @@ describe("enforceAuthentication", () => {
 
   afterEach(async () => {
     // eslint-disable-next-line new-cap -- used for testing
-    INTERNAL_reset();
+    await INTERNAL_reset();
     await browser.storage.managed.clear();
     await browser.storage.local.clear();
     axiosMock.reset();

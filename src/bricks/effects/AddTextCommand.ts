@@ -16,7 +16,6 @@
  */
 
 import { validateRegistryId } from "@/types/helpers";
-import { propertiesToSchema } from "@/validators/generic";
 import type {
   BrickArgs,
   BrickOptions,
@@ -29,6 +28,7 @@ import { BusinessError } from "@/errors/businessErrors";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import type { PlatformCapability } from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 type CommandArgs = {
   /**

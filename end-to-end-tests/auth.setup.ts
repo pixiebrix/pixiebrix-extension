@@ -15,26 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Shape of arguments passed to action generators for dynamic QuickBar action generator.
- *
- * @see QuickBarProviderExtensionPoint
- */
-export type GeneratorArgs = {
-  /**
-   * Current user query in the QuickBar.
-   */
-  query: string;
+import { expect, test as setup } from "@playwright/test";
+import {
+  E2E_TEST_USER_EMAIL_UNAFFILIATED,
+  E2E_TEST_USER_PASSWORD_UNAFFILIATED,
+  SERVICE_URL,
+} from "./env";
 
-  /**
-   * Current selected root action id, or null if no root action is selected.
-   */
-  rootActionId: string | null;
-};
+const authFile = "end-to-end-tests/.auth/user.json";
 
-/**
- * An action generator. The generator is expected to make calls QuickBarRegistry.addAction
- */
-export type ActionGenerator = (
-  args: GeneratorArgs & { abortSignal: AbortSignal },
-) => Promise<void>;
+setup("authenticate", async ({ page }) => {
+  await page.goto(`${SERVICE_URL}/login/email`);
+  await page.getByLabel("Email").fill(E2E_TEST_USER_EMAIL_UNAFFILIATED);
+  await page.getByLabel("Password").fill(E2E_TEST_USER_PASSWORD_UNAFFILIATED);
+  await page.getByRole("button", { name: "Log in" }).click();
+  await page.waitForURL(SERVICE_URL);
+  await expect(page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED)).toBeVisible();
+  await page.context().storageState({ path: authFile });
+});

@@ -21,7 +21,6 @@ import { render, screen } from "@/sidebar/testHelpers";
 import ActivateModPanel from "@/sidebar/activateMod/ActivateModPanel";
 import sidebarSlice from "@/sidebar/sidebarSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import useQuickbarShortcut from "@/hooks/useQuickbarShortcut";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
@@ -55,6 +54,7 @@ import useActivateRecipe, {
 import brickRegistry from "@/bricks/registry";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
 import { registry } from "@/background/messenger/strict/api";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 jest.mock("@/modDefinitions/modDefinitionHooks");
 jest.mock("@/sidebar/sidebarSelectors");

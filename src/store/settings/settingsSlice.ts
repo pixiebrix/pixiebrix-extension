@@ -33,7 +33,6 @@ import { revertAll } from "@/store/commonActions";
 import { activateTheme } from "@/background/messenger/strict/api";
 
 export const initialSettingsState: SettingsState = {
-  mode: "remote",
   nextUpdate: null,
   suggestElements: false,
   browserWarningDismissed: false,
@@ -62,9 +61,6 @@ const settingsSlice = createSlice({
   name: "settings",
   initialState: initialSettingsState,
   reducers: {
-    setMode(state, { payload: { mode } }) {
-      state.mode = mode;
-    },
     setFlag(
       state,
       action: PayloadAction<{

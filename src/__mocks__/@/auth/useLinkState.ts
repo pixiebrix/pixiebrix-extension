@@ -15,26 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Shape of arguments passed to action generators for dynamic QuickBar action generator.
- *
- * @see QuickBarProviderExtensionPoint
- */
-export type GeneratorArgs = {
-  /**
-   * Current user query in the QuickBar.
-   */
-  query: string;
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
 
-  /**
-   * Current selected root action id, or null if no root action is selected.
-   */
-  rootActionId: string | null;
-};
+const DEFAULT_LINK_STATE = valueToAsyncState(true);
+const useLinkState = jest.fn(() => DEFAULT_LINK_STATE);
 
-/**
- * An action generator. The generator is expected to make calls QuickBarRegistry.addAction
- */
-export type ActionGenerator = (
-  args: GeneratorArgs & { abortSignal: AbortSignal },
-) => Promise<void>;
+export default useLinkState;

@@ -18,30 +18,60 @@
 import { INTERNAL_reset } from "@/store/enterprise/managedStorage";
 import { renderHook } from "@testing-library/react-hooks";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
+import { waitFor } from "@testing-library/react";
+
+jest.mock("lodash", () => {
+  const lodash = jest.requireActual("lodash");
+  return {
+    ...lodash,
+    // Handle multiple calls to managedStorage:initManagedStorage across tests
+    once: (fn: any) => fn,
+  };
+});
 
 beforeEach(async () => {
   // eslint-disable-next-line new-cap -- test helper method
-  INTERNAL_reset();
+  await INTERNAL_reset();
   await browser.storage.managed.clear();
 });
 
 describe("useManagedStorageState", () => {
-  it("handles state initialization", async () => {
+  it("waits on uninitialized state", async () => {
     const { result } = renderHook(() => useManagedStorageState());
     expect(result.current).toStrictEqual({
       data: undefined,
       isLoading: true,
     });
+
+    await waitFor(
+      () => {
+        expect(result.current).toStrictEqual({
+          data: {},
+          isLoading: false,
+        });
+      },
+      // XXX: figure out how to use fake timers to avoid slowing down test suite
+      // Must be longer than MAX_MANAGED_STORAGE_WAIT_MILLIS
+      { timeout: 5000 },
+    );
   });
 
   it("handles already initialized state", async () => {
     await browser.storage.managed.set({ partnerId: "taco-bell" });
+
     const { result, waitForNextUpdate } = renderHook(() =>
       useManagedStorageState(),
     );
+
     await waitForNextUpdate();
+
     expect(result.current).toStrictEqual({
-      data: { partnerId: "taco-bell" },
+      data: {
+        // `jest-webextension-mock`'s storage is shared across sources, the call ends up with the managed storage
+        // and the local storage mixed together. See https://github.com/clarkbw/jest-webextension-mock/issues/183
+        managedStorageInitTimestamp: expect.any(String),
+        partnerId: "taco-bell",
+      },
       isLoading: false,
     });
   });

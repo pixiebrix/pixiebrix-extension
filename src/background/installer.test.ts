@@ -18,7 +18,7 @@
 import {
   requirePartnerAuth,
   openInstallPage,
-  handleInstall,
+  showInstallPage,
 } from "@/background/installer";
 import * as auth from "@/auth/authStorage";
 import { locator } from "@/background/locator";
@@ -56,9 +56,9 @@ const getUserData = jest.mocked(auth.getUserData);
 const locateAllForServiceMock = jest.mocked(locator.locateAllForService);
 const browserManagedStorageMock = jest.mocked(browser.storage.managed.get);
 
-afterEach(() => {
+afterEach(async () => {
   jest.clearAllMocks();
-  resetManagedStorage();
+  await resetManagedStorage();
 });
 
 describe("openInstallPage", () => {
@@ -230,7 +230,7 @@ describe("handleInstall", () => {
     // App setup tab isn't open
     queryTabsMock.mockResolvedValue([]);
     isLinkedMock.mockResolvedValue(false);
-    await handleInstall({
+    await showInstallPage({
       reason: "install",
       previousVersion: undefined,
       temporary: false,
@@ -243,7 +243,7 @@ describe("handleInstall", () => {
     // App setup tab isn't open
     queryTabsMock.mockResolvedValue([]);
     isLinkedMock.mockResolvedValue(true);
-    await handleInstall({
+    await showInstallPage({
       reason: "install",
       previousVersion: undefined,
       temporary: false,
@@ -260,7 +260,7 @@ describe("handleInstall", () => {
       });
       queryTabsMock.mockResolvedValue([]);
       isLinkedMock.mockResolvedValue(false);
-      await handleInstall({
+      await showInstallPage({
         reason: "install",
         previousVersion: undefined,
         temporary: false,

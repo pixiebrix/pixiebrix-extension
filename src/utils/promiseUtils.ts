@@ -108,17 +108,37 @@ export async function awaitValue<T>(
 /**
  * Poll until the looper returns a truthy value. If the timeout is reached, return undefined.
  * @param looper the value generator
- * @param maxWaitMillis maximium time to wait for the value
+ * @param maxWaitMillis the maximum time to wait for the value
  * @param intervalMillis time between each call to looper
+ * @param signal an AbortSignal to cancel the polling. Checked per interval.
+ * @throws Error if the signal is aborted. Throw's the signal's abort reason
  */
 export async function pollUntilTruthy<T>(
   looper: (...args: unknown[]) => Promise<T> | T,
-  { maxWaitMillis = Number.MAX_SAFE_INTEGER, intervalMillis = 100 },
+  {
+    maxWaitMillis = Number.MAX_SAFE_INTEGER,
+    intervalMillis = 100,
+    signal,
+  }: {
+    maxWaitMillis?: number;
+    intervalMillis?: number;
+    signal?: AbortSignal;
+  } = {},
 ): Promise<T | undefined> {
+  // See example of signal logic:
+  // https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/throwIfAborted#aborting_a_polling_operation
+
   const endBy = Date.now() + maxWaitMillis;
   do {
+    // Check at beginning of loop to avoid unnecessary compute
+    signal?.throwIfAborted();
+
     // eslint-disable-next-line no-await-in-loop -- It's a retry loop
     const result = await looper();
+
+    // Prefer cancellation to result
+    signal?.throwIfAborted();
+
     if (result) {
       return result;
     }

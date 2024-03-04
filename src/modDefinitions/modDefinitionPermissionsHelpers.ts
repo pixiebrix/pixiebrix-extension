@@ -29,6 +29,7 @@ import { type ModComponentBase } from "@/types/modComponentTypes";
 import { collectIntegrationOriginPermissions } from "@/integrations/util/permissionsHelpers";
 import { collectExtensionPermissions } from "@/permissions/extensionPermissionsHelpers";
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
+import type { Manifest } from "webextension-polyfill/namespaces/manifest";
 
 async function collectModComponentDefinitionPermissions(
   modComponentDefinitions: ResolvedModComponentDefinition[],
@@ -81,21 +82,36 @@ async function collectModComponentDefinitionPermissions(
  * Returns true if the mod definition has the necessary permissions to run. Does not request the permissions.
  * @param modDefinition the mod definition
  * @param configuredDependencies mod integration dependencies with defined configs
+ * @param optionalPermissions permissions to ignore when calculating hasPermissions. Used to allow auto-deployment
+ * of mods using `clipboardWrite` permission.
  * @see ensureModDefinitionPermissionsFromUserGesture
  */
 export async function checkModDefinitionPermissions(
   modDefinition: Pick<ModDefinition, "definitions" | "extensionPoints">,
   configuredDependencies: IntegrationDependency[],
+  {
+    optionalPermissions = [],
+  }: {
+    optionalPermissions?: Manifest.OptionalPermission[];
+  } = {},
 ): Promise<PermissionsStatus> {
   const extensionDefinitions =
     await resolveRecipeInnerDefinitions(modDefinition);
+
   const permissions = await collectModComponentDefinitionPermissions(
     extensionDefinitions,
     configuredDependencies,
   );
 
-  if (isEmpty(permissions)) {
-    // Small performance enhancement to avoid hitting background worker
+  const requiredPermissions = {
+    permissions: permissions.permissions.filter(
+      (permission) => !optionalPermissions.includes(permission),
+    ),
+    origins: permissions.origins,
+  };
+
+  if (isEmpty(requiredPermissions)) {
+    // Small performance enhancement to avoid hitting permissions API
     return {
       hasPermissions: true,
       permissions,
@@ -103,7 +119,7 @@ export async function checkModDefinitionPermissions(
   }
 
   return {
-    hasPermissions: await browser.permissions.contains(permissions),
+    hasPermissions: await browser.permissions.contains(requiredPermissions),
     permissions,
   };
 }

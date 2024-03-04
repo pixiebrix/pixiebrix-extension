@@ -27,15 +27,17 @@ import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import { isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import {
-  readManagedStorage,
+  initManagedStorage,
   isInitialized as isManagedStorageInitialized,
+  readManagedStorage,
+  resetInitializationTimestamp as resetManagedStorageInitializationState,
+  watchForDelayedStorageInitialization,
 } from "@/store/enterprise/managedStorage";
 import { Events } from "@/telemetry/events";
-
 import { DEFAULT_SERVICE_URL, UNINSTALL_URL } from "@/urlConstants";
-
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import { oncePerSession } from "@/mv3/SessionStorage";
 
 /**
  * The latest version of PixieBrix available in the Chrome Web Store, or null if the version hasn't been fetched.
@@ -213,7 +215,7 @@ export async function requirePartnerAuth(): Promise<void> {
 }
 
 // Exported for testing
-export async function handleInstall({
+export async function showInstallPage({
   reason,
   previousVersion,
 }: Runtime.OnInstalledDetailsType): Promise<void> {
@@ -291,7 +293,9 @@ export async function handleInstall({
   }
 }
 
-function onUpdateAvailable({ version }: Runtime.OnUpdateAvailableDetailsType) {
+function setAvailableVersion({
+  version,
+}: Runtime.OnUpdateAvailableDetailsType): void {
   _availableVersion = version;
 }
 
@@ -320,10 +324,38 @@ async function setUninstallURL(): Promise<void> {
   await browser.runtime.setUninstallURL(url.href);
 }
 
-function initInstaller() {
-  browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
-  browser.runtime.onInstalled.addListener(handleInstall);
-  browser.runtime.onStartup.addListener(initTelemetry);
+// Using our own session value vs. webext-events because onExtensionStart has a 100ms delay
+// https://github.com/fregante/webext-events/blob/main/source/on-extension-start.ts#L56
+// eslint-disable-next-line local-rules/persistBackgroundData -- using SessionMap via oncePerSession
+const initManagedStorageOncePerSession = oncePerSession(
+  "initManagedStorage",
+  import.meta.url,
+  async () => {
+    await resetManagedStorageInitializationState();
+    await initManagedStorage();
+    void watchForDelayedStorageInitialization();
+  },
+);
+
+// eslint-disable-next-line local-rules/persistBackgroundData -- using SessionMap via oncePerSession
+const initTelemetryOncePerSession = oncePerSession(
+  "initTelemetry",
+  import.meta.url,
+  async () => {
+    if (await isLinked()) {
+      // Init telemetry is a no-op if not linked. So calling without being linked just delays the throttle
+      await initTelemetry();
+    }
+  },
+);
+
+function initInstaller(): void {
+  void initManagedStorageOncePerSession();
+  void initTelemetryOncePerSession();
+
+  browser.runtime.onInstalled.addListener(showInstallPage);
+  browser.runtime.onUpdateAvailable.addListener(setAvailableVersion);
+
   dntConfig.onChanged(() => {
     void setUninstallURL();
   });

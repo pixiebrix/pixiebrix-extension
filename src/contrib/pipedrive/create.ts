@@ -16,11 +16,11 @@
  */
 
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { BusinessError } from "@/errors/businessErrors";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import type { PlatformCapability } from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class AddOrganization extends EffectABC {
   // https://developers.pipedrive.com/docs/api/v1/#!/Organizations/post_organizations

@@ -23,7 +23,7 @@ import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
 import { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
-// Bypass auto-mocks
+// Use relative path to bypass auto-mocks
 export * from "../../../../background/messenger/api";
 
 export const pong = jest.fn(() => ({
