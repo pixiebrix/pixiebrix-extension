@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { propertiesToSchema } from "@/validators/generic";
 import {
   type Manifest,
   type Menus,
@@ -64,6 +63,7 @@ import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export type QuickBarProviderConfig = {
   /**

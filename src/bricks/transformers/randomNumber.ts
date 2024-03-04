@@ -16,10 +16,10 @@
  */
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { random } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class RandomNumber extends TransformerABC {
   constructor() {

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { propertiesToSchema } from "@/validators/generic";
 import {
   StarterBrickABC,
   type StarterBrickConfig,
@@ -62,6 +61,7 @@ import {
   type PlatformCapability,
 } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export type TourConfig = {
   /**

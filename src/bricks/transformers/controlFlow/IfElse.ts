@@ -22,9 +22,9 @@ import {
   type PipelineExpression,
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { validateRegistryId } from "@/types/helpers";
 import { boolean } from "@/utils/typeUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 class IfElse extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/if-else");

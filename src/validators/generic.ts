@@ -20,7 +20,7 @@ import {
   type ValidationResult,
   Validator,
 } from "@cfworker/json-schema";
-import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import serviceRegistry from "@/integrations/registry";
 import { pickBy } from "lodash";
 import urljoin from "url-join";
@@ -152,21 +152,6 @@ export async function validateInput(
   }
 
   return validator.validate(instance ?? null);
-}
-
-/**
- * Convert JSON Schema properties value to a top-level JSONSchema.
- */
-export function propertiesToSchema(
-  properties: SchemaProperties,
-  required: string[],
-): Schema {
-  return {
-    $schema: "https://json-schema.org/draft/2019-09/schema#",
-    type: "object",
-    properties,
-    required,
-  };
 }
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static

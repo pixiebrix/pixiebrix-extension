@@ -15,8 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { unionSchemaDefinitionTypes } from "@/utils/schemaUtils";
-import { type Schema } from "@/types/schemaTypes";
+import {
+  inputProperties,
+  propertiesToSchema,
+  unionSchemaDefinitionTypes,
+} from "@/utils/schemaUtils";
+import type { Schema, SchemaProperties } from "@/types/schemaTypes";
 
 const fooObjectSchema: Schema = {
   type: "object",
@@ -133,5 +137,29 @@ describe("unionSchemaDefinitionTypes", () => {
     ).toEqual({
       anyOf: [fooObjectSchema, { type: "number" }],
     });
+  });
+});
+
+describe("inputProperties", () => {
+  it("returns properties if present", () => {
+    expect(inputProperties(fooObjectSchema)).toStrictEqual(
+      fooObjectSchema.properties,
+    );
+  });
+
+  it("returns properties if type: object", () => {
+    expect(inputProperties({ type: "object" })).toStrictEqual({});
+  });
+
+  it("returns argument if no properties", () => {
+    // Legacy behavior handling brick
+    expect(inputProperties({ foo: 42 } as any)).toStrictEqual({ foo: 42 });
+  });
+
+  it("round trips", () => {
+    const original: SchemaProperties = { foo: { type: "string" } };
+    expect(inputProperties(propertiesToSchema(original, []))).toStrictEqual(
+      original,
+    );
   });
 });
