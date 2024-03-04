@@ -116,6 +116,9 @@ function integrationResolverFactory({
           );
 
           return {
+            // XXX: leave off $id because $RefParser.dereference throws on duplicate $ids in a schema?
+            //   In practice, bricks won't have more than one integration per type
+            //   Leaving $id off might cause problems with field toggle logic in the UI
             $id: file.url,
             type: "object",
             // Strip out the properties containing secrets because those are excluded during runtime execution
@@ -153,7 +156,8 @@ const builtInSchemaResolver: ResolverOptions = {
     const schema = BUILT_IN_SCHEMAS[url];
 
     if (schema != null) {
-      // Strip off $id because $RefParser.dereference on duplicate $ids in a schema
+      // XXX: strip off $id because $RefParser.dereference on duplicate $ids in a schema
+      //  However, leaving off the $id might cause problems with field toggle logic in the UI?
       const { $id, ...other } = schema;
       return other;
     }
