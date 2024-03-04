@@ -54,6 +54,8 @@ function selectButtonTitle(
   return text.replace("%s", selectionText);
 }
 
+let lastKnownSelection: string | undefined;
+
 const ToolbarItem: React.FC<
   RegisteredAction & ActionCallbacks & { selection: Nullishable<string> }
 > = ({ selection, title, handler, emoji, icon, onHide }) => (
@@ -65,12 +67,14 @@ const ToolbarItem: React.FC<
       fontSize: `${ICON_SIZE_PX}px`,
     }}
     title={selectButtonTitle(title, selection)}
+    onMouseDown={() => {
+      // Don't use selectionController.save() because restoring it brings up the
+      // toolbar even after it's been hidden by onHide()
+      lastKnownSelection = window.getSelection()?.toString();
+    }}
     onClick={() => {
-      const selection = window.getSelection();
-      if (selection) {
-        handler(selection.toString());
-        onHide();
-      }
+      handler(lastKnownSelection);
+      onHide();
     }}
   >
     {emoji ?? <Icon {...icon} size={ICON_SIZE_PX} />}
