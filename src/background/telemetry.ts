@@ -17,7 +17,6 @@
 
 import { type JsonObject } from "type-fest";
 import { compact, debounce, throttle, uniq } from "lodash";
-import { isLinked } from "@/auth/authStorage";
 import { getModComponentState } from "@/store/extensionsStorage";
 import {
   getLinkedApiClient,
@@ -305,8 +304,9 @@ async function collectUserSummary(): Promise<UserSummary> {
 }
 
 async function init(): Promise<void> {
-  if ((await isLinked()) && (await allowsTrack())) {
-    const client = await getLinkedApiClient();
+  const client = await maybeGetLinkedApiClient();
+
+  if (client && (await allowsTrack())) {
     await client.post("/api/identify/", {
       uid: await getUUID(),
       data: await collectUserSummary(),
@@ -321,7 +321,7 @@ export const initTelemetry = throttle(init, 30 * 60 * 1000, {
 });
 
 /**
- * @deprecated Only allowed in @/background files. Otherwise use: `import reportEvent from "@/telemetry/reportEvent"`
+ * @deprecated Only allowed in @/background files. Otherwise, use: `import reportEvent from "@/telemetry/reportEvent"`
  */
 export async function recordEvent({
   event,

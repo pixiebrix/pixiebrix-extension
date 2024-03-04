@@ -111,6 +111,8 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
     config: rawConfig,
   } = useParseBrick(data.config);
 
+  const name = rawConfig.metadata?.name;
+
   const { submit, validate, remove } = useSubmitBrick({
     create: false,
   });
@@ -120,7 +122,7 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
   const [isRemoving, setIsRemovingBrick] = useState(false);
   const onRemove = async () => {
     setIsRemovingBrick(true);
-    await remove(id);
+    await remove({ id, name });
 
     // If the brick has been removed, the app will navigate away from this page,
     // so we need to check if the component is still mounted
@@ -131,7 +133,6 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
 
   useLogContext(data.config);
 
-  const name = rawConfig.metadata?.name;
   useSetDocumentTitle(
     name ? `Edit ${truncate(name, { length: 15 })}` : "Edit Brick",
   );

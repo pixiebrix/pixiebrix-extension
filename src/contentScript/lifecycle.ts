@@ -47,6 +47,7 @@ import {
 import { $safeFind } from "@/utils/domUtils";
 import { onContextInvalidated } from "webext-events";
 import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu";
+import { RepeatableAbortController } from "abort-utils";
 
 /**
  * True if handling the initial page load.
@@ -92,10 +93,9 @@ const _activeExtensionPoints = new Set<StarterBrick>();
 let lastUrl: string | undefined;
 
 /**
- * Abort controllers for navigation events for Single Page Applications (SPAs).
+ * Abort controller for navigation events for Single Page Applications (SPAs).
  */
-// eslint-disable-next-line local-rules/persistBackgroundData -- Functions
-const _navigationListeners = new Set<() => void>();
+const navigationListeners = new RepeatableAbortController();
 
 const WAIT_LOADED_INTERVAL_MS = 25;
 
@@ -324,23 +324,10 @@ export function clearEditorExtension(
 }
 
 /**
- * Return an AbortSignal that's aborted when the user navigates.
- */
-function createNavigationAbortSignal(): AbortSignal {
-  const controller = new AbortController();
-  _navigationListeners.add(controller.abort.bind(controller));
-  return controller.signal;
-}
-
-/**
- * Notifies all navigation listeners that the user has navigated in a way that changed the URL.
+ * Notifies all the listeners that the user has navigated in a way that changed the URL.
  */
 function notifyNavigationListeners(): void {
-  for (const listener of _navigationListeners) {
-    listener();
-  }
-
-  _navigationListeners.clear();
+  navigationListeners.abortAndReset();
 }
 
 /**
@@ -372,7 +359,7 @@ export async function runEditorExtension(
     // The Page Editor is the only caller for runDynamic
     reason: RunReason.PAGE_EDITOR,
     extensionIds: [extensionId],
-    abortSignal: createNavigationAbortSignal(),
+    abortSignal: navigationListeners.signal,
   });
 
   checkLifecycleInvariants();
@@ -587,14 +574,12 @@ export async function handleNavigate({
   updateNavigationId();
   notifyNavigationListeners();
 
-  const abortSignal = createNavigationAbortSignal();
-
   const extensionPoints = await loadPersistedExtensionsOnce();
   if (extensionPoints.length > 0) {
     // Wait for document to load, to ensure any selector-based availability rules are ready to be applied.
     await logPromiseDuration(
       "handleNavigate:waitDocumentLoad",
-      waitDocumentLoad(abortSignal),
+      waitDocumentLoad(navigationListeners.signal),
     );
 
     // Safe to use Promise.all because the inner method can't throw
@@ -606,7 +591,7 @@ export async function handleNavigate({
           // extension point that runs on the contact information modal on LinkedIn
           const runPromise = runExtensionPoint(extensionPoint, {
             reason: runReason,
-            abortSignal,
+            abortSignal: navigationListeners.signal,
           }).catch((error) => {
             console.error("Error installing/running: %s", extensionPoint.id, {
               error,

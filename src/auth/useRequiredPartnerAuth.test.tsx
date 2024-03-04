@@ -29,19 +29,22 @@ import {
 } from "@/testUtils/factories/authFactories";
 import { renderHook } from "@/pageEditor/testHelpers";
 import { integrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+import usePartnerAuthData from "@/auth/usePartnerAuthData";
 
-jest.mock("@/store/enterprise/useManagedStorageState", () => ({
-  __esModule: true,
-  default: jest.fn().mockReturnValue({ data: {}, isLoading: false }),
-}));
+jest.mock("@/store/enterprise/useManagedStorageState");
+jest.mock("@/auth/usePartnerAuthData");
 
 const useManagedStorageStateMock = jest.mocked(useManagedStorageState);
+const usePartnerAuthDataMock = jest.mocked(usePartnerAuthData);
 
 beforeEach(() => {
   useManagedStorageStateMock.mockReturnValue({
     data: {},
     isLoading: false,
   });
+
+  usePartnerAuthDataMock.mockReturnValue(valueToAsyncState(null));
 });
 
 describe("useRequiredPartnerAuth", () => {
@@ -180,7 +183,13 @@ describe("useRequiredPartnerAuth", () => {
     });
   });
 
-  test("has required integration", async () => {
+  test("has required partner integration", async () => {
+    usePartnerAuthDataMock.mockReturnValue(
+      valueToAsyncState({
+        token: "NOTAREALTOKEN",
+      }),
+    );
+
     await mockAuthenticatedUser(
       partnerUserFactory({
         organization: userOrganizationFactory({

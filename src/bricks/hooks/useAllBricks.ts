@@ -17,20 +17,15 @@
 
 import brickRegistry, { type TypedBrickMap } from "@/bricks/registry";
 import { isEmpty } from "lodash";
-import { type RegistryChangeListener } from "@/registry/memoryRegistry";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import { useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
 
 const subscribe = (callback: () => void) => {
-  const listener: RegistryChangeListener = {
-    onCacheChanged: callback,
-  };
-
-  brickRegistry.addListener(listener);
+  brickRegistry.onChange.add(callback);
 
   return () => {
-    brickRegistry.removeListener(listener);
+    brickRegistry.onChange.remove(callback);
   };
 };
 

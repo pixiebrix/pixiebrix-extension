@@ -24,7 +24,7 @@ import { INTERNAL_reset } from "@/store/enterprise/managedStorage";
 
 beforeEach(async () => {
   // eslint-disable-next-line new-cap -- test helper method
-  INTERNAL_reset();
+  await INTERNAL_reset();
   await browser.storage.managed.clear();
 });
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 /**
  * Returns a function that returns true if the component is still mounted.
@@ -30,7 +30,7 @@ function useIsMounted(): () => boolean {
     [],
   );
 
-  return () => isMountedRef.current;
+  return useCallback(() => isMountedRef.current, []);
 }
 
 export default useIsMounted;

@@ -16,8 +16,16 @@
  */
 
 import { test, expect } from "@playwright/test";
+import { E2E_TEST_USER_EMAIL_UNAFFILIATED, SERVICE_URL } from "./env";
 
 test.describe("create-react-app", () => {
+  test("basic auth smoke test", async ({ page }) => {
+    await page.goto(SERVICE_URL);
+    await expect(
+      page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
+    ).toBeVisible();
+  });
+
   test("has title", async ({ page }) => {
     await page.goto("/create-react-app/");
 
