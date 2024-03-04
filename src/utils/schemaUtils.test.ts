@@ -160,10 +160,22 @@ describe("inputProperties", () => {
     expect(inputProperties({ foo: 42 } as any)).toStrictEqual({ foo: 42 });
   });
 
-  it("round trips", () => {
+  it("round trips with propertiesToSchema", () => {
     const original: SchemaProperties = { foo: { type: "string" } };
     expect(inputProperties(propertiesToSchema(original, []))).toStrictEqual(
       original,
     );
+  });
+});
+
+describe("propertiesToSchema", () => {
+  it("passes through required fields", () => {
+    // No additionalProperties property is added
+    expect(propertiesToSchema({ foo: { type: "string" } }, ["foo"])).toEqual({
+      type: "object",
+      $schema: "https://json-schema.org/draft/2019-09/schema#",
+      properties: { foo: { type: "string" } },
+      required: ["foo"],
+    });
   });
 });
