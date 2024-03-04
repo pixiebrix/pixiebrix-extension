@@ -280,7 +280,9 @@ export const initSelectionTooltip = once(() => {
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
   document.addEventListener(
     "selectionchange",
-    // Debounce to avoid slowing drag of selection
+    // Debounce to:
+    // - avoid slowing drag of selection
+    // - simulate "selectionend" event (which doesn't exist)
     debounce(
       async () => {
         const selection = window.getSelection();
@@ -296,7 +298,7 @@ export const initSelectionTooltip = once(() => {
         trailing: true,
       },
     ),
-    { passive: true },
+    { passive: true, signal: onContextInvalidated.signal },
   );
 
   tooltipActionRegistry.onChange.add(async () => {
