@@ -28,6 +28,7 @@ import type { Nullishable } from "@/utils/nullishUtils";
 import useActionRegistry from "@/contentScript/selectionTooltip/useActionRegistry";
 import { Stylesheets } from "@/components/Stylesheets";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
+import { getSelection } from "@/utils/selectionController";
 
 const ICON_SIZE_PX = 16;
 
@@ -68,12 +69,16 @@ const ToolbarItem: React.FC<
     }}
     title={selectButtonTitle(title, selection)}
     onMouseDown={() => {
+      // Some websites like Gmail might change the selection on mousedown, so we save it before that happens:
+      // https://github.com/pixiebrix/pixiebrix-extension/issues/7729
+
       // Don't use selectionController.save() because restoring it brings up the
       // toolbar even after it's been hidden by onHide()
-      lastKnownSelection = window.getSelection()?.toString();
+      lastKnownSelection = getSelection().toString();
     }}
     onClick={() => {
-      handler(lastKnownSelection);
+      // Add fallback just in case the mousedown event didn't fire
+      handler(lastKnownSelection ?? getSelection().toString());
       onHide();
     }}
   >
