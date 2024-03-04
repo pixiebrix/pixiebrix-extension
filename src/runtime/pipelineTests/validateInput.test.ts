@@ -197,12 +197,19 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         keyword: "properties",
         keywordLocation: "#/properties",
       },
+      // We're not de-referencing the schema, so errors on the config are relative to the $ref:
+      {
+        error: "A subschema had errors.",
+        instanceLocation: "#/config",
+        keyword: "$ref",
+        keywordLocation: "#/properties/config/$ref",
+      },
       {
         // No error for apiKey because secrets are stripped out
         error: 'Instance does not have required property "baseURL".',
         instanceLocation: "#/config",
         keyword: "required",
-        keywordLocation: "#/properties/config/required",
+        keywordLocation: "#/properties/config/$ref/required",
       },
     ]);
   });

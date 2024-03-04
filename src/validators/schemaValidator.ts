@@ -116,9 +116,9 @@ function integrationResolverFactory({
           );
 
           return {
-            // XXX: leave off $id because $RefParser.dereference throws on duplicate $ids in a schema?
-            //   In practice, bricks won't have more than one integration per type
-            //   Leaving $id off might cause problems with field toggle logic in the UI
+            // NOTE: including the $id cause duplicate schema errors when validating a dereferenced schema if the
+            // reference is used in multiple places. But including an $id is useful for preserving field toggling
+            // based on well-known schema $ids.
             $id: file.url,
             type: "object",
             // Strip out the properties containing secrets because those are excluded during runtime execution
@@ -156,10 +156,10 @@ const builtInSchemaResolver: ResolverOptions = {
     const schema = BUILT_IN_SCHEMAS[url];
 
     if (schema != null) {
-      // XXX: strip off $id because $RefParser.dereference on duplicate $ids in a schema
-      //  However, leaving off the $id might cause problems with field toggle logic in the UI?
-      const { $id, ...other } = schema;
-      return other;
+      // NOTE: including the $id cause duplicate schema errors when validating a dereferenced schema if the
+      // reference is used in multiple places. But including an $id is useful for preserving field toggling
+      // based on well-known schema $ids.
+      return schema;
     }
 
     throw new Error(`Unknown schema: ${file.url}`);
@@ -167,7 +167,9 @@ const builtInSchemaResolver: ResolverOptions = {
 } as const;
 
 /**
- * Returns a new copy of schema with all $ref de-referenced.
+ * Returns a new copy of schema with all $refs de-referenced. Use in contexts that don't support $refs, e.g.,
+ * creating a Yup schema from a JSON schema.
+ *
  * @param schema the original schema that may contain $ref
  * @param sanitizeIntegrationDefinitions remove properties associated with secrets from integration definitions.
  *   Should generally be set to true when using for runtime validation, but false when using for UI entry validation.
@@ -220,16 +222,27 @@ export async function validateBrickInputOutput(
   schema: Schema,
   instance: unknown,
 ): Promise<ValidationResult> {
-  // XXX: we might consider using resolve and adding the schemas to the validator vs. de-referencing
-  // The problem is that the validator in errors change, so we'd have to double-check our translation from
-  // validation errors to field paths for the Page Editor.
-  // https://apitools.dev/json-schema-ref-parser/docs/ref-parser.html#resolveschema-options-callback
-
-  const dereferenced = await dereference(schema, {
-    sanitizeIntegrationDefinitions: true,
+  // We need to `dereference` here, given that our @cfworker/json-schema library supports $ref
+  const refs = await $RefParser.resolve(schema, {
+    resolve: {
+      // Exclude secret properties, because they aren't passed to the runtime
+      integrationDefinitionResolver: integrationResolverFactory({
+        sanitize: true,
+      }),
+      builtInSchemaResolver,
+      // Disable built-in resolvers: https://apitools.dev/json-schema-ref-parser/docs/options.html
+      http: false,
+      file: false,
+    },
   });
 
-  const validator = new Validator(dereferenced as ValidatorSchema);
+  const validator = new Validator({
+    // Provide an $id to avoid an error about duplicate schema because validator defaults the schema $id.
+    // The exact $id doesn't matter, it just can't be one of BUILT_IN_SCHEMAS.
+    $id: "https://app.pixiebrix.com/schemas/value",
+    ...(schema as ValidatorSchema),
+  });
+  validator.addSchema(refs.values() as ValidatorSchema);
   return validator.validate(instance ?? null);
 }
 
@@ -255,7 +268,7 @@ export function validatePackageDefinition(
 
   const validator = new Validator(schema);
 
-  // Add the schemas synchronously
+  // Add the schemas synchronously. Definitions do not reference any external schemas, e.g., integration definitions.
   for (const builtIn of Object.values(BUILT_IN_SCHEMAS)) {
     if (builtIn !== schema) {
       // `validate` throws if there are multiple schemas registered with the same $id

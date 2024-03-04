@@ -38,6 +38,8 @@ export async function getOptionsValidationSchema(
     return object().shape({});
   }
 
+  // Dereference because buildYup doesn't support $ref:
+  // https://github.com/kristianmandrup/schema-to-yup?tab=readme-ov-file#refs
   // NOTE: sometimes this schema comes in as a non-extensible object. Dereference clones the object for us.
   const dereferencedSchema = await dereference(optionsDefinitionSchema, {
     // Include secrets (if any), so they can be validated. As of 1.8.10, there's no "secret" mod input type
