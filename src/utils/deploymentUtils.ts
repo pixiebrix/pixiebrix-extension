@@ -91,7 +91,7 @@ export const makeUpdatedFilter =
       blueprintMatch &&
       gte(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- blueprintMatch is checked above
-        blueprintMatch._recipe!.version,
+        blueprintMatch._recipe!.version!,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- deployment package is checked above
         deployment.package.version!,
       )
