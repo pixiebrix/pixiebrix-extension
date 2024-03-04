@@ -29,6 +29,7 @@ import {
 } from "@/telemetry/telemetryHelpers";
 import type { UserData } from "@/auth/authTypes";
 import { flagOn } from "@/auth/featureFlagStorage";
+import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 const environment = process.env.ENVIRONMENT;
 const applicationId = process.env.DATADOG_APPLICATION_ID;
@@ -40,23 +41,22 @@ const RUM_FLAG = "telemetry-performance";
  * Initialize Datadog Real User Monitoring (RUM) for performance monitoring.
  */
 export async function initPerformanceMonitoring(): Promise<void> {
+  const start = Date.now();
+  console.log("start:", start);
   // Require the extension context because we don't want to track performance of the host sites
   expectContext("extension");
 
   forbidContext("contentScript");
   forbidContext("web");
-  // There's no user interactions to track in the background page
+  // // There's no user interactions to track in the background page
   forbidContext("background");
 
-  const baseUrl = await getBaseURL();
-
-  if (await getDNT()) {
-    return;
-  }
-
-  if (!(await flagOn(RUM_FLAG))) {
-    return;
-  }
+  // const baseUrl = DEFAULT_SERVICE_URL;
+  const baseUrl = await getBaseURL(); // SLOW! about 4.5 seconds
+  //
+  // if (await getDNT()) {
+  //   return;
+  // }
 
   if (!applicationId || !clientToken) {
     console.warn("Datadog application ID or client token not configured");
@@ -65,6 +65,7 @@ export async function initPerformanceMonitoring(): Promise<void> {
 
   const { version_name } = browser.runtime.getManifest();
 
+  console.log("about to init:", Date.now() - start);
   // https://docs.datadoghq.com/real_user_monitoring/browser/
   datadogRum.init({
     applicationId,
@@ -92,6 +93,8 @@ export async function initPerformanceMonitoring(): Promise<void> {
     allowFallbackToLocalStorage: true,
   });
 
+  console.log("done init:", Date.now() - start);
+
   datadogRum.setGlobalContextProperty(
     "code_version",
     process.env.SOURCE_VERSION,
@@ -103,6 +106,8 @@ export async function initPerformanceMonitoring(): Promise<void> {
   datadogRum.startSessionReplayRecording();
 
   addAuthListener(updatePerson);
+
+  console.log("all done:", Date.now() - start);
 }
 
 async function updatePerson(data: UserData): Promise<void> {

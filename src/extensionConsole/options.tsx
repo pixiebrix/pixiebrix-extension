@@ -44,5 +44,10 @@ void initMessengerLogging();
 void initRuntimeLogging();
 initToaster();
 initTelemetry();
-void initPerformanceMonitoring();
-init();
+initPerformanceMonitoring()
+  .then(() => {
+    init();
+  })
+  .catch((e) => {
+    console.log(e);
+  });
