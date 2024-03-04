@@ -18,12 +18,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import ScopeSettings from "./ScopeSettings";
-import { type SettingsState } from "@/store/settings/settingsTypes";
 import { selectScope } from "@/auth/authSelectors";
-
-type RootStateWithSettings = {
-  settings: SettingsState;
-};
 
 type RequireScopeProps = {
   // A flag to opt out of the scope check but still have the RequireScope component in the tree.
@@ -44,11 +39,7 @@ export const RequireScope: React.FunctionComponent<RequireScopeProps> = ({
 }) => {
   const scope = useSelector(selectScope);
 
-  const mode = useSelector<RootStateWithSettings, string>(
-    ({ settings }) => settings.mode,
-  );
-
-  if (isRequired && mode !== "local" && scope == null) {
+  if (isRequired && scope == null) {
     return (
       <ScopeSettings
         title={scopeSettingsTitle}

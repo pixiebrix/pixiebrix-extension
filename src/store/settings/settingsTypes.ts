@@ -19,8 +19,6 @@ import { type ThemeName } from "@/themes/themeTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Except } from "type-fest";
 
-type InstallMode = "local" | "remote";
-
 export const AUTH_METHODS = [
   "default",
   "pixiebrix-token",
@@ -81,13 +79,6 @@ export type SettingsFlags = SkunkworksSettingsFlags & GeneralSettingsFlags;
  */
 export type SettingsStateV1 = SkunkworksSettingsFlags &
   GeneralSettingsFlags & {
-    /**
-     * Whether the extension is synced to the app for provisioning.
-     *
-     * NOTE: `local` is broken in many places. The only current valid value is remote.
-     */
-    mode: InstallMode;
-
     /**
      * Time to snooze updates until (in milliseconds from the epoch), or null.
      *

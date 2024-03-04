@@ -123,7 +123,7 @@ beforeEach(async () => {
     organizationId: "00000000-00000000-00000000-00000000",
   } as any);
 
-  resetManagedStorage();
+  await resetManagedStorage();
 });
 
 describe("updateDeployments", () => {

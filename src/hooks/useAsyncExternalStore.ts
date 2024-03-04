@@ -107,6 +107,10 @@ export function INTERNAL_reset(): void {
 
 /**
  * A version of useSyncExternalStore that accepts an async snapshot function and returns an AsyncState.
+ *
+ * KNOWN BUG: the subscribe function must not be shared across generators, because it maintains a map of subscriptions
+ * to value generator state controllers. See https://github.com/pixiebrix/pixiebrix-extension/issues/7789
+ *
  * @param subscribe see docs for useSyncExternalStore
  * @param factory an async function that returns the current snapshot of the external store
  * @see useSyncExternalStore
