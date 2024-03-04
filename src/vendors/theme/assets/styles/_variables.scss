@@ -4,7 +4,7 @@
 $content-bg: $neutral-surface-color;
 $footer-bg: $neutral-surface-color;
 $footer-color: color(dark);
-$border-color: hsl(0, 0%, 80%); // Matches react-select's border
+$border-color: $neutral-surface-color;
 $circle-border: $white;
 
 ////////// COLOR VARIABLES //////////
