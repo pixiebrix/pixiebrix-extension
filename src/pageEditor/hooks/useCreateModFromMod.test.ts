@@ -17,7 +17,6 @@
 
 import { appApiMock } from "@/testUtils/appApiMock";
 import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { validateTimestamp } from "@/types/helpers";
 import { renderHook, waitFor } from "@/pageEditor/testHelpers";
 import { act } from "@testing-library/react-hooks";
 import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
@@ -27,6 +26,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 
 const reportEventMock = jest.mocked(reportEvent);
+jest.mock("@/telemetry/trace");
 
 describe("useCreateModFromMod", () => {
   it("saves with no dirty changes", async () => {
@@ -37,7 +37,9 @@ describe("useCreateModFromMod", () => {
       metadata,
     });
 
-    appApiMock.onPost("/api/bricks/").reply(200, {});
+    appApiMock
+      .onPost("/api/bricks/")
+      .reply(200, { updated_at: "2024-01-01T00:00:00Z" });
 
     const { result } = renderHook(() => useCreateModFromMod(), {
       setupRedux(dispatch) {
