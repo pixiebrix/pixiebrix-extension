@@ -16,11 +16,11 @@
  */
 
 import { RendererABC } from "@/types/bricks/rendererTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { validateRegistryId } from "@/types/helpers";
 import MarkdownLazy from "@/components/Markdown";
 import { type BrickArgs, type ComponentRef } from "@/types/runtimeTypes";
 import { ADD_IFRAME_CONFIG } from "@/utils/sanitize";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 class MarkdownRenderer extends RendererABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/markdown");

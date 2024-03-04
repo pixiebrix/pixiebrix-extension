@@ -17,7 +17,8 @@
 
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
+
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 class ToggleQuickbarEffect extends EffectABC {
   constructor() {

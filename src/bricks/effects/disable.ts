@@ -17,13 +17,13 @@
 
 import { EffectABC } from "@/types/bricks/effectTypes";
 
-import { propertiesToSchema } from "@/validators/generic";
 import {
   IS_ROOT_AWARE_BRICK_PROPS,
   $safeFindElementsWithRootMode,
 } from "@/bricks/rootModeHelpers";
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class DisableEffect extends EffectABC {
   constructor() {

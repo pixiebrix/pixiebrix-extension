@@ -16,7 +16,6 @@
  */
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
@@ -25,6 +24,7 @@ import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes
 import { type AxiosRequestConfig } from "axios";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class GetAPITransformer extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/get");

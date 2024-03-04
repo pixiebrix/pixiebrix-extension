@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./__mocks__/@/auth/useLinkState.ts",
     "./__mocks__/@/background/messenger/strict/api.ts",
     "./__mocks__/@/components/DelayedRender.tsx",
     "./__mocks__/@/components/Stylesheets.tsx",
@@ -38,6 +39,7 @@
     "./auth/authUtils.ts",
     "./auth/featureFlagStorage.ts",
     "./auth/useLinkState.ts",
+    "./auth/usePartnerAuthData.ts",
     "./background/auth/authStorage.ts",
     "./background/auth/codeGrantFlow.ts",
     "./background/auth/implicitGrantFlow.ts",

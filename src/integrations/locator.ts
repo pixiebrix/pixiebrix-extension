@@ -27,7 +27,6 @@ import {
   MissingConfigurationError,
   NotConfiguredError,
 } from "@/errors/businessErrors";
-import { DoesNotExistError } from "@/registry/memoryRegistry";
 import {
   type IntegrationABC,
   type IntegrationConfig,
@@ -36,7 +35,7 @@ import {
   type SecretsConfig,
 } from "@/integrations/integrationTypes";
 import { type UUID } from "@/types/stringTypes";
-import { type RegistryId } from "@/types/registryTypes";
+import { DoesNotExistError, type RegistryId } from "@/types/registryTypes";
 import { sanitizeIntegrationConfig } from "@/integrations/sanitizeIntegrationConfig";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import { getLinkedApiClient } from "@/data/service/apiClient";

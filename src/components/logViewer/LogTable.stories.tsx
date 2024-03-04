@@ -26,8 +26,6 @@ import { InputValidationError } from "@/bricks/errors";
 import { type Schema } from "@/types/schemaTypes";
 import type { LogEntry } from "@/telemetry/logging";
 
-Object.assign(global, { chrome: { runtime: { id: 42 } } });
-
 export default {
   title: "Editor/LogTable",
   component: LogTable,

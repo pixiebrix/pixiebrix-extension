@@ -36,7 +36,6 @@ import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
-import { propertiesToSchema } from "@/validators/generic";
 import { render } from "@/starterBricks/dom";
 import { type Permissions } from "webextension-polyfill";
 import reportEvent from "@/telemetry/reportEvent";
@@ -66,6 +65,7 @@ import {
 } from "@/platform/capabilities";
 import { RepeatableAbortController } from "abort-utils";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export type PanelConfig = {
   heading?: string;

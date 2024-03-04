@@ -15,11 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export default {
-  runtime: {
-    id: "abcxyz",
-    getManifest: () => ({
-      homepage_url: "https://www.pixiebrix.com/",
-    }),
-  },
-};
+import { valueToAsyncState } from "@/utils/asyncStateUtils";
+
+const DEFAULT_LINK_STATE = valueToAsyncState(true);
+const useLinkState = jest.fn(() => DEFAULT_LINK_STATE);
+
+export default useLinkState;

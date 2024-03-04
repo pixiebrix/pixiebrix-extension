@@ -16,18 +16,33 @@
  */
 
 import {
+  initializationTimestamp,
   INTERNAL_reset,
   readManagedStorage,
   readManagedStorageByKey,
 } from "@/store/enterprise/managedStorage";
+import type { Timestamp } from "@/types/stringTypes";
 
 beforeEach(async () => {
+  jest.clearAllMocks();
   // eslint-disable-next-line new-cap -- test helper method
-  INTERNAL_reset();
+  await INTERNAL_reset();
   await browser.storage.managed.clear();
 });
 
 describe("readManagedStorage", () => {
+  it("reads immediately if managed storage is already initialized", async () => {
+    await initializationTimestamp.set(new Date().toISOString() as Timestamp);
+    await expect(readManagedStorage()).resolves.toStrictEqual({
+      // `jest-webextension-mock`'s storage is shared across sources, the call ends up with the managed storage
+      // and the local storage mixed together. See https://github.com/clarkbw/jest-webextension-mock/issues/183
+      managedStorageInitTimestamp: expect.any(String),
+    });
+
+    // Should only be called once vs. polling
+    expect(browser.storage.managed.get).toHaveBeenCalledOnce();
+  });
+
   it("reads uninitialized managed storage", async () => {
     await expect(readManagedStorage()).resolves.toStrictEqual({});
   });
@@ -35,6 +50,9 @@ describe("readManagedStorage", () => {
   it("reads managed storage", async () => {
     await browser.storage.managed.set({ partnerId: "taco-bell" });
     await expect(readManagedStorage()).resolves.toStrictEqual({
+      // `jest-webextension-mock`'s storage is shared across sources, the call ends up with the managed storage
+      // and the local storage mixed together. See https://github.com/clarkbw/jest-webextension-mock/issues/183
+      managedStorageInitTimestamp: expect.any(String),
       partnerId: "taco-bell",
     });
   });
