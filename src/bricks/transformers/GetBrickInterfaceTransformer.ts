@@ -18,12 +18,12 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { validateRegistryId } from "@/types/helpers";
 import type { RegistryProtocol } from "@/registry/memoryRegistry";
 import type { RegistryId } from "@/types/registryTypes";
 import type { Brick } from "@/types/brickTypes";
 import { BusinessError, PropError } from "@/errors/businessErrors";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 /**
  * An experimental brick that returns the interface of a brick by its registry ID.

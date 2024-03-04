@@ -22,8 +22,8 @@ import {
   type PipelineExpression,
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { validateRegistryId } from "@/types/helpers";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 /**
  * A brick that runs one or more bricks synchronously or asynchronously. Used to group bricks and/or develop custom

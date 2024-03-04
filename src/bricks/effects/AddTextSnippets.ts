@@ -16,13 +16,13 @@
  */
 
 import { validateRegistryId } from "@/types/helpers";
-import { propertiesToSchema } from "@/validators/generic";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { initCommandController } from "@/contentScript/commandPopover/commandController";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import type { PlatformCapability } from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 type Snippet = {
   /**

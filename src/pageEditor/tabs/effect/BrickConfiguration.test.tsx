@@ -21,7 +21,6 @@ import brickRegistry from "@/bricks/registry";
 import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { screen } from "@testing-library/react";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { propertiesToSchema } from "@/validators/generic";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import { render } from "@/pageEditor/testHelpers";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
@@ -39,6 +38,7 @@ import {
   brickFactory,
 } from "@/testUtils/factories/brickFactories";
 import CommentEffect from "@/bricks/effects/comment";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 beforeAll(() => {
   registerDefaultWidgets();

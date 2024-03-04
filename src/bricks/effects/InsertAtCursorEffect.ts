@@ -22,12 +22,12 @@ import {
   isDocument,
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { BusinessError } from "@/errors/businessErrors";
 import { isEmpty } from "lodash";
 import focus from "@/utils/focusController";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { insertAtCursorWithCustomEditorSupport } from "@/contentScript/textEditorDom";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 /**
  * Insert text at the cursor position. For use with text snippets, etc.

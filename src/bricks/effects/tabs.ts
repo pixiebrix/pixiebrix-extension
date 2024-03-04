@@ -17,12 +17,12 @@
 
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { activateTab, closeTab } from "@/background/messenger/api";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
 } from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class ActivateTabEffect extends EffectABC {
   constructor() {

@@ -22,7 +22,6 @@ import {
   type PipelineExpression,
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import {
   BusinessError,
   MultipleElementsFoundError,
@@ -48,6 +47,7 @@ import {
   type PlatformCapability,
 } from "@/platform/capabilities";
 import { expectContext } from "@/utils/expectContext";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export type StepInputs = {
   title: string;
