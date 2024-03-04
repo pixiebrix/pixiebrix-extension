@@ -23,8 +23,7 @@ import {
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
-import type { RegistryProtocol } from "@/registry/memoryRegistry";
-import type { RegistryId } from "@/types/registryTypes";
+import type { RegistryId, RegistryProtocol } from "@/types/registryTypes";
 import type { Brick } from "@/types/brickTypes";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
