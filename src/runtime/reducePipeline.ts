@@ -69,8 +69,8 @@ import {
 import { isPipelineClosureExpression } from "@/utils/expressionUtils";
 import extendModVariableContext from "@/runtime/extendModVariableContext";
 import { isObject } from "@/utils/objectUtils";
-import { type RegistryId, RegistryProtocol } from "@/types/registryTypes";
-import { type Brick } from "@/types/brickTypes";
+import type { RegistryId, RegistryProtocol } from "@/types/registryTypes";
+import type { Brick } from "@/types/brickTypes";
 import getType from "@/runtime/getType";
 import { getPlatform } from "@/platform/platformContext";
 
