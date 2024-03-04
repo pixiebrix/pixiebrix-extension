@@ -66,10 +66,7 @@ export async function validateSchema(
   let validation: ValidationResult;
 
   try {
-    validation = validatePackageDefinition(
-      json.kind as keyof typeof KIND_SCHEMAS,
-      json as UnknownObject,
-    );
+    validation = validatePackageDefinition(json.kind, json as UnknownObject);
   } catch (error) {
     console.error("An error occurred when validating the schema", error);
     return { config: ["An error occurred when validating the schema"] };
