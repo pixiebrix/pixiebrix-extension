@@ -16,7 +16,10 @@
  */
 
 import { appApiMock } from "@/testUtils/appApiMock";
-import { modDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import {
+  modComponentDefinitionFactory,
+  modDefinitionFactory,
+} from "@/testUtils/factories/modDefinitionFactories";
 import { renderHook, waitFor } from "@/pageEditor/testHelpers";
 import { act } from "@testing-library/react-hooks";
 import useCreateModFromMod from "@/pageEditor/hooks/useCreateModFromMod";
@@ -24,14 +27,24 @@ import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories"
 import { actions as extensionsActions } from "@/store/extensionsSlice";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
+import { array } from "cooky-cutter";
+import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
 
 const reportEventMock = jest.mocked(reportEvent);
 jest.mock("@/telemetry/trace");
 
-describe("useCreateModFromMod", () => {
-  it("saves with no dirty changes", async () => {
-    appApiMock.reset();
+jest.mock("@/pageEditor/hooks/useCompareModComponentCounts", () =>
+  jest.fn().mockReturnValue(() => true),
+);
+const compareModComponentCountsMock = jest.mocked(useCompareModComponentCounts);
 
+describe("useCreateModFromMod", () => {
+  beforeEach(() => {
+    appApiMock.reset();
+    compareModComponentCountsMock.mockClear();
+  });
+
+  it("saves with no dirty changes", async () => {
     const metadata = modMetadataFactory();
     const definition = modDefinitionFactory({
       metadata,
@@ -69,5 +82,39 @@ describe("useCreateModFromMod", () => {
       Events.MOD_ACTIVATE,
       expect.any(Object),
     );
+  });
+
+  it("does not throw an error if the mod fails an invariant check", async () => {
+    compareModComponentCountsMock.mockReturnValue(() => false);
+    const modMetadata = modMetadataFactory();
+    const installedModDefinition = modDefinitionFactory({
+      metadata: modMetadata,
+      extensionPoints: array(modComponentDefinitionFactory, 2),
+    });
+
+    appApiMock
+      .onPost("/api/bricks/")
+      .reply(200, { updated_at: "2024-01-01T00:00:00Z" });
+
+    const { result } = renderHook(() => useCreateModFromMod(), {
+      setupRedux(dispatch) {
+        dispatch(
+          extensionsActions.installMod({
+            modDefinition: installedModDefinition,
+            screen: "pageEditor",
+            isReinstall: false,
+          }),
+        );
+      },
+    });
+
+    await act(async () => {
+      await result.current.createModFromMod(
+        installedModDefinition,
+        modMetadata,
+      );
+    });
+
+    expect(appApiMock.history.post).toHaveLength(0);
   });
 });
