@@ -27,6 +27,7 @@ import { useDispatch } from "react-redux";
 import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
 import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
+import { type JsonObject } from "type-fest";
 
 function useBuildAndValidateMod() {
   const dispatch = useDispatch();
@@ -62,7 +63,8 @@ function useBuildAndValidateMod() {
         // Not including modDefinition because it can be 1.5MB+ in some rare cases
         // See discussion: https://github.com/pixiebrix/pixiebrix-extension/pull/7629/files#r1492864349
         reportEvent(Events.PAGE_EDITOR_MOD_SAVE_ERROR, {
-          modId: newMod.metadata.id,
+          // Metadata is an object, but doesn't extend JsonObject so typescript doesn't like it
+          modMetadata: newMod.metadata as unknown as JsonObject,
           modComponentDefinitionCountsMatch,
           modComponentStarterBricksMatch,
         });
