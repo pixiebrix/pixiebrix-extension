@@ -36,7 +36,6 @@ import {
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
 import { type Metadata } from "@/types/registryTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { type Permissions } from "webextension-polyfill";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -87,6 +86,7 @@ import {
 } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 interface ShadowDOM {
   mode?: "open" | "closed";

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { propertiesToSchema } from "@/validators/generic";
 import blockRegistry from "@/bricks/registry";
 import {
   echoBrick,
@@ -33,6 +32,7 @@ import {
 } from "@/types/runtimeTypes";
 import { BrickABC } from "@/types/brickTypes";
 import { toExpression } from "@/utils/expressionUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 class RootAwareBlock extends BrickABC {
   constructor() {

@@ -18,8 +18,8 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import type { PlatformCapability } from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class SoundEffect extends EffectABC {
   constructor() {

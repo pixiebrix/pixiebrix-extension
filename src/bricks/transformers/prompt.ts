@@ -18,9 +18,9 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { CancelError } from "@/errors/businessErrors";
 import type { PlatformCapability } from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class Prompt extends TransformerABC {
   constructor() {

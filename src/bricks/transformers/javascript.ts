@@ -19,10 +19,10 @@ import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type UiSchema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { type JSONSchema7 } from "json-schema";
 import { type JsonObject } from "type-fest";
 import type { PlatformCapability } from "@/platform/capabilities";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class JavaScriptTransformer extends TransformerABC {
   static readonly BRICK_ID = validateRegistryId("@pixiebrix/javascript");

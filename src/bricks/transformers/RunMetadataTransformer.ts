@@ -18,8 +18,8 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { validateRegistryId } from "@/types/helpers";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 /**
  * Returns metadata for the current run.

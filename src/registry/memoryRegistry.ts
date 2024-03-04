@@ -19,7 +19,12 @@ import { type Kind } from "@/registry/packageRegistry";
 import { registry as backgroundRegistry } from "@/background/messenger/strict/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { expectContext } from "@/utils/expectContext";
-import { type RegistryId } from "@/types/registryTypes";
+import {
+  DoesNotExistError,
+  type EnumerableRegistryProtocol,
+  type RegistryId,
+  type RegistryItem,
+} from "@/types/registryTypes";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
@@ -31,20 +36,6 @@ type Source =
   | "builtin"
   // From an internal definition
   | "internal";
-
-export interface RegistryItem<T extends RegistryId = RegistryId> {
-  id: T;
-}
-
-export class DoesNotExistError extends Error {
-  override name = "DoesNotExistError";
-  public readonly id: string;
-
-  constructor(id: string) {
-    super(`Registry item does not exist: ${id}`);
-    this.id = id;
-  }
-}
 
 /**
  * `backgroundRegistry` database change listeners.
@@ -72,23 +63,12 @@ export const clearPackages = async () => {
 };
 
 /**
- * Protocol to avoid circular imports.
- * @since 1.8.2
- */
-export interface RegistryProtocol<
-  Id extends RegistryId = RegistryId,
-  Item extends RegistryItem<Id> = RegistryItem<Id>,
-> {
-  lookup: (id: Id) => Promise<Item>;
-}
-
-/**
  * Brick registry, with remote bricks backed by IDB.
  */
 class MemoryRegistry<
   Id extends RegistryId = RegistryId,
   Item extends RegistryItem<Id> = RegistryItem<Id>,
-> implements RegistryProtocol<Id, Item>
+> implements EnumerableRegistryProtocol<Id, Item>
 {
   /**
    * Registered built-in items. Used to keep track of built-ins across cache clears.
