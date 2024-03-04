@@ -35,7 +35,14 @@ import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";
 
-function useCreateModFromMod() {
+type UseCreateModFromModReturn = {
+  createModFromMod: (
+    modDefinition: ModDefinition,
+    metadata: ModMetadataFormState,
+  ) => Promise<void>;
+};
+
+function useCreateModFromMod(): UseCreateModFromModReturn {
   const dispatch = useDispatch();
   const [createMod] = useCreateRecipeMutation();
   const deactivateMod = useDeactivateMod();

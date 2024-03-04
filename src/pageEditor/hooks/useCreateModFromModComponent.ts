@@ -33,9 +33,16 @@ import { useRemoveModComponentFromStorage } from "@/pageEditor/hooks/useRemoveMo
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 import { BusinessError } from "@/errors/businessErrors";
 
+type UseCreateModFromModReturn = {
+  createModFromComponent: (
+    modComponentFormState: ModComponentFormState,
+    modMetadata: ModMetadataFormState,
+  ) => Promise<void>;
+};
+
 function useCreateModFromModComponent(
   activeModComponent: ModComponentFormState,
-) {
+): UseCreateModFromModReturn {
   const dispatch = useDispatch();
   const keepLocalCopy = useSelector(selectKeepLocalCopyOnCreateRecipe);
   const [createMod] = useCreateRecipeMutation();

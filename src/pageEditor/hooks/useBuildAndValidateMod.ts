@@ -28,8 +28,13 @@ import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModSta
 import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { type JsonObject } from "type-fest";
+import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 
-function useBuildAndValidateMod() {
+type UseBuildAndValidateModReturn = {
+  buildAndValidateMod: (modParts: ModParts) => Promise<UnsavedModDefinition>;
+};
+
+function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
   const dispatch = useDispatch();
   const compareModComponentCountsToModDefinition =
     useCompareModComponentCounts();
