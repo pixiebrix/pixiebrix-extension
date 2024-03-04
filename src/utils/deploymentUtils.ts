@@ -90,8 +90,10 @@ export const makeUpdatedFilter =
     if (
       blueprintMatch &&
       gte(
-        blueprintMatch._recipe?.version ?? "",
-        deployment.package.version ?? "",
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- blueprintMatch is checked above
+        blueprintMatch._recipe!.version,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- deployment package is checked above
+        deployment.package.version!,
       )
     ) {
       // The unrestricted user already has the blueprint (or a newer version of the blueprint), so don't prompt
