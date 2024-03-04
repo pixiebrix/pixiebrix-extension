@@ -101,7 +101,7 @@ export function inputProperties(inputSchema: Schema): SchemaProperties {
     return {} as SchemaProperties;
   }
 
-  // It looks like a Schema, even it properties are not provided
+  // It looks like a Schema, even if `properties` property is not provided
   if ("$schema" in inputSchema || inputSchema.type === "object") {
     return inputSchema.properties ?? {};
   }
