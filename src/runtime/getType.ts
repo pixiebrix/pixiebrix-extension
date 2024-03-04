@@ -18,31 +18,35 @@
 import { type BrickType } from "@/runtime/runtimeTypes";
 import { type Metadata } from "@/types/registryTypes";
 
+/**
+ * Returns the type of the brick, or `null` if the type cannot be determined.
+ * @param brick
+ */
 export default async function getType<T extends Metadata>(
-  // HACK: including Integration and StarterBrick here is a hack to fix some call-sites. This method can only return
-  // block types
-  block: T,
+  // HACK: T extends Metadata (which includes Integration and StarterBrick) here as a hack to fix some call-sites.
+  // This getType method can only return brick types
+  brick: T,
 ): Promise<BrickType | null> {
-  if ("inferType" in block && typeof block.inferType === "function") {
+  if ("inferType" in brick && typeof brick.inferType === "function") {
     // For YAML-based blocks, can't use the method to determine the type because only the "run" method is available.
-    // The inferType method is provided ExternalBlock, which is the class used for YAML-based blocks (which have
+    // The inferType method is provided UserDefinedBrick, which is the class used for YAML-based blocks (which have
     // kind: component) in their YAML
-    return block.inferType();
+    return brick.inferType();
   }
 
-  if ("read" in block) {
+  if ("read" in brick) {
     return "reader";
   }
 
-  if ("effect" in block) {
+  if ("effect" in brick) {
     return "effect";
   }
 
-  if ("transform" in block) {
+  if ("transform" in brick) {
     return "transform";
   }
 
-  if ("render" in block) {
+  if ("render" in brick) {
     return "renderer";
   }
 

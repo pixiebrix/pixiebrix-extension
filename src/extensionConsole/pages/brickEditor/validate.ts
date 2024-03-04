@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { KIND_SCHEMAS, validateKind } from "@/validators/generic";
+import {
+  KIND_SCHEMAS,
+  validatePackageDefinition,
+} from "@/validators/schemaValidator";
 import { type ValidationResult } from "@cfworker/json-schema";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { loadBrickYaml } from "@/runtime/brickYaml";
@@ -63,9 +66,9 @@ export async function validateSchema(
   let validation: ValidationResult;
 
   try {
-    validation = await validateKind(
-      json as UnknownObject,
+    validation = validatePackageDefinition(
       json.kind as keyof typeof KIND_SCHEMAS,
+      json as UnknownObject,
     );
   } catch (error) {
     console.error("An error occurred when validating the schema", error);

@@ -71,5 +71,5 @@
     }
   },
   "additionalProperties": false,
-  "required": ["apiVersion", "kind", "metadata", "inputSchema", "pipeline"]
+  "required": ["kind", "metadata", "inputSchema", "pipeline"]
 }

@@ -24,8 +24,6 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
-import { dereference } from "@/validators/generic";
-import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
 import { render } from "@/pageEditor/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
@@ -49,6 +47,8 @@ import selectEvent from "react-select-event";
 import { type FormikValues } from "formik";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import { toExpression } from "@/utils/expressionUtils";
+import googleSheetIdSchema from "@schemas/googleSheetId.json";
+import type { Schema } from "@/types/schemaTypes";
 
 let idSequence = 0;
 function newId(): UUID {
@@ -212,10 +212,8 @@ beforeEach(() => {
 describe("getToggleOptions", () => {
   // Sanity check getToggleOptions returning expected values, because that would cause problems in the snapshot tests
   it("should include file picker and variable toggle options", async () => {
-    const baseSchema = await dereference(BASE_SHEET_SCHEMA);
-
     const result = getToggleOptions({
-      fieldSchema: baseSchema,
+      fieldSchema: googleSheetIdSchema as Schema,
       customToggleModes: [],
       isRequired: true,
       allowExpressions: true,

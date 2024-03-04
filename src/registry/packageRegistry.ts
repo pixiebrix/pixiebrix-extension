@@ -46,7 +46,7 @@ export type Kind =
   | "extensionPoint"
   | "recipe";
 
-type PackageVersion = {
+export type PackageVersion = {
   id: string;
   version: Version;
   kind: Kind;

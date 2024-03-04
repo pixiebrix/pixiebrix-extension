@@ -21,7 +21,7 @@ import optionsRegistry from "@/components/fields/optionsRegistry";
 import React, { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import AsyncButton from "@/components/AsyncButton";
-import { dereference } from "@/validators/generic";
+import { dereference } from "@/validators/schemaValidator";
 import { cloneDeep, truncate } from "lodash";
 import genericOptionsFactory, {
   type BlockOptionProps,
@@ -135,9 +135,9 @@ const ModalContent: React.FC<ContentProps> = ({
           // (one level up), but only works with JSONSchema4 `required: boolean`
           required: true,
         },
-        // $RefParse mutates the schema
-        config: cloneDeep(integration.schema),
+        config: integration.schema,
       },
+      required: ["config"],
     });
 
     try {
