@@ -237,7 +237,7 @@ describe("DeploymentsContext", () => {
     );
 
     await waitForEffect();
-    // Deployments are not fetched because extensin is not linked
+    // Deployments are not fetched because extension is not linked
     expect(axiosMock.history.post).toHaveLength(0);
   });
 

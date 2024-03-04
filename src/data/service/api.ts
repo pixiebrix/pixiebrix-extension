@@ -442,6 +442,7 @@ export const appApi = createApi({
     // Post request not used to mutate data on the backend, just to fetch data
     getDeployments: builder.query<
       Deployment[],
+      // Uid is used for the clientId property on events in Mixpanel telemetry
       { uid: UUID; version: string; active: InstalledDeployment[] }
     >({
       query: (data) => ({

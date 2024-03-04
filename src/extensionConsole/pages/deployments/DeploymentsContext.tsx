@@ -56,6 +56,7 @@ import useMemoCompare from "@/hooks/useMemoCompare";
 function getError(deploymentsError: unknown, permissionsError: unknown) {
   if (deploymentsError) {
     if (deserializeError(deploymentsError).name === "ExtensionNotLinkedError") {
+      // Deployments are refetched once the Extension is linked
       return null;
     }
 
@@ -104,10 +105,10 @@ export type DeploymentsState = {
 
 function useDeployments(): DeploymentsState {
   const dispatch = useDispatch<Dispatch>();
-  const installedExtensions = useSelector(selectExtensions);
+  const activeExtensions = useSelector(selectExtensions);
   const { restrict } = useFlags();
-  const activeExtensions = useMemoCompare<InstalledDeployment[]>(
-    selectInstalledDeployments(installedExtensions),
+  const activeDeployments = useMemoCompare<InstalledDeployment[]>(
+    selectInstalledDeployments(activeExtensions),
     isEqual,
   );
 
@@ -121,7 +122,7 @@ function useDeployments(): DeploymentsState {
     {
       uid: uuid,
       version: getExtensionVersion(),
-      active: activeExtensions,
+      active: activeDeployments,
     },
     {
       skip: !uuid, // Avoid fetching deployments until we have a UUID
@@ -159,10 +160,10 @@ function useDeployments(): DeploymentsState {
     );
 
     return permissions;
-  }, [installedExtensions, deployments]);
+  }, [activeExtensions, deployments]);
 
   const [updatedDeployments, extensionUpdateRequired] = useMemo(() => {
-    const isUpdated = makeUpdatedFilter(installedExtensions, {
+    const isUpdated = makeUpdatedFilter(activeExtensions, {
       restricted: restrict("uninstall"),
     });
 
@@ -172,11 +173,11 @@ function useDeployments(): DeploymentsState {
       updatedDeployments,
       checkExtensionUpdateRequired(updatedDeployments),
     ];
-  }, [restrict, installedExtensions, deployments]);
+  }, [restrict, activeExtensions, deployments]);
 
   const { isAutoDeploying } = useAutoDeploy(
     updatedDeployments,
-    installedExtensions,
+    activeExtensions,
     { extensionUpdateRequired },
   );
 
@@ -221,12 +222,12 @@ function useDeployments(): DeploymentsState {
     }
 
     try {
-      await activateDeployments(dispatch, deployments, installedExtensions);
+      await activateDeployments(dispatch, deployments, activeExtensions);
       notify.success("Updated team deployments");
     } catch (error) {
       notify.error({ message: "Error updating team deployments", error });
     }
-  }, [deployments, permissions, dispatch, installedExtensions]);
+  }, [deployments, permissions, dispatch, activeExtensions]);
 
   const updateExtension = useCallback(async () => {
     await reloadIfNewVersionIsReady();
