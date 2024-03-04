@@ -24,7 +24,7 @@ export const SPREADSHEET_FIELD_DESCRIPTION =
   "Select a Google Sheet. The first row in your sheet MUST contain headings.";
 
 /**
- * `$ref` schema for a Google Sheet input. The $ref is used in field definitions.
+ * `$ref` schema for a Google Sheet input. The $ref form is used in field definitions.
  * @see SHEET_FIELD_SCHEMA
  */
 export const SHEET_FIELD_REF_SCHEMA: Schema = {
@@ -33,7 +33,7 @@ export const SHEET_FIELD_REF_SCHEMA: Schema = {
 };
 
 /**
- * The actual schema for Google Sheet inputs.
+ * The actual schema for Google Sheet fields.
  * @see SHEET_FIELD_REF_SCHEMA
  */
 export const SHEET_FIELD_SCHEMA: Schema = googleSheetIdSchema as Schema;

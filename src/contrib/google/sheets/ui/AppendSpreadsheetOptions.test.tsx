@@ -28,7 +28,6 @@ import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPicke
 import { render } from "@/pageEditor/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { services, sheets } from "@/background/messenger/api";
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
@@ -37,7 +36,6 @@ import {
   type FileList,
   type Spreadsheet,
 } from "@/contrib/google/sheets/core/types";
-import { type UUID } from "@/types/stringTypes";
 import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 import { useAuthOptions } from "@/hooks/auth";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
@@ -47,13 +45,8 @@ import selectEvent from "react-select-event";
 import { type FormikValues } from "formik";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import { toExpression } from "@/utils/expressionUtils";
-import googleSheetIdSchema from "@schemas/googleSheetId.json";
-import type { Schema } from "@/types/schemaTypes";
-
-let idSequence = 0;
-function newId(): UUID {
-  return uuidSequence(idSequence++);
-}
+import { SHEET_FIELD_SCHEMA } from "@/contrib/google/sheets/core/schemas";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/hooks/auth");
 const servicesLocateMock = jest.mocked(services.locate);
@@ -63,12 +56,12 @@ const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
 const getSpreadsheetMock = jest.mocked(sheets.getSpreadsheet);
 const getHeadersMock = jest.mocked(sheets.getHeaders);
 
-const TEST_SPREADSHEET_ID = newId();
-const OTHER_TEST_SPREADSHEET_ID = newId();
+const TEST_SPREADSHEET_ID = autoUUIDSequence();
+const OTHER_TEST_SPREADSHEET_ID = autoUUIDSequence();
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 const GOOGLE_PKCE_SERVICE_ID = validateRegistryId("google/oauth2-pkce");
-const GOOGLE_PKCE_AUTH_CONFIG = newId();
-const TEST_SPREADSHEET_AUTH_CONFIG = newId();
+const GOOGLE_PKCE_AUTH_CONFIG = autoUUIDSequence();
+const TEST_SPREADSHEET_AUTH_CONFIG = autoUUIDSequence();
 
 const TEST_SPREADSHEET_NAME = "Test Spreadsheet";
 const OTHER_TEST_SPREADSHEET_NAME = "Other Spreadsheet";
@@ -213,7 +206,7 @@ describe("getToggleOptions", () => {
   // Sanity check getToggleOptions returning expected values, because that would cause problems in the snapshot tests
   it("should include file picker and variable toggle options", async () => {
     const result = getToggleOptions({
-      fieldSchema: googleSheetIdSchema as Schema,
+      fieldSchema: SHEET_FIELD_SCHEMA,
       customToggleModes: [],
       isRequired: true,
       allowExpressions: true,

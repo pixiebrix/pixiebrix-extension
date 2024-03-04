@@ -33,8 +33,7 @@ import { type FileList } from "@/contrib/google/sheets/core/types";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import selectEvent from "react-select-event";
-import googleSheetIdSchema from "@schemas/googleSheetId.json";
-import type { Schema } from "@/types/schemaTypes";
+import { SHEET_FIELD_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 
 const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
 
@@ -98,7 +97,7 @@ const renderWithValues = async (initialValues: FormikValues) => {
     render(
       <SpreadsheetPickerWidget
         name="spreadsheetId"
-        schema={googleSheetIdSchema as Schema}
+        schema={SHEET_FIELD_SCHEMA}
       />,
       {
         initialValues,
