@@ -133,6 +133,7 @@ describe("ModOptionsValuesEditor", () => {
     const modDefinition = defaultModDefinitionFactory({
       options: {
         schema: {
+          // Interpreted as a schema because it has type: object
           type: "object",
           additionalProperties: {
             type: "string",
@@ -143,6 +144,9 @@ describe("ModOptionsValuesEditor", () => {
     mockModDefinition(modDefinition);
     const { asFragment } = render(<ModOptionsValuesEditor />);
     await waitForEffect();
+    expect(
+      await screen.findByText("This mod does not require any configuration"),
+    ).toBeVisible();
     expect(asFragment()).toMatchSnapshot();
   });
 
