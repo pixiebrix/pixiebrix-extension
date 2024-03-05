@@ -369,4 +369,66 @@ describe("useCompareModComponentCounts", () => {
 
     expect(result.current(unsavedModDefinition)).toBe(false);
   });
+
+  it("should return true for 0 clean and 0 unmatching form state and includes new form state and 1 in definition", () => {
+    const modDefinition = modDefinitionFactory();
+    const newFormState = formStateFactory();
+
+    const { result } = renderHook(() => useCompareModComponentCounts(), {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(newFormState));
+      },
+    });
+
+    expect(result.current(modDefinition, newFormState)).toBe(true);
+  });
+
+  it("should return false for 0 clean and 0 unmatching form state and includes new form state and 2 in definition", () => {
+    const modDefinition = modDefinitionFactory({
+      extensionPoints: array(modComponentDefinitionFactory, 2),
+    });
+    const formState = formStateFactory();
+
+    const { result } = renderHook(() => useCompareModComponentCounts(), {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(formState));
+      },
+    });
+
+    expect(result.current(modDefinition, formState)).toBe(false);
+  });
+
+  it("should return false for 0 clean and 0 unmatching form state and includes new form state and 0 in definition", () => {
+    const modDefinition = modDefinitionFactory({
+      extensionPoints: [],
+    });
+    const formState = formStateFactory();
+
+    const { result } = renderHook(() => useCompareModComponentCounts(), {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(formState));
+      },
+    });
+
+    expect(result.current(modDefinition, formState)).toBe(false);
+  });
+
+  it("should return false for 1 clean and 0 unmatching form state and includes new form state and 1 in definition", () => {
+    const modDefinition = modDefinitionFactory();
+    const formState = formStateFactory();
+
+    const { result } = renderHook(() => useCompareModComponentCounts(), {
+      setupRedux(dispatch) {
+        dispatch(
+          extensionsActions.installMod({
+            modDefinition,
+            screen: "extensionConsole",
+            isReinstall: false,
+          }),
+        );
+      },
+    });
+
+    expect(result.current(modDefinition, formState)).toBe(false);
+  });
 });
