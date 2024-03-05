@@ -57,10 +57,10 @@ async function activateDeployment({
     actions.installMod({
       modDefinition,
       deployment,
-      configuredDependencies: await mergeDeploymentIntegrationDependencies({
+      configuredDependencies: await mergeDeploymentIntegrationDependencies(
         deploymentModDefinitionPair,
-        locate: services.locateAllForId,
-      }),
+        services.locateAllForId,
+      ),
       // Assume validation on the backend for options
       optionsArgs: deployment.options_config,
       screen: "extensionConsole",

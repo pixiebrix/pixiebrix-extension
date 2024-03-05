@@ -262,10 +262,10 @@ async function installDeployment({
     optionsActions.installMod({
       modDefinition,
       deployment,
-      configuredDependencies: await mergeDeploymentIntegrationDependencies({
+      configuredDependencies: await mergeDeploymentIntegrationDependencies(
         deploymentModDefinitionPair,
-        locate: services.locateAllForId,
-      }),
+        services.locateAllForId,
+      ),
       // Assume backend properly validates the options
       optionsArgs: deployment.options_config as OptionsArgs,
       screen: "background",
@@ -338,10 +338,10 @@ async function canAutomaticallyInstall({
   }
 
   const personalConfigs =
-    await findLocalDeploymentConfiguredIntegrationDependencies({
+    await findLocalDeploymentConfiguredIntegrationDependencies(
       deploymentModDefinitionPair,
-      locate: locateAllForService,
-    });
+      locateAllForService,
+    );
   return personalConfigs.every(({ configs }) => configs.length === 1);
 }
 

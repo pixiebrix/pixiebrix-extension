@@ -47,10 +47,8 @@ export async function checkDeploymentPermissions({
   optionalPermissions: Manifest.OptionalPermission[];
 }): Promise<PermissionsStatus> {
   const localAuths = await findLocalDeploymentConfiguredIntegrationDependencies(
-    {
-      deploymentModDefinitionPair,
-      locate,
-    },
+    deploymentModDefinitionPair,
+    locate,
   );
 
   const integrationDependencies: IntegrationDependency[] = localAuths.flatMap(

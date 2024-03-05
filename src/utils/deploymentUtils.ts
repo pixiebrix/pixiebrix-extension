@@ -186,13 +186,10 @@ const isPersonal = (x: SanitizedIntegrationConfig) => !x.proxy;
  *
  * Excludes the PixieBrix API integration and integrations that are bound in the deployment configuration.
  */
-export async function findLocalDeploymentConfiguredIntegrationDependencies({
-  deploymentModDefinitionPair: { deployment, modDefinition },
-  locate,
-}: {
-  deploymentModDefinitionPair: DeploymentModDefinitionPair;
-  locate: Locate;
-}): Promise<
+export async function findLocalDeploymentConfiguredIntegrationDependencies(
+  { deployment, modDefinition }: DeploymentModDefinitionPair,
+  locate: Locate,
+): Promise<
   Array<
     Except<IntegrationDependency, "configId"> & {
       configs: SanitizedIntegrationConfig[];
@@ -226,13 +223,10 @@ export async function findLocalDeploymentConfiguredIntegrationDependencies({
 /**
  * Merge deployment service bindings and personal configurations to get all integration dependencies for a deployment.
  */
-export async function mergeDeploymentIntegrationDependencies({
-  deploymentModDefinitionPair: { deployment, modDefinition },
-  locate,
-}: {
-  deploymentModDefinitionPair: DeploymentModDefinitionPair;
-  locate: Locate;
-}): Promise<IntegrationDependency[]> {
+export async function mergeDeploymentIntegrationDependencies(
+  { deployment, modDefinition }: DeploymentModDefinitionPair,
+  locate: Locate,
+): Promise<IntegrationDependency[]> {
   // Note/to-do: There is some logic overlap here with findLocalDeploymentConfiguredIntegrationDependencies() above,
   // but it's tricky to extract right now
 
