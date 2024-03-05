@@ -213,7 +213,7 @@ const ModalContent: React.FC<ContentProps> = ({
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          Configure Private Integration: {integration.name}
+          Configure Local Integration: {integration.name}
         </Modal.Title>
       </Modal.Header>
 
