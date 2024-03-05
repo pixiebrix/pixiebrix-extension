@@ -20,11 +20,13 @@ import {
   getByKinds,
   syncPackages,
   find,
+  count,
 } from "@/registry/packageRegistry";
 import { produce } from "immer";
-import { type SemVerString } from "@/types/registryTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import pDefer from "p-defer";
+import { validateSemVerString } from "@/types/helpers";
 
 describe("localRegistry", () => {
   beforeEach(() => {
@@ -63,7 +65,7 @@ describe("localRegistry", () => {
   it("should return latest version", async () => {
     const definition = defaultModDefinitionFactory();
     const updated = produce(definition, (draft) => {
-      draft.metadata.version = "9.9.9" as SemVerString;
+      draft.metadata.version = validateSemVerString("9.9.9");
     });
 
     appApiMock.onGet("/api/registry/bricks/").reply(200, [updated, definition]);
@@ -77,5 +79,41 @@ describe("localRegistry", () => {
       minor: 9,
       patch: 9,
     });
+  });
+
+  it("should await sync on getByKinds", async () => {
+    const deferred = pDefer<unknown[]>();
+
+    appApiMock
+      .onGet("/api/registry/bricks/")
+      .reply(async () => deferred.promise);
+
+    const recipesPromise = getByKinds(["recipe"]);
+
+    await expect(count()).resolves.toBe(0);
+
+    deferred.resolve([200, [defaultModDefinitionFactory()]]);
+
+    // `recipesPromise` must come first since it waits on syncPackages. The `count` call doesn't wait.
+    await expect(recipesPromise).resolves.toHaveLength(1);
+    await expect(count()).resolves.toBe(1);
+  });
+
+  it("should await sync on lookup", async () => {
+    const deferred = pDefer<unknown[]>();
+
+    appApiMock
+      .onGet("/api/registry/bricks/")
+      .reply(async () => deferred.promise);
+
+    const packagePromise = find("foo/bar");
+
+    await expect(count()).resolves.toBe(0);
+
+    deferred.resolve([200, [defaultModDefinitionFactory()]]);
+
+    // `packagePromise` must come first since it waits on syncPackages. The `count` call doesn't wait.
+    await expect(packagePromise).resolves.toBeNull();
+    await expect(count()).resolves.toBe(1);
   });
 });
