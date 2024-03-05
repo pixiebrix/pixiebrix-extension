@@ -18,9 +18,8 @@
 import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 import useFlags from "@/hooks/useFlags";
 import useModPermissions from "@/mods/hooks/useModPermissions";
-import { type Deployment } from "@/types/contract";
+import { type DeploymentModDefinitionPair } from "@/types/contract";
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { type ModDefinition } from "@/types/modDefinitionTypes";
 import notify from "@/utils/notify";
 import { type Dispatch } from "@reduxjs/toolkit";
 import { useState } from "react";
@@ -35,13 +34,11 @@ type UseAutoDeployReturn = {
 };
 
 function useAutoDeploy({
-  deployments,
-  deploymentsModDefinitionMap,
+  deploymentModDefinitionPairs,
   installedExtensions,
   extensionUpdateRequired,
 }: {
-  deployments: Deployment[] | undefined;
-  deploymentsModDefinitionMap: Map<Deployment["package"]["id"], ModDefinition>;
+  deploymentModDefinitionPairs: DeploymentModDefinitionPair[];
   installedExtensions: ModComponentBase[];
   extensionUpdateRequired: boolean;
 }): UseAutoDeployReturn {
@@ -68,7 +65,7 @@ function useAutoDeploy({
       if (
         !isMounted() ||
         // Still loading deployments or already deploying
-        !deployments ||
+        !deploymentModDefinitionPairs ||
         isActivationInProgress
       ) {
         return;
@@ -76,7 +73,7 @@ function useAutoDeploy({
 
       // No deployments to deploy or user interaction required
       if (
-        deployments.length === 0 ||
+        deploymentModDefinitionPairs.length === 0 ||
         !hasPermissions ||
         extensionUpdateRequired ||
         !shouldAutoDeploy
@@ -90,8 +87,7 @@ function useAutoDeploy({
         setIsActivationInProgress(true);
         await activateDeployments({
           dispatch,
-          deployments,
-          deploymentsModDefinitionMap,
+          deploymentModDefinitionPairs,
           installed: installedExtensions,
         });
         notify.success("Updated team deployments");
@@ -102,7 +98,7 @@ function useAutoDeploy({
         setIsFetchingAndActivatingDeployments(false);
       }
     },
-    [hasPermissions, deployments],
+    [hasPermissions, deploymentModDefinitionPairs],
   );
 
   return { isAutoDeploying: isFetchingAndActivatingDeployments };

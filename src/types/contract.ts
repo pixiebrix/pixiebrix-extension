@@ -168,6 +168,11 @@ export type Deployment = Except<
   > & { package_id: RegistryId };
 };
 
+export type DeploymentModDefinitionPair = {
+  deployment: Deployment;
+  modDefinition: ModDefinition;
+};
+
 /**
  * Metadata for an editable package in the registry. See PackageMetaSerializer.
  */

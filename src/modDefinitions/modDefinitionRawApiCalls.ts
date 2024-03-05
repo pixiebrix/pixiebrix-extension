@@ -17,12 +17,17 @@
 
 import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { type Deployment, type PackageConfigDetail } from "@/types/contract";
+import {
+  type Deployment,
+  type DeploymentModDefinitionPair,
+  type PackageConfigDetail,
+} from "@/types/contract";
+import { allSettled } from "@/utils/promiseUtils";
 
 export async function fetchDeploymentModDefinition({
   package_id: registryId,
   version,
-}: Deployment["package"]): Promise<ModDefinition | undefined> {
+}: Deployment["package"]): Promise<ModDefinition> {
   // TODO: Remove this
   console.log(
     `Fetching deployment package config for ${registryId}@${version}`,
@@ -33,31 +38,20 @@ export async function fetchDeploymentModDefinition({
 
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
-    console.debug(
-      "Skipping deployments update because the extension is not linked to the PixieBrix service",
-    );
-    return;
+    throw new Error("No linked API client");
   }
 
-  const { data, status } = await client.get<PackageConfigDetail>(
+  const { data } = await client.get<PackageConfigDetail>(
     `/api/registry/bricks/${encodeURIComponent(registryId)}/`,
     { params: { version } },
   );
-
-  if (status >= 400) {
-    // If our server is acting up, check again later
-    console.debug(
-      "Skipping deployments update because request to fetch a mod definition failed",
-    );
-    return;
-  }
 
   return {
     ...data.config,
     // Cast to ModDefinition["sharing"] because the fields in ModDefinition["sharing"] are required
     // but optional in PackageConfigDetail["sharing"]
     sharing: data.sharing as ModDefinition["sharing"],
-    updated_at: data?.updated_at,
+    updated_at: data.updated_at,
   };
 }
 
@@ -65,23 +59,20 @@ export async function fetchDeploymentModDefinition({
  * Fetches the mod definitions for the given deployments.
  *
  * Notes:
- * - This func is called in the background script, and we can't use RTK query there,
+ * - We can't use RTK query in the background script, which is where this function is used,
  *   so need to fetch the mod definitions manually.
  * - Multiple deployments can theoretically use the same mod version, but that should rarely occur in practice
  *   and handling that won't improve performance significantly, so let's punt on it for now.
  */
 export async function fetchDeploymentModDefinitions(deployments: Deployment[]) {
-  return new Map(
-    await Promise.all(
-      deployments.map(
-        async (
-          deployment,
-        ): Promise<[Deployment["package"]["id"], ModDefinition]> => [
-          deployment.package.id,
-          // TODO: check what happens if API call returns 400, ideally it should just skip over that item
-          await fetchDeploymentModDefinition(deployment.package),
-        ],
-      ),
+  const { fulfilled } = await allSettled(
+    deployments.map(
+      async (deployment): Promise<DeploymentModDefinitionPair> => ({
+        deployment,
+        modDefinition: await fetchDeploymentModDefinition(deployment.package),
+      }),
     ),
+    { catch: "ignore" },
   );
+  return fulfilled;
 }

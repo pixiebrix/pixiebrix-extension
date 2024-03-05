@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Deployment, type Me } from "@/types/contract";
+import {
+  type Deployment,
+  type DeploymentModDefinitionPair,
+  type Me,
+} from "@/types/contract";
 import { isEmpty, partition } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { getUUID } from "@/telemetry/telemetryHelpers";
@@ -64,7 +68,6 @@ import { type UUID } from "@/types/stringTypes";
 import { type UnresolvedModComponent } from "@/types/modComponentTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
-import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { Events } from "@/telemetry/events";
 import { allSettled } from "@/utils/promiseUtils";
@@ -226,19 +229,18 @@ async function uninstallRecipe(
 async function installDeployment({
   optionsState,
   editorState,
-  deployment,
-  deploymentModDefinition,
+  deploymentModDefinitionPair,
 }: {
   optionsState: ModComponentState;
   editorState: EditorState | undefined;
-  deployment: Deployment;
-  deploymentModDefinition: ModDefinition;
+  deploymentModDefinitionPair: DeploymentModDefinitionPair;
 }): Promise<{
   options: ModComponentState;
   editor: EditorState | undefined;
 }> {
   let options = optionsState;
   let editor = editorState;
+  const { deployment, modDefinition } = deploymentModDefinitionPair;
 
   const isReinstall = optionsState.extensions.some(
     (x) => x._deployment?.id === deployment.id,
@@ -258,11 +260,10 @@ async function installDeployment({
   options = optionsReducer(
     options,
     optionsActions.installMod({
-      modDefinition: deploymentModDefinition,
+      modDefinition,
       deployment,
       configuredDependencies: await mergeDeploymentIntegrationDependencies({
-        deployment,
-        deploymentModDefinition,
+        deploymentModDefinitionPair,
         locate: services.locateAllForId,
       }),
       // Assume backend properly validates the options
@@ -282,30 +283,22 @@ async function installDeployment({
 
 /**
  * Install all deployments
- * @param deployments deployments that PixieBrix already has permission to run
- * @param deploymentsModDefinitionMap map of deployment package UUIDs to mod definitions
+ * @param deploymentModDefinitionPairs deployments that PixieBrix already has permission to run
  */
-async function installDeployments({
-  deployments,
-  deploymentsModDefinitionMap,
-}: {
-  deployments: Deployment[];
-  deploymentsModDefinitionMap: Map<Deployment["package"]["id"], ModDefinition>;
-}): Promise<void> {
+async function installDeployments(
+  deploymentModDefinitionPairs: DeploymentModDefinitionPair[],
+): Promise<void> {
   let [optionsState, editorState] = await Promise.all([
     getModComponentState(),
     getEditorState(),
   ]);
 
-  for (const deployment of deployments) {
+  for (const deploymentModDefinitionPair of deploymentModDefinitionPairs) {
     // eslint-disable-next-line no-await-in-loop -- running reducer, need to update states serially
     const result = await installDeployment({
       optionsState,
       editorState,
-      deployment,
-      deploymentModDefinition: deploymentsModDefinitionMap.get(
-        deployment.package.id,
-      ),
+      deploymentModDefinitionPair,
     });
     optionsState = result.options;
     editorState = result.editor;
@@ -316,8 +309,7 @@ async function installDeployments({
 }
 
 type DeploymentConstraint = {
-  deployment: Deployment;
-  deploymentModDefinition: ModDefinition;
+  deploymentModDefinitionPair: DeploymentModDefinitionPair;
   hasPermissions: boolean;
   extensionVersion: SemVer;
 };
@@ -331,8 +323,7 @@ type DeploymentConstraint = {
  * 3. The user has exactly one (1) personal configuration for each unbound service for the deployment
  */
 async function canAutomaticallyInstall({
-  deployment,
-  deploymentModDefinition,
+  deploymentModDefinitionPair,
   hasPermissions,
   extensionVersion,
 }: DeploymentConstraint): Promise<boolean> {
@@ -340,15 +331,15 @@ async function canAutomaticallyInstall({
     return false;
   }
 
-  const requiredRange = deploymentModDefinition.metadata.extensionVersion;
+  const requiredRange =
+    deploymentModDefinitionPair.modDefinition.metadata.extensionVersion;
   if (requiredRange && !satisfies(extensionVersion, requiredRange)) {
     return false;
   }
 
   const personalConfigs =
     await findLocalDeploymentConfiguredIntegrationDependencies({
-      deployment,
-      deploymentModDefinition,
+      deploymentModDefinitionPair,
       locate: locateAllForService,
     });
   return personalConfigs.every(({ configs }) => configs.length === 1);
@@ -466,10 +457,6 @@ export async function updateDeployments(): Promise<void> {
   // Always get the freshest options slice from the local storage
   const { extensions } = await getModComponentState();
 
-  // Version to report to the server. The update check happens via isUpdateAvailable below
-  const { version: extensionVersionString } = browser.runtime.getManifest();
-  const extensionVersion = parseSemVer(extensionVersionString);
-
   // This is the "heartbeat". The old behavior was to only send if the user had at least one deployment installed.
   // Now we're always sending in order to help team admins understand any gaps between number of registered users
   // and amount of activity when using deployments
@@ -581,11 +568,26 @@ export async function updateDeployments(): Promise<void> {
     return;
   }
 
-  const deploymentsModDefinitionMap =
-    await fetchDeploymentModDefinitions(deployments);
+  const deploymentModDefinitionPairs =
+    await fetchDeploymentModDefinitions(updatedDeployments);
   // TODO: remove this
-  console.log(deploymentsModDefinitionMap);
+  console.log(deploymentModDefinitionPairs);
 
+  // Extract into a function because we should only be using deploymentModDefinitionPairs from now on.
+  // We shouldn't need deployments or updatedDeployments anymore.
+  await updateDeploymentModDefinitionPairs({
+    deploymentModDefinitionPairs,
+    profile,
+  });
+}
+
+async function updateDeploymentModDefinitionPairs({
+  deploymentModDefinitionPairs,
+  profile,
+}: {
+  deploymentModDefinitionPairs: DeploymentModDefinitionPair[];
+  profile: Me;
+}) {
   // `clipboardWrite` is not strictly required to use the clipboard brick, so allow it to auto-install.
   // Behind a feature flag in case it causes problems for enterprise customers.
   // Could use browser.runtime.getManifest().optional_permissions here, but that also technically supports the Origin
@@ -596,30 +598,31 @@ export async function updateDeployments(): Promise<void> {
       : ["clipboardWrite"];
 
   const deploymentRequirements = await Promise.all(
-    updatedDeployments.map(async (deployment) => ({
-      deployment,
+    deploymentModDefinitionPairs.map(async (deploymentModDefinitionPair) => ({
+      deploymentModDefinitionPair,
       ...(await checkDeploymentPermissions({
-        deployment,
-        deploymentModDefinition: deploymentsModDefinitionMap.get(
-          deployment.package.id,
-        ),
+        deploymentModDefinitionPair,
         locate: locateAllForService,
         optionalPermissions,
       })),
     })),
   );
 
+  // Version to report to the server.
+  const { version: extensionVersionString } = browser.runtime.getManifest();
+  const extensionVersion = parseSemVer(extensionVersionString);
+
   const installability = await Promise.all(
-    deploymentRequirements.map(async (requirement) => ({
-      deployment: requirement.deployment,
-      isAutomatic: await canAutomaticallyInstall({
-        ...requirement,
-        extensionVersion,
-        deploymentModDefinition: deploymentsModDefinitionMap.get(
-          requirement.deployment.package.id,
-        ),
+    deploymentRequirements.map(
+      async ({ deploymentModDefinitionPair, hasPermissions }) => ({
+        deploymentModDefinitionPair,
+        isAutomatic: await canAutomaticallyInstall({
+          deploymentModDefinitionPair,
+          hasPermissions,
+          extensionVersion,
+        }),
       }),
-    })),
+    ),
   );
 
   const [automatic, manual] = partition(installability, (x) => x.isAutomatic);
@@ -628,10 +631,9 @@ export async function updateDeployments(): Promise<void> {
 
   if (automatic.length > 0) {
     try {
-      await installDeployments({
-        deployments: automatic.map((x) => x.deployment),
-        deploymentsModDefinitionMap,
-      });
+      await installDeployments(
+        automatic.map((x) => x.deploymentModDefinitionPair),
+      );
     } catch (error) {
       reportError(error);
       automaticError = true;

@@ -17,7 +17,7 @@
 
 // Split from deploymentUtils.ts to avoid circular dependency
 
-import { type Deployment } from "@/types/contract";
+import { type DeploymentModDefinitionPair } from "@/types/contract";
 import {
   findLocalDeploymentConfiguredIntegrationDependencies,
   type Locate,
@@ -26,7 +26,6 @@ import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPer
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import type { Manifest } from "webextension-polyfill";
-import { type ModDefinition } from "@/types/modDefinitionTypes";
 
 /**
  * Return permissions required to activate a deployment.
@@ -39,20 +38,17 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
  * @see mergePermissionsStatuses
  */
 export async function checkDeploymentPermissions({
-  deployment,
-  deploymentModDefinition,
+  deploymentModDefinitionPair,
   locate,
   optionalPermissions,
 }: {
-  deployment: Deployment;
-  deploymentModDefinition: ModDefinition;
+  deploymentModDefinitionPair: DeploymentModDefinitionPair;
   locate: Locate;
   optionalPermissions: Manifest.OptionalPermission[];
 }): Promise<PermissionsStatus> {
   const localAuths = await findLocalDeploymentConfiguredIntegrationDependencies(
     {
-      deployment,
-      deploymentModDefinition,
+      deploymentModDefinitionPair,
       locate,
     },
   );
@@ -68,7 +64,7 @@ export async function checkDeploymentPermissions({
   );
 
   return checkModDefinitionPermissions(
-    deploymentModDefinition,
+    deploymentModDefinitionPair.modDefinition,
     integrationDependencies,
     {
       optionalPermissions,
