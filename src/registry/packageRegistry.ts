@@ -130,6 +130,8 @@ export const syncPackages = memoizeUntilSettled(async () => {
   // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
   const timestamp = new Date();
 
+  // XXX: we currently don't have to worry about consecutive calls where the first call is unauthenticated and the
+  // second is after the user authenticates, because the extension reloads on linking
   const client = await getApiClient();
   // In the future, use the paginated endpoint?
   const { data } = await client.get<RegistryPackage[]>("/api/registry/bricks/");
@@ -299,6 +301,7 @@ export async function find(id: string): Promise<Nullishable<PackageVersion>> {
 
   try {
     const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
+
     return latestVersion(versions);
   } finally {
     db.close();
