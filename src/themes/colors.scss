@@ -65,8 +65,9 @@ $W70: #b57900;
 *
 * The following color variables are colors that belong to no particular design system
 */
+$react-select-border-color: hsl(0, 0%, 80%);
 $sidebar-light-menu-icon-color: #bba8bff5;
-$input-border-color: hsl(0, 0%, 80%); // Matches react-select's border
+$input-border-color: $react-select-border-color;
 $neutral-surface-color: #f9f8fa;
 $neutral-surface-color-hover: #e9e6ed;
 $popover-header: #ddd;
