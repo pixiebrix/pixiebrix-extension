@@ -57,12 +57,16 @@ export async function initPerformanceMonitoring(): Promise<void> {
     return;
   }
 
-  if (!applicationId || !clientToken) {
-    console.warn("Datadog application ID or client token not configured");
+  const { version_name } = browser.runtime.getManifest();
+
+  if (!applicationId || !clientToken || !version_name || !environment) {
+    console.warn(
+      "Required environment variables for initializing Datadog missing:",
+      { applicationId, clientToken, version_name, environment },
+    );
     return;
   }
 
-  const { version_name } = browser.runtime.getManifest();
   const baseUrl = await getBaseURL();
 
   // https://docs.datadoghq.com/real_user_monitoring/browser/

@@ -50,6 +50,7 @@ describe("initPerformanceMonitoring", () => {
     jest.mocked(flagOn).mockResolvedValue(true);
     process.env.DATADOG_APPLICATION_ID = "applicationId";
     process.env.DATADOG_CLIENT_TOKEN = "clientToken";
+    process.env.ENVIRONMENT = "local";
     jest.mocked(getBaseURL).mockResolvedValue("https://example.com");
     browser.runtime.getManifest = jest
       .fn()
@@ -66,7 +67,7 @@ describe("initPerformanceMonitoring", () => {
       clientToken: "clientToken",
       site: "datadoghq.com",
       service: "pixiebrix-browser-extension",
-      env: process.env.ENVIRONMENT,
+      env: "local",
       version: expect.any(String),
       sessionSampleRate: 100,
       sessionReplaySampleRate: 20,
