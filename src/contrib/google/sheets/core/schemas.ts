@@ -29,7 +29,8 @@ export const SPREADSHEET_FIELD_DESCRIPTION =
  */
 export const SHEET_FIELD_REF_SCHEMA: Schema = {
   $ref: "https://app.pixiebrix.com/schemas/googleSheetId#",
-  // XXX: provide base type in-case $ref cannot be dereferenced. Why is this necessary?
+  // XXX: provide base type in-case $ref cannot be dereferenced / or the field context is not $ref-aware.
+  //  Why is including type necessary?
   type: "string",
 };
 

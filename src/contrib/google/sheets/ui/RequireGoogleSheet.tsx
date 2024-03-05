@@ -54,6 +54,7 @@ const RequireGoogleSheet: React.FC<{
 }> = ({ blockConfigPath, children }) => {
   const googleAccountAsyncState = useGoogleAccount();
   const spreadsheetIdAsyncState = useSpreadsheetId(blockConfigPath);
+
   const [spreadsheetError, setSpreadsheetError] = useState<string | null>(null);
   const [isRetrying, setIsRetrying] = useState(false);
   const retry = useCallback(async () => {

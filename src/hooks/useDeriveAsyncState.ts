@@ -95,6 +95,9 @@ const promiseSlice = createSlice({
 /**
  * Returns a new AsyncState that is asynchronously derived from the given AsyncStates.
  *
+ * FOOT GUN: the AsyncStates provided must NOT allow `undefined` for `data` in the `isSuccess` state, because `data`
+ * is used to determine when to re-derive the state.
+ *
  * The hook does not support a "refetch" method, as it's not currently possible to detect when the dependencies are
  * done re-fetching if their `data` field hasn't changed. If needed in the future, could try implementing by adding
  * fulfillment timestamps or a nonce on AsyncState.
@@ -130,6 +133,7 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
     checkAsyncStateInvariants(state);
   }
 
+  // Warning
   const datums = states.map((x) => x.data);
 
   // Effect to automatically refetch when stated dependencies change
