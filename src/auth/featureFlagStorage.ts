@@ -27,7 +27,7 @@ export async function fetchFeatureFlags(): Promise<string[]> {
   expectContext("background");
   const client = await getApiClient();
   const { data } = await client.get<components["schemas"]["Me"]>("/api/me/");
-  return [...data.flags];
+  return [...(data?.flags ?? [])];
 }
 
 const featureFlags = new CachedFunction("getFeatureFlags", {

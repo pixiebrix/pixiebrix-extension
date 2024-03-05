@@ -78,7 +78,8 @@ export function isValidUrl(
   }
 
   try {
-    const url = new URL(value);
+    // eslint-disable-next-line -- string null checks thinks this is still nullishable
+    const url = new URL(value as string);
     return protocols.includes(url.protocol);
   } catch {
     return false;

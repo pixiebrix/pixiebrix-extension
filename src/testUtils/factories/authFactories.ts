@@ -33,6 +33,7 @@ import {
   type RequiredMeOrganizationResponse,
   type RequiredMePartnerResponse,
 } from "@/data/service/responseTypeHelpers";
+import { SetRequired } from "type-fest";
 
 function emailFactory(n: number): string {
   return `user${n}@test.com`;
@@ -138,7 +139,7 @@ export const meApiResponseFactory = define<components["schemas"]["Me"]>({
 
 export const meWithPartnerApiResponseFactory = extend<
   components["schemas"]["Me"],
-  RequiredMePartnerResponse
+  SetRequired<components["schemas"]["Me"], "partner">
 >(meApiResponseFactory, {
   partner(n: number): RequiredMePartnerResponse {
     return {
