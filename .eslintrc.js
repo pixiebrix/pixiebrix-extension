@@ -31,6 +31,16 @@ module.exports = {
     "@shopify/prefer-module-scope-constants": "error",
     "@shopify/jest/no-snapshots": "warn",
     "react/no-array-index-key": "error",
+    "react/no-unstable-nested-components": ["error", { allowAsProps: true }],
+    "react/forbid-elements": [
+      "error",
+      {
+        forbid: [
+          { element: "b", message: "use <strong> instead" },
+          { element: "i", message: "use <em> instead" },
+        ],
+      },
+    ],
     "local-rules/noNullRtkQueryArgs": "error",
     "local-rules/noInvalidDataTestId": "error",
     "local-rules/noExpressionLiterals": "error",
