@@ -37,6 +37,7 @@ import {
   formStateFactory,
 } from "@/testUtils/factories/pageEditorFactories";
 import { brickConfigFactory } from "@/testUtils/factories/brickFactories";
+import { validateRegistryId } from "@/types/helpers";
 
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
@@ -168,7 +169,10 @@ test.each(
 });
 
 test("can preview pipeline element with bricks", () => {
-  const testBrick = brickConfigFactory();
+  const testBrick = brickConfigFactory({
+    // Consistent registry id for snapshot testing
+    id: validateRegistryId("test/brick"),
+  });
   const markdownBlock = new MarkdownRenderer();
   const markdownConfig = brickConfigFactory({
     id: markdownBlock.id,

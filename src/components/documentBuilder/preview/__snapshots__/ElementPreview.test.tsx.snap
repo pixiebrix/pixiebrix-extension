@@ -472,7 +472,7 @@ exports[`can preview pipeline element with bricks 1`] = `
         Brick
       </h3>
       <p>
-        testing/block-17
+        test/brick
       </p>
       <p>
         @pixiebrix/markdown

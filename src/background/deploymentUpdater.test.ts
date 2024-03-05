@@ -429,7 +429,7 @@ describe("updateDeployments", () => {
       .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
     // Make sure we're testing the case where getEditorState() returns undefined
-    expect(await getEditorState()).toBeUndefined();
+    await expect(getEditorState()).resolves.toBeUndefined();
 
     await updateDeployments();
 

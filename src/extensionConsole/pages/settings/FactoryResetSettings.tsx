@@ -55,10 +55,10 @@ const FactoryResetSettings: React.FunctionComponent = () => {
       <Card.Body className="text-danger">
         <p className="card-text">
           Click here to reset your local PixieBrix data.{" "}
-          <b>
+          <strong>
             This will deactivate any mods you&apos;ve activated and reset all
             browser extension settings.
-          </b>
+          </strong>
         </p>
         <AsyncButton
           variant="danger"

@@ -16,8 +16,8 @@
  */
 
 import {
-  BASE_SHEET_SCHEMA,
-  SHEET_SERVICE_SCHEMA,
+  SHEET_FIELD_REF_SCHEMA,
+  SHEET_INTEGRATION_SCHEMA,
 } from "@/contrib/google/sheets/core/schemas";
 import { inputProperties as httpInputProperties } from "@/bricks/transformers/remoteMethod";
 import extractIntegrationIdsFromSchema from "@/integrations/util/extractIntegrationIdsFromSchema";
@@ -34,7 +34,7 @@ describe("extractIntegrationIdsFromSchema", () => {
   });
 
   it("can extract from ref", () => {
-    expect(extractIntegrationIdsFromSchema(SHEET_SERVICE_SCHEMA)).toEqual([
+    expect(extractIntegrationIdsFromSchema(SHEET_INTEGRATION_SCHEMA)).toEqual([
       "google/sheet",
     ]);
   });
@@ -45,7 +45,7 @@ describe("extractIntegrationIdsFromSchema", () => {
 
   it("does not error if value is not found in sub-schema", () => {
     const schema = {
-      oneOf: [SHEET_SERVICE_SCHEMA, BASE_SHEET_SCHEMA],
+      oneOf: [SHEET_INTEGRATION_SCHEMA, SHEET_FIELD_REF_SCHEMA],
     };
 
     expect(extractIntegrationIdsFromSchema(schema)).toEqual(["google/sheet"]);

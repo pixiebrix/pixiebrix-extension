@@ -18,13 +18,11 @@
 import { render } from "@/pageEditor/testHelpers";
 import React from "react";
 import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
-import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import { services, sheets } from "@/background/messenger/api";
 import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { act, screen } from "@testing-library/react";
 import { type FormikValues } from "formik";
-import { dereference } from "@/validators/generic";
 import { type UUID } from "@/types/stringTypes";
 import {
   integrationDependencyFactory,
@@ -35,6 +33,7 @@ import { type FileList } from "@/contrib/google/sheets/core/types";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import selectEvent from "react-select-event";
+import { SHEET_FIELD_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 
 const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
 
@@ -93,12 +92,13 @@ const fileListResponse: FileList = {
 };
 
 const renderWithValues = async (initialValues: FormikValues) => {
-  const baseSchema = await dereference(BASE_SHEET_SCHEMA);
-
   // eslint-disable-next-line testing-library/no-unnecessary-act -- Need this for side effects to avoid console error
   await act(async () => {
     render(
-      <SpreadsheetPickerWidget name="spreadsheetId" schema={baseSchema} />,
+      <SpreadsheetPickerWidget
+        name="spreadsheetId"
+        schema={SHEET_FIELD_SCHEMA}
+      />,
       {
         initialValues,
         wrapper: IntegrationsSliceModIntegrationsContextAdapter,
@@ -136,7 +136,7 @@ describe("SpreadsheetPickerWidget", () => {
       selectEvent.openMenu(selectInput);
     });
 
-    expect(await screen.findByText("No options")).toBeVisible();
+    await expect(screen.findByText("No options")).resolves.toBeVisible();
   });
 
   test("given google pkce dependency and string spreadsheetId, renders dropdown with test spreadsheet option selected", async () => {

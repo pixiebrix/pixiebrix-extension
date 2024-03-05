@@ -250,12 +250,12 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
     });
 
     const locator = async () => [] as SanitizedIntegrationConfig[];
-    expect(
-      await findLocalDeploymentConfiguredIntegrationDependencies(
+    await expect(
+      findLocalDeploymentConfiguredIntegrationDependencies(
         { deployment, modDefinition },
         locator,
       ),
-    ).toStrictEqual([
+    ).resolves.toStrictEqual([
       {
         integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         outputKey: "foo",
@@ -283,12 +283,12 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
     });
 
     const locator = async () => [auth];
-    expect(
-      await findLocalDeploymentConfiguredIntegrationDependencies(
+    await expect(
+      findLocalDeploymentConfiguredIntegrationDependencies(
         { deployment, modDefinition },
         locator,
       ),
-    ).toStrictEqual([
+    ).resolves.toStrictEqual([
       {
         integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         outputKey: "foo",
@@ -320,12 +320,12 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
     });
 
     const locator = async () => [auth];
-    expect(
-      await findLocalDeploymentConfiguredIntegrationDependencies(
+    await expect(
+      findLocalDeploymentConfiguredIntegrationDependencies(
         { deployment, modDefinition },
         locator,
       ),
-    ).toBeArrayOfSize(0);
+    ).resolves.toBeArrayOfSize(0);
   });
 
   test("exclude pixiebrix integration", async () => {
@@ -345,12 +345,12 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
     });
 
     const locator = async () => [auth];
-    expect(
-      await findLocalDeploymentConfiguredIntegrationDependencies(
+    await expect(
+      findLocalDeploymentConfiguredIntegrationDependencies(
         { deployment, modDefinition },
         locator,
       ),
-    ).toBeArrayOfSize(0);
+    ).resolves.toBeArrayOfSize(0);
   });
 });
 
@@ -377,12 +377,12 @@ describe("mergeDeploymentIntegrationDependencies", () => {
     });
 
     const locator = async () => [auth];
-    expect(
-      await mergeDeploymentIntegrationDependencies(
+    await expect(
+      mergeDeploymentIntegrationDependencies(
         { deployment, modDefinition },
         locator,
       ),
-    ).toStrictEqual([
+    ).resolves.toStrictEqual([
       {
         integrationId: registryId,
         outputKey: "foo",
@@ -410,12 +410,12 @@ describe("mergeDeploymentIntegrationDependencies", () => {
     });
 
     const locator = async () => [auth];
-    expect(
-      await mergeDeploymentIntegrationDependencies(
+    await expect(
+      mergeDeploymentIntegrationDependencies(
         { deployment, modDefinition },
         locator,
       ),
-    ).toStrictEqual([
+    ).resolves.toStrictEqual([
       {
         integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         outputKey: "foo",
@@ -500,12 +500,12 @@ describe("mergeDeploymentIntegrationDependencies", () => {
     });
 
     const locator = async () => [auth];
-    expect(
-      await mergeDeploymentIntegrationDependencies(
+    await expect(
+      mergeDeploymentIntegrationDependencies(
         { deployment, modDefinition },
         locator,
       ),
-    ).toStrictEqual([
+    ).resolves.toStrictEqual([
       {
         integrationId: PIXIEBRIX_INTEGRATION_ID,
         outputKey: "pixiebrix",
