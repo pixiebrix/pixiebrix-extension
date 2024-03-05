@@ -29,7 +29,7 @@ type SelectorMatchFieldProps = {
 const defaultDescription = (
   <span>
     Selectors restricting when this starter brick runs. If provided, at least
-    one of the selectors must match <i>on page load</i> for this starter brick
+    one of the selectors must match <em>on page load</em> for this starter brick
     to run.
   </span>
 );

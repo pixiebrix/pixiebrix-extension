@@ -75,7 +75,7 @@ const SettingToggle: React.FunctionComponent<SettingToggleProps> = ({
     <Form.Group controlId={controlId}>
       <div>
         <Form.Label>
-          {label}: <i>{isEnabled ? "Enabled" : "Disabled"}</i>
+          {label}: <em>{isEnabled ? "Enabled" : "Disabled"}</em>
         </Form.Label>
         {description && (
           <Form.Text muted className="mb-2">
