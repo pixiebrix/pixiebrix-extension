@@ -30,10 +30,6 @@ import {
 import type { UserData } from "@/auth/authTypes";
 import { flagOn } from "@/auth/featureFlagStorage";
 
-const environment = process.env.ENVIRONMENT;
-const applicationId = process.env.DATADOG_APPLICATION_ID;
-const clientToken = process.env.DATADOG_CLIENT_TOKEN;
-
 const RUM_FLAG = "telemetry-performance";
 
 /**
@@ -41,6 +37,10 @@ const RUM_FLAG = "telemetry-performance";
  * any user interactions or network requests are made.
  */
 export async function initPerformanceMonitoring(): Promise<void> {
+  const environment = process.env.ENVIRONMENT;
+  const applicationId = process.env.DATADOG_APPLICATION_ID;
+  const clientToken = process.env.DATADOG_CLIENT_TOKEN;
+
   // Require the extension context because we don't want to track performance of the host sites
   expectContext("extension");
 
