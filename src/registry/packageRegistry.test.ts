@@ -20,11 +20,13 @@ import {
   getByKinds,
   syncPackages,
   find,
+  count,
 } from "@/registry/packageRegistry";
 import { produce } from "immer";
 import { type SemVerString } from "@/types/registryTypes";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import pDefer from "p-defer";
 
 describe("localRegistry", () => {
   beforeEach(() => {
@@ -77,5 +79,37 @@ describe("localRegistry", () => {
       minor: 9,
       patch: 9,
     });
+  });
+
+  it("should await sync on getByKinds", async () => {
+    const deferred = pDefer<unknown[]>();
+
+    appApiMock
+      .onGet("/api/registry/bricks/")
+      .reply(async () => deferred.promise);
+
+    const recipesPromise = getByKinds(["recipe"]);
+
+    await expect(count()).resolves.toBe(0);
+
+    deferred.resolve([defaultModDefinitionFactory()]);
+
+    await recipesPromise;
+  });
+
+  it("should await sync on lookup", async () => {
+    const deferred = pDefer<unknown[]>();
+
+    appApiMock
+      .onGet("/api/registry/bricks/")
+      .reply(async () => deferred.promise);
+
+    const packagePromise = find("foo/bar");
+
+    await expect(count()).resolves.toBe(0);
+
+    deferred.resolve([]);
+
+    await expect(packagePromise).resolves.toBeNull();
   });
 });

@@ -122,46 +122,6 @@ function latestVersion(
 }
 
 /**
- * Return all packages for the given kinds
- * @param kinds kinds of bricks
- */
-export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
-  await ensurePopulated();
-
-  const db = await openRegistryDB();
-
-  try {
-    const bricks = flatten(
-      await Promise.all(
-        kinds.map(async (kind) =>
-          db.getAllFromIndex(BRICK_STORE, "kind", kind),
-        ),
-      ),
-    );
-
-    return Object.entries(groupBy(bricks, (x) => x.id)).map(
-      ([, versions]) =>
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- there's at least one element per group
-        latestVersion(versions)!,
-    );
-  } finally {
-    db.close();
-  }
-}
-
-/**
- * Clear the brick definition registry
- */
-export async function clear(): Promise<void> {
-  const db = await openRegistryDB();
-  try {
-    await db.clear(BRICK_STORE);
-  } finally {
-    db.close();
-  }
-}
-
-/**
  * Replace the local database with the packages from the registry.
  *
  * Memoized to avoid multiple network requests across tabs.
@@ -188,7 +148,8 @@ export const syncPackages = memoizeUntilSettled(async () => {
  * Helper to ensure the IDB has synced packages. DOES NOT ensure the database has the latest package definitions --
  * i.e., does not await any inflight syncPackages call if the database is already populated.
  */
-async function ensurePopulated(): Promise<void> {
+// Memoize for slight performance gain for multiple concurrent callers
+const ensurePopulated = memoizeUntilSettled(async () => {
   // Safe to assume everyone has access to at least one package
   if ((await count()) > 0) {
     // Already populated
@@ -204,6 +165,18 @@ async function ensurePopulated(): Promise<void> {
   } catch {
     // NOP - call-site will handle uninitialized state
   }
+});
+
+/**
+ * Clear the brick definition registry.
+ */
+export async function clear(): Promise<void> {
+  const db = await openRegistryDB();
+  try {
+    await db.clear(BRICK_STORE);
+  } finally {
+    db.close();
+  }
 }
 
 /**
@@ -217,6 +190,34 @@ export async function recreateDB(): Promise<void> {
 
   // Re-populate the packages from the remote registry
   await syncPackages();
+}
+
+/**
+ * Return all packages for the given kinds
+ * @param kinds kinds of bricks
+ */
+export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
+  await ensurePopulated();
+
+  const db = await openRegistryDB();
+
+  try {
+    const bricks = flatten(
+      await Promise.all(
+        kinds.map(async (kind) =>
+          db.getAllFromIndex(BRICK_STORE, "kind", kind),
+        ),
+      ),
+    );
+
+    return Object.entries(groupBy(bricks, (x) => x.id)).map(
+      ([, versions]) =>
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- there's at least one element per group
+        latestVersion(versions)!,
+    );
+  } finally {
+    db.close();
+  }
 }
 
 /**
