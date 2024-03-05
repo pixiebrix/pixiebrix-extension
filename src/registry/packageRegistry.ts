@@ -122,10 +122,85 @@ function latestVersion(
 }
 
 /**
+ * Replace the local database with the packages from the registry.
+ *
+ * Memoized to avoid multiple network requests across tabs.
+ */
+export const syncPackages = memoizeUntilSettled(async () => {
+  // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
+  const timestamp = new Date();
+
+  // XXX: we currently don't have to worry about consecutive calls where the first call is unauthenticated and the
+  // second is after the user authenticates, because the extension reloads on linking
+  const client = await getApiClient();
+  // In the future, use the paginated endpoint?
+  const { data } = await client.get<RegistryPackage[]>("/api/registry/bricks/");
+
+  const packages = data.map((x) => ({
+    ...parsePackage(x),
+    // Use the timestamp the call was initiated, not the timestamp received. That prevents missing any updates
+    // that were made during the call.
+    timestamp,
+  }));
+
+  await replaceAll(packages);
+});
+
+/**
+ * Helper to ensure the IDB has synced packages. DOES NOT ensure the database has the latest package definitions --
+ * i.e., does not await any inflight syncPackages call if the database is already populated.
+ */
+// Memoize for slight performance gain for multiple concurrent callers
+const ensurePopulated = memoizeUntilSettled(async () => {
+  // Safe to assume everyone has access to at least one package
+  if ((await count()) > 0) {
+    // Already populated
+    return;
+  }
+
+  // XXX: there's a small chance of a race here, where an existing syncPackages call finishes after the count()
+  // call resolves, before executes switches back to this method.
+
+  try {
+    // `syncPackages` is memoized, so safe to call multiple times;
+    await syncPackages();
+  } catch {
+    // NOP - call-site will handle uninitialized state
+  }
+});
+
+/**
+ * Clear the brick definition registry.
+ */
+export async function clear(): Promise<void> {
+  const db = await openRegistryDB();
+  try {
+    await db.clear(BRICK_STORE);
+  } finally {
+    db.close();
+  }
+}
+
+/**
+ * Deletes and recreates the brick definition database.
+ */
+export async function recreateDB(): Promise<void> {
+  await deleteDatabase(DATABASE_NAME);
+
+  // Open the database to recreate it
+  await openRegistryDB();
+
+  // Re-populate the packages from the remote registry
+  await syncPackages();
+}
+
+/**
  * Return all packages for the given kinds
  * @param kinds kinds of bricks
  */
 export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
+  await ensurePopulated();
+
   const db = await openRegistryDB();
 
   try {
@@ -148,57 +223,10 @@ export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
 }
 
 /**
- * Clear the brick definition registry
- */
-export async function clear(): Promise<void> {
-  const db = await openRegistryDB();
-  try {
-    await db.clear(BRICK_STORE);
-  } finally {
-    db.close();
-  }
-}
-
-/**
- * Replace the local database with the packages from the registry.
- *
- * Memoized to avoid multiple network requests across tabs.
- */
-export const syncPackages = memoizeUntilSettled(async () => {
-  // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
-  const timestamp = new Date();
-
-  const client = await getApiClient();
-  // In the future, use the paginated endpoint?
-  const { data } = await client.get<RegistryPackage[]>("/api/registry/bricks/");
-
-  const packages = data.map((x) => ({
-    ...parsePackage(x),
-    // Use the timestamp the call was initiated, not the timestamp received. That prevents missing any updates
-    // that were made during the call.
-    timestamp,
-  }));
-
-  await replaceAll(packages);
-});
-
-/**
- * Deletes and recreates the brick definition database.
- */
-export async function recreateDB(): Promise<void> {
-  await deleteDatabase(DATABASE_NAME);
-
-  // Open the database to recreate it
-  await openRegistryDB();
-
-  // Re-populate the packages from the remote registry
-  await syncPackages();
-}
-
-/**
  * Return the number of records in the registry.
  */
 export async function count(): Promise<number> {
+  // Don't need to ensure populated, because we're just counting current records
   const db = await openRegistryDB();
   try {
     return await db.count(BRICK_STORE);
@@ -267,10 +295,13 @@ export async function find(id: string): Promise<Nullishable<PackageVersion>> {
     throw new Error("invalid brick id");
   }
 
+  await ensurePopulated();
+
   const db = await openRegistryDB();
 
   try {
     const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
+
     return latestVersion(versions);
   } finally {
     db.close();
