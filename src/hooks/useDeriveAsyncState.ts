@@ -26,20 +26,24 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import useIsMounted from "@/hooks/useIsMounted";
 import { useReducer, useRef } from "react";
 import { useAsyncEffect } from "use-async-effect";
-import { checkAsyncStateInvariants } from "@/utils/asyncStateUtils";
+import {
+  checkAsyncStateInvariants,
+  uninitializedAsyncStateFactory,
+} from "@/utils/asyncStateUtils";
 import { type UUID } from "@/types/stringTypes";
 import { uuidv4 } from "@/types/helpers";
 
-const initialAsyncState: AsyncState = {
-  data: undefined,
-  currentData: undefined,
-  isUninitialized: true,
-  isLoading: false,
-  isFetching: false,
-  isError: false,
-  isSuccess: false,
-  error: undefined,
-};
+const initialAsyncState: AsyncState = uninitializedAsyncStateFactory();
+
+function checkStateSuccessInvariant(state: AsyncState): void {
+  if (state.isSuccess && state.data === undefined) {
+    // The AsyncStates provided must NOT allow `undefined` for `data` in the `isSuccess` state, because `data`
+    // is used to determine when to re-derive the state.
+    throw new Error(
+      "useMergeAsyncState: `data` must not be undefined in `isSuccess` state",
+    );
+  }
+}
 
 const warnNullValueOnce = once(() => {
   // This will warn once per module -- not once per instance of useAsyncState. We might want to track in the slice
@@ -95,9 +99,6 @@ const promiseSlice = createSlice({
 /**
  * Returns a new AsyncState that is asynchronously derived from the given AsyncStates.
  *
- * FOOT GUN: the AsyncStates provided must NOT allow `undefined` for `data` in the `isSuccess` state, because `data`
- * is used to determine when to re-derive the state.
- *
  * The hook does not support a "refetch" method, as it's not currently possible to detect when the dependencies are
  * done re-fetching if their `data` field hasn't changed. If needed in the future, could try implementing by adding
  * fulfillment timestamps or a nonce on AsyncState.
@@ -129,11 +130,13 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
   // @ts-expect-error -- getting args except last element
   const states: FetchableAsyncStateArray = args.slice(0, -1);
 
-  for (const state of states) {
-    checkAsyncStateInvariants(state);
+  if (process.env.DEBUG) {
+    for (const state of states) {
+      checkAsyncStateInvariants(state);
+      checkStateSuccessInvariant(state);
+    }
   }
 
-  // Warning
   const datums = states.map((x) => x.data);
 
   // Effect to automatically refetch when stated dependencies change
