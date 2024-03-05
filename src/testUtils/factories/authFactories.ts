@@ -28,7 +28,11 @@ import { UserRole } from "@/types/contract";
 import { type AuthData } from "@/integrations/integrationTypes";
 import { type UserMilestone } from "@/data/model/UserMilestone";
 import type { components } from "@/types/swagger";
-import { type SetRequired } from "type-fest";
+import { type UserPartner } from "@/data/model/UserPartner";
+import {
+  type RequiredMeOrganizationResponse,
+  type RequiredMePartnerResponse,
+} from "@/data/service/responseTypeHelpers";
 
 function emailFactory(n: number): string {
   return `user${n}@test.com`;
@@ -105,19 +109,18 @@ export const authStateFactory = define<AuthState>({
   },
 });
 
-export const meOrganizationApiResponseFactory = define<
-  components["schemas"]["Me"]["organization"]
->({
-  id: uuidSequence,
-  name(n: number): string {
-    return `Test Organization ${n}`;
-  },
-  scope(n: number): string {
-    return `@organization-${n}`;
-  },
-  control_room: null,
-  theme: null,
-});
+export const meOrganizationApiResponseFactory =
+  define<RequiredMeOrganizationResponse>({
+    id: uuidSequence,
+    name(n: number): string {
+      return `Test Organization ${n}`;
+    },
+    scope(n: number): string {
+      return `@organization-${n}`;
+    },
+    control_room: null,
+    theme: null,
+  });
 
 export const meApiResponseFactory = define<components["schemas"]["Me"]>({
   id: uuidSequence,
@@ -135,12 +138,15 @@ export const meApiResponseFactory = define<components["schemas"]["Me"]>({
 
 export const meWithPartnerApiResponseFactory = extend<
   components["schemas"]["Me"],
-  SetRequired<components["schemas"]["Me"], "partner">
+  RequiredMePartnerResponse
 >(meApiResponseFactory, {
-  partner: () => ({
-    name: "Automation Anywhere",
-    theme: "automation-anywhere",
-  }),
+  partner(n: number): RequiredMePartnerResponse {
+    return {
+      id: uuidSequence(n),
+      name: "Automation Anywhere",
+      theme: "automation-anywhere",
+    };
+  },
 });
 
 export const authDataFactory = define<AuthData>({
@@ -162,4 +168,12 @@ export const tokenAuthDataFactory = define<TokenAuthData>({
   enforceUpdateMillis: null,
   partner: null,
   token: "1234567890abcdef",
+});
+
+export const userPartnerFactory = define<UserPartner>({
+  partnerId: uuidSequence,
+  partnerName(n: number): string {
+    return `Test AA Partner ${n}`;
+  },
+  partnerTheme: "automation-anywhere",
 });

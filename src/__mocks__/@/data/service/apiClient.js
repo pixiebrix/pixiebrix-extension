@@ -24,5 +24,4 @@ export { absoluteApiUrl } from "../../../../data/service/apiClient";
 
 export const getLinkedApiClient = jest.fn(async () => axios);
 export const getApiClient = jest.fn(async () => axios);
-export const maybeGetApiClient = jest.fn(async () => axios);
 export const maybeGetLinkedApiClient = jest.fn(async () => axios);
