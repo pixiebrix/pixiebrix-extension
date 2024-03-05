@@ -30,25 +30,24 @@ import {
 import type { UserData } from "@/auth/authTypes";
 import { flagOn } from "@/auth/featureFlagStorage";
 
-const environment = process.env.ENVIRONMENT;
-const applicationId = process.env.DATADOG_APPLICATION_ID;
-const clientToken = process.env.DATADOG_CLIENT_TOKEN;
-
 const RUM_FLAG = "telemetry-performance";
 
 /**
- * Initialize Datadog Real User Monitoring (RUM) for performance monitoring.
+ * Initialize Datadog Real User Monitoring (RUM) for performance monitoring. This should be called once per page load, before
+ * any user interactions or network requests are made.
  */
 export async function initPerformanceMonitoring(): Promise<void> {
+  const environment = process.env.ENVIRONMENT;
+  const applicationId = process.env.DATADOG_APPLICATION_ID;
+  const clientToken = process.env.DATADOG_CLIENT_TOKEN;
+
   // Require the extension context because we don't want to track performance of the host sites
   expectContext("extension");
 
   forbidContext("contentScript");
   forbidContext("web");
-  // There's no user interactions to track in the background page
+  // There's no user interactions to  track in the background page
   forbidContext("background");
-
-  const baseUrl = await getBaseURL();
 
   if (await getDNT()) {
     return;
@@ -58,12 +57,22 @@ export async function initPerformanceMonitoring(): Promise<void> {
     return;
   }
 
-  if (!applicationId || !clientToken) {
-    console.warn("Datadog application ID or client token not configured");
+  const { version_name } = browser.runtime.getManifest();
+
+  if (!applicationId || !clientToken || !version_name || !environment) {
+    console.warn(
+      "Required environment variables for initializing Datadog missing:",
+      {
+        applicationId: Boolean(applicationId),
+        clientToken: Boolean(clientToken),
+        version_name,
+        environment,
+      },
+    );
     return;
   }
 
-  const { version_name } = browser.runtime.getManifest();
+  const baseUrl = await getBaseURL();
 
   // https://docs.datadoghq.com/real_user_monitoring/browser/
   datadogRum.init({

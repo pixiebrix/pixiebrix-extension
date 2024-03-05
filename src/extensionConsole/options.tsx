@@ -36,13 +36,18 @@ import extensionPagePlatform from "@/extensionPages/extensionPagePlatform";
 
 setPlatform(extensionPagePlatform);
 
-function init(): void {
+async function init() {
+  void initMessengerLogging();
+  void initRuntimeLogging();
+  initToaster();
+  initTelemetry();
+  try {
+    await initPerformanceMonitoring();
+  } catch (error) {
+    console.error("Failed to initialize performance monitoring", error);
+  }
+
   render(<App />, document.querySelector("#container"));
 }
 
-void initMessengerLogging();
-void initRuntimeLogging();
-initToaster();
-initTelemetry();
-void initPerformanceMonitoring();
-init();
+void init();
