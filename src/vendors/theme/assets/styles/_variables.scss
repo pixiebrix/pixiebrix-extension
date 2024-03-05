@@ -153,7 +153,7 @@ $tooltip-border-radius: 0.375rem;
 
 $input-bg: color(white);
 $input-border-radius: 2px;
-$input-border-color: hsl(0, 0%, 80%); // Matches react-select's border
+$input-border-color: $react-select-border-color;
 $input-placeholder-color: #c9c8c8;
 $input-font-size: 0.8125rem;
 
