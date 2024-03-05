@@ -16,8 +16,8 @@
  */
 
 import { type UUID } from "@/types/stringTypes";
-import { type components } from "@/types/swagger";
 import { validateUUID } from "@/types/helpers";
+import { type RequiredControlRoomResponse } from "@/data/service/responseTypeHelpers";
 
 export type ControlRoom = {
   readonly controlRoomId: UUID;
@@ -25,7 +25,7 @@ export type ControlRoom = {
 };
 
 export function transformControlRoomResponse(
-  response: components["schemas"]["Me"]["organization"]["control_room"],
+  response: RequiredControlRoomResponse,
 ): ControlRoom {
   return {
     controlRoomId: validateUUID(response.id),

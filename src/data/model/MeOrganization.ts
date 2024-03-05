@@ -26,6 +26,7 @@ import {
 } from "@/data/model/OrganizationTheme";
 import { type components } from "@/types/swagger";
 import { validateUUID } from "@/types/helpers";
+import { type SetRequired } from "type-fest";
 
 export type MeOrganization = {
   /**
@@ -51,7 +52,10 @@ export type MeOrganization = {
 };
 
 export function transformMeOrganizationResponse(
-  response: components["schemas"]["Me"]["organization"],
+  response: SetRequired<
+    components["schemas"]["Me"],
+    "organization"
+  >["organization"],
 ): MeOrganization {
   const organization: MeOrganization = {
     organizationId: validateUUID(response.id),

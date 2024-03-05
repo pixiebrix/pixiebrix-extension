@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type components } from "@/types/swagger";
 import { isValidUrl } from "@/utils/urlUtils";
+import { type RequiredMeOrganizationThemeResponse } from "@/data/service/responseTypeHelpers";
 
 export type OrganizationTheme = {
   /**
@@ -34,7 +34,7 @@ export type OrganizationTheme = {
 };
 
 export function transformOrganizationThemeResponse(
-  response: components["schemas"]["Me"]["organization"]["theme"],
+  response: RequiredMeOrganizationThemeResponse,
 ): OrganizationTheme {
   const theme: OrganizationTheme = {
     showSidebarHeaderLogo: response.show_sidebar_logo ?? true,

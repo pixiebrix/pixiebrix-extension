@@ -18,7 +18,6 @@
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import {
-  autoModUpdatesEnabled,
   deactivateMod,
   fetchModUpdates,
   getActivatedMarketplaceModVersions,
@@ -51,37 +50,6 @@ jest.mock("@/utils/extensionUtils");
 jest.mock("@/background/contextMenus");
 
 const uninstallContextMenuMock = jest.mocked(uninstallContextMenu);
-
-describe("autoModUpdatesEnabled function", () => {
-  it("should return false if flag absent", async () => {
-    axiosMock.onGet().reply(200, {
-      flags: [],
-    });
-
-    const result = await autoModUpdatesEnabled();
-
-    expect(result).toBe(false);
-  });
-
-  it("should return true if flag present", async () => {
-    axiosMock.onGet().reply(200, {
-      flags: ["automatic-mod-updates"],
-    });
-
-    const result = await autoModUpdatesEnabled();
-
-    expect(result).toBe(true);
-  });
-
-  it("should return false on error", async () => {
-    axiosMock.onGet().reply(400, {});
-
-    const result = await autoModUpdatesEnabled();
-
-    expect(result).toBe(false);
-    expect(reportError).toHaveBeenCalled();
-  });
-});
 
 describe("getActivatedMarketplaceModVersions function", () => {
   let publicActivatedMod: ActivatedModComponent;

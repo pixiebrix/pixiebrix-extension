@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type components } from "@/types/swagger";
 import { UserRole } from "@/types/contract";
+import { type RequiredMeOrganizationMembershipRoleResponse } from "@/data/service/responseTypeHelpers";
 
 export type UserOrganizationMembershipRole =
   | "member"
@@ -26,7 +26,7 @@ export type UserOrganizationMembershipRole =
   | "manager";
 
 export function transformUserOrganizationMembershipRoleResponse(
-  response: components["schemas"]["Me"]["organization_memberships"][number]["role"],
+  response: RequiredMeOrganizationMembershipRoleResponse,
 ): UserOrganizationMembershipRole {
   switch (response) {
     case 1: {
@@ -50,9 +50,9 @@ export function transformUserOrganizationMembershipRoleResponse(
     }
 
     default: {
+      const exhaustiveCheck: never = response;
       throw new Error(
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- future-proofing
-        `Invalid user organization membership role: ${response}`,
+        `Invalid user organization membership role: ${exhaustiveCheck}`,
       );
     }
   }

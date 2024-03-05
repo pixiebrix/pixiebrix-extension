@@ -129,7 +129,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   const controlRoomUrl =
     managedStorage.data?.controlRoomUrl ??
     hostnameToUrl(hostname) ??
-    me?.organization?.control_room?.url ??
+    me?.primaryOrganization?.controlRoom?.controlRoomUrl?.href ??
     "";
 
   const { data: installUrl } = usePartnerAppStartUrl(controlRoomUrl);
@@ -146,71 +146,65 @@ const PartnerSetupCard: React.FunctionComponent = () => {
     dispatch(updateLocalPartnerTheme("automation-anywhere"));
   }, [dispatch]);
 
+  const StepOne = (
+    <OnboardingStep number={1} title="Browser Extension installed" completed />
+  );
+
+  let StepTwo: React.ReactNode;
+  let StepThree: React.ReactNode = null;
+
   if (mode === "oauth2") {
     // For OAuth2, there's only 2 steps because the AA JWT is also used to communicate with the PixieBrix server
-    return (
-      <OnboardingChecklistCard title="Set up your account">
-        <OnboardingStep
-          number={1}
-          title="Browser Extension installed"
-          completed
+    StepTwo = (
+      <OnboardingStep number={2} title="Connect your AARI account" active>
+        <ControlRoomOAuthForm
+          initialValues={initialFormValues}
+          // Force re-render when control room URL changes, so that the control room URL will be pre-filled
+          key={controlRoomUrl}
         />
-        <OnboardingStep number={2} title="Connect your AARI account" active>
-          <ControlRoomOAuthForm
-            initialValues={initialFormValues}
-            // Force re-render when control room URL changes, so that the control room URL will be pre-filled
-            key={controlRoomUrl}
-          />
-        </OnboardingStep>
-      </OnboardingChecklistCard>
+      </OnboardingStep>
     );
-  }
-
-  if (!me?.id) {
-    return (
-      <OnboardingChecklistCard title="Set up your account">
-        <OnboardingStep
-          number={1}
-          title="Browser Extension installed"
-          completed
-        />
-        <OnboardingStep
-          number={2}
-          title="Link the extension to a PixieBrix account"
-          active
-        >
-          <Button
-            className="btn btn-primary mt-2"
-            // The async state for installUrl will be ready by the time the button is rendered/clicked
-            href={installUrl}
-            data-testid="link-account-btn"
-          >
-            <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
-          </Button>
-        </OnboardingStep>
-        <OnboardingStep number={3} title="Connect your AARI account" />
-      </OnboardingChecklistCard>
-    );
-  }
-
-  return (
-    <OnboardingChecklistCard title="Set up your account">
-      <OnboardingStep
-        number={1}
-        title="Browser Extension installed"
-        completed
-      />
+  } else if (me) {
+    StepTwo = (
       <OnboardingStep
         number={2}
         title="Link the extension to a PixieBrix account"
         completed
       />
+    );
+    StepThree = (
       <OnboardingStep number={3} title="Connect your AARI account" active>
         <ControlRoomTokenForm
           initialValues={initialFormValues}
           key={controlRoomUrl}
         />
       </OnboardingStep>
+    );
+  } else {
+    StepTwo = (
+      <OnboardingStep
+        number={2}
+        title="Link the extension to a PixieBrix account"
+        active
+      >
+        <Button
+          className="btn btn-primary mt-2"
+          // The async state for installUrl will be ready by the time the button is rendered/clicked
+          href={installUrl}
+          data-testid="link-account-btn"
+        >
+          <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
+        </Button>
+      </OnboardingStep>
+    );
+    StepThree = <OnboardingStep number={3} title="Connect your AARI account" />;
+  }
+
+  return (
+    <OnboardingChecklistCard title="Set up your account">
+      {StepOne}
+      {StepTwo}
+      {StepThree}
     </OnboardingChecklistCard>
   );
 };

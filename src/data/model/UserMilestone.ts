@@ -15,24 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type components } from "@/types/swagger";
+import { type RequiredMeMilestoneResponse } from "@/data/service/responseTypeHelpers";
 
 export type UserMilestone = {
   /**
    * A lower-snake-case, human-readible identifier for the Milestone, e.g. "first_time_extension_install"
    */
-  milestoneIdentifier: string;
+  milestoneName: string;
   /**
    * Optional additional information to provide context about the Milestone
    */
-  metadata: Record<string, unknown>;
+  metadata: UnknownObject;
 };
 
 export function transformUserMilestoneResponse(
-  response: components["schemas"]["Me"]["milestones"][number],
+  response: RequiredMeMilestoneResponse,
 ): UserMilestone {
   return {
-    milestoneIdentifier: response.key,
+    milestoneName: response.key,
     metadata: response.metadata ?? {},
+  };
+}
+
+export function transformUserMilestoneRequest(
+  milestone: UserMilestone,
+): RequiredMeMilestoneResponse {
+  return {
+    key: milestone.milestoneName,
+    metadata: milestone.metadata,
   };
 }

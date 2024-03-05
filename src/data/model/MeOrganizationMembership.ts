@@ -24,8 +24,8 @@ import {
   type ControlRoom,
   transformControlRoomResponse,
 } from "@/data/model/ControlRoom";
-import { type components } from "@/types/swagger";
 import { validateUUID } from "@/types/helpers";
+import { type RequiredMeOrganizationMembershipResponse } from "@/data/service/responseTypeHelpers";
 
 export type MeOrganizationMembership = {
   /**
@@ -43,7 +43,7 @@ export type MeOrganizationMembership = {
 };
 
 export function transformMeOrganizationMembershipResponse(
-  response: components["schemas"]["Me"]["organization_memberships"][number],
+  response: RequiredMeOrganizationMembershipResponse,
 ): MeOrganizationMembership {
   const membership: MeOrganizationMembership = {
     organizationId: validateUUID(response.organization),

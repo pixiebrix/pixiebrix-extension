@@ -16,11 +16,10 @@
  */
 
 import { type UUID } from "@/types/stringTypes";
-import { type components } from "@/types/swagger";
 import { validateUUID } from "@/types/helpers";
-import { type RequireAll } from "type-fest/source/require-all-or-none";
 import { type ThemeName } from "@/themes/themeTypes";
 import { isValidThemeName } from "@/themes/themeUtils";
+import { type RequiredMePartnerResponse } from "@/data/service/responseTypeHelpers";
 
 export type UserPartner = {
   readonly partnerId: UUID;
@@ -30,7 +29,7 @@ export type UserPartner = {
 };
 
 export function transformUserPartnerResponse(
-  response: RequireAll<components["schemas"]["Me"], "partner">["partner"],
+  response: RequiredMePartnerResponse,
 ): UserPartner {
   const partner: UserPartner = {
     partnerId: validateUUID(response.id),

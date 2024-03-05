@@ -16,8 +16,8 @@
  */
 
 import { type UUID } from "@/types/stringTypes";
-import { type components } from "@/types/swagger";
 import { validateUUID } from "@/types/helpers";
+import { type RequiredMeGroupMembershipResponse } from "@/data/service/responseTypeHelpers";
 
 export type MeUserGroupMembership = {
   groupId: UUID;
@@ -25,7 +25,7 @@ export type MeUserGroupMembership = {
 };
 
 export function transformMeUserGroupMembershipResponse(
-  response: components["schemas"]["Me"]["group_memberships"][number],
+  response: RequiredMeGroupMembershipResponse,
 ): MeUserGroupMembership {
   return {
     groupId: validateUUID(response.id),

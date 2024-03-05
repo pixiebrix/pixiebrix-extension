@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type components } from "@/types/swagger";
+import { type RequiredMePartnerPrincipalResponse } from "@/data/service/responseTypeHelpers";
 
 export type PartnerPrincipal = {
   /**
@@ -23,14 +23,19 @@ export type PartnerPrincipal = {
    * format: int64
    */
   controlRoomUserId: number;
+  /**
+   * The URL for the Control Room.
+   */
   controlRoomUrl: URL;
 };
 
 export function transformPartnerPrincipalResponse(
-  response: components["schemas"]["Me"]["partner_principals"][number],
+  response: RequiredMePartnerPrincipalResponse,
 ): PartnerPrincipal {
   return {
     controlRoomUserId: response.control_room_user_id,
-    controlRoomUrl: new URL(response.control_room_url),
+    // Can assume a control room response will always have a url
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion
+    controlRoomUrl: new URL(response.control_room_url!),
   };
 }

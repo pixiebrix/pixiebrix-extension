@@ -16,6 +16,7 @@
  */
 
 import { isNullOrBlank } from "@/utils/stringUtils";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 const SPACE_ENCODED_VALUE = "%20";
 
@@ -69,13 +70,36 @@ export function safeParseUrl(url: string, baseUrl?: string): URL {
  * @param protocols valid protocols including colon, defaults to http: and https:
  */
 export function isValidUrl(
-  value: string,
+  value: Nullishable<string>,
   { protocols = ["http:", "https:"] }: { protocols?: string[] } = {},
-): boolean {
+): value is string {
+  if (isNullOrBlank(value)) {
+    return false;
+  }
+
   try {
     const url = new URL(value);
     return protocols.includes(url.protocol);
   } catch {
     return false;
   }
+}
+
+/**
+ * Returns `url` without a trailing slash
+ * @param url the URL to possibly remove the trailing slash from
+ */
+export function withoutTrailingSlash(url: string): string {
+  return url.replace(/\/$/, "");
+}
+
+/**
+ * Returns true if `url1` and `url2` match as either URL or href, ignoring trailing slashes
+ * @param url1 the first URL to compare
+ * @param url2 the second URL to compare
+ */
+export function urlsMatch(url1: string | URL, url2: string | URL): boolean {
+  const href1 = typeof url1 === "string" ? url1 : url1.href;
+  const href2 = typeof url2 === "string" ? url2 : url2.href;
+  return withoutTrailingSlash(href1) === withoutTrailingSlash(href2);
 }
