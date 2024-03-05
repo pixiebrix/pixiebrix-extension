@@ -485,7 +485,7 @@ describe("SchemaField", () => {
   test.each<{
     widget: keyof CustomWidgetRegistry;
     schema: Schema;
-    assertion: () => unknown;
+    assertion: () => Promise<unknown>;
   }>([
     {
       widget: "CodeEditorWidget",
