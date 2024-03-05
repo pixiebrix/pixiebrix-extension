@@ -24,6 +24,13 @@ import { PACKAGE_REGEX } from "@/types/helpers";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getApiClient } from "@/data/service/apiClient";
 import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
+import pDefer from "p-defer";
+
+/**
+ * Promise to await the completion of the current sync operation.
+ */
+// eslint-disable-next-line local-rules/persistBackgroundData -- tracking in-flight sync
+let syncPromise: Promise<unknown> = Promise.resolve();
 
 const DATABASE_NAME = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
@@ -126,6 +133,9 @@ function latestVersion(
  * @param kinds kinds of bricks
  */
 export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
+  // Wait for in-flight sync to complete to ensure find sees the latest data
+  await syncPromise;
+
   const db = await openRegistryDB();
 
   try {
@@ -165,21 +175,30 @@ export async function clear(): Promise<void> {
  * Memoized to avoid multiple network requests across tabs.
  */
 export const syncPackages = memoizeUntilSettled(async () => {
+  const deferred = pDefer<unknown>();
+  syncPromise = deferred.promise;
+
   // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
   const timestamp = new Date();
 
-  const client = await getApiClient();
-  // In the future, use the paginated endpoint?
-  const { data } = await client.get<RegistryPackage[]>("/api/registry/bricks/");
+  try {
+    const client = await getApiClient();
+    // In the future, use the paginated endpoint?
+    const { data } = await client.get<RegistryPackage[]>(
+      "/api/registry/bricks/",
+    );
 
-  const packages = data.map((x) => ({
-    ...parsePackage(x),
-    // Use the timestamp the call was initiated, not the timestamp received. That prevents missing any updates
-    // that were made during the call.
-    timestamp,
-  }));
+    const packages = data.map((x) => ({
+      ...parsePackage(x),
+      // Use the timestamp the call was initiated, not the timestamp received. That prevents missing any updates
+      // that were made during the call.
+      timestamp,
+    }));
 
-  await replaceAll(packages);
+    await replaceAll(packages);
+  } finally {
+    deferred.resolve();
+  }
 });
 
 /**
@@ -199,6 +218,8 @@ export async function recreateDB(): Promise<void> {
  * Return the number of records in the registry.
  */
 export async function count(): Promise<number> {
+  await syncPromise;
+
   const db = await openRegistryDB();
   try {
     return await db.count(BRICK_STORE);
@@ -266,6 +287,9 @@ export async function find(id: string): Promise<Nullishable<PackageVersion>> {
     console.error("REGISTRY_FIND received invalid id argument", { id });
     throw new Error("invalid brick id");
   }
+
+  // Wait for in-flight sync to complete to ensure find sees the latest data
+  await syncPromise;
 
   const db = await openRegistryDB();
 
