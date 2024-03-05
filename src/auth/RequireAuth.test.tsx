@@ -40,7 +40,9 @@ describe("RequireAuth", () => {
       </RequireAuth>,
     );
 
-    expect(await screen.findByTestId("loader")).not.toBeInTheDocument();
+    await expect(
+      screen.findByTestId("loader"),
+    ).resolves.not.toBeInTheDocument();
     expect(
       screen.getByText("Only authenticated users should see me!"),
     ).toBeVisible();
@@ -58,7 +60,7 @@ describe("RequireAuth", () => {
     );
 
     await waitFor(async () => {
-      expect(await screen.findByText("Login")).toBeVisible();
+      await expect(screen.findByText("Login")).resolves.toBeVisible();
     });
     expect(screen.queryByTestId("loader")).not.toBeInTheDocument();
     expect(

@@ -22,7 +22,7 @@ import { sheets } from "@/background/messenger/api";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
   GOOGLE_OAUTH2_PKCE_INTEGRATION_ID,
-  SHEET_SERVICE_SCHEMA,
+  SHEET_INTEGRATION_SCHEMA,
 } from "@/contrib/google/sheets/core/schemas";
 import { type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
@@ -67,7 +67,7 @@ export const APPEND_SCHEMA: Schema = propertiesToSchema(
           type: "string",
           minLength: 1,
         },
-        SHEET_SERVICE_SCHEMA,
+        SHEET_INTEGRATION_SCHEMA,
       ],
     },
     tabName: {

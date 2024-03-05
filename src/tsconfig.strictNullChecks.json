@@ -718,7 +718,7 @@
     "./utils/urlUtils.ts",
     "./utils/variableUtils.ts",
     "./validators/formValidator.ts",
-    "./validators/generic.ts",
+    "./validators/schemaValidator.ts",
     "./vendors/AceEditor.tsx",
     "./vendors/AceEditorSync.tsx",
     "./vendors/DiffEditor.tsx",

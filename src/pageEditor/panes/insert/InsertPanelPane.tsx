@@ -43,8 +43,8 @@ const InsertPanelPane: React.FunctionComponent<{
       <div>
         <Alert variant="warning">
           <FontAwesomeIcon icon={faExclamationTriangle} /> Automatic panel
-          placement is currently in <b>Alpha</b> and typically requires manual
-          configuration/adjustment
+          placement is currently in <strong>Alpha</strong> and typically
+          requires manual configuration/adjustment
         </Alert>
       </div>
     </div>

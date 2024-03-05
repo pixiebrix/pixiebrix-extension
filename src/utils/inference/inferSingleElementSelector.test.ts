@@ -54,13 +54,13 @@ describe("inferElementSelector", () => {
     `;
 
     const element = document.body.querySelector<HTMLElement>("#test");
-    expect(
-      await inferSingleElementSelector({
+    await expect(
+      inferSingleElementSelector({
         element,
         root: document.body,
         excludeRandomClasses: true,
       }),
-    ).toStrictEqual({
+    ).resolves.toStrictEqual({
       parent: null,
       // Site hint doesn't match, so requiredSelectors has not effect
       selectors: [
@@ -85,13 +85,13 @@ describe("inferElementSelector", () => {
     `;
 
     const element = document.body.querySelector<HTMLElement>("#test");
-    expect(
-      await inferSingleElementSelector({
+    await expect(
+      inferSingleElementSelector({
         element,
         root: document.body,
         excludeRandomClasses: true,
       }),
-    ).toStrictEqual({
+    ).resolves.toStrictEqual({
       parent: null,
       selectors: [".grandparent>.parent #test", ".grandparent>.parent div"],
       tagName: "DIV",
@@ -109,13 +109,13 @@ describe("inferElementSelector", () => {
     `;
 
     const element = document.body.querySelector<HTMLElement>(".testValue");
-    expect(
-      await inferSingleElementSelector({
+    await expect(
+      inferSingleElementSelector({
         element,
         root: document.body,
         excludeRandomClasses: true,
       }),
-    ).toStrictEqual({
+    ).resolves.toStrictEqual({
       parent: null,
       selectors: [
         '.container:has(.testLabel:contains("test label")) div',
@@ -145,13 +145,13 @@ describe("inferElementSelector", () => {
 
     expect(element.textContent).toBe("Label Value");
 
-    expect(
-      await inferSingleElementSelector({
+    await expect(
+      inferSingleElementSelector({
         element,
         root: document.body,
         excludeRandomClasses: true,
       }),
-    ).toStrictEqual({
+    ).resolves.toStrictEqual({
       parent: null,
       // Doesn't return the instantiated template, because it would match both field.
       // These selectors are not very robust. We'll fix those in future improvements to general selector generation.
@@ -188,13 +188,13 @@ describe("inferElementSelector", () => {
 
     expect(element.textContent).toBe("Label Value");
 
-    expect(
-      await inferSingleElementSelector({
+    await expect(
+      inferSingleElementSelector({
         element,
         root: document.body,
         excludeRandomClasses: true,
       }),
-    ).toStrictEqual({
+    ).resolves.toStrictEqual({
       parent: null,
       selectors: [
         '.active .container:has(.testLabel:contains("label")) div',
@@ -231,13 +231,13 @@ describe("inferElementSelector", () => {
 
     const element = $safeFind(".testValue").get(0);
 
-    expect(
-      await inferSingleElementSelector({
+    await expect(
+      inferSingleElementSelector({
         element,
         root: document.body,
         excludeRandomClasses: true,
       }),
-    ).toStrictEqual({
+    ).resolves.toStrictEqual({
       parent: null,
       selectors: [".container div", ".container .testValue"],
       tagName: "DIV",
