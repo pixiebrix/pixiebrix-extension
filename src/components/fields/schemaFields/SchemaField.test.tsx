@@ -501,14 +501,15 @@ describe("SchemaField", () => {
           { const: "secondary", title: "Secondary" },
         ],
       },
-      assertion: () => screen.getByTestId("selected-variant"),
+      assertion: async () => screen.getByTestId("selected-variant"),
     },
     {
       widget: "SchemaCustomEventWidget",
       schema: {
         type: "string",
       },
-      assertion: () => screen.getByRole("combobox", { name: "Test Field" }),
+      assertion: async () =>
+        screen.getByRole("combobox", { name: "Test Field" }),
     },
   ])("renders ui:widget $widget", async ({ widget, schema, assertion }) => {
     render(
@@ -519,6 +520,7 @@ describe("SchemaField", () => {
       />,
       { initialValues: {} },
     );
+
     await expect(assertion()).resolves.toBeInTheDocument();
   });
 });
