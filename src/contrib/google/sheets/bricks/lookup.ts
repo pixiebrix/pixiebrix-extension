@@ -21,7 +21,7 @@ import { zip } from "lodash";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
   GOOGLE_OAUTH2_PKCE_INTEGRATION_ID,
-  SHEET_SERVICE_SCHEMA,
+  SHEET_INTEGRATION_SCHEMA,
 } from "@/contrib/google/sheets/core/schemas";
 import { type Schema } from "@/types/schemaTypes";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
@@ -56,7 +56,7 @@ export const LOOKUP_SCHEMA: Schema = {
           type: "string",
           minLength: 1,
         },
-        SHEET_SERVICE_SCHEMA,
+        SHEET_INTEGRATION_SCHEMA,
       ],
     },
     tabName: {

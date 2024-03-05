@@ -24,7 +24,7 @@ import { validateRegistryId } from "@/types/helpers";
 import selectEvent from "react-select-event";
 import { render } from "@/pageEditor/testHelpers";
 import { services, sheets } from "@/background/messenger/api";
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
@@ -33,7 +33,6 @@ import {
   type FileList,
   type Spreadsheet,
 } from "@/contrib/google/sheets/core/types";
-import { type UUID } from "@/types/stringTypes";
 import { useAuthOptions } from "@/hooks/auth";
 import { type AuthOption } from "@/auth/authTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -41,11 +40,6 @@ import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { type FormikValues } from "formik";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import { toExpression } from "@/utils/expressionUtils";
-
-let idSequence = 0;
-function newId(): UUID {
-  return uuidSequence(idSequence++);
-}
 
 const servicesLocateMock = jest.mocked(services.locate);
 
@@ -58,11 +52,11 @@ const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
 const getSpreadsheetMock = jest.mocked(sheets.getSpreadsheet);
 const getHeadersMock = jest.mocked(sheets.getHeaders);
 
-const TEST_SPREADSHEET_ID = newId();
+const TEST_SPREADSHEET_ID = autoUUIDSequence();
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 const GOOGLE_PKCE_SERVICE_ID = validateRegistryId("google/oauth2-pkce");
-const GOOGLE_PKCE_AUTH_CONFIG = newId();
-const TEST_SPREADSHEET_AUTH_CONFIG = newId();
+const GOOGLE_PKCE_AUTH_CONFIG = autoUUIDSequence();
+const TEST_SPREADSHEET_AUTH_CONFIG = autoUUIDSequence();
 
 const TEST_SPREADSHEET_NAME = "Test Spreadsheet";
 

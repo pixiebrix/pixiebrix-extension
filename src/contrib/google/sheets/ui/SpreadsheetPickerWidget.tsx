@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "./SpreadsheetPickerWidget.module.scss";
-
 import React, { useCallback, useState } from "react";
 import { sheets } from "@/background/messenger/api";
 import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
@@ -38,6 +36,7 @@ import { type AsyncStateArray } from "@/types/sliceTypes";
 import { useField } from "formik";
 import { type Expression } from "@/types/runtimeTypes";
 import { isExpression } from "@/utils/expressionUtils";
+import "./SpreadsheetPickerWidget.module.scss";
 
 const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
   const { name, schema: baseSchema } = props;

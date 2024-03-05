@@ -345,7 +345,7 @@
 ./src/utils/urlUtils.ts
 ./src/utils/variableUtils.ts
 ./src/validators/formValidator.ts
-./src/validators/generic.ts
+./src/validators/schemaValidator.ts
 ./src/vendors/encodings.ts
 ./src/vendors/mixpanel.ts
 ./src/vendors/Overlay.tsx

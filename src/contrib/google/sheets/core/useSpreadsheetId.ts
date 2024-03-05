@@ -115,7 +115,8 @@ function useSpreadsheetId(
 
   const [{ value: optionsArgs }] = useField<OptionsArgs>("optionsArgs");
 
-  const lastGoodSpreadsheetId = useRef<string | null>();
+  // Provide null, so undefined isn't returned from useAsyncState if spreadsheetId is null
+  const lastGoodSpreadsheetId = useRef<string | null>(null);
 
   return useAsyncState<string | null>(async () => {
     try {
