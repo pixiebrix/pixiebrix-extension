@@ -62,7 +62,8 @@ const Sidebar: React.FunctionComponent = () => {
           {permit("services") && (
             <SidebarLink
               route="/services"
-              title="Integrations"
+              // Help to distinguish vs. integrations defined in the Admin Console
+              title="Local Integrations"
               icon={faCloud}
             />
           )}
