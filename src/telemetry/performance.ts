@@ -41,8 +41,6 @@ const RUM_FLAG = "telemetry-performance";
  * any user interactions or network requests are made.
  */
 export async function initPerformanceMonitoring(): Promise<void> {
-  const start = Date.now();
-  console.log("start:", start);
   // Require the extension context because we don't want to track performance of the host sites
   expectContext("extension");
 
@@ -59,20 +57,14 @@ export async function initPerformanceMonitoring(): Promise<void> {
     return;
   }
 
-  const baseUrl = await getBaseURL();
-
-  if (await getDNT()) {
-    return;
-  }
-
   if (!applicationId || !clientToken) {
     console.warn("Datadog application ID or client token not configured");
     return;
   }
 
   const { version_name } = browser.runtime.getManifest();
+  const baseUrl = await getBaseURL();
 
-  console.log("about to init:", Date.now() - start);
   // https://docs.datadoghq.com/real_user_monitoring/browser/
   datadogRum.init({
     applicationId,
@@ -100,8 +92,6 @@ export async function initPerformanceMonitoring(): Promise<void> {
     allowFallbackToLocalStorage: true,
   });
 
-  console.log("done init:", Date.now() - start);
-
   datadogRum.setGlobalContextProperty(
     "code_version",
     process.env.SOURCE_VERSION,
@@ -113,8 +103,6 @@ export async function initPerformanceMonitoring(): Promise<void> {
   datadogRum.startSessionReplayRecording();
 
   addAuthListener(updatePerson);
-
-  console.log("all done:", Date.now() - start);
 }
 
 async function updatePerson(data: UserData): Promise<void> {
