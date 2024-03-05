@@ -130,7 +130,7 @@ describe("DeploymentModal", () => {
       {},
     );
 
-    expect(await screen.findAllByRole("dialog")).toMatchSnapshot();
+    await expect(screen.findAllByRole("dialog")).resolves.toMatchSnapshot();
     expect(
       screen.getByText(
         "An update to the PixieBrix browser extension is available. After updating, you will need need to reload any pages where PixieBrix is running.",
@@ -161,7 +161,7 @@ describe("DeploymentModal", () => {
     );
 
     expect(reloadMock).toHaveBeenCalledTimes(1);
-    expect(await screen.findAllByRole("dialog")).toMatchSnapshot();
+    await expect(screen.findAllByRole("dialog")).resolves.toMatchSnapshot();
     expect(screen.getByText("Remind Me Later")).toBeDisabled();
   });
 
@@ -186,7 +186,7 @@ describe("DeploymentModal", () => {
     );
 
     expect(reloadMock).toHaveBeenCalledTimes(0);
-    expect(await screen.findAllByRole("dialog")).toMatchSnapshot();
+    await expect(screen.findAllByRole("dialog")).resolves.toMatchSnapshot();
     expect(screen.getByText("Remind Me Later")).toBeDisabled();
   });
 
@@ -211,7 +211,7 @@ describe("DeploymentModal", () => {
     );
 
     expect(reloadMock).toHaveBeenCalledTimes(1);
-    expect(await screen.findAllByRole("dialog")).toMatchSnapshot();
+    await expect(screen.findAllByRole("dialog")).resolves.toMatchSnapshot();
     expect(screen.getByText("Remind Me Later")).toBeDisabled();
   });
 });

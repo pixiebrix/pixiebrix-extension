@@ -138,6 +138,7 @@ module.exports = {
       rules: {
         "unicorn/prefer-spread": "off",
         "local-rules/noCrossBoundaryImports": "off",
+        "jest/prefer-expect-resolves": "error",
       },
     },
     {
