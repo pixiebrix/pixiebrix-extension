@@ -21,7 +21,7 @@ import optionsRegistry from "@/components/fields/optionsRegistry";
 import React, { useCallback, useMemo } from "react";
 import { Button, Modal } from "react-bootstrap";
 import AsyncButton from "@/components/AsyncButton";
-import { dereference } from "@/validators/generic";
+import { dereference } from "@/validators/schemaValidator";
 import { cloneDeep, truncate } from "lodash";
 import genericOptionsFactory, {
   type BlockOptionProps,
@@ -95,6 +95,51 @@ type ContentProps = {
   onDelete?: (id: UUID) => void;
 };
 
+async function createYupValidationSchema(
+  integration: Integration,
+): Promise<Yup.AnyObjectSchema> {
+  try {
+    // Dereference because buildYup doesn't support $ref:
+    // https://github.com/kristianmandrup/schema-to-yup?tab=readme-ov-file#refs
+    const schema = await dereference(
+      {
+        type: "object",
+        properties: {
+          organization: {
+            type: "string",
+          },
+          label: {
+            type: "string",
+            // @ts-expect-error -- expects JSONSchema7 type `required: string[]`
+            // (one level up), but only works with JSONSchema4 `required: boolean`
+            required: true,
+          },
+          config: integration.schema,
+        },
+        required: ["config"],
+      },
+      {
+        // Include secrets, so they can be validated
+        sanitizeIntegrationDefinitions: false,
+      },
+    );
+
+    // The de-referenced schema is frozen, buildYup can mutate it, so we need to "unfreeze" the schema
+    return buildYup(cloneDeep(schema), {
+      errMessages: getValidationErrMessages(
+        schema.properties?.config as Schema,
+      ),
+    });
+  } catch (error) {
+    reportError(
+      new Error("Error building Yup validator from JSON Schema", {
+        cause: error,
+      }),
+    );
+    return Yup.object();
+  }
+}
+
 const ModalContent: React.FC<ContentProps> = ({
   integration,
   initialValues,
@@ -122,40 +167,10 @@ const ModalContent: React.FC<ContentProps> = ({
     return genericOptionsFactory(integration.schema, integration.uiSchema);
   }, [integration]);
 
-  const validationSchemaState = useAsyncState<Yup.AnyObjectSchema>(async () => {
-    const schema = await dereference({
-      type: "object",
-      properties: {
-        organization: {
-          type: "string",
-        },
-        label: {
-          type: "string",
-          // @ts-expect-error -- expects JSONSchema7 type `required: string[]`
-          // (one level up), but only works with JSONSchema4 `required: boolean`
-          required: true,
-        },
-        // $RefParse mutates the schema
-        config: cloneDeep(integration.schema),
-      },
-    });
-
-    try {
-      // The de-referenced schema is frozen, buildYup can mutate it, so we need to "unfreeze" the schema
-      return buildYup(cloneDeep(schema), {
-        errMessages: getValidationErrMessages(
-          schema.properties?.config as Schema,
-        ),
-      });
-    } catch (error) {
-      reportError(
-        new Error("Error building Yup validator from JSON Schema", {
-          cause: error,
-        }),
-      );
-      return Yup.object();
-    }
-  }, [integration.schema]);
+  const validationSchemaState = useAsyncState<Yup.AnyObjectSchema>(
+    async () => createYupValidationSchema(integration),
+    [integration.schema],
+  );
 
   const renderBody: RenderBody = () => (
     <Modal.Body>

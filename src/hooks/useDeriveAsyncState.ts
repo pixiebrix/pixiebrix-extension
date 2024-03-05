@@ -26,26 +26,31 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import useIsMounted from "@/hooks/useIsMounted";
 import { useReducer, useRef } from "react";
 import { useAsyncEffect } from "use-async-effect";
-import { checkAsyncStateInvariants } from "@/utils/asyncStateUtils";
+import {
+  checkAsyncStateInvariants,
+  errorToAsyncState,
+  uninitializedAsyncStateFactory,
+} from "@/utils/asyncStateUtils";
 import { type UUID } from "@/types/stringTypes";
 import { uuidv4 } from "@/types/helpers";
 
-const initialAsyncState: AsyncState = {
-  data: undefined,
-  currentData: undefined,
-  isUninitialized: true,
-  isLoading: false,
-  isFetching: false,
-  isError: false,
-  isSuccess: false,
-  error: undefined,
-};
+const initialAsyncState: AsyncState = uninitializedAsyncStateFactory();
+
+function checkStateSuccessInvariant(state: AsyncState): void {
+  if (state.isSuccess && state.data === undefined) {
+    // The AsyncStates provided must NOT allow `undefined` for `data` in the `isSuccess` state, because `data`
+    // is used to determine when to re-derive the state.
+    throw new Error(
+      "useDeriveAsyncState: `data` must not be undefined in `isSuccess` state",
+    );
+  }
+}
 
 const warnNullValueOnce = once(() => {
   // This will warn once per module -- not once per instance of useAsyncState. We might want to track in the slice
   // instead. But this is sufficient for now, and keeps the reducer state clean.
   console.warn(
-    "useAsyncState:promiseOrGenerator produced a null value. Avoid returning null for async state values.",
+    "useDeriveAsyncState:promiseOrGenerator produced a null value. Avoid returning null for async state values.",
   );
 });
 
@@ -126,8 +131,11 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
   // @ts-expect-error -- getting args except last element
   const states: FetchableAsyncStateArray = args.slice(0, -1);
 
-  for (const state of states) {
-    checkAsyncStateInvariants(state);
+  if (process.env.DEBUG) {
+    for (const state of states) {
+      checkAsyncStateInvariants(state);
+      checkStateSuccessInvariant(state);
+    }
   }
 
   const datums = states.map((x) => x.data);
@@ -186,29 +194,16 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
   // In error state if the final promise is an error
   if (promiseState.isError) {
     return {
-      data: undefined,
-      currentData: undefined,
-      isUninitialized: false,
-      isLoading: false,
+      ...errorToAsyncState(promiseState.error),
       isFetching,
-      isError: true,
-      isSuccess: false,
-      error: promiseState.error,
     };
   }
 
   // Or, in error state if any of the dependencies are errors
   if (states.some((x) => x.isError)) {
     return {
-      data: undefined,
-      currentData: undefined,
-      isUninitialized: false,
-      isLoading: false,
+      ...errorToAsyncState(states.find((x) => x.isError)?.error),
       isFetching,
-      isError: true,
-      isSuccess: false,
-      // Return an arbitrary error. Could consider merging errors into a composite error
-      error: states.find((x) => x.isError)?.error,
     };
   }
 

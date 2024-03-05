@@ -25,9 +25,6 @@ import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
 import { type Schema } from "@/types/schemaTypes";
 import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
 import useSpreadsheetId from "@/contrib/google/sheets/core/useSpreadsheetId";
-import useAsyncState from "@/hooks/useAsyncState";
-import { dereference } from "@/validators/generic";
-import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { sheets } from "@/background/messenger/api";
@@ -41,6 +38,7 @@ import { oauth2Storage } from "@/auth/authConstants";
 import { AnnotationType } from "@/types/annotationTypes";
 import FieldAnnotationAlert from "@/components/annotationAlert/FieldAnnotationAlert";
 import { getErrorMessage } from "@/errors/errorHelpers";
+import { SHEET_FIELD_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 
 type GoogleSheetState = {
   googleAccount: SanitizedIntegrationConfig | null;
@@ -56,6 +54,7 @@ const RequireGoogleSheet: React.FC<{
 }> = ({ blockConfigPath, children }) => {
   const googleAccountAsyncState = useGoogleAccount();
   const spreadsheetIdAsyncState = useSpreadsheetId(blockConfigPath);
+
   const [spreadsheetError, setSpreadsheetError] = useState<string | null>(null);
   const [isRetrying, setIsRetrying] = useState(false);
   const retry = useCallback(async () => {
@@ -66,13 +65,6 @@ const RequireGoogleSheet: React.FC<{
     setIsRetrying(true);
     googleAccountAsyncState.refetch();
   }, [googleAccountAsyncState, isRetrying]);
-  const baseSchemaAsyncState = useAsyncState(
-    dereference(BASE_SHEET_SCHEMA),
-    [],
-    {
-      initialValue: BASE_SHEET_SCHEMA,
-    },
-  );
 
   const [loginController, setLoginController] =
     useState<AbortController | null>(null);
@@ -100,18 +92,16 @@ const RequireGoogleSheet: React.FC<{
   const resultAsyncState: AsyncState<GoogleSheetState> = useDeriveAsyncState(
     googleAccountAsyncState,
     spreadsheetIdAsyncState,
-    baseSchemaAsyncState,
     async (
       googleAccount: SanitizedIntegrationConfig | null,
       spreadsheetId: string | null,
-      baseSchema: Schema,
     ) => {
       setSpreadsheetError(null);
       if (!googleAccount || !spreadsheetId) {
         return {
           googleAccount,
           spreadsheet: null,
-          spreadsheetFieldSchema: baseSchema,
+          spreadsheetFieldSchema: SHEET_FIELD_SCHEMA,
         };
       }
 
@@ -126,7 +116,7 @@ const RequireGoogleSheet: React.FC<{
             googleAccount,
             spreadsheet,
             spreadsheetFieldSchema: {
-              ...baseSchema,
+              ...SHEET_FIELD_SCHEMA,
               oneOf: [
                 {
                   const: spreadsheetId,
@@ -140,7 +130,7 @@ const RequireGoogleSheet: React.FC<{
           return {
             googleAccount,
             spreadsheet: null,
-            spreadsheetFieldSchema: baseSchema,
+            spreadsheetFieldSchema: SHEET_FIELD_SCHEMA,
           };
         } finally {
           setIsRetrying(false);
@@ -152,7 +142,7 @@ const RequireGoogleSheet: React.FC<{
       return {
         googleAccount,
         spreadsheet: null,
-        spreadsheetFieldSchema: baseSchema,
+        spreadsheetFieldSchema: SHEET_FIELD_SCHEMA,
       };
     },
   );

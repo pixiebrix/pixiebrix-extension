@@ -15,22 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateInput, validateKind } from "@/validators/generic";
+import {
+  validateBrickInputOutput,
+  validatePackageDefinition,
+} from "@/validators/schemaValidator";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import serviceText from "@contrib/raw/hunter.txt";
 import { type Schema } from "@/types/schemaTypes";
 import { uuidv4 } from "@/types/helpers";
 
 describe("validateKind", () => {
-  test("can validate service", async () => {
+  test("can validate integration definition", async () => {
     const json = loadBrickYaml(serviceText) as UnknownObject;
-    const result = await validateKind(json, "service");
+    const result = validatePackageDefinition("service", json);
     expect(result.errors).toHaveLength(0);
     expect(result.valid).toBe(true);
   });
 });
 
-describe("validateInput", () => {
+describe("validateBrickInputOutput", () => {
   test("can validate DB ref parameter", async () => {
     const inputSchema = {
       type: "object",
@@ -45,7 +48,7 @@ describe("validateInput", () => {
       db: uuidv4(),
     };
 
-    const result = await validateInput(inputSchema, inputInstance);
+    const result = await validateBrickInputOutput(inputSchema, inputInstance);
     expect(result.errors).toHaveLength(0);
     expect(result.valid).toBe(true);
   });
