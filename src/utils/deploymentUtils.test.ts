@@ -98,16 +98,7 @@ describe("makeUpdatedFilter", () => {
   );
 
   test("matched blueprint for restricted user", () => {
-    const modDefinition = defaultModDefinitionFactory({
-      extensionPoints: [
-        modComponentDefinitionFactory({
-          services: {
-            [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-            [validateOutputKey("bar")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-          },
-        }),
-      ],
-    });
+    const modDefinition = defaultModDefinitionFactory();
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
         name: modDefinition.metadata.name,
@@ -133,16 +124,7 @@ describe("makeUpdatedFilter", () => {
   });
 
   test("matched blueprint for unrestricted user / developer", () => {
-    const modDefinition = defaultModDefinitionFactory({
-      extensionPoints: [
-        modComponentDefinitionFactory({
-          services: {
-            [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-            [validateOutputKey("bar")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-          },
-        }),
-      ],
-    });
+    const modDefinition = defaultModDefinitionFactory();
     const deployment = deploymentFactory({
       package: deploymentPackageFactory({
         name: modDefinition.metadata.name,

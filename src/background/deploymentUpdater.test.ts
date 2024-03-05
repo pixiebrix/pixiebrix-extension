@@ -22,6 +22,7 @@ import {
 import { uuidv4, validateSemVerString } from "@/types/helpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
+import { omit } from "lodash";
 import { updateDeployments } from "@/background/deploymentUpdater";
 import reportEvent from "@/telemetry/reportEvent";
 import { isLinked, readAuthData } from "@/auth/authStorage";
@@ -50,10 +51,22 @@ import {
   modMetadataFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
-import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
+import {
+  defaultModDefinitionFactory,
+  modComponentDefinitionFactory,
+  starterBrickConfigFactory,
+} from "@/testUtils/factories/modDefinitionFactories";
 
-import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
-import { type RegistryPackage } from "@/types/contract";
+import {
+  deploymentFactory,
+  deploymentPackageFactory,
+} from "@/testUtils/factories/deploymentFactories";
+import {
+  type Deployment,
+  type PackageConfigDetail,
+  type RegistryPackage,
+} from "@/types/contract";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 
 setContext("background");
 const axiosMock = new MockAdapter(axios);
@@ -101,6 +114,25 @@ const saveSettingsStateMock = jest.mocked(saveSettingsState);
 
 async function clearEditorReduxState() {
   await browser.storage.local.remove("persist:editor");
+}
+
+function buildPackageConfigDetail({
+  deployment,
+  modDefinition,
+}: {
+  deployment: Deployment;
+  modDefinition: ModDefinition;
+}): PackageConfigDetail {
+  const { sharing, updated_at, ...config } = modDefinition;
+  return {
+    id: deployment.package.id,
+    name: modDefinition.metadata.id,
+    verbose_name: modDefinition.metadata.name,
+    kind: modDefinition.kind,
+    config,
+    sharing,
+    updated_at,
+  };
 }
 
 beforeEach(async () => {
@@ -211,13 +243,25 @@ describe("updateDeployments", () => {
   test("can add deployment from empty state if deployment has permissions", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const deployment = deploymentFactory();
+    const modDefinition = defaultModDefinitionFactory();
+    const registryId = modDefinition.metadata.id;
+    const deployment = deploymentFactory({
+      package: deploymentPackageFactory({
+        name: modDefinition.metadata.name,
+        version: modDefinition.metadata.version,
+        package_id: registryId,
+      }),
+    });
 
-    axiosMock.onGet().reply(200, {
+    axiosMock.onGet("/api/me/").reply(200, {
       flags: [],
     });
 
     axiosMock.onPost().reply(201, [deployment]);
+
+    axiosMock
+      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
     await updateDeployments();
 
@@ -237,16 +281,33 @@ describe("updateDeployments", () => {
       },
     });
 
-    const deployment = deploymentFactory();
-    deployment.package.config.extensionPoints[0].permissions.permissions = [
-      "clipboardWrite",
-    ];
+    const modDefinition = defaultModDefinitionFactory({
+      extensionPoints: [
+        modComponentDefinitionFactory({
+          permissions: {
+            permissions: ["clipboardWrite"],
+          },
+        }),
+      ],
+    });
+    const registryId = modDefinition.metadata.id;
+    const deployment = deploymentFactory({
+      package: deploymentPackageFactory({
+        name: modDefinition.metadata.name,
+        version: modDefinition.metadata.version,
+        package_id: registryId,
+      }),
+    });
 
-    axiosMock.onGet().reply(200, {
+    axiosMock.onGet("/api/me/").reply(200, {
       flags: [],
     });
 
     axiosMock.onPost().reply(201, [deployment]);
+
+    axiosMock
+      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
     await updateDeployments();
 
@@ -254,9 +315,14 @@ describe("updateDeployments", () => {
 
     expect(jest.mocked(checkDeploymentPermissions).mock.calls[0]).toStrictEqual(
       [
-        expect.anything(),
-        expect.anything(),
-        { optionalPermissions: ["clipboardWrite"] },
+        {
+          deploymentModDefinitionPair: {
+            deployment,
+            modDefinition: omit(modDefinition, "options"),
+          },
+          locate: expect.anything(),
+          optionalPermissions: ["clipboardWrite"],
+        },
       ],
     );
 
@@ -294,13 +360,25 @@ describe("updateDeployments", () => {
     );
     await saveEditorState(editorState);
 
-    const deployment = deploymentFactory();
+    const modDefinition = defaultModDefinitionFactory();
+    const registryId = modDefinition.metadata.id;
+    const deployment = deploymentFactory({
+      package: deploymentPackageFactory({
+        name: modDefinition.metadata.name,
+        version: modDefinition.metadata.version,
+        package_id: registryId,
+      }),
+    });
 
-    axiosMock.onGet().reply(200, {
+    axiosMock.onGet("/api/me/").reply(200, {
       flags: [],
     });
 
     axiosMock.onPost().reply(201, [deployment]);
+
+    axiosMock
+      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
     await updateDeployments();
 
@@ -314,7 +392,15 @@ describe("updateDeployments", () => {
   test("uninstall existing recipe mod component with no dynamic elements", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const deployment = deploymentFactory();
+    const modDefinition = defaultModDefinitionFactory();
+    const registryId = modDefinition.metadata.id;
+    const deployment = deploymentFactory({
+      package: deploymentPackageFactory({
+        name: modDefinition.metadata.name,
+        version: modDefinition.metadata.version,
+        package_id: registryId,
+      }),
+    });
 
     // A mod component without a recipe. Exclude _recipe entirely to handle the case where the property is missing
     const modComponent = modComponentFactory({
@@ -332,11 +418,15 @@ describe("updateDeployments", () => {
       extensions: [modComponent],
     });
 
-    axiosMock.onGet().reply(200, {
+    axiosMock.onGet("/api/me/").reply(200, {
       flags: [],
     });
 
     axiosMock.onPost().reply(201, [deployment]);
+
+    axiosMock
+      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
     // Make sure we're testing the case where getEditorState() returns undefined
     expect(await getEditorState()).toBeUndefined();
@@ -351,7 +441,15 @@ describe("updateDeployments", () => {
   test("uninstall existing recipe mod component with dynamic element", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const deployment = deploymentFactory();
+    const modDefinition = defaultModDefinitionFactory();
+    const registryId = modDefinition.metadata.id;
+    const deployment = deploymentFactory({
+      package: deploymentPackageFactory({
+        name: modDefinition.metadata.name,
+        version: modDefinition.metadata.version,
+        package_id: registryId,
+      }),
+    });
 
     const starterBrick = starterBrickConfigFactory();
     const brick = {
@@ -387,11 +485,15 @@ describe("updateDeployments", () => {
     );
     await saveEditorState(editorState);
 
-    axiosMock.onGet().reply(200, {
+    axiosMock.onGet("/api/me/").reply(200, {
       flags: [],
     });
 
     axiosMock.onPost().reply(201, [deployment]);
+
+    axiosMock
+      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
     await updateDeployments();
 
@@ -410,13 +512,25 @@ describe("updateDeployments", () => {
       permissions: emptyPermissionsFactory(),
     });
 
-    const deployment = deploymentFactory();
+    const modDefinition = defaultModDefinitionFactory();
+    const registryId = modDefinition.metadata.id;
+    const deployment = deploymentFactory({
+      package: deploymentPackageFactory({
+        name: modDefinition.metadata.name,
+        version: modDefinition.metadata.version,
+        package_id: registryId,
+      }),
+    });
 
-    axiosMock.onGet().reply(200, {
+    axiosMock.onGet("/api/me/").reply(200, {
       flags: [],
     });
 
     axiosMock.onPost().reply(201, [deployment]);
+
+    axiosMock
+      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
     await updateDeployments();
 
@@ -436,23 +550,49 @@ describe("updateDeployments", () => {
       },
     });
 
-    const deployment = deploymentFactory();
-    deployment.package.config.extensionPoints[0].permissions.permissions = [
-      "clipboardWrite",
-    ];
+    const modDefinition = defaultModDefinitionFactory({
+      extensionPoints: [
+        modComponentDefinitionFactory({
+          permissions: {
+            permissions: ["clipboardWrite"],
+          },
+        }),
+      ],
+    });
+    const registryId = modDefinition.metadata.id;
+    const deployment = deploymentFactory({
+      package: deploymentPackageFactory({
+        name: modDefinition.metadata.name,
+        version: modDefinition.metadata.version,
+        package_id: registryId,
+      }),
+    });
 
-    axiosMock.onGet().reply(200, {
+    axiosMock.onGet("/api/me/").reply(200, {
       flags: ["deployment-permissions-strict"],
     });
 
     axiosMock.onPost().reply(201, [deployment]);
+
+    axiosMock
+      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
     await updateDeployments();
 
     const { extensions } = await getModComponentState();
 
     expect(jest.mocked(checkDeploymentPermissions).mock.calls[0]).toStrictEqual(
-      [expect.anything(), expect.anything(), { optionalPermissions: [] }],
+      [
+        {
+          deploymentModDefinitionPair: {
+            deployment,
+            modDefinition: omit(modDefinition, "options"),
+          },
+          locate: expect.anything(),
+          optionalPermissions: [],
+        },
+      ],
     );
 
     expect(extensions).toHaveLength(0);
