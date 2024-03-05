@@ -33,6 +33,7 @@ import { HashRouter } from "react-router-dom";
 import { createHashHistory } from "history";
 import { addThemeClassToDocumentRoot } from "@/themes/themeUtils";
 import defaultMiddlewareConfig from "@/store/defaultMiddlewareConfig";
+import { meApiResponseFactory } from "@/testUtils/factories/authFactories";
 
 export default {
   title: "Onboarding/Setup/PartnerSetupCard",
@@ -100,7 +101,7 @@ OAuth2.parameters = {
     handlers: [
       rest.get("/api/me/", async (request, result, context) =>
         // State is blank for unauthenticated users
-        result(context.json({})),
+        result(context.json({ flags: [] })),
       ),
     ],
   },
@@ -116,7 +117,7 @@ TokenUnlinked.parameters = {
     handlers: [
       rest.get("/api/me/", async (request, result, context) =>
         // State is blank for unauthenticated users
-        result(context.json({})),
+        result(context.json({ flags: [] })),
       ),
     ],
   },
@@ -131,11 +132,7 @@ TokenLinked.parameters = {
   msw: {
     handlers: [
       rest.get("/api/me/", async (request, result, context) =>
-        result(
-          context.json({
-            id: uuidv4(),
-          }),
-        ),
+        result(context.json(meApiResponseFactory())),
       ),
     ],
   },

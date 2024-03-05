@@ -38,6 +38,8 @@ import {
 import useAsyncState from "@/hooks/useAsyncState";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
+import useLinkState from "@/auth/useLinkState";
+import Loader from "@/components/Loader";
 
 /**
  * Create the app URL for the partner start page. It shows content based on whether or not the hostname corresponds
@@ -115,8 +117,13 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   // Make sure to use useLocation because the location.search are on the hash route
   const location = useLocation();
   const mode = usePartnerLoginMode();
-  const { data: me } = useGetMeQuery();
   const managedStorage = useManagedStorageState();
+
+  const { data: isLinked, isLoading: isLinkedLoading } = useLinkState();
+  const { isLoading: isMeLoading, data: me } = useGetMeQuery(undefined, {
+    // Skip because useGetMeQuery throws an error if the user is not linked
+    skip: !isLinked,
+  });
 
   // Hostname passed from manual flow during manual setup initiated via Control Room link
   const hostname = new URLSearchParams(location.search).get("hostname");
@@ -145,6 +152,10 @@ const PartnerSetupCard: React.FunctionComponent = () => {
     // Ensure the partner branding is applied
     dispatch(updateLocalPartnerTheme("automation-anywhere"));
   }, [dispatch]);
+
+  if (isLinkedLoading || isMeLoading) {
+    return <Loader />;
+  }
 
   const StepOne = (
     <OnboardingStep number={1} title="Browser Extension installed" completed />

@@ -54,6 +54,8 @@ import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFa
 
 import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
 import { type RegistryPackage } from "@/types/contract";
+import { resetFeatureFlags } from "@/__mocks__/@/auth/featureFlagStorage";
+import { resetMeApiMocks } from "@/testUtils/userMock";
 
 setContext("background");
 const axiosMock = new MockAdapter(axios);
@@ -82,6 +84,7 @@ jest.mock("@/auth/authStorage", () => ({
   isLinked: jest.fn().mockResolvedValue(true),
   async updateUserData() {},
   addListener: jest.fn(),
+  TEST_setAuthData: jest.fn(),
 }));
 
 jest.mock("@/background/installer", () => ({
@@ -124,6 +127,11 @@ beforeEach(async () => {
   } as any);
 
   await resetManagedStorage();
+});
+
+afterEach(async () => {
+  await resetFeatureFlags();
+  await resetMeApiMocks();
 });
 
 describe("updateDeployments", () => {

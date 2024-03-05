@@ -21,6 +21,12 @@ import { addListener as addAuthStorageListener } from "@/auth/authStorage";
 
 let flags: string[] | null = null;
 
+/**
+ * Suggested that you call this in afterEach() in your tests:
+ *    afterEach(async () => {
+ *      await resetFeatureFlags();
+ *    });
+ */
 export async function resetFeatureFlags(): Promise<void> {
   flags = null;
 }
@@ -39,9 +45,5 @@ export async function flagOn(flag: string): Promise<boolean> {
 }
 
 addAuthStorageListener(async () => {
-  await resetFeatureFlags();
-});
-
-afterEach(async () => {
   await resetFeatureFlags();
 });

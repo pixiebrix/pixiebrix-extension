@@ -74,11 +74,16 @@ export function mockErrorMeApiResponse(error: unknown): void {
   useLinkStateMock.mockReturnValue(valueToAsyncState(true));
 }
 
-afterAll(async () => {
-  console.log("TEST");
+/**
+ * Suggested that you call this in afterEach() in your tests:
+ *    afterEach(async () => {
+ *      await resetMeApiMocks();
+ *    });
+ */
+export async function resetMeApiMocks(): Promise<void> {
   useLinkStateMock.mockReset();
   appApiMock.reset();
-  // getLinkedApiClientMock.mockResolvedValue(axios);
   // eslint-disable-next-line new-cap
   await TEST_setAuthData({});
-});
+  // getLinkedApiClientMock.mockResolvedValue(axios);
+}

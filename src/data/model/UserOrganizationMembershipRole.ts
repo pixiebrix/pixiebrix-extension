@@ -83,9 +83,9 @@ export function convertToLegacyUserRole(
     }
 
     default: {
+      const exhaustiveCheck: never = userOrganizationMembershipRole;
       throw new Error(
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- future-proofing
-        `Invalid user organization membership role: ${userOrganizationMembershipRole}`,
+        `Invalid user organization membership role: ${exhaustiveCheck}`,
       );
     }
   }
