@@ -21,22 +21,10 @@
 const API_VERSIONS = ["1.0", "1.1", "2.0"] as const;
 export type ApiVersion = (typeof API_VERSIONS)[number];
 
-// See REST_FRAMEWORK["DEFAULT_VERSION"] in the Django settings
-const DEFAULT_API_VERSION = "1.0";
-
-const NON_DEFAULT_API_VERSIONS = API_VERSIONS.filter(
-  (version) => version !== DEFAULT_API_VERSION,
-);
-
-export function getRequestHeadersByAPIVersion(
-  apiVersion: ApiVersion | undefined,
-) {
-  if (!apiVersion || apiVersion === DEFAULT_API_VERSION) {
-    // No headers are required for the default version.
-    return {};
-  }
-
-  if (NON_DEFAULT_API_VERSIONS.includes(apiVersion)) {
+export function getRequestHeadersByAPIVersion(apiVersion: ApiVersion) {
+  // The default version doesn't require a header, but pass it anyway to be explicit
+  // and make troubleshooting easier.
+  if (API_VERSIONS.includes(apiVersion)) {
     return { Accept: `application/json; version=${apiVersion}` };
   }
 

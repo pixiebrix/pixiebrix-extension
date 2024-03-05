@@ -47,7 +47,7 @@ import { allSettled } from "@/utils/promiseUtils";
  * 2. Multiple deployments can theoretically use the same mod version, so we can check if the mod version was already
  *    fetched. But that should rarely occur in practice and handling that won't improve performance significantly.
  */
-export async function fetchDeploymentModDefinition({
+async function fetchDeploymentModDefinition({
   package_id: registryId,
   version,
 }: Deployment["package"]): Promise<ModDefinition> {
