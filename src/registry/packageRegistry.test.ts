@@ -92,9 +92,10 @@ describe("localRegistry", () => {
 
     await expect(count()).resolves.toBe(0);
 
-    deferred.resolve([defaultModDefinitionFactory()]);
+    deferred.resolve([200, defaultModDefinitionFactory()]);
 
-    await recipesPromise;
+    // FIXME: test assertion failing
+    await expect(recipesPromise).resolves.toHaveLength(1);
   });
 
   it("should await sync on lookup", async () => {
@@ -108,7 +109,7 @@ describe("localRegistry", () => {
 
     await expect(count()).resolves.toBe(0);
 
-    deferred.resolve([]);
+    deferred.resolve([200, []]);
 
     await expect(packagePromise).resolves.toBeNull();
   });
