@@ -24,6 +24,29 @@ import {
 } from "@/types/contract";
 import { allSettled } from "@/utils/promiseUtils";
 
+/**
+ * Fetches the mod definition for the given deployment.
+ *
+ * Potential performance improvements:
+ *
+ * 1. Check to see if the mod definition version in IDB matches the requested version. However, there's a small
+ *    chance using the local copy would give the incorrect definition in the following sequence:
+ *
+ *    - Save mod as 1.0.0
+ *    - End-user fetches mod
+ *    - Save mod as 1.0.0 (incrementing version isn't required because it's not deployed yet)
+ *    - Deploy mod as 1.0.0
+ *    - End-user fetches deployments and sees the stale mod content
+ *
+ *    That risk might be with the performance benefits, though.
+ *
+ *    We could potentially leverage the updated_at timestamp and version, but the IDB registry uses the time
+ *    it fetched, not the updated_at timestamp on the package:
+ *    @see syncPackages
+ *
+ * 2. Multiple deployments can theoretically use the same mod version, so we can check if the mod version was already
+ *    fetched. But that should rarely occur in practice and handling that won't improve performance significantly.
+ */
 export async function fetchDeploymentModDefinition({
   package_id: registryId,
   version,
@@ -57,6 +80,8 @@ export async function fetchDeploymentModDefinition({
 
 /**
  * Fetches the mod definitions for the given deployments.
+ *
+ * Skip any deployments that fail to fetch the mod definition.
  *
  * Notes:
  * - We can't use RTK query in the background script, which is where this function is used,
