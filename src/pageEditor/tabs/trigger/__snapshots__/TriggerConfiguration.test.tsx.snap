@@ -903,9 +903,9 @@ exports[`TriggerConfiguration renders custom event field with known event names 
             >
               <span>
                 Selectors restricting when this starter brick runs. If provided, at least one of the selectors must match 
-                <i>
+                <em>
                   on page load
-                </i>
+                </em>
                  for this starter brick to run.
               </span>
             </small>
