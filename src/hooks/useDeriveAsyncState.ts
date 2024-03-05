@@ -40,7 +40,7 @@ function checkStateSuccessInvariant(state: AsyncState): void {
     // The AsyncStates provided must NOT allow `undefined` for `data` in the `isSuccess` state, because `data`
     // is used to determine when to re-derive the state.
     throw new Error(
-      "useMergeAsyncState: `data` must not be undefined in `isSuccess` state",
+      "useDeriveAsyncState: `data` must not be undefined in `isSuccess` state",
     );
   }
 }
@@ -49,7 +49,7 @@ const warnNullValueOnce = once(() => {
   // This will warn once per module -- not once per instance of useAsyncState. We might want to track in the slice
   // instead. But this is sufficient for now, and keeps the reducer state clean.
   console.warn(
-    "useAsyncState:promiseOrGenerator produced a null value. Avoid returning null for async state values.",
+    "useDeriveAsyncState:promiseOrGenerator produced a null value. Avoid returning null for async state values.",
   );
 });
 
