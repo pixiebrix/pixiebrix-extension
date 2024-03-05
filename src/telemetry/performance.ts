@@ -29,7 +29,6 @@ import {
 } from "@/telemetry/telemetryHelpers";
 import type { UserData } from "@/auth/authTypes";
 import { flagOn } from "@/auth/featureFlagStorage";
-import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 
 const environment = process.env.ENVIRONMENT;
 const applicationId = process.env.DATADOG_APPLICATION_ID;
@@ -38,7 +37,8 @@ const clientToken = process.env.DATADOG_CLIENT_TOKEN;
 const RUM_FLAG = "telemetry-performance";
 
 /**
- * Initialize Datadog Real User Monitoring (RUM) for performance monitoring.
+ * Initialize Datadog Real User Monitoring (RUM) for performance monitoring. This should be called once per page load, before
+ * any user interactions or network requests are made.
  */
 export async function initPerformanceMonitoring(): Promise<void> {
   const start = Date.now();
@@ -48,15 +48,22 @@ export async function initPerformanceMonitoring(): Promise<void> {
 
   forbidContext("contentScript");
   forbidContext("web");
-  // // There's no user interactions to track in the background page
+  // There's no user interactions to  track in the background page
   forbidContext("background");
 
-  // const baseUrl = DEFAULT_SERVICE_URL;
-  const baseUrl = await getBaseURL(); // SLOW! about 4.5 seconds
-  //
-  // if (await getDNT()) {
-  //   return;
-  // }
+  if (await getDNT()) {
+    return;
+  }
+
+  if (!(await flagOn(RUM_FLAG))) {
+    return;
+  }
+
+  const baseUrl = await getBaseURL();
+
+  if (await getDNT()) {
+    return;
+  }
 
   if (!applicationId || !clientToken) {
     console.warn("Datadog application ID or client token not configured");
