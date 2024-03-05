@@ -22,9 +22,11 @@ import { isEqual } from "lodash";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
+import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 function useCheckModStarterBrickInvariants(): (
   modDefinition: UnsavedModDefinition,
+  newModComponentFormState?: ModComponentFormState,
 ) => Promise<boolean> {
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
@@ -41,14 +43,22 @@ function useCheckModStarterBrickInvariants(): (
    *    also need to run it through the adapter because of some cleanup logic
    */
   return useCallback(
-    async (modDefinition: UnsavedModDefinition) => {
+    async (
+      modDefinition: UnsavedModDefinition,
+      newModComponentFormState?: ModComponentFormState,
+    ) => {
       const modId = modDefinition.metadata.id;
       const definitionsFromMod = Object.values(modDefinition.definitions);
 
       const { cleanModComponents, dirtyModComponentFormStates } =
         getCleanComponentsAndDirtyFormStatesForMod(modId);
+      const dirtyFormStates = dirtyModComponentFormStates;
 
-      for (const formState of dirtyModComponentFormStates) {
+      if (newModComponentFormState) {
+        dirtyFormStates.push(newModComponentFormState);
+      }
+
+      for (const formState of dirtyFormStates) {
         if (
           !isInnerDefinitionRegistryId(formState.extensionPoint.metadata.id)
         ) {
