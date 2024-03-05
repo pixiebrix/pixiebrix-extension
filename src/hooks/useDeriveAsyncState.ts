@@ -28,6 +28,7 @@ import { useReducer, useRef } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import {
   checkAsyncStateInvariants,
+  errorToAsyncState,
   uninitializedAsyncStateFactory,
 } from "@/utils/asyncStateUtils";
 import { type UUID } from "@/types/stringTypes";
@@ -193,29 +194,16 @@ function useDeriveAsyncState<AsyncStates extends AsyncStateArray, Result>(
   // In error state if the final promise is an error
   if (promiseState.isError) {
     return {
-      data: undefined,
-      currentData: undefined,
-      isUninitialized: false,
-      isLoading: false,
+      ...errorToAsyncState(promiseState.error),
       isFetching,
-      isError: true,
-      isSuccess: false,
-      error: promiseState.error,
     };
   }
 
   // Or, in error state if any of the dependencies are errors
   if (states.some((x) => x.isError)) {
     return {
-      data: undefined,
-      currentData: undefined,
-      isUninitialized: false,
-      isLoading: false,
+      ...errorToAsyncState(states.find((x) => x.isError)?.error),
       isFetching,
-      isError: true,
-      isSuccess: false,
-      // Return an arbitrary error. Could consider merging errors into a composite error
-      error: states.find((x) => x.isError)?.error,
     };
   }
 
