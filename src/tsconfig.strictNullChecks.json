@@ -598,6 +598,8 @@
     "./telemetry/events.ts",
     "./telemetry/initErrorReporter.ts",
     "./telemetry/logging.ts",
+    "./telemetry/performance.ts",
+    "./telemetry/performance.test.ts",
     "./telemetry/reportError.ts",
     "./telemetry/reportEvent.ts",
     "./telemetry/reportUncaughtErrors.ts",

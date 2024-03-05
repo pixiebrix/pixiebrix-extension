@@ -42,23 +42,30 @@ import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
 import { setPlatform } from "@/platform/platformContext";
 import extensionPagePlatform from "@/extensionPages/extensionPagePlatform";
 
-setPlatform(extensionPagePlatform);
-
 async function init(): Promise<void> {
+  setPlatform(extensionPagePlatform);
+  void initMessengerLogging();
+  void initRuntimeLogging();
+  try {
+    await initPerformanceMonitoring();
+  } catch (error) {
+    console.error("Failed to initialize performance monitoring", error);
+  }
+
+  registerMessenger();
+  registerContribBlocks();
+  registerBuiltinBricks();
+  initToaster();
+
   ReactDOM.render(<App />, document.querySelector("#container"));
+
   sidebarWasLoaded(await getConnectedTarget());
+
+  initSidePanel();
+  markDocumentAsFocusableByUser();
+
+  // Handle an embedded AA business copilot frame
+  void initCopilotMessenger();
 }
 
-void initMessengerLogging();
-void initRuntimeLogging();
-void initPerformanceMonitoring();
-registerMessenger();
-registerContribBlocks();
-registerBuiltinBricks();
-initToaster();
 void init();
-initSidePanel();
-markDocumentAsFocusableByUser();
-
-// Handle an embedded AA business copilot frame
-void initCopilotMessenger();
