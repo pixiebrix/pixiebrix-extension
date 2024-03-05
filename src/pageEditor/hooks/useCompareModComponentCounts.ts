@@ -19,25 +19,36 @@ import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import { useSelector } from "react-redux";
 import { useCallback } from "react";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 
 /**
  * @returns {function} - A function that compares the number of mod components in the redux state and the mod definition
  */
 function useCompareModComponentCounts(): (
   modDefinition: UnsavedModDefinition,
+  newModComponentFormState?: ModComponentFormState,
 ) => boolean {
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
   );
 
   return useCallback(
-    (modDefinition: UnsavedModDefinition) => {
+    (
+      modDefinition: UnsavedModDefinition,
+      newModComponentFormState?: ModComponentFormState,
+    ) => {
       const modId = modDefinition.metadata.id;
       const { cleanModComponents, dirtyModComponentFormStates } =
         getCleanComponentsAndDirtyFormStatesForMod(modId);
+      const dirtyFormStates = dirtyModComponentFormStates;
+
+      if (newModComponentFormState) {
+        dirtyFormStates.push(newModComponentFormState);
+      }
 
       const totalNumberModComponentsFromState =
-        cleanModComponents.length + dirtyModComponentFormStates.length;
+        cleanModComponents.length + dirtyFormStates.length;
+
       const totalNumberModComponentsFromDefinition =
         modDefinition.extensionPoints.length;
 

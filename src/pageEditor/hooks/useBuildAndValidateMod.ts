@@ -56,8 +56,20 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
         dirtyModMetadata,
       });
 
+      // Find form state that doesn't have a matching clean mod component, to
+      // cover the case where a new mod is being created from a source component
+      const newModComponentFormState = dirtyModComponentFormStates.find(
+        (formState) =>
+          !cleanModComponents.some(
+            (modComponent) => modComponent.id === formState.uuid,
+          ),
+      );
+
       const modComponentDefinitionCountsMatch =
-        compareModComponentCountsToModDefinition(newMod);
+        compareModComponentCountsToModDefinition(
+          newMod,
+          newModComponentFormState,
+        );
       const modComponentStarterBricksMatch =
         await checkModStarterBrickInvariants(newMod);
 
