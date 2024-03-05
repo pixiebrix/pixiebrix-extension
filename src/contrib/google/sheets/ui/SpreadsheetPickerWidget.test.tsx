@@ -136,7 +136,7 @@ describe("SpreadsheetPickerWidget", () => {
       selectEvent.openMenu(selectInput);
     });
 
-    expect(await screen.findByText("No options")).toBeVisible();
+    await expect(screen.findByText("No options")).resolves.toBeVisible();
   });
 
   test("given google pkce dependency and string spreadsheetId, renders dropdown with test spreadsheet option selected", async () => {

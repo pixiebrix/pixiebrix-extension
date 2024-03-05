@@ -23,9 +23,9 @@ import { checkAvailable, testMatchPatterns } from "@/bricks/available";
 
 describe("isAvailable.urlPatterns", () => {
   test("can match hash", async () => {
-    expect(await checkAvailable({ urlPatterns: { hash: "/foo/:id" } })).toBe(
-      true,
-    );
+    await expect(
+      checkAvailable({ urlPatterns: { hash: "/foo/:id" } }),
+    ).resolves.toBe(true);
   });
 
   test("invalid baseURL", async () => {
@@ -35,26 +35,26 @@ describe("isAvailable.urlPatterns", () => {
   });
 
   test("can reject hash", async () => {
-    expect(
-      await checkAvailable({ urlPatterns: { hash: "/DIFFERENT/:id" } }),
-    ).toBe(false);
+    await expect(
+      checkAvailable({ urlPatterns: { hash: "/DIFFERENT/:id" } }),
+    ).resolves.toBe(false);
   });
 });
 
 describe("isAvailable.matchPatterns", () => {
   test("can match pattern", async () => {
-    expect(
-      await checkAvailable({ matchPatterns: "https://www.example.com/*" }),
-    ).toBe(true);
+    await expect(
+      checkAvailable({ matchPatterns: "https://www.example.com/*" }),
+    ).resolves.toBe(true);
   });
 
   test("require urlPattern and matchPattern", async () => {
-    expect(
-      await checkAvailable({
+    await expect(
+      checkAvailable({
         matchPatterns: "https://www.example.com/*",
         urlPatterns: { hash: "/DIFFERENT/:id" },
       }),
-    ).toBe(false);
+    ).resolves.toBe(false);
   });
 });
 

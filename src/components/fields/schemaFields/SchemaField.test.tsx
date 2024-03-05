@@ -519,6 +519,6 @@ describe("SchemaField", () => {
       />,
       { initialValues: {} },
     );
-    expect(await assertion()).toBeInTheDocument();
+    await expect(assertion()).resolves.toBeInTheDocument();
   });
 });

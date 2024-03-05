@@ -98,9 +98,9 @@ describe("ActivatedModComponentListItem", () => {
       />,
     );
 
-    expect(
-      await screen.findByRole("img", { name: "Not available on page" }),
-    ).toBeVisible();
+    await expect(
+      screen.findByRole("img", { name: "Not available on page" }),
+    ).resolves.toBeVisible();
   });
 
   it("handles mouseover action properly for button mod components", async () => {
