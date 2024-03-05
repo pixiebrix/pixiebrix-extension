@@ -62,7 +62,12 @@ export async function initPerformanceMonitoring(): Promise<void> {
   if (!applicationId || !clientToken || !version_name || !environment) {
     console.warn(
       "Required environment variables for initializing Datadog missing:",
-      { applicationId, clientToken, version_name, environment },
+      {
+        applicationId: Boolean(applicationId),
+        clientToken: Boolean(clientToken),
+        version_name,
+        environment,
+      },
     );
     return;
   }
