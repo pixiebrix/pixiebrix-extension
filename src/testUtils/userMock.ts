@@ -49,7 +49,7 @@ export function mockAnonymousMeApiResponse(): void {
     flags: [],
   });
   useLinkStateMock.mockReturnValue(valueToAsyncState(false));
-  connectApiClientMock();
+  // connectApiClientMock();
 }
 
 export async function mockAuthenticatedMeApiResponse(
@@ -64,7 +64,7 @@ export async function mockAuthenticatedMeApiResponse(
   // eslint-disable-next-line new-cap
   await TEST_setAuthData(tokenData);
   useLinkStateMock.mockReturnValue(valueToAsyncState(true));
-  connectApiClientMock();
+  // connectApiClientMock();
 }
 
 export function mockErrorMeApiResponse(error: unknown): void {
@@ -78,7 +78,7 @@ afterAll(async () => {
   console.log("TEST");
   useLinkStateMock.mockReset();
   appApiMock.reset();
-  getLinkedApiClientMock.mockResolvedValue(axios);
+  // getLinkedApiClientMock.mockResolvedValue(axios);
   // eslint-disable-next-line new-cap
   await TEST_setAuthData({});
 });

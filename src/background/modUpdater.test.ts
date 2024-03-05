@@ -191,7 +191,7 @@ describe("fetchModUpdates function", () => {
   });
 
   it("calls the registry/updates/ endpoint with the right payload", async () => {
-    axiosMock.onPost().reply(200, {});
+    axiosMock.onPost().reply(200, { updates: [] });
 
     await fetchModUpdates();
 

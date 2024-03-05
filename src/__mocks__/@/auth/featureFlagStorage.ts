@@ -15,46 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getApiClient } from "@/data/service/apiClient";
-import { type components } from "@/types/swagger";
+// noinspection ES6PreferShortImport -- Override mock
+import { fetchFeatureFlags } from "../../../auth/featureFlagStorage";
 import { addListener as addAuthStorageListener } from "@/auth/authStorage";
-import { CachedFunction } from "webext-storage-cache";
-import { expectContext } from "@/utils/expectContext";
-import { fetchFeatureFlagsInBackground } from "@/background/messenger/strict/api";
-import { oncePerSession } from "@/mv3/SessionStorage";
 
-export async function fetchFeatureFlags(): Promise<string[]> {
-  expectContext("background");
-  const client = await getApiClient();
-  const { data } = await client.get<components["schemas"]["Me"]>("/api/me/");
-  return [...data.flags];
-}
-
-const featureFlags = new CachedFunction("getFeatureFlags", {
-  updater: fetchFeatureFlagsInBackground,
-});
+let flags: string[] | null = null;
 
 export async function resetFeatureFlags(): Promise<void> {
-  await featureFlags.delete();
+  flags = null;
 }
 
 export async function TEST_overrideFeatureFlags(
-  flags: string[],
+  newFlags: string[],
 ): Promise<void> {
-  await featureFlags.applyOverride([], flags);
+  flags = newFlags;
 }
 
-/**
- * Returns true if the specified flag is on for the current user.
- * @param flag the feature flag to check
- */
 export async function flagOn(flag: string): Promise<boolean> {
-  const flags = await featureFlags.get();
-  return flags.includes(flag);
+  if (flags === null) {
+    flags = await fetchFeatureFlags();
+  }
+  return flags?.includes(flag) ?? false;
 }
 
 addAuthStorageListener(async () => {
   await resetFeatureFlags();
 });
 
-oncePerSession("resetFeatureFlags", import.meta.url, resetFeatureFlags);
+afterEach(async () => {
+  await resetFeatureFlags();
+});
