@@ -195,7 +195,11 @@ async function ensurePopulated(): Promise<void> {
     return;
   }
 
+  // XXX: there's a small chance of a race here, where an existing syncPackages call finishes after the count()
+  // call resolves, before executes switches back to this method.
+
   try {
+    // `syncPackages` is memoized, so safe to call multiple times;
     await syncPackages();
   } catch {
     // NOP - call-site will handle uninitialized state
