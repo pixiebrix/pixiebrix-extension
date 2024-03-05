@@ -29,7 +29,6 @@ import {
   type Milestone,
   type Organization,
   type Package,
-  type PackageConfigDetail,
   type PackageUpsertResponse,
   type PackageVersionDeprecated,
   type PendingInvitation,
@@ -41,6 +40,7 @@ import {
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
+import { getRequestHeadersByAPIVersion } from "@/data/service/apiVersioning";
 import { type IntegrationDefinition } from "@/integrations/integrationTypes";
 import {
   type ModDefinition,
@@ -361,19 +361,6 @@ export const appApi = createApi({
       query: ({ id }) => ({ url: `/api/bricks/${id}/`, method: "get" }),
       providesTags: (result, error, { id }) => [{ type: "Package", id }],
     }),
-    getPackageViaRegistryId: builder.query<
-      PackageConfigDetail,
-      { registryId: RegistryId; version?: string }
-    >({
-      query: ({ registryId, version }) => ({
-        url: `/api/registry/bricks/${encodeURIComponent(registryId)}/`,
-        method: "get",
-        params: { version },
-      }),
-      providesTags: (result, error, { registryId }) => [
-        { type: "Package", id: registryId },
-      ],
-    }),
     createPackage: builder.mutation<PackageUpsertResponse, UnknownObject>({
       query(data) {
         return {
@@ -466,6 +453,8 @@ export const appApi = createApi({
         url: "/api/deployments/",
         method: "post",
         data,
+        // @since 1.8.10 -- API version 1.1 excludes the package config
+        headers: getRequestHeadersByAPIVersion("1.1"),
       }),
       providesTags: ["Deployments"],
     }),
@@ -495,7 +484,6 @@ export const {
   useUpdateRecipeMutation,
   useGetInvitationsQuery,
   useGetPackageQuery,
-  useGetPackageViaRegistryIdQuery,
   useCreatePackageMutation,
   useUpdatePackageMutation,
   useDeletePackageMutation,

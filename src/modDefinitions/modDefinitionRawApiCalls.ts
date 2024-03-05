@@ -22,7 +22,7 @@ import { type Deployment, type PackageConfigDetail } from "@/types/contract";
 export async function fetchDeploymentModDefinition({
   package_id: registryId,
   version,
-}: Deployment["package"]): Promise<ModDefinition> {
+}: Deployment["package"]): Promise<ModDefinition | undefined> {
   // TODO: Remove this
   console.log(
     `Fetching deployment package config for ${registryId}@${version}`,
@@ -47,18 +47,17 @@ export async function fetchDeploymentModDefinition({
   if (status >= 400) {
     // If our server is acting up, check again later
     console.debug(
-      "Skipping deployments update because request to fetch a mod defintion failed",
+      "Skipping deployments update because request to fetch a mod definition failed",
     );
-
     return;
   }
 
   return {
     ...data.config,
-    // Cast to ModDefinition because the fields in ModDefinition["sharing"] are required
+    // Cast to ModDefinition["sharing"] because the fields in ModDefinition["sharing"] are required
     // but optional in PackageConfigDetail["sharing"]
     sharing: data.sharing as ModDefinition["sharing"],
-    updated_at: data.updated_at,
+    updated_at: data?.updated_at,
   };
 }
 
@@ -79,6 +78,7 @@ export async function fetchDeploymentModDefinitions(deployments: Deployment[]) {
           deployment,
         ): Promise<[Deployment["package"]["id"], ModDefinition]> => [
           deployment.package.id,
+          // TODO: check what happens if API call returns 400, ideally it should just skip over that item
           await fetchDeploymentModDefinition(deployment.package),
         ],
       ),

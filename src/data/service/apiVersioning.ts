@@ -24,20 +24,19 @@ export type ApiVersion = (typeof API_VERSIONS)[number];
 // See REST_FRAMEWORK["DEFAULT_VERSION"] in the Django settings
 const DEFAULT_API_VERSION = "1.0";
 
+const NON_DEFAULT_API_VERSIONS = API_VERSIONS.filter(
+  (version) => version !== DEFAULT_API_VERSION,
+);
+
 export function getRequestHeadersByAPIVersion(
   apiVersion: ApiVersion | undefined,
 ) {
   if (!apiVersion || apiVersion === DEFAULT_API_VERSION) {
     // No headers are required for the default version.
-    // But we set as a default axios header in baseQuery.ts anyway.
     return {};
   }
 
-  const nonDefaultApiVersions = API_VERSIONS.filter(
-    (version) => version !== DEFAULT_API_VERSION,
-  );
-
-  if (nonDefaultApiVersions.includes(apiVersion)) {
+  if (NON_DEFAULT_API_VERSIONS.includes(apiVersion)) {
     return { Accept: `application/json; version=${apiVersion}` };
   }
 

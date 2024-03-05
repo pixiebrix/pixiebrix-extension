@@ -515,6 +515,7 @@ export async function updateDeployments(): Promise<void> {
         campaignIds,
       },
       {
+        // @since 1.8.10 -- API version 1.1 excludes the package config
         headers: getRequestHeadersByAPIVersion("1.1"),
       },
     );
@@ -582,6 +583,7 @@ export async function updateDeployments(): Promise<void> {
 
   const deploymentsModDefinitionMap =
     await fetchDeploymentModDefinitions(deployments);
+  // TODO: remove this
   console.log(deploymentsModDefinitionMap);
 
   // `clipboardWrite` is not strictly required to use the clipboard brick, so allow it to auto-install.
