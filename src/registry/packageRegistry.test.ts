@@ -94,9 +94,9 @@ describe("localRegistry", () => {
 
     deferred.resolve([200, [defaultModDefinitionFactory()]]);
 
-    // FIXME: test assertion failing
-    await expect(count()).resolves.toBe(1);
+    // `recipesPromise` must come first since it waits on syncPackages. The `count` call doesn't wait.
     await expect(recipesPromise).resolves.toHaveLength(1);
+    await expect(count()).resolves.toBe(1);
   });
 
   it("should await sync on lookup", async () => {
@@ -110,10 +110,10 @@ describe("localRegistry", () => {
 
     await expect(count()).resolves.toBe(0);
 
-    deferred.resolve([200, []]);
+    deferred.resolve([200, [defaultModDefinitionFactory()]]);
 
-    // FIXME: test assertion failing
-    await expect(count()).resolves.toBe(1);
+    // `packagePromise` must come first since it waits on syncPackages. The `count` call doesn't wait.
     await expect(packagePromise).resolves.toBeNull();
+    await expect(count()).resolves.toBe(1);
   });
 });
