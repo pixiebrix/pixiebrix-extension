@@ -185,7 +185,8 @@ export const syncPackages = memoizeUntilSettled(async () => {
 });
 
 /**
- * Helper to ensure the IDB has synced packages.
+ * Helper to ensure the IDB has synced packages. DOES NOT ensure the database has the latest package definitions --
+ * i.e., does not await any inflight syncPackages call if the database is already populated.
  */
 async function ensurePopulated(): Promise<void> {
   // Safe to assume everyone has access to at least one package
