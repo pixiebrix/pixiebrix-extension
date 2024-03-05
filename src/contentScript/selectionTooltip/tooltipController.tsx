@@ -288,9 +288,6 @@ export const initSelectionTooltip = once(() => {
         const selection = window.getSelection();
         if (isSelectionValid(selection)) {
           await showTooltip();
-        } else {
-          // It should be showing because the controller hide on selectionstart. But safe to hide in case
-          hideTooltip();
         }
       },
       60,
