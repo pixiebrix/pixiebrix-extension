@@ -42,7 +42,7 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(modDefinition)).toBe(true);
+    expect(result.current(modDefinition, {})).toBe(true);
   });
 
   it("should return true for 0 clean components and 1 dirty component in state and 1 in the definition", () => {
@@ -60,7 +60,7 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(modDefinition)).toBe(true);
+    expect(result.current(modDefinition, {})).toBe(true);
   });
 
   it("should return true for 1 clean component and 0 dirty components and 1 in the definition", () => {
@@ -81,7 +81,7 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(modDefinition)).toBe(true);
+    expect(result.current(modDefinition, {})).toBe(true);
   });
 
   it("should return true for 1 clean and 1 unmatching dirty component in state and 2 in the definition", () => {
@@ -111,7 +111,11 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(unsavedModDefinition)).toBe(true);
+    expect(
+      result.current(unsavedModDefinition, {
+        sourceModDefinition: installedModDefinition,
+      }),
+    ).toBe(true);
   });
 
   it("should return true for 3 clean and 2 unmatching dirty form state and 5 components in the definition", () => {
@@ -146,7 +150,11 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(unsavedModDefinition)).toBe(true);
+    expect(
+      result.current(unsavedModDefinition, {
+        sourceModDefinition: installedModDefinition,
+      }),
+    ).toBe(true);
   });
 
   it("should return false for 1 clean and 1 unmatching form state and 1 in definition", () => {
@@ -171,7 +179,7 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(modDefinition)).toBe(false);
+    expect(result.current(modDefinition, {})).toBe(false);
   });
 
   it("should return false for 1 clean and 1 unmatching form state and 3 in definition", () => {
@@ -201,7 +209,11 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(unsavedModDefinition)).toBe(false);
+    expect(
+      result.current(unsavedModDefinition, {
+        sourceModDefinition: installedModDefinition,
+      }),
+    ).toBe(false);
   });
 
   it("should return false for 1 clean and 0 unmatching form state and 0 in definition", () => {
@@ -226,7 +238,11 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(unsavedModDefinition)).toBe(false);
+    expect(
+      result.current(unsavedModDefinition, {
+        sourceModDefinition: installedModDefinition,
+      }),
+    ).toBe(false);
   });
 
   it("should return false for 1 clean and 0 unmatching form state and 2 in definition", () => {
@@ -251,7 +267,11 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(unsavedModDefinition)).toBe(false);
+    expect(
+      result.current(unsavedModDefinition, {
+        sourceModDefinition: installedModDefinition,
+      }),
+    ).toBe(false);
   });
 
   it("should return false for 0 clean and 1 unmatching form state and 0 in definition", () => {
@@ -278,7 +298,7 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(modDefinition)).toBe(false);
+    expect(result.current(modDefinition, {})).toBe(false);
   });
 
   it("should return false for 0 clean and 1 unmatching form state and 2 in definition", () => {
@@ -309,7 +329,11 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(unsavedModDefinition)).toBe(false);
+    expect(
+      result.current(unsavedModDefinition, {
+        sourceModDefinition: installedModDefinition,
+      }),
+    ).toBe(false);
   });
 
   it("should return false for 3 clean and 1 unmatching form state and 3 in definition", () => {
@@ -336,7 +360,7 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(modDefinition)).toBe(false);
+    expect(result.current(modDefinition, {})).toBe(false);
   });
 
   it("should return false for 3 clean and 1 unmatching form state and 5 in definition", () => {
@@ -367,7 +391,11 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(unsavedModDefinition)).toBe(false);
+    expect(
+      result.current(unsavedModDefinition, {
+        sourceModDefinition: installedModDefinition,
+      }),
+    ).toBe(false);
   });
 
   it("should return true for 0 clean and 0 unmatching form state and 1 new form state and 1 in definition", () => {

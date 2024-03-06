@@ -230,8 +230,10 @@ describe("useCheckModStarterBrickInvariants", () => {
       });
 
       const checkModStarterBrickInvariants = result.current;
-      const actualResult =
-        await checkModStarterBrickInvariants(resultModDefinition);
+      const actualResult = await checkModStarterBrickInvariants(
+        resultModDefinition,
+        { sourceModDefinition: installedModDefinition },
+      );
       expect(actualResult).toBe(expectedResult);
     },
   );

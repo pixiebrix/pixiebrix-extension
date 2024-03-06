@@ -28,13 +28,11 @@ import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/s
 import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
 
-type SourceModParts =
-  | {
-      sourceModDefinition?: ModDefinition;
-      sourceModComponent?: ActivatedModComponent;
-      sourceModComponentFormState?: ModComponentFormState;
-    }
-  | undefined;
+type SourceModParts = {
+  sourceModDefinition?: ModDefinition;
+  sourceModComponent?: ActivatedModComponent;
+  sourceModComponentFormState?: ModComponentFormState;
+};
 
 function useCheckModStarterBrickInvariants(): (
   unsavedModDefinition: UnsavedModDefinition,
@@ -42,7 +40,7 @@ function useCheckModStarterBrickInvariants(): (
     sourceModDefinition,
     sourceModComponent,
     sourceModComponentFormState,
-  }?: SourceModParts,
+  }: SourceModParts,
 ) => Promise<boolean> {
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
@@ -65,7 +63,7 @@ function useCheckModStarterBrickInvariants(): (
         sourceModDefinition,
         sourceModComponent,
         sourceModComponentFormState,
-      }: SourceModParts = {},
+      }: SourceModParts,
     ) => {
       // Always compare to the pre-existing mod if it exists
       const modId = sourceModDefinition

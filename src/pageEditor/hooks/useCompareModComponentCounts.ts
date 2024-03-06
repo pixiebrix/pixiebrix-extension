@@ -25,13 +25,11 @@ import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/s
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 
-type SourceModParts =
-  | {
-      sourceModDefinition?: ModDefinition;
-      sourceModComponent?: ActivatedModComponent;
-      sourceModComponentFormState?: ModComponentFormState;
-    }
-  | undefined;
+type SourceModParts = {
+  sourceModDefinition?: ModDefinition;
+  sourceModComponent?: ActivatedModComponent;
+  sourceModComponentFormState?: ModComponentFormState;
+};
 
 /**
  * @returns {function} - A function that compares the number of mod components in the redux state and the mod definition
@@ -42,7 +40,7 @@ function useCompareModComponentCounts(): (
     sourceModDefinition,
     sourceModComponent,
     sourceModComponentFormState,
-  }?: SourceModParts,
+  }: SourceModParts,
 ) => boolean {
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
@@ -55,7 +53,7 @@ function useCompareModComponentCounts(): (
         sourceModDefinition,
         sourceModComponent,
         sourceModComponentFormState,
-      }: SourceModParts = {},
+      }: SourceModParts,
     ) => {
       // Always compare to the pre-existing mod if it exists
       const modId = sourceModDefinition
