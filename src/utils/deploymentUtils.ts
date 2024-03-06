@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type Deployment,
-  type DeploymentModDefinitionPair,
-} from "@/types/contract";
+import { type Deployment } from "@/types/contract";
 import { gte, satisfies } from "semver";
 import { compact, uniqBy } from "lodash";
 import { type ModComponentBase } from "@/types/modComponentTypes";
@@ -32,6 +29,7 @@ import { validateUUID } from "@/types/helpers";
 import { type Except } from "type-fest";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
+import type { DeploymentModDefinitionPair } from "@/types/deploymentTypes";
 
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)
@@ -120,12 +118,12 @@ export const makeUpdatedFilter =
  * violation).
  */
 export function checkExtensionUpdateRequired(
-  deploymentModDefinitionPairs: DeploymentModDefinitionPair[],
+  deploymentModDefinitionPairs: DeploymentModDefinitionPair[] = [],
 ): boolean {
   // Check that the user's extension can run the deployment
   const { version: extensionVersion } = browser.runtime.getManifest();
   const versionRanges = compact(
-    deploymentModDefinitionPairs?.map(
+    deploymentModDefinitionPairs.map(
       ({ modDefinition }) => modDefinition.metadata.extensionVersion,
     ),
   );

@@ -642,6 +642,7 @@
     "./types/bricks/transformerTypes.ts",
     "./types/browserTypes.ts",
     "./types/contract.ts",
+    "./types/deploymentTypes.ts",
     "./types/helpers.ts",
     "./types/iconTypes.ts",
     "./types/inputTypes.ts",

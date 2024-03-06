@@ -28,9 +28,9 @@ import {
   type SecretsConfig,
 } from "@/integrations/integrationTypes";
 import {
+  type Metadata,
   type RegistryId,
   type SemVerString,
-  type Metadata,
 } from "@/types/registryTypes";
 import {
   type ModDefinition,
@@ -166,11 +166,6 @@ export type Deployment = Except<
     NonNullable<components["schemas"]["DeploymentDetail"]["package"]>,
     "package_id"
   > & { package_id: RegistryId };
-};
-
-export type DeploymentModDefinitionPair = {
-  deployment: Deployment;
-  modDefinition: ModDefinition;
 };
 
 /**

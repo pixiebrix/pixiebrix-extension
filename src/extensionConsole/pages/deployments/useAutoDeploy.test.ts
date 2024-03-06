@@ -22,8 +22,8 @@ import useFlags from "@/hooks/useFlags";
 import useModPermissions from "@/mods/hooks/useModPermissions";
 import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
-import { type DeploymentModDefinitionPair } from "@/types/contract";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import type { DeploymentModDefinitionPair } from "@/types/deploymentTypes";
 
 jest.mock("@/mods/hooks/useModPermissions");
 jest.mock("@/hooks/useFlags");

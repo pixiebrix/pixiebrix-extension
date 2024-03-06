@@ -17,7 +17,6 @@
 
 // Split from deploymentUtils.ts to avoid circular dependency
 
-import { type DeploymentModDefinitionPair } from "@/types/contract";
 import {
   findLocalDeploymentConfiguredIntegrationDependencies,
   type Locate,
@@ -26,6 +25,7 @@ import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPer
 import { type PermissionsStatus } from "@/permissions/permissionsTypes";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import type { Manifest } from "webextension-polyfill";
+import type { DeploymentModDefinitionPair } from "@/types/deploymentTypes";
 
 /**
  * Return permissions required to activate a deployment.

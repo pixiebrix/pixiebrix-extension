@@ -18,13 +18,13 @@
 import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 import useFlags from "@/hooks/useFlags";
 import useModPermissions from "@/mods/hooks/useModPermissions";
-import { type DeploymentModDefinitionPair } from "@/types/contract";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import notify from "@/utils/notify";
 import { type Dispatch } from "@reduxjs/toolkit";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import useAsyncEffect from "use-async-effect";
+import type { DeploymentModDefinitionPair } from "@/types/deploymentTypes";
 
 type UseAutoDeployReturn = {
   /**

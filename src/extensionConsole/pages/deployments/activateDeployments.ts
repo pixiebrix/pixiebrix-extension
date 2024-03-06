@@ -19,10 +19,10 @@ import { services } from "@/background/messenger/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import { Events } from "@/telemetry/events";
 import reportEvent from "@/telemetry/reportEvent";
-import { type DeploymentModDefinitionPair } from "@/types/contract";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { mergeDeploymentIntegrationDependencies } from "@/utils/deploymentUtils";
 import { type Dispatch } from "@reduxjs/toolkit";
+import type { DeploymentModDefinitionPair } from "@/types/deploymentTypes";
 
 const { actions } = extensionsSlice;
 

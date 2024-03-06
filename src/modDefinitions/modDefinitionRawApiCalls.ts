@@ -15,14 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
+import { getLinkedApiClient } from "@/data/service/apiClient";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import {
-  type Deployment,
-  type DeploymentModDefinitionPair,
-  type PackageConfigDetail,
-} from "@/types/contract";
+import { type Deployment, type PackageConfigDetail } from "@/types/contract";
 import { allSettled } from "@/utils/promiseUtils";
+import type { DeploymentModDefinitionPair } from "@/types/deploymentTypes";
 
 /**
  * Fetches the mod definition for the given deployment.
@@ -51,19 +48,7 @@ async function fetchDeploymentModDefinition({
   package_id: registryId,
   version,
 }: Deployment["package"]): Promise<ModDefinition> {
-  // TODO: Remove this
-  console.log(
-    `Fetching deployment package config for ${registryId}@${version}`,
-  );
-
-  // TODO: Assert this is always empty and then remove
-  // console.log("config", package.config);
-
-  const client = await maybeGetLinkedApiClient();
-  if (client == null) {
-    throw new Error("No linked API client");
-  }
-
+  const client = await getLinkedApiClient();
   const { data } = await client.get<PackageConfigDetail>(
     `/api/registry/bricks/${encodeURIComponent(registryId)}/`,
     { params: { version } },
@@ -71,10 +56,10 @@ async function fetchDeploymentModDefinition({
 
   return {
     ...data.config,
-    // Cast to ModDefinition["sharing"] because the fields in ModDefinition["sharing"] are required
-    // but optional in PackageConfigDetail["sharing"]
+    // XXX: cast to ModDefinition["sharing"] because the fields in ModDefinition["sharing"] are required
+    // but currently marked as optional in PackageConfigDetail["sharing"]. Drop after API transformer work.
     sharing: data.sharing as ModDefinition["sharing"],
-    updated_at: data.updated_at,
+    updated_at: data.updated_at!,
   };
 }
 
