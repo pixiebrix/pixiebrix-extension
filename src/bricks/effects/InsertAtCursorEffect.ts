@@ -28,6 +28,7 @@ import focus from "@/utils/focusController";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { insertAtCursorWithCustomEditorSupport } from "@/contentScript/textEditorDom";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { expectContext } from "@/utils/expectContext";
 
 /**
  * Insert text at the cursor position. For use with text snippets, etc.
@@ -62,9 +63,13 @@ class InsertAtCursorEffect extends EffectABC {
 
   async effect(
     { text }: BrickArgs<{ text: string }>,
-    { root }: BrickOptions,
+    { root, logger }: BrickOptions,
   ): Promise<void> {
+    expectContext("contentScript");
+
     if (isEmpty(text)) {
+      // Skip because inserting no text is a NOP
+      logger.debug("No text provided");
       return;
     }
 

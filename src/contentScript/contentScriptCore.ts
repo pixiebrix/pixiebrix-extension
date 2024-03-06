@@ -41,7 +41,10 @@ import initFloatingActions from "@/components/floatingActions/initFloatingAction
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
 import { initRuntime } from "@/runtime/reducePipeline";
-import { renderPanelsIfVisible } from "./sidebarController";
+import {
+  initSidebarFocusEvents,
+  renderPanelsIfVisible,
+} from "./sidebarController";
 import {
   isSidebarFrameVisible,
   removeSidebarFrame,
@@ -94,6 +97,7 @@ export async function init(): Promise<void> {
 
   void initNavigation();
 
+  initSidebarFocusEvents();
   void initSidebarActivation();
 
   // Notify `ensureContentScript`
