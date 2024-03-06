@@ -16,8 +16,8 @@
  */
 
 import {
-  type ModParts,
   buildNewMod,
+  type ModParts,
 } from "@/pageEditor/panes/save/saveHelpers";
 import reportEvent from "@/telemetry/reportEvent";
 import { useCallback } from "react";
@@ -29,9 +29,18 @@ import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModCompon
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { type JsonObject } from "type-fest";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+
+type BuildAndValidateModParts = Partial<ModParts> & {
+  sourceModComponent?: ActivatedModComponent;
+  sourceModComponentFormState?: ModComponentFormState;
+};
 
 type UseBuildAndValidateModReturn = {
-  buildAndValidateMod: (modParts: ModParts) => Promise<UnsavedModDefinition>;
+  buildAndValidateMod: (
+    modParts: BuildAndValidateModParts,
+  ) => Promise<UnsavedModDefinition>;
 };
 
 function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
@@ -43,11 +52,13 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
   const buildAndValidateMod = useCallback(
     async ({
       sourceMod,
+      sourceModComponent,
+      sourceModComponentFormState,
       cleanModComponents,
       dirtyModComponentFormStates,
       dirtyModOptions,
       dirtyModMetadata,
-    }: ModParts) => {
+    }: BuildAndValidateModParts) => {
       const newMod = buildNewMod({
         sourceMod,
         cleanModComponents,
@@ -56,22 +67,18 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
         dirtyModMetadata,
       });
 
-      // Find form state that doesn't have a matching clean mod component, to
-      // cover the case where a new mod is being created from a source component
-      const newModComponentFormState = dirtyModComponentFormStates.find(
-        (formState) =>
-          !cleanModComponents.some(
-            (modComponent) => modComponent.id === formState.uuid,
-          ),
-      );
-
       const modComponentDefinitionCountsMatch =
-        compareModComponentCountsToModDefinition(
-          newMod,
-          newModComponentFormState,
-        );
+        compareModComponentCountsToModDefinition({
+          modDefinition: newMod,
+          sourceModComponent,
+          sourceModComponentFormState,
+        });
       const modComponentStarterBricksMatch =
-        await checkModStarterBrickInvariants(newMod);
+        await checkModStarterBrickInvariants({
+          modDefinition: newMod,
+          sourceModComponent,
+          sourceModComponentFormState,
+        });
 
       if (
         !modComponentDefinitionCountsMatch ||

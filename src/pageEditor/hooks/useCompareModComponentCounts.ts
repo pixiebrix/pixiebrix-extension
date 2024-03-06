@@ -20,34 +20,48 @@ import { useSelector } from "react-redux";
 import { useCallback } from "react";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { type ActivatedModComponent } from "@/types/modComponentTypes";
 
 /**
  * @returns {function} - A function that compares the number of mod components in the redux state and the mod definition
  */
-function useCompareModComponentCounts(): (
-  modDefinition: UnsavedModDefinition,
-  newModComponentFormState?: ModComponentFormState,
-) => boolean {
+function useCompareModComponentCounts(): ({
+  modDefinition,
+  sourceModComponent,
+  sourceModComponentFormState,
+}: {
+  modDefinition: UnsavedModDefinition;
+  sourceModComponent?: ActivatedModComponent;
+  sourceModComponentFormState?: ModComponentFormState;
+}) => boolean {
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
   );
 
   return useCallback(
-    (
-      modDefinition: UnsavedModDefinition,
-      newModComponentFormState?: ModComponentFormState,
-    ) => {
+    ({
+      modDefinition,
+      sourceModComponent,
+      sourceModComponentFormState,
+    }: {
+      modDefinition: UnsavedModDefinition;
+      sourceModComponent?: ActivatedModComponent;
+      sourceModComponentFormState?: ModComponentFormState;
+    }) => {
       const modId = modDefinition.metadata.id;
       const { cleanModComponents, dirtyModComponentFormStates } =
         getCleanComponentsAndDirtyFormStatesForMod(modId);
-      const dirtyFormStates = dirtyModComponentFormStates;
 
-      if (newModComponentFormState) {
-        dirtyFormStates.push(newModComponentFormState);
+      if (sourceModComponent) {
+        cleanModComponents.push(sourceModComponent);
+      }
+
+      if (sourceModComponentFormState) {
+        dirtyModComponentFormStates.push(sourceModComponentFormState);
       }
 
       const totalNumberModComponentsFromState =
-        cleanModComponents.length + dirtyFormStates.length;
+        cleanModComponents.length + dirtyModComponentFormStates.length;
 
       const totalNumberModComponentsFromDefinition =
         modDefinition.extensionPoints.length;

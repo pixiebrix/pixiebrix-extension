@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories";
+import {
+  activatedModComponentFactory,
+  modMetadataFactory,
+} from "@/testUtils/factories/modComponentFactories";
 import {
   modComponentDefinitionFactory,
   modDefinitionFactory,
@@ -232,4 +235,85 @@ describe("useCheckModStarterBrickInvariants", () => {
       expect(actualResult).toBe(expectedResult);
     },
   );
+
+  it("should return true for one new mod component and matching component in mod definition", async () => {
+    const modMetadata = modMetadataFactory();
+
+    const modInnerDefinitions: InnerDefinitions = {};
+
+    const extensionPointId = newExtensionPointId();
+    const modComponentDefinition = modComponentDefinitionFactory({
+      id: extensionPointId,
+    });
+    modInnerDefinitions[extensionPointId] = {
+      kind: "extensionPoint",
+      definition: starterBrickConfigFactory().definition,
+    };
+
+    const resultModDefinition = modDefinitionFactory({
+      metadata: modMetadata,
+      definitions: modInnerDefinitions,
+      extensionPoints: [modComponentDefinition],
+    });
+
+    const activatedModComponent = getActivatedModComponentFromDefinition({
+      modComponentDefinition,
+      modDefinition: resultModDefinition,
+      optionsArgs: {},
+      integrationDependencies: [],
+    });
+    const formState = await modComponentToFormState(activatedModComponent);
+
+    const { result } = renderHook(() => useCheckModStarterBrickInvariants(), {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(formState));
+      },
+    });
+
+    const checkModStarterBrickInvariants = result.current;
+    const actualResult = await checkModStarterBrickInvariants(
+      resultModDefinition,
+      formState,
+    );
+    expect(actualResult).toBe(true);
+  });
+
+  // Doesn't work yet, need to mock the new component form state in the right way so it has an inner definition
+  it.skip("should return false for one new mod component and no matching component in mod definition", async () => {
+    const modMetadata = modMetadataFactory();
+
+    const modInnerDefinitions: InnerDefinitions = {};
+
+    const extensionPointId = newExtensionPointId();
+    const modComponentDefinition = modComponentDefinitionFactory({
+      id: extensionPointId,
+    });
+    modInnerDefinitions[extensionPointId] = {
+      kind: "extensionPoint",
+      definition: starterBrickConfigFactory().definition,
+    };
+
+    const resultModDefinition = modDefinitionFactory({
+      metadata: modMetadata,
+      definitions: modInnerDefinitions,
+      extensionPoints: [modComponentDefinition],
+    });
+
+    const formState = await modComponentToFormState(
+      activatedModComponentFactory(),
+    );
+
+    const { result } = renderHook(() => useCheckModStarterBrickInvariants(), {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(formState));
+      },
+    });
+
+    const checkModStarterBrickInvariants = result.current;
+    const actualResult = await checkModStarterBrickInvariants(
+      resultModDefinition,
+      formState,
+    );
+    expect(actualResult).toBe(false);
+  });
 });

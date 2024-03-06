@@ -23,11 +23,17 @@ import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import type { ActivatedModComponent } from "@/types/modComponentTypes";
 
-function useCheckModStarterBrickInvariants(): (
-  modDefinition: UnsavedModDefinition,
-  newModComponentFormState?: ModComponentFormState,
-) => Promise<boolean> {
+function useCheckModStarterBrickInvariants(): ({
+  modDefinition,
+  sourceModComponent,
+  sourceModComponentFormState,
+}: {
+  modDefinition: UnsavedModDefinition;
+  sourceModComponent?: ActivatedModComponent;
+  sourceModComponentFormState?: ModComponentFormState;
+}) => Promise<boolean> {
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
   );
@@ -43,22 +49,30 @@ function useCheckModStarterBrickInvariants(): (
    *    also need to run it through the adapter because of some cleanup logic
    */
   return useCallback(
-    async (
-      modDefinition: UnsavedModDefinition,
-      newModComponentFormState?: ModComponentFormState,
-    ) => {
+    async ({
+      modDefinition,
+      sourceModComponent,
+      sourceModComponentFormState,
+    }: {
+      modDefinition: UnsavedModDefinition;
+      sourceModComponent?: ActivatedModComponent;
+      sourceModComponentFormState?: ModComponentFormState;
+    }) => {
       const modId = modDefinition.metadata.id;
       const definitionsFromMod = Object.values(modDefinition.definitions);
 
       const { cleanModComponents, dirtyModComponentFormStates } =
         getCleanComponentsAndDirtyFormStatesForMod(modId);
-      const dirtyFormStates = dirtyModComponentFormStates;
 
-      if (newModComponentFormState) {
-        dirtyFormStates.push(newModComponentFormState);
+      if (sourceModComponent) {
+        cleanModComponents.push(sourceModComponent);
       }
 
-      for (const formState of dirtyFormStates) {
+      if (sourceModComponentFormState) {
+        dirtyModComponentFormStates.push(sourceModComponentFormState);
+      }
+
+      for (const formState of dirtyModComponentFormStates) {
         if (
           !isInnerDefinitionRegistryId(formState.extensionPoint.metadata.id)
         ) {

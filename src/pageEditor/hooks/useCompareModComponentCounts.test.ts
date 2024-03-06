@@ -370,7 +370,20 @@ describe("useCompareModComponentCounts", () => {
     expect(result.current(unsavedModDefinition)).toBe(false);
   });
 
-  it("should return true for 0 clean and 0 unmatching form state and includes new form state and 1 in definition", () => {
+  it("should return true for 0 clean and 0 unmatching form state and 1 new form state and 1 in definition", () => {
+    const modDefinition = modDefinitionFactory();
+    const newFormState = formStateFactory();
+
+    const { result } = renderHook(() => useCompareModComponentCounts(), {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(newFormState));
+      },
+    });
+
+    expect(result.current(modDefinition, newFormState)).toBe(true);
+  });
+
+  it("should return true for 0 clean and 0 unmatching form state and 1 new clean component and 1 in definition", () => {
     const modDefinition = modDefinitionFactory();
     const newFormState = formStateFactory();
 
