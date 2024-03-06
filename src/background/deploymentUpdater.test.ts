@@ -23,7 +23,7 @@ import { uuidv4, validateSemVerString } from "@/types/helpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { omit } from "lodash";
-import { updateDeployments } from "@/background/deploymentUpdater";
+import { syncDeployments } from "@/background/deploymentUpdater";
 import reportEvent from "@/telemetry/reportEvent";
 import { isLinked, readAuthData } from "@/auth/authStorage";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
@@ -170,7 +170,7 @@ describe("updateDeployments", () => {
 
     isLinkedMock.mockResolvedValue(false);
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(reportEvent).toHaveBeenCalledWith(
       "OrganizationExtensionLink",
@@ -190,7 +190,7 @@ describe("updateDeployments", () => {
 
     isLinkedMock.mockResolvedValue(false);
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(reportEvent).toHaveBeenCalledWith(
       "OrganizationExtensionLink",
@@ -220,7 +220,7 @@ describe("updateDeployments", () => {
         disableLoginTab: true,
       });
 
-      await updateDeployments();
+      await syncDeployments();
 
       expect(openOptionsPageMock).not.toHaveBeenCalled();
       expect(browser.tabs.create).not.toHaveBeenCalled();
@@ -231,7 +231,7 @@ describe("updateDeployments", () => {
     // `readAuthDataMock` already has organizationId "00000000-00000000-00000000-00000000"
     isLinkedMock.mockResolvedValue(false);
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(reportEvent).toHaveBeenCalledWith(
       "OrganizationExtensionLink",
@@ -263,7 +263,7 @@ describe("updateDeployments", () => {
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
       .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
-    await updateDeployments();
+    await syncDeployments();
 
     const { extensions } = await getModComponentState();
 
@@ -309,7 +309,7 @@ describe("updateDeployments", () => {
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
       .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
-    await updateDeployments();
+    await syncDeployments();
 
     const { extensions } = await getModComponentState();
 
@@ -380,7 +380,7 @@ describe("updateDeployments", () => {
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
       .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
-    await updateDeployments();
+    await syncDeployments();
 
     const { extensions } = await getModComponentState();
     expect(extensions).toBeArrayOfSize(2);
@@ -431,7 +431,7 @@ describe("updateDeployments", () => {
     // Make sure we're testing the case where getEditorState() returns undefined
     await expect(getEditorState()).resolves.toBeUndefined();
 
-    await updateDeployments();
+    await syncDeployments();
 
     const { extensions } = await getModComponentState();
     expect(extensions).toBeArrayOfSize(1);
@@ -495,7 +495,7 @@ describe("updateDeployments", () => {
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
       .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
-    await updateDeployments();
+    await syncDeployments();
 
     const { extensions } = await getModComponentState();
     expect(extensions).toBeArrayOfSize(1);
@@ -532,7 +532,7 @@ describe("updateDeployments", () => {
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
       .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
-    await updateDeployments();
+    await syncDeployments();
 
     const { extensions } = await getModComponentState();
 
@@ -578,7 +578,7 @@ describe("updateDeployments", () => {
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
       .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
-    await updateDeployments();
+    await syncDeployments();
 
     const { extensions } = await getModComponentState();
 
@@ -609,7 +609,7 @@ describe("updateDeployments", () => {
       "@/background/deploymentUpdater"
     );
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(jest.mocked(uninstallAllDeployments).mock.calls).toHaveLength(0);
     expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
@@ -626,7 +626,7 @@ describe("updateDeployments", () => {
 
     axiosMock.onPost().reply(201, []);
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
     expect(openOptionsPageMock.mock.calls).toHaveLength(0);
@@ -645,7 +645,7 @@ describe("updateDeployments", () => {
     const deployment = deploymentFactory();
     axiosMock.onPost().reply(201, [deployment]);
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
     expect(refreshRegistriesMock.mock.calls).toHaveLength(1);
@@ -662,7 +662,7 @@ describe("updateDeployments", () => {
 
     axiosMock.onPost().reply(201, []);
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
@@ -685,7 +685,7 @@ describe("updateDeployments", () => {
 
     axiosMock.onPost().reply(201, []);
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
@@ -708,7 +708,7 @@ describe("updateDeployments", () => {
 
     axiosMock.onPost().reply(201, []);
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
     expect(openOptionsPageMock.mock.calls).toHaveLength(0);
@@ -728,7 +728,7 @@ describe("updateDeployments", () => {
 
     axiosMock.onPost().reply(201, []);
 
-    await updateDeployments();
+    await syncDeployments();
 
     // Unmatched deployments are always uninstalled if snoozed
     expect(isUpdateAvailableMock.mock.calls).toHaveLength(0);
@@ -801,7 +801,7 @@ describe("updateDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     readAuthDataMock.mockResolvedValue({} as any);
 
-    await updateDeployments();
+    await syncDeployments();
 
     const { extensions } = await getModComponentState();
 

@@ -72,6 +72,7 @@ import { getRequestHeadersByAPIVersion } from "@/data/service/apiVersioning";
 import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
 import { services } from "@/background/messenger/api";
 import type { DeploymentModDefinitionPair } from "@/types/deploymentTypes";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
@@ -375,7 +376,7 @@ async function markAllAsInstalled() {
  * NOTE: if updates are snoozed, does not install updates automatically. (To not interrupt the current business
  * process the team member is working on.)
  */
-export async function updateDeployments(): Promise<void> {
+export async function syncDeployments(): Promise<void> {
   expectContext("background");
 
   const now = Date.now();
@@ -477,6 +478,7 @@ export async function updateDeployments(): Promise<void> {
       },
     );
 
+  // XXX: won't client.get throw an error on status >= 400?
   if (profileResponseStatus >= 400) {
     // If our server is acting up, check again later
     console.debug(
@@ -504,6 +506,7 @@ export async function updateDeployments(): Promise<void> {
       },
     );
 
+  // XXX: won't client.get throw an error on status >= 400?
   if (deploymentResponseStatus >= 400) {
     // Our server is acting up, check again later
     console.debug(
@@ -554,37 +557,43 @@ export async function updateDeployments(): Promise<void> {
     return;
   }
 
-  // Fetch the current brick definitions, which will have the current permissions and extensionVersion requirements
+  // Ensure the user brick definitions are up-to-date, to ensure they have the latest current permissions and
+  // extensionVersion requirements for bricks.
   try {
     await refreshRegistries();
   } catch (error) {
+    // Reporting goes through Datadog, so safe to report even if our server is acting up.
     reportError(error);
-    void browser.runtime.openOptionsPage();
+
+    if (isAxiosError(error) && error.response?.status >= 500) {
+      // If our server is acting up, bail because opening the options page will cause a refetch, which will just
+      // further increase server load. Try again on the next heart beat.
+      return;
+    }
+
     // Bail and open the main options page, which 1) fetches the latest bricks, and 2) will prompt the user to
-    // manually install the deployments via the banner
+    // manually install the deployments via the banner.
+    void browser.runtime.openOptionsPage();
     return;
   }
 
-  const deploymentModDefinitionPairs =
-    await fetchDeploymentModDefinitions(updatedDeployments);
-  // TODO: remove this
-  console.log(deploymentModDefinitionPairs);
-
-  // Extract into a function because we should only be using deploymentModDefinitionPairs from now on.
-  // We shouldn't need deployments or updatedDeployments anymore.
-  await updateDeploymentModDefinitionPairs({
-    deploymentModDefinitionPairs,
+  // Extracted activateDeployments into a separate function because code only uses deploymentModDefinitionPairs.
+  await activateDeployments({
+    // Excludes any deployments that fail to fetch. In those cases, the user will stay on the old deployment until
+    // the next heartbeat/check.
+    deploymentModDefinitionPairs:
+      await fetchDeploymentModDefinitions(updatedDeployments),
     profile,
   });
 }
 
-async function updateDeploymentModDefinitionPairs({
+async function activateDeployments({
   deploymentModDefinitionPairs,
   profile,
 }: {
   deploymentModDefinitionPairs: DeploymentModDefinitionPair[];
   profile: Me;
-}) {
+}): Promise<void> {
   // `clipboardWrite` is not strictly required to use the clipboard brick, so allow it to auto-install.
   // Behind a feature flag in case it causes problems for enterprise customers.
   // Could use browser.runtime.getManifest().optional_permissions here, but that also technically supports the Origin
@@ -670,9 +679,9 @@ function initDeploymentUpdater(): void {
   registerBuiltinBricks();
   registerContribBlocks();
 
-  setInterval(updateDeployments, UPDATE_INTERVAL_MS);
+  setInterval(syncDeployments, UPDATE_INTERVAL_MS);
   void resetUpdatePromptTimestamp();
-  void updateDeployments();
+  void syncDeployments();
 }
 
 export default initDeploymentUpdater;

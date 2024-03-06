@@ -64,9 +64,7 @@ async function fetchDeploymentModDefinition({
 }
 
 /**
- * Fetches the mod definitions for the given deployments.
- *
- * Skip any deployments that fail to fetch the mod definition.
+ * Fetches the mod definitions for the given deployments. Excludes any deployments that fail to fetch.
  *
  * Notes:
  * - We can't use RTK query in the background script, which is where this function is used,
@@ -74,14 +72,14 @@ async function fetchDeploymentModDefinition({
  * - Multiple deployments can theoretically use the same mod version, but that should rarely occur in practice
  *   and handling that won't improve performance significantly, so let's punt on it for now.
  */
-export async function fetchDeploymentModDefinitions(deployments: Deployment[]) {
+export async function fetchDeploymentModDefinitions(
+  deployments: Deployment[],
+): Promise<DeploymentModDefinitionPair[]> {
   const { fulfilled } = await allSettled(
-    deployments.map(
-      async (deployment): Promise<DeploymentModDefinitionPair> => ({
-        deployment,
-        modDefinition: await fetchDeploymentModDefinition(deployment.package),
-      }),
-    ),
+    deployments.map(async (deployment) => ({
+      deployment,
+      modDefinition: await fetchDeploymentModDefinition(deployment.package),
+    })),
     { catch: "ignore" },
   );
   return fulfilled;
