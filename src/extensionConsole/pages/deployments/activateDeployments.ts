@@ -19,18 +19,23 @@ import { services } from "@/background/messenger/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import { Events } from "@/telemetry/events";
 import reportEvent from "@/telemetry/reportEvent";
-import { type Deployment } from "@/types/contract";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { mergeDeploymentIntegrationDependencies } from "@/utils/deploymentUtils";
 import { type Dispatch } from "@reduxjs/toolkit";
+import type { ActivatableDeployment } from "@/types/deploymentTypes";
 
 const { actions } = extensionsSlice;
 
-async function activateDeployment(
-  dispatch: Dispatch,
-  deployment: Deployment,
-  installed: ModComponentBase[],
-): Promise<void> {
+async function activateDeployment({
+  dispatch,
+  activatableDeployment,
+  installed,
+}: {
+  dispatch: Dispatch;
+  activatableDeployment: ActivatableDeployment;
+  installed: ModComponentBase[];
+}): Promise<void> {
+  const { deployment, modDefinition } = activatableDeployment;
   let isReinstall = false;
 
   // Clear existing installations of the blueprint
@@ -50,10 +55,10 @@ async function activateDeployment(
   // Install the blueprint with the service definition
   dispatch(
     actions.installMod({
-      modDefinition: deployment.package.config,
+      modDefinition,
       deployment,
       configuredDependencies: await mergeDeploymentIntegrationDependencies(
-        deployment,
+        activatableDeployment,
         services.locateAllForId,
       ),
       // Assume validation on the backend for options
@@ -68,18 +73,26 @@ async function activateDeployment(
   });
 }
 
-export async function activateDeployments(
-  dispatch: Dispatch,
-  deployments: Deployment[],
-  installed: ModComponentBase[],
-): Promise<void> {
+export async function activateDeployments({
+  dispatch,
+  activatableDeployments,
+  installed,
+}: {
+  dispatch: Dispatch;
+  activatableDeployments: ActivatableDeployment[];
+  installed: ModComponentBase[];
+}): Promise<void> {
   // Activate as many as we can
   const errors = [];
 
-  for (const deployment of deployments) {
+  for (const activatableDeployment of activatableDeployments) {
     try {
       // eslint-disable-next-line no-await-in-loop -- modifies redux state
-      await activateDeployment(dispatch, deployment, installed);
+      await activateDeployment({
+        dispatch,
+        activatableDeployment,
+        installed,
+      });
     } catch (error) {
       errors.push(error);
     }

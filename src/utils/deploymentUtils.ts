@@ -29,6 +29,7 @@ import { validateUUID } from "@/types/helpers";
 import { type Except } from "type-fest";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
+import type { ActivatableDeployment } from "@/types/deploymentTypes";
 
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)
@@ -117,12 +118,14 @@ export const makeUpdatedFilter =
  * violation).
  */
 export function checkExtensionUpdateRequired(
-  deployments: Deployment[] | undefined,
+  activatableDeployments: ActivatableDeployment[] = [],
 ): boolean {
-  // Check that the user's extension van run the deployment
+  // Check that the user's extension can run the deployment
   const { version: extensionVersion } = browser.runtime.getManifest();
   const versionRanges = compact(
-    deployments?.map((x) => x.package.config.metadata.extensionVersion),
+    activatableDeployments.map(
+      ({ modDefinition }) => modDefinition.metadata.extensionVersion,
+    ),
   );
 
   console.debug("Checking deployment version requirements", {
@@ -182,7 +185,7 @@ const isPersonal = (x: SanitizedIntegrationConfig) => !x.proxy;
  * Excludes the PixieBrix API integration and integrations that are bound in the deployment configuration.
  */
 export async function findLocalDeploymentConfiguredIntegrationDependencies(
-  deployment: Deployment,
+  { deployment, modDefinition }: ActivatableDeployment,
   locate: Locate,
 ): Promise<
   Array<
@@ -191,9 +194,8 @@ export async function findLocalDeploymentConfiguredIntegrationDependencies(
     }
   >
 > {
-  const deploymentIntegrations = getUnconfiguredComponentIntegrations(
-    deployment.package.config,
-  );
+  const deploymentIntegrations =
+    getUnconfiguredComponentIntegrations(modDefinition);
   // Integrations in the deployment that are bound to a team credential
   const teamBoundIntegrationIds = new Set(
     deployment.bindings?.map((x) => x.auth.service_id) ?? [],
@@ -220,15 +222,14 @@ export async function findLocalDeploymentConfiguredIntegrationDependencies(
  * Merge deployment service bindings and personal configurations to get all integration dependencies for a deployment.
  */
 export async function mergeDeploymentIntegrationDependencies(
-  deployment: Deployment,
+  { deployment, modDefinition }: ActivatableDeployment,
   locate: Locate,
 ): Promise<IntegrationDependency[]> {
   // Note/to-do: There is some logic overlap here with findLocalDeploymentConfiguredIntegrationDependencies() above,
   // but it's tricky to extract right now
 
-  const deploymentIntegrations = getUnconfiguredComponentIntegrations(
-    deployment.package.config,
-  );
+  const deploymentIntegrations =
+    getUnconfiguredComponentIntegrations(modDefinition);
   const teamBoundIntegrationIds = new Set(
     deployment.bindings?.map((x) => x.auth.service_id) ?? [],
   );

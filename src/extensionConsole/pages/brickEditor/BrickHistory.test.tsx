@@ -25,7 +25,7 @@ import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import selectEvent from "react-select-event";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { render } from "@/extensionConsole/testHelpers";
-import { type Package, type PackageVersion } from "@/types/contract";
+import { type Package, type PackageVersionDeprecated } from "@/types/contract";
 import { type Timestamp } from "@/types/stringTypes";
 
 const axiosMock = new MockAdapter(axios);
@@ -45,7 +45,7 @@ describe("BrickHistory", () => {
   };
 
   it("renders select components for choosing versions and displays the diff", async () => {
-    const testVersions: PackageVersion[] = [
+    const testVersions: PackageVersionDeprecated[] = [
       {
         id: testBrickId,
         version: "1.0.1",
