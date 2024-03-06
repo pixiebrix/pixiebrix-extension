@@ -9684,7 +9684,6 @@ exports[`Storyshots Sidebar/LoginPanel Default 1`] = `
       href="https://app.pixiebrix.com"
       onClick={[Function]}
       onKeyDown={[Function]}
-      target="_blank"
     >
       <svg
         aria-hidden="true"
