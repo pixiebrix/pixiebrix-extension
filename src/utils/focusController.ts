@@ -15,30 +15,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { uuidv4 } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
 
-const FOCUS_CONTROLLER_ADDED_SYMBOL = Symbol.for("focus-controller-added");
+const FOCUS_CONTROLLER_UUID_SYMBOL = Symbol.for("focus-controller-uuid");
 
 declare global {
   interface Window {
-    [FOCUS_CONTROLLER_ADDED_SYMBOL]?: UUID;
+    [FOCUS_CONTROLLER_UUID_SYMBOL]?: UUID;
   }
 }
 
 class FocusController {
+  /**
+   * The last saved focused element
+   * @private
+   */
   private focusedElement: HTMLElement | undefined;
 
+  /**
+   * Nonce to detect multiple imports of focusController
+   * @private
+   */
   private readonly nonce = uuidv4();
 
   constructor() {
-    if (window[FOCUS_CONTROLLER_ADDED_SYMBOL]) {
+    // eslint-disable-next-line security/detect-object-injection -- symbol
+    if (window[FOCUS_CONTROLLER_UUID_SYMBOL]) {
       console.warn(
-        `focusController(${this.nonce}): ${window[FOCUS_CONTROLLER_ADDED_SYMBOL]} already added to window`,
+        // eslint-disable-next-line security/detect-object-injection -- symbol
+        `focusController(${this.nonce}): ${window[FOCUS_CONTROLLER_UUID_SYMBOL]} already added to window`,
       );
     } else {
-      window[FOCUS_CONTROLLER_ADDED_SYMBOL] = this.nonce;
+      // eslint-disable-next-line security/detect-object-injection -- symbol
+      window[FOCUS_CONTROLLER_UUID_SYMBOL] = this.nonce;
     }
   }
 
@@ -52,7 +62,6 @@ class FocusController {
     const active = activeElement as HTMLElement;
 
     if (active == null) {
-      console.warn(`focusController(${this.nonce}): no active element to save`);
       return;
     }
 
@@ -66,11 +75,6 @@ class FocusController {
       );
     }
 
-    console.debug(`focusController(${this.nonce}): saving focus`, {
-      active,
-      isLoadedInIframe: isLoadedInIframe(),
-    });
-
     this.focusedElement = active;
   }
 
@@ -79,7 +83,6 @@ class FocusController {
    * @note This doesn't behave as you'd expect across iframes
    */
   restore(): void {
-    console.debug(`focusController(${this.nonce}): restoring focus`);
     // `focusedElement === body`: This restores its focus. `body.focus()` doesn't do anything
     (document.activeElement as HTMLElement)?.blur?.();
 
@@ -91,7 +94,6 @@ class FocusController {
 
   /** Clear saved value without restoring focus */
   clear(): void {
-    console.debug(`focusController(${this.nonce}): clearing saved focus`);
     this.focusedElement = undefined;
   }
 
@@ -99,16 +101,13 @@ class FocusController {
    * Gets the last saved item or the current active item, if there is no saved item
    */
   get(): HTMLElement {
-    console.debug(`focusController(${this.nonce}): getting focus`, {
-      focusedElement: this.focusedElement,
-      activeElement: document.activeElement,
-      isLoadedInIframe: isLoadedInIframe(),
-    });
-
     return this.focusedElement ?? (document.activeElement as HTMLElement);
   }
 }
 
+/**
+ * Singleton instance of the focus controller
+ */
 const focusController = new FocusController();
 
 export default focusController;

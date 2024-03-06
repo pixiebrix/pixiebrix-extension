@@ -542,8 +542,6 @@ export function sidePanelOnClose(callback: () => void): void {
 }
 
 export function initSidebarFocusEvents(): void {
-  const closeSignal = sidePanelOnCloseSignal();
-
   sidebarShowEvents.add(() => {
     const sidebar = getSidebarElement();
 
@@ -552,7 +550,9 @@ export function initSidebarFocusEvents(): void {
       return;
     }
 
-    // Can't detect clicks on the sidebar itself. So need to just watch for movement into/out of the sidebar
+    const closeSignal = sidePanelOnCloseSignal();
+
+    // Can't detect clicks in the sidebar itself. So need to just watch for enter/leave the sidebar element
     sidebar.addEventListener(
       "mouseenter",
       () => {
@@ -562,7 +562,7 @@ export function initSidebarFocusEvents(): void {
           focusController.save();
         }
       },
-      { passive: true, signal: closeSignal, capture: true },
+      { passive: true, capture: true, signal: closeSignal },
     );
 
     sidebar.addEventListener(
@@ -570,7 +570,7 @@ export function initSidebarFocusEvents(): void {
       () => {
         focusController.clear();
       },
-      { passive: true, signal: closeSignal, capture: true },
+      { passive: true, capture: true, signal: closeSignal },
     );
   });
 }
