@@ -56,12 +56,8 @@ import {
 } from "@/testUtils/factories/modDefinitionFactories";
 
 import { deploymentModDefinitionPairFactory } from "@/testUtils/factories/deploymentFactories";
-import {
-  type Deployment,
-  type PackageConfigDetail,
-  type RegistryPackage,
-} from "@/types/contract";
-import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories";
+import { type RegistryPackage } from "@/types/contract";
 
 setContext("background");
 
@@ -108,25 +104,6 @@ const saveSettingsStateMock = jest.mocked(saveSettingsState);
 
 async function clearEditorReduxState() {
   await browser.storage.local.remove("persist:editor");
-}
-
-function buildPackageConfigDetail({
-  deployment,
-  modDefinition,
-}: {
-  deployment: Deployment;
-  modDefinition: ModDefinition;
-}): PackageConfigDetail {
-  const { sharing, updated_at, ...config } = modDefinition;
-  return {
-    id: deployment.package.id,
-    name: modDefinition.metadata.id,
-    verbose_name: modDefinition.metadata.name,
-    kind: modDefinition.kind,
-    config,
-    sharing,
-    updated_at,
-  };
 }
 
 beforeEach(async () => {
@@ -249,7 +226,13 @@ describe("syncDeployments", () => {
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
 
     await syncDeployments();
 
@@ -290,7 +273,13 @@ describe("syncDeployments", () => {
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
 
     await syncDeployments();
 
@@ -354,7 +343,13 @@ describe("syncDeployments", () => {
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
 
     await syncDeployments();
 
@@ -395,7 +390,13 @@ describe("syncDeployments", () => {
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
 
     // Make sure we're testing the case where getEditorState() returns undefined
     await expect(getEditorState()).resolves.toBeUndefined();
@@ -455,7 +456,13 @@ describe("syncDeployments", () => {
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
 
     await syncDeployments();
 
@@ -485,7 +492,13 @@ describe("syncDeployments", () => {
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
 
     await syncDeployments();
 
@@ -526,7 +539,13 @@ describe("syncDeployments", () => {
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
-      .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
 
     await syncDeployments();
 
