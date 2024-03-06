@@ -16,7 +16,7 @@
  */
 
 import { type ApiVersion } from "@/types/runtimeTypes";
-import blockRegistry from "@/bricks/registry";
+import brickRegistry from "@/bricks/registry";
 import { reducePipeline } from "@/runtime/reducePipeline";
 import { InputValidationError } from "@/bricks/errors";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -27,10 +27,20 @@ import {
   testOptions,
 } from "./pipelineTestHelpers";
 import { extraEmptyModStateContext } from "@/runtime/extendModVariableContext";
+import { BrickABC } from "@/types/brickTypes";
+import { validateRegistryId } from "@/types/helpers";
+import integrationRegistry from "@/integrations/registry";
+import { fromJS } from "@/integrations/UserDefinedIntegration";
+import { keyAuthIntegrationDefinitionFactory } from "@/testUtils/factories/integrationFactories";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+import { ContextError } from "@/errors/genericErrors";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 beforeEach(() => {
-  blockRegistry.clear();
-  blockRegistry.register([echoBrick, contextBrick]);
+  integrationRegistry.clear();
+  brickRegistry.clear();
+  brickRegistry.register([echoBrick, contextBrick]);
 });
 
 describe("apiVersion: v1", () => {
@@ -115,5 +125,157 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
       ...extraEmptyModStateContext(apiVersion),
       "@first": { message: "First block" },
     });
+  });
+
+  test("validate integration configuration", async () => {
+    class IntegrationBrick extends BrickABC {
+      static BRICK_ID = validateRegistryId("test/integration");
+      constructor() {
+        super(IntegrationBrick.BRICK_ID, "Integration Brick");
+      }
+
+      inputSchema = propertiesToSchema(
+        {
+          config: {
+            $ref: "https://app.pixiebrix.com/schemas/services/@scope/collection/name",
+          },
+        },
+        ["config"],
+      );
+
+      async run() {}
+    }
+
+    const integrationDefinition = keyAuthIntegrationDefinitionFactory({
+      metadata: metadataFactory({
+        id: validateRegistryId("@scope/collection/name"),
+      }),
+      inputSchema: {
+        $schema: "https://json-schema.org/draft/2019-09/schema#",
+        type: "object",
+        properties: {
+          apiKey: {
+            $ref: "https://app.pixiebrix.com/schemas/key#",
+            title: "API Key",
+          },
+          baseURL: {
+            type: "string",
+          },
+        },
+        required: ["apiKey", "baseURL"],
+      },
+    });
+
+    integrationRegistry.register([fromJS(integrationDefinition)]);
+    brickRegistry.register([new IntegrationBrick()]);
+
+    const pipeline = [
+      {
+        id: IntegrationBrick.BRICK_ID,
+        config: {
+          config: {},
+        },
+      },
+    ];
+
+    let actualError: unknown;
+
+    try {
+      await reducePipeline(pipeline, simpleInput({}), testOptions(apiVersion));
+    } catch (error) {
+      actualError = error;
+    }
+
+    expect(actualError).toBeInstanceOf(ContextError);
+    const contextError = actualError as ContextError;
+    expect(contextError.cause).toBeInstanceOf(InputValidationError);
+    const inputValidationError = contextError.cause as InputValidationError;
+    expect(inputValidationError.errors).toStrictEqual([
+      {
+        error: 'Property "config" does not match schema.',
+        instanceLocation: "#",
+        keyword: "properties",
+        keywordLocation: "#/properties",
+      },
+      // We're not de-referencing the schema, so errors on the config are relative to the $ref:
+      {
+        error: "A subschema had errors.",
+        instanceLocation: "#/config",
+        keyword: "$ref",
+        keywordLocation: "#/properties/config/$ref",
+      },
+      {
+        // No error for apiKey because secrets are stripped out
+        error: 'Instance does not have required property "baseURL".',
+        instanceLocation: "#/config",
+        keyword: "required",
+        keywordLocation: "#/properties/config/$ref/required",
+      },
+    ]);
+  });
+
+  test("validate multiple database configuration", async () => {
+    class DatabaseBrick extends BrickABC {
+      static BRICK_ID = validateRegistryId("test/database");
+      constructor() {
+        super(DatabaseBrick.BRICK_ID, "Database Brick");
+      }
+
+      inputSchema = propertiesToSchema(
+        {
+          db1: {
+            $ref: "https://app.pixiebrix.com/schemas/database#",
+          },
+          db2: {
+            $ref: "https://app.pixiebrix.com/schemas/database#",
+          },
+        },
+        ["db1", "db2"],
+      );
+
+      async run() {}
+    }
+
+    brickRegistry.register([new DatabaseBrick()]);
+
+    const pipeline = [
+      {
+        id: DatabaseBrick.BRICK_ID,
+        config: {
+          db1: autoUUIDSequence(),
+        },
+      },
+    ];
+
+    let actualError: unknown;
+
+    try {
+      await reducePipeline(pipeline, simpleInput({}), testOptions(apiVersion));
+    } catch (error) {
+      actualError = error;
+    }
+
+    expect(actualError).toBeInstanceOf(ContextError);
+    const contextError = actualError as ContextError;
+    expect(contextError.cause).toBeInstanceOf(InputValidationError);
+    const inputValidationError = contextError.cause as InputValidationError;
+    expect(inputValidationError.errors).toStrictEqual([
+      {
+        error: 'Instance does not have required property "db2".',
+        instanceLocation: "#",
+        keyword: "required",
+        keywordLocation: "#/required",
+      },
+    ]);
+  });
+});
+
+describe("URLPattern smoke tests", () => {
+  it("find integration schema", () => {
+    const pattern = new URLPattern({ pathname: "/schemas/services/:id+" });
+    const result = pattern.exec(
+      "https://app.pixiebrix.com/schemas/services/@scope/collection/name",
+    );
+    expect(result.pathname.groups.id).toBe("@scope/collection/name");
   });
 });

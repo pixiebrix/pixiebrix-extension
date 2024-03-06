@@ -40,15 +40,15 @@ const uuidStorage = new StorageItem<UUID>("USER_UUID");
  * It's persisted in storage via `chrome.storage.local` and in-memory via `once`
  */
 export const getUUID = once(async (): Promise<UUID> => {
-  const uid = await uuidStorage.get();
-  if (uid) {
-    return uid;
+  const existingUUID = await uuidStorage.get();
+  if (existingUUID) {
+    return existingUUID;
   }
 
-  const uuid = uuidv4();
-  console.debug("Generating UID for browser", { uuid });
-  await uuidStorage.set(uuid);
-  return uuid;
+  const newUUID = uuidv4();
+  console.debug("Generating UID for browser", { uuid: newUUID });
+  await uuidStorage.set(newUUID);
+  return newUUID;
 });
 
 /**

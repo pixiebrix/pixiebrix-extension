@@ -24,13 +24,10 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOptions";
-import { dereference } from "@/validators/generic";
-import { BASE_SHEET_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
 import { render } from "@/pageEditor/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
 import { services, sheets } from "@/background/messenger/api";
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
@@ -39,7 +36,6 @@ import {
   type FileList,
   type Spreadsheet,
 } from "@/contrib/google/sheets/core/types";
-import { type UUID } from "@/types/stringTypes";
 import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 import { useAuthOptions } from "@/hooks/auth";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
@@ -49,11 +45,11 @@ import selectEvent from "react-select-event";
 import { type FormikValues } from "formik";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import { toExpression } from "@/utils/expressionUtils";
-
-let idSequence = 0;
-function newId(): UUID {
-  return uuidSequence(idSequence++);
-}
+import {
+  SHEET_FIELD_REF_SCHEMA,
+  SHEET_FIELD_SCHEMA,
+} from "@/contrib/google/sheets/core/schemas";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 jest.mock("@/hooks/auth");
 const servicesLocateMock = jest.mocked(services.locate);
@@ -63,12 +59,12 @@ const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
 const getSpreadsheetMock = jest.mocked(sheets.getSpreadsheet);
 const getHeadersMock = jest.mocked(sheets.getHeaders);
 
-const TEST_SPREADSHEET_ID = newId();
-const OTHER_TEST_SPREADSHEET_ID = newId();
+const TEST_SPREADSHEET_ID = autoUUIDSequence();
+const OTHER_TEST_SPREADSHEET_ID = autoUUIDSequence();
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");
 const GOOGLE_PKCE_SERVICE_ID = validateRegistryId("google/oauth2-pkce");
-const GOOGLE_PKCE_AUTH_CONFIG = newId();
-const TEST_SPREADSHEET_AUTH_CONFIG = newId();
+const GOOGLE_PKCE_AUTH_CONFIG = autoUUIDSequence();
+const TEST_SPREADSHEET_AUTH_CONFIG = autoUUIDSequence();
 
 const TEST_SPREADSHEET_NAME = "Test Spreadsheet";
 const OTHER_TEST_SPREADSHEET_NAME = "Other Spreadsheet";
@@ -211,30 +207,32 @@ beforeEach(() => {
 
 describe("getToggleOptions", () => {
   // Sanity check getToggleOptions returning expected values, because that would cause problems in the snapshot tests
-  it("should include file picker and variable toggle options", async () => {
-    const baseSchema = await dereference(BASE_SHEET_SCHEMA);
+  // Should show toggle for both $ref and $id schemas
+  it.each([SHEET_FIELD_SCHEMA, SHEET_FIELD_REF_SCHEMA])(
+    "should include file picker and variable toggle options",
+    async (fieldSchema) => {
+      const result = getToggleOptions({
+        fieldSchema,
+        customToggleModes: [],
+        isRequired: true,
+        allowExpressions: true,
+        isObjectProperty: false,
+        isArrayItem: false,
+      });
 
-    const result = getToggleOptions({
-      fieldSchema: baseSchema,
-      customToggleModes: [],
-      isRequired: true,
-      allowExpressions: true,
-      isObjectProperty: false,
-      isArrayItem: false,
-    });
-
-    expect(result).toEqual([
-      // The Google File Picker
-      expect.objectContaining({
-        Widget: SpreadsheetPickerWidget,
-        value: "string",
-      }),
-      // Variable
-      expect.objectContaining({
-        value: "var",
-      }),
-    ]);
-  });
+      expect(result).toEqual([
+        // The Google File Picker
+        expect.objectContaining({
+          Widget: SpreadsheetPickerWidget,
+          value: "string",
+        }),
+        // Variable
+        expect.objectContaining({
+          value: "var",
+        }),
+      ]);
+    },
+  );
 });
 
 function expectTab1Selected() {

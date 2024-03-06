@@ -51,7 +51,7 @@ describe("ModListItem", () => {
       </Accordion>,
     );
 
-    expect(await screen.findByText(modMetadata.name)).toBeVisible();
+    await expect(screen.findByText(modMetadata.name)).resolves.toBeVisible();
     // eslint-disable-next-line testing-library/no-node-access -- Accordion collapse state
     expect(screen.getByText("test children").parentElement).toHaveClass(
       "collapse show",
@@ -83,7 +83,7 @@ describe("ModListItem", () => {
       </Accordion>,
     );
 
-    expect(await screen.findByText(modMetadata.name)).toBeVisible();
+    await expect(screen.findByText(modMetadata.name)).resolves.toBeVisible();
     // eslint-disable-next-line testing-library/no-node-access -- Accordion collapse state
     expect(screen.getByText("test children").parentElement).toHaveClass(
       "collapse",
@@ -129,8 +129,8 @@ describe("ModListItem", () => {
     const expectedMessage =
       "You are editing version 1.0.0 of this mod, the latest version is 1.0.1.";
 
-    expect(
-      await screen.findByRole("img", { name: expectedMessage }),
-    ).toBeVisible();
+    await expect(
+      screen.findByRole("img", { name: expectedMessage }),
+    ).resolves.toBeVisible();
   });
 });

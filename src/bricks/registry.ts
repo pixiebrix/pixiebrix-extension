@@ -60,7 +60,7 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
 
     const items = this.isCachedInitialized ? this.cached : await this.all();
 
-    console.debug("Computing block types for %d block(s)", items.length);
+    console.debug("Computing types for %d brick(s)", items.length);
 
     await allSettled(
       items.map(async (item) => {
@@ -74,7 +74,7 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
       }),
       {
         catch(errors) {
-          console.warn(`Failed to compute type for ${errors.length} blocks`, {
+          console.warn(`Failed to compute type for ${errors.length} brick`, {
             errors,
           });
         },

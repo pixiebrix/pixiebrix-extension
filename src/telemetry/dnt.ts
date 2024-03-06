@@ -26,6 +26,9 @@ async function setDNT(enable: boolean): Promise<void> {
   await dntConfig.set(enable);
 }
 
+/**
+ * DNT stands for Do Not Track, and determines whether we can enable telemetry
+ */
 export async function getDNT(): Promise<boolean> {
   // The DNT setting was stored as a string at some point, so we need to handle that too
   return boolean((await dntConfig.get()) ?? process.env.DEBUG);

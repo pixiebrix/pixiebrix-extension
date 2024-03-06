@@ -18,62 +18,63 @@
 import bricksRegistry from "@/bricks/registry";
 import { registry as backgroundRegistry } from "@/background/messenger/strict/api";
 import { echoBrick } from "@/runtime/pipelineTests/pipelineTestHelpers";
-import { parsePackage } from "@/registry/packageRegistry";
-import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
-import { brickFactory } from "@/testUtils/factories/brickFactories";
+import { type PackageVersion, parsePackage } from "@/registry/packageRegistry";
+import {
+  brickDefinitionFactory,
+  readerBrickFactory,
+} from "@/testUtils/factories/brickFactories";
+import { array } from "cooky-cutter";
+import type { BrickDefinition } from "@/bricks/transformers/brickFactory";
+import type { RegistryId } from "@/types/registryTypes";
 
-const getByKindsMock = jest.mocked(backgroundRegistry.getByKinds);
-const findMock = jest.mocked(backgroundRegistry.find);
+const backgroundGetByKindsMock = jest.mocked(backgroundRegistry.getByKinds);
+const backgroundFindMock = jest.mocked(backgroundRegistry.find);
+
+function mapDefinitionToPackageVersion(
+  definition: BrickDefinition,
+): PackageVersion {
+  return {
+    // Cast to any due to Metadata index-signature mismatch
+    ...parsePackage(definition as any),
+    timestamp: new Date(),
+  };
+}
 
 beforeEach(() => {
-  jest.restoreAllMocks();
-  getByKindsMock.mockResolvedValue([]);
-  bricksRegistry.clear();
+  jest.clearAllMocks();
+  backgroundGetByKindsMock.mockResolvedValue([]);
+
+  // eslint-disable-next-line new-cap -- test-only method
+  bricksRegistry.TEST_reset();
 });
 
-describe("blocksMap", () => {
-  beforeEach(() => {
-    // eslint-disable-next-line new-cap -- test-only method
-    bricksRegistry.TEST_reset();
+describe("bricksMap", () => {
+  test("can add and read a brick", async () => {
+    const brick = readerBrickFactory();
+    bricksRegistry.register([brick]);
+    const typedBricks = await bricksRegistry.allTyped();
+    const typedBrick = typedBricks.get(brick.id);
+
+    expect(typedBrick.type).toBe("reader");
+    expect(typedBrick.block).toBe(brick);
   });
 
-  const createReaderBlock = () => brickFactory({ read: jest.fn() } as unknown);
+  test("returns bricks of multiple registrations", async () => {
+    const bricks = array(readerBrickFactory, 2)();
 
-  test("can add and read a block", async () => {
-    const block = createReaderBlock();
-    bricksRegistry.register([block]);
+    bricksRegistry.register(bricks);
     const enrichedBlocks = await bricksRegistry.allTyped();
 
-    const enrichedBlock = enrichedBlocks.get(block.id);
-
-    expect(enrichedBlock.type).toBe("reader");
-    expect(enrichedBlock.block).toBe(block);
+    for (const brick of bricks) {
+      expect(enrichedBlocks.get(brick.id).type).toBe("reader");
+      expect(enrichedBlocks.get(brick.id).block).toBe(brick);
+    }
   });
 
-  test("returns blocks of multiple registrations", async () => {
-    const block1 = createReaderBlock();
-    const block2 = createReaderBlock();
-
-    bricksRegistry.register([block1, block2]);
-    const enrichedBlocks = await bricksRegistry.allTyped();
-
-    expect(enrichedBlocks.get(block1.id).type).toBe("reader");
-    expect(enrichedBlocks.get(block1.id).block).toBe(block1);
-
-    expect(enrichedBlocks.get(block2.id).type).toBe("reader");
-    expect(enrichedBlocks.get(block2.id).block).toBe(block2);
-  });
-
-  test("caches the typed blocks", async () => {
-    getByKindsMock.mockResolvedValueOnce([
-      {
-        ...parsePackage(starterBrickConfigFactory() as any),
-        timestamp: new Date(),
-      },
-      {
-        ...parsePackage(starterBrickConfigFactory() as any),
-        timestamp: new Date(),
-      },
+  test("caches the typed bricks", async () => {
+    backgroundGetByKindsMock.mockResolvedValueOnce([
+      mapDefinitionToPackageVersion(brickDefinitionFactory()),
+      mapDefinitionToPackageVersion(brickDefinitionFactory()),
     ]);
 
     jest.spyOn(bricksRegistry, "all");
@@ -93,36 +94,27 @@ describe("blocksMap", () => {
 });
 
 describe("bricksRegistry", () => {
-  beforeEach(() => {
-    // eslint-disable-next-line new-cap -- test-only method
-    bricksRegistry.TEST_reset();
-  });
-
   test("reads single JS block", async () => {
     bricksRegistry.register([echoBrick]);
     await expect(bricksRegistry.all()).resolves.toEqual([echoBrick]);
     expect(bricksRegistry.cached).toEqual([echoBrick]);
   });
 
-  test("skips invalid block", async () => {
-    const validBrick = {
-      ...parsePackage(starterBrickConfigFactory() as any),
-      timestamp: new Date(),
-    };
-    const invalidBrick = {
-      ...parsePackage(starterBrickConfigFactory() as any),
-      timestamp: new Date(),
-    };
-    // No config makes the brick invalid
-    invalidBrick.config = {};
+  test("does not register invalid brick", async () => {
+    const validBrick = mapDefinitionToPackageVersion(brickDefinitionFactory());
+    const invalidBrick = mapDefinitionToPackageVersion(
+      brickDefinitionFactory(),
+    );
+    // No pipeline makes the brick invalid
+    delete invalidBrick.config.pipeline;
 
-    getByKindsMock.mockResolvedValueOnce([validBrick, invalidBrick]);
+    backgroundGetByKindsMock.mockResolvedValueOnce([validBrick, invalidBrick]);
 
     const bricks = await bricksRegistry.all();
     expect(bricks.map((x) => x.id)).toEqual([validBrick.id]);
   });
 
-  test("preserves JS block on clear", async () => {
+  test("preserves JS bricks on clear", async () => {
     bricksRegistry.register([echoBrick]);
     bricksRegistry.clear();
     await expect(bricksRegistry.all()).resolves.toEqual([echoBrick]);
@@ -134,24 +126,28 @@ describe("bricksRegistry", () => {
     );
   });
 
-  test("throws on invalid cache", async () => {
+  test("cached getter throws on uninitialized cache", async () => {
     bricksRegistry.register([echoBrick]);
     bricksRegistry.clear();
     expect(bricksRegistry.isCachedInitialized).toBe(false);
     expect(() => bricksRegistry.cached).toThrow("Cache not initialized");
   });
 
-  test("cache invalid until all()", async () => {
-    const value = starterBrickConfigFactory();
-    const brick = { ...parsePackage(value as any), timestamp: new Date() };
+  test("cache uninitialized until all()", async () => {
+    const brickDefinition = brickDefinitionFactory();
+    const brick = mapDefinitionToPackageVersion(brickDefinition);
 
-    getByKindsMock.mockResolvedValueOnce([brick]);
-    findMock.mockResolvedValue(brick);
+    backgroundGetByKindsMock.mockResolvedValueOnce([brick]);
+    backgroundFindMock.mockImplementation(async (id: RegistryId) => {
+      if (id === brick.id) {
+        return brick;
+      }
+    });
 
     bricksRegistry.register([echoBrick]);
 
     await expect(
-      bricksRegistry.lookup(value.metadata.id),
+      bricksRegistry.lookup(brickDefinition.metadata.id),
     ).resolves.not.toThrow();
 
     expect(bricksRegistry.isCachedInitialized).toBe(false);
