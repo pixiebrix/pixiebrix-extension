@@ -948,8 +948,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
       switch (position) {
         case "prepend":
         case "append": {
-          // Safe because we're checking the value in the case statements
-          // eslint-disable-next-line security/detect-object-injection
+          // eslint-disable-next-line security/detect-object-injection -- Safe because we're checking the value in the case statements
           $menu[position]($menuItem);
           break;
         }
