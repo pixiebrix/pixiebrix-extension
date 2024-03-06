@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isLoadedInIframe } from "@/utils/iframeUtils";
-
 declare global {
   // eslint-disable-next-line no-var, @shopify/prefer-module-scope-constants -- It must be a var for types to work
   var PB_FOCUS_CONTROLLER: boolean;
