@@ -380,7 +380,11 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(modDefinition, newFormState)).toBe(true);
+    expect(
+      result.current(modDefinition, {
+        sourceModComponentFormState: newFormState,
+      }),
+    ).toBe(true);
   });
 
   it("should return true for 0 clean and 0 unmatching form state and 1 new clean component and 1 in definition", () => {
@@ -393,7 +397,11 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(modDefinition, newFormState)).toBe(true);
+    expect(
+      result.current(modDefinition, {
+        sourceModComponentFormState: newFormState,
+      }),
+    ).toBe(true);
   });
 
   it("should return false for 0 clean and 0 unmatching form state and includes new form state and 2 in definition", () => {
@@ -408,7 +416,9 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(modDefinition, formState)).toBe(false);
+    expect(
+      result.current(modDefinition, { sourceModComponentFormState: formState }),
+    ).toBe(false);
   });
 
   it("should return false for 0 clean and 0 unmatching form state and includes new form state and 0 in definition", () => {
@@ -423,7 +433,9 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(modDefinition, formState)).toBe(false);
+    expect(
+      result.current(modDefinition, { sourceModComponentFormState: formState }),
+    ).toBe(false);
   });
 
   it("should return false for 1 clean and 0 unmatching form state and includes new form state and 1 in definition", () => {
@@ -442,6 +454,8 @@ describe("useCompareModComponentCounts", () => {
       },
     });
 
-    expect(result.current(modDefinition, formState)).toBe(false);
+    expect(
+      result.current(modDefinition, { sourceModComponentFormState: formState }),
+    ).toBe(false);
   });
 });
