@@ -50,6 +50,23 @@ describe("validateKind", () => {
     const json = loadBrickYaml(serviceText) as UnknownObject;
     json.foobar = "Hello, world!";
     const result = validatePackageDefinition("service", json);
+
+    expect(result.errors).toStrictEqual([
+      {
+        error: 'Property "foobar" does not match additional properties schema.',
+        instanceLocation: "#",
+        keyword: "additionalProperties",
+        keywordLocation: "#/additionalProperties",
+      },
+      // The exact error here doesn't really matter:
+      {
+        error: "False boolean schema.",
+        instanceLocation: "#/foobar",
+        keyword: "false",
+        keywordLocation: "#/foobar",
+      },
+    ]);
+
     expect(result.valid).toBe(false);
   });
 });
