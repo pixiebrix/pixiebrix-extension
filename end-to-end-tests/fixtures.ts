@@ -1,0 +1,53 @@
+/*
+ * Copyright (C) 2024 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { test as base, chromium, type BrowserContext } from "@playwright/test";
+import path from "node:path";
+
+export const test = base.extend<{
+  context: BrowserContext;
+  extensionId: string;
+}>({
+  async context(_, use) {
+    const pathToExtension = path.join(import.meta.dirname, "my-extension");
+    const context = await chromium.launchPersistentContext("", {
+      headless: false,
+      args: [
+        `--disable-extensions-except=${pathToExtension}`,
+        `--load-extension=${pathToExtension}`,
+      ],
+    });
+    await use(context);
+    await context.close();
+  },
+  async extensionId({ context }, use) {
+    /*
+    // for manifest v2:
+    let [background] = context.backgroundPages()
+    if (!background)
+      background = await context.waitForEvent('backgroundpage')
+    */
+
+    // for manifest v3:
+    let [background] = context.serviceWorkers();
+    background ||= await context.waitForEvent("serviceworker");
+
+    const extensionId = background.url().split("/")[2];
+    await use(extensionId);
+  },
+});
+export const { expect } = test;
