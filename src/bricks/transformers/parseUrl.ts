@@ -127,8 +127,7 @@ export class UrlParser extends TransformerABC {
 
     const searchParams: Record<string, string> = {};
     for (const [key, value] of parsed.searchParams.entries()) {
-      // Fine because value will always be a string
-      // eslint-disable-next-line security/detect-object-injection
+      // eslint-disable-next-line security/detect-object-injection -- Fine because value will always be a string
       searchParams[key] = value;
     }
 

@@ -79,7 +79,6 @@ describe("useFlags", () => {
 
     const tokenData = tokenAuthDataFactory();
 
-    // eslint-disable-next-line new-cap
     await TEST_setAuthData(tokenData);
 
     render(
@@ -94,7 +93,6 @@ describe("useFlags", () => {
     expect(appApiMock.history.get).toHaveLength(1);
 
     // Simulate a change in auth data
-    // eslint-disable-next-line new-cap
     TEST_triggerListeners(tokenData);
 
     await waitForEffect();

@@ -51,12 +51,12 @@ function useMoveWithinParent(documentBodyName: string): MoveWithinParent {
     const newElementsCollection = [...elementsCollection];
     const toIndex = direction === "up" ? elementIndex - 1 : elementIndex + 1;
 
-    /* eslint-disable security/detect-object-injection */
+    /* eslint-disable security/detect-object-injection -- swapping list elements  */
     [newElementsCollection[elementIndex], newElementsCollection[toIndex]] = [
       newElementsCollection[toIndex],
       newElementsCollection[elementIndex],
     ];
-    /* eslint-enable security/detect-object-injection */
+    /* eslint-enable security/detect-object-injection -- re-enable */
 
     await setElementsCollection(newElementsCollection);
     setActiveElement(joinPathParts(collectionName, toIndex));
