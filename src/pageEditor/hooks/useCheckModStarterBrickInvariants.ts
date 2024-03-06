@@ -67,9 +67,11 @@ function useCheckModStarterBrickInvariants(): (
         sourceModComponentFormState,
       }: SourceModParts = {},
     ) => {
+      // Always compare to the pre-existing mod if it exists
       const modId = sourceModDefinition
         ? sourceModDefinition.metadata.id
-        : unsavedModDefinition.metadata.id;
+        : // See useCreateModFromModComponent.ts for an example where there is no sourceModDefinition
+          unsavedModDefinition.metadata.id;
       const definitionsFromMod = Object.values(
         unsavedModDefinition.definitions,
       );
