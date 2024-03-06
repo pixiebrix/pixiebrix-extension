@@ -615,7 +615,7 @@ function findContainerForElement(element: HTMLElement): {
     container = container.parentElement!;
     level++;
   }
-  /* eslint-enable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion */
+  /* eslint-enable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion  */
 
   const extra: string[] = [];
 

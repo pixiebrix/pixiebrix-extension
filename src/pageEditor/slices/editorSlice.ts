@@ -862,7 +862,7 @@ export const editorSlice = createSlice({
       );
   },
 });
-/* eslint-enable security/detect-object-injection */
+/* eslint-enable security/detect-object-injection  */
 
 export const actions = {
   ...editorSlice.actions,

@@ -66,7 +66,7 @@ const integrationsSlice = createSlice({
   extraReducers(builder) {
     builder.addCase(revertAll, () => initialState);
   },
-  /* eslint-enable security/detect-object-injection */
+  /* eslint-enable security/detect-object-injection  */
 });
 
 export const persistIntegrationsConfig = {
