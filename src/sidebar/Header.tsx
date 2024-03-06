@@ -31,6 +31,7 @@ import { getTopLevelFrame } from "webext-messenger";
 import { isMV3 } from "@/mv3/api";
 import useFlags from "@/hooks/useFlags";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
+import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 
 function reloadSidebar() {
   location.reload();
@@ -98,8 +99,7 @@ const Header: React.FunctionComponent = () => {
         </Button>
       )}
       <Button
-        href="/options.html"
-        target="_blank"
+        href={getExtensionConsoleUrl()}
         size="sm"
         variant="link"
         className={headerButtonClassName}

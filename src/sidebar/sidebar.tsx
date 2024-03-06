@@ -41,6 +41,8 @@ import { sidebarWasLoaded } from "@/contentScript/messenger/strict/api";
 import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
 import { setPlatform } from "@/platform/platformContext";
 import extensionPagePlatform from "@/extensionPages/extensionPagePlatform";
+import { isMicrosoftEdge } from "@/utils/browserUtils";
+import openAllLinksInPopups from "@/utils/openAllLinksInPopups";
 
 async function init(): Promise<void> {
   setPlatform(extensionPagePlatform);
@@ -66,6 +68,11 @@ async function init(): Promise<void> {
 
   // Handle an embedded AA business copilot frame
   void initCopilotMessenger();
+
+  // Edge crashes on plain target=_blank links
+  if (isMicrosoftEdge()) {
+    openAllLinksInPopups();
+  }
 }
 
 void init();

@@ -88,8 +88,6 @@ exports[`SidebarApp renders 1`] = `
             Check out the 
             <a
               href="https://www.pixiebrix.com/marketplace/"
-              rel="noopener noreferrer"
-              target="_blank"
             >
               PixieBrix Marketplace
             </a>
@@ -207,8 +205,6 @@ exports[`SidebarApp renders connected partner view 1`] = `
             Check out the 
             <a
               href="https://www.pixiebrix.com/marketplace/"
-              rel="noopener noreferrer"
-              target="_blank"
             >
               PixieBrix Marketplace
             </a>
@@ -257,7 +253,6 @@ exports[`SidebarApp renders not connected 1`] = `
       <a
         class="mt-4 btn btn-primary"
         href="https://app.pixiebrix.com"
-        target="_blank"
       >
         <svg
           aria-hidden="true"
