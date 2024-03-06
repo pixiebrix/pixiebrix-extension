@@ -28,6 +28,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import type { components } from "@/types/swagger";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import type { EditablePackageMetadata } from "@/types/contract";
+import extensionsSlice from "@/store/extensionsSlice";
 
 const modId = validateRegistryId("@test/mod");
 
@@ -68,7 +69,17 @@ describe("useSaveMod", () => {
 
     appApiMock.onPut(`/api/bricks/${editablePackage.id}/`).reply(200, {});
 
-    const { result, waitForEffect } = renderHook(() => useSaveMod(), {});
+    const { result, waitForEffect } = renderHook(() => useSaveMod(), {
+      setupRedux(dispatch) {
+        dispatch(
+          extensionsSlice.actions.installMod({
+            modDefinition: definition,
+            screen: "pageEditor",
+            isReinstall: false,
+          }),
+        );
+      },
+    });
 
     await waitForEffect();
 
@@ -121,7 +132,17 @@ describe("useSaveMod", () => {
       .onPut(`/api/bricks/${editablePackage.id}/`)
       .reply(200, {});
 
-    const { result, waitForEffect } = renderHook(() => useSaveMod(), {});
+    const { result, waitForEffect } = renderHook(() => useSaveMod(), {
+      setupRedux(dispatch) {
+        dispatch(
+          extensionsSlice.actions.installMod({
+            modDefinition: definition,
+            screen: "pageEditor",
+            isReinstall: false,
+          }),
+        );
+      },
+    });
 
     await waitForEffect();
 
@@ -182,6 +203,13 @@ describe("useSaveMod", () => {
 
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
+        dispatch(
+          extensionsSlice.actions.installMod({
+            modDefinition: definition,
+            screen: "pageEditor",
+            isReinstall: false,
+          }),
+        );
         dispatch(editorSlice.actions.selectRecipeId(modId));
         dispatch(
           editorSlice.actions.editRecipeOptionsDefinitions({
