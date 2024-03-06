@@ -1,4 +1,3 @@
-/* eslint-disable security/detect-object-injection */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
@@ -153,16 +152,15 @@ const builtInSchemaResolver: ResolverOptions = {
   async read(file: FileInfo) {
     const url = trimEnd(file.url, "#");
 
-    const schema = BUILT_IN_SCHEMAS[url];
-
-    if (schema != null) {
-      // NOTE: including the $id cause duplicate schema errors when validating a dereferenced schema if the
-      // reference is used in multiple places. But including an $id is useful for preserving field toggling
-      // based on well-known schema $ids.
-      return schema;
+    if (!Object.hasOwn(BUILT_IN_SCHEMAS, url)) {
+      throw new Error(`Unknown schema: ${file.url}`);
     }
 
-    throw new Error(`Unknown schema: ${file.url}`);
+    // NOTE: keeping the $id causes duplicate schema errors when validating a dereferenced schema if the
+    // reference is used in multiple places. But including an $id is useful for preserving field toggling
+    // based on well-known schema $ids.
+    // eslint-disable-next-line security/detect-object-injection -- hasOwn check
+    return BUILT_IN_SCHEMAS[url];
   },
 } as const;
 
@@ -260,6 +258,7 @@ export function validatePackageDefinition(
   kind: keyof typeof KIND_SCHEMAS,
   instance: unknown,
 ): ValidationResult {
+  // eslint-disable-next-line security/detect-object-injection -- keyof check
   const originalSchema = KIND_SCHEMAS[kind];
 
   if (originalSchema == null) {
