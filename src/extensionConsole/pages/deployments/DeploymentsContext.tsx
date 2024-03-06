@@ -141,17 +141,33 @@ function useDeployments(): DeploymentsState {
     },
   );
 
+  const updatedDeployments = useMemo(() => {
+    const isUpdated = makeUpdatedFilter(activeExtensions, {
+      restricted: restrict("uninstall"),
+    });
+
+    return deployments?.filter((x) => isUpdated(x)) ?? null;
+  }, [activeExtensions, restrict, deployments]);
+
   const {
     data: deploymentModDefinitionPairs,
     isLoading: isLoadingModDefinitions,
     error: modDefinitionsError,
   } = useAsyncState(async () => {
-    if (!deployments) {
+    if (!updatedDeployments) {
       return null;
     }
 
-    return fetchDeploymentModDefinitions(deployments);
-  }, [deployments]);
+    return fetchDeploymentModDefinitions(updatedDeployments);
+  }, [updatedDeployments]);
+
+  const extensionUpdateRequired = useMemo(() => {
+    if (!deploymentModDefinitionPairs) {
+      return false;
+    }
+
+    return checkExtensionUpdateRequired(deploymentModDefinitionPairs);
+  }, [deploymentModDefinitionPairs]);
 
   const {
     data: permissions,
@@ -187,22 +203,6 @@ function useDeployments(): DeploymentsState {
 
     return permissions;
   }, [activeExtensions, deploymentModDefinitionPairs]);
-
-  const [updatedDeployments, extensionUpdateRequired] = useMemo(() => {
-    const isUpdated = makeUpdatedFilter(activeExtensions, {
-      restricted: restrict("uninstall"),
-    });
-
-    const updatedDeployments =
-      deploymentModDefinitionPairs?.filter(({ deployment }) =>
-        isUpdated(deployment),
-      ) ?? null;
-
-    return [
-      updatedDeployments,
-      checkExtensionUpdateRequired(deploymentModDefinitionPairs),
-    ];
-  }, [restrict, activeExtensions, deploymentModDefinitionPairs]);
 
   const { isAutoDeploying } = useAutoDeploy({
     deploymentModDefinitionPairs,
