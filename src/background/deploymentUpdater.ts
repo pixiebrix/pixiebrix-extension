@@ -466,8 +466,7 @@ export async function syncDeployments(): Promise<void> {
     return;
   }
 
-  const { data: profile, status: profileResponseStatus } =
-    await client.get<Me>("/api/me/");
+  const { data: profile } = await client.get<Me>("/api/me/");
 
   const { isSnoozed, isUpdateOverdue, updatePromptTimestamp } =
     selectUpdatePromptState(
@@ -478,42 +477,22 @@ export async function syncDeployments(): Promise<void> {
       },
     );
 
-  // XXX: won't client.get throw an error on status >= 400?
-  if (profileResponseStatus >= 400) {
-    // If our server is acting up, check again later
-    console.debug(
-      "Skipping deployments update because /api/me/ request failed",
-    );
-
-    return;
-  }
-
   // Ensure the user's flags and telemetry information is up-to-date
   void updateUserData(selectUserDataUpdate(profile));
 
-  const { data: deployments, status: deploymentResponseStatus } =
-    await client.post<Deployment[]>(
-      "/api/deployments/",
-      {
-        uid: await getUUID(),
-        version: getExtensionVersion(),
-        active: selectInstalledDeployments(extensions),
-        campaignIds,
-      },
-      {
-        // @since 1.8.10 -- API version 1.1 excludes the package config
-        headers: getRequestHeadersByAPIVersion("1.1"),
-      },
-    );
-
-  // XXX: won't client.get throw an error on status >= 400?
-  if (deploymentResponseStatus >= 400) {
-    // Our server is acting up, check again later
-    console.debug(
-      "Skipping deployments update because /api/deployments/ request failed",
-    );
-    return;
-  }
+  const { data: deployments } = await client.post<Deployment[]>(
+    "/api/deployments/",
+    {
+      uid: await getUUID(),
+      version: getExtensionVersion(),
+      active: selectInstalledDeployments(extensions),
+      campaignIds,
+    },
+    {
+      // @since 1.8.10 -- API version 1.1 excludes the package config
+      headers: getRequestHeadersByAPIVersion("1.1"),
+    },
+  );
 
   // Always uninstall unmatched deployments
   await uninstallUnmatchedDeployments(deployments);
