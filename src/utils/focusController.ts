@@ -23,6 +23,8 @@ declare global {
 let focusedElement: HTMLElement | undefined;
 
 if (globalThis.PB_FOCUS_CONTROLLER) {
+  // If you're seeing this error message, it's likely this file was imported from multiple content scripts.
+  // This focusController module should only be imported from the main content script.
   console.error(
     "focusController: there should only be one focusController instance per window",
   );
