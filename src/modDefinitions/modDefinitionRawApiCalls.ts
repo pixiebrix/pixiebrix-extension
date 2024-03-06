@@ -64,6 +64,7 @@ async function fetchDeploymentModDefinition({
     // XXX: cast to ModDefinition["sharing"] because the fields in ModDefinition["sharing"] are required
     // but currently marked as optional in PackageConfigDetail["sharing"]. Drop after API transformer work.
     sharing: data.sharing as ModDefinition["sharing"],
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- PackageConfigDetail.updated_at is always returned
     updated_at: data.updated_at!,
   };
 }
@@ -77,7 +78,6 @@ async function fetchDeploymentModDefinition({
  * - Multiple deployments can theoretically use the same mod version, but that should rarely occur in practice
  *   and handling that won't improve performance significantly, so let's punt on it for now.
  */
-// TODO: rename to new type name
 export async function fetchDeploymentModDefinitions(
   deployments: Deployment[],
 ): Promise<ActivatableDeployment[]> {
