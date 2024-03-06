@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleOptions"] }] -- TODO: replace with native expect and it.each */
+
 import React from "react";
 import { type Schema } from "@/types/schemaTypes";
 import { render, screen, within } from "@/pageEditor/testHelpers";

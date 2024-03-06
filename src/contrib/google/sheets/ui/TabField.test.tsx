@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleOptions", "expectTab1Selected", "expectTab2Selected"] }]
+-- TODO: replace with native expect and it.each */
+
 import React from "react";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 import { render } from "@/pageEditor/testHelpers";

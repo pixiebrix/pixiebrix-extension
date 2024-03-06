@@ -62,6 +62,8 @@ import { partnerUserFactory } from "@/testUtils/factories/authFactories";
 import { toExpression } from "@/utils/expressionUtils";
 import { PipelineFlavor } from "@/bricks/types";
 
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectEditorError"] }] -- TODO: replace with native expect and it.each */
+
 jest.setTimeout(15_000); // This test is flaky with the default timeout of 5000 ms
 
 let clock: sinonTimers.InstalledClock;
