@@ -28,11 +28,13 @@ import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/s
 import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
 
-type SourceModParts = {
-  sourceModDefinition?: ModDefinition;
-  sourceModComponent?: ActivatedModComponent;
-  sourceModComponentFormState?: ModComponentFormState;
-};
+type SourceModParts =
+  | {
+      sourceModDefinition?: ModDefinition;
+      sourceModComponent?: ActivatedModComponent;
+      sourceModComponentFormState?: ModComponentFormState;
+    }
+  | undefined;
 
 function useCheckModStarterBrickInvariants(): (
   unsavedModDefinition: UnsavedModDefinition,
@@ -40,7 +42,7 @@ function useCheckModStarterBrickInvariants(): (
     sourceModDefinition,
     sourceModComponent,
     sourceModComponentFormState,
-  }: SourceModParts,
+  }?: SourceModParts,
 ) => Promise<boolean> {
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
@@ -63,7 +65,7 @@ function useCheckModStarterBrickInvariants(): (
         sourceModDefinition,
         sourceModComponent,
         sourceModComponentFormState,
-      }: SourceModParts,
+      }: SourceModParts = {},
     ) => {
       const modId = sourceModDefinition
         ? sourceModDefinition.metadata.id

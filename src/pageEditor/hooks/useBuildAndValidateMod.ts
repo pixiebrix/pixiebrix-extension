@@ -73,6 +73,7 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
           sourceModComponent,
           sourceModComponentFormState,
         });
+
       const modComponentStarterBricksMatch =
         await checkModStarterBrickInvariants(newMod, {
           sourceModDefinition: sourceMod,
