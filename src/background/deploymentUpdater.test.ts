@@ -20,8 +20,7 @@ import {
   saveModComponentState,
 } from "@/store/extensionsStorage";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
-import MockAdapter from "axios-mock-adapter";
-import axios from "axios";
+import { appApiMock } from "@/testUtils/appApiMock";
 import { omit } from "lodash";
 import { syncDeployments } from "@/background/deploymentUpdater";
 import reportEvent from "@/telemetry/reportEvent";
@@ -65,7 +64,6 @@ import {
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 
 setContext("background");
-const axiosMock = new MockAdapter(axios);
 
 jest.mock("@/store/settings/settingsStorage");
 
@@ -134,6 +132,7 @@ function buildPackageConfigDetail({
 beforeEach(async () => {
   jest.resetModules();
   jest.clearAllMocks();
+  appApiMock.reset();
 
   // Reset local states
   await Promise.all([
@@ -154,7 +153,7 @@ beforeEach(async () => {
   await resetManagedStorage();
 });
 
-describe("updateDeployments", () => {
+describe("syncDeployments", () => {
   test("opens options page if managed enterprise customer not linked", async () => {
     readAuthDataMock.mockResolvedValue({
       organizationId: null,
@@ -242,13 +241,13 @@ describe("updateDeployments", () => {
     const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
     const registryId = deployment.package.package_id;
 
-    axiosMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet("/api/me/").reply(200, {
       flags: [],
     });
 
-    axiosMock.onPost().reply(201, [deployment]);
+    appApiMock.onPost().reply(201, [deployment]);
 
-    axiosMock
+    appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
       .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
@@ -283,13 +282,13 @@ describe("updateDeployments", () => {
     });
     const registryId = deployment.package.package_id;
 
-    axiosMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet("/api/me/").reply(200, {
       flags: [],
     });
 
-    axiosMock.onPost().reply(201, [deployment]);
+    appApiMock.onPost().reply(201, [deployment]);
 
-    axiosMock
+    appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
       .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
@@ -347,13 +346,13 @@ describe("updateDeployments", () => {
     const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
     const registryId = deployment.package.package_id;
 
-    axiosMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet("/api/me/").reply(200, {
       flags: [],
     });
 
-    axiosMock.onPost().reply(201, [deployment]);
+    appApiMock.onPost().reply(201, [deployment]);
 
-    axiosMock
+    appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
       .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
@@ -388,13 +387,13 @@ describe("updateDeployments", () => {
       extensions: [modComponent],
     });
 
-    axiosMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet("/api/me/").reply(200, {
       flags: [],
     });
 
-    axiosMock.onPost().reply(201, [deployment]);
+    appApiMock.onPost().reply(201, [deployment]);
 
-    axiosMock
+    appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
       .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
@@ -448,13 +447,13 @@ describe("updateDeployments", () => {
     );
     await saveEditorState(editorState);
 
-    axiosMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet("/api/me/").reply(200, {
       flags: [],
     });
 
-    axiosMock.onPost().reply(201, [deployment]);
+    appApiMock.onPost().reply(201, [deployment]);
 
-    axiosMock
+    appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
       .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
@@ -478,13 +477,13 @@ describe("updateDeployments", () => {
     const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
     const registryId = deployment.package.package_id;
 
-    axiosMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet("/api/me/").reply(200, {
       flags: [],
     });
 
-    axiosMock.onPost().reply(201, [deployment]);
+    appApiMock.onPost().reply(201, [deployment]);
 
-    axiosMock
+    appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
       .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
@@ -519,13 +518,13 @@ describe("updateDeployments", () => {
     });
     const registryId = deployment.package.package_id;
 
-    axiosMock.onGet("/api/me/").reply(200, {
+    appApiMock.onGet("/api/me/").reply(200, {
       flags: ["deployment-permissions-strict"],
     });
 
-    axiosMock.onPost().reply(201, [deployment]);
+    appApiMock.onPost().reply(201, [deployment]);
 
-    axiosMock
+    appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
       .reply(200, buildPackageConfigDetail({ deployment, modDefinition }));
 
@@ -571,11 +570,11 @@ describe("updateDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(true);
 
-    axiosMock.onGet().reply(200, {
+    appApiMock.onGet().reply(200, {
       flags: [],
     });
 
-    axiosMock.onPost().reply(201, []);
+    appApiMock.onPost().reply(201, []);
 
     await syncDeployments();
 
@@ -589,12 +588,12 @@ describe("updateDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(false);
 
-    axiosMock.onGet().reply(200, {
+    appApiMock.onGet().reply(200, {
       flags: ["restricted-version"],
     });
 
     const { deployment } = deploymentModDefinitionPairFactory();
-    axiosMock.onPost().reply(201, [deployment]);
+    appApiMock.onPost().reply(201, [deployment]);
 
     await syncDeployments();
 
@@ -607,11 +606,11 @@ describe("updateDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(true);
 
-    axiosMock.onGet().reply(200, {
+    appApiMock.onGet().reply(200, {
       flags: ["restricted-version"],
     });
 
-    axiosMock.onPost().reply(201, []);
+    appApiMock.onPost().reply(201, []);
 
     await syncDeployments();
 
@@ -629,12 +628,12 @@ describe("updateDeployments", () => {
       updatePromptTimestamp: null,
     } as any);
 
-    axiosMock.onGet().reply(200, {
+    appApiMock.onGet().reply(200, {
       flags: [],
       enforce_update_millis: 5000,
     });
 
-    axiosMock.onPost().reply(201, []);
+    appApiMock.onPost().reply(201, []);
 
     await syncDeployments();
 
@@ -652,12 +651,12 @@ describe("updateDeployments", () => {
       updatePromptTimestamp: null,
     } as any);
 
-    axiosMock.onGet().reply(200, {
+    appApiMock.onGet().reply(200, {
       flags: [],
       enforce_update_millis: 5000,
     });
 
-    axiosMock.onPost().reply(201, []);
+    appApiMock.onPost().reply(201, []);
 
     await syncDeployments();
 
@@ -673,11 +672,11 @@ describe("updateDeployments", () => {
       nextUpdate: Date.now() + 1_000_000,
     } as any);
 
-    axiosMock.onGet().reply(200, {
+    appApiMock.onGet().reply(200, {
       flags: ["restricted-version"],
     });
 
-    axiosMock.onPost().reply(201, []);
+    appApiMock.onPost().reply(201, []);
 
     await syncDeployments();
 
