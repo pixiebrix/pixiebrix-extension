@@ -266,12 +266,10 @@ export function validatePackageDefinition(
     throw new Error(`Unknown kind: ${kind}`);
   }
 
-  // The API for packages includes an updated_at and sharing property:
-  // https://github.com/pixiebrix/pixiebrix-app/blob/368a0116edad2c115ae370b651f109619e621745/api/serializers/brick.py#L67-L67
-  // These then get added to the YAML/JSON of user-defined packages
-  // TODO: track down/comment exactly where these properties are getting added and mention the corresponding typescript types.
-  //   there's on ModDefinition https://github.com/pixiebrix/pixiebrix-extension/blob/ea547eb5ce592fab537f45cf387ebb6b7c7c02e0/src/types/modDefinitionTypes.ts#L131-L131
-  //   but it's unclear where its getting added for brick definitions
+  // The API for packages add an updated_at and sharing property to config:
+  // https://github.com/pixiebrix/pixiebrix-app/blob/368a0116edad2c115ae370b651f109619e621745/api/serializers/brick.py#L139-L139
+  // It's not on RegistryPackage, though:
+  // https://github.com/pixiebrix/pixiebrix-extension/blob/ca7597fa6f3154eef4aec1cc5c306375b7926074/src/types/contract.ts#L192-L192
   const schemaWithMetadata = cloneDeep(originalSchema);
   // `properties` is always defined on these schemas. Typescript/Lint were disagreeing on adding "!" though.
   schemaWithMetadata.properties ??= {};
