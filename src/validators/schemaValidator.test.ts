@@ -45,6 +45,13 @@ describe("validateKind", () => {
     expect(result.errors).toHaveLength(0);
     expect(result.valid).toBe(true);
   });
+
+  test("fails on additional unknown property", async () => {
+    const json = loadBrickYaml(serviceText) as UnknownObject;
+    json.foobar = "Hello, world!";
+    const result = validatePackageDefinition("service", json);
+    expect(result.valid).toBe(false);
+  });
 });
 
 describe("validateBrickInputOutput", () => {
