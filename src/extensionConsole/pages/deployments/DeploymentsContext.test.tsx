@@ -250,14 +250,9 @@ describe("DeploymentsContext", () => {
     });
 
     await user.click(screen.getByText("Update"));
+    await waitForEffect();
 
-    await waitFor(() => {
-      // This shouldn't be occurring. Something is wrong with the test store that's making the
-      // activeExtensions return an empty array.
-      expect(axiosMock.history.post).toHaveLength(4);
-    });
-
-    console.log(axiosMock.history.post);
+    expect(axiosMock.history.post).toHaveLength(3);
 
     // Permissions requested twice because user has clicked update twice
     expect(requestPermissionsMock).toHaveBeenCalledTimes(2);
