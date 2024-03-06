@@ -40,7 +40,8 @@ export interface StrictBaseInputTemplateProps<
   value: string | number;
 }
 
-// eslint-disable-next-line security/detect-unsafe-regex -- This regex is used to validate number inputs
+/* eslint-disable-next-line security/detect-unsafe-regex -- @graham: this was the best/fastest regex I was able to
+ * come up with, but a better regex-er might be able to improve it and eliminate the need to disable. */
 const DEFAULT_NUMBER_REGEX = /^-?\d*(?:\.\d*)?(?:[Ee][+-]?\d*)?$/;
 
 /* @since 1.8.7
