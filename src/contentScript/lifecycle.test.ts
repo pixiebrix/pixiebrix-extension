@@ -1,4 +1,3 @@
-/* eslint-disable new-cap -- using exposed TEST_ methods */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *

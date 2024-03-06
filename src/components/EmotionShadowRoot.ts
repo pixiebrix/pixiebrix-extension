@@ -18,9 +18,9 @@
 // eslint-disable-next-line no-restricted-imports -- All roads lead here
 import EmotionShadowRoot from "react-shadow/emotion";
 
-// "Every property exists" (via Proxy), TypeScript doesn't offer such type
-// Also strictNullChecks config mismatch
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion --
+"Every property exists" (via Proxy), TypeScript doesn't offer such type
+Also strictNullChecks config mismatch */
 const ShadowRoot = EmotionShadowRoot.div!;
 
 export default ShadowRoot;

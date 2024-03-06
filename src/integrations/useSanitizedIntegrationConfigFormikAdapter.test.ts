@@ -60,7 +60,6 @@ const serviceRegistryMock = jest.mocked(serviceRegistry);
 
 describe("useSanitizedIntegrationConfigFormikAdapter", () => {
   beforeEach(() => {
-    // eslint-disable-next-line new-cap -- test helper method
     INTERNAL_reset();
   });
 

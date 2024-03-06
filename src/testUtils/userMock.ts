@@ -46,7 +46,7 @@ export async function mockAuthenticatedUser(me?: Me): Promise<void> {
   const tokenData = tokenAuthDataFactory({
     ...authData,
   });
-  // eslint-disable-next-line new-cap
+
   await TEST_setAuthData(tokenData);
   useLinkStateMock.mockReturnValue(valueToAsyncState(true));
 }
@@ -62,7 +62,6 @@ async function cleanUpUserMocks() {
   console.log("TEST");
   useLinkStateMock.mockReset();
   appApiMock.reset();
-  // eslint-disable-next-line new-cap
   await TEST_setAuthData({});
 }
 

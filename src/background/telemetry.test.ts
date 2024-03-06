@@ -27,7 +27,6 @@ beforeEach(async () => {
   appApiMock.reset();
   appApiMock.onPost("/api/events/").reply(201, {});
 
-  // eslint-disable-next-line new-cap -- test file
   await TEST_flushAll();
 });
 
