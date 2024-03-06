@@ -16,18 +16,15 @@
  */
 
 /**
- * @file This file MUST not have dependencies as it's meant to be tiny
- * and imported by browserActionInstantHandler.ts
+ * @file This file MUST not have dependencies as it's meant to be tiny and imported by browserActionInstantHandler.ts.
+ * Because browserActionInstantHandler.ts is a separate content script, any modules will be duplicated
+ * between browserActionInstantHandler and the main content script.
  */
 
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/domConstants";
 import shadowWrap from "@/utils/shadowWrap";
 import { expectContext } from "@/utils/expectContext";
 import { uuidv4 } from "@/types/helpers";
-import focusController from "@/utils/focusController";
-import { RepeatableAbortController } from "abort-utils";
-
-const hideController = new RepeatableAbortController();
 
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
@@ -42,13 +39,13 @@ function storeOriginalCSSOnce() {
     return;
   }
 
-  // Store the original margin so it can be reused in future calculations. It must also persist across sessions
+  // Store the original margin, so it can be reused in future calculations. It must also persist across sessions
   html.style.setProperty(
     ORIGINAL_MARGIN_CSS_PROPERTY,
     getComputedStyle(html).getPropertyValue("margin-right"),
   );
 
-  // Make margin dynamic so it always follows the original margin AND the sidebar width, if open
+  // Make margin dynamic, so it always follows the original margin AND the sidebar width, if open
   html.style.setProperty(
     "margin-right",
     `calc(var(${ORIGINAL_MARGIN_CSS_PROPERTY}) + var(${SIDEBAR_WIDTH_CSS_PROPERTY}))`,
@@ -62,7 +59,7 @@ function setSidebarWidth(pixels: number): void {
 /**
  * Returns the sidebar frame if it's in the DOM, or null otherwise. The sidebar might not be initialized yet.
  */
-function getSidebar(): Element | null {
+export function getSidebarElement(): Element | null {
   expectContext("contentScript");
 
   return html.querySelector(`#${PANEL_FRAME_ID}`);
@@ -72,12 +69,12 @@ function getSidebar(): Element | null {
  * Return true if the sidebar frame is in the DOM. The sidebar might not be initialized yet.
  */
 export function isSidebarFrameVisible(): boolean {
-  return Boolean(getSidebar());
+  return Boolean(getSidebarElement());
 }
 
 /** Removes the element; Returns false if no element was found */
 export function removeSidebarFrame(): boolean {
-  const sidebar = getSidebar();
+  const sidebar = getSidebarElement();
 
   console.debug("sidebarDomControllerLite:removeSidebarFrame", {
     isSidebarFrameVisible: Boolean(sidebar),
@@ -86,7 +83,6 @@ export function removeSidebarFrame(): boolean {
   if (sidebar) {
     sidebar.remove();
     setSidebarWidth(0);
-    hideController.abortAndReset();
   }
 
   return Boolean(sidebar);
@@ -144,36 +140,6 @@ export function insertSidebarFrame(): boolean {
       "Post-condition failed: isSidebarFrameVisible is false after insertSidebarFrame",
     );
   }
-
-  // Can't detect clicks on the sidebar itself. So need to just watch for movement into/out of the sidebar
-  wrapper.addEventListener(
-    "mouseenter",
-    () => {
-      // If the user clicks into the sidebar and then leaves the sidebar, don't set the focus to the sidebar
-      // when they re-enter the sidebar
-      if (document.activeElement !== wrapper) {
-        focusController.save();
-      }
-    },
-    { passive: true, signal: hideController.signal, capture: true },
-  );
-
-  wrapper.addEventListener(
-    "mouseleave",
-    () => {
-      focusController.clear();
-    },
-    { passive: true, signal: hideController.signal, capture: true },
-  );
-
-  // XXX: there's a corner case where the user has the Quick Bar open and hides the sidebar
-  hideController.signal.addEventListener(
-    "abort",
-    () => {
-      focusController.clear();
-    },
-    { passive: true, once: true },
-  );
 
   return true;
 }
