@@ -744,6 +744,11 @@ export const editorSlice = createSlice({
     hideModal(state) {
       state.visibleModalKey = null;
     },
+    hideModalIfShowing(state, action: PayloadAction<ModalKey>) {
+      if (state.visibleModalKey === action.payload) {
+        state.visibleModalKey = null;
+      }
+    },
     editRecipeOptionsValues(state, action: PayloadAction<OptionsArgs>) {
       const recipeId = state.activeRecipeId;
       if (recipeId == null) {

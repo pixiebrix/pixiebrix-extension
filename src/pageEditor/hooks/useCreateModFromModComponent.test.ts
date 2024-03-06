@@ -23,6 +23,7 @@ import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories"
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
+import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
 
 const reportEventMock = jest.mocked(reportEvent);
 jest.mock("@/telemetry/trace");
@@ -30,7 +31,14 @@ jest.mock("@/telemetry/trace");
 jest.mock("@/pageEditor/hooks/useCompareModComponentCounts", () =>
   jest.fn().mockReturnValue(() => true),
 );
+jest.mock("@/pageEditor/hooks/useCheckModStarterBrickInvariants", () =>
+  jest.fn().mockReturnValue(async () => true),
+);
+
 const compareModComponentCountsMock = jest.mocked(useCompareModComponentCounts);
+const checkModStarterBrickInvariantsMock = jest.mocked(
+  useCheckModStarterBrickInvariants,
+);
 
 describe("useCreateModFromModComponent", () => {
   beforeEach(() => {
@@ -64,8 +72,28 @@ describe("useCreateModFromModComponent", () => {
     });
   });
 
-  it("does not throw an error if the mod fails an invariant check", async () => {
+  it("does not throw an error if the mod fails the compareModComponentCounts check", async () => {
     compareModComponentCountsMock.mockReturnValue(() => false);
+    const metadata = modMetadataFactory();
+    const menuItemFormState = menuItemFormStateFactory({ recipe: metadata });
+
+    appApiMock
+      .onPost("/api/bricks/")
+      .reply(200, { updated_at: "2024-01-01T00:00:00Z" });
+
+    const { result } = renderHook(() =>
+      useCreateModFromModComponent(menuItemFormState),
+    );
+
+    await hookAct(async () => {
+      await result.current.createModFromComponent(menuItemFormState, metadata);
+    });
+
+    expect(appApiMock.history.post).toHaveLength(0);
+  });
+
+  it("does not throw an error if the mod fails the checkModStarterBrickInvariants check", async () => {
+    checkModStarterBrickInvariantsMock.mockReturnValue(async () => false);
     const metadata = modMetadataFactory();
     const menuItemFormState = menuItemFormStateFactory({ recipe: metadata });
 
