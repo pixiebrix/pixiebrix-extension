@@ -460,8 +460,8 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
       }
 
       try {
-        // Running in loop to ensure consistent placement. OK because `installBody` in runExtension is runs asynchronously
-        // eslint-disable-next-line no-await-in-loop
+        /* eslint-disable-next-line no-await-in-loop
+        -- Running in loop to ensure consistent placement. OK because `installBody` in runExtension is runs asynchronously */
         await this.runExtension(readerContext, extension);
       } catch (error) {
         errors.push(error);
@@ -554,8 +554,7 @@ class RemotePanelExtensionPoint extends PanelStarterBrickABC {
     switch (position) {
       case "prepend":
       case "append": {
-        // Safe because we're casing the method name
-        // eslint-disable-next-line security/detect-object-injection
+        // eslint-disable-next-line security/detect-object-injection -- Safe because we're casing the method name
         this.$container[position]($panel);
         break;
       }

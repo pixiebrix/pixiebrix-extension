@@ -29,8 +29,8 @@ export const SITES_PATTERN = "*://*/*";
  */
 export function getDomain(url: string): string {
   const urlClass = new URL(url);
-  // The URL is already validated by `new URL` so the domain can't be empty
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+  /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+  -- The URL is already validated by `new URL` so the domain can't be empty */
   return psl.get(urlClass.hostname)!;
 }
 

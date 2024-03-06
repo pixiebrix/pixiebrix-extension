@@ -34,7 +34,7 @@ export function sanitizeIntegrationConfig(
 ): SanitizedConfig {
   const result: SanitizedConfig = {} as SanitizedConfig;
   for (const [key, type] of Object.entries(inputProperties(service.schema))) {
-    // eslint-disable-next-line security/detect-object-injection
+    // eslint-disable-next-line security/detect-object-injection -- Safe because we're getting from Object.entries
     const value = config[key];
 
     if (
@@ -44,8 +44,7 @@ export function sanitizeIntegrationConfig(
       // because it's not valid JSON. We could just check "key in config" instead.
       value !== undefined
     ) {
-      // Safe because we're getting from Object.entries
-      // eslint-disable-next-line security/detect-object-injection
+      // eslint-disable-next-line security/detect-object-injection -- Safe because we're getting from Object.entries
       result[key] = value;
     }
   }

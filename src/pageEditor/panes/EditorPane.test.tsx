@@ -591,7 +591,7 @@ describe("can copy and paste a node", () => {
 
 describe("validation", () => {
   function expectEditorError(container: HTMLElement, errorMessage: string) {
-    // eslint-disable-next-line testing-library/no-node-access
+    // eslint-disable-next-line testing-library/no-node-access -- TODO: use a better selector
     const errorBadge = container.querySelector(
       '.active[data-testid="editor-node"] span.badge',
     );
@@ -682,7 +682,7 @@ describe("validation", () => {
 
     // Ensure 2 nodes have error badges
     expect(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- TODO: use a better selector
       container.querySelectorAll('[data-testid="editor-node"] span.badge'),
     ).toHaveLength(2);
 
@@ -691,7 +691,7 @@ describe("validation", () => {
     store.dispatch(editorActions.selectElement(extension2.uuid));
 
     // Ensure no error is displayed
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- TODO: use a better selector
     const errorBadgesOfAnotherExtension = container.querySelectorAll(
       '[data-testid="editor-node"] span.badge',
     );
@@ -705,7 +705,7 @@ describe("validation", () => {
 
     // Should show 2 error in the Node Layout
     expect(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- TODO: use a better selector
       container.querySelectorAll('[data-testid="editor-node"] span.badge'),
     ).toHaveLength(2);
 
@@ -899,7 +899,7 @@ describe("brick validation in Add Brick Modal UI", () => {
 
       // Check for the alert on hover
       const firstResult =
-        // eslint-disable-next-line testing-library/no-node-access
+        // eslint-disable-next-line testing-library/no-node-access -- TODO: use a better selector
         screen.getAllByRole("button", { name: /add/i })[0].parentElement;
       await immediateUserEvent.hover(firstResult);
       expect(firstResult).toHaveTextContent("is not allowed in this pipeline");
@@ -943,7 +943,7 @@ describe("brick validation in Add Brick Modal UI", () => {
 
     // Assert that no UiPath bricks are available
     for (const button of addButtons) {
-      // eslint-disable-next-line testing-library/no-node-access
+      // eslint-disable-next-line testing-library/no-node-access -- TODO: use a better selector
       const brick = button.parentElement;
       expect(brick).not.toHaveTextContent("uipath");
     }

@@ -139,8 +139,7 @@ const cloneActiveExtension = createAsyncThunk<
       );
     },
   );
-  // Add the cloned extension
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned extension
   thunkAPI.dispatch(actions.addElement(newElement));
 });
 
@@ -863,7 +862,7 @@ export const editorSlice = createSlice({
       );
   },
 });
-/* eslint-enable security/detect-object-injection */
+/* eslint-enable security/detect-object-injection  */
 
 export const actions = {
   ...editorSlice.actions,

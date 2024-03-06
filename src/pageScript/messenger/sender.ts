@@ -87,8 +87,7 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
         fulfillmentCallbacks.delete(id);
         rejectionCallbacks.delete(id);
 
-        // Only getting called with "result" or "error"
-        // eslint-disable-next-line security/detect-object-injection
+        // eslint-disable-next-line security/detect-object-injection -- Only getting called with "result" or "error"
         callback(event.detail[prop]);
       }
     });

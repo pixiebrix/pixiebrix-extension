@@ -56,7 +56,7 @@ function useMoveWithinParent(documentBodyName: string): MoveWithinParent {
       newElementsCollection[toIndex],
       newElementsCollection[elementIndex],
     ];
-    /* eslint-enable security/detect-object-injection -- re-enable */
+    /* eslint-enable security/detect-object-injection  */
 
     await setElementsCollection(newElementsCollection);
     setActiveElement(joinPathParts(collectionName, toIndex));

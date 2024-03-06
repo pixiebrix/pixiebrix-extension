@@ -135,8 +135,7 @@ export function insertText(element: HTMLElement, value: string): void {
 
     // Clear any selected text
     if (firstPosition !== editor.model.document.selection.getLastPosition()) {
-      // Must exist if the selection is not empty
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Must exist if the selection is not empty
       writer.remove(editor.model.document.selection.getFirstRange()!);
     }
 

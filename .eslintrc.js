@@ -36,7 +36,10 @@ module.exports = {
         capIsNewExceptionPattern: "(TEST_|INTERNAL_|HACK_|UNSAFE_)",
       },
     ],
-    "eslint-comments/require-description": "warn",
+    "eslint-comments/require-description": [
+      "error",
+      { ignore: ["eslint-enable"] },
+    ],
     "react/no-array-index-key": "error",
     "react/no-unstable-nested-components": ["error", { allowAsProps: true }],
     "react/forbid-elements": [

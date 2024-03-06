@@ -203,7 +203,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
         );
       }
 
-      // eslint-disable-next-line security/detect-object-injection
+      // eslint-disable-next-line security/detect-object-injection -- not user input
       delete draft.schema.properties[propertyToRemove];
 
       if (!uiSchema) {
@@ -212,7 +212,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
       // eslint-disable-next-line security/detect-object-injection -- prop name is a constant
       draft.uiSchema[UI_ORDER] = nextUiOrder;
-      // eslint-disable-next-line security/detect-object-injection
+      // eslint-disable-next-line security/detect-object-injection -- not user input
       delete draft.uiSchema[propertyToRemove];
     });
 

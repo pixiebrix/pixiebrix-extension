@@ -267,7 +267,7 @@ const usePipelineNodes = (): {
     );
   }
 
-  // eslint-disable-next-line complexity
+  // eslint-disable-next-line complexity -- large number of parameters required to map a block to nodes
   function mapBlockToNodes({
     index,
     blockConfig,
