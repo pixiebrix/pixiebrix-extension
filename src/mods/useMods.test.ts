@@ -61,7 +61,6 @@ describe("useMods", () => {
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
-          // eslint-disable-next-line new-cap -- unsafe
           extensionsSlice.actions.UNSAFE_setExtensions([
             activatedModComponentFactory({
               _recipe: {
@@ -93,7 +92,6 @@ describe("useMods", () => {
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
-          // eslint-disable-next-line new-cap -- unsafe
           extensionsSlice.actions.UNSAFE_setExtensions(
             range(3).map(() =>
               activatedModComponentFactory({
@@ -132,7 +130,6 @@ describe("useMods", () => {
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
-          // eslint-disable-next-line new-cap -- test setup
           extensionsSlice.actions.UNSAFE_setExtensions([
             activatedModComponentFactory({
               _recipe: {
@@ -189,7 +186,6 @@ describe("useMods", () => {
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
-          // eslint-disable-next-line new-cap -- test setup
           extensionsSlice.actions.UNSAFE_setExtensions([
             // Content doesn't matter, just need to match the ID
             activatedModComponentFactory({ id: standaloneModDefinition.id }),

@@ -33,7 +33,7 @@ module.exports = {
     "new-cap": [
       "error",
       {
-        capIsNewExceptionPattern: "(TEST_|INTERNAL_|HACK_)",
+        capIsNewExceptionPattern: "(TEST_|INTERNAL_|HACK_|UNSAFE_)",
       },
     ],
     "eslint-comments/require-description": "warn",
