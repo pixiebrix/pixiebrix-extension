@@ -577,8 +577,8 @@ export async function syncDeployments(): Promise<void> {
     return;
   }
 
-  // Extracted activateDeployments into a separate function because code only uses deploymentModDefinitionPairs.
-  await activateDeployments({
+  // Extracted activateDeploymentsInBackground into a separate function because code only uses deploymentModDefinitionPairs.
+  await activateDeploymentsInBackground({
     // Excludes any deployments that fail to fetch. In those cases, the user will stay on the old deployment until
     // the next heartbeat/check.
     deploymentModDefinitionPairs:
@@ -587,7 +587,13 @@ export async function syncDeployments(): Promise<void> {
   });
 }
 
-async function activateDeployments({
+/**
+ * Activate deployments in the background.
+ *
+ * Similar to activateDeployments, which activates deployments in the foreground.
+ * @see activateDeployments
+ */
+async function activateDeploymentsInBackground({
   deploymentModDefinitionPairs,
   profile,
 }: {
