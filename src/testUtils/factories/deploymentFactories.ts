@@ -15,18 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { define, derive } from "cooky-cutter";
-import { type Deployment } from "@/types/contract";
+import { define, derive, type FactoryConfig } from "cooky-cutter";
+import {
+  type Deployment,
+  type DeploymentModDefinitionPair,
+} from "@/types/contract";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   validateRegistryId,
   validateSemVerString,
   validateTimestamp,
 } from "@/types/helpers";
+import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 
 // Deployments are returned from the API, but their shape is determined by the registry and ModDefinition type.
 
-// TODO: would be nice to generate this from a package config object but I'm not sure how to do this
 export const deploymentPackageFactory = define<Deployment["package"]>({
   id: uuidSequence,
   name: "Test Starter Brick",
@@ -49,3 +53,30 @@ export const deploymentFactory = define<Deployment>({
   package: deploymentPackageFactory,
   options_config: () => ({}) as Deployment["options_config"],
 });
+
+export function deploymentModDefinitionPairFactory({
+  deploymentOverride,
+  modDefinitionOverride,
+}: {
+  deploymentOverride?: FactoryConfig<Deployment>;
+  modDefinitionOverride?: FactoryConfig<ModDefinition>;
+} = {}): DeploymentModDefinitionPair {
+  const modDefinition = defaultModDefinitionFactory(modDefinitionOverride);
+
+  if (deploymentOverride && "package" in deploymentOverride) {
+    throw new Error(
+      "You cannot override the deployment's package because it is derived from the mod definition",
+    );
+  }
+
+  const deployment = deploymentFactory({
+    ...deploymentOverride,
+    package: deploymentPackageFactory({
+      name: modDefinition.metadata.name,
+      version: modDefinition.metadata.version,
+      package_id: modDefinition.metadata.id,
+    }),
+  });
+
+  return { deployment, modDefinition };
+}

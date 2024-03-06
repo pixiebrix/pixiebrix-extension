@@ -72,6 +72,7 @@ async function fetchDeploymentModDefinition({
  * - Multiple deployments can theoretically use the same mod version, but that should rarely occur in practice
  *   and handling that won't improve performance significantly, so let's punt on it for now.
  */
+// TODO: rename to new type name
 export async function fetchDeploymentModDefinitions(
   deployments: Deployment[],
 ): Promise<DeploymentModDefinitionPair[]> {

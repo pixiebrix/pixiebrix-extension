@@ -52,15 +52,11 @@ import {
 } from "@/testUtils/factories/modComponentFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 import {
-  defaultModDefinitionFactory,
   modComponentDefinitionFactory,
   starterBrickConfigFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 
-import {
-  deploymentFactory,
-  deploymentPackageFactory,
-} from "@/testUtils/factories/deploymentFactories";
+import { deploymentModDefinitionPairFactory } from "@/testUtils/factories/deploymentFactories";
 import {
   type Deployment,
   type PackageConfigDetail,
@@ -243,15 +239,8 @@ describe("updateDeployments", () => {
   test("can add deployment from empty state if deployment has permissions", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const modDefinition = defaultModDefinitionFactory();
-    const registryId = modDefinition.metadata.id;
-    const deployment = deploymentFactory({
-      package: deploymentPackageFactory({
-        name: modDefinition.metadata.name,
-        version: modDefinition.metadata.version,
-        package_id: registryId,
-      }),
-    });
+    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const registryId = deployment.package.package_id;
 
     axiosMock.onGet("/api/me/").reply(200, {
       flags: [],
@@ -281,23 +270,18 @@ describe("updateDeployments", () => {
       },
     });
 
-    const modDefinition = defaultModDefinitionFactory({
-      extensionPoints: [
-        modComponentDefinitionFactory({
-          permissions: {
-            permissions: ["clipboardWrite"],
-          },
-        }),
-      ],
+    const { deployment, modDefinition } = deploymentModDefinitionPairFactory({
+      modDefinitionOverride: {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            permissions: {
+              permissions: ["clipboardWrite"],
+            },
+          }),
+        ],
+      },
     });
-    const registryId = modDefinition.metadata.id;
-    const deployment = deploymentFactory({
-      package: deploymentPackageFactory({
-        name: modDefinition.metadata.name,
-        version: modDefinition.metadata.version,
-        package_id: registryId,
-      }),
-    });
+    const registryId = deployment.package.package_id;
 
     axiosMock.onGet("/api/me/").reply(200, {
       flags: [],
@@ -360,15 +344,8 @@ describe("updateDeployments", () => {
     );
     await saveEditorState(editorState);
 
-    const modDefinition = defaultModDefinitionFactory();
-    const registryId = modDefinition.metadata.id;
-    const deployment = deploymentFactory({
-      package: deploymentPackageFactory({
-        name: modDefinition.metadata.name,
-        version: modDefinition.metadata.version,
-        package_id: registryId,
-      }),
-    });
+    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const registryId = deployment.package.package_id;
 
     axiosMock.onGet("/api/me/").reply(200, {
       flags: [],
@@ -392,15 +369,8 @@ describe("updateDeployments", () => {
   test("uninstall existing recipe mod component with no dynamic elements", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const modDefinition = defaultModDefinitionFactory();
-    const registryId = modDefinition.metadata.id;
-    const deployment = deploymentFactory({
-      package: deploymentPackageFactory({
-        name: modDefinition.metadata.name,
-        version: modDefinition.metadata.version,
-        package_id: registryId,
-      }),
-    });
+    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const registryId = deployment.package.package_id;
 
     // A mod component without a recipe. Exclude _recipe entirely to handle the case where the property is missing
     const modComponent = modComponentFactory({
@@ -441,15 +411,8 @@ describe("updateDeployments", () => {
   test("uninstall existing recipe mod component with dynamic element", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const modDefinition = defaultModDefinitionFactory();
-    const registryId = modDefinition.metadata.id;
-    const deployment = deploymentFactory({
-      package: deploymentPackageFactory({
-        name: modDefinition.metadata.name,
-        version: modDefinition.metadata.version,
-        package_id: registryId,
-      }),
-    });
+    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const registryId = deployment.package.package_id;
 
     const starterBrick = starterBrickConfigFactory();
     const brick = {
@@ -512,15 +475,8 @@ describe("updateDeployments", () => {
       permissions: emptyPermissionsFactory(),
     });
 
-    const modDefinition = defaultModDefinitionFactory();
-    const registryId = modDefinition.metadata.id;
-    const deployment = deploymentFactory({
-      package: deploymentPackageFactory({
-        name: modDefinition.metadata.name,
-        version: modDefinition.metadata.version,
-        package_id: registryId,
-      }),
-    });
+    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const registryId = deployment.package.package_id;
 
     axiosMock.onGet("/api/me/").reply(200, {
       flags: [],
@@ -550,23 +506,18 @@ describe("updateDeployments", () => {
       },
     });
 
-    const modDefinition = defaultModDefinitionFactory({
-      extensionPoints: [
-        modComponentDefinitionFactory({
-          permissions: {
-            permissions: ["clipboardWrite"],
-          },
-        }),
-      ],
+    const { deployment, modDefinition } = deploymentModDefinitionPairFactory({
+      modDefinitionOverride: {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            permissions: {
+              permissions: ["clipboardWrite"],
+            },
+          }),
+        ],
+      },
     });
-    const registryId = modDefinition.metadata.id;
-    const deployment = deploymentFactory({
-      package: deploymentPackageFactory({
-        name: modDefinition.metadata.name,
-        version: modDefinition.metadata.version,
-        package_id: registryId,
-      }),
-    });
+    const registryId = deployment.package.package_id;
 
     axiosMock.onGet("/api/me/").reply(200, {
       flags: ["deployment-permissions-strict"],
@@ -642,7 +593,7 @@ describe("updateDeployments", () => {
       flags: ["restricted-version"],
     });
 
-    const deployment = deploymentFactory();
+    const { deployment } = deploymentModDefinitionPairFactory();
     axiosMock.onPost().reply(201, [deployment]);
 
     await syncDeployments();

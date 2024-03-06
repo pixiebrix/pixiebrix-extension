@@ -20,9 +20,8 @@ import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useFlags from "@/hooks/useFlags";
 import useModPermissions from "@/mods/hooks/useModPermissions";
-import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
+import { deploymentModDefinitionPairFactory } from "@/testUtils/factories/deploymentFactories";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
-import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import type { DeploymentModDefinitionPair } from "@/types/deploymentTypes";
 
 jest.mock("@/mods/hooks/useModPermissions");
@@ -107,10 +106,7 @@ describe("useAutoDeploy", () => {
       mockHooks();
 
       const deploymentModDefinitionPairs: DeploymentModDefinitionPair[] = [
-        {
-          deployment: deploymentFactory(),
-          modDefinition: defaultModDefinitionFactory(),
-        },
+        deploymentModDefinitionPairFactory(),
       ];
       const installedExtensions = [
         modComponentFactory(),
@@ -141,10 +137,7 @@ describe("useAutoDeploy", () => {
       mockHooks();
 
       const deploymentModDefinitionPairs: DeploymentModDefinitionPair[] = [
-        {
-          deployment: deploymentFactory(),
-          modDefinition: defaultModDefinitionFactory(),
-        },
+        deploymentModDefinitionPairFactory(),
       ];
       const installedExtensions = [
         modComponentFactory(),
@@ -176,10 +169,8 @@ describe("useAutoDeploy", () => {
 
       mockHooks({ activateDeploymentsResponse: promise });
 
-      const deploymentModDefinitionPair: DeploymentModDefinitionPair = {
-        deployment: deploymentFactory(),
-        modDefinition: defaultModDefinitionFactory(),
-      };
+      const deploymentModDefinitionPair: DeploymentModDefinitionPair =
+        deploymentModDefinitionPairFactory();
 
       const installedExtensions = [
         modComponentFactory(),
@@ -216,10 +207,7 @@ describe("useAutoDeploy", () => {
       mockHooks({ hasPermissions: false });
 
       const deploymentModDefinitionPairs: DeploymentModDefinitionPair[] = [
-        {
-          deployment: deploymentFactory(),
-          modDefinition: defaultModDefinitionFactory(),
-        },
+        deploymentModDefinitionPairFactory(),
       ];
       const installedExtensions = [
         modComponentFactory(),
@@ -242,10 +230,7 @@ describe("useAutoDeploy", () => {
       mockHooks({ restricted: false });
 
       const deploymentModDefinitionPairs: DeploymentModDefinitionPair[] = [
-        {
-          deployment: deploymentFactory(),
-          modDefinition: defaultModDefinitionFactory(),
-        },
+        deploymentModDefinitionPairFactory(),
       ];
       const installedExtensions = [
         modComponentFactory(),
