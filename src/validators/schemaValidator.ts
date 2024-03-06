@@ -273,14 +273,14 @@ export function validatePackageDefinition(
   //   there's on ModDefinition https://github.com/pixiebrix/pixiebrix-extension/blob/ea547eb5ce592fab537f45cf387ebb6b7c7c02e0/src/types/modDefinitionTypes.ts#L131-L131
   //   but it's unclear where its getting added for brick definitions
   const schemaWithMetadata = cloneDeep(originalSchema);
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- our schemas are all object schemas with properties
-  const properties = schemaWithMetadata.properties!;
-  properties.updated_at = {
+  // `properties` is always defined on these schemas. Typescript/Lint were disagreeing on adding "!" though.
+  schemaWithMetadata.properties ??= {};
+  schemaWithMetadata.properties.updated_at = {
     type: "string",
     format: "date-time",
   };
 
-  properties.sharing = {
+  schemaWithMetadata.properties.sharing = {
     // Exact metadata shape doesn't matter for definition validation
     type: "object",
   };
