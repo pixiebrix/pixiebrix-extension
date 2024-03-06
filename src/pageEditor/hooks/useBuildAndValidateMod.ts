@@ -68,14 +68,14 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
       });
 
       const modComponentDefinitionCountsMatch =
-        compareModComponentCountsToModDefinition({
-          modDefinition: newMod,
+        compareModComponentCountsToModDefinition(newMod, {
+          sourceModDefinition: sourceMod,
           sourceModComponent,
           sourceModComponentFormState,
         });
       const modComponentStarterBricksMatch =
-        await checkModStarterBrickInvariants({
-          modDefinition: newMod,
+        await checkModStarterBrickInvariants(newMod, {
+          sourceModDefinition: sourceMod,
           sourceModComponent,
           sourceModComponentFormState,
         });

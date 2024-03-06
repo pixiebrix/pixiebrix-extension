@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
+import {
+  type ModDefinition,
+  type UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
 import { isEqual } from "lodash";
@@ -25,15 +28,20 @@ import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/s
 import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import type { ActivatedModComponent } from "@/types/modComponentTypes";
 
-function useCheckModStarterBrickInvariants(): ({
-  modDefinition,
-  sourceModComponent,
-  sourceModComponentFormState,
-}: {
-  modDefinition: UnsavedModDefinition;
+type SourceModParts = {
+  sourceModDefinition?: ModDefinition;
   sourceModComponent?: ActivatedModComponent;
   sourceModComponentFormState?: ModComponentFormState;
-}) => Promise<boolean> {
+};
+
+function useCheckModStarterBrickInvariants(): (
+  unsavedModDefinition: UnsavedModDefinition,
+  {
+    sourceModDefinition,
+    sourceModComponent,
+    sourceModComponentFormState,
+  }: SourceModParts,
+) => Promise<boolean> {
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
   );
@@ -49,17 +57,20 @@ function useCheckModStarterBrickInvariants(): ({
    *    also need to run it through the adapter because of some cleanup logic
    */
   return useCallback(
-    async ({
-      modDefinition,
-      sourceModComponent,
-      sourceModComponentFormState,
-    }: {
-      modDefinition: UnsavedModDefinition;
-      sourceModComponent?: ActivatedModComponent;
-      sourceModComponentFormState?: ModComponentFormState;
-    }) => {
-      const modId = modDefinition.metadata.id;
-      const definitionsFromMod = Object.values(modDefinition.definitions);
+    async (
+      unsavedModDefinition: UnsavedModDefinition,
+      {
+        sourceModDefinition,
+        sourceModComponent,
+        sourceModComponentFormState,
+      }: SourceModParts,
+    ) => {
+      const modId = sourceModDefinition
+        ? sourceModDefinition.metadata.id
+        : unsavedModDefinition.metadata.id;
+      const definitionsFromMod = Object.values(
+        unsavedModDefinition.definitions,
+      );
 
       const { cleanModComponents, dirtyModComponentFormStates } =
         getCleanComponentsAndDirtyFormStatesForMod(modId);

@@ -15,40 +15,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
+import {
+  type ModDefinition,
+  type UnsavedModDefinition,
+} from "@/types/modDefinitionTypes";
 import { useSelector } from "react-redux";
 import { useCallback } from "react";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 
+type SourceModParts = {
+  sourceModDefinition?: ModDefinition;
+  sourceModComponent?: ActivatedModComponent;
+  sourceModComponentFormState?: ModComponentFormState;
+};
+
 /**
  * @returns {function} - A function that compares the number of mod components in the redux state and the mod definition
  */
-function useCompareModComponentCounts(): ({
-  modDefinition,
-  sourceModComponent,
-  sourceModComponentFormState,
-}: {
-  modDefinition: UnsavedModDefinition;
-  sourceModComponent?: ActivatedModComponent;
-  sourceModComponentFormState?: ModComponentFormState;
-}) => boolean {
+function useCompareModComponentCounts(): (
+  unsavedModDefinition: UnsavedModDefinition,
+  {
+    sourceModDefinition,
+    sourceModComponent,
+    sourceModComponentFormState,
+  }: SourceModParts,
+) => boolean {
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
   );
 
   return useCallback(
-    ({
-      modDefinition,
-      sourceModComponent,
-      sourceModComponentFormState,
-    }: {
-      modDefinition: UnsavedModDefinition;
-      sourceModComponent?: ActivatedModComponent;
-      sourceModComponentFormState?: ModComponentFormState;
-    }) => {
-      const modId = modDefinition.metadata.id;
+    (
+      unsavedModDefinition: UnsavedModDefinition,
+      {
+        sourceModDefinition,
+        sourceModComponent,
+        sourceModComponentFormState,
+      }: SourceModParts,
+    ) => {
+      const modId = sourceModDefinition
+        ? sourceModDefinition.metadata.id
+        : unsavedModDefinition.metadata.id;
       const { cleanModComponents, dirtyModComponentFormStates } =
         getCleanComponentsAndDirtyFormStatesForMod(modId);
 
@@ -64,7 +73,7 @@ function useCompareModComponentCounts(): ({
         cleanModComponents.length + dirtyModComponentFormStates.length;
 
       const totalNumberModComponentsFromDefinition =
-        modDefinition.extensionPoints.length;
+        unsavedModDefinition.extensionPoints.length;
 
       return (
         totalNumberModComponentsFromState ===
