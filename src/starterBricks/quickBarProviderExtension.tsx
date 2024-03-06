@@ -97,7 +97,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     extensionPoint: StarterBrick,
   ): extensionPoint is QuickBarProviderStarterBrickABC {
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any
-    -- Need to access a type specific property (QuickBarProviderExtensionPoint._definition) on a base-typed entity (StarterBrick) */
+    -- Need to access a type specific property (QuickBarProviderStarterBrickABC._definition) on a base-typed entity (StarterBrick) */
     return (extensionPoint as any)?._definition?.type === "quickBarProvider";
   }
 
