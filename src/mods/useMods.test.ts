@@ -61,7 +61,7 @@ describe("useMods", () => {
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
-          // eslint-disable-next-line new-cap -- unsave
+          // eslint-disable-next-line new-cap -- unsafe
           extensionsSlice.actions.UNSAFE_setExtensions([
             activatedModComponentFactory({
               _recipe: {
@@ -93,7 +93,7 @@ describe("useMods", () => {
     const wrapper = renderHook(() => useMods(), {
       setupRedux(dispatch) {
         dispatch(
-          // eslint-disable-next-line new-cap -- unsave
+          // eslint-disable-next-line new-cap -- unsafe
           extensionsSlice.actions.UNSAFE_setExtensions(
             range(3).map(() =>
               activatedModComponentFactory({

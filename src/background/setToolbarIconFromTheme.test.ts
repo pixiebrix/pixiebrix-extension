@@ -51,7 +51,7 @@ describe("setToolbarIconFromTheme", () => {
   // @ts-expect-error -- No need to mock the whole class for the test
   global.Image = class {
     src = "";
-    // eslint-disable-next-line no-restricted-syntax
+    // eslint-disable-next-line no-restricted-syntax -- This is a mock
     decode = jest.fn().mockResolvedValue(undefined);
   };
   // @ts-expect-error -- No need to mock the whole class for the test

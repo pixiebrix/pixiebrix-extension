@@ -94,7 +94,7 @@ export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
   return componentDefinition;
 };
 
-// eslint-disable-next-line complexity
+// eslint-disable-next-line complexity -- We're handling a lot of different element types
 export function getComponentDefinition(
   element: DocumentElement,
   tracePath: DynamicPath,
