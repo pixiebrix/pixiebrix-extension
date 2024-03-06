@@ -222,7 +222,7 @@ describe("syncDeployments", () => {
       flags: [],
     });
 
-    appApiMock.onPost().reply(201, [deployment]);
+    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
@@ -269,7 +269,7 @@ describe("syncDeployments", () => {
       flags: [],
     });
 
-    appApiMock.onPost().reply(201, [deployment]);
+    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
@@ -339,7 +339,7 @@ describe("syncDeployments", () => {
       flags: [],
     });
 
-    appApiMock.onPost().reply(201, [deployment]);
+    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
@@ -386,7 +386,7 @@ describe("syncDeployments", () => {
       flags: [],
     });
 
-    appApiMock.onPost().reply(201, [deployment]);
+    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
@@ -452,7 +452,7 @@ describe("syncDeployments", () => {
       flags: [],
     });
 
-    appApiMock.onPost().reply(201, [deployment]);
+    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
@@ -488,7 +488,7 @@ describe("syncDeployments", () => {
       flags: [],
     });
 
-    appApiMock.onPost().reply(201, [deployment]);
+    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
@@ -535,7 +535,7 @@ describe("syncDeployments", () => {
       flags: ["deployment-permissions-strict"],
     });
 
-    appApiMock.onPost().reply(201, [deployment]);
+    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
 
     appApiMock
       .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
@@ -589,11 +589,11 @@ describe("syncDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(true);
 
-    appApiMock.onGet().reply(200, {
+    appApiMock.onGet("/api/me/").reply(200, {
       flags: [],
     });
 
-    appApiMock.onPost().reply(201, []);
+    appApiMock.onPost("/api/deployments/").reply(201, []);
 
     await syncDeployments();
 
@@ -607,12 +607,12 @@ describe("syncDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(false);
 
-    appApiMock.onGet().reply(200, {
+    appApiMock.onGet("/api/me/").reply(200, {
       flags: ["restricted-version"],
     });
 
     const { deployment } = activatableDeploymentFactory();
-    appApiMock.onPost().reply(201, [deployment]);
+    appApiMock.onPost("/api/deployments/").reply(201, [deployment]);
 
     await syncDeployments();
 
@@ -625,11 +625,11 @@ describe("syncDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     isUpdateAvailableMock.mockReturnValue(true);
 
-    appApiMock.onGet().reply(200, {
+    appApiMock.onGet("/api/me/").reply(200, {
       flags: ["restricted-version"],
     });
 
-    appApiMock.onPost().reply(201, []);
+    appApiMock.onPost("/api/deployments/").reply(201, []);
 
     await syncDeployments();
 
@@ -647,12 +647,12 @@ describe("syncDeployments", () => {
       updatePromptTimestamp: null,
     } as any);
 
-    appApiMock.onGet().reply(200, {
+    appApiMock.onGet("/api/me/").reply(200, {
       flags: [],
       enforce_update_millis: 5000,
     });
 
-    appApiMock.onPost().reply(201, []);
+    appApiMock.onPost("/api/deployments/").reply(201, []);
 
     await syncDeployments();
 
@@ -670,12 +670,12 @@ describe("syncDeployments", () => {
       updatePromptTimestamp: null,
     } as any);
 
-    appApiMock.onGet().reply(200, {
+    appApiMock.onGet("/api/me/").reply(200, {
       flags: [],
       enforce_update_millis: 5000,
     });
 
-    appApiMock.onPost().reply(201, []);
+    appApiMock.onPost("/api/deployments/").reply(201, []);
 
     await syncDeployments();
 
@@ -691,11 +691,11 @@ describe("syncDeployments", () => {
       nextUpdate: Date.now() + 1_000_000,
     } as any);
 
-    appApiMock.onGet().reply(200, {
+    appApiMock.onGet("/api/me/").reply(200, {
       flags: ["restricted-version"],
     });
 
-    appApiMock.onPost().reply(201, []);
+    appApiMock.onPost("/api/deployments/").reply(201, []);
 
     await syncDeployments();
 
