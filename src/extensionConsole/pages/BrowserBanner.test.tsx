@@ -23,7 +23,6 @@ import { screen } from "@testing-library/react";
 import { INTERNAL_reset } from "@/store/enterprise/managedStorage";
 
 beforeEach(async () => {
-  // eslint-disable-next-line new-cap -- test helper method
   await INTERNAL_reset();
   await browser.storage.managed.clear();
 });

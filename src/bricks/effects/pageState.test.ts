@@ -24,7 +24,6 @@ import { GetPageState, SetPageState } from "@/bricks/effects/pageState";
 import { TEST_resetState } from "@/platform/state/stateController";
 
 beforeEach(() => {
-  // eslint-disable-next-line new-cap -- test method
   TEST_resetState();
 });
 

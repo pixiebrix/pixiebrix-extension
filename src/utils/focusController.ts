@@ -15,26 +15,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+declare global {
+  // eslint-disable-next-line no-var, @shopify/prefer-module-scope-constants -- It must be a var for types to work
+  var PB_FOCUS_CONTROLLER: boolean;
+}
+
 let focusedElement: HTMLElement | undefined;
+
+if (globalThis.PB_FOCUS_CONTROLLER) {
+  // If you're seeing this error message, it's likely this file was imported from multiple content scripts.
+  // This focusController module should only be imported from the main content script.
+  console.error(
+    "focusController: there should only be one focusController instance per window",
+  );
+} else {
+  globalThis.PB_FOCUS_CONTROLLER = true;
+}
 
 const focusController = {
   /**
    * Saves the focus of the current focused element so that it can be restored later
-   * @note This doesn't behave as you'd expect across iframes
+   * @note This doesn't behave as you'd expect across iframes, see discussion:
+   *  https://github.com/pixiebrix/pixiebrix-extension/issues/7774#issuecomment-1980041738
    */
   save(): void {
-    if (focusedElement) {
-      console.warn("The previously-saved focus is being overridden", {
-        focusedElement,
-      });
+    // Only HTMLElements can have their focus restored, but we're currently ignoring this distinction
+    const active = document.activeElement as HTMLElement;
+
+    if (focusedElement != null && focusedElement !== active) {
+      console.warn(
+        "focusController: the previously-saved focus is being overridden",
+        {
+          previous: focusedElement,
+          active,
+        },
+      );
     }
 
-    // Only HTMLElements can't have their focus restored, but we're currently ignoring this distinciton
-    focusedElement = document.activeElement as HTMLElement;
+    focusedElement = active;
   },
+
   /**
    * Restores the focus to the last saved item, if it hasn't already been restored
-   * @note This doesn't behave as you'd expect across iframes
+   * @note This doesn't behave as you'd expect across iframes, see discussion:
+   *  https://github.com/pixiebrix/pixiebrix-extension/issues/7774#issuecomment-1980041738
    */
   restore(): void {
     // `focusedElement === body`: This restores its focus. `body.focus()` doesn't do anything
@@ -45,6 +69,15 @@ const focusController = {
 
     focusedElement = undefined;
   },
+
+  /** Clear saved value without restoring focus */
+  clear(): void {
+    focusedElement = undefined;
+  },
+
+  /**
+   * Gets the last saved item or the current active item, if there is no saved item
+   */
   get(): HTMLElement {
     return focusedElement ?? (document.activeElement as HTMLElement);
   },

@@ -74,8 +74,7 @@ export class MappingTransformer extends TransformerABC {
     }
 
     if (Object.hasOwn(mapping, key)) {
-      // Checking for hasOwn
-      // eslint-disable-next-line security/detect-object-injection
+      // eslint-disable-next-line security/detect-object-injection -- Checking for hasOwn
       return mapping[key];
     }
 
