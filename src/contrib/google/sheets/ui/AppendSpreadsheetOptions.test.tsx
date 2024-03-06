@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectLegacyTestSpreadsheetLoaded", "expectTab1Selected", "expectGoogleAccountTestSpreadsheetLoaded", "expectTabSelectWorksProperly"] }] */
-
 import React from "react";
 import AppendSpreadsheetOptions from "./AppendSpreadsheetOptions";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
@@ -339,7 +337,6 @@ describe("AppendSpreadsheetOptions", () => {
     expect(screen.getByDisplayValue("barValue")).toBeVisible();
   });
 
-  // eslint-disable-next-line jest/expect-expect -- custom expect functions
   test("given test googleAccount and string spreadsheetId value and selected tabName and column values, when rendered, loads spreadsheet title and doesn't clear values", async () => {
     await renderWithValuesAndWait({
       config: {

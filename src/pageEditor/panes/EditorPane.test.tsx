@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectEditorError"] }] */
-
 import React from "react";
 import { render, screen, within } from "@/pageEditor/testHelpers";
 import EditorPane from "./EditorPane";

@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleMode"] }] */
-
 import React from "react";
 import { render, screen } from "@/pageEditor/testHelpers";
 import BasicSchemaField from "@/components/fields/schemaFields/BasicSchemaField";

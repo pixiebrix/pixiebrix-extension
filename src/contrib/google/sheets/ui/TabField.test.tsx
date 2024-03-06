@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectToggleOptions", "expectTab1Selected"] }] */
-
 import React from "react";
 import { expectToggleOptions } from "@/components/fields/schemaFields/fieldTestUtils";
 import { render } from "@/pageEditor/testHelpers";
@@ -343,7 +341,6 @@ describe("TabField", () => {
     expect(screen.getByText("Foo")).toBeVisible();
   });
 
-  // eslint-disable-next-line jest/expect-expect -- custom assertion function is used
   test("given string tabName value, when spreadsheet changes to null, then does not update the value", async () => {
     const { rerender } = render(
       <TabField
@@ -377,7 +374,6 @@ describe("TabField", () => {
     expectTab2Selected();
   });
 
-  // eslint-disable-next-line jest/expect-expect -- custom assertion function is used
   test("given string tabName value, when spreadsheet changes to null and back to the same spreadsheet, should not reset the value", async () => {
     const { rerender } = render(
       <TabField
