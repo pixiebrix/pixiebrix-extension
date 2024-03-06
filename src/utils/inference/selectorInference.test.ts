@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectSelector", "expectRoundtripSelector", "expectSimilarElements", "expectSelectors"] }] */
+/* eslint jest/expect-expect: ["error", { "assertFunctionNames": ["expect", "expectSelector", "expectRoundtripSelector", "expectSimilarElements", "expectSelectors"] }]
+-- TODO: replace with native expect and it.each */
 
 import {
   expandedCssSelector,
