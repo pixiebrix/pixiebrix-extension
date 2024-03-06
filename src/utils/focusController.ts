@@ -15,23 +15,64 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-let focusedElement: HTMLElement | undefined;
+import { uuidv4 } from "@/types/helpers";
+import type { UUID } from "@/types/stringTypes";
 
-const focusController = {
+const FOCUS_CONTROLLER_UUID_SYMBOL = Symbol.for("focus-controller-uuid");
+
+declare global {
+  interface Window {
+    [FOCUS_CONTROLLER_UUID_SYMBOL]?: UUID;
+  }
+}
+
+class FocusController {
+  /**
+   * The last saved focused element
+   * @private
+   */
+  private focusedElement: HTMLElement | undefined;
+
+  /**
+   * Nonce to detect multiple imports of focusController
+   * @private
+   */
+  private readonly nonce = uuidv4();
+
+  constructor() {
+    // eslint-disable-next-line security/detect-object-injection -- symbol
+    if (window[FOCUS_CONTROLLER_UUID_SYMBOL]) {
+      console.warn(
+        // eslint-disable-next-line security/detect-object-injection -- symbol
+        `focusController(${this.nonce}): ${window[FOCUS_CONTROLLER_UUID_SYMBOL]} already added to window`,
+      );
+    } else {
+      // eslint-disable-next-line security/detect-object-injection -- symbol
+      window[FOCUS_CONTROLLER_UUID_SYMBOL] = this.nonce;
+    }
+  }
+
   /**
    * Saves the focus of the current focused element so that it can be restored later
    * @note This doesn't behave as you'd expect across iframes
    */
   save(): void {
-    if (focusedElement) {
-      console.warn("The previously-saved focus is being overridden", {
-        focusedElement,
-      });
+    // Only HTMLElements can have their focus restored, but we're currently ignoring this distinction
+    const active = document.activeElement as HTMLElement;
+
+    if (this.focusedElement != null && this.focusedElement !== active) {
+      console.warn(
+        `focusController(${this.nonce}): the previously-saved focus is being overridden`,
+        {
+          previous: this.focusedElement,
+          active,
+        },
+      );
     }
 
-    // Only HTMLElements can't have their focus restored, but we're currently ignoring this distinciton
-    focusedElement = document.activeElement as HTMLElement;
-  },
+    this.focusedElement = active;
+  }
+
   /**
    * Restores the focus to the last saved item, if it hasn't already been restored
    * @note This doesn't behave as you'd expect across iframes
@@ -41,13 +82,27 @@ const focusController = {
     (document.activeElement as HTMLElement)?.blur?.();
 
     // `focusedElement === HTMLElement`: Restore focus if it's an HTMLElement, otherwise silently ignore it
-    focusedElement?.focus?.();
+    this.focusedElement?.focus?.();
 
-    focusedElement = undefined;
-  },
+    this.focusedElement = undefined;
+  }
+
+  /** Clear saved value without restoring focus */
+  clear(): void {
+    this.focusedElement = undefined;
+  }
+
+  /**
+   * Gets the last saved item or the current active item, if there is no saved item
+   */
   get(): HTMLElement {
-    return focusedElement ?? (document.activeElement as HTMLElement);
-  },
-} as const;
+    return this.focusedElement ?? (document.activeElement as HTMLElement);
+  }
+}
+
+/**
+ * Singleton instance of the focus controller
+ */
+const focusController = new FocusController();
 
 export default focusController;
