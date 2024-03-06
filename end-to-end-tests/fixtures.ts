@@ -17,6 +17,7 @@
 
 import { test as base, chromium, type BrowserContext } from "@playwright/test";
 import path from "node:path";
+import { MV } from "./env";
 
 export const test = base.extend<{
   context: BrowserContext;
@@ -35,19 +36,20 @@ export const test = base.extend<{
     await context.close();
   },
   async extensionId({ context }, use) {
-    /*
-    // for manifest v2:
-    let [background] = context.backgroundPages()
-    if (!background)
-      background = await context.waitForEvent('backgroundpage')
-    */
+    if (MV === "3") {
+      let [background] = context.serviceWorkers();
+      background = await context.waitForEvent("serviceworker");
 
-    // for manifest v3:
-    let [background] = context.serviceWorkers();
-    background ||= await context.waitForEvent("serviceworker");
+      const extensionId = background.url().split("/")[2];
+      await use(extensionId);
+    } else {
+      // For manifest v2:
+      let [background] = context.backgroundPages();
+      background ||= await context.waitForEvent("backgroundpage");
 
-    const extensionId = background.url().split("/")[2];
-    await use(extensionId);
+      const extensionId = background.url().split("/")[2];
+      await use(extensionId);
+    }
   },
 });
 export const { expect } = test;
