@@ -149,6 +149,7 @@ function useDeployments(): DeploymentsState {
     return deployments?.filter((x) => isUpdated(x)) ?? null;
   }, [activeExtensions, restrict, deployments]);
 
+  // TODO: Refactor this to use RTK query: https://github.com/pixiebrix/pixiebrix-extension/issues/7841
   const {
     data: activatableDeployments,
     isLoading: isLoadingModDefinitions,
