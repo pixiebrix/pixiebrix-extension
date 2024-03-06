@@ -267,7 +267,7 @@ export function validatePackageDefinition(
     throw new Error(`Unknown kind: ${kind}`);
   }
 
-  // The API for packages add an updated_at and sharing property to config:
+  // The API for packages add an updated_at and sharing property to config, which is reflected on RegistryPackage type:
   // https://github.com/pixiebrix/pixiebrix-app/blob/368a0116edad2c115ae370b651f109619e621745/api/serializers/brick.py#L139-L139
   const schemaWithMetadata = cloneDeep(originalSchema);
   // `properties` is always defined on these schemas. Typescript/Lint were disagreeing on adding "!" though.
