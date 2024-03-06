@@ -63,14 +63,16 @@ function useCreateModFromModComponent(
             return;
           }
 
-          let modComponent = produce(activeModComponent, (draft) => {
-            draft.uuid = uuidv4();
-          });
+          const newModComponentFormState = produce(
+            activeModComponent,
+            (draft) => {
+              draft.uuid = uuidv4();
+            },
+          );
 
           try {
             const newModDefinition = await buildAndValidateMod({
-              cleanModComponents: [],
-              dirtyModComponentFormStates: [modComponent],
+              newModComponentFormState,
               dirtyModMetadata: modMetadata,
             });
 
@@ -80,19 +82,22 @@ function useCreateModFromModComponent(
               public: false,
             }).unwrap();
 
-            modComponent = produce(modComponent, (draft) => {
-              draft.recipe = selectModMetadata(
-                newModDefinition,
-                upsertResponse,
-              );
-            });
+            const newModComponent = produce(
+              newModComponentFormState,
+              (draft) => {
+                draft.recipe = selectModMetadata(
+                  newModDefinition,
+                  upsertResponse,
+                );
+              },
+            );
 
-            dispatch(editorActions.addElement(modComponent));
+            dispatch(editorActions.addElement(newModComponent));
 
             await upsertModComponentFormState({
-              element: modComponent,
+              element: newModComponent,
               options: {
-                // Don't push to cloud since we're saving it with the recipe
+                // Don't push to cloud since we're saving it with the mod
                 pushToCloud: false,
                 // Permissions are already checked above
                 checkPermissions: false,

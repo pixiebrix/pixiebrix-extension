@@ -52,7 +52,10 @@ import {
 import Loader from "@/components/Loader";
 import ModalLayout from "@/components/ModalLayout";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
-import { type ModMetadataFormState } from "@/pageEditor/pageEditorTypes";
+import {
+  ModalKey,
+  type ModMetadataFormState,
+} from "@/pageEditor/pageEditorTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { generatePackageId } from "@/utils/registryUtils";
 import { FieldDescriptions } from "@/modDefinitions/modDefinitionConstants";
@@ -148,7 +151,7 @@ const CreateModModalBody: React.FC = () => {
   const formSchema = useFormSchema();
 
   const hideModal = useCallback(() => {
-    dispatch(editorActions.hideModal());
+    dispatch(editorActions.hideModalIfShowing(ModalKey.CREATE_RECIPE));
   }, [dispatch]);
 
   const initialModMetadataFormState = useInitialFormState({
@@ -257,7 +260,7 @@ const CreateModModal: React.FunctionComponent = () => {
 
   const dispatch = useDispatch();
   const hideModal = useCallback(() => {
-    dispatch(editorActions.hideModal());
+    dispatch(editorActions.hideModalIfShowing(ModalKey.CREATE_RECIPE));
   }, [dispatch]);
 
   return (

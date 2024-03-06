@@ -397,14 +397,12 @@ export function buildNewMod({
     sourceMod ?? emptyModDefinition;
 
   return produce(unsavedModDefinition, (draft: UnsavedModDefinition): void => {
-    // Options dirty state is only populated if a change is made
     if (dirtyModOptions) {
       draft.options = isModOptionsSchemaEmpty(dirtyModOptions)
         ? undefined
         : normalizeModOptionsDefinition(dirtyModOptions);
     }
 
-    // Metadata dirty state is only populated if a change is made
     if (dirtyModMetadata) {
       draft.metadata = dirtyModMetadata;
     }
