@@ -57,13 +57,8 @@ class FocusController {
    * @note This doesn't behave as you'd expect across iframes
    */
   save(): void {
-    // Only HTMLElements can't have their focus restored, but we're currently ignoring this distinction
-    const { activeElement } = document;
-    const active = activeElement as HTMLElement;
-
-    if (active == null) {
-      return;
-    }
+    // Only HTMLElements can have their focus restored, but we're currently ignoring this distinction
+    const active = document.activeElement as HTMLElement;
 
     if (this.focusedElement != null && this.focusedElement !== active) {
       console.warn(
