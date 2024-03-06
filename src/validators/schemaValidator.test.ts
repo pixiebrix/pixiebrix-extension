@@ -23,11 +23,25 @@ import { loadBrickYaml } from "@/runtime/brickYaml";
 import serviceText from "@contrib/raw/hunter.txt";
 import { type Schema } from "@/types/schemaTypes";
 import { uuidv4 } from "@/types/helpers";
+import { timestampFactory } from "@/testUtils/factories/stringFactories";
+import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 
 describe("validateKind", () => {
   test("can validate integration definition", async () => {
     const json = loadBrickYaml(serviceText) as UnknownObject;
     const result = validatePackageDefinition("service", json);
+    expect(result.errors).toHaveLength(0);
+    expect(result.valid).toBe(true);
+  });
+
+  test("can validate integration with timestamp/sharing metadata", async () => {
+    const json = loadBrickYaml(serviceText) as UnknownObject;
+
+    json.updated_at = timestampFactory();
+    json.sharing = sharingDefinitionFactory();
+
+    const result = validatePackageDefinition("service", json);
+
     expect(result.errors).toHaveLength(0);
     expect(result.valid).toBe(true);
   });

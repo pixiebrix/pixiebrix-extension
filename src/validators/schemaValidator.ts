@@ -266,21 +266,26 @@ export function validatePackageDefinition(
     throw new Error(`Unknown kind: ${kind}`);
   }
 
-  // TODO: track down/comment exactly where these properties are getting added and mention the corresponding typescript types
   // The API for packages includes an updated_at and sharing property:
   // https://github.com/pixiebrix/pixiebrix-app/blob/368a0116edad2c115ae370b651f109619e621745/api/serializers/brick.py#L67-L67
-
-  const cloned = cloneDeep(originalSchema);
-  cloned.properties.updated_at = {
+  // These then get added to the YAML/JSON of user-defined packages
+  // TODO: track down/comment exactly where these properties are getting added and mention the corresponding typescript types.
+  //   there's on ModDefinition https://github.com/pixiebrix/pixiebrix-extension/blob/ea547eb5ce592fab537f45cf387ebb6b7c7c02e0/src/types/modDefinitionTypes.ts#L131-L131
+  //   but it's unclear where its getting added for brick definitions
+  const schemaWithMetadata = cloneDeep(originalSchema);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- our schemas are all object schemas with properties
+  const properties = schemaWithMetadata.properties!;
+  properties.updated_at = {
     type: "string",
     format: "date-time",
   };
 
-  cloned.properties.sharing = {
+  properties.sharing = {
+    // Exact metadata shape doesn't matter for definition validation
     type: "object",
   };
 
-  const validator = new Validator(cloned);
+  const validator = new Validator(schemaWithMetadata);
 
   // Add the schemas synchronously. Definitions do not reference any external schemas, e.g., integration definitions.
   for (const builtIn of Object.values(BUILT_IN_SCHEMAS)) {
