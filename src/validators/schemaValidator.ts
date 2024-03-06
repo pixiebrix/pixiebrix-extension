@@ -152,16 +152,15 @@ const builtInSchemaResolver: ResolverOptions = {
   async read(file: FileInfo) {
     const url = trimEnd(file.url, "#");
 
-    const schema = BUILT_IN_SCHEMAS[url];
-
-    if (schema != null) {
-      // NOTE: including the $id cause duplicate schema errors when validating a dereferenced schema if the
-      // reference is used in multiple places. But including an $id is useful for preserving field toggling
-      // based on well-known schema $ids.
-      return schema;
+    if (!Object.hasOwn(BUILT_IN_SCHEMAS, url)) {
+      throw new Error(`Unknown schema: ${file.url}`);
     }
 
-    throw new Error(`Unknown schema: ${file.url}`);
+    // NOTE: keeping the $id causes duplicate schema errors when validating a dereferenced schema if the
+    // reference is used in multiple places. But including an $id is useful for preserving field toggling
+    // based on well-known schema $ids.
+    // eslint-disable-next-line security/detect-object-injection -- hasOwn check
+    return BUILT_IN_SCHEMAS[url];
   },
 } as const;
 
@@ -252,24 +251,42 @@ export async function validateBrickInputOutput(
  * distribution, so they are available to be added directly.
  *
  * @param kind the package definition kind.
- * @param instance the package definition
+ * @param instance the package definition, typically a RegistryPackage
+ * @see RegistryPackage
  */
 export function validatePackageDefinition(
   kind: keyof typeof KIND_SCHEMAS,
   instance: unknown,
 ): ValidationResult {
-  const schema = KIND_SCHEMAS[kind];
+  // eslint-disable-next-line security/detect-object-injection -- keyof check
+  const originalSchema = KIND_SCHEMAS[kind];
 
-  if (schema == null) {
+  if (originalSchema == null) {
     // `strictNullChecks` isn't satisfied with the keyof parameter type
     throw new Error(`Unknown kind: ${kind}`);
   }
 
-  const validator = new Validator(schema);
+  // The API for packages add an updated_at and sharing property to config, which is reflected on RegistryPackage type:
+  // https://github.com/pixiebrix/pixiebrix-app/blob/368a0116edad2c115ae370b651f109619e621745/api/serializers/brick.py#L139-L139
+  const schemaWithMetadata = cloneDeep(originalSchema);
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- `properties` is always defined on these schemas
+  schemaWithMetadata.properties!.updated_at = {
+    type: "string",
+    format: "date-time",
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- `properties` is always defined on these schemas
+  schemaWithMetadata.properties!.sharing = {
+    // Exact metadata shape doesn't matter for definition validation
+    type: "object",
+  };
+
+  const validator = new Validator(schemaWithMetadata);
 
   // Add the schemas synchronously. Definitions do not reference any external schemas, e.g., integration definitions.
   for (const builtIn of Object.values(BUILT_IN_SCHEMAS)) {
-    if (builtIn !== schema) {
+    if (builtIn !== originalSchema) {
       // `validate` throws if there are multiple schemas registered with the same $id
       validator.addSchema(builtIn);
     }

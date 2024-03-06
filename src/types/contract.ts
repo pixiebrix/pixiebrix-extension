@@ -202,6 +202,14 @@ export type RegistryPackage = Pick<
    * @see https://github.com/pixiebrix/pixiebrix-app/blob/43f0a4b81d8b7aaaf11adbe7fd8e4530ca4b8bf0/api/serializers/brick.py#L204-L204
    */
   kind: "component" | "extensionPoint" | "recipe" | "service" | "reader";
+
+  // PackageConfigListSerializer adds updated_at and sharing to the PackageConfigList response:
+  // https://github.com/pixiebrix/pixiebrix-app/blob/368a0116edad2c115ae370b651f109619e621745/api/serializers/brick.py#L139-L139
+
+  updated_at: Timestamp;
+
+  // The exact shape isn't used for now in the extension. So keep as UnknownObject
+  sharing: UnknownObject;
 };
 
 /**
