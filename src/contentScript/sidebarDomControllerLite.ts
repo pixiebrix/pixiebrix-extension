@@ -24,6 +24,10 @@ import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/domConstants";
 import shadowWrap from "@/utils/shadowWrap";
 import { expectContext } from "@/utils/expectContext";
 import { uuidv4 } from "@/types/helpers";
+import focusController from "@/utils/focusController";
+import { RepeatableAbortController } from "abort-utils";
+
+const hideController = new RepeatableAbortController();
 
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
@@ -82,6 +86,7 @@ export function removeSidebarFrame(): boolean {
   if (sidebar) {
     sidebar.remove();
     setSidebarWidth(0);
+    hideController.abortAndReset();
   }
 
   return Boolean(sidebar);
@@ -139,6 +144,36 @@ export function insertSidebarFrame(): boolean {
       "Post-condition failed: isSidebarFrameVisible is false after insertSidebarFrame",
     );
   }
+
+  // Can't detect clicks on the sidebar itself. So need to just watch for movement into/out of the sidebar
+  wrapper.addEventListener(
+    "mouseenter",
+    () => {
+      // If the user clicks into the sidebar and then leaves the sidebar, don't set the focus to the sidebar
+      // when they re-enter the sidebar
+      if (document.activeElement !== wrapper) {
+        focusController.save();
+      }
+    },
+    { passive: true, signal: hideController.signal, capture: true },
+  );
+
+  wrapper.addEventListener(
+    "mouseeexit",
+    () => {
+      focusController.clear();
+    },
+    { passive: true, signal: hideController.signal, capture: true },
+  );
+
+  // XXX: there's a corner case where the user has the Quick Bar open and hides the sidebar
+  hideController.signal.addEventListener(
+    "abort",
+    () => {
+      focusController.clear();
+    },
+    { passive: true, once: true },
+  );
 
   return true;
 }

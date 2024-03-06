@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { isLoadedInIframe } from "@/utils/iframeUtils";
+
 let focusedElement: HTMLElement | undefined;
 
 const focusController = {
@@ -23,20 +25,37 @@ const focusController = {
    * @note This doesn't behave as you'd expect across iframes
    */
   save(): void {
-    if (focusedElement) {
-      console.warn("The previously-saved focus is being overridden", {
-        focusedElement,
-      });
+    // Only HTMLElements can't have their focus restored, but we're currently ignoring this distinction
+    const active = document.activeElement as HTMLElement;
+
+    if (active == null) {
+      console.warn("focusController: no active element to save");
+      return;
     }
 
-    // Only HTMLElements can't have their focus restored, but we're currently ignoring this distinciton
-    focusedElement = document.activeElement as HTMLElement;
+    if (focusedElement != null && focusedElement !== active) {
+      console.warn(
+        "focusController: the previously-saved focus is being overridden",
+        {
+          previous: focusedElement,
+          active,
+        },
+      );
+    }
+
+    console.debug("focusController: saving focus", {
+      active,
+      isLoadedInIframe: isLoadedInIframe(),
+    });
+
+    focusedElement = active;
   },
   /**
    * Restores the focus to the last saved item, if it hasn't already been restored
    * @note This doesn't behave as you'd expect across iframes
    */
   restore(): void {
+    console.debug("focusController: restoring focus");
     // `focusedElement === body`: This restores its focus. `body.focus()` doesn't do anything
     (document.activeElement as HTMLElement)?.blur?.();
 
@@ -45,7 +64,21 @@ const focusController = {
 
     focusedElement = undefined;
   },
+  /** Clear saved value without restoring focus */
+  clear(): void {
+    console.debug("focusController: clearing saved focus");
+    focusedElement = undefined;
+  },
+  /**
+   * Gets the last saved item or the current active item, if there is no saved item
+   */
   get(): HTMLElement {
+    console.debug("focusController: getting focus", {
+      focusedElement,
+      activeElement: document.activeElement,
+      isLoadedInIframe: isLoadedInIframe(),
+    });
+
     return focusedElement ?? (document.activeElement as HTMLElement);
   },
 } as const;
