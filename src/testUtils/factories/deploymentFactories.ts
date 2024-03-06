@@ -16,10 +16,8 @@
  */
 
 import { define, derive, type FactoryConfig } from "cooky-cutter";
-import {
-  type Deployment,
-  type DeploymentModDefinitionPair,
-} from "@/types/contract";
+import { type Deployment } from "@/types/contract";
+import { type DeploymentModDefinitionPair } from "@/types/deploymentTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   validateRegistryId,
