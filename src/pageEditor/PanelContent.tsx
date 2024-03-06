@@ -72,8 +72,11 @@ const PanelContent: React.FC = () => {
 
     if (activeElement != null && shouldAutoRun(activeElement)) {
       const dynamicElement = formStateToDynamicElement(activeElement);
-      console.log("*** in PanelContent");
-      updateDynamicElement(allFramesInInspectedTab, dynamicElement);
+      updateDynamicElement(
+        allFramesInInspectedTab,
+        dynamicElement,
+        "PanelContent",
+      );
     }
   }, [dispatch, activeElement]);
 
