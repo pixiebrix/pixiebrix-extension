@@ -29,12 +29,11 @@ import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModCompon
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { type JsonObject } from "type-fest";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
-import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { isEmpty } from "lodash";
 
 type BuildAndValidateModParts = Partial<ModParts> & {
-  sourceModComponent?: ActivatedModComponent;
-  sourceModComponentFormState?: ModComponentFormState;
+  newModComponentFormState?: ModComponentFormState;
 };
 
 type UseBuildAndValidateModReturn = {
@@ -52,13 +51,27 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
   const buildAndValidateMod = useCallback(
     async ({
       sourceMod,
-      sourceModComponent,
-      sourceModComponentFormState,
-      cleanModComponents,
-      dirtyModComponentFormStates,
+      newModComponentFormState,
+      cleanModComponents = [],
+      dirtyModComponentFormStates: existingDirtyModComponentFormStates = [],
       dirtyModOptions,
       dirtyModMetadata,
     }: BuildAndValidateModParts) => {
+      if (
+        !newModComponentFormState &&
+        isEmpty(cleanModComponents) &&
+        isEmpty(existingDirtyModComponentFormStates)
+      ) {
+        throw new Error("Error saving mod - no mod components found to save");
+      }
+
+      const dirtyModComponentFormStates = [
+        ...existingDirtyModComponentFormStates,
+      ];
+      if (newModComponentFormState) {
+        dirtyModComponentFormStates.push(newModComponentFormState);
+      }
+
       const newMod = buildNewMod({
         sourceMod,
         cleanModComponents,
@@ -70,15 +83,13 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
       const modComponentDefinitionCountsMatch =
         compareModComponentCountsToModDefinition(newMod, {
           sourceModDefinition: sourceMod,
-          sourceModComponent,
-          sourceModComponentFormState,
+          newModComponentFormState,
         });
 
       const modComponentStarterBricksMatch =
         await checkModStarterBrickInvariants(newMod, {
           sourceModDefinition: sourceMod,
-          sourceModComponent,
-          sourceModComponentFormState,
+          newModComponentFormState,
         });
 
       if (

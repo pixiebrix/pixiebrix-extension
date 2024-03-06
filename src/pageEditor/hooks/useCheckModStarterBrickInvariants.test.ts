@@ -275,7 +275,7 @@ describe("useCheckModStarterBrickInvariants", () => {
     const checkModStarterBrickInvariants = result.current;
     const actualResult = await checkModStarterBrickInvariants(
       resultModDefinition,
-      { sourceModComponentFormState: formState },
+      { newModComponentFormState: formState },
     );
     expect(actualResult).toBe(true);
   });
@@ -314,7 +314,7 @@ describe("useCheckModStarterBrickInvariants", () => {
     const checkModStarterBrickInvariants = result.current;
     const actualResult = await checkModStarterBrickInvariants(
       resultModDefinition,
-      { sourceModComponentFormState: formState },
+      { newModComponentFormState: formState },
     );
     expect(actualResult).toBe(false);
   });

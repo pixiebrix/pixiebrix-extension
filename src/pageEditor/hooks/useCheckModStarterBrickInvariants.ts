@@ -26,21 +26,15 @@ import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import type { ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import type { ActivatedModComponent } from "@/types/modComponentTypes";
 
 type SourceModParts = {
   sourceModDefinition?: ModDefinition;
-  sourceModComponent?: ActivatedModComponent;
-  sourceModComponentFormState?: ModComponentFormState;
+  newModComponentFormState?: ModComponentFormState;
 };
 
 function useCheckModStarterBrickInvariants(): (
   unsavedModDefinition: UnsavedModDefinition,
-  {
-    sourceModDefinition,
-    sourceModComponent,
-    sourceModComponentFormState,
-  }: SourceModParts,
+  { sourceModDefinition, newModComponentFormState }: SourceModParts,
 ) => Promise<boolean> {
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
@@ -59,11 +53,7 @@ function useCheckModStarterBrickInvariants(): (
   return useCallback(
     async (
       unsavedModDefinition: UnsavedModDefinition,
-      {
-        sourceModDefinition,
-        sourceModComponent,
-        sourceModComponentFormState,
-      }: SourceModParts,
+      { sourceModDefinition, newModComponentFormState }: SourceModParts,
     ) => {
       // Always compare to the pre-existing mod if it exists
       const modId = sourceModDefinition
@@ -77,12 +67,8 @@ function useCheckModStarterBrickInvariants(): (
       const { cleanModComponents, dirtyModComponentFormStates } =
         getCleanComponentsAndDirtyFormStatesForMod(modId);
 
-      if (sourceModComponent) {
-        cleanModComponents.push(sourceModComponent);
-      }
-
-      if (sourceModComponentFormState) {
-        dirtyModComponentFormStates.push(sourceModComponentFormState);
+      if (newModComponentFormState) {
+        dirtyModComponentFormStates.push(newModComponentFormState);
       }
 
       for (const formState of dirtyModComponentFormStates) {

@@ -23,12 +23,10 @@ import { useSelector } from "react-redux";
 import { useCallback } from "react";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { type ActivatedModComponent } from "@/types/modComponentTypes";
 
 type SourceModParts = {
   sourceModDefinition?: ModDefinition;
-  sourceModComponent?: ActivatedModComponent;
-  sourceModComponentFormState?: ModComponentFormState;
+  newModComponentFormState?: ModComponentFormState;
 };
 
 /**
@@ -36,11 +34,7 @@ type SourceModParts = {
  */
 function useCompareModComponentCounts(): (
   unsavedModDefinition: UnsavedModDefinition,
-  {
-    sourceModDefinition,
-    sourceModComponent,
-    sourceModComponentFormState,
-  }: SourceModParts,
+  { sourceModDefinition, newModComponentFormState }: SourceModParts,
 ) => boolean {
   const getCleanComponentsAndDirtyFormStatesForMod = useSelector(
     selectGetCleanComponentsAndDirtyFormStatesForMod,
@@ -49,11 +43,7 @@ function useCompareModComponentCounts(): (
   return useCallback(
     (
       unsavedModDefinition: UnsavedModDefinition,
-      {
-        sourceModDefinition,
-        sourceModComponent,
-        sourceModComponentFormState,
-      }: SourceModParts,
+      { sourceModDefinition, newModComponentFormState }: SourceModParts,
     ) => {
       // Always compare to the pre-existing mod if it exists
       const modId = sourceModDefinition
@@ -63,12 +53,8 @@ function useCompareModComponentCounts(): (
       const { cleanModComponents, dirtyModComponentFormStates } =
         getCleanComponentsAndDirtyFormStatesForMod(modId);
 
-      if (sourceModComponent) {
-        cleanModComponents.push(sourceModComponent);
-      }
-
-      if (sourceModComponentFormState) {
-        dirtyModComponentFormStates.push(sourceModComponentFormState);
+      if (newModComponentFormState) {
+        dirtyModComponentFormStates.push(newModComponentFormState);
       }
 
       const totalNumberModComponentsFromState =

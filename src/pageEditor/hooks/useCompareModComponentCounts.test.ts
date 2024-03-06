@@ -410,7 +410,7 @@ describe("useCompareModComponentCounts", () => {
 
     expect(
       result.current(modDefinition, {
-        sourceModComponentFormState: newFormState,
+        newModComponentFormState: newFormState,
       }),
     ).toBe(true);
   });
@@ -427,7 +427,7 @@ describe("useCompareModComponentCounts", () => {
 
     expect(
       result.current(modDefinition, {
-        sourceModComponentFormState: newFormState,
+        newModComponentFormState: newFormState,
       }),
     ).toBe(true);
   });
@@ -445,7 +445,7 @@ describe("useCompareModComponentCounts", () => {
     });
 
     expect(
-      result.current(modDefinition, { sourceModComponentFormState: formState }),
+      result.current(modDefinition, { newModComponentFormState: formState }),
     ).toBe(false);
   });
 
@@ -462,7 +462,7 @@ describe("useCompareModComponentCounts", () => {
     });
 
     expect(
-      result.current(modDefinition, { sourceModComponentFormState: formState }),
+      result.current(modDefinition, { newModComponentFormState: formState }),
     ).toBe(false);
   });
 
@@ -483,7 +483,7 @@ describe("useCompareModComponentCounts", () => {
     });
 
     expect(
-      result.current(modDefinition, { sourceModComponentFormState: formState }),
+      result.current(modDefinition, { newModComponentFormState: formState }),
     ).toBe(false);
   });
 });
