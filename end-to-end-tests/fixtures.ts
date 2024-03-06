@@ -24,7 +24,7 @@ export const test = base.extend<{
   extensionId: string;
 }>({
   async context(_, use) {
-    const pathToExtension = path.join(import.meta.dirname, "my-extension");
+    const pathToExtension = path.join(import.meta.dirname, "../dist");
     const context = await chromium.launchPersistentContext("", {
       headless: false,
       args: [
