@@ -35,7 +35,8 @@ if (globalThis.PB_FOCUS_CONTROLLER) {
 const focusController = {
   /**
    * Saves the focus of the current focused element so that it can be restored later
-   * @note This doesn't behave as you'd expect across iframes
+   * @note This doesn't behave as you'd expect across iframes, see discussion:
+   *  https://github.com/pixiebrix/pixiebrix-extension/issues/7774#issuecomment-1980041738
    */
   save(): void {
     // Only HTMLElements can have their focus restored, but we're currently ignoring this distinction
@@ -56,7 +57,8 @@ const focusController = {
 
   /**
    * Restores the focus to the last saved item, if it hasn't already been restored
-   * @note This doesn't behave as you'd expect across iframes
+   * @note This doesn't behave as you'd expect across iframes, see discussion:
+   *  https://github.com/pixiebrix/pixiebrix-extension/issues/7774#issuecomment-1980041738
    */
   restore(): void {
     // `focusedElement === body`: This restores its focus. `body.focus()` doesn't do anything
