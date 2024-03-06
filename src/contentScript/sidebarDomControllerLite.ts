@@ -159,7 +159,7 @@ export function insertSidebarFrame(): boolean {
   );
 
   wrapper.addEventListener(
-    "mouseeexit",
+    "mouseleave",
     () => {
       focusController.clear();
     },

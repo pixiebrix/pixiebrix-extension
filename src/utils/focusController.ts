@@ -17,11 +17,30 @@
 
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { uuidv4 } from "@/types/helpers";
+import type { UUID } from "@/types/stringTypes";
+
+const FOCUS_CONTROLLER_ADDED_SYMBOL = Symbol.for("focus-controller-added");
+
+declare global {
+  interface Window {
+    [FOCUS_CONTROLLER_ADDED_SYMBOL]?: UUID;
+  }
+}
 
 class FocusController {
   private focusedElement: HTMLElement | undefined;
 
   private readonly nonce = uuidv4();
+
+  constructor() {
+    if (window[FOCUS_CONTROLLER_ADDED_SYMBOL]) {
+      console.warn(
+        `focusController(${this.nonce}): ${window[FOCUS_CONTROLLER_ADDED_SYMBOL]} already added to window`,
+      );
+    } else {
+      window[FOCUS_CONTROLLER_ADDED_SYMBOL] = this.nonce;
+    }
+  }
 
   /**
    * Saves the focus of the current focused element so that it can be restored later
