@@ -17,7 +17,7 @@
 
 import { define, derive, type FactoryConfig } from "cooky-cutter";
 import { type Deployment } from "@/types/contract";
-import { type DeploymentModDefinitionPair } from "@/types/deploymentTypes";
+import { type ActivatableDeployment } from "@/types/deploymentTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   validateRegistryId,
@@ -52,13 +52,13 @@ export const deploymentFactory = define<Deployment>({
   options_config: () => ({}) as Deployment["options_config"],
 });
 
-export function deploymentModDefinitionPairFactory({
+export function activatableDeploymentFactory({
   deploymentOverride,
   modDefinitionOverride,
 }: {
   deploymentOverride?: FactoryConfig<Deployment>;
   modDefinitionOverride?: FactoryConfig<ModDefinition>;
-} = {}): DeploymentModDefinitionPair {
+} = {}): ActivatableDeployment {
   const modDefinition = defaultModDefinitionFactory(modDefinitionOverride);
 
   if (deploymentOverride && "package" in deploymentOverride) {

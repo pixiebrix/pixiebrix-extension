@@ -22,20 +22,20 @@ import reportEvent from "@/telemetry/reportEvent";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import { mergeDeploymentIntegrationDependencies } from "@/utils/deploymentUtils";
 import { type Dispatch } from "@reduxjs/toolkit";
-import type { DeploymentModDefinitionPair } from "@/types/deploymentTypes";
+import type { ActivatableDeployment } from "@/types/deploymentTypes";
 
 const { actions } = extensionsSlice;
 
 async function activateDeployment({
   dispatch,
-  deploymentModDefinitionPair,
+  activatableDeployment,
   installed,
 }: {
   dispatch: Dispatch;
-  deploymentModDefinitionPair: DeploymentModDefinitionPair;
+  activatableDeployment: ActivatableDeployment;
   installed: ModComponentBase[];
 }): Promise<void> {
-  const { deployment, modDefinition } = deploymentModDefinitionPair;
+  const { deployment, modDefinition } = activatableDeployment;
   let isReinstall = false;
 
   // Clear existing installations of the blueprint
@@ -58,7 +58,7 @@ async function activateDeployment({
       modDefinition,
       deployment,
       configuredDependencies: await mergeDeploymentIntegrationDependencies(
-        deploymentModDefinitionPair,
+        activatableDeployment,
         services.locateAllForId,
       ),
       // Assume validation on the backend for options
@@ -75,22 +75,22 @@ async function activateDeployment({
 
 export async function activateDeployments({
   dispatch,
-  deploymentModDefinitionPairs,
+  activatableDeployments,
   installed,
 }: {
   dispatch: Dispatch;
-  deploymentModDefinitionPairs: DeploymentModDefinitionPair[];
+  activatableDeployments: ActivatableDeployment[];
   installed: ModComponentBase[];
 }): Promise<void> {
   // Activate as many as we can
   const errors = [];
 
-  for (const deploymentModDefinitionPair of deploymentModDefinitionPairs) {
+  for (const activatableDeployment of activatableDeployments) {
     try {
       // eslint-disable-next-line no-await-in-loop -- modifies redux state
       await activateDeployment({
         dispatch,
-        deploymentModDefinitionPair,
+        activatableDeployment,
         installed,
       });
     } catch (error) {

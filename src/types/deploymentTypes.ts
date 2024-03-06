@@ -26,7 +26,7 @@ import type { Deployment } from "@/types/contract";
  *
  * @since 1.8.10
  */
-export type DeploymentModDefinitionPair = {
+export type ActivatableDeployment = {
   deployment: Deployment;
   modDefinition: ModDefinition;
 };

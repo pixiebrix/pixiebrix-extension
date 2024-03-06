@@ -55,7 +55,7 @@ import {
   starterBrickConfigFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 
-import { deploymentModDefinitionPairFactory } from "@/testUtils/factories/deploymentFactories";
+import { activatableDeploymentFactory } from "@/testUtils/factories/deploymentFactories";
 import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories";
 import { type RegistryPackage } from "@/types/contract";
 
@@ -215,7 +215,7 @@ describe("syncDeployments", () => {
   test("can add deployment from empty state if deployment has permissions", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
     appApiMock.onGet("/api/me/").reply(200, {
@@ -252,7 +252,7 @@ describe("syncDeployments", () => {
       },
     });
 
-    const { deployment, modDefinition } = deploymentModDefinitionPairFactory({
+    const { deployment, modDefinition } = activatableDeploymentFactory({
       modDefinitionOverride: {
         extensionPoints: [
           modComponentDefinitionFactory({
@@ -288,7 +288,7 @@ describe("syncDeployments", () => {
     expect(jest.mocked(checkDeploymentPermissions).mock.calls[0]).toStrictEqual(
       [
         {
-          deploymentModDefinitionPair: {
+          activatableDeployment: {
             deployment,
             modDefinition: omit(modDefinition, "options"),
           },
@@ -332,7 +332,7 @@ describe("syncDeployments", () => {
     );
     await saveEditorState(editorState);
 
-    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
     appApiMock.onGet("/api/me/").reply(200, {
@@ -363,7 +363,7 @@ describe("syncDeployments", () => {
   test("uninstall existing recipe mod component with no dynamic elements", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
     // A mod component without a recipe. Exclude _recipe entirely to handle the case where the property is missing
@@ -411,7 +411,7 @@ describe("syncDeployments", () => {
   test("uninstall existing recipe mod component with dynamic element", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
     const starterBrick = starterBrickConfigFactory();
@@ -481,7 +481,7 @@ describe("syncDeployments", () => {
       permissions: emptyPermissionsFactory(),
     });
 
-    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
     appApiMock.onGet("/api/me/").reply(200, {
@@ -518,7 +518,7 @@ describe("syncDeployments", () => {
       },
     });
 
-    const { deployment, modDefinition } = deploymentModDefinitionPairFactory({
+    const { deployment, modDefinition } = activatableDeploymentFactory({
       modDefinitionOverride: {
         extensionPoints: [
           modComponentDefinitionFactory({
@@ -554,7 +554,7 @@ describe("syncDeployments", () => {
     expect(jest.mocked(checkDeploymentPermissions).mock.calls[0]).toStrictEqual(
       [
         {
-          deploymentModDefinitionPair: {
+          activatableDeployment: {
             deployment,
             modDefinition: omit(modDefinition, "options"),
           },
@@ -611,7 +611,7 @@ describe("syncDeployments", () => {
       flags: ["restricted-version"],
     });
 
-    const { deployment } = deploymentModDefinitionPairFactory();
+    const { deployment } = activatableDeploymentFactory();
     appApiMock.onPost().reply(201, [deployment]);
 
     await syncDeployments();

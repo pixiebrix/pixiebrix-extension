@@ -30,7 +30,7 @@ import { type ModComponentState } from "@/store/extensionsTypes";
 import { getLinkedApiClient } from "@/data/service/apiClient";
 import {
   deploymentFactory,
-  deploymentModDefinitionPairFactory,
+  activatableDeploymentFactory,
 } from "@/testUtils/factories/deploymentFactories";
 import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories";
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
@@ -95,7 +95,7 @@ describe("DeploymentsContext", () => {
   });
 
   it("activate single deployment from empty state", async () => {
-    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
     axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
@@ -139,7 +139,7 @@ describe("DeploymentsContext", () => {
   });
 
   it("remounting the DeploymentsProvider doesn't refetch the deployments", async () => {
-    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
     axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
@@ -199,7 +199,7 @@ describe("DeploymentsContext", () => {
     jest.useFakeTimers();
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
-    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
     const registryId = deployment.package.package_id;
 
     axiosMock.onPost("/api/deployments/").reply(200, [deployment]);

@@ -19,7 +19,7 @@ import { getLinkedApiClient } from "@/data/service/apiClient";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { type Deployment, type PackageConfigDetail } from "@/types/contract";
 import { allSettled } from "@/utils/promiseUtils";
-import type { DeploymentModDefinitionPair } from "@/types/deploymentTypes";
+import type { ActivatableDeployment } from "@/types/deploymentTypes";
 
 /**
  * Fetches the mod definition for the given deployment.
@@ -80,7 +80,7 @@ async function fetchDeploymentModDefinition({
 // TODO: rename to new type name
 export async function fetchDeploymentModDefinitions(
   deployments: Deployment[],
-): Promise<DeploymentModDefinitionPair[]> {
+): Promise<ActivatableDeployment[]> {
   const { fulfilled } = await allSettled(
     deployments.map(async (deployment) => ({
       deployment,

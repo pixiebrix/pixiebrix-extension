@@ -35,7 +35,7 @@ import { modComponentDefinitionFactory } from "@/testUtils/factories/modDefiniti
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import {
   deploymentFactory,
-  deploymentModDefinitionPairFactory,
+  activatableDeploymentFactory,
 } from "@/testUtils/factories/deploymentFactories";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
@@ -95,7 +95,7 @@ describe("makeUpdatedFilter", () => {
   );
 
   test("matched blueprint for restricted user", () => {
-    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
 
     const extensions = [
       modComponentFactory({
@@ -114,7 +114,7 @@ describe("makeUpdatedFilter", () => {
   });
 
   test("matched blueprint for unrestricted user / developer", () => {
-    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
 
     const extensions = [
       modComponentFactory({
@@ -141,7 +141,7 @@ describe("checkExtensionUpdateRequired", () => {
   });
 
   test("update required", () => {
-    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
     (modDefinition.metadata.extensionVersion as any) = ">=99.99.99";
 
     expect(
@@ -150,7 +150,7 @@ describe("checkExtensionUpdateRequired", () => {
   });
 
   test("update not required", () => {
-    const { deployment, modDefinition } = deploymentModDefinitionPairFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
     (modDefinition.metadata.extensionVersion as any) = `>=${
       browser.runtime.getManifest().version
     }`;
@@ -200,7 +200,7 @@ describe("isDeploymentActive", () => {
 
 describe("getIntegrationIds", () => {
   test("find unique integration ids", async () => {
-    const { modDefinition } = deploymentModDefinitionPairFactory({
+    const { modDefinition } = activatableDeploymentFactory({
       modDefinitionOverride: {
         extensionPoints: [
           modComponentDefinitionFactory({
@@ -221,7 +221,7 @@ describe("getIntegrationIds", () => {
 
 describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
   test("missing personal integration", async () => {
-    const deploymentModDefinitionPair = deploymentModDefinitionPairFactory({
+    const activatableDeployment = activatableDeploymentFactory({
       modDefinitionOverride: {
         extensionPoints: [
           modComponentDefinitionFactory({
@@ -236,7 +236,7 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
     const locator = async () => [] as SanitizedIntegrationConfig[];
     await expect(
       findLocalDeploymentConfiguredIntegrationDependencies(
-        deploymentModDefinitionPair,
+        activatableDeployment,
         locator,
       ),
     ).resolves.toStrictEqual([
@@ -251,7 +251,7 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
   });
 
   test("found personal integration", async () => {
-    const deploymentModDefinitionPair = deploymentModDefinitionPairFactory({
+    const activatableDeployment = activatableDeploymentFactory({
       modDefinitionOverride: {
         extensionPoints: [
           modComponentDefinitionFactory({
@@ -270,7 +270,7 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
     const locator = async () => [auth];
     await expect(
       findLocalDeploymentConfiguredIntegrationDependencies(
-        deploymentModDefinitionPair,
+        activatableDeployment,
         locator,
       ),
     ).resolves.toStrictEqual([
@@ -287,7 +287,7 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
   test("exclude bound integrations", async () => {
     const registryId = validateRegistryId("test/bound");
 
-    const deploymentModDefinitionPair = deploymentModDefinitionPairFactory({
+    const activatableDeployment = activatableDeploymentFactory({
       deploymentOverride: {
         bindings: [{ auth: { id: uuidv4(), service_id: registryId } }],
       },
@@ -309,14 +309,14 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
     const locator = async () => [auth];
     await expect(
       findLocalDeploymentConfiguredIntegrationDependencies(
-        deploymentModDefinitionPair,
+        activatableDeployment,
         locator,
       ),
     ).resolves.toBeArrayOfSize(0);
   });
 
   test("exclude pixiebrix integration", async () => {
-    const deploymentModDefinitionPair = deploymentModDefinitionPairFactory({
+    const activatableDeployment = activatableDeploymentFactory({
       modDefinitionOverride: {
         extensionPoints: [
           modComponentDefinitionFactory({
@@ -335,7 +335,7 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
     const locator = async () => [auth];
     await expect(
       findLocalDeploymentConfiguredIntegrationDependencies(
-        deploymentModDefinitionPair,
+        activatableDeployment,
         locator,
       ),
     ).resolves.toBeArrayOfSize(0);
@@ -347,7 +347,7 @@ describe("mergeDeploymentIntegrationDependencies", () => {
     const registryId = validateRegistryId("test/bound");
     const boundId = uuidv4();
 
-    const deploymentModDefinitionPair = deploymentModDefinitionPairFactory({
+    const activatableDeployment = activatableDeploymentFactory({
       deploymentOverride: {
         bindings: [{ auth: { id: boundId, service_id: registryId } }],
       },
@@ -368,10 +368,7 @@ describe("mergeDeploymentIntegrationDependencies", () => {
 
     const locator = async () => [auth];
     await expect(
-      mergeDeploymentIntegrationDependencies(
-        deploymentModDefinitionPair,
-        locator,
-      ),
+      mergeDeploymentIntegrationDependencies(activatableDeployment, locator),
     ).resolves.toStrictEqual([
       {
         integrationId: registryId,
@@ -384,7 +381,7 @@ describe("mergeDeploymentIntegrationDependencies", () => {
   });
 
   test("take local integration dependency", async () => {
-    const deploymentModDefinitionPair = deploymentModDefinitionPairFactory({
+    const activatableDeployment = activatableDeploymentFactory({
       modDefinitionOverride: {
         extensionPoints: [
           modComponentDefinitionFactory({
@@ -402,10 +399,7 @@ describe("mergeDeploymentIntegrationDependencies", () => {
 
     const locator = async () => [auth];
     await expect(
-      mergeDeploymentIntegrationDependencies(
-        deploymentModDefinitionPair,
-        locator,
-      ),
+      mergeDeploymentIntegrationDependencies(activatableDeployment, locator),
     ).resolves.toStrictEqual([
       {
         integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
@@ -418,7 +412,7 @@ describe("mergeDeploymentIntegrationDependencies", () => {
   });
 
   test("ignore personal remote integration dependency", async () => {
-    const deploymentModDefinitionPair = deploymentModDefinitionPairFactory({
+    const activatableDeployment = activatableDeploymentFactory({
       modDefinitionOverride: {
         extensionPoints: [
           modComponentDefinitionFactory({
@@ -437,15 +431,12 @@ describe("mergeDeploymentIntegrationDependencies", () => {
 
     const locator = async () => [auth];
     await expect(
-      mergeDeploymentIntegrationDependencies(
-        deploymentModDefinitionPair,
-        locator,
-      ),
+      mergeDeploymentIntegrationDependencies(activatableDeployment, locator),
     ).rejects.toThrow("No configuration found for integration");
   });
 
   test("reject multiple personal configurations", async () => {
-    const deploymentModDefinitionPair = deploymentModDefinitionPairFactory({
+    const activatableDeployment = activatableDeploymentFactory({
       modDefinitionOverride: {
         extensionPoints: [
           modComponentDefinitionFactory({
@@ -468,15 +459,12 @@ describe("mergeDeploymentIntegrationDependencies", () => {
       }),
     ];
     await expect(
-      mergeDeploymentIntegrationDependencies(
-        deploymentModDefinitionPair,
-        locator,
-      ),
+      mergeDeploymentIntegrationDependencies(activatableDeployment, locator),
     ).rejects.toThrow("Multiple local configurations found for integration:");
   });
 
   test("preserve PixieBrix Integration placeholder if included", async () => {
-    const deploymentModDefinitionPair = deploymentModDefinitionPairFactory({
+    const activatableDeployment = activatableDeploymentFactory({
       modDefinitionOverride: {
         extensionPoints: [
           modComponentDefinitionFactory({
@@ -495,10 +483,7 @@ describe("mergeDeploymentIntegrationDependencies", () => {
 
     const locator = async () => [auth];
     await expect(
-      mergeDeploymentIntegrationDependencies(
-        deploymentModDefinitionPair,
-        locator,
-      ),
+      mergeDeploymentIntegrationDependencies(activatableDeployment, locator),
     ).resolves.toStrictEqual([
       {
         integrationId: PIXIEBRIX_INTEGRATION_ID,

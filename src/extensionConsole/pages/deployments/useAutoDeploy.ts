@@ -24,7 +24,7 @@ import { type Dispatch } from "@reduxjs/toolkit";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import useAsyncEffect from "use-async-effect";
-import type { DeploymentModDefinitionPair } from "@/types/deploymentTypes";
+import type { ActivatableDeployment } from "@/types/deploymentTypes";
 
 type UseAutoDeployReturn = {
   /**
@@ -34,11 +34,11 @@ type UseAutoDeployReturn = {
 };
 
 function useAutoDeploy({
-  deploymentModDefinitionPairs,
+  activatableDeployments,
   installedExtensions,
   extensionUpdateRequired,
 }: {
-  deploymentModDefinitionPairs: DeploymentModDefinitionPair[];
+  activatableDeployments: ActivatableDeployment[];
   installedExtensions: ModComponentBase[];
   extensionUpdateRequired: boolean;
 }): UseAutoDeployReturn {
@@ -65,7 +65,7 @@ function useAutoDeploy({
       if (
         !isMounted() ||
         // Still loading deployments or already deploying
-        !deploymentModDefinitionPairs ||
+        !activatableDeployments ||
         isActivationInProgress
       ) {
         return;
@@ -73,7 +73,7 @@ function useAutoDeploy({
 
       // No deployments to deploy or user interaction required
       if (
-        deploymentModDefinitionPairs.length === 0 ||
+        activatableDeployments.length === 0 ||
         !hasPermissions ||
         extensionUpdateRequired ||
         !shouldAutoDeploy
@@ -87,7 +87,7 @@ function useAutoDeploy({
         setIsActivationInProgress(true);
         await activateDeployments({
           dispatch,
-          deploymentModDefinitionPairs,
+          activatableDeployments,
           installed: installedExtensions,
         });
         notify.success("Updated team deployments");
@@ -98,7 +98,7 @@ function useAutoDeploy({
         setIsFetchingAndActivatingDeployments(false);
       }
     },
-    [hasPermissions, deploymentModDefinitionPairs],
+    [hasPermissions, activatableDeployments],
   );
 
   return { isAutoDeploying: isFetchingAndActivatingDeployments };

@@ -71,7 +71,7 @@ import type { Manifest } from "webextension-polyfill";
 import { getRequestHeadersByAPIVersion } from "@/data/service/apiVersioning";
 import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
 import { services } from "@/background/messenger/api";
-import type { DeploymentModDefinitionPair } from "@/types/deploymentTypes";
+import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
@@ -227,18 +227,18 @@ async function uninstallRecipe(
 async function installDeployment({
   optionsState,
   editorState,
-  deploymentModDefinitionPair,
+  activatableDeployment,
 }: {
   optionsState: ModComponentState;
   editorState: EditorState | undefined;
-  deploymentModDefinitionPair: DeploymentModDefinitionPair;
+  activatableDeployment: ActivatableDeployment;
 }): Promise<{
   options: ModComponentState;
   editor: EditorState | undefined;
 }> {
   let options = optionsState;
   let editor = editorState;
-  const { deployment, modDefinition } = deploymentModDefinitionPair;
+  const { deployment, modDefinition } = activatableDeployment;
 
   const isReinstall = optionsState.extensions.some(
     (x) => x._deployment?.id === deployment.id,
@@ -261,7 +261,7 @@ async function installDeployment({
       modDefinition,
       deployment,
       configuredDependencies: await mergeDeploymentIntegrationDependencies(
-        deploymentModDefinitionPair,
+        activatableDeployment,
         services.locateAllForId,
       ),
       // Assume backend properly validates the options
@@ -281,22 +281,22 @@ async function installDeployment({
 
 /**
  * Install all deployments
- * @param deploymentModDefinitionPairs deployments that PixieBrix already has permission to run
+ * @param activatableDeployments deployments that PixieBrix already has permission to run
  */
 async function installDeployments(
-  deploymentModDefinitionPairs: DeploymentModDefinitionPair[],
+  activatableDeployments: ActivatableDeployment[],
 ): Promise<void> {
   let [optionsState, editorState] = await Promise.all([
     getModComponentState(),
     getEditorState(),
   ]);
 
-  for (const deploymentModDefinitionPair of deploymentModDefinitionPairs) {
+  for (const activatableDeployment of activatableDeployments) {
     // eslint-disable-next-line no-await-in-loop -- running reducer, need to update states serially
     const result = await installDeployment({
       optionsState,
       editorState,
-      deploymentModDefinitionPair,
+      activatableDeployment,
     });
     optionsState = result.options;
     editorState = result.editor;
@@ -307,7 +307,7 @@ async function installDeployments(
 }
 
 type DeploymentConstraint = {
-  deploymentModDefinitionPair: DeploymentModDefinitionPair;
+  activatableDeployment: ActivatableDeployment;
   hasPermissions: boolean;
   extensionVersion: SemVer;
 };
@@ -321,7 +321,7 @@ type DeploymentConstraint = {
  * 3. The user has exactly one (1) personal configuration for each unbound service for the deployment
  */
 async function canAutomaticallyInstall({
-  deploymentModDefinitionPair,
+  activatableDeployment,
   hasPermissions,
   extensionVersion,
 }: DeploymentConstraint): Promise<boolean> {
@@ -330,14 +330,14 @@ async function canAutomaticallyInstall({
   }
 
   const requiredRange =
-    deploymentModDefinitionPair.modDefinition.metadata.extensionVersion;
+    activatableDeployment.modDefinition.metadata.extensionVersion;
   if (requiredRange && !satisfies(extensionVersion, requiredRange)) {
     return false;
   }
 
   const personalConfigs =
     await findLocalDeploymentConfiguredIntegrationDependencies(
-      deploymentModDefinitionPair,
+      activatableDeployment,
       locateAllForService,
     );
   return personalConfigs.every(({ configs }) => configs.length === 1);
@@ -556,11 +556,11 @@ export async function syncDeployments(): Promise<void> {
     return;
   }
 
-  // Extracted activateDeploymentsInBackground into a separate function because code only uses deploymentModDefinitionPairs.
+  // Extracted activateDeploymentsInBackground into a separate function because code only uses activatableDeployments.
   await activateDeploymentsInBackground({
     // Excludes any deployments that fail to fetch. In those cases, the user will stay on the old deployment until
     // the next heartbeat/check.
-    deploymentModDefinitionPairs:
+    activatableDeployments:
       await fetchDeploymentModDefinitions(updatedDeployments),
     profile,
   });
@@ -573,10 +573,10 @@ export async function syncDeployments(): Promise<void> {
  * @see activateDeployments
  */
 async function activateDeploymentsInBackground({
-  deploymentModDefinitionPairs,
+  activatableDeployments,
   profile,
 }: {
-  deploymentModDefinitionPairs: DeploymentModDefinitionPair[];
+  activatableDeployments: ActivatableDeployment[];
   profile: Me;
 }): Promise<void> {
   // `clipboardWrite` is not strictly required to use the clipboard brick, so allow it to auto-install.
@@ -589,10 +589,10 @@ async function activateDeploymentsInBackground({
       : ["clipboardWrite"];
 
   const deploymentRequirements = await Promise.all(
-    deploymentModDefinitionPairs.map(async (deploymentModDefinitionPair) => ({
-      deploymentModDefinitionPair,
+    activatableDeployments.map(async (activatableDeployment) => ({
+      activatableDeployment,
       ...(await checkDeploymentPermissions({
-        deploymentModDefinitionPair,
+        activatableDeployment,
         locate: locateAllForService,
         optionalPermissions,
       })),
@@ -605,10 +605,10 @@ async function activateDeploymentsInBackground({
 
   const installability = await Promise.all(
     deploymentRequirements.map(
-      async ({ deploymentModDefinitionPair, hasPermissions }) => ({
-        deploymentModDefinitionPair,
+      async ({ activatableDeployment, hasPermissions }) => ({
+        activatableDeployment,
         isAutomatic: await canAutomaticallyInstall({
-          deploymentModDefinitionPair,
+          activatableDeployment,
           hasPermissions,
           extensionVersion,
         }),
@@ -622,9 +622,7 @@ async function activateDeploymentsInBackground({
 
   if (automatic.length > 0) {
     try {
-      await installDeployments(
-        automatic.map((x) => x.deploymentModDefinitionPair),
-      );
+      await installDeployments(automatic.map((x) => x.activatableDeployment));
     } catch (error) {
       reportError(error);
       automaticError = true;

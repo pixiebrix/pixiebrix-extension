@@ -29,7 +29,7 @@ import { validateUUID } from "@/types/helpers";
 import { type Except } from "type-fest";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
-import type { DeploymentModDefinitionPair } from "@/types/deploymentTypes";
+import type { ActivatableDeployment } from "@/types/deploymentTypes";
 
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)
@@ -118,12 +118,12 @@ export const makeUpdatedFilter =
  * violation).
  */
 export function checkExtensionUpdateRequired(
-  deploymentModDefinitionPairs: DeploymentModDefinitionPair[] = [],
+  activatableDeployments: ActivatableDeployment[] = [],
 ): boolean {
   // Check that the user's extension can run the deployment
   const { version: extensionVersion } = browser.runtime.getManifest();
   const versionRanges = compact(
-    deploymentModDefinitionPairs.map(
+    activatableDeployments.map(
       ({ modDefinition }) => modDefinition.metadata.extensionVersion,
     ),
   );
@@ -185,7 +185,7 @@ const isPersonal = (x: SanitizedIntegrationConfig) => !x.proxy;
  * Excludes the PixieBrix API integration and integrations that are bound in the deployment configuration.
  */
 export async function findLocalDeploymentConfiguredIntegrationDependencies(
-  { deployment, modDefinition }: DeploymentModDefinitionPair,
+  { deployment, modDefinition }: ActivatableDeployment,
   locate: Locate,
 ): Promise<
   Array<
@@ -222,7 +222,7 @@ export async function findLocalDeploymentConfiguredIntegrationDependencies(
  * Merge deployment service bindings and personal configurations to get all integration dependencies for a deployment.
  */
 export async function mergeDeploymentIntegrationDependencies(
-  { deployment, modDefinition }: DeploymentModDefinitionPair,
+  { deployment, modDefinition }: ActivatableDeployment,
   locate: Locate,
 ): Promise<IntegrationDependency[]> {
   // Note/to-do: There is some logic overlap here with findLocalDeploymentConfiguredIntegrationDependencies() above,
