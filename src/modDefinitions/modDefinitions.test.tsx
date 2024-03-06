@@ -27,6 +27,7 @@ import pDefer from "p-defer";
 import { defaultInitialValue } from "@/utils/asyncStateUtils";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import extensionsSlice from "@/store/extensionsSlice";
 
 jest.mock("@/components/ConfirmationModal", () => ({
   ...jest.requireActual("@/components/ConfirmationModal"),
@@ -130,7 +131,17 @@ test("load mod definitions and save one", async () => {
     );
   };
 
-  render(<TestComponent />);
+  render(<TestComponent />, {
+    setupRedux(dispatch) {
+      dispatch(
+        extensionsSlice.actions.installMod({
+          modDefinition: sourceModDefinition,
+          screen: "pageEditor",
+          isReinstall: false,
+        }),
+      );
+    },
+  });
 
   // Let the registry and the RTK Query to load and update a mod definition
   await act(async () => fetchingSavingPromise.promise);

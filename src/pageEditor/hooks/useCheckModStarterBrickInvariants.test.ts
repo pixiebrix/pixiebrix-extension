@@ -227,9 +227,98 @@ describe("useCheckModStarterBrickInvariants", () => {
       });
 
       const checkModStarterBrickInvariants = result.current;
-      const actualResult =
-        await checkModStarterBrickInvariants(resultModDefinition);
+      const actualResult = await checkModStarterBrickInvariants(
+        resultModDefinition,
+        { sourceModDefinition: installedModDefinition },
+      );
       expect(actualResult).toBe(expectedResult);
     },
   );
+
+  it("should return true for one new mod component and matching component in mod definition", async () => {
+    const modMetadata = modMetadataFactory();
+
+    const modInnerDefinitions: InnerDefinitions = {};
+
+    const extensionPointId = newExtensionPointId();
+    const modComponentDefinition = modComponentDefinitionFactory({
+      id: extensionPointId,
+    });
+    modInnerDefinitions[extensionPointId] = {
+      kind: "extensionPoint",
+      definition: starterBrickConfigFactory().definition,
+    };
+
+    const resultModDefinition = modDefinitionFactory({
+      metadata: modMetadata,
+      definitions: modInnerDefinitions,
+      extensionPoints: [modComponentDefinition],
+    });
+
+    const activatedModComponent = getActivatedModComponentFromDefinition({
+      modComponentDefinition,
+      modDefinition: resultModDefinition,
+      optionsArgs: {},
+      integrationDependencies: [],
+    });
+    const formState = await modComponentToFormState(activatedModComponent);
+
+    const { result } = renderHook(() => useCheckModStarterBrickInvariants(), {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(formState));
+      },
+    });
+
+    const checkModStarterBrickInvariants = result.current;
+    const actualResult = await checkModStarterBrickInvariants(
+      resultModDefinition,
+      { newModComponentFormState: formState },
+    );
+    expect(actualResult).toBe(true);
+  });
+
+  it("should return false for one new mod component and no matching component in mod definition", async () => {
+    const modMetadata = modMetadataFactory();
+    const modInnerDefinitions: InnerDefinitions = {};
+    const extensionPointId = newExtensionPointId();
+    const modComponentDefinition = modComponentDefinitionFactory({
+      id: extensionPointId,
+    });
+    modInnerDefinitions[extensionPointId] = {
+      kind: "extensionPoint",
+      definition: starterBrickConfigFactory().definition,
+    };
+    const modForComponent = modDefinitionFactory({
+      metadata: modMetadata,
+      definitions: modInnerDefinitions,
+      extensionPoints: [modComponentDefinition],
+    });
+    const activatedModComponent = getActivatedModComponentFromDefinition({
+      modComponentDefinition,
+      modDefinition: modForComponent,
+      optionsArgs: {},
+      integrationDependencies: [],
+    });
+    const formState = await modComponentToFormState(activatedModComponent);
+    delete formState.recipe;
+
+    const { result } = renderHook(() => useCheckModStarterBrickInvariants(), {
+      setupRedux(dispatch) {
+        dispatch(editorActions.addElement(formState));
+      },
+    });
+    const checkModStarterBrickInvariants = result.current;
+
+    const resultModDefinition = modDefinitionFactory({
+      metadata: modMetadata,
+      definitions: {},
+      extensionPoints: [],
+    });
+
+    const actualResult = await checkModStarterBrickInvariants(
+      resultModDefinition,
+      { newModComponentFormState: formState },
+    );
+    expect(actualResult).toBe(false);
+  });
 });
