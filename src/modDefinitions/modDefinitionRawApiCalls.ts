@@ -48,6 +48,11 @@ async function fetchDeploymentModDefinition({
   package_id: registryId,
   version,
 }: Deployment["package"]): Promise<ModDefinition> {
+  // TODO: Remove this
+  console.log(
+    `Fetching deployment package config for ${registryId}@${version}`,
+  );
+
   const client = await getLinkedApiClient();
   const { data } = await client.get<PackageConfigDetail>(
     `/api/registry/bricks/${encodeURIComponent(registryId)}/`,
