@@ -17,17 +17,20 @@
 
 import excludeAltClicksEtc from "filter-altered-clicks";
 
+const listener = excludeAltClicksEtc((event: MouseEvent) => {
+  const link = event.target instanceof HTMLElement && event.target.closest("a");
+  if (link) {
+    window.open(link.href);
+    event.preventDefault();
+  }
+});
+
+/**
+ * Causes all unaltered links to open in new tabs.
+ *
+ * This is only used for Edge at the moment. You can achieve the same result via a single `<base target="_blank">` tag in the `<head>`.
+ * https://github.com/pixiebrix/pixiebrix-extension/issues/7809
+ */
 export default function openAllLinksInPopups(signal?: AbortSignal) {
-  document.body.addEventListener(
-    "click",
-    excludeAltClicksEtc((event) => {
-      const link =
-        event.target instanceof HTMLElement && event.target.closest("a");
-      if (link) {
-        window.open(link.href);
-        event.preventDefault();
-      }
-    }),
-    { signal },
-  );
+  document.body.addEventListener("click", listener, { signal });
 }

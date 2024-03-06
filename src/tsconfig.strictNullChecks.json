@@ -698,6 +698,7 @@
     "./utils/nullishUtils.ts",
     "./utils/objToYaml.ts",
     "./utils/objectUtils.ts",
+    "./utils/openAllLinksInPopups.ts",
     "./utils/parseDataUrl.ts",
     "./utils/parseDefinitionList.ts",
     "./utils/parseDomTable.ts",
