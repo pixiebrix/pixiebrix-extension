@@ -53,8 +53,6 @@ export async function insertAtCursorWithCustomEditorSupport({
     "contentScript context required for editor JavaScript integrations",
   );
 
-  console.debug("insertAtCursorWithCustomEditorSupport", element);
-
   // `textFieldEdit` handles focus required to insert the text. But, force focus to enable the user to keep typing
   window.focus();
   element.focus();

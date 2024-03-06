@@ -73,8 +73,6 @@ class InsertAtCursorEffect extends EffectABC {
       return;
     }
 
-    console.debug("InsertAtCursorEffect", { text, root, focused: focus.get() });
-
     const element = isDocument(root) ? focus.get() : root;
 
     if (!element) {
