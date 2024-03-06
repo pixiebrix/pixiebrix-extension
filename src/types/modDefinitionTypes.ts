@@ -107,7 +107,7 @@ export interface UnsavedModDefinition extends Definition {
  * which team they were shared from
  */
 // Not exported -- use ModDefinition["sharing"] instead to reference
-export type SharingDefinition = {
+type SharingDefinition = {
   /**
    * True fi the package has been shared publicly on PixieBrix
    */
