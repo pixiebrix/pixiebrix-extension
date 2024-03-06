@@ -29,7 +29,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 
 // Deployments are returned from the API, but their shape is determined by the registry and ModDefinition type.
 
-export const deploymentPackageFactory = define<Deployment["package"]>({
+const deploymentPackageFactory = define<Deployment["package"]>({
   id: uuidSequence,
   name: "Test Starter Brick",
   version: (n: number) => validateSemVerString(`1.0.${n}`),
