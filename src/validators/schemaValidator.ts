@@ -259,18 +259,32 @@ export function validatePackageDefinition(
   kind: keyof typeof KIND_SCHEMAS,
   instance: unknown,
 ): ValidationResult {
-  const schema = KIND_SCHEMAS[kind];
+  const originalSchema = KIND_SCHEMAS[kind];
 
-  if (schema == null) {
+  if (originalSchema == null) {
     // `strictNullChecks` isn't satisfied with the keyof parameter type
     throw new Error(`Unknown kind: ${kind}`);
   }
 
-  const validator = new Validator(schema);
+  // TODO: track down/comment exactly where these properties are getting added and mention the corresponding typescript types
+  // The API for packages includes an updated_at and sharing property:
+  // https://github.com/pixiebrix/pixiebrix-app/blob/368a0116edad2c115ae370b651f109619e621745/api/serializers/brick.py#L67-L67
+
+  const cloned = cloneDeep(originalSchema);
+  cloned.properties.updated_at = {
+    type: "string",
+    format: "date-time",
+  };
+
+  cloned.properties.sharing = {
+    type: "object",
+  };
+
+  const validator = new Validator(cloned);
 
   // Add the schemas synchronously. Definitions do not reference any external schemas, e.g., integration definitions.
   for (const builtIn of Object.values(BUILT_IN_SCHEMAS)) {
-    if (builtIn !== schema) {
+    if (builtIn !== originalSchema) {
       // `validate` throws if there are multiple schemas registered with the same $id
       validator.addSchema(builtIn);
     }
