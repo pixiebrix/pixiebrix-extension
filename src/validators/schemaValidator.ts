@@ -253,7 +253,8 @@ export async function validateBrickInputOutput(
  * distribution, so they are available to be added directly.
  *
  * @param kind the package definition kind.
- * @param instance the package definition
+ * @param instance the package definition, typically a RegistryPackage
+ * @see RegistryPackage
  */
 export function validatePackageDefinition(
   kind: keyof typeof KIND_SCHEMAS,
@@ -268,8 +269,6 @@ export function validatePackageDefinition(
 
   // The API for packages add an updated_at and sharing property to config:
   // https://github.com/pixiebrix/pixiebrix-app/blob/368a0116edad2c115ae370b651f109619e621745/api/serializers/brick.py#L139-L139
-  // It's not on RegistryPackage, though:
-  // https://github.com/pixiebrix/pixiebrix-extension/blob/ca7597fa6f3154eef4aec1cc5c306375b7926074/src/types/contract.ts#L192-L192
   const schemaWithMetadata = cloneDeep(originalSchema);
   // `properties` is always defined on these schemas. Typescript/Lint were disagreeing on adding "!" though.
   schemaWithMetadata.properties ??= {};
