@@ -15,43 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { uuidv4 } from "@/types/helpers";
-import type { UUID } from "@/types/stringTypes";
-
-const FOCUS_CONTROLLER_UUID_SYMBOL = Symbol.for("focus-controller-uuid");
-
 declare global {
-  interface Window {
-    [FOCUS_CONTROLLER_UUID_SYMBOL]?: UUID;
-  }
+  // eslint-disable-next-line no-var, @shopify/prefer-module-scope-constants -- It must be a var for types to work
+  var PB_FOCUS_CONTROLLER: boolean;
 }
 
-class FocusController {
-  /**
-   * The last saved focused element
-   * @private
-   */
-  private focusedElement: HTMLElement | undefined;
+let focusedElement: HTMLElement | undefined;
 
-  /**
-   * Nonce to detect multiple imports of focusController
-   * @private
-   */
-  private readonly nonce = uuidv4();
+if (globalThis.PB_FOCUS_CONTROLLER) {
+  // If you're seeing this error message, it's likely this file was imported from multiple content scripts.
+  // This focusController module should only be imported from the main content script.
+  console.error(
+    "focusController: there should only be one focusController instance per window",
+  );
+} else {
+  globalThis.PB_FOCUS_CONTROLLER = true;
+}
 
-  constructor() {
-    // eslint-disable-next-line security/detect-object-injection -- symbol
-    if (window[FOCUS_CONTROLLER_UUID_SYMBOL]) {
-      console.warn(
-        // eslint-disable-next-line security/detect-object-injection -- symbol
-        `focusController(${this.nonce}): ${window[FOCUS_CONTROLLER_UUID_SYMBOL]} already added to window`,
-      );
-    } else {
-      // eslint-disable-next-line security/detect-object-injection -- symbol
-      window[FOCUS_CONTROLLER_UUID_SYMBOL] = this.nonce;
-    }
-  }
-
+const focusController = {
   /**
    * Saves the focus of the current focused element so that it can be restored later
    * @note This doesn't behave as you'd expect across iframes
@@ -60,18 +41,18 @@ class FocusController {
     // Only HTMLElements can have their focus restored, but we're currently ignoring this distinction
     const active = document.activeElement as HTMLElement;
 
-    if (this.focusedElement != null && this.focusedElement !== active) {
+    if (focusedElement != null && focusedElement !== active) {
       console.warn(
-        `focusController(${this.nonce}): the previously-saved focus is being overridden`,
+        "focusController: the previously-saved focus is being overridden",
         {
-          previous: this.focusedElement,
+          previous: focusedElement,
           active,
         },
       );
     }
 
-    this.focusedElement = active;
-  }
+    focusedElement = active;
+  },
 
   /**
    * Restores the focus to the last saved item, if it hasn't already been restored
@@ -82,27 +63,22 @@ class FocusController {
     (document.activeElement as HTMLElement)?.blur?.();
 
     // `focusedElement === HTMLElement`: Restore focus if it's an HTMLElement, otherwise silently ignore it
-    this.focusedElement?.focus?.();
+    focusedElement?.focus?.();
 
-    this.focusedElement = undefined;
-  }
+    focusedElement = undefined;
+  },
 
   /** Clear saved value without restoring focus */
   clear(): void {
-    this.focusedElement = undefined;
-  }
+    focusedElement = undefined;
+  },
 
   /**
    * Gets the last saved item or the current active item, if there is no saved item
    */
   get(): HTMLElement {
-    return this.focusedElement ?? (document.activeElement as HTMLElement);
-  }
-}
-
-/**
- * Singleton instance of the focus controller
- */
-const focusController = new FocusController();
+    return focusedElement ?? (document.activeElement as HTMLElement);
+  },
+} as const;
 
 export default focusController;

@@ -542,35 +542,40 @@ export function sidePanelOnClose(callback: () => void): void {
 }
 
 export function initSidebarFocusEvents(): void {
-  sidebarShowEvents.add(() => {
-    const sidebar = getSidebarElement();
+  if (!isMV3()) {
+    // Add listeners to track keep track of focus with the MV2 sidebar. When the user interacts
+    // with the MV2 sidebar, the sidebar gets set as the document.activeElement. Required for brick
+    // functionality such as InsertAtCursorEffect
+    sidebarShowEvents.add(() => {
+      const sidebar = getSidebarElement();
 
-    if (!sidebar) {
-      // Should always exist because sidebarShowEvents is called on Sidebar App initialization
-      return;
-    }
+      if (!sidebar) {
+        // Should always exist because sidebarShowEvents is called on Sidebar App initialization
+        return;
+      }
 
-    const closeSignal = sidePanelOnCloseSignal();
+      const closeSignal = sidePanelOnCloseSignal();
 
-    // Can't detect clicks in the sidebar itself. So need to just watch for enter/leave the sidebar element
-    sidebar.addEventListener(
-      "mouseenter",
-      () => {
-        // If the user clicks into the sidebar and then leaves the sidebar, don't set the focus to the sidebar
-        // when they re-enter the sidebar
-        if (document.activeElement !== sidebar) {
-          focusController.save();
-        }
-      },
-      { passive: true, capture: true, signal: closeSignal },
-    );
+      // Can't detect clicks in the sidebar itself. So need to just watch for enter/leave the sidebar element
+      sidebar.addEventListener(
+        "mouseenter",
+        () => {
+          // If the user clicks into the sidebar and then leaves the sidebar, don't set the focus to the sidebar
+          // when they re-enter the sidebar
+          if (document.activeElement !== sidebar) {
+            focusController.save();
+          }
+        },
+        { passive: true, capture: true, signal: closeSignal },
+      );
 
-    sidebar.addEventListener(
-      "mouseleave",
-      () => {
-        focusController.clear();
-      },
-      { passive: true, capture: true, signal: closeSignal },
-    );
-  });
+      sidebar.addEventListener(
+        "mouseleave",
+        () => {
+          focusController.clear();
+        },
+        { passive: true, capture: true, signal: closeSignal },
+      );
+    });
+  }
 }
