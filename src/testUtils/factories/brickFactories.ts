@@ -18,10 +18,16 @@
 import { define, derive, type FactoryConfig } from "cooky-cutter";
 import { type Brick } from "@/types/brickTypes";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
+import { type UUID } from "@/types/stringTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
+import { minimalSchemaFactory } from "@/utils/schemaUtils";
+import type { BrickDefinition } from "@/bricks/transformers/brickFactory";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+import type { PackageConfigDetail } from "@/types/contract";
+import type { ModDefinition } from "@/types/modDefinitionTypes";
 
 export const brickFactory = define<Brick>({
   id: (i: number) => validateRegistryId(`testing/block-${i}`),
@@ -48,3 +54,33 @@ export const pipelineFactory: (
 
   return [brickConfig1, brickConfig2] as BrickPipeline;
 };
+
+/**
+ * User-defined brick definition factory.
+ * @see BrickConfig
+ */
+export const brickDefinitionFactory = define<BrickDefinition>({
+  metadata: metadataFactory,
+  kind: "component",
+  inputSchema: minimalSchemaFactory,
+  pipeline: pipelineFactory,
+});
+
+export function packageConfigDetailFactory({
+  modDefinition,
+  packageVersionUUID,
+}: {
+  modDefinition: ModDefinition;
+  packageVersionUUID?: UUID;
+}): PackageConfigDetail {
+  const { sharing, updated_at, ...config } = modDefinition;
+  return {
+    id: packageVersionUUID || uuidSequence(0),
+    name: modDefinition.metadata.id,
+    verbose_name: modDefinition.metadata.name,
+    kind: modDefinition.kind,
+    config,
+    sharing,
+    updated_at,
+  };
+}

@@ -64,7 +64,7 @@ import type { PlatformCapability } from "@/platform/capabilities";
 // Interface to avoid circular dependency with the implementation
 type BrickRegistryProtocol = BaseRegistry<RegistryId, Brick>;
 
-type BrickDefinition = {
+export type BrickDefinition = {
   /**
    * The runtime version to use when running the Brick.
    */

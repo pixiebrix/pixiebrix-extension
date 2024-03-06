@@ -30,7 +30,7 @@ import {
   type Organization,
   type Package,
   type PackageUpsertResponse,
-  type PackageVersion,
+  type PackageVersionDeprecated,
   type PendingInvitation,
   type RecipeResponse,
   type RemoteIntegrationConfig,
@@ -40,6 +40,7 @@ import {
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
+import { getRequestHeadersByAPIVersion } from "@/data/service/apiVersioning";
 import { type IntegrationDefinition } from "@/integrations/integrationTypes";
 import {
   type ModDefinition,
@@ -399,7 +400,10 @@ export const appApi = createApi({
         "EditablePackages",
       ],
     }),
-    listPackageVersions: builder.query<PackageVersion[], { id: UUID }>({
+    listPackageVersions: builder.query<
+      PackageVersionDeprecated[],
+      { id: UUID }
+    >({
       query: ({ id }) => ({
         url: `/api/bricks/${id}/versions/`,
         method: "get",
@@ -449,6 +453,8 @@ export const appApi = createApi({
         url: "/api/deployments/",
         method: "post",
         data,
+        // @since 1.8.10 -- API version 1.1 excludes the package config
+        headers: getRequestHeadersByAPIVersion("1.1"),
       }),
       providesTags: ["Deployments"],
     }),

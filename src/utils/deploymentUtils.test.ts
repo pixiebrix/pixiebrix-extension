@@ -31,14 +31,11 @@ import {
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
-import {
-  modComponentDefinitionFactory,
-  defaultModDefinitionFactory,
-} from "@/testUtils/factories/modDefinitionFactories";
+import { modComponentDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import {
   deploymentFactory,
-  deploymentPackageFactory,
+  activatableDeploymentFactory,
 } from "@/testUtils/factories/deploymentFactories";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
@@ -98,13 +95,13 @@ describe("makeUpdatedFilter", () => {
   );
 
   test("matched blueprint for restricted user", () => {
-    const deployment = deploymentFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
 
     const extensions = [
       modComponentFactory({
         _deployment: undefined,
         _recipe: {
-          ...deployment.package.config.metadata,
+          ...modDefinition.metadata,
           updated_at: validateTimestamp(deployment.updated_at),
           // `sharing` doesn't impact the predicate. Pass an arbitrary value
           sharing: undefined,
@@ -117,13 +114,13 @@ describe("makeUpdatedFilter", () => {
   });
 
   test("matched blueprint for unrestricted user / developer", () => {
-    const deployment = deploymentFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
 
     const extensions = [
       modComponentFactory({
         _deployment: undefined,
         _recipe: {
-          ...deployment.package.config.metadata,
+          ...modDefinition.metadata,
           // The factory produces version "1.0.1"
           version: validateSemVerString("1.0.1"),
           updated_at: validateTimestamp(deployment.updated_at),
@@ -144,18 +141,23 @@ describe("checkExtensionUpdateRequired", () => {
   });
 
   test("update required", () => {
-    const deployment = deploymentFactory();
-    (deployment.package.config.metadata.extensionVersion as any) = ">=99.99.99";
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    (modDefinition.metadata.extensionVersion as any) = ">=99.99.99";
 
-    expect(checkExtensionUpdateRequired([deployment])).toBeTrue();
+    expect(
+      checkExtensionUpdateRequired([{ deployment, modDefinition }]),
+    ).toBeTrue();
   });
 
   test("update not required", () => {
-    const deployment = deploymentFactory();
-    (deployment.package.config.metadata.extensionVersion as any) = `>=${
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    (modDefinition.metadata.extensionVersion as any) = `>=${
       browser.runtime.getManifest().version
     }`;
-    expect(checkExtensionUpdateRequired([deployment])).toBeFalse();
+
+    expect(
+      checkExtensionUpdateRequired([{ deployment, modDefinition }]),
+    ).toBeFalse();
   });
 });
 
@@ -198,50 +200,46 @@ describe("isDeploymentActive", () => {
 
 describe("getIntegrationIds", () => {
   test("find unique integration ids", async () => {
-    const deployment = deploymentFactory({
-      package: deploymentPackageFactory({
-        config: defaultModDefinitionFactory({
-          extensionPoints: [
-            modComponentDefinitionFactory({
-              services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-                [validateOutputKey("bar")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-              },
-            }),
-          ],
-        }),
-      }),
+    const { modDefinition } = activatableDeploymentFactory({
+      modDefinitionOverride: {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            services: {
+              [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+              [validateOutputKey("bar")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+            },
+          }),
+        ],
+      },
     });
 
-    expect(
-      getModDefinitionIntegrationIds(deployment.package.config),
-    ).toStrictEqual([CONTROL_ROOM_OAUTH_INTEGRATION_ID]);
+    expect(getModDefinitionIntegrationIds(modDefinition)).toStrictEqual([
+      CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+    ]);
   });
 });
 
 describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
   test("missing personal integration", async () => {
-    const deployment = deploymentFactory({
-      package: deploymentPackageFactory({
-        config: defaultModDefinitionFactory({
-          extensionPoints: [
-            modComponentDefinitionFactory({
-              services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-              },
-            }),
-          ],
-        }),
-      }),
+    const activatableDeployment = activatableDeploymentFactory({
+      modDefinitionOverride: {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            services: {
+              [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+            },
+          }),
+        ],
+      },
     });
 
     const locator = async () => [] as SanitizedIntegrationConfig[];
-    expect(
-      await findLocalDeploymentConfiguredIntegrationDependencies(
-        deployment,
+    await expect(
+      findLocalDeploymentConfiguredIntegrationDependencies(
+        activatableDeployment,
         locator,
       ),
-    ).toStrictEqual([
+    ).resolves.toStrictEqual([
       {
         integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         outputKey: "foo",
@@ -253,18 +251,16 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
   });
 
   test("found personal integration", async () => {
-    const deployment = deploymentFactory({
-      package: deploymentPackageFactory({
-        config: defaultModDefinitionFactory({
-          extensionPoints: [
-            modComponentDefinitionFactory({
-              services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-              },
-            }),
-          ],
-        }),
-      }),
+    const activatableDeployment = activatableDeploymentFactory({
+      modDefinitionOverride: {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            services: {
+              [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+            },
+          }),
+        ],
+      },
     });
 
     const auth = sanitizedIntegrationConfigFactory({
@@ -272,12 +268,12 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
     });
 
     const locator = async () => [auth];
-    expect(
-      await findLocalDeploymentConfiguredIntegrationDependencies(
-        deployment,
+    await expect(
+      findLocalDeploymentConfiguredIntegrationDependencies(
+        activatableDeployment,
         locator,
       ),
-    ).toStrictEqual([
+    ).resolves.toStrictEqual([
       {
         integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         outputKey: "foo",
@@ -291,19 +287,19 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
   test("exclude bound integrations", async () => {
     const registryId = validateRegistryId("test/bound");
 
-    const deployment = deploymentFactory({
-      bindings: [{ auth: { id: uuidv4(), service_id: registryId } }],
-      package: deploymentPackageFactory({
-        config: defaultModDefinitionFactory({
-          extensionPoints: [
-            modComponentDefinitionFactory({
-              services: {
-                [validateOutputKey("foo")]: registryId,
-              },
-            }),
-          ],
-        }),
-      }),
+    const activatableDeployment = activatableDeploymentFactory({
+      deploymentOverride: {
+        bindings: [{ auth: { id: uuidv4(), service_id: registryId } }],
+      },
+      modDefinitionOverride: {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            services: {
+              [validateOutputKey("foo")]: registryId,
+            },
+          }),
+        ],
+      },
     });
 
     const auth = sanitizedIntegrationConfigFactory({
@@ -311,27 +307,25 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
     });
 
     const locator = async () => [auth];
-    expect(
-      await findLocalDeploymentConfiguredIntegrationDependencies(
-        deployment,
+    await expect(
+      findLocalDeploymentConfiguredIntegrationDependencies(
+        activatableDeployment,
         locator,
       ),
-    ).toBeArrayOfSize(0);
+    ).resolves.toBeArrayOfSize(0);
   });
 
   test("exclude pixiebrix integration", async () => {
-    const deployment = deploymentFactory({
-      package: deploymentPackageFactory({
-        config: defaultModDefinitionFactory({
-          extensionPoints: [
-            modComponentDefinitionFactory({
-              services: {
-                [validateOutputKey("foo")]: PIXIEBRIX_INTEGRATION_ID,
-              },
-            }),
-          ],
-        }),
-      }),
+    const activatableDeployment = activatableDeploymentFactory({
+      modDefinitionOverride: {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            services: {
+              [validateOutputKey("foo")]: PIXIEBRIX_INTEGRATION_ID,
+            },
+          }),
+        ],
+      },
     });
 
     const auth = sanitizedIntegrationConfigFactory({
@@ -339,12 +333,12 @@ describe("findLocalDeploymentConfiguredIntegrationDependencies", () => {
     });
 
     const locator = async () => [auth];
-    expect(
-      await findLocalDeploymentConfiguredIntegrationDependencies(
-        deployment,
+    await expect(
+      findLocalDeploymentConfiguredIntegrationDependencies(
+        activatableDeployment,
         locator,
       ),
-    ).toBeArrayOfSize(0);
+    ).resolves.toBeArrayOfSize(0);
   });
 });
 
@@ -353,19 +347,19 @@ describe("mergeDeploymentIntegrationDependencies", () => {
     const registryId = validateRegistryId("test/bound");
     const boundId = uuidv4();
 
-    const deployment = deploymentFactory({
-      bindings: [{ auth: { id: boundId, service_id: registryId } }],
-      package: deploymentPackageFactory({
-        config: defaultModDefinitionFactory({
-          extensionPoints: [
-            modComponentDefinitionFactory({
-              services: {
-                [validateOutputKey("foo")]: registryId,
-              },
-            }),
-          ],
-        }),
-      }),
+    const activatableDeployment = activatableDeploymentFactory({
+      deploymentOverride: {
+        bindings: [{ auth: { id: boundId, service_id: registryId } }],
+      },
+      modDefinitionOverride: {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            services: {
+              [validateOutputKey("foo")]: registryId,
+            },
+          }),
+        ],
+      },
     });
 
     const auth = sanitizedIntegrationConfigFactory({
@@ -373,9 +367,9 @@ describe("mergeDeploymentIntegrationDependencies", () => {
     });
 
     const locator = async () => [auth];
-    expect(
-      await mergeDeploymentIntegrationDependencies(deployment, locator),
-    ).toStrictEqual([
+    await expect(
+      mergeDeploymentIntegrationDependencies(activatableDeployment, locator),
+    ).resolves.toStrictEqual([
       {
         integrationId: registryId,
         outputKey: "foo",
@@ -387,18 +381,16 @@ describe("mergeDeploymentIntegrationDependencies", () => {
   });
 
   test("take local integration dependency", async () => {
-    const deployment = deploymentFactory({
-      package: deploymentPackageFactory({
-        config: defaultModDefinitionFactory({
-          extensionPoints: [
-            modComponentDefinitionFactory({
-              services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-              },
-            }),
-          ],
-        }),
-      }),
+    const activatableDeployment = activatableDeploymentFactory({
+      modDefinitionOverride: {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            services: {
+              [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+            },
+          }),
+        ],
+      },
     });
 
     const auth = sanitizedIntegrationConfigFactory({
@@ -406,9 +398,9 @@ describe("mergeDeploymentIntegrationDependencies", () => {
     });
 
     const locator = async () => [auth];
-    expect(
-      await mergeDeploymentIntegrationDependencies(deployment, locator),
-    ).toStrictEqual([
+    await expect(
+      mergeDeploymentIntegrationDependencies(activatableDeployment, locator),
+    ).resolves.toStrictEqual([
       {
         integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
         outputKey: "foo",
@@ -420,18 +412,16 @@ describe("mergeDeploymentIntegrationDependencies", () => {
   });
 
   test("ignore personal remote integration dependency", async () => {
-    const deployment = deploymentFactory({
-      package: deploymentPackageFactory({
-        config: defaultModDefinitionFactory({
-          extensionPoints: [
-            modComponentDefinitionFactory({
-              services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-              },
-            }),
-          ],
-        }),
-      }),
+    const activatableDeployment = activatableDeploymentFactory({
+      modDefinitionOverride: {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            services: {
+              [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+            },
+          }),
+        ],
+      },
     });
 
     const auth = sanitizedIntegrationConfigFactory({
@@ -441,23 +431,21 @@ describe("mergeDeploymentIntegrationDependencies", () => {
 
     const locator = async () => [auth];
     await expect(
-      mergeDeploymentIntegrationDependencies(deployment, locator),
+      mergeDeploymentIntegrationDependencies(activatableDeployment, locator),
     ).rejects.toThrow("No configuration found for integration");
   });
 
   test("reject multiple personal configurations", async () => {
-    const deployment = deploymentFactory({
-      package: deploymentPackageFactory({
-        config: defaultModDefinitionFactory({
-          extensionPoints: [
-            modComponentDefinitionFactory({
-              services: {
-                [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-              },
-            }),
-          ],
-        }),
-      }),
+    const activatableDeployment = activatableDeploymentFactory({
+      modDefinitionOverride: {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            services: {
+              [validateOutputKey("foo")]: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+            },
+          }),
+        ],
+      },
     });
 
     const locator = async () => [
@@ -471,24 +459,22 @@ describe("mergeDeploymentIntegrationDependencies", () => {
       }),
     ];
     await expect(
-      mergeDeploymentIntegrationDependencies(deployment, locator),
+      mergeDeploymentIntegrationDependencies(activatableDeployment, locator),
     ).rejects.toThrow("Multiple local configurations found for integration:");
   });
 
   test("preserve PixieBrix Integration placeholder if included", async () => {
-    const deployment = deploymentFactory({
-      package: deploymentPackageFactory({
-        config: defaultModDefinitionFactory({
-          extensionPoints: [
-            modComponentDefinitionFactory({
-              services: {
-                // @ts-expect-error - this is a placeholder
-                pixiebrix: PIXIEBRIX_INTEGRATION_ID,
-              },
-            }),
-          ],
-        }),
-      }),
+    const activatableDeployment = activatableDeploymentFactory({
+      modDefinitionOverride: {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            services: {
+              // @ts-expect-error - this is a placeholder
+              pixiebrix: PIXIEBRIX_INTEGRATION_ID,
+            },
+          }),
+        ],
+      },
     });
 
     const auth = sanitizedIntegrationConfigFactory({
@@ -496,9 +482,9 @@ describe("mergeDeploymentIntegrationDependencies", () => {
     });
 
     const locator = async () => [auth];
-    expect(
-      await mergeDeploymentIntegrationDependencies(deployment, locator),
-    ).toStrictEqual([
+    await expect(
+      mergeDeploymentIntegrationDependencies(activatableDeployment, locator),
+    ).resolves.toStrictEqual([
       {
         integrationId: PIXIEBRIX_INTEGRATION_ID,
         outputKey: "pixiebrix",
