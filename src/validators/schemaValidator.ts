@@ -1,4 +1,3 @@
-/* eslint-disable security/detect-object-injection */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *

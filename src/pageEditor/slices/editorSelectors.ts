@@ -162,7 +162,7 @@ const dirtyMetadataForRecipeIdSelector = createSelector(
   selectDirtyRecipeMetadata,
   (_state: EditorRootState, recipeId: RegistryId) => recipeId,
   (dirtyRecipeMetadataById, recipeId) =>
-    // eslint-disable-next-line security/detect-object-injection
+    // eslint-disable-next-line security/detect-object-injection -- recipeId is a controlled string
     dirtyRecipeMetadataById[recipeId],
 );
 
@@ -173,7 +173,7 @@ export const selectDirtyMetadataForRecipeId =
 const elementIsDirtySelector = createSelector(
   selectDirty,
   (_state: RootState, elementId: UUID) => elementId,
-  // eslint-disable-next-line security/detect-object-injection
+  // eslint-disable-next-line security/detect-object-injection -- id extracted from element
   (dirty, elementId) => dirty[elementId] ?? false,
 );
 
@@ -185,7 +185,7 @@ const recipeIsDirtySelector = createSelector(
   dirtyOptionDefinitionsForRecipeIdSelector,
   dirtyMetadataForRecipeIdSelector,
   (state: EditorRootState, recipeId: RegistryId) =>
-    // eslint-disable-next-line security/detect-object-injection
+    // eslint-disable-next-line security/detect-object-injection -- RegistryId is a controlled string
     selectDeletedElements(state)[recipeId],
   ({ editor }: EditorRootState, recipeId: RegistryId) =>
     editor.elements
@@ -197,7 +197,7 @@ const recipeIsDirtySelector = createSelector(
     dirtyRecipeMetadata,
     deletedElements,
     elementIds,
-    // eslint-disable-next-line max-params
+    // eslint-disable-next-line max-params -- all are needed
   ) => {
     const hasDirtyElements = elementIds.some(
       // eslint-disable-next-line security/detect-object-injection -- id extracted from element

@@ -1,4 +1,4 @@
-/* eslint-disable complexity */
+/* eslint-disable complexity -- necessary complexity due to data handling  */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *

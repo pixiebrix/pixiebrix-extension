@@ -598,8 +598,8 @@ function findContainerForElement(element: HTMLElement): {
   container: HTMLElement;
   selectors: string[];
 } {
-  /* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion */
-  /* We assume that the checked elements are not `html` and are attached to the page, so they all have a parentElement */
+  /* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion --
+   We assume that the checked elements are not `html` and are attached to the page, so they all have a parentElement */
   let container: HTMLElement = element;
   let level = 0;
 

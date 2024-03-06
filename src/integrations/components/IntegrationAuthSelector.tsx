@@ -46,8 +46,8 @@ const colors = {
 };
 
 const customStyles: StylesConfig<AuthOption> = {
-  // @ts-expect-error not sure how to pass the genetic argument to the react-select types
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // @ts-expect-error not sure how to pass the generic argument to the react-select types
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: fix this typing
   control(base: CSSProperties, state: { selectProps: any }) {
     let statusColor = colors.divider;
 

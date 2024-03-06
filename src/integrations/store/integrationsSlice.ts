@@ -40,8 +40,8 @@ export const initialState: IntegrationsState = {
 };
 
 const integrationsSlice = createSlice({
-  /* The object access should be safe because type-checker enforced UUID */
-  /* eslint-disable security/detect-object-injection */
+  /* eslint-disable security/detect-object-injection
+  -- The object access should be safe because type-checker enforced UUID */
   name: "integrations",
   initialState,
   reducers: {

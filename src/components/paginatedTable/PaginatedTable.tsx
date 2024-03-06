@@ -248,7 +248,7 @@ function PaginatedTable<
                 index !== headerGroup.headers.length - 1 ? (
                   <>
                     {column?.isResizing && <div className={styles.overlay} />}
-                    {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+                    {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- required UX */}
                     <div
                       className={styles.resize}
                       {...column.getResizerProps()}
