@@ -16,71 +16,80 @@
  */
 
 import { isLoadedInIframe } from "@/utils/iframeUtils";
+import { uuidv4 } from "@/types/helpers";
 
-let focusedElement: HTMLElement | undefined;
+class FocusController {
+  private focusedElement: HTMLElement | undefined;
 
-const focusController = {
+  private readonly nonce = uuidv4();
+
   /**
    * Saves the focus of the current focused element so that it can be restored later
    * @note This doesn't behave as you'd expect across iframes
    */
   save(): void {
     // Only HTMLElements can't have their focus restored, but we're currently ignoring this distinction
-    const active = document.activeElement as HTMLElement;
+    const { activeElement } = document;
+    const active = activeElement as HTMLElement;
 
     if (active == null) {
-      console.warn("focusController: no active element to save");
+      console.warn(`focusController(${this.nonce}): no active element to save`);
       return;
     }
 
-    if (focusedElement != null && focusedElement !== active) {
+    if (this.focusedElement != null && this.focusedElement !== active) {
       console.warn(
-        "focusController: the previously-saved focus is being overridden",
+        `focusController(${this.nonce}): the previously-saved focus is being overridden`,
         {
-          previous: focusedElement,
+          previous: this.focusedElement,
           active,
         },
       );
     }
 
-    console.debug("focusController: saving focus", {
+    console.debug(`focusController(${this.nonce}): saving focus`, {
       active,
       isLoadedInIframe: isLoadedInIframe(),
     });
 
-    focusedElement = active;
-  },
+    this.focusedElement = active;
+  }
+
   /**
    * Restores the focus to the last saved item, if it hasn't already been restored
    * @note This doesn't behave as you'd expect across iframes
    */
   restore(): void {
-    console.debug("focusController: restoring focus");
+    console.debug(`focusController(${this.nonce}): restoring focus`);
     // `focusedElement === body`: This restores its focus. `body.focus()` doesn't do anything
     (document.activeElement as HTMLElement)?.blur?.();
 
     // `focusedElement === HTMLElement`: Restore focus if it's an HTMLElement, otherwise silently ignore it
-    focusedElement?.focus?.();
+    this.focusedElement?.focus?.();
 
-    focusedElement = undefined;
-  },
+    this.focusedElement = undefined;
+  }
+
   /** Clear saved value without restoring focus */
   clear(): void {
-    console.debug("focusController: clearing saved focus");
-    focusedElement = undefined;
-  },
+    console.debug(`focusController(${this.nonce}): clearing saved focus`);
+    this.focusedElement = undefined;
+  }
+
   /**
    * Gets the last saved item or the current active item, if there is no saved item
    */
   get(): HTMLElement {
-    console.debug("focusController: getting focus", {
-      focusedElement,
+    console.debug(`focusController(${this.nonce}): getting focus`, {
+      focusedElement: this.focusedElement,
       activeElement: document.activeElement,
       isLoadedInIframe: isLoadedInIframe(),
     });
 
-    return focusedElement ?? (document.activeElement as HTMLElement);
-  },
-} as const;
+    return this.focusedElement ?? (document.activeElement as HTMLElement);
+  }
+}
+
+const focusController = new FocusController();
 
 export default focusController;
