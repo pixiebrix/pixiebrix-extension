@@ -518,7 +518,7 @@ function buildExtensionPoints(
         // We already used this extensionPointId, need to generate a fresh one
         needsFreshExtensionPointId = true;
 
-        // eslint-disable-next-line security/detect-object-injection
+        // eslint-disable-next-line security/detect-object-injection -- extensionPointId is coming from the modComponent definition entries
         if (isEqual(definition, innerDefinitions[extensionPointId])) {
           // Not only has the id been used before, but the definition deeply matches
           // the one being added as well

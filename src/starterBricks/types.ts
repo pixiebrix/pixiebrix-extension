@@ -223,8 +223,8 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
       console.warn(
         `Component ${component.id} already registered for the starter brick ${this.id}`,
       );
-      // Index is guaranteed to be a number, and this.extensions is an array
-      // eslint-disable-next-line security/detect-object-injection
+      /* eslint-disable-next-line security/detect-object-injection --
+      -- Index is guaranteed to be a number, and this.extensions is an array */
       this.modComponents[index] = component;
     } else {
       this.modComponents.push(component);

@@ -201,9 +201,9 @@ const sidebarSlice = createSlice({
       state.activeKey =
         visiblePanelCount === 0
           ? eventKeyForEntry(MOD_LAUNCHER)
-          : // Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
-            // See: https://github.com/immerjs/immer/issues/839
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+          : /* eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+            -- Immer Draft<T> type resolution can't handle JsonObject (recursive) types properly
+            See: https://github.com/immerjs/immer/issues/839 */
             // @ts-ignore-error -- SidebarEntries.panels --> PanelEntry.actions --> PanelButton.detail is JsonObject
             defaultEventKey(state, state.closedTabs);
     },

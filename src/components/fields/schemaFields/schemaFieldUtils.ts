@@ -107,8 +107,7 @@ export function sortedFields(
           fieldSchema.$ref !== pipelineSchema.$id),
     )
     .map(([prop, fieldSchema]) => {
-      // Fine because coming from Object.entries for the schema
-      // eslint-disable-next-line security/detect-object-injection
+      // eslint-disable-next-line security/detect-object-injection -- Fine because coming from Object.entries for the schema
       const propUiSchema = uiSchema?.[prop];
 
       return {

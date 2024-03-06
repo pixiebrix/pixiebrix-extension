@@ -86,7 +86,7 @@ describe("RJSF BaseInputTemplate Override", () => {
       <BaseInputTemplate {...getProps("url", schema, "file")} />,
     );
 
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- TODO: use better selector method
     const input = container.querySelector("#url");
 
     expect(input).toBeInTheDocument();
@@ -104,7 +104,7 @@ describe("RJSF BaseInputTemplate Override", () => {
       <BaseInputTemplate {...getProps("date", schema, "date")} />,
     );
 
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- TODO: use better selector method
     const input = container.querySelector("#date");
 
     expect(input).toBeInTheDocument();
@@ -122,7 +122,7 @@ describe("RJSF BaseInputTemplate Override", () => {
       <BaseInputTemplate {...getProps("dateTime", schema, "datetime-local")} />,
     );
 
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- TODO: use better selector method
     const input = container.querySelector("#dateTime");
 
     expect(input).toBeInTheDocument();
