@@ -29,6 +29,7 @@ import type { PlatformCapability } from "@/platform/capabilities";
 import { insertAtCursorWithCustomEditorSupport } from "@/contentScript/textEditorDom";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { expectContext } from "@/utils/expectContext";
+import selectionController from "@/utils/selectionController";
 
 /**
  * Insert text at the cursor position. For use with text snippets, etc.
@@ -74,6 +75,8 @@ class InsertAtCursorEffect extends EffectABC {
     }
 
     const element = isDocument(root) ? focus.get() : root;
+
+    selectionController.restoreWithoutClearing();
 
     if (!element) {
       throw new BusinessError("No active element");

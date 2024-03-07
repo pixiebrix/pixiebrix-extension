@@ -48,6 +48,7 @@ import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { showMySidePanel } from "@/background/messenger/strict/api";
 import { getSidebarElement } from "@/contentScript/sidebarDomControllerLite";
 import focusController from "@/utils/focusController";
+import selectionController from "@/utils/selectionController";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
@@ -564,6 +565,7 @@ export function initSidebarFocusEvents(): void {
           // when they re-enter the sidebar
           if (document.activeElement !== sidebar) {
             focusController.save();
+            selectionController.save();
           }
         },
         { passive: true, capture: true, signal: closeSignal },
@@ -573,6 +575,7 @@ export function initSidebarFocusEvents(): void {
         "mouseleave",
         () => {
           focusController.clear();
+          selectionController.clear();
         },
         { passive: true, capture: true, signal: closeSignal },
       );
