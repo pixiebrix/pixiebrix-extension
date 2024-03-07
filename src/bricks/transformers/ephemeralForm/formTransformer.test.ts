@@ -179,7 +179,6 @@ describe("FormTransformer", () => {
 
     await expect(firstPromise).rejects.toThrow(CancelError);
 
-    // eslint-disable-next-line new-cap -- test method
     await TEST_cancelAll();
 
     await expect(secondPromise).rejects.toThrow(CancelError);
