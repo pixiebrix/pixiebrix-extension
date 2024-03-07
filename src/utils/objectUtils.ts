@@ -87,8 +87,7 @@ export function getProperty<TResult = unknown>(
   property: string,
 ): TResult | undefined {
   if (Object.hasOwn(obj, property)) {
-    // Checking for hasOwn
-    // eslint-disable-next-line security/detect-object-injection
+    // eslint-disable-next-line security/detect-object-injection -- Checking for hasOwn
     return obj[property] as TResult;
   }
 }

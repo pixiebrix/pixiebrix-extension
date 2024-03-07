@@ -18,6 +18,7 @@
 import { define, derive, extend, type FactoryConfig } from "cooky-cutter";
 import { type Brick } from "@/types/brickTypes";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
+import { type UUID } from "@/types/stringTypes";
 import {
   registryIdSequence,
   uuidSequence,
@@ -28,6 +29,8 @@ import { minimalSchemaFactory } from "@/utils/schemaUtils";
 import type { BrickDefinition } from "@/bricks/transformers/brickFactory";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import type { Reader } from "@/types/bricks/readerTypes";
+import type { PackageConfigDetail } from "@/types/contract";
+import type { ModDefinition } from "@/types/modDefinitionTypes";
 
 export const brickFactory = define<Brick>({
   id: registryIdSequence,
@@ -76,3 +79,22 @@ export const brickDefinitionFactory = define<BrickDefinition>({
   inputSchema: minimalSchemaFactory,
   pipeline: pipelineFactory,
 });
+
+export function packageConfigDetailFactory({
+  modDefinition,
+  packageVersionUUID,
+}: {
+  modDefinition: ModDefinition;
+  packageVersionUUID?: UUID;
+}): PackageConfigDetail {
+  const { sharing, updated_at, ...config } = modDefinition;
+  return {
+    id: packageVersionUUID || uuidSequence(0),
+    name: modDefinition.metadata.id,
+    verbose_name: modDefinition.metadata.name,
+    kind: modDefinition.kind,
+    config,
+    sharing,
+    updated_at,
+  };
+}

@@ -143,7 +143,7 @@ const BrickPreview: React.FunctionComponent<{
   extensionPoint: BaseExtensionPointState;
   traceRecord: TraceRecord;
   previewRefreshMillis?: 250;
-  // eslint-disable-next-line complexity
+  // eslint-disable-next-line complexity -- complex due to formik
 }> = ({ brickConfig, extensionPoint, traceRecord, previewRefreshMillis }) => {
   const [{ isRunning, output }, dispatch] = useReducer(previewSlice.reducer, {
     ...initialState,

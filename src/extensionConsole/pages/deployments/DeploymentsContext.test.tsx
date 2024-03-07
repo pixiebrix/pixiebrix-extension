@@ -28,7 +28,11 @@ import userEvent from "@testing-library/user-event";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import { getLinkedApiClient } from "@/data/service/apiClient";
-import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
+import {
+  deploymentFactory,
+  activatableDeploymentFactory,
+} from "@/testUtils/factories/deploymentFactories";
+import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories";
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
 
 const axiosMock = new MockAdapter(axios);
@@ -91,7 +95,19 @@ describe("DeploymentsContext", () => {
   });
 
   it("activate single deployment from empty state", async () => {
-    axiosMock.onPost("/api/deployments/").reply(200, [deploymentFactory()]);
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    const registryId = deployment.package.package_id;
+
+    axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
+    axiosMock
+      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
     requestPermissionsMock.mockResolvedValue(true);
 
     const { getReduxStore } = render(
@@ -123,7 +139,19 @@ describe("DeploymentsContext", () => {
   });
 
   it("remounting the DeploymentsProvider doesn't refetch the deployments", async () => {
-    axiosMock.onPost("/api/deployments/").reply(200, [deploymentFactory()]);
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    const registryId = deployment.package.package_id;
+
+    axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
+    axiosMock
+      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
     requestPermissionsMock.mockResolvedValue(true);
 
     const { rerender } = render(
@@ -171,7 +199,19 @@ describe("DeploymentsContext", () => {
     jest.useFakeTimers();
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
-    axiosMock.onPost("/api/deployments/").reply(200, [deploymentFactory()]);
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    const registryId = deployment.package.package_id;
+
+    axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
+    axiosMock
+      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
     requestPermissionsMock.mockResolvedValue(true);
 
     const { rerender } = render(
@@ -210,14 +250,9 @@ describe("DeploymentsContext", () => {
     });
 
     await user.click(screen.getByText("Update"));
+    await waitForEffect();
 
-    await waitFor(() => {
-      // This shouldn't be occurring. Something is wrong with the test store that's making the
-      // activeExtensions return an empty array.
-      expect(axiosMock.history.post).toHaveLength(4);
-    });
-
-    console.log(axiosMock.history.post);
+    expect(axiosMock.history.post).toHaveLength(3);
 
     // Permissions requested twice because user has clicked update twice
     expect(requestPermissionsMock).toHaveBeenCalledTimes(2);

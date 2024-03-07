@@ -298,7 +298,7 @@ describe("FormEditor", () => {
     expect(getRequiredFieldFromMock(0)).toBeUndefined();
 
     // Make it required
-    // eslint-disable-next-line testing-library/no-container
+    // eslint-disable-next-line testing-library/no-container -- TODO: refactor to use better selector
     const requiredSwitch = container.querySelector(".switch.btn");
     fireEvent.click(requiredSwitch);
 

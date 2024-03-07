@@ -54,7 +54,7 @@ describe("RegistryIdWidget", () => {
       },
     });
 
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- TODO: use better selector method
     const scopeInput = container.querySelector("input[name='testField-scope']");
     const idInput = screen.getByRole("textbox");
 
@@ -154,10 +154,10 @@ describe("RegistryIdWidget", () => {
 
     await userEvent.click(screen.getByText(testUserScope));
 
-    // eslint-disable-next-line testing-library/no-node-access
+    // eslint-disable-next-line testing-library/no-node-access  -- TODO: use better selector method
     const reactSelectOptions = screen.getByRole("combobox").closest("div");
 
-    // eslint-disable-next-line testing-library/no-node-access
+    // eslint-disable-next-line testing-library/no-node-access  -- TODO: use better selector method
     expect(reactSelectOptions.children).toHaveLength(1);
   });
 });

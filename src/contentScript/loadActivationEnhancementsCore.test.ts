@@ -85,7 +85,6 @@ describe("marketplace enhancements", () => {
 
   afterEach(async () => {
     jest.resetAllMocks();
-    // eslint-disable-next-line new-cap -- test method
     TEST_unloadActivationEnhancements();
   });
 

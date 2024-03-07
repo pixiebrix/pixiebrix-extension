@@ -68,6 +68,11 @@ import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsH
 import { Events } from "@/telemetry/events";
 import { allSettled } from "@/utils/promiseUtils";
 import type { Manifest } from "webextension-polyfill";
+import { getRequestHeadersByAPIVersion } from "@/data/service/apiVersioning";
+import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
+import { services } from "@/background/messenger/api";
+import type { ActivatableDeployment } from "@/types/deploymentTypes";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
@@ -219,16 +224,21 @@ async function uninstallRecipe(
   return { options, editor };
 }
 
-async function installDeployment(
-  optionsState: ModComponentState,
-  editorState: EditorState | undefined,
-  deployment: Deployment,
-): Promise<{
+async function installDeployment({
+  optionsState,
+  editorState,
+  activatableDeployment,
+}: {
+  optionsState: ModComponentState;
+  editorState: EditorState | undefined;
+  activatableDeployment: ActivatableDeployment;
+}): Promise<{
   options: ModComponentState;
   editor: EditorState | undefined;
 }> {
   let options = optionsState;
   let editor = editorState;
+  const { deployment, modDefinition } = activatableDeployment;
 
   const isReinstall = optionsState.extensions.some(
     (x) => x._deployment?.id === deployment.id,
@@ -248,11 +258,11 @@ async function installDeployment(
   options = optionsReducer(
     options,
     optionsActions.installMod({
-      modDefinition: deployment.package.config,
+      modDefinition,
       deployment,
       configuredDependencies: await mergeDeploymentIntegrationDependencies(
-        deployment,
-        locateAllForService,
+        activatableDeployment,
+        services.locateAllForId,
       ),
       // Assume backend properly validates the options
       optionsArgs: deployment.options_config as OptionsArgs,
@@ -271,21 +281,23 @@ async function installDeployment(
 
 /**
  * Install all deployments
- * @param deployments deployments that PixieBrix already has permission to run
+ * @param activatableDeployments deployments that PixieBrix already has permission to run
  */
-async function installDeployments(deployments: Deployment[]): Promise<void> {
+async function installDeployments(
+  activatableDeployments: ActivatableDeployment[],
+): Promise<void> {
   let [optionsState, editorState] = await Promise.all([
     getModComponentState(),
     getEditorState(),
   ]);
 
-  for (const deployment of deployments) {
+  for (const activatableDeployment of activatableDeployments) {
     // eslint-disable-next-line no-await-in-loop -- running reducer, need to update states serially
-    const result = await installDeployment(
+    const result = await installDeployment({
       optionsState,
       editorState,
-      deployment,
-    );
+      activatableDeployment,
+    });
     optionsState = result.options;
     editorState = result.editor;
   }
@@ -295,7 +307,7 @@ async function installDeployments(deployments: Deployment[]): Promise<void> {
 }
 
 type DeploymentConstraint = {
-  deployment: Deployment;
+  activatableDeployment: ActivatableDeployment;
   hasPermissions: boolean;
   extensionVersion: SemVer;
 };
@@ -309,7 +321,7 @@ type DeploymentConstraint = {
  * 3. The user has exactly one (1) personal configuration for each unbound service for the deployment
  */
 async function canAutomaticallyInstall({
-  deployment,
+  activatableDeployment,
   hasPermissions,
   extensionVersion,
 }: DeploymentConstraint): Promise<boolean> {
@@ -317,14 +329,15 @@ async function canAutomaticallyInstall({
     return false;
   }
 
-  const requiredRange = deployment.package.config.metadata.extensionVersion;
+  const requiredRange =
+    activatableDeployment.modDefinition.metadata.extensionVersion;
   if (requiredRange && !satisfies(extensionVersion, requiredRange)) {
     return false;
   }
 
   const personalConfigs =
     await findLocalDeploymentConfiguredIntegrationDependencies(
-      deployment,
+      activatableDeployment,
       locateAllForService,
     );
   return personalConfigs.every(({ configs }) => configs.length === 1);
@@ -363,7 +376,7 @@ async function markAllAsInstalled() {
  * NOTE: if updates are snoozed, does not install updates automatically. (To not interrupt the current business
  * process the team member is working on.)
  */
-export async function updateDeployments(): Promise<void> {
+export async function syncDeployments(): Promise<void> {
   expectContext("background");
 
   const now = Date.now();
@@ -442,10 +455,6 @@ export async function updateDeployments(): Promise<void> {
   // Always get the freshest options slice from the local storage
   const { extensions } = await getModComponentState();
 
-  // Version to report to the server. The update check happens via isUpdateAvailable below
-  const { version: extensionVersionString } = browser.runtime.getManifest();
-  const extensionVersion = parseSemVer(extensionVersionString);
-
   // This is the "heartbeat". The old behavior was to only send if the user had at least one deployment installed.
   // Now we're always sending in order to help team admins understand any gaps between number of registered users
   // and amount of activity when using deployments
@@ -457,8 +466,7 @@ export async function updateDeployments(): Promise<void> {
     return;
   }
 
-  const { data: profile, status: profileResponseStatus } =
-    await client.get<Me>("/api/me/");
+  const { data: profile } = await client.get<Me>("/api/me/");
 
   const { isSnoozed, isUpdateOverdue, updatePromptTimestamp } =
     selectUpdatePromptState(
@@ -469,33 +477,22 @@ export async function updateDeployments(): Promise<void> {
       },
     );
 
-  if (profileResponseStatus >= 400) {
-    // If our server is acting up, check again later
-    console.debug(
-      "Skipping deployments update because /api/me/ request failed",
-    );
-
-    return;
-  }
-
   // Ensure the user's flags and telemetry information is up-to-date
   void updateUserData(selectUserDataUpdate(profile));
 
-  const { data: deployments, status: deploymentResponseStatus } =
-    await client.post<Deployment[]>("/api/deployments/", {
+  const { data: deployments } = await client.post<Deployment[]>(
+    "/api/deployments/",
+    {
       uid: await getUUID(),
       version: getExtensionVersion(),
       active: selectInstalledDeployments(extensions),
       campaignIds,
-    });
-
-  if (deploymentResponseStatus >= 400) {
-    // Our server is active up, check again later
-    console.debug(
-      "Skipping deployments update because /api/deployments/ request failed",
-    );
-    return;
-  }
+    },
+    {
+      // @since 1.8.10 -- API version 1.1 excludes the package config
+      headers: getRequestHeadersByAPIVersion("1.1"),
+    },
+  );
 
   // Always uninstall unmatched deployments
   await uninstallUnmatchedDeployments(deployments);
@@ -539,18 +536,50 @@ export async function updateDeployments(): Promise<void> {
     return;
   }
 
-  // Fetch the current brick definitions, which will have the current permissions and extensionVersion requirements
+  // Ensure the user brick definitions are up-to-date, to ensure they have the latest current permissions and
+  // extensionVersion requirements for bricks.
   try {
     await refreshRegistries();
   } catch (error) {
+    // Reporting goes through Datadog, so safe to report even if our server is acting up.
     reportError(error);
-    void browser.runtime.openOptionsPage();
+
+    if (isAxiosError(error) && error.response?.status >= 500) {
+      // If our server is acting up, bail because opening the options page will cause a refetch, which will just
+      // further increase server load. Try again on the next heart beat.
+      return;
+    }
+
     // Bail and open the main options page, which 1) fetches the latest bricks, and 2) will prompt the user to
-    // manually install the deployments via the banner
+    // manually install the deployments via the banner.
+    void browser.runtime.openOptionsPage();
     return;
   }
 
-  // `clipboardWrite` is no strictly required to use the clipboard brick, so allow it to auto-install.
+  // Extracted activateDeploymentsInBackground into a separate function because code only uses activatableDeployments.
+  await activateDeploymentsInBackground({
+    // Excludes any deployments that fail to fetch. In those cases, the user will stay on the old deployment until
+    // the next heartbeat/check.
+    activatableDeployments:
+      await fetchDeploymentModDefinitions(updatedDeployments),
+    profile,
+  });
+}
+
+/**
+ * Activate deployments in the background.
+ *
+ * Similar to activateDeployments, which activates deployments in the foreground.
+ * @see activateDeployments
+ */
+async function activateDeploymentsInBackground({
+  activatableDeployments,
+  profile,
+}: {
+  activatableDeployments: ActivatableDeployment[];
+  profile: Me;
+}): Promise<void> {
+  // `clipboardWrite` is not strictly required to use the clipboard brick, so allow it to auto-install.
   // Behind a feature flag in case it causes problems for enterprise customers.
   // Could use browser.runtime.getManifest().optional_permissions here, but that also technically supports the Origin
   // type so the types wouldn't match with checkDeploymentPermissions
@@ -560,22 +589,31 @@ export async function updateDeployments(): Promise<void> {
       : ["clipboardWrite"];
 
   const deploymentRequirements = await Promise.all(
-    updatedDeployments.map(async (deployment) => ({
-      deployment,
-      ...(await checkDeploymentPermissions(deployment, locateAllForService, {
+    activatableDeployments.map(async (activatableDeployment) => ({
+      activatableDeployment,
+      ...(await checkDeploymentPermissions({
+        activatableDeployment,
+        locate: locateAllForService,
         optionalPermissions,
       })),
     })),
   );
 
+  // Version to report to the server.
+  const { version: extensionVersionString } = browser.runtime.getManifest();
+  const extensionVersion = parseSemVer(extensionVersionString);
+
   const installability = await Promise.all(
-    deploymentRequirements.map(async (requirement) => ({
-      deployment: requirement.deployment,
-      isAutomatic: await canAutomaticallyInstall({
-        ...requirement,
-        extensionVersion,
+    deploymentRequirements.map(
+      async ({ activatableDeployment, hasPermissions }) => ({
+        activatableDeployment,
+        isAutomatic: await canAutomaticallyInstall({
+          activatableDeployment,
+          hasPermissions,
+          extensionVersion,
+        }),
       }),
-    })),
+    ),
   );
 
   const [automatic, manual] = partition(installability, (x) => x.isAutomatic);
@@ -584,7 +622,7 @@ export async function updateDeployments(): Promise<void> {
 
   if (automatic.length > 0) {
     try {
-      await installDeployments(automatic.map((x) => x.deployment));
+      await installDeployments(automatic.map((x) => x.activatableDeployment));
     } catch (error) {
       reportError(error);
       automaticError = true;
@@ -624,9 +662,9 @@ function initDeploymentUpdater(): void {
   registerBuiltinBricks();
   registerContribBlocks();
 
-  setInterval(updateDeployments, UPDATE_INTERVAL_MS);
+  setInterval(syncDeployments, UPDATE_INTERVAL_MS);
   void resetUpdatePromptTimestamp();
-  void updateDeployments();
+  void syncDeployments();
 }
 
 export default initDeploymentUpdater;

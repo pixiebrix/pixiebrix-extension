@@ -49,18 +49,29 @@ import {
 import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
 import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 import { useGetDeploymentsQuery } from "@/data/service/api";
+import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
 import { deserializeError } from "serialize-error";
 import { isEqual } from "lodash";
 import useMemoCompare from "@/hooks/useMemoCompare";
 
-function getError(deploymentsError: unknown, permissionsError: unknown) {
-  if (deploymentsError) {
-    if (deserializeError(deploymentsError).name === "ExtensionNotLinkedError") {
-      // Deployments are refetched once the Extension is linked
-      return null;
-    }
+function getError({
+  deploymentsError,
+  modDefinitionsError,
+  permissionsError,
+}: {
+  deploymentsError: unknown;
+  modDefinitionsError: unknown;
+  permissionsError: unknown;
+}) {
+  for (const error of [deploymentsError, modDefinitionsError]) {
+    if (error) {
+      if (deserializeError(error).name === "ExtensionNotLinkedError") {
+        // Deployments and mod definitions are refetched once the Extension is linked
+        return null;
+      }
 
-    return deploymentsError;
+      return error;
+    }
   }
 
   return permissionsError;
@@ -130,12 +141,41 @@ function useDeployments(): DeploymentsState {
     },
   );
 
+  const updatedDeployments = useMemo(() => {
+    const isUpdated = makeUpdatedFilter(activeExtensions, {
+      restricted: restrict("uninstall"),
+    });
+
+    return deployments?.filter((x) => isUpdated(x)) ?? null;
+  }, [activeExtensions, restrict, deployments]);
+
+  // TODO: Refactor this to use RTK query: https://github.com/pixiebrix/pixiebrix-extension/issues/7841
+  const {
+    data: activatableDeployments,
+    isLoading: isLoadingModDefinitions,
+    error: modDefinitionsError,
+  } = useAsyncState(async () => {
+    if (!updatedDeployments) {
+      return null;
+    }
+
+    return fetchDeploymentModDefinitions(updatedDeployments);
+  }, [updatedDeployments]);
+
+  const extensionUpdateRequired = useMemo(() => {
+    if (!activatableDeployments) {
+      return false;
+    }
+
+    return checkExtensionUpdateRequired(activatableDeployments);
+  }, [activatableDeployments]);
+
   const {
     data: permissions,
     isLoading: isLoadingPermissions,
     error: permissionsError,
   } = useAsyncState(async () => {
-    if (!deployments) {
+    if (!activatableDeployments) {
       return null;
     }
 
@@ -148,8 +188,10 @@ function useDeployments(): DeploymentsState {
       await logPromiseDuration(
         "useDeployments:checkDeploymentPermissions",
         Promise.all(
-          deployments.map(async (deployment) =>
-            checkDeploymentPermissions(deployment, services.locateAllForId, {
+          activatableDeployments.map(async (activatableDeployment) =>
+            checkDeploymentPermissions({
+              activatableDeployment,
+              locate: services.locateAllForId,
               // In the UI context, always prompt the user to accept permissions to ensure they get the full
               // functionality of the mod
               optionalPermissions: [],
@@ -160,26 +202,13 @@ function useDeployments(): DeploymentsState {
     );
 
     return permissions;
-  }, [activeExtensions, deployments]);
+  }, [activeExtensions, activatableDeployments]);
 
-  const [updatedDeployments, extensionUpdateRequired] = useMemo(() => {
-    const isUpdated = makeUpdatedFilter(activeExtensions, {
-      restricted: restrict("uninstall"),
-    });
-
-    const updatedDeployments = deployments?.filter((x) => isUpdated(x)) ?? null;
-
-    return [
-      updatedDeployments,
-      checkExtensionUpdateRequired(updatedDeployments),
-    ];
-  }, [restrict, activeExtensions, deployments]);
-
-  const { isAutoDeploying } = useAutoDeploy(
-    updatedDeployments,
-    activeExtensions,
-    { extensionUpdateRequired },
-  );
+  const { isAutoDeploying } = useAutoDeploy({
+    activatableDeployments,
+    installedExtensions: activeExtensions,
+    extensionUpdateRequired,
+  });
 
   const handleUpdateFromUserGesture = useCallback(async () => {
     // IMPORTANT: can't do a fetch or any potentially stalling operation (including IDB calls) because the call to
@@ -190,8 +219,8 @@ function useDeployments(): DeploymentsState {
     // notifying them to update again
     dispatch(settingsSlice.actions.resetUpdatePromptTimestamp());
 
-    if (deployments == null) {
-      notify.error("Deployments have not been fetched");
+    if (activatableDeployments == null) {
+      notify.error("Activatable deployments have not been fetched");
       return;
     }
 
@@ -206,7 +235,7 @@ function useDeployments(): DeploymentsState {
       return;
     }
 
-    if (checkExtensionUpdateRequired(deployments)) {
+    if (checkExtensionUpdateRequired(activatableDeployments)) {
       void browser.runtime.requestUpdateCheck();
       notify.warning(
         "You must update the PixieBrix browser extension to activate the deployment",
@@ -222,12 +251,16 @@ function useDeployments(): DeploymentsState {
     }
 
     try {
-      await activateDeployments(dispatch, deployments, activeExtensions);
+      await activateDeployments({
+        dispatch,
+        activatableDeployments,
+        installed: activeExtensions,
+      });
       notify.success("Updated team deployments");
     } catch (error) {
       notify.error({ message: "Error updating team deployments", error });
     }
-  }, [deployments, permissions, dispatch, activeExtensions]);
+  }, [activatableDeployments, permissions, dispatch, activeExtensions]);
 
   const updateExtension = useCallback(async () => {
     await reloadIfNewVersionIsReady();
@@ -241,8 +274,13 @@ function useDeployments(): DeploymentsState {
     update: handleUpdateFromUserGesture,
     updateExtension,
     extensionUpdateRequired,
-    isLoading: isLoadingDeployments || isLoadingPermissions,
-    error: getError(deploymentsError, permissionsError),
+    isLoading:
+      isLoadingDeployments || isLoadingModDefinitions || isLoadingPermissions,
+    error: getError({
+      deploymentsError,
+      modDefinitionsError,
+      permissionsError,
+    }),
     isAutoDeploying,
   };
 }

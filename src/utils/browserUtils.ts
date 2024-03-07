@@ -24,7 +24,7 @@ export function isMac(): boolean {
 // https://learn.microsoft.com/en-us/microsoft-edge/web-platform/user-agent-guidance
 // https://caniuse.com/mdn-api_navigator_useragentdata -- not defined for Firefox/Safari
 // @ts-expect-error -- userAgentData is defined in Chrome browser
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, local-rules/persistBackgroundData, @typescript-eslint/no-unsafe-member-access -- userAgentData is defined in Chrome browser
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, local-rules/persistBackgroundData, @typescript-eslint/no-unsafe-member-access -- userAgentData is defined in Chrome
 const brands: Array<{ brand: string }> = navigator.userAgentData?.brands ?? [];
 
 /**

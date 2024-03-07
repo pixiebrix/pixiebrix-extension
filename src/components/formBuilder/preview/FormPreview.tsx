@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable security/detect-object-injection */
+/* eslint-disable security/detect-object-injection -- keys do not come from customer input */
+
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import validator from "@/validators/formValidator";

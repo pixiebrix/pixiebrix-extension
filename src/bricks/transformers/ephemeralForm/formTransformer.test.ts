@@ -34,7 +34,6 @@ const showModalMock = jest.mocked(showModal);
 const brick = new FormTransformer();
 
 afterEach(async () => {
-  // eslint-disable-next-line new-cap -- test method
   await TEST_cancelAll();
   jest.clearAllMocks();
 });
@@ -102,7 +101,6 @@ describe("FormTransformer", () => {
       brickOptionsFactory(),
     );
 
-    // eslint-disable-next-line new-cap -- test method
     await TEST_cancelAll();
 
     await expect(brickPromise).rejects.toThrow(CancelError);
@@ -134,7 +132,6 @@ describe("FormTransformer", () => {
       brickOptionsFactory(),
     );
 
-    // eslint-disable-next-line new-cap -- test method
     await TEST_cancelAll();
 
     await expect(brickPromise).rejects.toThrow(CancelError);
