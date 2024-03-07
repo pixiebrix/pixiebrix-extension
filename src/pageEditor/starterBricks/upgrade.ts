@@ -272,7 +272,7 @@ async function upgradeValue({
       // to assign each extra item a schema in our itemSchemas array.
       for (const [index, element] of value.entries()) {
         if (index >= itemSchemas.length) {
-          // eslint-disable-next-line security/detect-object-injection
+          // eslint-disable-next-line security/detect-object-injection -- from Object.entries
           itemSchemas[index] = additionalItemSchemasByType[typeof element];
         }
       }
@@ -327,9 +327,9 @@ async function upgradeValue({
         for (const name of Object.keys(value).filter(
           (key) => !(key in propertySchemas),
         )) {
-          // eslint-disable-next-line security/detect-object-injection
+          // eslint-disable-next-line security/detect-object-injection -- from Object.keys
           const subValue = (value as UnknownObject)[name];
-          // eslint-disable-next-line security/detect-object-injection
+          // eslint-disable-next-line security/detect-object-injection -- from Object.keys
           propertySchemas[name] = additionalPropsByType[typeof subValue];
         }
       }
@@ -340,7 +340,7 @@ async function upgradeValue({
             blockId,
             config: value as UnknownObject,
             fieldName,
-            // eslint-disable-next-line security/detect-object-injection
+            // eslint-disable-next-line security/detect-object-injection -- from Object.keys
             fieldSchema: propertySchemas[fieldName],
             templateEngine,
           });

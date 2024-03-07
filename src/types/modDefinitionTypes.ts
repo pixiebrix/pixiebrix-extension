@@ -103,7 +103,7 @@ export interface UnsavedModDefinition extends Definition {
 }
 
 /**
- * Information about who a package has been shared with. Currently used only on mods in the interface to indicate
+ * Information about whom a package has been shared with. Currently used only on mods in the interface to indicate
  * which team they were shared from
  */
 // Not exported -- use ModDefinition["sharing"] instead to reference

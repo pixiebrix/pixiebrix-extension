@@ -68,7 +68,6 @@ describe("getActiveTheme", () => {
     });
 
     afterEach(async () => {
-      // eslint-disable-next-line new-cap -- used for testing
       await INTERNAL_reset();
       await browser.storage.managed.clear();
       await browser.storage.local.clear();

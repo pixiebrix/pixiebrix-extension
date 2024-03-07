@@ -15,12 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line no-restricted-imports -- All roads lead here
-import EmotionShadowRoot from "react-shadow/emotion";
+// See similar file in the App codebase
 
-/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion --
-"Every property exists" (via Proxy), TypeScript doesn't offer such type
-Also strictNullChecks config mismatch */
-const ShadowRoot = EmotionShadowRoot.div!;
+// See REST_FRAMEWORK["ALLOWED_VERSIONS"] in the Django settings
+const API_VERSIONS = ["1.0", "1.1", "2.0"] as const;
+export type ApiVersion = (typeof API_VERSIONS)[number];
 
-export default ShadowRoot;
+export function getRequestHeadersByAPIVersion(apiVersion: ApiVersion) {
+  // The default version doesn't require a header, but pass it anyway to be explicit
+  // and make troubleshooting easier.
+  if (API_VERSIONS.includes(apiVersion)) {
+    return { Accept: `application/json; version=${apiVersion}` };
+  }
+
+  throw new Error("Unknown API version");
+}

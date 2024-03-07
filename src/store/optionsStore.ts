@@ -137,7 +137,7 @@ const store = configureStore({
           whitelist: sessionChangesStateSyncActions,
         }),
       );
-    /* eslint-enable unicorn/prefer-spread */
+    /* eslint-enable unicorn/prefer-spread  */
   },
   devTools: REDUX_DEV_TOOLS,
 });

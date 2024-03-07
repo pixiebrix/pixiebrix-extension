@@ -44,7 +44,6 @@ beforeEach(() => {
   jest.clearAllMocks();
   backgroundGetByKindsMock.mockResolvedValue([]);
 
-  // eslint-disable-next-line new-cap -- test-only method
   bricksRegistry.TEST_reset();
 });
 

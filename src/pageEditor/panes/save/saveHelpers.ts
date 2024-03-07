@@ -397,14 +397,12 @@ export function buildNewMod({
     sourceMod ?? emptyModDefinition;
 
   return produce(unsavedModDefinition, (draft: UnsavedModDefinition): void => {
-    // Options dirty state is only populated if a change is made
     if (dirtyModOptions) {
       draft.options = isModOptionsSchemaEmpty(dirtyModOptions)
         ? undefined
         : normalizeModOptionsDefinition(dirtyModOptions);
     }
 
-    // Metadata dirty state is only populated if a change is made
     if (dirtyModMetadata) {
       draft.metadata = dirtyModMetadata;
     }
@@ -518,7 +516,7 @@ function buildExtensionPoints(
         // We already used this extensionPointId, need to generate a fresh one
         needsFreshExtensionPointId = true;
 
-        // eslint-disable-next-line security/detect-object-injection
+        // eslint-disable-next-line security/detect-object-injection -- extensionPointId is coming from the modComponent definition entries
         if (isEqual(definition, innerDefinitions[extensionPointId])) {
           // Not only has the id been used before, but the definition deeply matches
           // the one being added as well

@@ -15,12 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line no-restricted-imports -- All roads lead here
-import EmotionShadowRoot from "react-shadow/emotion";
+import type { ModDefinition } from "@/types/modDefinitionTypes";
+import type { Deployment } from "@/types/contract";
 
-/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion --
-"Every property exists" (via Proxy), TypeScript doesn't offer such type
-Also strictNullChecks config mismatch */
-const ShadowRoot = EmotionShadowRoot.div!;
-
-export default ShadowRoot;
+/**
+ * A deployment and its associated mod definition (for exact package and version).
+ *
+ * Introduced in 1.8.10 to support dropping the mod definition from the Deployment heartbeat payload returned from
+ * the server.
+ *
+ * @since 1.8.10
+ */
+export type ActivatableDeployment = {
+  deployment: Deployment;
+  modDefinition: ModDefinition;
+};

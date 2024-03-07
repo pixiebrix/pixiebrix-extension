@@ -288,7 +288,6 @@ export function clearEditorExtension(
 
       if (extensionPoint.kind === "actionPanel" && preserveSidebar) {
         const sidebar = extensionPoint as SidebarStarterBrickABC;
-        // eslint-disable-next-line new-cap -- hack for action panels
         sidebar.HACK_uninstallExceptExtension(extensionId);
       } else {
         extensionPoint.uninstall({ global: true });

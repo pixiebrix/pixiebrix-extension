@@ -198,8 +198,8 @@ async function read<TComponent>(
   const target = traverse(adapter.getParent, component, traverseUp);
   const rawData = adapter.getData(target);
   const readData = readPathSpec(
-    // TODO: Find a better solution than casting to any
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, security/detect-object-injection
+    /* eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, security/detect-object-injection
+    -- TODO: Find a better solution than casting to any */
     rootProp ? (rawData as any)[rootProp] : rawData,
     pathSpec,
     adapter.proxy,
@@ -292,7 +292,7 @@ setTimeout(() => {
   document.dispatchEvent(new CustomEvent(CONNECT_EXTENSION, {}));
 }, 0);
 
-// Ensure jquery is available for testing selectors when debugging PixieBrix errors
-// Cast as any because we don't want to pollute namespace with TypeScript declaration
-// eslint-disable-next-line security/detect-object-injection
+/* eslint-disable-next-line security/detect-object-injection
+-- Ensure jquery is available for testing selectors when debugging PixieBrix errors
+Cast as any because we don't want to pollute namespace with TypeScript declaration */
 window[JQUERY_WINDOW_PROP] = $;

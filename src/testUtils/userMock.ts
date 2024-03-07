@@ -61,7 +61,7 @@ export async function mockAuthenticatedMeApiResponse(
   const tokenData = tokenAuthDataFactory({
     ...authData,
   });
-  // eslint-disable-next-line new-cap
+
   await TEST_setAuthData(tokenData);
   useLinkStateMock.mockReturnValue(valueToAsyncState(true));
   // connectApiClientMock();
@@ -83,7 +83,6 @@ export function mockErrorMeApiResponse(error: unknown): void {
 export async function resetMeApiMocks(): Promise<void> {
   useLinkStateMock.mockReset();
   appApiMock.reset();
-  // eslint-disable-next-line new-cap
   await TEST_setAuthData({});
   // getLinkedApiClientMock.mockResolvedValue(axios);
 }

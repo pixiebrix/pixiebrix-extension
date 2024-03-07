@@ -34,12 +34,20 @@ import { initPerformanceMonitoring } from "@/telemetry/performance";
 import { setPlatform } from "@/platform/platformContext";
 import extensionPagePlatform from "@/extensionPages/extensionPagePlatform";
 
-setPlatform(extensionPagePlatform);
+async function init() {
+  setPlatform(extensionPagePlatform);
+  void initMessengerLogging();
+  void initRuntimeLogging();
+  try {
+    await initPerformanceMonitoring();
+  } catch (error) {
+    console.error("Failed to initialize performance monitoring", error);
+  }
 
-void initMessengerLogging();
-void initRuntimeLogging();
-void initPerformanceMonitoring();
-watchNavigation();
-initToaster();
+  watchNavigation();
+  initToaster();
 
-ReactDOM.render(<Panel />, document.querySelector("#container"));
+  ReactDOM.render(<Panel />, document.querySelector("#container"));
+}
+
+void init();

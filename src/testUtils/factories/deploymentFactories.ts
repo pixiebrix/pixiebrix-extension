@@ -15,31 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { define, derive } from "cooky-cutter";
+import { define, derive, type FactoryConfig } from "cooky-cutter";
 import { type Deployment } from "@/types/contract";
+import { type ActivatableDeployment } from "@/types/deploymentTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { validateTimestamp } from "@/types/helpers";
-import { type RegistryId } from "@/types/registryTypes";
+import {
+  validateRegistryId,
+  validateSemVerString,
+  validateTimestamp,
+} from "@/types/helpers";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
 
 // Deployments are returned from the API, but their shape is determined by the registry and ModDefinition type.
 
-export const deploymentPackageFactory = define<Deployment["package"]>({
+const deploymentPackageFactory = define<Deployment["package"]>({
   id: uuidSequence,
-  name: derive<Deployment["package"], string>(
-    ({ config }) => config.metadata.name,
-    "config",
-  ),
-  version: derive<Deployment["package"], string>(
-    ({ config }) => config.metadata.version,
-    "config",
-  ),
-  package_id: derive<Deployment["package"], RegistryId>(
-    ({ config }) => config.metadata.id,
-    "config",
-  ),
-  config: defaultModDefinitionFactory,
+  name: "Test Starter Brick",
+  version: (n: number) => validateSemVerString(`1.0.${n}`),
+  package_id: (n: number) => validateRegistryId(`test/starter-brick-${n}`),
 });
+
 export const deploymentFactory = define<Deployment>({
   id: uuidSequence,
   name: (n: number) => `Deployment ${n}`,
@@ -55,3 +51,30 @@ export const deploymentFactory = define<Deployment>({
   package: deploymentPackageFactory,
   options_config: () => ({}) as Deployment["options_config"],
 });
+
+export function activatableDeploymentFactory({
+  deploymentOverride,
+  modDefinitionOverride,
+}: {
+  deploymentOverride?: FactoryConfig<Deployment>;
+  modDefinitionOverride?: FactoryConfig<ModDefinition>;
+} = {}): ActivatableDeployment {
+  const modDefinition = defaultModDefinitionFactory(modDefinitionOverride);
+
+  if (deploymentOverride && "package" in deploymentOverride) {
+    throw new Error(
+      "You cannot override the deployment's package because it is derived from the mod definition",
+    );
+  }
+
+  const deployment = deploymentFactory({
+    ...deploymentOverride,
+    package: deploymentPackageFactory({
+      name: modDefinition.metadata.name,
+      version: modDefinition.metadata.version,
+      package_id: modDefinition.metadata.id,
+    }),
+  });
+
+  return { deployment, modDefinition };
+}

@@ -12,3 +12,5 @@
 /jsLinters/
 # Personal extensions
 codestream.xml
+# GitHub Copilot persisted chat sessions
+/copilot/chatSessions

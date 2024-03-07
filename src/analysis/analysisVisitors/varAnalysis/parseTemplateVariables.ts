@@ -30,7 +30,7 @@ const VARIABLE_START_INDEX = Symbol("#Variable_start_index");
 
 export interface VariableOptions {
   type?: string;
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Cyclic dependency
   parent?: Variable | undefined;
   startIndex: number;
 }
