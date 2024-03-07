@@ -124,14 +124,12 @@ function useDeployments(): DeploymentsState {
 
       const updatedDeployments = deployments.filter((x) => isUpdated(x));
 
-      const activatableDeployments =
-        await fetchDeploymentModDefinitions(updatedDeployments);
-
-      if (activatableDeployments.length > 0) {
+      const [activatableDeployments] = await Promise.all([
+        fetchDeploymentModDefinitions(updatedDeployments),
         // `refreshRegistries` to ensure user has the latest brick definitions before deploying. `refreshRegistries`
         // uses memoizedUntilSettled to avoid excessive calls.
-        await refreshRegistries();
-      }
+        updatedDeployments.length > 0 ? refreshRegistries() : Promise.resolve(),
+      ]);
 
       // Log performance to determine if we're having issues with messenger/IDB performance
       const { permissions } = mergePermissionsStatuses(
