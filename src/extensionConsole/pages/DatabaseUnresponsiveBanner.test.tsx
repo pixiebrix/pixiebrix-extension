@@ -64,6 +64,7 @@ describe("BrowserBanner", () => {
       deferredPromise.resolve(0);
     });
 
+    // Removed after the promise resolves
     expect(
       screen.queryByText("trouble connecting", {
         exact: false,

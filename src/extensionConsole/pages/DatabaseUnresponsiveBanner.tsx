@@ -15,11 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import Banner from "@/components/banner/Banner";
 import useAsyncState from "@/hooks/useAsyncState";
 import { count as pingPackageDatabase } from "@/registry/packageRegistry";
 import useTimeoutState from "@/hooks/useTimeoutState";
+import reportEvent from "@/telemetry/reportEvent";
+import { Events } from "@/telemetry/events";
+import reportError from "@/telemetry/reportError";
+
+const errorBanner = (
+  <Banner variant="danger">
+    We&apos;re having trouble connecting your browser&apos;s local database,
+    please close and reopen your browser.{" "}
+    <a href="https://docs.pixiebrix.com/how-to/troubleshooting">Read More</a>
+  </Banner>
+);
 
 /**
  * Banner that displays when the local registry IDB database is unresponsive.
@@ -33,17 +44,16 @@ const DatabaseUnresponsiveBanner: React.VoidFunctionComponent<{
 
   const hasWaited = useTimeoutState(timeoutMillis);
 
-  if (state.isSuccess || !hasWaited) {
-    return null;
-  }
+  const showBanner = !state.isSuccess && hasWaited;
 
-  return (
-    <Banner variant="danger">
-      We&apos;re having trouble connecting your browser&apos;s local database,
-      please close and reopen your browser.{" "}
-      <a href="https://docs.pixiebrix.com/how-to/troubleshooting">Read More</a>
-    </Banner>
-  );
+  useEffect(() => {
+    if (showBanner) {
+      reportEvent(Events.IDB_UNRESPONSIVE_BANNER);
+      reportError(new Error("IDB unresponsive"));
+    }
+  }, [showBanner]);
+
+  return showBanner ? errorBanner : null;
 };
 
 export default DatabaseUnresponsiveBanner;
