@@ -382,6 +382,7 @@
     "./hooks/useAsyncState.ts",
     "./hooks/useAuthorizationGrantFlow.ts",
     "./hooks/useAutoFocusConfiguration.ts",
+    "./hooks/useBrowserIdentifier.ts",
     "./hooks/useContextInvalidated.ts",
     "./hooks/useDebouncedEffect.ts",
     "./hooks/useDeriveAsyncState.ts",
