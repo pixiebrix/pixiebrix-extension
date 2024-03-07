@@ -36,12 +36,3 @@ export function transformUserMilestoneResponse(
     metadata: response.metadata ?? {},
   };
 }
-
-export function transformUserMilestoneRequest(
-  milestone: UserMilestone,
-): RequiredMeMilestoneResponse {
-  return {
-    key: milestone.milestoneName,
-    metadata: milestone.metadata,
-  };
-}
