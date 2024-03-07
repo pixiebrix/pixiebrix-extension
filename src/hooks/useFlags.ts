@@ -36,7 +36,14 @@ type RestrictedFeature =
   | "service-url"
   | "page-editor";
 
-type Restrict = {
+export type Restrict = {
+  // XXX: Asynchronous state flags. Consider returning a standard AsyncState. Typically, AsyncState is used with
+  // serializable values, though, so there may be gotchas in some circumstances.
+  isLoading: boolean;
+  isFetching: boolean;
+  isError: boolean;
+  isSuccess: boolean;
+  // Methods
   permit: (area: RestrictedFeature) => boolean;
   restrict: (area: RestrictedFeature) => boolean;
   flagOn: (flag: string) => boolean;
@@ -49,7 +56,14 @@ type Restrict = {
  * For permit/restrict, features will be restricted in the fetching/loading state
  */
 function useFlags(): Restrict {
-  const { data: flags, refetch } = useGetFeatureFlagsQuery();
+  const {
+    data: flags,
+    isLoading,
+    isFetching,
+    isError,
+    isSuccess,
+    refetch,
+  } = useGetFeatureFlagsQuery();
 
   useEffect(() => {
     const listener = () => {
@@ -67,6 +81,10 @@ function useFlags(): Restrict {
     const flagSet = new Set(flags);
 
     return {
+      isLoading,
+      isFetching,
+      isSuccess,
+      isError,
       permit: (area: RestrictedFeature) =>
         !flagSet.has(`${RESTRICTED_PREFIX}-${area}`),
       restrict: (area: RestrictedFeature) =>
@@ -74,7 +92,7 @@ function useFlags(): Restrict {
       flagOn: (flag: string) => flagSet.has(flag),
       flagOff: (flag: string) => !flagSet.has(flag),
     };
-  }, [flags]);
+  }, [flags, isLoading, isFetching, isError, isSuccess]);
 }
 
 export default useFlags;
