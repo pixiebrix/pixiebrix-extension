@@ -468,8 +468,10 @@ export async function syncDeployments(): Promise<void> {
     return;
   }
 
-  const { data: meApiResponse, status: meResponseStatus } =
+  // In the case of errors, client.get() will throw here, so we don't need to explicitly check the status
+  const { data: meApiResponse } =
     await client.get<components["schemas"]["Me"]>("/api/me/");
+  const meData = transformMeResponse(meApiResponse);
 
   const { isSnoozed, isUpdateOverdue, updatePromptTimestamp } =
     selectUpdatePromptState(
@@ -481,7 +483,7 @@ export async function syncDeployments(): Promise<void> {
     );
 
   // Ensure the user's flags and telemetry information is up-to-date
-  void updateUserData(selectUserDataUpdate(transformMeResponse(meApiResponse)));
+  void updateUserData(selectUserDataUpdate(meData));
 
   const { data: deployments } = await client.post<Deployment[]>(
     "/api/deployments/",
@@ -508,7 +510,7 @@ export async function syncDeployments(): Promise<void> {
 
   if (
     isSnoozed &&
-    meApiResponse.enforce_update_millis &&
+    meData.enforceUpdateMillis &&
     updatePromptTimestamp == null &&
     (isUpdateAvailable() || updatedDeployments.length > 0)
   ) {
@@ -526,7 +528,7 @@ export async function syncDeployments(): Promise<void> {
     isUpdateAvailable() &&
     // `restricted-version` is an implicit flag from the MeSerializer
     (meApiResponse.flags.includes("restricted-version") ||
-      meApiResponse.enforce_update_millis)
+      meData.enforceUpdateMillis)
   ) {
     console.info("Extension update available from the web store");
     // Have the user update their browser extension. (Since the new version might impact the deployment activation)
@@ -565,7 +567,7 @@ export async function syncDeployments(): Promise<void> {
     // the next heartbeat/check.
     activatableDeployments:
       await fetchDeploymentModDefinitions(updatedDeployments),
-    profile,
+    meApiResponse,
   });
 }
 
@@ -577,10 +579,10 @@ export async function syncDeployments(): Promise<void> {
  */
 async function activateDeploymentsInBackground({
   activatableDeployments,
-  profile,
+  meApiResponse,
 }: {
   activatableDeployments: ActivatableDeployment[];
-  profile: Me;
+  meApiResponse: components["schemas"]["Me"];
 }): Promise<void> {
   // `clipboardWrite` is not strictly required to use the clipboard brick, so allow it to auto-install.
   // Behind a feature flag in case it causes problems for enterprise customers.

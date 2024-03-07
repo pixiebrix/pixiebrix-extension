@@ -58,8 +58,8 @@ import {
 import { activatableDeploymentFactory } from "@/testUtils/factories/deploymentFactories";
 import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories";
 import { type RegistryPackage } from "@/types/contract";
-import { resetFeatureFlags } from "@/__mocks__/@/auth/featureFlagStorage";
 import { resetMeApiMocks } from "@/testUtils/userMock";
+import { resetFeatureFlags } from "@/auth/featureFlagStorage";
 
 setContext("background");
 
