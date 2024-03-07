@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import {
   ensurePermissionsFromUserGesture,
   mergePermissionsStatuses,
@@ -25,23 +25,19 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
-import { getUUID } from "@/telemetry/telemetryHelpers";
 import { services } from "@/background/messenger/api";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { type Dispatch } from "@reduxjs/toolkit";
-import useFlags from "@/hooks/useFlags";
+import useFlags, { type Restrict } from "@/hooks/useFlags";
 import {
-  type InstalledDeployment,
   checkExtensionUpdateRequired,
+  type InstalledDeployment,
   makeUpdatedFilter,
   selectInstalledDeployments,
 } from "@/utils/deploymentUtils";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
-import useAsyncState from "@/hooks/useAsyncState";
-
 import { logPromiseDuration } from "@/utils/promiseUtils";
-
 import {
   getExtensionVersion,
   reloadIfNewVersionIsReady,
@@ -50,32 +46,13 @@ import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
 import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 import { useGetDeploymentsQuery } from "@/data/service/api";
 import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRawApiCalls";
-import { deserializeError } from "serialize-error";
 import { isEqual } from "lodash";
 import useMemoCompare from "@/hooks/useMemoCompare";
-
-function getError({
-  deploymentsError,
-  modDefinitionsError,
-  permissionsError,
-}: {
-  deploymentsError: unknown;
-  modDefinitionsError: unknown;
-  permissionsError: unknown;
-}) {
-  for (const error of [deploymentsError, modDefinitionsError]) {
-    if (error) {
-      if (deserializeError(error).name === "ExtensionNotLinkedError") {
-        // Deployments and mod definitions are refetched once the Extension is linked
-        return null;
-      }
-
-      return error;
-    }
-  }
-
-  return permissionsError;
-}
+import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
+import type { Deployment } from "@/types/contract";
+import useBrowserIdentifier from "@/hooks/useBrowserIdentifier";
+import type { ActivatableDeployment } from "@/types/deploymentTypes";
+import type { Permissions } from "webextension-polyfill";
 
 export type DeploymentsState = {
   /**
@@ -116,93 +93,79 @@ export type DeploymentsState = {
 
 function useDeployments(): DeploymentsState {
   const dispatch = useDispatch<Dispatch>();
+  const { data: browserIdentifier } = useBrowserIdentifier();
   const activeExtensions = useSelector(selectExtensions);
-  const { restrict } = useFlags();
+  const { state: flagsState } = useFlags();
   const activeDeployments = useMemoCompare<InstalledDeployment[]>(
     selectInstalledDeployments(activeExtensions),
     isEqual,
   );
 
-  const { data: uuid } = useAsyncState(async () => getUUID(), []);
-
-  const {
-    data: deployments,
-    isLoading: isLoadingDeployments,
-    error: deploymentsError,
-  } = useGetDeploymentsQuery(
+  const deploymentsState = useGetDeploymentsQuery(
     {
-      uid: uuid,
+      uid: browserIdentifier,
       version: getExtensionVersion(),
       active: activeDeployments,
     },
     {
-      skip: !uuid, // Avoid fetching deployments until we have a UUID
+      skip: !browserIdentifier, // Avoid fetching deployments until we have a UUID
       refetchOnMountOrArgChange: 60, // 1 minute
     },
   );
 
-  const updatedDeployments = useMemo(() => {
-    const isUpdated = makeUpdatedFilter(activeExtensions, {
-      restricted: restrict("uninstall"),
-    });
+  const deploymentUpdateState = useDeriveAsyncState(
+    deploymentsState,
+    flagsState,
+    async (deployments: Deployment[], { restrict }: Restrict) => {
+      const isUpdated = makeUpdatedFilter(activeExtensions, {
+        restricted: restrict("uninstall"),
+      });
 
-    return deployments?.filter((x) => isUpdated(x)) ?? null;
-  }, [activeExtensions, restrict, deployments]);
+      const updatedDeployments = deployments.filter((x) => isUpdated(x));
 
-  // TODO: Refactor this to use RTK query: https://github.com/pixiebrix/pixiebrix-extension/issues/7841
-  const {
-    data: activatableDeployments,
-    isLoading: isLoadingModDefinitions,
-    error: modDefinitionsError,
-  } = useAsyncState(async () => {
-    if (!updatedDeployments) {
-      return null;
-    }
+      const [activatableDeployments] = await Promise.all([
+        fetchDeploymentModDefinitions(updatedDeployments),
+        // `refreshRegistries` to ensure user has the latest brick definitions before deploying. `refreshRegistries`
+        // uses memoizedUntilSettled to avoid excessive calls.
+        updatedDeployments.length > 0 ? refreshRegistries() : Promise.resolve(),
+      ]);
 
-    return fetchDeploymentModDefinitions(updatedDeployments);
-  }, [updatedDeployments]);
-
-  const extensionUpdateRequired = useMemo(() => {
-    if (!activatableDeployments) {
-      return false;
-    }
-
-    return checkExtensionUpdateRequired(activatableDeployments);
-  }, [activatableDeployments]);
-
-  const {
-    data: permissions,
-    isLoading: isLoadingPermissions,
-    error: permissionsError,
-  } = useAsyncState(async () => {
-    if (!activatableDeployments) {
-      return null;
-    }
-
-    // `refreshRegistries` to ensure user has the latest brick definitions. `refreshRegistries` uses
-    // memoizedUntilSettled to avoid excessive calls.
-    await refreshRegistries();
-
-    // Log performance to determine if we're having issues with messenger/IDB performance
-    const { permissions } = mergePermissionsStatuses(
-      await logPromiseDuration(
-        "useDeployments:checkDeploymentPermissions",
-        Promise.all(
-          activatableDeployments.map(async (activatableDeployment) =>
-            checkDeploymentPermissions({
-              activatableDeployment,
-              locate: services.locateAllForId,
-              // In the UI context, always prompt the user to accept permissions to ensure they get the full
-              // functionality of the mod
-              optionalPermissions: [],
-            }),
+      // Log performance to determine if we're having issues with messenger/IDB performance
+      const { permissions } = mergePermissionsStatuses(
+        await logPromiseDuration(
+          "useDeployments:checkDeploymentPermissions",
+          Promise.all(
+            activatableDeployments.map(async (activatableDeployment) =>
+              checkDeploymentPermissions({
+                activatableDeployment,
+                locate: services.locateAllForId,
+                // In the UI context, always prompt the user to accept permissions to ensure they get the full
+                // functionality of the mod
+                optionalPermissions: [],
+              }),
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    return permissions;
-  }, [activeExtensions, activatableDeployments]);
+      return {
+        activatableDeployments,
+        extensionUpdateRequired: checkExtensionUpdateRequired(
+          activatableDeployments,
+        ),
+        permissions,
+      };
+    },
+  );
+
+  // Fallback values for loading/error states
+  const { activatableDeployments, extensionUpdateRequired, permissions } =
+    deploymentUpdateState.data ?? {
+      // `useAutoDeploy` expects `null` to represent deployment loading state. It tries to activate once available
+      activatableDeployments: null as ActivatableDeployment[] | null,
+      extensionUpdateRequired: false as boolean,
+      permissions: [] as Permissions.Permissions,
+    };
 
   const { isAutoDeploying } = useAutoDeploy({
     activatableDeployments,
@@ -220,7 +183,14 @@ function useDeployments(): DeploymentsState {
     dispatch(settingsSlice.actions.resetUpdatePromptTimestamp());
 
     if (activatableDeployments == null) {
-      notify.error("Activatable deployments have not been fetched");
+      notify.error("Deployments have not been fetched");
+      return;
+    }
+
+    if (activatableDeployments.length === 0) {
+      // In practice, this code path should never get hit because the button to update deployments should be hidden
+      // if there are no deployments to activate.
+      notify.info("No deployments to activate");
       return;
     }
 
@@ -260,7 +230,7 @@ function useDeployments(): DeploymentsState {
     } catch (error) {
       notify.error({ message: "Error updating team deployments", error });
     }
-  }, [activatableDeployments, permissions, dispatch, activeExtensions]);
+  }, [dispatch, activatableDeployments, permissions, activeExtensions]);
 
   const updateExtension = useCallback(async () => {
     await reloadIfNewVersionIsReady();
@@ -270,17 +240,13 @@ function useDeployments(): DeploymentsState {
   }, []);
 
   return {
-    hasUpdate: updatedDeployments?.length > 0,
+    hasUpdate: activatableDeployments?.length > 0,
     update: handleUpdateFromUserGesture,
     updateExtension,
     extensionUpdateRequired,
-    isLoading:
-      isLoadingDeployments || isLoadingModDefinitions || isLoadingPermissions,
-    error: getError({
-      deploymentsError,
-      modDefinitionsError,
-      permissionsError,
-    }),
+    // XXX: should `isLoading` if isAutoDeploying is true?
+    isLoading: deploymentUpdateState.isLoading,
+    error: deploymentUpdateState.error,
     isAutoDeploying,
   };
 }

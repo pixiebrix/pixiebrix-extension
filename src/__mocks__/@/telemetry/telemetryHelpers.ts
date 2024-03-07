@@ -16,5 +16,9 @@
  */
 
 import { uuidv4 } from "@/types/helpers";
+import { UUID } from "@/types/stringTypes";
+import { StorageItem } from "webext-storage";
 
 export const getUUID = jest.fn().mockResolvedValue(uuidv4());
+
+export const uuidStorage = new StorageItem<UUID>("USER_UUID");
