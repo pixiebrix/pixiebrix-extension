@@ -54,7 +54,7 @@ import ReduxPersistenceContext, {
 } from "@/store/ReduxPersistenceContext";
 import IDBErrorDisplay from "@/extensionConsole/components/IDBErrorDisplay";
 import { DeploymentsProvider } from "@/extensionConsole/pages/deployments/DeploymentsContext";
-import DatabaseUnresponsiveBanner from "@/extensionConsole/pages/DatabaseUnresponsiveBanner";
+import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
 
 // Register the built-in bricks
 registerEditors();
