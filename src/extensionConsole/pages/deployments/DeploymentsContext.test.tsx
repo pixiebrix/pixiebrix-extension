@@ -36,7 +36,7 @@ import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
 
 const axiosMock = new MockAdapter(axios);
-axiosMock.onGet("/api/me/").reply(200, []);
+axiosMock.onGet("/api/me/").reply(200, { flags: [] });
 
 const getLinkedApiClientMock = jest.mocked(getLinkedApiClient);
 
