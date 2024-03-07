@@ -22,15 +22,6 @@ import { CancelError } from "@/errors/businessErrors";
 import { type FormPanelEntry } from "@/types/sidebarTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
-import { uuidv4 } from "@/types/helpers";
-
-const FORM_CONTROLLER_ADDED_SYMBOL = Symbol.for("form-controller-added");
-
-declare global {
-  interface Window {
-    [FORM_CONTROLLER_ADDED_SYMBOL]?: UUID;
-  }
-}
 
 export type RegisteredForm = {
   /**
@@ -42,54 +33,16 @@ export type RegisteredForm = {
   blueprintId: Nullishable<RegistryId>;
 };
 
-class RegisteredForms {
-  private readonly forms: Map<UUID, RegisteredForm> = new Map<
-    UUID,
-    RegisteredForm
-  >();
-  private readonly nonce = uuidv4();
-
-  constructor() {
-    if (window[FORM_CONTROLLER_ADDED_SYMBOL]) {
-      console.warn(
-        `focusController(${this.nonce}): ${window[FORM_CONTROLLER_ADDED_SYMBOL]} already added to window`,
-      );
-    } else {
-      window[FORM_CONTROLLER_ADDED_SYMBOL] = this.nonce;
-    }
-  }
-
-  getNonce(): UUID {
-    return this.nonce;
-  }
-
-  getForms(): Map<UUID, RegisteredForm> {
-    return this.forms;
-  }
-
-  get(nonce: UUID): RegisteredForm | undefined {
-    return this.forms.get(nonce);
-  }
-
-  set(nonce: UUID, form: RegisteredForm): void {
-    this.forms.set(nonce, form);
-  }
-
-  delete(nonce: UUID): void {
-    this.forms.delete(nonce);
-  }
-}
-
 /**
  * Mapping from form nonce to form definition.
  */
-const registeredForms = new RegisteredForms();
+const forms = new Map<UUID, RegisteredForm>();
 
 /**
  * Returns form panel entries corresponding forms registered for the sidebar.
  */
 export function getFormPanelSidebarEntries(): FormPanelEntry[] {
-  return [...registeredForms.getForms().entries()]
+  return [...forms.entries()]
     .filter(([, form]) => form.definition.location === "sidebar")
     .map(([nonce, form]) => ({
       type: "form",
@@ -120,19 +73,14 @@ export async function registerForm({
 }): Promise<unknown> {
   const registration = pDefer();
 
-  console.log(
-    "*** registerForm",
-    "registeredForms.nonce:",
-    registeredForms.getNonce(),
-  );
-  console.log("*** registerForm", "form nonce:", nonce);
+  console.log("*** registerForm");
 
-  if (registeredForms.getForms().has(nonce)) {
+  if (forms.has(nonce)) {
     // This should never happen, but if it does, it's a bug.
     throw new Error(`Form with nonce already exists: ${nonce}`);
   }
 
-  const preexistingForms = [...registeredForms.getForms().entries()].filter(
+  const preexistingForms = [...forms.entries()].filter(
     ([_, registeredForm]) => registeredForm.extensionId === extensionId,
   );
 
@@ -141,7 +89,7 @@ export async function registerForm({
     await cancelForm(...preexistingForms.map(([nonce]) => nonce));
   }
 
-  registeredForms.set(nonce, {
+  forms.set(nonce, {
     extensionId,
     definition,
     registration,
@@ -155,13 +103,13 @@ export async function registerForm({
  * Helper method to unregister the deferred promise for the form.
  */
 function unregisterForm(formNonce: UUID): void {
-  registeredForms.delete(formNonce);
+  forms.delete(formNonce);
 }
 
 export async function getFormDefinition(
   formNonce: UUID,
 ): Promise<FormDefinition> {
-  const form = registeredForms.get(formNonce);
+  const form = forms.get(formNonce);
   if (!form) {
     throw new Error(`Form not registered: ${formNonce}`);
   }
@@ -173,7 +121,7 @@ export async function resolveForm(
   formNonce: UUID,
   values: unknown,
 ): Promise<void> {
-  const form = registeredForms.get(formNonce);
+  const form = forms.get(formNonce);
   if (!form) {
     throw new Error(`Form not registered: ${formNonce}`);
   }
@@ -187,16 +135,8 @@ export async function resolveForm(
  * @param formNonces the form nonces
  */
 export async function cancelForm(...formNonces: UUID[]): Promise<void> {
-  console.log("*** forms to cancel:", formNonces);
   for (const formNonce of formNonces) {
-    console.log("*** cancelForm:", formNonce);
-    const form = registeredForms.get(formNonce);
-
-    if (!form) {
-      console.warn(`*** Form not registered: ${formNonce}`);
-      continue;
-    }
-
+    const form = forms.get(formNonce);
     form?.registration.reject(new CancelError("User cancelled the action"));
     unregisterForm(formNonce);
   }
@@ -207,5 +147,5 @@ export async function cancelForm(...formNonces: UUID[]): Promise<void> {
  * @constructor
  */
 export async function TEST_cancelAll(): Promise<void> {
-  await cancelForm(...registeredForms.getForms().keys());
+  await cancelForm(...forms.keys());
 }

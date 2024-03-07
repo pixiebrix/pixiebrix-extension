@@ -51,10 +51,10 @@ function useAutoInsert(type: StarterBrickType): void {
 
       // Don't auto-run tours on selection in Page Editor
       if (config.elementType !== "tour") {
+        console.log("*** in useAutoInsert");
         updateDynamicElement(
           allFramesInInspectedTab,
           config.asDynamicElement(formState),
-          "useAutoInsert",
         );
       }
 

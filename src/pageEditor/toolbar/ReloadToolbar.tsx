@@ -28,7 +28,6 @@ import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import useKeyboardShortcut from "@/hooks/useKeyboardShortcut";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
-import { uuidv4 } from "@/types/helpers";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
@@ -98,11 +97,8 @@ const ReloadToolbar: React.FunctionComponent<{
 
   const run = useCallback(async () => {
     const { asDynamicElement: factory } = ADAPTERS.get(element.type);
-    updateDynamicElement(
-      allFramesInInspectedTab,
-      factory(element),
-      `ReloadToolbar ${uuidv4()}`,
-    );
+    console.log("*** in ReloadToolbar");
+    updateDynamicElement(allFramesInInspectedTab, factory(element));
   }, [element]);
 
   const manualRun = async () => {

@@ -69,10 +69,10 @@ function useAddElement(): AddElement {
 
         const initialState = config.fromNativeElement(url, metadata, element);
 
+        console.log("*** in useAddElement");
         updateDynamicElement(
           allFramesInInspectedTab,
           config.asDynamicElement(initialState),
-          "useAddElement",
         );
 
         dispatch(actions.addElement(initialState as ModComponentFormState));

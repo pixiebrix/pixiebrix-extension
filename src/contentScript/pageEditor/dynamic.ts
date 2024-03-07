@@ -96,13 +96,11 @@ export async function runExtensionPointReader(
   return reader.read(root ?? document);
 }
 
-export async function updateDynamicElement(
-  { extensionPointConfig, extension: extensionConfig }: DynamicDefinition,
-  runReason: string,
-): Promise<void> {
+export async function updateDynamicElement({
+  extensionPointConfig,
+  extension: extensionConfig,
+}: DynamicDefinition): Promise<void> {
   expectContext("contentScript");
-
-  console.log("*** updateDynamicElement runReason:", runReason);
 
   // HACK: adjust behavior when using the Page Editor
   if (extensionPointConfig.definition.type === "trigger") {
