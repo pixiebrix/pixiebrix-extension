@@ -32,10 +32,12 @@ function subscribe(callback: () => void) {
 
 /**
  * Watch the unique client identifier for this browser profile.
+ *
+ * In practice, the identifier UUID should never change during a session.
+ *
  * @see getUUID
  */
 function useBrowserIdentifier(): AsyncState<UUID> {
-  // In practice, the UUID should never change during a session, but use standard useAsyncExternalStore anyway
   return useAsyncExternalStore(subscribe, getUUID);
 }
 
