@@ -97,6 +97,10 @@ const ReloadToolbar: React.FunctionComponent<{
 
   const run = useCallback(async () => {
     const { asDynamicElement: factory } = ADAPTERS.get(element.type);
+    // TODO: Fix issues with the messenger api's message forwarding behavior to enable usage of
+    //  allFramesInInspected tab instead of inspectedTab
+    //  see https://github.com/pixiebrix/pixiebrix-extension/issues/6648 and
+    //  https://github.com/pixiebrix/pixiebrix-extension/pull/7785
     updateDynamicElement(inspectedTab, factory(element));
   }, [element]);
 
