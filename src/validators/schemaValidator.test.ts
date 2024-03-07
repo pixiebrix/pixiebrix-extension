@@ -21,6 +21,11 @@ import {
 } from "@/validators/schemaValidator";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import serviceText from "@contrib/raw/hunter.txt";
+import jqueryReaderDefinition from "@contrib/readers/apartments-reader.yaml";
+import emptyJQueryReaderDefinition from "@contrib/readers/empty-jquery-reader.yaml";
+import emberJsReaderDefinition from "@contrib/readers/linkedin-organization-reader.yaml";
+import windowReader from "@contrib/readers/trello-card-reader.yaml";
+import reactReader from "@contrib/readers/redfin-reader.yaml";
 import { type Schema } from "@/types/schemaTypes";
 import { uuidv4 } from "@/types/helpers";
 import { timestampFactory } from "@/testUtils/factories/stringFactories";
@@ -30,6 +35,18 @@ describe("validateKind", () => {
   test("can validate integration definition", async () => {
     const json = loadBrickYaml(serviceText) as UnknownObject;
     const result = validatePackageDefinition("service", json);
+    expect(result.errors).toHaveLength(0);
+    expect(result.valid).toBe(true);
+  });
+
+  test.each([
+    jqueryReaderDefinition,
+    emptyJQueryReaderDefinition,
+    emberJsReaderDefinition,
+    reactReader,
+    windowReader,
+  ])("can validate reader definition: %#", (config) => {
+    const result = validatePackageDefinition("reader", config);
     expect(result.errors).toHaveLength(0);
     expect(result.valid).toBe(true);
   });
