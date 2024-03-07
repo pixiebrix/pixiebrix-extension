@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,13 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios from "axios";
-// Re-export utility methods directly, skip automatic __mocks__ resolution #6799
-export { absoluteApiUrl } from "../../../../data/service/apiClient";
+import { type UUID } from "@/types/stringTypes";
+import { validateUUID } from "@/types/helpers";
+import { type RequiredControlRoomResponse } from "@/data/service/responseTypeHelpers";
 
-// A mock of @/data/service/apiClient that doesn't use the local browser state. For use with msw in Storybook.
-// See .storybook/preview.js for more information
+export type ControlRoom = {
+  readonly controlRoomId: UUID;
+  controlRoomUrl: URL;
+};
 
-export const getLinkedApiClient = jest.fn(async () => axios);
-export const getApiClient = jest.fn(async () => axios);
-export const maybeGetLinkedApiClient = jest.fn(async () => axios);
+export function transformControlRoomResponse(
+  response: RequiredControlRoomResponse,
+): ControlRoom {
+  return {
+    controlRoomId: validateUUID(response.id),
+    controlRoomUrl: new URL(response.url),
+  };
+}

@@ -21,13 +21,13 @@ import { addListener as addAuthStorageListener } from "@/auth/authStorage";
 import { CachedFunction } from "webext-storage-cache";
 import { expectContext } from "@/utils/expectContext";
 import { fetchFeatureFlagsInBackground } from "@/background/messenger/strict/api";
+import { oncePerSession } from "@/mv3/SessionStorage";
 
-export async function fetchFeatureFlags(): Promise<readonly string[]> {
+export async function fetchFeatureFlags(): Promise<string[]> {
   expectContext("background");
   const client = await getApiClient();
   const { data } = await client.get<components["schemas"]["Me"]>("/api/me/");
-
-  return data.flags ?? [];
+  return [...(data?.flags ?? [])];
 }
 
 const featureFlags = new CachedFunction("getFeatureFlags", {
@@ -56,3 +56,5 @@ export async function flagOn(flag: string): Promise<boolean> {
 addAuthStorageListener(async () => {
   await resetFeatureFlags();
 });
+
+oncePerSession("resetFeatureFlags", import.meta.url, resetFeatureFlags);

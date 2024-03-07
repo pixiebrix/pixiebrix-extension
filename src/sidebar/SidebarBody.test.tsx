@@ -22,7 +22,10 @@ import useConnectedTargetUrl from "@/sidebar/hooks/useConnectedTargetUrl";
 import useTheme from "@/hooks/useTheme";
 import { initialTheme } from "@/themes/themeStore";
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { mockAnonymousUser, mockAuthenticatedUser } from "@/testUtils/userMock";
+import {
+  mockAnonymousMeApiResponse,
+  mockAuthenticatedMeApiResponse,
+} from "@/testUtils/userMock";
 
 jest.mock("@/sidebar/hooks/useConnectedTargetUrl");
 jest.mock("@/hooks/useTheme");
@@ -46,7 +49,7 @@ describe("SidebarBody", () => {
     jest
       .mocked(useConnectedTargetUrl)
       .mockReturnValueOnce("https://www.example.com");
-    mockAnonymousUser();
+    mockAnonymousMeApiResponse();
     const { asFragment } = render(<SidebarBody />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
@@ -56,7 +59,7 @@ describe("SidebarBody", () => {
     jest
       .mocked(useConnectedTargetUrl)
       .mockReturnValueOnce("https://www.example.com");
-    await mockAuthenticatedUser();
+    await mockAuthenticatedMeApiResponse();
     const { asFragment } = render(<SidebarBody />);
     await waitForEffect();
     expect(asFragment()).toMatchSnapshot();
