@@ -54,6 +54,7 @@ import ReduxPersistenceContext, {
 } from "@/store/ReduxPersistenceContext";
 import IDBErrorDisplay from "@/extensionConsole/components/IDBErrorDisplay";
 import { DeploymentsProvider } from "@/extensionConsole/pages/deployments/DeploymentsContext";
+import DatabaseUnresponsiveBanner from "@/extensionConsole/pages/DatabaseUnresponsiveBanner";
 
 // Register the built-in bricks
 registerEditors();
@@ -76,6 +77,7 @@ const AuthenticatedContent: React.VFC = () => {
     <DeploymentsProvider>
       <Sidebar />
       <div className="main-panel">
+        <DatabaseUnresponsiveBanner />
         <BrowserBanner />
         <EnvironmentBanner />
         <UpdateBanner />
