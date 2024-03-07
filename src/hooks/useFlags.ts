@@ -46,8 +46,9 @@ export type Restrict = {
 };
 
 type HookResult = Restrict & {
-  // The async state for use in deriving values that require valid flags. Not that the data is not serializable,
-  // so might not work with all async state utilities.
+  // The async state for use in deriving values that require valid flags. NOTE: the data is not serializable,
+  // so the state might not work with any state helpers that require serializable data (e.g., due to cloning, Immer,
+  // or Redux).
   state: AsyncState<Restrict>;
 };
 
