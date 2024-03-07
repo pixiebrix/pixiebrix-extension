@@ -129,7 +129,6 @@ export async function updateDynamicElement({
   const resolved = await resolveExtensionInnerDefinitions(extensionConfig);
 
   starterBrick.registerModComponent(resolved);
-  console.log("*** runningEditorExtension");
   await runEditorExtension(extensionConfig.id, starterBrick);
 
   if (starterBrick.kind === "actionPanel") {

@@ -97,7 +97,6 @@ const ReloadToolbar: React.FunctionComponent<{
 
   const run = useCallback(async () => {
     const { asDynamicElement: factory } = ADAPTERS.get(element.type);
-    console.log("*** in ReloadToolbar");
     updateDynamicElement(allFramesInInspectedTab, factory(element));
   }, [element]);
 

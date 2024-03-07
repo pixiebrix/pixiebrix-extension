@@ -73,8 +73,6 @@ export async function registerForm({
 }): Promise<unknown> {
   const registration = pDefer();
 
-  console.log("*** registerForm");
-
   if (forms.has(nonce)) {
     // This should never happen, but if it does, it's a bug.
     throw new Error(`Form with nonce already exists: ${nonce}`);
