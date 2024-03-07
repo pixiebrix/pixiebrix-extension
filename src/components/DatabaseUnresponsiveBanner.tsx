@@ -26,8 +26,11 @@ import reportError from "@/telemetry/reportError";
 
 const errorBanner = (
   <Banner variant="warning">
-    We&apos;re having trouble connecting to your browser&apos;s local database,
-    please close and reopen your browser.{" "}
+    <span>
+      {
+        "We're having trouble connecting to your browser's local database, please restart your browser."
+      }
+    </span>{" "}
     <a href="https://docs.pixiebrix.com/how-to/troubleshooting">Read More</a>
   </Banner>
 );
