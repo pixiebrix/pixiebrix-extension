@@ -555,7 +555,7 @@ export function initSidebarFocusEvents(): void {
       }
 
       // Save focus on initial load, because the user may have `mouseenter`ed the sidebar before the React App
-      // fired the sidebarShowEvent event./For example, if they user clicked the browserAction toolbar button and
+      // fired the sidebarShowEvent event. For example, if the user clicked the browserAction toolbar button and
       // immediately `mouseenter`ed the sidebar (because the top of the sidebar is very close to the top browserAction)
       if (document.activeElement !== sidebar) {
         focusController.save();
