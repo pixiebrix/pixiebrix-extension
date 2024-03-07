@@ -554,6 +554,13 @@ export function initSidebarFocusEvents(): void {
         return;
       }
 
+      // Save focus on initial load, because the user may have `mouseenter`ed the sidebar before the React App
+      // fired the sidebarShowEvent event./For example, if they user clicked the browserAction toolbar button and
+      // immediately `mouseenter`ed the sidebar (because the top of the sidebar is very close to the top browserAction)
+      if (document.activeElement !== sidebar) {
+        focusController.save();
+      }
+
       const closeSignal = sidePanelOnCloseSignal();
 
       // Can't detect clicks in the sidebar itself. So need to just watch for enter/leave the sidebar element
