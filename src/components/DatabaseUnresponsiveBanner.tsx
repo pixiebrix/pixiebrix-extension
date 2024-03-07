@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React, { useRef } from "react";
 import Banner from "@/components/banner/Banner";
 import useAsyncState from "@/hooks/useAsyncState";
 import { count as pingPackageDatabase } from "@/registry/packageRegistry";
@@ -43,18 +43,18 @@ const errorBanner = (
 const DatabaseUnresponsiveBanner: React.VoidFunctionComponent<{
   timeoutMillis?: number;
 }> = ({ timeoutMillis = 3500 }) => {
+  const reportedRef = useRef<boolean>(false);
   const state = useAsyncState(async () => pingPackageDatabase(), []);
 
   const hasWaited = useTimeoutState(timeoutMillis);
 
   const showBanner = !state.isSuccess && hasWaited;
 
-  useEffect(() => {
-    if (showBanner) {
-      reportEvent(Events.IDB_UNRESPONSIVE_BANNER);
-      reportError(new Error("IDB unresponsive"));
-    }
-  }, [showBanner]);
+  if (showBanner && !reportedRef.current) {
+    reportEvent(Events.IDB_UNRESPONSIVE_BANNER);
+    reportError(new Error("IDB unresponsive"));
+    reportedRef.current = true;
+  }
 
   return showBanner ? errorBanner : null;
 };
