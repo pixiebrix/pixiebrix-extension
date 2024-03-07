@@ -23,9 +23,10 @@ export function isMac(): boolean {
 // https://github.com/google/closure-library/blob/master/closure/goog/labs/useragent/browser.js#L87
 // https://learn.microsoft.com/en-us/microsoft-edge/web-platform/user-agent-guidance
 // https://caniuse.com/mdn-api_navigator_useragentdata -- not defined for Firefox/Safari
-// @ts-expect-error -- userAgentData is defined in Chrome browser
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, local-rules/persistBackgroundData, @typescript-eslint/no-unsafe-member-access -- userAgentData is defined in Chrome
+// eslint-disable-next-line local-rules/persistBackgroundData, @typescript-eslint/no-unsafe-assignment -- userAgentData is defined in Chrome
 const brands: Array<{ brand: string }> =
+  // @ts-expect-error -- userAgentData is defined in Chrome browser
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- userAgentData is defined in Chrome
   globalThis.navigator?.userAgentData?.brands ?? [];
 
 /**
