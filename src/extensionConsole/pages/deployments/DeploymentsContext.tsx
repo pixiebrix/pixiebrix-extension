@@ -189,7 +189,7 @@ function useDeployments(): DeploymentsState {
 
     if (activatableDeployments.length === 0) {
       // In practice, this code path should never get hit because the button to update deployments should be hidden
-      // if there are not deployments to activate.
+      // if there are no deployments to activate.
       notify.info("No deployments to activate");
       return;
     }

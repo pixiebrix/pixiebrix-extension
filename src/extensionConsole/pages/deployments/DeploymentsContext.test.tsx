@@ -46,6 +46,7 @@ const Component: React.FC = () => {
   const deployments = useContext(DeploymentsContext);
   return (
     <div data-testid="Component">
+      {deployments.hasUpdate && <span>Has Update</span>}
       <AsyncButton onClick={async () => deployments.update()}>
         Update
       </AsyncButton>
@@ -90,8 +91,8 @@ describe("DeploymentsContext", () => {
       expect(axiosMock.history.post).toHaveLength(1);
     });
 
-    // Permissions only requested once because user clicked update once
-    expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
+    // Permissions not requested because there's no deployments to activate
+    expect(requestPermissionsMock).not.toHaveBeenCalled();
   });
 
   it("activate single deployment from empty state", async () => {
@@ -165,6 +166,7 @@ describe("DeploymentsContext", () => {
       expect(axiosMock.history.post).toHaveLength(1);
     });
 
+    expect(screen.getByText("Has Update")).toBeInTheDocument();
     await userEvent.click(screen.getByText("Update"));
 
     await waitFor(() => {
@@ -187,8 +189,9 @@ describe("DeploymentsContext", () => {
 
     await userEvent.click(screen.getByText("Update"));
 
-    // Permissions requested twice because user has clicked update twice
-    expect(requestPermissionsMock).toHaveBeenCalledTimes(2);
+    // The user already has all deployments installed, so no new fetch
+    expect(screen.queryByText("Has Update")).not.toBeInTheDocument();
+    expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
 
     // Still no changes in deployments, so no new fetch even after remount
     await waitForEffect();
@@ -225,6 +228,7 @@ describe("DeploymentsContext", () => {
       expect(axiosMock.history.post).toHaveLength(1);
     });
 
+    expect(screen.getByText("Has Update")).toBeInTheDocument();
     await user.click(screen.getByText("Update"));
 
     await waitFor(() => {
@@ -254,8 +258,9 @@ describe("DeploymentsContext", () => {
 
     expect(axiosMock.history.post).toHaveLength(3);
 
-    // Permissions requested twice because user has clicked update twice
-    expect(requestPermissionsMock).toHaveBeenCalledTimes(2);
+    expect(screen.queryByText("Has Update")).not.toBeInTheDocument();
+    // Not called because there are no new deployments
+    expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
 
     jest.useRealTimers();
   });
