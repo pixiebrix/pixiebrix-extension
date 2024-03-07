@@ -93,6 +93,7 @@ export type DeploymentsState = {
 
 function useDeployments(): DeploymentsState {
   const dispatch = useDispatch<Dispatch>();
+  const { data: browserIdentifier } = useBrowserIdentifier();
   const activeExtensions = useSelector(selectExtensions);
   const { state: flagsState } = useFlags();
   const activeDeployments = useMemoCompare<InstalledDeployment[]>(
@@ -100,16 +101,14 @@ function useDeployments(): DeploymentsState {
     isEqual,
   );
 
-  const { data: uuid } = useBrowserIdentifier();
-
   const deploymentsState = useGetDeploymentsQuery(
     {
-      uid: uuid,
+      uid: browserIdentifier,
       version: getExtensionVersion(),
       active: activeDeployments,
     },
     {
-      skip: !uuid, // Avoid fetching deployments until we have a UUID
+      skip: !browserIdentifier, // Avoid fetching deployments until we have a UUID
       refetchOnMountOrArgChange: 60, // 1 minute
     },
   );
