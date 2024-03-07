@@ -4,7 +4,7 @@ metadata:
   id: test/empty-jquery-reader
   version: 0.0.1
   name: Empty JQuery Reader
-  description: "Empty JQuery reader for testing purposes; Page Editor used to product reader definition"
+  description: "Empty JQuery reader for testing purposes; Page Editor used to produce reader definitions"
 definition:
   reader:
     type: jquery
