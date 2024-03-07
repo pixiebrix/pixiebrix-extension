@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 import { E2E_TEST_USER_EMAIL_UNAFFILIATED, SERVICE_URL } from "./env";
 
 test.describe("create-react-app", () => {

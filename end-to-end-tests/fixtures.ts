@@ -23,8 +23,10 @@ export const test = base.extend<{
   context: BrowserContext;
   extensionId: string;
 }>({
-  async context(_, use) {
-    const pathToExtension = path.join(import.meta.dirname, "../dist");
+  // eslint-disable-next-line no-empty-pattern -- todo: why is this necessary?
+  async context({}, use) {
+    // eslint-disable-next-line unicorn/prefer-module -- todo: why isn't import.meta not working?
+    const pathToExtension = path.join(__dirname, "../dist");
     const context = await chromium.launchPersistentContext("", {
       headless: false,
       args: [

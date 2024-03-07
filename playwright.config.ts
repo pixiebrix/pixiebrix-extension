@@ -24,6 +24,8 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test in CI, and always on failure when running locally. See https://playwright.dev/docs/trace-viewer */
     trace: CI ? "on-first-retry" : "retain-on-failure",
+    // Use auth state prepared by auth.setup.ts
+    storageState: "end-to-end-tests/.auth/user.json",
   },
   /* Configure projects for major browsers */
   projects: [
