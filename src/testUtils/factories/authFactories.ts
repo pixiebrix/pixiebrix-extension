@@ -33,7 +33,7 @@ import {
   type RequiredMeOrganizationResponse,
   type RequiredMePartnerResponse,
 } from "@/data/service/responseTypeHelpers";
-import { SetRequired } from "type-fest";
+import { type SetRequired } from "type-fest";
 
 function emailFactory(n: number): string {
   return `user${n}@test.com`;
