@@ -29,13 +29,13 @@ function canInferType(
  * Returns the type of the brick, or `null` if the type cannot be determined.
  */
 export default async function getType(
-  block: Metadata,
+  brick: Metadata,
 ): Promise<BrickType | null> {
-  if (canInferType(block)) {
+  if (canInferType(brick)) {
     // HACK: including Integration and StarterBrick here is a hack to fix some call-sites. This method can only return
-    // block types.
-    // For YAML-based blocks, can't use the method to determine the type because only the "run" method is available.
-    // The inferType method is provided UserDefinedBrick, which is the class used for YAML-based blocks (which have
+    // brick types.
+    // For YAML-based bricks, can't use the method to determine the type because only the "run" method is available.
+    // The inferType method is provided UserDefinedBrick, which is the class used for YAML-based bricks (which have
     // kind: component) in their YAML
     return brick.inferType();
   }
