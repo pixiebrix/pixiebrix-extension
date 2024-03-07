@@ -118,6 +118,10 @@ function useDeployments(): DeploymentsState {
     deploymentsState,
     async (deployments: Deployment[]) => {
       const isUpdated = makeUpdatedFilter(activeExtensions, {
+        // FIXME: the restrict reference changes when the available flags change. Currently useFlags makes an
+        //   HTTP request vs. using the app cache. So there there will be a race on whether the flags are ready for
+        //   checking. A potential solution is to ensure the App is gated until the flags are ready, e.g., via
+        //   the RequireAuth component or similar. In that case, useFlags should use a React Context vs. RTK Query.
         restricted: restrict("uninstall"),
       });
 
