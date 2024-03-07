@@ -75,7 +75,16 @@ export async function registerForm({
 
   if (forms.has(nonce)) {
     // This should never happen, but if it does, it's a bug.
-    console.warn("A form was already registered with nonce %s", nonce);
+    throw new Error(`Form with nonce already exists: ${nonce}`);
+  }
+
+  const preexistingForms = [...forms.entries()].filter(
+    ([_, registeredForm]) => registeredForm.extensionId === extensionId,
+  );
+
+  if (preexistingForms.length > 0) {
+    // Cancel any preexisting forms from the same mod definition to prevent duplicates
+    await cancelForm(...preexistingForms.map(([nonce]) => nonce));
   }
 
   forms.set(nonce, {
