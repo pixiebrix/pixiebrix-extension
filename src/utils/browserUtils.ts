@@ -25,7 +25,7 @@ export function isMac(): boolean {
 // https://caniuse.com/mdn-api_navigator_useragentdata -- not defined for Firefox/Safari
 // @ts-expect-error -- userAgentData is defined in Chrome browser
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, local-rules/persistBackgroundData, @typescript-eslint/no-unsafe-member-access -- userAgentData is defined in Chrome
-const brands: Array<{ brand: string }> = navigator.userAgentData?.brands ?? [];
+const brands: Array<{ brand: string }> = globalThis.navigator?.userAgentData?.brands ?? [];
 
 /**
  * Return true if the browser is Google Chrome.
