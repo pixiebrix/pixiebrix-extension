@@ -29,11 +29,9 @@ https://github.com/typescript-eslint/typescript-eslint/issues/3295#issuecomment-
 
 declare const browser: import("webextension-polyfill").Browser;
 
-/**
+/* eslint-disable-next-line no-restricted-syntax --
  * Type to be preferred over a plain `object`
- * https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/ban-types.md
- */
-// eslint-disable-next-line no-restricted-syntax
+ * https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/ban-types.md */
 type UnknownObject = Record<string, unknown>;
 
 // https://stackoverflow.com/questions/43638454/webpack-typescript-image-import

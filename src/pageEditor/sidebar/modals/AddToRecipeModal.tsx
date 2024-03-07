@@ -109,6 +109,10 @@ const AddToRecipeModal: React.FC = () => {
         });
       }
 
+      // Need to setSubmitting to false before hiding the modal,
+      // otherwise the form will be unmounted before the state update
+      helpers.setSubmitting(false);
+
       hideModal();
     } catch (error: unknown) {
       if (isSingleObjectBadRequestError(error) && error.response.data.config) {
@@ -120,67 +124,75 @@ const AddToRecipeModal: React.FC = () => {
         message: "Problem adding to mod",
         error,
       });
-    } finally {
+
       helpers.setSubmitting(false);
     }
   };
 
-  const selectOptions = [
-    { label: "➕ Create new mod...", value: NEW_RECIPE_ID },
-    ...recipeMetadatas.map((metadata) => ({
-      label: metadata.name,
-      value: metadata.id,
-    })),
-  ];
-
-  const radioItems: RadioItem[] = [
-    {
-      label: "Move into the selected mod",
-      value: "move",
-    },
-    {
-      label: "Create a copy in the selected mod",
-      value: "copy",
-    },
-  ];
-
-  const renderBody: RenderBody = () => (
-    <Modal.Body>
-      <ConnectedFieldTemplate
-        name="recipeId"
-        hideLabel
-        description="Choose a mod"
-        as={SelectWidget}
-        options={selectOptions}
-        widerLabel
-      />
-      <ConnectedFieldTemplate
-        name="moveOrCopy"
-        hideLabel
-        as={RadioItemListWidget}
-        items={radioItems}
-        header="Move or copy the starter brick?"
-      />
-    </Modal.Body>
+  const selectOptions = useMemo(
+    () => [
+      { label: "➕ Create new mod...", value: NEW_RECIPE_ID },
+      ...recipeMetadatas.map((metadata) => ({
+        label: metadata.name,
+        value: metadata.id,
+      })),
+    ],
+    [recipeMetadatas],
   );
 
-  const renderSubmit: RenderSubmit = ({
-    isSubmitting,
-    isValid,
-    values: { moveOrCopy },
-  }) => (
-    <Modal.Footer>
-      <Button variant="info" onClick={hideModal}>
-        Cancel
-      </Button>
-      <Button
-        variant="primary"
-        type="submit"
-        disabled={!isValid || isSubmitting}
-      >
-        {moveOrCopy === "move" ? "Move" : "Copy"}
-      </Button>
-    </Modal.Footer>
+  const radioItems: RadioItem[] = useMemo(
+    () => [
+      {
+        label: "Move into the selected mod",
+        value: "move",
+      },
+      {
+        label: "Create a copy in the selected mod",
+        value: "copy",
+      },
+    ],
+    [],
+  );
+
+  const renderBody: RenderBody = useCallback(
+    () => (
+      <Modal.Body>
+        <ConnectedFieldTemplate
+          name="recipeId"
+          hideLabel
+          description="Choose a mod"
+          as={SelectWidget}
+          options={selectOptions}
+          widerLabel
+        />
+        <ConnectedFieldTemplate
+          name="moveOrCopy"
+          hideLabel
+          as={RadioItemListWidget}
+          items={radioItems}
+          header="Move or copy the starter brick?"
+        />
+      </Modal.Body>
+    ),
+    [radioItems, selectOptions],
+  );
+
+  const renderSubmit: RenderSubmit = useCallback(
+    ({ isSubmitting, isValid, values: { moveOrCopy } }) => (
+      <Modal.Footer>
+        <Button variant="info" onClick={hideModal}>
+          Cancel
+        </Button>
+        <Button
+          variant="primary"
+          type="submit"
+          disabled={!isValid || isSubmitting}
+        >
+          {moveOrCopy === "move" ? "Move" : "Copy"}
+        </Button>
+      </Modal.Footer>
+    ),
+    [hideModal],
   );
 
   return (

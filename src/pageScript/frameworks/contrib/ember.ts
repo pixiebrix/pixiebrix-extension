@@ -273,8 +273,7 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
     const props = getAllPropertyNames(target).filter(
       (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop),
     );
-    // Safe because the prop names are coming from getAllPropertyNames
-    // eslint-disable-next-line security/detect-object-injection
+    // eslint-disable-next-line security/detect-object-injection -- Safe because the prop names are coming from getAllPropertyNames
     return Object.fromEntries(props.map((x) => [x, target[x]]));
   },
   proxy: {

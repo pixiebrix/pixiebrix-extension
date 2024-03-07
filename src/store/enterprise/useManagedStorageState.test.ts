@@ -30,7 +30,6 @@ jest.mock("lodash", () => {
 });
 
 beforeEach(async () => {
-  // eslint-disable-next-line new-cap -- test helper method
   await INTERNAL_reset();
   await browser.storage.managed.clear();
 });

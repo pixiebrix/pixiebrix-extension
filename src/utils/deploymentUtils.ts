@@ -29,6 +29,7 @@ import { validateUUID } from "@/types/helpers";
 import { type Except } from "type-fest";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
+import type { ActivatableDeployment } from "@/types/deploymentTypes";
 
 /**
  * Returns `true` if a managed deployment is active (i.e., has not been remotely paused by an admin)
@@ -71,8 +72,8 @@ export const makeUpdatedFilter =
     if (restricted) {
       return (
         !deploymentMatch ||
-        new Date(deploymentMatch._deployment.timestamp) <
-          new Date(deployment.updated_at)
+        new Date(deploymentMatch._deployment?.timestamp ?? "") <
+          new Date(deployment.updated_at ?? "")
       );
     }
 
@@ -89,7 +90,12 @@ export const makeUpdatedFilter =
 
     if (
       blueprintMatch &&
-      gte(blueprintMatch._recipe.version, deployment.package.version)
+      gte(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- blueprintMatch is checked above
+        blueprintMatch._recipe!.version!,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- deployment package is checked above
+        deployment.package.version!,
+      )
     ) {
       // The unrestricted user already has the blueprint (or a newer version of the blueprint), so don't prompt
       return false;
@@ -100,8 +106,8 @@ export const makeUpdatedFilter =
     }
 
     return (
-      new Date(deploymentMatch._deployment.timestamp) <
-      new Date(deployment.updated_at)
+      new Date(deploymentMatch._deployment?.timestamp ?? "") <
+      new Date(deployment.updated_at ?? "")
     );
   };
 
@@ -112,12 +118,14 @@ export const makeUpdatedFilter =
  * violation).
  */
 export function checkExtensionUpdateRequired(
-  deployments: Deployment[] | undefined,
+  activatableDeployments: ActivatableDeployment[] = [],
 ): boolean {
-  // Check that the user's extension van run the deployment
+  // Check that the user's extension can run the deployment
   const { version: extensionVersion } = browser.runtime.getManifest();
   const versionRanges = compact(
-    deployments?.map((x) => x.package.config.metadata.extensionVersion),
+    activatableDeployments.map(
+      ({ modDefinition }) => modDefinition.metadata.extensionVersion,
+    ),
   );
 
   console.debug("Checking deployment version requirements", {
@@ -134,7 +142,7 @@ export function checkExtensionUpdateRequired(
 /**
  * Deployment installed on the client. A deployment may be installed but not active (see DeploymentContext.active)
  */
-type InstalledDeployment = {
+export type InstalledDeployment = {
   deployment: UUID;
   blueprint: RegistryId;
   blueprintVersion: string;
@@ -146,11 +154,15 @@ export function selectInstalledDeployments(
   return uniqBy(
     extensions
       .filter((x) => x._deployment?.id != null)
-      .map((x) => ({
-        deployment: x._deployment.id,
-        blueprint: x._recipe?.id,
-        blueprintVersion: x._recipe?.version,
-      })),
+      .map(
+        (x) =>
+          ({
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- _deployment is checked above
+            deployment: x._deployment!.id,
+            blueprint: x._recipe?.id,
+            blueprintVersion: x._recipe?.version,
+          }) as InstalledDeployment,
+      ),
     (x) => x.deployment,
   );
 }
@@ -173,7 +185,7 @@ const isPersonal = (x: SanitizedIntegrationConfig) => !x.proxy;
  * Excludes the PixieBrix API integration and integrations that are bound in the deployment configuration.
  */
 export async function findLocalDeploymentConfiguredIntegrationDependencies(
-  deployment: Deployment,
+  { deployment, modDefinition }: ActivatableDeployment,
   locate: Locate,
 ): Promise<
   Array<
@@ -182,12 +194,11 @@ export async function findLocalDeploymentConfiguredIntegrationDependencies(
     }
   >
 > {
-  const deploymentIntegrations = getUnconfiguredComponentIntegrations(
-    deployment.package.config,
-  );
+  const deploymentIntegrations =
+    getUnconfiguredComponentIntegrations(modDefinition);
   // Integrations in the deployment that are bound to a team credential
   const teamBoundIntegrationIds = new Set(
-    deployment.bindings.map((x) => x.auth.service_id),
+    deployment.bindings?.map((x) => x.auth.service_id) ?? [],
   );
   const unboundIntegrations = deploymentIntegrations.filter(
     ({ integrationId }) =>
@@ -211,17 +222,16 @@ export async function findLocalDeploymentConfiguredIntegrationDependencies(
  * Merge deployment service bindings and personal configurations to get all integration dependencies for a deployment.
  */
 export async function mergeDeploymentIntegrationDependencies(
-  deployment: Deployment,
+  { deployment, modDefinition }: ActivatableDeployment,
   locate: Locate,
 ): Promise<IntegrationDependency[]> {
   // Note/to-do: There is some logic overlap here with findLocalDeploymentConfiguredIntegrationDependencies() above,
   // but it's tricky to extract right now
 
-  const deploymentIntegrations = getUnconfiguredComponentIntegrations(
-    deployment.package.config,
-  );
+  const deploymentIntegrations =
+    getUnconfiguredComponentIntegrations(modDefinition);
   const teamBoundIntegrationIds = new Set(
-    deployment.bindings.map((x) => x.auth.service_id),
+    deployment.bindings?.map((x) => x.auth.service_id) ?? [],
   );
 
   const pixiebrixIntegration = deploymentIntegrations.find(
@@ -255,7 +265,8 @@ export async function mergeDeploymentIntegrationDependencies(
     );
 
   const deploymentBindingConfigs = Object.fromEntries(
-    deployment.bindings.map(({ auth, key }) => [auth.service_id, auth.id]),
+    deployment.bindings?.map(({ auth, key }) => [auth.service_id, auth.id]) ??
+      [],
   );
   const teamIntegrationDependencies: IntegrationDependency[] =
     deploymentIntegrations

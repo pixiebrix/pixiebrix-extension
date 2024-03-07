@@ -48,7 +48,7 @@ const SharingTable: React.FunctionComponent = () => {
               <span>
                 <FontAwesomeIcon icon={faGlobe} /> Public{" "}
                 <span className="text-primary">
-                  <i> &ndash; visible to all PixieBrix users</i>
+                  <em> &ndash; visible to all PixieBrix users</em>
                 </span>
               </span>
             ) : (

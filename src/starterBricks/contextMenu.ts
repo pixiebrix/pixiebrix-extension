@@ -19,7 +19,6 @@ import {
   type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-import { propertiesToSchema } from "@/validators/generic";
 import {
   type Manifest,
   type Menus,
@@ -70,6 +69,7 @@ import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { type MessageConfig } from "@/utils/notify";
 import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
 import { flagOn } from "@/auth/featureFlagStorage";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 

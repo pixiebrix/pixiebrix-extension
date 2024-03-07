@@ -46,8 +46,7 @@ export const noopProxy: ReadProxy = {
   toJS: identity,
   get(value, prop) {
     if (isObject(value) && Object.hasOwn(value, prop)) {
-      // Checking visibility of the property above
-      // eslint-disable-next-line security/detect-object-injection
+      // eslint-disable-next-line security/detect-object-injection -- Checking visibility of the property above
       return value[prop];
     }
   },

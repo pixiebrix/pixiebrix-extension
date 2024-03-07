@@ -22,13 +22,13 @@ import {
   type PipelineExpression,
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { validateRegistryId } from "@/types/helpers";
 import { castArray } from "lodash";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import { PropError } from "@/errors/businessErrors";
 import { $safeFind } from "@/utils/domUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 class ForEachElement extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/for-each-element");

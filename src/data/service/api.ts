@@ -30,15 +30,17 @@ import {
   type Organization,
   type Package,
   type PackageUpsertResponse,
-  type PackageVersion,
+  type PackageVersionDeprecated,
   type PendingInvitation,
   type RecipeResponse,
   type RemoteIntegrationConfig,
   UserRole,
+  type Deployment,
 } from "@/types/contract";
 import { type components } from "@/types/swagger";
 import { dumpBrickYaml } from "@/runtime/brickYaml";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
+import { getRequestHeadersByAPIVersion } from "@/data/service/apiVersioning";
 import { type IntegrationDefinition } from "@/integrations/integrationTypes";
 import {
   type ModDefinition,
@@ -46,6 +48,7 @@ import {
 } from "@/types/modDefinitionTypes";
 import baseQuery from "@/data/service/baseQuery";
 import type { ModComponentBase } from "@/types/modComponentTypes";
+import { type InstalledDeployment } from "@/utils/deploymentUtils";
 
 export const appApi = createApi({
   reducerPath: "appApi",
@@ -67,6 +70,7 @@ export const appApi = createApi({
     "PackageVersion",
     "StarterBlueprints",
     "ZapierKey",
+    "Deployments",
   ],
   endpoints: (builder) => ({
     getMe: builder.query<Me, void>({
@@ -396,7 +400,10 @@ export const appApi = createApi({
         "EditablePackages",
       ],
     }),
-    listPackageVersions: builder.query<PackageVersion[], { id: UUID }>({
+    listPackageVersions: builder.query<
+      PackageVersionDeprecated[],
+      { id: UUID }
+    >({
       query: ({ id }) => ({
         url: `/api/bricks/${id}/versions/`,
         method: "get",
@@ -436,6 +443,21 @@ export const appApi = createApi({
       }),
       invalidatesTags: ["Me"],
     }),
+    // Post request not used to mutate data on the backend, just to fetch data
+    getDeployments: builder.query<
+      Deployment[],
+      // Uid is used for the clientId property on events in Mixpanel telemetry
+      { uid: UUID; version: string; active: InstalledDeployment[] }
+    >({
+      query: (data) => ({
+        url: "/api/deployments/",
+        method: "post",
+        data,
+        // @since 1.8.10 -- API version 1.1 excludes the package config
+        headers: getRequestHeadersByAPIVersion("1.1"),
+      }),
+      providesTags: ["Deployments"],
+    }),
   }),
 });
 
@@ -468,5 +490,6 @@ export const {
   useListPackageVersionsQuery,
   useGetStarterBlueprintsQuery,
   useCreateMilestoneMutation,
+  useGetDeploymentsQuery,
   util,
 } = appApi;

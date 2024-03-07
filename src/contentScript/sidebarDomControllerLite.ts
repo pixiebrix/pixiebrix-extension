@@ -16,8 +16,9 @@
  */
 
 /**
- * @file This file MUST not have dependencies as it's meant to be tiny
- * and imported by browserActionInstantHandler.ts
+ * @file This file MUST not have dependencies as it's meant to be tiny and imported by browserActionInstantHandler.ts.
+ * Because browserActionInstantHandler.ts is a separate content script, any modules will be duplicated
+ * between browserActionInstantHandler and the main content script.
  */
 
 import { MAX_Z_INDEX, PANEL_FRAME_ID } from "@/domConstants";
@@ -38,13 +39,13 @@ function storeOriginalCSSOnce() {
     return;
   }
 
-  // Store the original margin so it can be reused in future calculations. It must also persist across sessions
+  // Store the original margin, so it can be reused in future calculations. It must also persist across sessions
   html.style.setProperty(
     ORIGINAL_MARGIN_CSS_PROPERTY,
     getComputedStyle(html).getPropertyValue("margin-right"),
   );
 
-  // Make margin dynamic so it always follows the original margin AND the sidebar width, if open
+  // Make margin dynamic, so it always follows the original margin AND the sidebar width, if open
   html.style.setProperty(
     "margin-right",
     `calc(var(${ORIGINAL_MARGIN_CSS_PROPERTY}) + var(${SIDEBAR_WIDTH_CSS_PROPERTY}))`,
@@ -58,7 +59,7 @@ function setSidebarWidth(pixels: number): void {
 /**
  * Returns the sidebar frame if it's in the DOM, or null otherwise. The sidebar might not be initialized yet.
  */
-function getSidebar(): Element | null {
+export function getSidebarElement(): Element | null {
   expectContext("contentScript");
 
   return html.querySelector(`#${PANEL_FRAME_ID}`);
@@ -68,12 +69,12 @@ function getSidebar(): Element | null {
  * Return true if the sidebar frame is in the DOM. The sidebar might not be initialized yet.
  */
 export function isSidebarFrameVisible(): boolean {
-  return Boolean(getSidebar());
+  return Boolean(getSidebarElement());
 }
 
 /** Removes the element; Returns false if no element was found */
 export function removeSidebarFrame(): boolean {
-  const sidebar = getSidebar();
+  const sidebar = getSidebarElement();
 
   console.debug("sidebarDomControllerLite:removeSidebarFrame", {
     isSidebarFrameVisible: Boolean(sidebar),

@@ -280,23 +280,33 @@ export const initSelectionTooltip = once(() => {
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
   document.addEventListener(
     "selectionchange",
-    // Debounce to avoid slowing drag of selection
+    // Debounce to:
+    // - avoid slowing drag of selection
+    // - simulate "selectionend" event (which doesn't exist)
     debounce(
       async () => {
         const selection = window.getSelection();
         if (isSelectionValid(selection)) {
           await showTooltip();
-        } else {
-          // It should be showing because the controller hide on selectionstart. But safe to hide in case
-          hideTooltip();
         }
+
+        // The tooltip is hidden on "selectionstart" via the showTooltip function, so don't need to hide it in response
+        // to the selection change event.
+        //
+        // "selectionchange" can be fired both in response to the user changing the selection, and the host page
+        // changing the selection, e.g., Gmail's composer deselects the user's selection on mousedown.
+        //
+        // Unfortunately Event.isTrusted is not working to distinguish the user selection vs. Gmail composer mousedown
+        // handler: https://developer.mozilla.org/en-US/docs/Web/API/Event/isTrusted
+        //
+        // See discussion here: https://github.com/pixiebrix/pixiebrix-extension/issues/7729#issuecomment-1975683222
       },
       60,
       {
         trailing: true,
       },
     ),
-    { passive: true },
+    { passive: true, signal: onContextInvalidated.signal },
   );
 
   tooltipActionRegistry.onChange.add(async () => {

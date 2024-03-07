@@ -29,7 +29,6 @@ import {
 import notify from "@/utils/notify";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { useModals } from "@/components/ConfirmationModal";
-import { buildNewMod } from "@/pageEditor/panes/save/saveHelpers";
 import { selectRecipeMetadata } from "@/pageEditor/panes/save/useSavingWizard";
 import extensionsSlice from "@/store/extensionsSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
@@ -41,9 +40,8 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import type { EditablePackageMetadata } from "@/types/contract";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
-import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
-import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
+import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
 
 const { actions: optionsActions } = extensionsSlice;
 
@@ -84,9 +82,7 @@ function useSaveMod(): ModSaver {
   const allDirtyModMetadatas = useSelector(selectDirtyRecipeMetadata);
   const { showConfirmation } = useModals();
   const [isSaving, setIsSaving] = useState(false);
-  const compareModComponentCountsToModDefinition =
-    useCompareModComponentCounts();
-  const checkModStarterBrickInvariants = useCheckModStarterBrickInvariants();
+  const { buildAndValidateMod } = useBuildAndValidateMod();
 
   /**
    * Save a mod's components, options, and metadata
@@ -133,81 +129,74 @@ function useSaveMod(): ModSaver {
     // eslint-disable-next-line security/detect-object-injection -- mod IDs are sanitized in the form validation
     const dirtyModMetadata = allDirtyModMetadatas[modId];
 
-    const newMod = buildNewMod({
-      sourceMod: modDefinition,
-      cleanModComponents,
-      dirtyModComponentFormStates,
-      dirtyModOptions,
-      dirtyModMetadata,
-    });
-
-    const modComponentDefinitionCountsMatch =
-      compareModComponentCountsToModDefinition(newMod);
-    const modComponentStarterBricksMatch =
-      await checkModStarterBrickInvariants(newMod);
-
-    if (!modComponentDefinitionCountsMatch || !modComponentStarterBricksMatch) {
-      // Not including modDefinition because it can be 1.5MB+ in some rare cases
-      // See discussion: https://github.com/pixiebrix/pixiebrix-extension/pull/7629/files#r1492864349
-      reportEvent(Events.PAGE_EDITOR_MOD_SAVE_ERROR, {
-        modId: newMod.metadata.id,
-        modComponentDefinitionCountsMatch,
-        modComponentStarterBricksMatch,
+    try {
+      const newMod = await buildAndValidateMod({
+        sourceMod: modDefinition,
+        cleanModComponents,
+        dirtyModComponentFormStates,
+        dirtyModOptions,
+        dirtyModMetadata,
       });
-      dispatch(editorActions.showSaveDataIntegrityErrorModal());
+
+      const packageId = editablePackages.find(
+        // Bricks endpoint uses "name" instead of id
+        (x) => x.name === newMod.metadata.id,
+      )?.id;
+
+      const upsertResponse = await updateMod({
+        packageId,
+        recipe: newMod,
+      }).unwrap();
+
+      const newModMetadata = selectRecipeMetadata(newMod, upsertResponse);
+
+      // Don't push to cloud since we're saving it with the mod
+      await Promise.all(
+        dirtyModComponentFormStates.map(async (modComponentFormState) =>
+          upsertModComponentFormState({
+            element: modComponentFormState,
+            options: {
+              pushToCloud: false,
+              // Permissions were already checked earlier in the save function here
+              checkPermissions: false,
+              // Notified and reactivated once in safeSave below
+              notifySuccess: false,
+              reactivateEveryTab: false,
+            },
+            modId: newModMetadata.id,
+          }),
+        ),
+      );
+
+      // Update the mod metadata on mod components in the options slice
+      dispatch(
+        optionsActions.updateRecipeMetadataForExtensions(newModMetadata),
+      );
+
+      // Update the mod metadata on mod component form states in the page editor slice
+      dispatch(editorActions.updateRecipeMetadataForElements(newModMetadata));
+
+      // Remove any deleted mod component form states from the extensions slice
+      for (const modComponentId of getDeletedComponentIdsForMod(modId)) {
+        dispatch(
+          optionsActions.removeExtension({ extensionId: modComponentId }),
+        );
+      }
+
+      // Clear the dirty states
+      dispatch(
+        editorActions.resetMetadataAndOptionsForRecipe(newModMetadata.id),
+      );
+      dispatch(editorActions.clearDeletedElementsForRecipe(newModMetadata.id));
+
+      reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
+        modId: newMod.metadata.id,
+      });
+
+      return true;
+    } catch {
       return false;
     }
-
-    const packageId = editablePackages.find(
-      // Bricks endpoint uses "name" instead of id
-      (x) => x.name === newMod.metadata.id,
-    )?.id;
-
-    const upsertResponse = await updateMod({
-      packageId,
-      recipe: newMod,
-    }).unwrap();
-
-    const newModMetadata = selectRecipeMetadata(newMod, upsertResponse);
-
-    // Don't push to cloud since we're saving it with the mod
-    await Promise.all(
-      dirtyModComponentFormStates.map(async (modComponentFormState) =>
-        upsertModComponentFormState({
-          element: modComponentFormState,
-          options: {
-            pushToCloud: false,
-            // Permissions were already checked earlier in the save function here
-            checkPermissions: false,
-            // Notified and reactivated once in safeSave below
-            notifySuccess: false,
-            reactivateEveryTab: false,
-          },
-          modId: newModMetadata.id,
-        }),
-      ),
-    );
-
-    // Update the mod metadata on mod components in the options slice
-    dispatch(optionsActions.updateRecipeMetadataForExtensions(newModMetadata));
-
-    // Update the mod metadata on mod component form states in the page editor slice
-    dispatch(editorActions.updateRecipeMetadataForElements(newModMetadata));
-
-    // Remove any deleted mod component form states from the extensions slice
-    for (const modComponentId of getDeletedComponentIdsForMod(modId)) {
-      dispatch(optionsActions.removeExtension({ extensionId: modComponentId }));
-    }
-
-    // Clear the dirty states
-    dispatch(editorActions.resetMetadataAndOptionsForRecipe(newModMetadata.id));
-    dispatch(editorActions.clearDeletedElementsForRecipe(newModMetadata.id));
-
-    reportEvent(Events.PAGE_EDITOR_MOD_UPDATE, {
-      modId: newMod.metadata.id,
-    });
-
-    return true;
   }
 
   async function safeSave(modId: RegistryId) {

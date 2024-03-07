@@ -86,7 +86,7 @@ const BrickDetail = <T extends Metadata>({
       : "inputSchema" in brick
         ? brick.inputSchema
         : {};
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: fix brick typing
   const outputSchema = (brick as any).outputSchema as Schema;
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
 

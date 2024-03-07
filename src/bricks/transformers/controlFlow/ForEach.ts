@@ -16,7 +16,6 @@
  */
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import {
   type BrickArgs,
@@ -26,6 +25,7 @@ import {
 } from "@/types/runtimeTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 class ForEach extends TransformerABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/for-each");

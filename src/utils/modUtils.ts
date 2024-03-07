@@ -42,6 +42,7 @@ import { assertNotNullish } from "./nullishUtils";
 import {
   minimalSchemaFactory,
   minimalUiSchemaFactory,
+  propertiesToSchema,
 } from "@/utils/schemaUtils";
 import { isEmpty, sortBy } from "lodash";
 import { isNullOrBlank } from "@/utils/stringUtils";
@@ -50,7 +51,6 @@ import {
   type SchemaProperties,
   type UiSchema,
 } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 
 /**
  * Returns true if the mod is an UnavailableMod

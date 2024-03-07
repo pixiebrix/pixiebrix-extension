@@ -17,13 +17,13 @@
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { getReferenceForElement } from "@/contentScript/elementReference";
-import { propertiesToSchema } from "@/validators/generic";
 import { type Schema } from "@/types/schemaTypes";
 import {
   type BrickArgs,
   type BrickOptions,
   type ElementReference,
 } from "@/types/runtimeTypes";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 const traversalTypes = [
   "closest",

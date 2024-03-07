@@ -327,6 +327,7 @@
     "./contrib/uipath/uipathContract.ts",
     "./contrib/zapier/contract.ts",
     "./data/service/apiClient.ts",
+    "./data/service/apiVersioning.ts",
     "./data/service/baseService.ts",
     "./data/service/constants.ts",
     "./data/service/errorService.ts",
@@ -429,6 +430,7 @@
     "./layout/Footer.tsx",
     "./layout/Page.tsx",
     "./modDefinitions/modDefinitionConstants.ts",
+    "./modDefinitions/modDefinitionRawApiCalls.ts",
     "./modDefinitions/modDefinitionsSelectors.ts",
     "./modDefinitions/modDefinitionsSlice.ts",
     "./modDefinitions/modDefinitionsTypes.ts",
@@ -596,6 +598,8 @@
     "./telemetry/events.ts",
     "./telemetry/initErrorReporter.ts",
     "./telemetry/logging.ts",
+    "./telemetry/performance.ts",
+    "./telemetry/performance.test.ts",
     "./telemetry/reportError.ts",
     "./telemetry/reportEvent.ts",
     "./telemetry/reportUncaughtErrors.ts",
@@ -638,6 +642,7 @@
     "./types/bricks/transformerTypes.ts",
     "./types/browserTypes.ts",
     "./types/contract.ts",
+    "./types/deploymentTypes.ts",
     "./types/helpers.ts",
     "./types/iconTypes.ts",
     "./types/inputTypes.ts",
@@ -718,7 +723,7 @@
     "./utils/urlUtils.ts",
     "./utils/variableUtils.ts",
     "./validators/formValidator.ts",
-    "./validators/generic.ts",
+    "./validators/schemaValidator.ts",
     "./vendors/AceEditor.tsx",
     "./vendors/AceEditorSync.tsx",
     "./vendors/DiffEditor.tsx",
@@ -741,6 +746,7 @@
     "./vendors/validateUuid.ts",
     "./components/errors/InvalidSelectorErrorDetail.tsx",
     "../end-to-end-tests/auth.setup.ts",
-    "../end-to-end-tests/example.spec.ts"
+    "../end-to-end-tests/example.spec.ts",
+    "./utils/deploymentUtils.ts"
   ]
 }

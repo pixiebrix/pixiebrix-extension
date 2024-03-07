@@ -18,11 +18,11 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import {
   $safeFindElementsWithRootMode,
   IS_ROOT_AWARE_BRICK_PROPS,
 } from "@/bricks/rootModeHelpers";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class DetectElement extends TransformerABC {
   override defaultOutputKey = "match";

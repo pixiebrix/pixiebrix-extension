@@ -17,7 +17,6 @@
 
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { type JsonObject } from "type-fest";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { validateRegistryId } from "@/types/helpers";
@@ -25,6 +24,7 @@ import { type BrickConfig } from "@/bricks/types";
 import { isObject } from "@/utils/objectUtils";
 import { mapValues } from "lodash";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 type MergeStrategy = "shallow" | "replace" | "deep";
 export type Namespace = "blueprint" | "extension" | "shared";

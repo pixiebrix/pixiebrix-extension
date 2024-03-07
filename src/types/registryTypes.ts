@@ -112,3 +112,39 @@ export type InnerDefinitionRef = string & {
   // Nominal subtyping
   _innerDefinitionRefBrand: never;
 };
+
+export interface RegistryItem<T extends RegistryId = RegistryId> {
+  id: T;
+}
+
+/**
+ * Error thrown when a registry item does not exist.
+ */
+export class DoesNotExistError extends Error {
+  override name = "DoesNotExistError";
+
+  constructor(public readonly id: string) {
+    super(`Registry item does not exist: ${id}`);
+  }
+}
+
+/**
+ * A registry that can look up items by id.
+ * @since 1.8.2
+ */
+export interface RegistryProtocol<
+  Id extends RegistryId = RegistryId,
+  Item extends RegistryItem<Id> = RegistryItem<Id>,
+> {
+  lookup: (id: Id) => Promise<Item>;
+}
+
+/**
+ * A registry that can enumerate all items accessible to the user.
+ */
+export interface EnumerableRegistryProtocol<
+  Id extends RegistryId = RegistryId,
+  Item extends RegistryItem<Id> = RegistryItem<Id>,
+> extends RegistryProtocol<Id, Item> {
+  all: () => Promise<Item[]>;
+}

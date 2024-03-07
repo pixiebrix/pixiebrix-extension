@@ -18,12 +18,12 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import sanitize from "@/utils/sanitize";
 import { PIXIEBRIX_DATA_ATTR } from "@/domConstants";
 import { escape } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 import { $safeFind } from "@/utils/domUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 type Position = "before" | "prepend" | "append" | "after";
 

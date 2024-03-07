@@ -32,10 +32,12 @@ test("memoizeUntilSettled", async () => {
 
   const memoized = memoizeUntilSettled(async () => index++);
 
-  expect(await memoized()).toBe(0);
-  expect(await memoized()).toBe(1);
-  expect(await memoized()).toBe(2);
-  expect(await Promise.all([memoized(), memoized()])).toStrictEqual([3, 3]);
+  await expect(memoized()).resolves.toBe(0);
+  await expect(memoized()).resolves.toBe(1);
+  await expect(memoized()).resolves.toBe(2);
+  await expect(Promise.all([memoized(), memoized()])).resolves.toStrictEqual([
+    3, 3,
+  ]);
 });
 
 test("groupPromisesByStatus", async () => {

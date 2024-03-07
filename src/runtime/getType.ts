@@ -25,6 +25,9 @@ function canInferType(
   return isObject(block) && typeof block.inferType === "function";
 }
 
+/**
+ * Returns the type of the brick, or `null` if the type cannot be determined.
+ */
 export default async function getType(
   block: Metadata,
 ): Promise<BrickType | null> {
@@ -32,24 +35,24 @@ export default async function getType(
     // HACK: including Integration and StarterBrick here is a hack to fix some call-sites. This method can only return
     // block types.
     // For YAML-based blocks, can't use the method to determine the type because only the "run" method is available.
-    // The inferType method is provided ExternalBlock, which is the class used for YAML-based blocks (which have
+    // The inferType method is provided UserDefinedBrick, which is the class used for YAML-based blocks (which have
     // kind: component) in their YAML
-    return block.inferType();
+    return brick.inferType();
   }
 
-  if ("read" in block) {
+  if ("read" in brick) {
     return "reader";
   }
 
-  if ("effect" in block) {
+  if ("effect" in brick) {
     return "effect";
   }
 
-  if ("transform" in block) {
+  if ("transform" in brick) {
     return "transform";
   }
 
-  if ("render" in block) {
+  if ("render" in brick) {
     return "renderer";
   }
 

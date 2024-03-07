@@ -30,7 +30,27 @@ module.exports = {
     "@shopify/react-hooks-strict-return": "error",
     "@shopify/prefer-module-scope-constants": "error",
     "@shopify/jest/no-snapshots": "warn",
+    "new-cap": [
+      "error",
+      {
+        capIsNewExceptionPattern: "(TEST_|INTERNAL_|HACK_|UNSAFE_)",
+      },
+    ],
+    "eslint-comments/require-description": [
+      "error",
+      { ignore: ["eslint-enable"] },
+    ],
     "react/no-array-index-key": "error",
+    "react/no-unstable-nested-components": ["error", { allowAsProps: true }],
+    "react/forbid-elements": [
+      "error",
+      {
+        forbid: [
+          { element: "b", message: "use <strong> instead" },
+          { element: "i", message: "use <em> instead" },
+        ],
+      },
+    ],
     "local-rules/noNullRtkQueryArgs": "error",
     "local-rules/noInvalidDataTestId": "error",
     "local-rules/noExpressionLiterals": "error",
@@ -127,6 +147,7 @@ module.exports = {
       rules: {
         "unicorn/prefer-spread": "off",
         "local-rules/noCrossBoundaryImports": "off",
+        "jest/prefer-expect-resolves": "error",
       },
     },
     {

@@ -53,6 +53,10 @@ export async function insertAtCursorWithCustomEditorSupport({
     "contentScript context required for editor JavaScript integrations",
   );
 
+  // `textFieldEdit` handles focus required to insert the text. But, force focus to enable the user to keep typing
+  window.focus();
+  element.focus();
+
   const ckeditor = ckeditorDom.selectCKEditorElement(element);
 
   if (ckeditor) {
@@ -63,10 +67,6 @@ export async function insertAtCursorWithCustomEditorSupport({
 
     return;
   }
-
-  // `textFieldEdit` handles focus required to insert the text. But, force focus to enable the user to keep typing
-  window.focus();
-  element.focus();
 
   textFieldEdit.insert(element, text);
 }

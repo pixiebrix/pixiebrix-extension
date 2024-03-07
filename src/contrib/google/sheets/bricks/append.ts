@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { propertiesToSchema } from "@/validators/generic";
 import { isEmpty, isEqual, unary, uniq } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import { normalizeHeader } from "@/contrib/google/sheets/core/sheetsHelpers";
@@ -23,7 +22,7 @@ import { sheets } from "@/background/messenger/api";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
   GOOGLE_OAUTH2_PKCE_INTEGRATION_ID,
-  SHEET_SERVICE_SCHEMA,
+  SHEET_INTEGRATION_SCHEMA,
 } from "@/contrib/google/sheets/core/schemas";
 import { type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
@@ -33,6 +32,7 @@ import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { isObject } from "@/utils/objectUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 type CellValue = string | number | null;
 
@@ -67,7 +67,7 @@ export const APPEND_SCHEMA: Schema = propertiesToSchema(
           type: "string",
           minLength: 1,
         },
-        SHEET_SERVICE_SCHEMA,
+        SHEET_INTEGRATION_SCHEMA,
       ],
     },
     tabName: {
@@ -397,7 +397,7 @@ export class GoogleSheetsAppend extends EffectABC {
       let firstHeaderIndex = 0;
       while (
         firstHeaderIndex < currentSheetHeaders.length &&
-        // eslint-disable-next-line security/detect-object-injection
+        // eslint-disable-next-line security/detect-object-injection -- firstHeaderIndex is controlled
         isNullOrBlank(currentSheetHeaders[firstHeaderIndex])
       ) {
         firstHeaderIndex++;

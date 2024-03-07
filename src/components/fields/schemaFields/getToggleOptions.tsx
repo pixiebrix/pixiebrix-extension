@@ -35,8 +35,7 @@ type ToggleOptionInputs = {
   allowExpressions: boolean;
 };
 
-// TODO refactor this function to be more readable (complexity of 28)
-// eslint-disable-next-line complexity
+// eslint-disable-next-line complexity -- TODO: refactor this function to be more readable (complexity of 28)
 export function getToggleOptions({
   fieldSchema,
   isRequired,

@@ -56,7 +56,7 @@ import {
  * "@testing-library/react-hooks"
  */
 export const waitForEffect = async () =>
-  // eslint-disable-next-line testing-library/no-unnecessary-act
+  // eslint-disable-next-line testing-library/no-unnecessary-act -- hack for testing some asynchronous code that the standard utilities have proven inadequate
   act(async () => {
     // Awaiting the async state update
   });

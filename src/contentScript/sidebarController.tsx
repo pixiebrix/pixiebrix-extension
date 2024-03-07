@@ -46,6 +46,8 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { focusCaptureDialog } from "@/contentScript/focusCaptureDialog";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { showMySidePanel } from "@/background/messenger/strict/api";
+import { getSidebarElement } from "@/contentScript/sidebarDomControllerLite";
+import focusController from "@/utils/focusController";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
@@ -59,7 +61,7 @@ export const isSidePanelOpen = isMV3()
 /**
  * Determines whether the sidebar is open.
  * @returns false when it's definitely closed
- * @returns 'unknown' when it cannot be determined, beause the extra padding might be
+ * @returns 'unknown' when it cannot be determined, because the extra padding might be
  *          caused by the dev tools being open on the side or due to another sidebar
  */
 // The type cannot be `undefined` due to strictNullChecks
@@ -537,4 +539,43 @@ function sidePanelOnCloseSignal(): AbortSignal {
 export function sidePanelOnClose(callback: () => void): void {
   const signal = sidePanelOnCloseSignal();
   signal.addEventListener("abort", callback, { once: true });
+}
+
+export function initSidebarFocusEvents(): void {
+  if (!isMV3()) {
+    // Add listeners to track keep track of focus with the MV2 sidebar. When the user interacts
+    // with the MV2 sidebar, the sidebar gets set as the document.activeElement. Required for brick
+    // functionality such as InsertAtCursorEffect
+    sidebarShowEvents.add(() => {
+      const sidebar = getSidebarElement();
+
+      if (!sidebar) {
+        // Should always exist because sidebarShowEvents is called on Sidebar App initialization
+        return;
+      }
+
+      const closeSignal = sidePanelOnCloseSignal();
+
+      // Can't detect clicks in the sidebar itself. So need to just watch for enter/leave the sidebar element
+      sidebar.addEventListener(
+        "mouseenter",
+        () => {
+          // If the user clicks into the sidebar and then leaves the sidebar, don't set the focus to the sidebar
+          // when they re-enter the sidebar
+          if (document.activeElement !== sidebar) {
+            focusController.save();
+          }
+        },
+        { passive: true, capture: true, signal: closeSignal },
+      );
+
+      sidebar.addEventListener(
+        "mouseleave",
+        () => {
+          focusController.clear();
+        },
+        { passive: true, capture: true, signal: closeSignal },
+      );
+    });
+  }
 }

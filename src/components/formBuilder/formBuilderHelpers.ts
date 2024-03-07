@@ -171,8 +171,7 @@ export const produceSchemaOnPropertyNameChange = (
   nextPropertyName: string,
 ) =>
   produce(rjsfSchema, (draft) => {
-    // Relying on Immer to protect against object injections
-    /* eslint-disable security/detect-object-injection */
+    /* eslint-disable security/detect-object-injection -- Relying on Immer to protect against object injections */
     draft.schema.properties[nextPropertyName] =
       draft.schema.properties[propertyName];
     delete draft.schema.properties[propertyName];
@@ -198,7 +197,7 @@ export const produceSchemaOnPropertyNameChange = (
       draft.uiSchema[nextPropertyName] = draft.uiSchema[propertyName];
       delete draft.uiSchema[propertyName];
     }
-    /* eslint-enable security/detect-object-injection */
+    /* eslint-enable security/detect-object-injection  */
   });
 
 export const produceSchemaOnUiTypeChange = (
@@ -210,8 +209,7 @@ export const produceSchemaOnUiTypeChange = (
     parseUiType(nextUiType);
 
   return produce(rjsfSchema, (draft) => {
-    // Relying on Immer to protect against object injections
-    /* eslint-disable security/detect-object-injection */
+    /* eslint-disable security/detect-object-injection -- Relying on Immer to protect against object injections */
     const draftPropertySchema = draft.schema.properties[propertyName] as Schema;
 
     switch (uiWidget) {
@@ -284,7 +282,7 @@ export const produceSchemaOnUiTypeChange = (
       delete draftPropertySchema.enum;
       delete draftPropertySchema.oneOf;
     }
-    /* eslint-enable security/detect-object-injection */
+    /* eslint-enable security/detect-object-injection  */
   });
 };
 

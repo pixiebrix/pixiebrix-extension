@@ -87,35 +87,34 @@ describe("Add new element", () => {
     const listElement = createNewElement("list") as ListDocumentElement;
     listElement.config.element.__value__ = createNewElement("container");
     const containerElement = createNewElement("container");
-    // There's a row in the container and a column in the row.
-    // eslint-disable-next-line testing-library/no-node-access
+    // eslint-disable-next-line testing-library/no-node-access -- There's a row in the container and a column in the row.
     containerElement.children[0].children[0].children[0] = listElement;
 
     const { container } = renderDocumentPreview(containerElement);
 
     // Select a dropdown inside a Col in List and open it
     await userEvent.click(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
       container.querySelector(".col .col .addElement button"),
     );
     expect(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
       container.querySelector(".col .col .addElement button"),
     ).toHaveAttribute("aria-expanded", "true");
 
     // Hover over the Col in the list
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
     fireEvent.mouseOver(container.querySelector(".col .col"));
     expect(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
       container.querySelector(".col .col .addElement button"),
     ).toHaveAttribute("aria-expanded", "true");
 
     // Hover over the Container of the List, .root.root - is the Document root element
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
     fireEvent.mouseOver(container.querySelector(".root.root > .container"));
     expect(
-      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+      // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
       container.querySelector(".col .col .addElement button"),
     ).toHaveAttribute("aria-expanded", "true");
   });
@@ -123,7 +122,7 @@ describe("Add new element", () => {
   test("can add an element to a container", async () => {
     const { container } = renderDocumentPreview(createNewElement("container"));
 
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access -- see test's TODO comment
     await userEvent.click(container.querySelector(".col .addElement button"));
     await userEvent.click(screen.getByText("Header", { selector: "a" }));
 

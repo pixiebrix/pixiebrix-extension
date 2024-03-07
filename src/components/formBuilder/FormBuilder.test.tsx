@@ -1,4 +1,4 @@
-/* eslint-disable testing-library/no-node-access */
+/* eslint-disable testing-library/no-node-access -- TODO: refactor to use better locator methods */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
@@ -393,7 +393,7 @@ describe("rename a field", () => {
     const newFieldName = "test";
     await renameField(newFieldName);
 
-    // eslint-disable-next-line testing-library/no-container
+    // eslint-disable-next-line testing-library/no-container -- TODO: refactor to use better locator methods
     const previewInput = container.querySelector(`#root_${newFieldName}`);
 
     expect(previewInput).toBeInTheDocument();
@@ -422,7 +422,7 @@ describe("rename a field", () => {
     const newFieldName = "test";
     await renameField(newFieldName);
 
-    // eslint-disable-next-line testing-library/no-container
+    // eslint-disable-next-line testing-library/no-container -- TODO: refactor to use better locator methods
     const previewInput = container.querySelector(`#root_${newFieldName}`);
 
     expect(previewInput).toBeInTheDocument();
@@ -447,7 +447,7 @@ describe("rename a field", () => {
     const newFieldName = "test";
     await renameField(newFieldName);
 
-    // eslint-disable-next-line testing-library/no-container
+    // eslint-disable-next-line testing-library/no-container -- TODO: refactor to use better locator methods
     const previewInput = container.querySelector(`#root_${newFieldName}`);
 
     expect(previewInput).toBeInTheDocument();

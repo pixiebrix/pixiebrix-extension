@@ -14,10 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { renderHook } from "@/pageEditor/testHelpers";
+import { hookAct, renderHook } from "@/pageEditor/testHelpers";
 import useSaveMod, { isModEditable } from "@/pageEditor/hooks/useSaveMod";
 import { validateRegistryId } from "@/types/helpers";
-import { act } from "@testing-library/react-hooks";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { editablePackageMetadataFactory } from "@/testUtils/factories/registryFactories";
 import notify from "@/utils/notify";
@@ -29,6 +28,7 @@ import { type ModDefinition } from "@/types/modDefinitionTypes";
 import type { components } from "@/types/swagger";
 import { editorSlice } from "@/pageEditor/slices/editorSlice";
 import type { EditablePackageMetadata } from "@/types/contract";
+import extensionsSlice from "@/store/extensionsSlice";
 
 const modId = validateRegistryId("@test/mod");
 
@@ -69,11 +69,21 @@ describe("useSaveMod", () => {
 
     appApiMock.onPut(`/api/bricks/${editablePackage.id}/`).reply(200, {});
 
-    const { result, waitForEffect } = renderHook(() => useSaveMod(), {});
+    const { result, waitForEffect } = renderHook(() => useSaveMod(), {
+      setupRedux(dispatch) {
+        dispatch(
+          extensionsSlice.actions.installMod({
+            modDefinition: definition,
+            screen: "pageEditor",
+            isReinstall: false,
+          }),
+        );
+      },
+    });
 
     await waitForEffect();
 
-    await act(async () => {
+    await hookAct(async () => {
       await result.current.save(modId);
     });
 
@@ -122,11 +132,21 @@ describe("useSaveMod", () => {
       .onPut(`/api/bricks/${editablePackage.id}/`)
       .reply(200, {});
 
-    const { result, waitForEffect } = renderHook(() => useSaveMod(), {});
+    const { result, waitForEffect } = renderHook(() => useSaveMod(), {
+      setupRedux(dispatch) {
+        dispatch(
+          extensionsSlice.actions.installMod({
+            modDefinition: definition,
+            screen: "pageEditor",
+            isReinstall: false,
+          }),
+        );
+      },
+    });
 
     await waitForEffect();
 
-    await act(async () => {
+    await hookAct(async () => {
       await result.current.save(modId);
     });
 
@@ -183,6 +203,13 @@ describe("useSaveMod", () => {
 
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
+        dispatch(
+          extensionsSlice.actions.installMod({
+            modDefinition: definition,
+            screen: "pageEditor",
+            isReinstall: false,
+          }),
+        );
         dispatch(editorSlice.actions.selectRecipeId(modId));
         dispatch(
           editorSlice.actions.editRecipeOptionsDefinitions({
@@ -201,7 +228,7 @@ describe("useSaveMod", () => {
 
     await waitForEffect();
 
-    await act(async () => {
+    await hookAct(async () => {
       await result.current.save(modId);
     });
 

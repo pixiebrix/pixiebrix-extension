@@ -20,9 +20,9 @@ import useAutoDeploy from "@/extensionConsole/pages/deployments/useAutoDeploy";
 import { renderHook } from "@/extensionConsole/testHelpers";
 import useFlags from "@/hooks/useFlags";
 import useModPermissions from "@/mods/hooks/useModPermissions";
-import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
+import { activatableDeploymentFactory } from "@/testUtils/factories/deploymentFactories";
 import { modComponentFactory } from "@/testUtils/factories/modComponentFactories";
-import { type Deployment } from "@/types/contract";
+import type { ActivatableDeployment } from "@/types/deploymentTypes";
 
 jest.mock("@/mods/hooks/useModPermissions");
 jest.mock("@/hooks/useFlags");
@@ -55,7 +55,8 @@ describe("useAutoDeploy", () => {
     it("should return true if the deployments are still being loaded", () => {
       mockHooks();
 
-      const deployments: Deployment[] | undefined = undefined;
+      const activatableDeployments: ActivatableDeployment[] | undefined =
+        undefined;
       const installedExtensions = [
         modComponentFactory(),
         modComponentFactory(),
@@ -63,7 +64,9 @@ describe("useAutoDeploy", () => {
       const extensionUpdateRequired = false;
 
       const { result } = renderHook(() =>
-        useAutoDeploy(deployments, installedExtensions, {
+        useAutoDeploy({
+          activatableDeployments,
+          installedExtensions,
           extensionUpdateRequired,
         }),
       );
@@ -74,7 +77,7 @@ describe("useAutoDeploy", () => {
     it("returns false if there are no deployments", () => {
       mockHooks();
 
-      const deployments: Deployment[] = [];
+      const activatableDeployments: ActivatableDeployment[] = [];
       const installedExtensions = [
         modComponentFactory(),
         modComponentFactory(),
@@ -82,7 +85,9 @@ describe("useAutoDeploy", () => {
       const extensionUpdateRequired = false;
 
       const { result } = renderHook(() =>
-        useAutoDeploy(deployments, installedExtensions, {
+        useAutoDeploy({
+          activatableDeployments,
+          installedExtensions,
           extensionUpdateRequired,
         }),
       );
@@ -99,7 +104,9 @@ describe("useAutoDeploy", () => {
     it("should return true if the deployments are being automatically deployed; activateDeployments should be called; returns false once deployments are activated", async () => {
       mockHooks();
 
-      const deployments: Deployment[] = [deploymentFactory()];
+      const activatableDeployments: ActivatableDeployment[] = [
+        activatableDeploymentFactory(),
+      ];
       const installedExtensions = [
         modComponentFactory(),
         modComponentFactory(),
@@ -107,17 +114,19 @@ describe("useAutoDeploy", () => {
       const extensionUpdateRequired = false;
 
       const { result, waitForValueToChange } = renderHook(() =>
-        useAutoDeploy(deployments, installedExtensions, {
+        useAutoDeploy({
+          activatableDeployments,
+          installedExtensions,
           extensionUpdateRequired,
         }),
       );
 
       expect(result.current.isAutoDeploying).toBe(true);
-      expect(activateDeployments).toHaveBeenCalledWith(
-        expect.any(Function),
-        deployments,
-        installedExtensions,
-      );
+      expect(activateDeployments).toHaveBeenCalledWith({
+        dispatch: expect.any(Function),
+        activatableDeployments,
+        installed: installedExtensions,
+      });
 
       await waitForValueToChange(() => result.current.isAutoDeploying);
       expect(result.current.isAutoDeploying).toBe(false);
@@ -126,7 +135,9 @@ describe("useAutoDeploy", () => {
     it("should return false once the deployments have been fetched and activated", async () => {
       mockHooks();
 
-      const deployments: Deployment[] = [deploymentFactory()];
+      const activatableDeployments: ActivatableDeployment[] = [
+        activatableDeploymentFactory(),
+      ];
       const installedExtensions = [
         modComponentFactory(),
         modComponentFactory(),
@@ -134,7 +145,9 @@ describe("useAutoDeploy", () => {
       const extensionUpdateRequired = false;
 
       const { result, waitForValueToChange } = renderHook(() =>
-        useAutoDeploy(deployments, installedExtensions, {
+        useAutoDeploy({
+          activatableDeployments,
+          installedExtensions,
           extensionUpdateRequired,
         }),
       );
@@ -155,7 +168,8 @@ describe("useAutoDeploy", () => {
 
       mockHooks({ activateDeploymentsResponse: promise });
 
-      const deployment = deploymentFactory();
+      const activatableDeployment: ActivatableDeployment =
+        activatableDeploymentFactory();
 
       const installedExtensions = [
         modComponentFactory(),
@@ -164,14 +178,20 @@ describe("useAutoDeploy", () => {
       const extensionUpdateRequired = false;
 
       const { result, rerender, waitForValueToChange } = renderHook(
-        ({ deployments }) =>
-          useAutoDeploy(deployments, installedExtensions, {
+        ({ activatableDeployments }) =>
+          useAutoDeploy({
+            activatableDeployments,
+            installedExtensions,
             extensionUpdateRequired,
           }),
-        { initialProps: { deployments: [deployment] } },
+        {
+          initialProps: {
+            activatableDeployments: [activatableDeployment],
+          },
+        },
       );
 
-      rerender({ deployments: [deployment] });
+      rerender({ activatableDeployments: [activatableDeployment] });
 
       expect(activateDeployments).toHaveBeenCalledTimes(1);
 
@@ -185,7 +205,9 @@ describe("useAutoDeploy", () => {
     it("should return false if the user has not granted required permissions to the Extensions", () => {
       mockHooks({ hasPermissions: false });
 
-      const deployments: Deployment[] = [deploymentFactory()];
+      const activatableDeployments: ActivatableDeployment[] = [
+        activatableDeploymentFactory(),
+      ];
       const installedExtensions = [
         modComponentFactory(),
         modComponentFactory(),
@@ -193,7 +215,9 @@ describe("useAutoDeploy", () => {
       const extensionUpdateRequired = false;
 
       const { result } = renderHook(() =>
-        useAutoDeploy(deployments, installedExtensions, {
+        useAutoDeploy({
+          activatableDeployments,
+          installedExtensions,
           extensionUpdateRequired,
         }),
       );
@@ -204,7 +228,9 @@ describe("useAutoDeploy", () => {
     it("should return false if the user has uninstall permissions", () => {
       mockHooks({ restricted: false });
 
-      const deployments: Deployment[] = [deploymentFactory()];
+      const activatableDeployments: ActivatableDeployment[] = [
+        activatableDeploymentFactory(),
+      ];
       const installedExtensions = [
         modComponentFactory(),
         modComponentFactory(),
@@ -212,7 +238,9 @@ describe("useAutoDeploy", () => {
       const extensionUpdateRequired = false;
 
       const { result } = renderHook(() =>
-        useAutoDeploy(deployments, installedExtensions, {
+        useAutoDeploy({
+          activatableDeployments,
+          installedExtensions,
           extensionUpdateRequired,
         }),
       );

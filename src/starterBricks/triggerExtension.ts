@@ -20,7 +20,6 @@ import {
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
 import { RepeatableAbortController } from "abort-utils";
-import { propertiesToSchema } from "@/validators/generic";
 import {
   type CustomEventOptions,
   type DebounceOptions,
@@ -85,6 +84,7 @@ import makeServiceContextFromDependencies from "@/integrations/util/makeServiceC
 import { allSettled } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 type TriggerTarget = Document | HTMLElement;
 

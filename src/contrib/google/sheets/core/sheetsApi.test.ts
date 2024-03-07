@@ -168,7 +168,9 @@ describe("error handling", () => {
 
       await expect(getAllSpreadsheets(config)).rejects.toThrow(message);
 
-      expect(await getCachedAuthData(integrationConfig.id)).toStrictEqual({
+      await expect(
+        getCachedAuthData(integrationConfig.id),
+      ).resolves.toStrictEqual({
         access_token: "NOTAREALTOKEN",
       });
       expect(deleteCachedAuthDataMock).toHaveBeenCalledOnce();
@@ -210,7 +212,9 @@ describe("error handling", () => {
 
       await expect(getAllSpreadsheets(config)).rejects.toThrow(message);
 
-      expect(await getCachedAuthData(integrationConfig.id)).toStrictEqual({
+      await expect(
+        getCachedAuthData(integrationConfig.id),
+      ).resolves.toStrictEqual({
         access_token: "NOTAREALTOKEN",
         refresh_token: "NOTAREALREFRESHTOKEN",
       });
@@ -246,7 +250,9 @@ describe("error handling", () => {
 
       await getAllSpreadsheets(config);
 
-      expect(await getCachedAuthData(integrationConfig.id)).toStrictEqual({
+      await expect(
+        getCachedAuthData(integrationConfig.id),
+      ).resolves.toStrictEqual({
         access_token: "NOTAREALTOKEN2",
         refresh_token: "NOTAREALREFRESHTOKEN2",
       });

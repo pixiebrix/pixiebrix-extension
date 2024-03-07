@@ -17,8 +17,8 @@
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { stringToBase64 } from "uint8array-extras";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class Base64Encode extends TransformerABC {
   override defaultOutputKey = "encoded";

@@ -20,7 +20,6 @@ import {
   type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-import { propertiesToSchema } from "@/validators/generic";
 import {
   type Manifest,
   type Menus,
@@ -61,6 +60,7 @@ import { allSettled } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export type QuickBarTargetMode = "document" | "eventTarget";
 
@@ -82,8 +82,8 @@ export abstract class QuickBarStarterBrickABC extends StarterBrickABC<QuickBarCo
   static isQuickBarExtensionPoint(
     extensionPoint: StarterBrick,
   ): extensionPoint is QuickBarStarterBrickABC {
-    // Need to a access a type specific property (QuickBarExtensionPoint._definition) on a base-typed entity (StarterBrick)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any
+    -- Need to a access a type specific property (QuickBarExtensionPoint._definition) on a base-typed entity (StarterBrick) */
     return (extensionPoint as any)?._definition?.type === "quickBar";
   }
 

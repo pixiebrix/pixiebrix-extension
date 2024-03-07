@@ -96,9 +96,9 @@ describe("AuthWidget", () => {
   test("given no auth options, when rendered, then shows configure and refresh buttons", async () => {
     renderContent();
 
-    expect(
-      await screen.findByRole("button", { name: "Configure" }),
-    ).toBeVisible();
+    await expect(
+      screen.findByRole("button", { name: "Configure" }),
+    ).resolves.toBeVisible();
     expect(
       screen.getByRole("button", { name: /refresh/i, exact: false }),
     ).toBeVisible();
@@ -107,7 +107,7 @@ describe("AuthWidget", () => {
   test("given 1 auth option, when rendered, then shows select dropdown and defaults to the only option", async () => {
     renderContent(authOption1);
 
-    expect(await screen.findByText("Test Option 1")).toBeVisible();
+    await expect(screen.findByText("Test Option 1")).resolves.toBeVisible();
     expect(
       screen.queryByRole("button", { name: "Configure" }),
     ).not.toBeInTheDocument();
@@ -116,7 +116,9 @@ describe("AuthWidget", () => {
   test("given multiple auth options, when rendered, then shows select dropdown but does not select an option automatically", async () => {
     renderContent(authOption1, authOption2);
 
-    expect(await screen.findByText("Select configuration...")).toBeVisible();
+    await expect(
+      screen.findByText("Select configuration..."),
+    ).resolves.toBeVisible();
     expect(
       screen.queryByRole("button", { name: "Configure" }),
     ).not.toBeInTheDocument();

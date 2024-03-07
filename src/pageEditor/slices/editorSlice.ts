@@ -139,8 +139,7 @@ const cloneActiveExtension = createAsyncThunk<
       );
     },
   );
-  // Add the cloned extension
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Add the cloned extension
   thunkAPI.dispatch(actions.addElement(newElement));
 });
 
@@ -745,6 +744,11 @@ export const editorSlice = createSlice({
     hideModal(state) {
       state.visibleModalKey = null;
     },
+    hideModalIfShowing(state, action: PayloadAction<ModalKey>) {
+      if (state.visibleModalKey === action.payload) {
+        state.visibleModalKey = null;
+      }
+    },
     editRecipeOptionsValues(state, action: PayloadAction<OptionsArgs>) {
       const recipeId = state.activeRecipeId;
       if (recipeId == null) {
@@ -863,7 +867,7 @@ export const editorSlice = createSlice({
       );
   },
 });
-/* eslint-enable security/detect-object-injection */
+/* eslint-enable security/detect-object-injection  */
 
 export const actions = {
   ...editorSlice.actions,

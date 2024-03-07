@@ -18,10 +18,10 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { $safeFindElementsWithRootMode } from "@/bricks/rootModeHelpers";
 
 import { assertSingleElement } from "@/utils/domUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 class ScrollIntoViewEffect extends EffectABC {
   constructor() {

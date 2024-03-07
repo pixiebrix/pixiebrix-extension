@@ -60,8 +60,9 @@ export function selectUserDataUpdate({
 
   return {
     // TODO: Review Required/Partial in Me type
-    // https://github.com/pixiebrix/pixiebrix-extension/issues/7725
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+    //  https://github.com/pixiebrix/pixiebrix-extension/issues/7725
+    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+    -- email is always present, pending above type refactoring */
     email: email!,
     organizationId: organization?.id ?? null,
     telemetryOrganizationId: telemetryOrganization?.id ?? null,
