@@ -41,6 +41,13 @@ const focusController = {
     // Only HTMLElements can have their focus restored, but we're currently ignoring this distinction
     const active = document.activeElement as HTMLElement;
 
+    if (active === document.body) {
+      // Don't save the body as the focused element. Can happen if when the user clicks the text selection popover,
+      // which then disappears.
+      focusedElement = undefined;
+      return;
+    }
+
     if (focusedElement != null && focusedElement !== active) {
       console.warn(
         "focusController: the previously-saved focus is being overridden",
