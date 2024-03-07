@@ -120,7 +120,7 @@ export function getPackageId(mod: Mod): RegistryId | undefined {
  * Returns the timestamp for the time the mod was last updated (edited)
  */
 export function getUpdatedAt(mod: Mod): string | null {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- See TODO below
   return isResolvedModComponent(mod)
     ? // @ts-expect-error -- TODO: need to figure out why updateTimestamp isn't included on ModComponentBase here
       mod._recipe?.updated_at ?? mod.updateTimestamp
