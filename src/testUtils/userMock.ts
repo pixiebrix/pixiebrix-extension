@@ -26,22 +26,11 @@ import useLinkState from "@/auth/useLinkState";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import type { components } from "@/types/swagger";
 import { transformMeResponse } from "@/data/model/Me";
-import { getLinkedApiClient } from "@/data/service/apiClient";
-import axios from "axios";
 
 // In existing code, there was a lot of places mocking both useQueryState and useGetMeQuery. This could in some places
 // yield impossible states due to how `skip` logic in calls like RequireAuth, etc.
 
 const useLinkStateMock = jest.mocked(useLinkState);
-
-const getLinkedApiClientMock = jest.mocked(getLinkedApiClient);
-
-function connectApiClientMock(): void {
-  const { getLinkedApiClient: actualGetLinkedApiClient } = jest.requireActual(
-    "@/data/service/apiClient",
-  );
-  getLinkedApiClientMock.mockImplementation(actualGetLinkedApiClient);
-}
 
 export function mockAnonymousMeApiResponse(): void {
   appApiMock.onGet("/api/me/").reply(200, {
@@ -49,7 +38,6 @@ export function mockAnonymousMeApiResponse(): void {
     flags: [],
   });
   useLinkStateMock.mockReturnValue(valueToAsyncState(false));
-  // connectApiClientMock();
 }
 
 export async function mockAuthenticatedMeApiResponse(
@@ -64,7 +52,6 @@ export async function mockAuthenticatedMeApiResponse(
 
   await TEST_setAuthData(tokenData);
   useLinkStateMock.mockReturnValue(valueToAsyncState(true));
-  // connectApiClientMock();
 }
 
 export function mockErrorMeApiResponse(error: unknown): void {
@@ -81,8 +68,7 @@ export function mockErrorMeApiResponse(error: unknown): void {
  *    });
  */
 export async function resetMeApiMocks(): Promise<void> {
-  useLinkStateMock.mockReset();
+  useLinkStateMock.mockReturnValue(valueToAsyncState(true));
   appApiMock.reset();
   await TEST_setAuthData({});
-  // getLinkedApiClientMock.mockResolvedValue(axios);
 }

@@ -24,7 +24,6 @@ import { authSlice } from "@/auth/authSlice";
 import { Provider } from "react-redux";
 import integrationsSlice from "@/integrations/store/integrationsSlice";
 import { uuidv4 } from "@/types/helpers";
-import { type RegistryId } from "@/types/registryTypes";
 import PartnerSetupCard from "@/extensionConsole/pages/onboarding/partner/PartnerSetupCard";
 import { type AuthState } from "@/auth/authTypes";
 import { appApi } from "@/data/service/api";
@@ -34,6 +33,7 @@ import { createHashHistory } from "history";
 import { addThemeClassToDocumentRoot } from "@/themes/themeUtils";
 import defaultMiddlewareConfig from "@/store/defaultMiddlewareConfig";
 import { meApiResponseFactory } from "@/testUtils/factories/authFactories";
+import { mockAnonymousMeApiResponse } from "@/testUtils/userMock";
 
 export default {
   title: "Onboarding/Setup/PartnerSetupCard",
@@ -54,8 +54,9 @@ const PartnerThemeEffect: React.FunctionComponent = () => {
 
 const Template: Story<{
   auth: AuthState;
-  configuredServiceId: RegistryId | null;
 }> = ({ auth }) => {
+  mockAnonymousMeApiResponse();
+
   // Store that doesn't persist the data
   const templateStore = configureStore({
     reducer: {
