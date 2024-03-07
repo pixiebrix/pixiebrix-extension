@@ -53,10 +53,6 @@ import type { Deployment } from "@/types/contract";
 import useBrowserIdentifier from "@/hooks/useBrowserIdentifier";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import type { Permissions } from "webextension-polyfill";
-import {
-  loadingAsyncStateFactory,
-  valueToAsyncState,
-} from "@/utils/asyncStateUtils";
 
 export type DeploymentsState = {
   /**
@@ -98,7 +94,7 @@ export type DeploymentsState = {
 function useDeployments(): DeploymentsState {
   const dispatch = useDispatch<Dispatch>();
   const activeExtensions = useSelector(selectExtensions);
-  const { restrict, isSuccess: isFlagsReady } = useFlags();
+  const { state: flagsState } = useFlags();
   const activeDeployments = useMemoCompare<InstalledDeployment[]>(
     selectInstalledDeployments(activeExtensions),
     isEqual,
@@ -118,16 +114,10 @@ function useDeployments(): DeploymentsState {
     },
   );
 
-  // Map flags state to standard AsyncState shape. Is savf because useDeriveAsyncState does not require that
-  // the data are serializable
-  const flagsState = isFlagsReady
-    ? valueToAsyncState(restrict)
-    : loadingAsyncStateFactory();
-
   const deploymentUpdateState = useDeriveAsyncState(
     deploymentsState,
     flagsState,
-    async (deployments: Deployment[], restrict: Restrict["restrict"]) => {
+    async (deployments: Deployment[], { restrict }: Restrict) => {
       const isUpdated = makeUpdatedFilter(activeExtensions, {
         restricted: restrict("uninstall"),
       });

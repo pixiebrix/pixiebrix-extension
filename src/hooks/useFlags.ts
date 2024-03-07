@@ -21,6 +21,8 @@ import {
   addListener as addAuthStorageListener,
   removeListener as removeAuthStorageListener,
 } from "@/auth/authStorage";
+import type { AsyncState } from "@/types/sliceTypes";
+import { mergeAsyncState } from "@/utils/asyncStateUtils";
 
 const RESTRICTED_PREFIX = "restricted";
 
@@ -37,17 +39,16 @@ type RestrictedFeature =
   | "page-editor";
 
 export type Restrict = {
-  // XXX: Asynchronous state flags. Consider returning a standard AsyncState. Typically, AsyncState is used with
-  // serializable values, though, so there may be gotchas in some circumstances.
-  isLoading: boolean;
-  isFetching: boolean;
-  isError: boolean;
-  isSuccess: boolean;
-  // Methods
   permit: (area: RestrictedFeature) => boolean;
   restrict: (area: RestrictedFeature) => boolean;
   flagOn: (flag: string) => boolean;
   flagOff: (flag: string) => boolean;
+};
+
+type HookResult = Restrict & {
+  // The async state for use in deriving values that require valid flags. Not that the data is not serializable,
+  // so might not work with all async state utilities.
+  state: AsyncState<Restrict>;
 };
 
 /**
@@ -55,15 +56,9 @@ export type Restrict = {
  *
  * For permit/restrict, features will be restricted in the fetching/loading state
  */
-function useFlags(): Restrict {
-  const {
-    data: flags,
-    isLoading,
-    isFetching,
-    isError,
-    isSuccess,
-    refetch,
-  } = useGetFeatureFlagsQuery();
+function useFlags(): HookResult {
+  const queryState = useGetFeatureFlagsQuery();
+  const { refetch } = queryState;
 
   useEffect(() => {
     const listener = () => {
@@ -78,13 +73,9 @@ function useFlags(): Restrict {
   }, [refetch]);
 
   return useMemo(() => {
-    const flagSet = new Set(flags);
+    const flagSet = new Set(queryState.data);
 
-    return {
-      isLoading,
-      isFetching,
-      isSuccess,
-      isError,
+    const helpers: Restrict = {
       permit: (area: RestrictedFeature) =>
         !flagSet.has(`${RESTRICTED_PREFIX}-${area}`),
       restrict: (area: RestrictedFeature) =>
@@ -92,7 +83,12 @@ function useFlags(): Restrict {
       flagOn: (flag: string) => flagSet.has(flag),
       flagOff: (flag: string) => !flagSet.has(flag),
     };
-  }, [flags, isLoading, isFetching, isError, isSuccess]);
+
+    return {
+      ...helpers,
+      state: mergeAsyncState(queryState, () => helpers),
+    };
+  }, [queryState]);
 }
 
 export default useFlags;
