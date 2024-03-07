@@ -41,7 +41,10 @@ import ReduxPersistenceContext, {
 import type { StarterBrickType } from "@/types/starterBrickTypes";
 import type { EditorState } from "@/pageEditor/pageEditorTypes";
 import DimensionGate from "@/pageEditor/components/DimensionGate";
-import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
+import {
+  allFramesInInspectedTab,
+  inspectedTab,
+} from "@/pageEditor/context/connection";
 
 const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
   "actionPanel",
@@ -72,7 +75,7 @@ const PanelContent: React.FC = () => {
 
     if (activeElement != null && shouldAutoRun(activeElement)) {
       const dynamicElement = formStateToDynamicElement(activeElement);
-      updateDynamicElement(allFramesInInspectedTab, dynamicElement);
+      updateDynamicElement(inspectedTab, dynamicElement);
     }
   }, [dispatch, activeElement]);
 
