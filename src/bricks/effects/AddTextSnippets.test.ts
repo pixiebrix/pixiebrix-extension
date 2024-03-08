@@ -47,7 +47,7 @@ describe("AddTextSnippets", () => {
 
       expect(commandRegistry.commands).toStrictEqual([
         {
-          // Leading slash is dropped
+          // Leading command key is dropped
           shortcut: "test",
           title: "Test",
           handler: expect.toBeFunction(),

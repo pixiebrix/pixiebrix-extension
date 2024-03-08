@@ -29,6 +29,7 @@ import { getSettingsState } from "@/store/settings/settingsStorage";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { normalizeShortcut } from "@/bricks/effects/AddTextSnippets";
 
 type CommandArgs = {
   /**
@@ -108,8 +109,8 @@ class AddTextCommand extends EffectABC {
 
     platform.commandPopover.register({
       componentId: logger.context.extensionId,
-      // Trim leading slashes to be resilient to user input
-      shortcut: shortcut.replace(/^[/\\]/, ""),
+      // Trim leading command key in shortcut to be resilient to user input
+      shortcut: normalizeShortcut(shortcut),
       title,
       async handler(currentText: string): Promise<string> {
         counter++;
