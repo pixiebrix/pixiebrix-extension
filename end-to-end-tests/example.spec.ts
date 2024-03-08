@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 import { E2E_TEST_USER_EMAIL_UNAFFILIATED, SERVICE_URL } from "./env";
 
 test.describe("create-react-app", () => {
@@ -24,6 +24,11 @@ test.describe("create-react-app", () => {
     await expect(
       page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
     ).toBeVisible();
+  });
+
+  test("can open the extension console", async ({ page, extensionId }) => {
+    await page.goto(`chrome-extension://${extensionId}/options.html`);
+    await expect(page.getByText("Extension Console")).toBeVisible();
   });
 
   test("has title", async ({ page }) => {

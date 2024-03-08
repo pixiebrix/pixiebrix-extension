@@ -27,7 +27,7 @@ const requiredEnvVariables = [
   "E2E_TEST_USER_PASSWORD_UNAFFILIATED",
 ] as const;
 
-const optionalEnvVariables = ["CI"] as const;
+const optionalEnvVariables = ["CI", "MV"] as const;
 
 type RequiredEnvVariables = Record<
   (typeof requiredEnvVariables)[number],
@@ -59,4 +59,4 @@ export const {
   E2E_TEST_USER_PASSWORD_UNAFFILIATED,
 } = process.env as RequiredEnvVariables;
 
-export const { CI } = process.env as OptionalEnvVariables;
+export const { CI, MV } = process.env as OptionalEnvVariables;
