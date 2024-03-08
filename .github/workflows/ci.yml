@@ -202,7 +202,9 @@ jobs:
       - name: Build the extension
         run: npm run build:webpack
       - name: Run end to end tests
-        # remove "|| exit 0" when these tests are ready to be used in CI
+        # Remove "|| exit 0" when these tests are ready to be used in CI
+        # Xvfb is required to run the tests in headed mode. Headed mode is required to run tests for browser extensions
+        # in Playwright, see https://playwright.dev/docs/ci#running-headed
         run: xvfb-run npm run test:e2e || exit 0
       - uses: actions/upload-artifact@v4
         if: always()

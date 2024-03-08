@@ -29,7 +29,7 @@ const getStoredCookies = async (): Promise<Cookie[]> => {
   let fileBuffer;
   try {
     fileBuffer = await fs.readFile(
-      // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname is throwing "cannot use 'import meta' outside a module"
+      // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname throws "cannot use 'import meta' outside a module"
       path.join(__dirname, "./.auth/user.json"),
     );
   } catch (error) {
@@ -54,7 +54,7 @@ export const test = base.extend<{
 }>({
   // eslint-disable-next-line no-empty-pattern -- Playwright requires destructuring pattern as first argument
   async context({}, use) {
-    // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname is throwing "cannot use 'import meta' outside a module"
+    // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname throws "cannot use 'import meta' outside a module"
     const pathToExtension = path.join(__dirname, "../dist");
 
     const context = await chromium.launchPersistentContext("", {
@@ -67,6 +67,7 @@ export const test = base.extend<{
 
     // Manually add session cookies instead of relying on storageState in playwright.config.ts because
     // launchPersistentContext does not support a storageState option
+    // see https://github.com/microsoft/playwright/issues/7634
     await context.addCookies(await getStoredCookies());
     await use(context);
     await context.close();
