@@ -50,6 +50,8 @@ export const test = base.extend<{
       cookies: Cookie[];
     };
 
+    // Manually add session cookies instead of relying on storageState in playwright.config.ts because
+    // launchPersistentContext does not support a storageState option
     await context.addCookies(cookies);
     await use(context);
     await context.close();
