@@ -62,13 +62,14 @@ type ApplyJqPayload = {
   filter: string;
 };
 
-async function applyJq(payload: ApplyJqPayload) {
+async function applyJq(payload: ApplyJqPayload): Promise<JsonValue> {
   const { input, filter } = payload;
   const { default: jq } = await import(
     /* webpackChunkName: "jq-web" */
     "@pixiebrix/jq-web"
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Not sure why it's marked as "any"
   return jq.promised.json(input, filter);
 }
 
@@ -104,6 +105,7 @@ export class JQTransformer extends TransformerABC {
     { ctxt }: BrickOptions,
   ): Promise<unknown> {
     // This is the legacy behavior, back from runtime v1 when there wasn't explicit data flow.
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- TODO: Fix when BrickArgs/BrickOptions return `unknown` instead
     const input = isNullOrBlank(data) ? ctxt : data;
 
     try {

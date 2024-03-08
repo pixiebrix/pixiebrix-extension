@@ -27,7 +27,10 @@ type SimpleEventListener<Detail> = (detail: Detail) => void;
  */
 export class SimpleEventTarget<Detail> extends EventTarget {
   coreEvent = "DEFAULT";
-  private readonly weakEvents = new WeakMap();
+  private readonly weakEvents = new WeakMap<
+    SimpleEventListener<Detail>,
+    EventListener
+  >();
 
   // Permanently map simplified callbacks to native listeners.
   // This acts as a memoization/deduplication which matches the native behavior.
@@ -36,7 +39,8 @@ export class SimpleEventTarget<Detail> extends EventTarget {
     callback: SimpleEventListener<Detail>,
   ): EventListener {
     if (this.weakEvents.has(callback)) {
-      return this.weakEvents.get(callback);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Just checked
+      return this.weakEvents.get(callback)!;
     }
 
     const native = (event: CustomEvent<Detail>) => {

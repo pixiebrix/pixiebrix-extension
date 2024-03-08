@@ -226,6 +226,7 @@ function isManaged(node: Node): boolean {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Internal Ember types
 function targetForComponent(component: any): UnknownObject {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access -- Internal Ember types
   return component._target || component._targetObject;
 }
 

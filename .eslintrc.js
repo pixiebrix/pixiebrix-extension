@@ -107,7 +107,6 @@ module.exports = {
     // TODO: Gradually fix and then drop https://github.com/pixiebrix/eslint-config-pixiebrix/pull/150
     "@typescript-eslint/no-unsafe-assignment": "warn",
     "@typescript-eslint/no-unsafe-member-access": "warn",
-    "@typescript-eslint/no-unsafe-return": "warn",
 
     "no-restricted-imports": [
       "error",

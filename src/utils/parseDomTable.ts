@@ -183,7 +183,7 @@ export function describeTable(
 export function getAllTables(
   root: HTMLElement | Document = document,
 ): Map<string, ParsedTable> {
-  const tables = new Map();
+  const tables = new Map<string, ParsedTable>();
   for (const table of $<HTMLTableElement>("table", root)) {
     // Skip empty tables
     if (!table.rows[0]?.cells.length) {
