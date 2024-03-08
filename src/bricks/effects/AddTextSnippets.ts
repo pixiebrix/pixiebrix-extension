@@ -24,6 +24,19 @@ import { getSettingsState } from "@/store/settings/settingsStorage";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 
+/**
+ * Regex for likely command keys to strip from shortcut definitions
+ */
+const COMMAND_KEY_REGEX = /^[/\\]/;
+
+/**
+ * Normalize a shortcut by removing the leading command key (if any)
+ * @param shortcut user-defined shortcut
+ */
+export function normalizeShortcut(shortcut: string): string {
+  return shortcut.replace(COMMAND_KEY_REGEX, "");
+}
+
 type Snippet = {
   /**
    * The shortcut for the text command.
@@ -109,8 +122,7 @@ class AddTextSnippets extends EffectABC {
     for (const { shortcut, title, text } of snippets) {
       platform.commandPopover.register({
         componentId: logger.context.extensionId,
-        // Trim leading slash to be resilient to user input
-        shortcut: shortcut.replace(/^\//, ""),
+        shortcut: normalizeShortcut(shortcut),
         title,
         async handler(): Promise<string> {
           return text;

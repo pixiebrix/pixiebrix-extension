@@ -41,39 +41,42 @@ afterEach(() => {
 });
 
 describe("AddTextCommand", () => {
-  it("registers command", async () => {
-    const extensionId = uuidv4();
-    const logger = new ConsoleLogger({ extensionId });
+  it.each(["/echo", "echo", "\\echo"])(
+    "registers command: %s",
+    async (shortcut) => {
+      const extensionId = uuidv4();
+      const logger = new ConsoleLogger({ extensionId });
 
-    const pipeline = {
-      id: brick.id,
-      config: {
-        shortcut: "/echo",
-        title: "Echo",
-        generate: toExpression("pipeline", [
-          { id: identity.id, config: toExpression("var", "@currentText") },
-        ]),
-      },
-    };
+      const pipeline = {
+        id: brick.id,
+        config: {
+          shortcut,
+          title: "Echo",
+          generate: toExpression("pipeline", [
+            { id: identity.id, config: toExpression("var", "@currentText") },
+          ]),
+        },
+      };
 
-    await reducePipeline(pipeline, simpleInput({}), {
-      ...testOptions("v3"),
-      extensionId,
-      logger,
-    });
+      await reducePipeline(pipeline, simpleInput({}), {
+        ...testOptions("v3"),
+        extensionId,
+        logger,
+      });
 
-    expect(commandRegistry.commands).toStrictEqual([
-      {
-        // Leading slash is dropped
-        shortcut: "echo",
-        title: "Echo",
-        handler: expect.toBeFunction(),
-        componentId: extensionId,
-      },
-    ]);
+      expect(commandRegistry.commands).toStrictEqual([
+        {
+          // Any leading slash is dropped
+          shortcut: "echo",
+          title: "Echo",
+          handler: expect.toBeFunction(),
+          componentId: extensionId,
+        },
+      ]);
 
-    await expect(
-      commandRegistry.commands[0].handler("current text"),
-    ).resolves.toBe("current text");
-  });
+      await expect(
+        commandRegistry.commands[0].handler("current text"),
+      ).resolves.toBe("current text");
+    },
+  );
 });
