@@ -30,7 +30,9 @@ const waitForAdminConsoleToLoad = async (page: Page) => {
       (await page.getByLabel("Email").isVisible()) ||
         (await page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED).isVisible()),
     ).toBeTruthy();
-  }).toPass();
+  }).toPass({
+    timeout: 5000,
+  });
 };
 
 setup("authenticate", async ({ page }) => {
