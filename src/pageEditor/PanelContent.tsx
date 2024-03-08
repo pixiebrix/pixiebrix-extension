@@ -22,7 +22,7 @@ import { tabStateActions } from "@/pageEditor/tabState/tabStateSlice";
 import { persistor } from "@/pageEditor/store";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import ErrorBanner from "@/pageEditor/ErrorBanner";
+import TabConnectionErrorBanner from "@/pageEditor/TabConnectionErrorBanner";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginCard from "@/pageEditor/components/LoginCard";
 import EditorLayout from "@/pageEditor/EditorLayout";
@@ -42,6 +42,7 @@ import type { StarterBrickType } from "@/types/starterBrickTypes";
 import type { EditorState } from "@/pageEditor/pageEditorTypes";
 import DimensionGate from "@/pageEditor/components/DimensionGate";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
+import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
 
 const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
   "actionPanel",
@@ -110,7 +111,8 @@ const PanelContent: React.FC = () => {
       <ReduxPersistenceContext.Provider value={authPersistenceContext}>
         <ModalProvider>
           <ErrorBoundary>
-            <ErrorBanner />
+            <TabConnectionErrorBanner />
+            <DatabaseUnresponsiveBanner />
             <DimensionGate>
               <RequireAuth LoginPage={LoginCard}>
                 <EditorLayout />

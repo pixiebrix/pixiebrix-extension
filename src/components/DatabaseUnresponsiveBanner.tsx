@@ -37,7 +37,7 @@ const errorBanner = (
 
 /**
  * Banner that displays when the local registry IDB database is unresponsive.
- * @param timeoutMillis the number of milliseconds to wait for a response
+ * @param timeoutMillis the number of milliseconds to wait before IDB is considered unresponsive
  * @constructor
  */
 const DatabaseUnresponsiveBanner: React.VoidFunctionComponent<{
@@ -54,8 +54,8 @@ const DatabaseUnresponsiveBanner: React.VoidFunctionComponent<{
       reportEvent(Events.IDB_UNRESPONSIVE_BANNER);
       reportError(new Error("IDB unresponsive"));
     }
-    // Show banner can only transition from false -> true once because `state` is only calculated once and
-    // hasWaited stays true after it becomes true because timeoutMillis is non-null.
+    // `showBanner` can only transition from false -> true once because `state` is only calculated once and
+    // hasWaited stays true after it becomes true because timeoutMillis is non-null (timeoutMillis is defaulted)
   }, [showBanner]);
 
   return showBanner ? errorBanner : null;

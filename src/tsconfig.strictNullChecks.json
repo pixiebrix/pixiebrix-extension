@@ -454,7 +454,7 @@
     "./mods/hooks/useMarketplaceUrl.ts",
     "./mv3/SessionStorage.ts",
     "./mv3/api.ts",
-    "./pageEditor/ErrorBanner.tsx",
+    "./pageEditor/TabConnectionErrorBanner.tsx",
     "./pageEditor/NonScriptablePage.tsx",
     "./pageEditor/baseFormStateTypes.ts",
     "./pageEditor/brickSummary.tsx",
