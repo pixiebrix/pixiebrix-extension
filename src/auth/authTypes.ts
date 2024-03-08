@@ -15,15 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  type Me,
-  type OrganizationTheme,
-  type Milestone,
-} from "@/types/contract";
 import { type Except } from "type-fest";
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { type UserPartner } from "@/data/model/UserPartner";
+import { type PartnerPrincipal } from "@/data/model/PartnerPrincipal";
+import { type OrganizationTheme } from "@/data/model/OrganizationTheme";
+import { type ControlRoom } from "@/data/model/ControlRoom";
+import { type UserRole } from "@/types/contract";
+import { type UserMilestone } from "@/data/model/UserMilestone";
 
 export type AuthSharing = "private" | "shared" | "built-in";
 export interface AuthOption {
@@ -83,12 +84,12 @@ export type UserData = Partial<{
    *
    * @since 1.7.14
    */
-  readonly partner: Me["partner"] | null;
+  readonly partner: UserPartner | null;
   /**
    * The partner principals. Currently, just the Automation Anywhere Control Room principal if applicable.
    * @since 1.7.16
    */
-  readonly partnerPrincipals: Me["partner_principals"];
+  readonly partnerPrincipals: PartnerPrincipal[];
 }>;
 
 // Exclude tenant information in updates (these are only updated on linking)
@@ -154,7 +155,7 @@ export type OrganizationAuthState = {
   /**
    * The Automation Anywhere Control Room information
    */
-  readonly control_room?: NonNullable<Me["organization"]>["control_room"];
+  readonly control_room?: ControlRoom;
 };
 
 export type AuthUserOrganization = {
@@ -169,7 +170,7 @@ export type AuthUserOrganization = {
   /**
    * The user's role within the organization.
    */
-  role: Me["organization_memberships"][number]["role"];
+  role: UserRole;
   /**
    * The organization's brick scope, or null if not set.
    */
@@ -233,12 +234,12 @@ export type AuthState = {
   /**
    * List of milestones for the user. A Milestone represents progress through the PixieBrix product.
    */
-  readonly milestones: readonly Milestone[];
+  readonly milestones: readonly UserMilestone[];
 
   /**
    * The partner, controlling theme, documentation links, etc.
    */
-  readonly partner?: Me["partner"] | null;
+  readonly partner?: UserPartner | null;
 
   /**
    * Number of milliseconds after which to enforce browser extension and manual deployment updates, or `null` to

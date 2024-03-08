@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: reader
+metadata:
+  id: test/empty-jquery-reader
+  version: 0.0.1
+  name: Empty JQuery Reader
+  description: "Empty JQuery reader for testing purposes; Page Editor used to produce reader definitions"
+definition:
+  reader:
+    type: jquery
+    selectors: {}
+outputSchema:
+  $schema: https://json-schema.org/draft-04/schema#
+  title: Inferred Schema
+  type: object
+  properties: {}

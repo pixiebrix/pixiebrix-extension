@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 PixieBrix, Inc.
+ * Copyright (C) 2023 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,13 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios from "axios";
-// Re-export utility methods directly, skip automatic __mocks__ resolution #6799
-export { absoluteApiUrl } from "../../../../data/service/apiClient";
+import { type RequiredMeMilestoneResponse } from "@/data/service/responseTypeHelpers";
 
-// A mock of @/data/service/apiClient that doesn't use the local browser state. For use with msw in Storybook.
-// See .storybook/preview.js for more information
+export type UserMilestone = {
+  /**
+   * A lower-snake-case, human-readible identifier for the Milestone, e.g. "first_time_extension_install"
+   */
+  milestoneName: string;
+  /**
+   * Optional additional information to provide context about the Milestone
+   */
+  metadata: UnknownObject;
+};
 
-export const getLinkedApiClient = jest.fn(async () => axios);
-export const getApiClient = jest.fn(async () => axios);
-export const maybeGetLinkedApiClient = jest.fn(async () => axios);
+export function transformUserMilestoneResponse(
+  response: RequiredMeMilestoneResponse,
+): UserMilestone {
+  return {
+    milestoneName: response.key,
+    metadata: response.metadata ?? {},
+  };
+}

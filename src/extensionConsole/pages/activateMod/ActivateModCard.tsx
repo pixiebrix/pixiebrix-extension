@@ -148,7 +148,7 @@ const ActivateModCard: React.FC = () => {
 
       if (!hasMilestone("first_time_public_blueprint_install")) {
         await createMilestone({
-          key: "first_time_public_blueprint_install",
+          milestoneName: "first_time_public_blueprint_install",
           metadata: {
             blueprintId: modId,
           },

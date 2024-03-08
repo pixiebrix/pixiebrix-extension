@@ -25,6 +25,7 @@ import { locator } from "@/background/locator";
 import { uuidv4 } from "@/types/helpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/managedStorage";
+import { userPartnerFactory } from "@/testUtils/factories/authFactories";
 
 const APP_BASE_URL = "https://app.pixiebrix.com";
 
@@ -74,7 +75,7 @@ describe("openInstallPage", () => {
       url: APP_BASE_URL,
       active: true,
     });
-    expect(createTabMock.mock.calls).toHaveLength(0);
+    expect(createTabMock).not.toHaveBeenCalled();
   });
 
   it("Opens Extension Console in same tab for enterprise partner", async () => {
@@ -89,7 +90,7 @@ describe("openInstallPage", () => {
       url: "chrome-extension://abcxyz/options.html#/start?hostname=enterprise.com",
       active: true,
     });
-    expect(createTabMock.mock.calls).toHaveLength(0);
+    expect(createTabMock).not.toHaveBeenCalled();
   });
 
   it("Opens Admin Console in same tab for community partner", async () => {
@@ -104,14 +105,14 @@ describe("openInstallPage", () => {
       url: APP_BASE_URL,
       active: true,
     });
-    expect(createTabMock.mock.calls).toHaveLength(0);
+    expect(createTabMock).not.toHaveBeenCalled();
   });
 
   it("Opens new Extension Console tab if no Admin Console onboarding tab found", async () => {
     queryTabsMock.mockResolvedValue([]);
     await openInstallPage();
     expect(createTabMock).toHaveBeenCalledWith({ url: APP_BASE_URL });
-    expect(updateTabMock.mock.calls).toHaveLength(0);
+    expect(updateTabMock).not.toHaveBeenCalled();
   });
 });
 
@@ -134,24 +135,21 @@ describe("checkPartnerAuth", () => {
 
     await requirePartnerAuth();
 
-    expect(createTabMock.mock.calls).toHaveLength(0);
-    expect(updateTabMock.mock.calls).toHaveLength(0);
+    expect(createTabMock).not.toHaveBeenCalled();
+    expect(updateTabMock).not.toHaveBeenCalled();
   });
 
   it("skip if partner JWT install", async () => {
     isLinkedMock.mockResolvedValue(true);
     getExtensionTokenMock.mockResolvedValue(null);
     getUserData.mockResolvedValue({
-      partner: {
-        id: uuidv4(),
-        theme: "automation-anywhere",
-      },
-    } as any);
+      partner: userPartnerFactory(),
+    });
 
     await requirePartnerAuth();
 
-    expect(createTabMock.mock.calls).toHaveLength(0);
-    expect(updateTabMock.mock.calls).toHaveLength(0);
+    expect(createTabMock).not.toHaveBeenCalled();
+    expect(updateTabMock).not.toHaveBeenCalled();
   });
 
   it("opens extension console if linked with partner and no services", async () => {
@@ -163,19 +161,16 @@ describe("checkPartnerAuth", () => {
       { id: uuidv4(), serviceId: "automation-anywhere", proxy: true } as any,
     ]);
     getUserData.mockResolvedValue({
-      partner: {
-        id: uuidv4(),
-        theme: "automation-anywhere",
-      },
-    } as any);
+      partner: userPartnerFactory(),
+    });
 
     await requirePartnerAuth();
 
-    expect(createTabMock.mock.calls).toHaveLength(1);
+    expect(createTabMock).toHaveBeenCalledTimes(1);
     expect(createTabMock).toHaveBeenCalledWith({
       url: "chrome-extension://abcxyz/options.html",
     });
-    expect(updateTabMock.mock.calls).toHaveLength(0);
+    expect(updateTabMock).not.toHaveBeenCalled();
   });
 
   it("opens extension console in same tab if linked with partner and no services and extension console open", async () => {
@@ -188,16 +183,13 @@ describe("checkPartnerAuth", () => {
     isLinkedMock.mockResolvedValue(true);
     getExtensionTokenMock.mockResolvedValue("abc123");
     getUserData.mockResolvedValue({
-      partner: {
-        id: uuidv4(),
-        theme: "automation-anywhere",
-      },
-    } as any);
+      partner: userPartnerFactory(),
+    });
 
     await requirePartnerAuth();
 
-    expect(createTabMock.mock.calls).toHaveLength(0);
-    expect(updateTabMock.mock.calls).toHaveLength(1);
+    expect(createTabMock).not.toHaveBeenCalled();
+    expect(updateTabMock).toHaveBeenCalledTimes(1);
     expect(updateTabMock).toHaveBeenCalledWith(1, {
       url: "chrome-extension://abcxyz/options.html",
       active: true,
@@ -212,16 +204,13 @@ describe("checkPartnerAuth", () => {
       { id: uuidv4(), serviceId: "automation-anywhere" } as any,
     ]);
     getUserData.mockResolvedValue({
-      partner: {
-        id: uuidv4(),
-        theme: "automation-anywhere",
-      },
-    } as any);
+      partner: userPartnerFactory(),
+    });
 
     await requirePartnerAuth();
 
-    expect(createTabMock.mock.calls).toHaveLength(0);
-    expect(updateTabMock.mock.calls).toHaveLength(0);
+    expect(createTabMock).not.toHaveBeenCalled();
+    expect(updateTabMock).not.toHaveBeenCalled();
   });
 });
 

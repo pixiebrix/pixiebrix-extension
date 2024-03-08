@@ -25,6 +25,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import useAsyncEffect from "use-async-effect";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 type UseAutoDeployReturn = {
   /**
@@ -38,7 +39,8 @@ function useAutoDeploy({
   installedExtensions,
   extensionUpdateRequired,
 }: {
-  activatableDeployments: ActivatableDeployment[];
+  // Expects nullish value if activatableDeployments are uninitialized/not loaded yet
+  activatableDeployments: Nullishable<ActivatableDeployment[]>;
   installedExtensions: ModComponentBase[];
   extensionUpdateRequired: boolean;
 }): UseAutoDeployReturn {

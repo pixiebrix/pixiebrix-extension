@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type Deployment, type Me } from "@/types/contract";
+import { type Deployment } from "@/types/contract";
 import { isEmpty, partition } from "lodash";
 import reportError from "@/telemetry/reportError";
 import { getUUID } from "@/telemetry/telemetryHelpers";
@@ -73,6 +73,8 @@ import { fetchDeploymentModDefinitions } from "@/modDefinitions/modDefinitionRaw
 import { services } from "@/background/messenger/api";
 import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
+import type { components } from "@/types/swagger";
+import { transformMeResponse } from "@/data/model/Me";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
@@ -466,19 +468,22 @@ export async function syncDeployments(): Promise<void> {
     return;
   }
 
-  const { data: profile } = await client.get<Me>("/api/me/");
+  // In the case of errors, client.get() will throw here, so we don't need to explicitly check the status
+  const { data: meApiResponse } =
+    await client.get<components["schemas"]["Me"]>("/api/me/");
+  const meData = transformMeResponse(meApiResponse);
 
   const { isSnoozed, isUpdateOverdue, updatePromptTimestamp } =
     selectUpdatePromptState(
       { settings },
       {
         now,
-        enforceUpdateMillis: profile.enforce_update_millis,
+        enforceUpdateMillis: meApiResponse.enforce_update_millis,
       },
     );
 
   // Ensure the user's flags and telemetry information is up-to-date
-  void updateUserData(selectUserDataUpdate(profile));
+  void updateUserData(selectUserDataUpdate(meData));
 
   const { data: deployments } = await client.post<Deployment[]>(
     "/api/deployments/",
@@ -500,12 +505,12 @@ export async function syncDeployments(): Promise<void> {
   // Using the restricted-uninstall flag as a proxy for whether the user is a restricted user. The flag currently
   // corresponds to whether the user is a restricted user vs. developer
   const updatedDeployments = await selectUpdatedDeployments(deployments, {
-    restricted: profile.flags.includes("restricted-uninstall"),
+    restricted: meApiResponse.flags.includes("restricted-uninstall"),
   });
 
   if (
     isSnoozed &&
-    profile.enforce_update_millis &&
+    meData.enforceUpdateMillis &&
     updatePromptTimestamp == null &&
     (isUpdateAvailable() || updatedDeployments.length > 0)
   ) {
@@ -522,8 +527,8 @@ export async function syncDeployments(): Promise<void> {
   if (
     isUpdateAvailable() &&
     // `restricted-version` is an implicit flag from the MeSerializer
-    (profile.flags.includes("restricted-version") ||
-      profile.enforce_update_millis)
+    (meApiResponse.flags.includes("restricted-version") ||
+      meData.enforceUpdateMillis)
   ) {
     console.info("Extension update available from the web store");
     // Have the user update their browser extension. (Since the new version might impact the deployment activation)
@@ -562,7 +567,7 @@ export async function syncDeployments(): Promise<void> {
     // the next heartbeat/check.
     activatableDeployments:
       await fetchDeploymentModDefinitions(updatedDeployments),
-    profile,
+    meApiResponse,
   });
 }
 
@@ -574,17 +579,17 @@ export async function syncDeployments(): Promise<void> {
  */
 async function activateDeploymentsInBackground({
   activatableDeployments,
-  profile,
+  meApiResponse,
 }: {
   activatableDeployments: ActivatableDeployment[];
-  profile: Me;
+  meApiResponse: components["schemas"]["Me"];
 }): Promise<void> {
   // `clipboardWrite` is not strictly required to use the clipboard brick, so allow it to auto-install.
   // Behind a feature flag in case it causes problems for enterprise customers.
   // Could use browser.runtime.getManifest().optional_permissions here, but that also technically supports the Origin
   // type so the types wouldn't match with checkDeploymentPermissions
   const optionalPermissions: Manifest.OptionalPermission[] =
-    profile.flags.includes("deployment-permissions-strict")
+    meApiResponse.flags.includes("deployment-permissions-strict")
       ? []
       : ["clipboardWrite"];
 
