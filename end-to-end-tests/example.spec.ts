@@ -26,6 +26,11 @@ test.describe("create-react-app", () => {
     ).toBeVisible();
   });
 
+  test("can open the extension console", async ({ page, extensionId }) => {
+    await page.goto(`chrome-extension://${extensionId}/options.html`);
+    await expect(page.getByText("Extension Console")).toBeVisible();
+  });
+
   test("has title", async ({ page }) => {
     await page.goto("/create-react-app/");
 
