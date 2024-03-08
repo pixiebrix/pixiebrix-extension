@@ -187,6 +187,8 @@ jobs:
   end-to-end-tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    env:
+      SERVICE_URL: https://app.pixiebrix.com
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -199,8 +201,6 @@ jobs:
         run: npx playwright install chromium chrome
       - name: Build the extension
         run: npm run build:webpack
-        env:
-          SERVICE_URL: https://app.pixiebrix.com/
       - name: Run end to end tests
         # remove "|| exit 0" when these tests are ready to be used in CI
         run: xvfb-run npm run test:e2e || exit 0
