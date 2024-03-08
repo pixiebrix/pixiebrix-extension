@@ -56,8 +56,6 @@ export const test = base.extend<{
   async context({}, use) {
     // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname is throwing "cannot use 'import meta' outside a module"
     const pathToExtension = path.join(__dirname, "../dist");
-    console.log("*** path to extension:", path.join(__dirname, "../dist"));
-    console.log("*** environment:", process.env);
 
     const context = await chromium.launchPersistentContext("", {
       headless: false,
