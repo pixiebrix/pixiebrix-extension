@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React from "react";
 import Banner from "@/components/banner/Banner";
 import useAsyncState from "@/hooks/useAsyncState";
 import { count as pingPackageDatabase } from "@/registry/packageRegistry";
@@ -23,6 +23,7 @@ import useTimeoutState from "@/hooks/useTimeoutState";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import reportError from "@/telemetry/reportError";
+import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 const errorBanner = (
   <Banner variant="warning">
@@ -48,15 +49,12 @@ const DatabaseUnresponsiveBanner: React.VoidFunctionComponent<{
   const hasWaited = useTimeoutState(timeoutMillis);
 
   const showBanner = !state.isSuccess && hasWaited;
+  const prevShowBanner = usePreviousValue(showBanner);
 
-  useEffect(() => {
-    if (showBanner) {
-      reportEvent(Events.IDB_UNRESPONSIVE_BANNER);
-      reportError(new Error("IDB unresponsive"));
-    }
-    // `showBanner` can only transition from false -> true once because `state` is only calculated once and
-    // hasWaited stays true after it becomes true because timeoutMillis is non-null (timeoutMillis is defaulted)
-  }, [showBanner]);
+  if (showBanner && !prevShowBanner) {
+    reportEvent(Events.IDB_UNRESPONSIVE_BANNER);
+    reportError(new Error("IDB unresponsive"));
+  }
 
   return showBanner ? errorBanner : null;
 };

@@ -15,17 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import reportError from "@/telemetry/reportError";
-import { usePreviousValue } from "@/hooks/usePreviousValue";
+import { useEffect, useRef } from "react";
 
 /**
- * React hook to report an error if it's different from the previous error.
+ * React hook to get the value of a variable from the previous render.
+ * This is useful for comparing the current value of a variable with its previous value
+ * to determine how it has changed, and avoids the needs for additional useEffects and state.
+ * @param value The value to get the previous value of.
  */
-function useReportError(error: unknown): void {
-  const previousError = usePreviousValue(error);
-  if (error && error !== previousError) {
-    reportError(error);
-  }
+export function usePreviousValue<T>(value: T) {
+  const ref = useRef<T | null>();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
 }
-
-export default useReportError;
