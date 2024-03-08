@@ -55,7 +55,7 @@ const DatabaseUnresponsiveBanner: React.VoidFunctionComponent<{
       reportError(new Error("IDB unresponsive"));
     }
     // Show banner can only transition from false -> true once because `state` is only calculated once and
-    // hasWaited stays true after it becomes true.
+    // hasWaited stays true after it becomes true because timeoutMillis is non-null.
   }, [showBanner]);
 
   return showBanner ? errorBanner : null;
