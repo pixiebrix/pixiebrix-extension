@@ -84,37 +84,46 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-test("it reports an error", () => {
-  renderUseReportTraceError([traceErrorFactory()]);
-  expect(reportEvent).toHaveBeenCalledWith(
-    "PageEditorExtensionError",
-    expect.anything(),
-  );
-});
-
-test("doesn't report when no error", () => {
-  renderUseReportTraceError([traceRecordFactory()]);
-  expect(reportEvent).not.toHaveBeenCalledWith();
-});
-
-test("reports error from the same run id only once", () => {
-  const errorTrace = traceErrorFactory({ runId: uuidSequence(1) });
-  const { rerender } = renderUseReportTraceError([errorTrace]);
-
-  // Re-render the hook
-  rerender({ rerenderTraces: [errorTrace] });
-
-  expect(reportEvent).toHaveBeenCalledTimes(1);
-
-  // Re-render the hook with a different error, but same run id
-  rerender({
-    rerenderTraces: [traceErrorFactory({ runId: errorTrace.runId })],
+describe("useReportTraceError", () => {
+  test("it reports an error", () => {
+    renderUseReportTraceError([traceErrorFactory()]);
+    expect(reportEvent).toHaveBeenCalledWith(
+      "PageEditorExtensionError",
+      expect.anything(),
+    );
   });
 
-  expect(reportEvent).toHaveBeenCalledTimes(1);
+  test("doesn't report when no error", () => {
+    renderUseReportTraceError([traceRecordFactory()]);
+    expect(reportEvent).not.toHaveBeenCalledWith();
+  });
 
-  // Re-render the hook with a different run id
-  rerender({ rerenderTraces: [traceErrorFactory({ runId: uuidSequence(2) })] });
+  test("doesn't report when error does not have a run id", () => {
+    renderUseReportTraceError([traceErrorFactory({ runId: null })]);
+    expect(reportEvent).not.toHaveBeenCalledWith();
+  });
 
-  expect(reportEvent).toHaveBeenCalledTimes(2);
+  test("reports error from the same run id only once", () => {
+    const errorTrace = traceErrorFactory({ runId: uuidSequence(1) });
+    const { rerender } = renderUseReportTraceError([errorTrace]);
+
+    // Re-render the hook
+    rerender({ rerenderTraces: [errorTrace] });
+
+    expect(reportEvent).toHaveBeenCalledTimes(1);
+
+    // Re-render the hook with a different error, but same run id
+    rerender({
+      rerenderTraces: [traceErrorFactory({ runId: errorTrace.runId })],
+    });
+
+    expect(reportEvent).toHaveBeenCalledTimes(1);
+
+    // Re-render the hook with a different run id
+    rerender({
+      rerenderTraces: [traceErrorFactory({ runId: uuidSequence(2) })],
+    });
+
+    expect(reportEvent).toHaveBeenCalledTimes(2);
+  });
 });
