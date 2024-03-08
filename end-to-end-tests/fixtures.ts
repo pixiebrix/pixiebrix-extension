@@ -69,6 +69,13 @@ export const test = base.extend<{
     }
 
     const extensionId = background.url().split("/")[2];
+
+    if (!extensionId) {
+      throw new Error(
+        "Could not find extensionId during test setup. Did the extension load correctly?",
+      );
+    }
+
     await use(extensionId);
   },
 });
