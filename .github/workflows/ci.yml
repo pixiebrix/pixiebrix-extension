@@ -199,7 +199,7 @@ jobs:
         run: npx playwright install chromium chrome
       - name: Run end to end tests
         # remove "|| exit 0" when these tests are ready to be used in CI
-        run: HEADFUL=true xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" npm run test:e2e || exit 0
+        run: xvfb-run npm run test:e2e || exit 0
       - uses: actions/upload-artifact@v4
         if: always()
         with:
