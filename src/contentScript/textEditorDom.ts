@@ -20,6 +20,7 @@ import * as pageScript from "@/pageScript/messenger/api";
 import { getSelectorForElement } from "@/contentScript/elementReference";
 import textFieldEdit from "text-field-edit";
 import { expectContext } from "@/utils/expectContext";
+import { dispatchPasteForDraftJs } from "@/utils/domFieldUtils";
 
 /**
  * @file Text Editor DOM utilities that might call the pageScript.
@@ -58,13 +59,19 @@ export async function insertAtCursorWithCustomEditorSupport({
   element.focus();
 
   const ckeditor = ckeditorDom.selectCKEditorElement(element);
-
   if (ckeditor) {
     await pageScript.insertCKEditorData({
       selector: getSelectorForElement(ckeditor),
       value: text,
     });
 
+    return;
+  }
+
+  if (element.textContent === "" && element.closest(".DraftEditor-root")) {
+    // Special handling for DraftJS if the field is empty
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/7630
+    dispatchPasteForDraftJs(element, text);
     return;
   }
 
