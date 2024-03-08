@@ -108,8 +108,8 @@ class AddTextCommand extends EffectABC {
 
     platform.commandPopover.register({
       componentId: logger.context.extensionId,
-      // Trim leading slash to be resilient to user input
-      shortcut: shortcut.replace(/^\//, ""),
+      // Trim leading slashes to be resilient to user input
+      shortcut: shortcut.replace(/^[/\\]/, ""),
       title,
       async handler(currentText: string): Promise<string> {
         counter++;
