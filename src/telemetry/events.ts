@@ -58,6 +58,7 @@ export const Events = {
 
   IDB_RECLAIM_QUOTA: "IDBReclaimQuota",
   IDB_RECOVER_CONNECTION: "IDBRecoverConnection",
+  IDB_UNRESPONSIVE_BANNER: "IDBUnresponsiveBanner",
 
   INTEGRATION_WIDGET_SELECT: "IntegrationWidgetSelect",
   INTEGRATION_WIDGET_CLEAR: "IntegrationWidgetClear",

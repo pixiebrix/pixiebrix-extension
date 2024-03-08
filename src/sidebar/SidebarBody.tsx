@@ -21,6 +21,7 @@ import Header from "./Header";
 import RestrictedUrlPopupApp from "@/tinyPages/RestrictedUrlPopupApp";
 import useConnectedTargetUrl from "./hooks/useConnectedTargetUrl";
 import { getReasonByUrl as getRestrictedReasonByUrl } from "@/tinyPages/restrictedUrlPopupUtils";
+import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
 
 const SidebarReady: React.FC<{ url: string }> = ({ url }) => {
   const restricted = getRestrictedReasonByUrl(url);
@@ -39,6 +40,7 @@ function SidebarBody() {
   return (
     <>
       <Header />
+      <DatabaseUnresponsiveBanner />
       <div className="full-height">{url && <SidebarReady url={url} />}</div>
     </>
   );
