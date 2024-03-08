@@ -16,8 +16,8 @@
  */
 
 import {
-  type ModParts,
   buildNewMod,
+  type ModParts,
 } from "@/pageEditor/panes/save/saveHelpers";
 import reportEvent from "@/telemetry/reportEvent";
 import { useCallback } from "react";
@@ -29,9 +29,17 @@ import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModCompon
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
 import { type JsonObject } from "type-fest";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
+import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
+import { isEmpty } from "lodash";
+
+type BuildAndValidateModParts = Partial<ModParts> & {
+  newModComponentFormState?: ModComponentFormState;
+};
 
 type UseBuildAndValidateModReturn = {
-  buildAndValidateMod: (modParts: ModParts) => Promise<UnsavedModDefinition>;
+  buildAndValidateMod: (
+    modParts: BuildAndValidateModParts,
+  ) => Promise<UnsavedModDefinition>;
 };
 
 function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
@@ -43,11 +51,27 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
   const buildAndValidateMod = useCallback(
     async ({
       sourceMod,
-      cleanModComponents,
-      dirtyModComponentFormStates,
+      newModComponentFormState,
+      cleanModComponents = [],
+      dirtyModComponentFormStates: existingDirtyModComponentFormStates = [],
       dirtyModOptions,
       dirtyModMetadata,
-    }: ModParts) => {
+    }: BuildAndValidateModParts) => {
+      if (
+        !newModComponentFormState &&
+        isEmpty(cleanModComponents) &&
+        isEmpty(existingDirtyModComponentFormStates)
+      ) {
+        throw new Error("Error saving mod - no mod components found to save");
+      }
+
+      const dirtyModComponentFormStates = [
+        ...existingDirtyModComponentFormStates,
+      ];
+      if (newModComponentFormState) {
+        dirtyModComponentFormStates.push(newModComponentFormState);
+      }
+
       const newMod = buildNewMod({
         sourceMod,
         cleanModComponents,
@@ -57,9 +81,16 @@ function useBuildAndValidateMod(): UseBuildAndValidateModReturn {
       });
 
       const modComponentDefinitionCountsMatch =
-        compareModComponentCountsToModDefinition(newMod);
+        compareModComponentCountsToModDefinition(newMod, {
+          sourceModDefinition: sourceMod,
+          newModComponentFormState,
+        });
+
       const modComponentStarterBricksMatch =
-        await checkModStarterBrickInvariants(newMod);
+        await checkModStarterBrickInvariants(newMod, {
+          sourceModDefinition: sourceMod,
+          newModComponentFormState,
+        });
 
       if (
         !modComponentDefinitionCountsMatch ||

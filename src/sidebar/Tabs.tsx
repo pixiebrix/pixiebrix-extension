@@ -104,11 +104,8 @@ const TabWithDivider = ({
     >
       <Nav.Link
         {...props}
+        as="button"
         className={styles.tabHeader}
-        // Added `target="_self"` due to stopPropagation on onCloseStaticPanel
-        // without it, the default behavior of the anchor tag (Nav.Link) is triggered
-        // and a new tab is opened
-        target="_self"
         eventKey={eventKey}
       >
         {children}

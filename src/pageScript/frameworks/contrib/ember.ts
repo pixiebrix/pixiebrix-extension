@@ -226,6 +226,7 @@ function isManaged(node: Node): boolean {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Internal Ember types
 function targetForComponent(component: any): UnknownObject {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access -- Internal Ember types
   return component._target || component._targetObject;
 }
 
@@ -272,8 +273,7 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
     const props = getAllPropertyNames(target).filter(
       (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop),
     );
-    // Safe because the prop names are coming from getAllPropertyNames
-    // eslint-disable-next-line security/detect-object-injection
+    // eslint-disable-next-line security/detect-object-injection -- Safe because the prop names are coming from getAllPropertyNames
     return Object.fromEntries(props.map((x) => [x, target[x]]));
   },
   proxy: {

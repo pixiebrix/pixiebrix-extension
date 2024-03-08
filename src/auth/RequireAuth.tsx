@@ -27,10 +27,10 @@ import {
 import { authActions } from "@/auth/authSlice";
 import { anonAuth } from "@/auth/authConstants";
 import { selectIsLoggedIn } from "@/auth/authSelectors";
-import { type Me } from "@/types/contract";
 import { type AxiosError } from "axios";
 import useRequiredPartnerAuth from "@/auth/useRequiredPartnerAuth";
 import useLinkState from "@/auth/useLinkState";
+import { type Me } from "@/data/model/Me";
 
 type RequireAuthProps = {
   /** Rendered in case of 401 response */
@@ -78,7 +78,7 @@ const useRequiredAuth = () => {
 
       // Because we're waiting to the Authorization token, there should always be a value here. But, defensively, if
       // not, then reset to the anonymous state
-      if (me?.id) {
+      if (me) {
         const auth = selectExtensionAuthState(me);
         dispatch(authActions.setAuth(auth));
       } else {

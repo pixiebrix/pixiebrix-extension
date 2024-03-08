@@ -18,13 +18,13 @@
 import { isErrorObject } from "@/errors/errorHelpers";
 import { type AxiosRequestConfig } from "axios";
 import { testMatchPatterns } from "@/bricks/available";
-import { getBaseURL, withoutTrailingSlash } from "@/data/service/baseService";
+import { getBaseURL } from "@/data/service/baseService";
 import urljoin from "url-join";
 import {
   isAxiosError,
   type SerializableAxiosError,
 } from "@/errors/networkErrorHelpers";
-import { isAbsoluteUrl } from "@/utils/urlUtils";
+import { isAbsoluteUrl, withoutTrailingSlash } from "@/utils/urlUtils";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
 import { assertNotNullish } from "@/utils/nullishUtils";
 

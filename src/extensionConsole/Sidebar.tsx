@@ -113,7 +113,9 @@ const Sidebar: React.FunctionComponent = () => {
 
           <li className="nav-item">
             <a
-              href={me?.partner?.documentation_url ?? DEFAULT_DOCUMENTATION_URL}
+              href={
+                me?.partner?.documentationUrl?.href ?? DEFAULT_DOCUMENTATION_URL
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="nav-link"

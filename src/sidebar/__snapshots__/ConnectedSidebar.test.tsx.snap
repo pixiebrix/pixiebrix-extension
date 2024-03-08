@@ -12,37 +12,35 @@ exports[`SidebarApp renders 1`] = `
       <div
         class="tabWrapper active nav-item"
       >
-        <a
+        <button
           aria-controls="panel-container-tabpane-static-modLauncher-panel"
           aria-selected="true"
           class="tabHeader nav-link active"
           data-rb-event-key="static-modLauncher-panel"
-          href="#"
           id="panel-container-tab-static-modLauncher-panel"
           role="tab"
-          target="_self"
         >
           <span
             class="tabTitle"
           >
             Mods
           </span>
-          <button
-            class="close"
-            type="button"
+        </button>
+        <button
+          class="close"
+          type="button"
+        >
+          <span
+            aria-hidden="true"
           >
-            <span
-              aria-hidden="true"
-            >
-              ×
-            </span>
-            <span
-              class="sr-only"
-            >
-              Close
-            </span>
-          </button>
-        </a>
+            ×
+          </span>
+          <span
+            class="sr-only"
+          >
+            Close
+          </span>
+        </button>
         <div
           class="tabDivider"
         />
@@ -88,8 +86,6 @@ exports[`SidebarApp renders 1`] = `
             Check out the 
             <a
               href="https://www.pixiebrix.com/marketplace/"
-              rel="noopener noreferrer"
-              target="_blank"
             >
               PixieBrix Marketplace
             </a>
@@ -131,37 +127,35 @@ exports[`SidebarApp renders connected partner view 1`] = `
       <div
         class="tabWrapper active nav-item"
       >
-        <a
+        <button
           aria-controls="panel-container-tabpane-static-modLauncher-panel"
           aria-selected="true"
           class="tabHeader nav-link active"
           data-rb-event-key="static-modLauncher-panel"
-          href="#"
           id="panel-container-tab-static-modLauncher-panel"
           role="tab"
-          target="_self"
         >
           <span
             class="tabTitle"
           >
             Mods
           </span>
-          <button
-            class="close"
-            type="button"
+        </button>
+        <button
+          class="close"
+          type="button"
+        >
+          <span
+            aria-hidden="true"
           >
-            <span
-              aria-hidden="true"
-            >
-              ×
-            </span>
-            <span
-              class="sr-only"
-            >
-              Close
-            </span>
-          </button>
-        </a>
+            ×
+          </span>
+          <span
+            class="sr-only"
+          >
+            Close
+          </span>
+        </button>
         <div
           class="tabDivider"
         />
@@ -207,8 +201,6 @@ exports[`SidebarApp renders connected partner view 1`] = `
             Check out the 
             <a
               href="https://www.pixiebrix.com/marketplace/"
-              rel="noopener noreferrer"
-              target="_blank"
             >
               PixieBrix Marketplace
             </a>
@@ -257,7 +249,6 @@ exports[`SidebarApp renders not connected 1`] = `
       <a
         class="mt-4 btn btn-primary"
         href="https://app.pixiebrix.com"
-        target="_blank"
       >
         <svg
           aria-hidden="true"

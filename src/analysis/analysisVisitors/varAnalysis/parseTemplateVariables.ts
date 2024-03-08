@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any -- Extensive usage of `any` */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any -- Extensive usage of `any` */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
@@ -30,7 +30,7 @@ const VARIABLE_START_INDEX = Symbol("#Variable_start_index");
 
 export interface VariableOptions {
   type?: string;
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Cyclic dependency
   parent?: Variable | undefined;
   startIndex: number;
 }
@@ -325,7 +325,7 @@ function getVariableName(variable: Variable, path = ""): string {
 }
 
 function parseTemplateVariables(template: string): string[] {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- Only used once
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call -- Only used once
   const ast = parser.parse(template, true);
   return traverse(ast)
     .filter((x) => x.parent == null)

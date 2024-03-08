@@ -33,11 +33,15 @@ type TelemetryUser = {
   organizationId?: UUID | null;
 };
 
-const uuidStorage = new StorageItem<UUID>("USER_UUID");
+export const uuidStorage = new StorageItem<UUID>("USER_UUID");
 
 /**
  * Return a random ID for this browser profile.
  * It's persisted in storage via `chrome.storage.local` and in-memory via `once`
+ *
+ * In React code, use useBrowserIdentifier
+ *
+ * @see useBrowserIdentifier
  */
 export const getUUID = once(async (): Promise<UUID> => {
   const existingUUID = await uuidStorage.get();

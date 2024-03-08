@@ -20,14 +20,11 @@ import useUpdatableAsyncState from "@/hooks/useUpdatableAsyncState";
 import { readManagedStorageByKey } from "@/store/enterprise/managedStorage";
 import { StorageItem } from "webext-storage";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import { withoutTrailingSlash } from "@/utils/urlUtils";
 
 type ConfiguredHost = string;
 
 const serviceStorage = new StorageItem<ConfiguredHost>("service-url");
-
-export function withoutTrailingSlash(url: string): string {
-  return url.replace(/\/$/, "");
-}
 
 /**
  * Return the base URL of the PixieBrix service.

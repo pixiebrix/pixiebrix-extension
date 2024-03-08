@@ -59,12 +59,17 @@ let selectionOverride: Range | undefined;
 const selectionController = {
   save(): void {
     const selection = getSelection();
-    // It must be set to "undefined" even if there are selections
+    // It must be set to "undefined" even if there are no selections
     selectionOverride = selection.rangeCount
       ? selection.getRangeAt(0)
       : undefined;
   },
   restore(): void {
+    selectionController.restoreWithoutClearing();
+    selectionController.clear();
+  },
+
+  restoreWithoutClearing(): void {
     if (!selectionOverride) {
       return;
     }
@@ -72,10 +77,14 @@ const selectionController = {
     const native = getSelection();
     native.removeAllRanges();
     native.addRange(selectionOverride);
-    selectionOverride = undefined;
   },
   get(): string {
     return (selectionOverride ?? getSelection()).toString();
+  },
+
+  /** Clear saved value without restoring focus */
+  clear(): void {
+    selectionOverride = undefined;
   },
 } as const;
 

@@ -21,8 +21,15 @@ import {
 } from "@/validators/schemaValidator";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import serviceText from "@contrib/raw/hunter.txt";
+import jqueryReaderDefinition from "@contrib/readers/apartments-reader.yaml";
+import emptyJQueryReaderDefinition from "@contrib/readers/empty-jquery-reader.yaml";
+import emberJsReaderDefinition from "@contrib/readers/linkedin-organization-reader.yaml";
+import windowReader from "@contrib/readers/trello-card-reader.yaml";
+import reactReader from "@contrib/readers/redfin-reader.yaml";
 import { type Schema } from "@/types/schemaTypes";
 import { uuidv4 } from "@/types/helpers";
+import { timestampFactory } from "@/testUtils/factories/stringFactories";
+import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
 
 describe("validateKind", () => {
   test("can validate integration definition", async () => {
@@ -30,6 +37,54 @@ describe("validateKind", () => {
     const result = validatePackageDefinition("service", json);
     expect(result.errors).toHaveLength(0);
     expect(result.valid).toBe(true);
+  });
+
+  test.each([
+    jqueryReaderDefinition,
+    emptyJQueryReaderDefinition,
+    emberJsReaderDefinition,
+    reactReader,
+    windowReader,
+  ])("can validate reader definition: %#", (config) => {
+    const result = validatePackageDefinition("reader", config);
+    expect(result.errors).toHaveLength(0);
+    expect(result.valid).toBe(true);
+  });
+
+  test("can validate integration with timestamp/sharing metadata", async () => {
+    const json = loadBrickYaml(serviceText) as UnknownObject;
+
+    json.updated_at = timestampFactory();
+    json.sharing = sharingDefinitionFactory();
+
+    const result = validatePackageDefinition("service", json);
+
+    expect(result.errors).toHaveLength(0);
+    expect(result.valid).toBe(true);
+  });
+
+  test("fails on additional unknown property", async () => {
+    const json = loadBrickYaml(serviceText) as UnknownObject;
+    json.foobar = "Hello, world!";
+    const result = validatePackageDefinition("service", json);
+
+    expect(result.errors).toStrictEqual([
+      {
+        error: 'Property "foobar" does not match additional properties schema.',
+        instanceLocation: "#",
+        keyword: "additionalProperties",
+        keywordLocation: "#/additionalProperties",
+      },
+      // The exact error here doesn't really matter:
+      {
+        error: "False boolean schema.",
+        instanceLocation: "#/foobar",
+        keyword: "false",
+        keywordLocation: "#/foobar",
+      },
+    ]);
+
+    expect(result.valid).toBe(false);
   });
 });
 

@@ -127,6 +127,10 @@ function findPageIndex<TRow extends UnknownObject>({
   return null;
 }
 
+/**
+ * A paginated table with sorting, resizing, and global filtering.
+ * TODO: This component is not fully accessible - it needs keyboard navigation support.
+ */
 function PaginatedTable<
   Row extends UnknownObject,
   Actions extends Record<string, Action>,
@@ -248,7 +252,8 @@ function PaginatedTable<
                 index !== headerGroup.headers.length - 1 ? (
                   <>
                     {column?.isResizing && <div className={styles.overlay} />}
-                    {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+                    {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+                    -- TODO: implement keyboard accessible column resizing */}
                     <div
                       className={styles.resize}
                       {...column.getResizerProps()}

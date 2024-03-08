@@ -49,7 +49,7 @@ export interface paths {
     delete: operations["destroyPackage"];
   };
   "/api/bricks/{id}/versions/": {
-    get: operations["listPackageVersions"];
+    get: operations["listPackageVersionDeprecateds"];
   };
   "/api/databases/": {
     get: operations["listUserDatabases"];
@@ -108,13 +108,13 @@ export interface paths {
     post: operations["telemetryListUserDeploymentDetail"];
   };
   "/api/deployments/{id}/": {
-    /** @description View for admins to get/create/update/delete a deployment. */
+    /** @description View for admins to get/update/delete a single deployment. */
     get: operations["retrieveDeploymentDetail"];
-    /** @description View for admins to get/create/update/delete a deployment. */
+    /** @description View for admins to get/update/delete a single deployment. */
     put: operations["updateDeploymentDetail"];
-    /** @description View for admins to get/create/update/delete a deployment. */
+    /** @description View for admins to get/update/delete a single deployment. */
     delete: operations["destroyDeploymentDetail"];
-    /** @description View for admins to get/create/update/delete a deployment. */
+    /** @description View for admins to get/update/delete a single deployment. */
     patch: operations["partialUpdateDeploymentDetail"];
   };
   "/api/deployments/{deployment_pk}/dependencies/": {
@@ -257,16 +257,16 @@ export interface paths {
     post: operations["createGroup"];
   };
   "/api/organizations/{organization_pk}/deployments/": {
-    /** @description View for admins to get/create/update/delete deployments. */
+    /** @description View for admins to list/create deployments. */
     get: operations["listDeployments"];
-    /** @description View for admins to get/create/update/delete deployments. */
+    /** @description View for admins to list/create deployments. */
     post: operations["createDeployment"];
   };
   "/api/organizations/{organization_pk}/bricks/": {
     get: operations["listOrganizationBricks"];
   };
   "/api/organizations/{organization_pk}/blueprints/": {
-    get: operations["listDeployableBlueprints"];
+    get: operations["listPackageVersionSlims"];
   };
   "/api/organizations/{organization_pk}/integrations/": {
     get: operations["listServiceAuthMetas"];
@@ -372,6 +372,9 @@ export interface paths {
   };
   "/api/support/users/{user_pk}/bricks/{brick_pk}/": {
     get: operations["retrieveSupportUserBricks"];
+  };
+  "/api/support/intercom": {
+    get: operations["listIntercoms"];
   };
   "/api/telemetry/errors/public-blueprints/": {
     get: operations["listPublicBlueprintErrorItemGroups"];
@@ -593,14 +596,12 @@ export interface components {
       /** @description Human-readable name */
       verbose_name?: string | null;
     };
-    PackageVersion: {
+    PackageVersionSlim: {
       /** Format: uuid */
-      id?: UUID;
+      id: UUID;
+      package_id: string;
+      name: string;
       version?: string;
-      config: {
-        [key: string]: unknown;
-      };
-      raw_config?: string;
       /** Format: date-time */
       created_at?: Timestamp;
       /** Format: date-time */
@@ -656,9 +657,13 @@ export interface components {
       package?: {
         /** Format: uuid */
         readonly id: UUID;
-        readonly version?: string;
         readonly package_id: string;
         readonly name: string;
+        readonly version?: string;
+        /** Format: date-time */
+        readonly created_at?: Timestamp;
+        /** Format: date-time */
+        readonly updated_at?: Timestamp;
       };
       package_version: string;
       services: {
@@ -758,55 +763,6 @@ export interface components {
       updated_at?: Timestamp;
       last_active_at?: string | null;
     };
-    UserDeploymentDetail: {
-      /** Format: uuid */
-      id?: UUID;
-      name?: string;
-      /** Format: date-time */
-      created_at?: Timestamp;
-      /** Format: date-time */
-      updated_at?: Timestamp;
-      package?: {
-        /** Format: uuid */
-        readonly id: UUID;
-        readonly version?: string;
-        readonly package_id: string;
-        readonly name: string;
-        readonly config?: {
-          [key: string]: unknown;
-        };
-      };
-      bindings?: readonly {
-        /** Format: uuid */
-        id?: UUID;
-        /** Format: date-time */
-        created_at?: Timestamp;
-        /** @description Key for named integration dependencies */
-        key?: string | null;
-        auth: {
-          /** Format: uuid */
-          id?: UUID;
-          service_id: string;
-          label?: string | null;
-        };
-      }[];
-      active?: boolean;
-      options_config?: {
-        [key: string]: unknown;
-      };
-    };
-    DeploymentTelemetry: {
-      /**
-       * Format: uuid
-       * @description The UID of the PixieBrix extension instance (varies by install)
-       */
-      uid: UUID;
-      /** @description The version of the PixieBrix extension */
-      version: string;
-      active?: {
-        [key: string]: unknown;
-      }[];
-    };
     DeploymentDetail: {
       /** Format: uuid */
       id?: UUID;
@@ -818,12 +774,13 @@ export interface components {
       package?: {
         /** Format: uuid */
         readonly id: UUID;
-        readonly version?: string;
         readonly package_id: string;
         readonly name: string;
-        readonly config?: {
-          [key: string]: unknown;
-        };
+        readonly version?: string;
+        /** Format: date-time */
+        readonly created_at?: Timestamp;
+        /** Format: date-time */
+        readonly updated_at?: Timestamp;
       };
       bindings?: readonly {
         /** Format: uuid */
@@ -846,6 +803,18 @@ export interface components {
       package_version: string;
       services: {
         auth: string;
+      }[];
+    };
+    DeploymentTelemetry: {
+      /**
+       * Format: uuid
+       * @description The UID of the PixieBrix extension instance (varies by install)
+       */
+      uid: UUID;
+      /** @description The version of the PixieBrix extension */
+      version: string;
+      active?: {
+        [key: string]: unknown;
       }[];
     };
     DependencyTree: {
@@ -1426,15 +1395,6 @@ export interface components {
       /** Format: date-time */
       created_at?: Timestamp;
     };
-    DeployableBlueprint: {
-      /** Format: uuid */
-      id?: UUID;
-      /** Format: uuid */
-      package_id: UUID;
-      registry_id: string;
-      name: string;
-      version?: string;
-    };
     ServiceAuthMeta: {
       /** Format: uuid */
       id?: UUID;
@@ -1825,6 +1785,64 @@ export interface components {
         scope?: string | null;
       }[];
     };
+    PackageVersionDeprecated: {
+      /** Format: uuid */
+      id?: UUID;
+      version?: string;
+      config: {
+        [key: string]: unknown;
+      };
+      raw_config?: string;
+      /** Format: date-time */
+      created_at?: Timestamp;
+      /** Format: date-time */
+      updated_at?: Timestamp;
+    };
+    DeploymentDetailDeprecated: {
+      /** Format: uuid */
+      id?: UUID;
+      name: string;
+      /** Format: date-time */
+      created_at?: Timestamp;
+      /** Format: date-time */
+      updated_at?: Timestamp;
+      package?: {
+        /** Format: uuid */
+        readonly id: UUID;
+        readonly package_id: string;
+        readonly name: string;
+        readonly version?: string;
+        /** Format: date-time */
+        readonly created_at?: Timestamp;
+        /** Format: date-time */
+        readonly updated_at?: Timestamp;
+        readonly config?: {
+          [key: string]: unknown;
+        };
+      };
+      bindings?: readonly {
+        /** Format: uuid */
+        id?: UUID;
+        /** Format: date-time */
+        created_at?: Timestamp;
+        /** @description Key for named integration dependencies */
+        key?: string | null;
+        auth: {
+          /** Format: uuid */
+          id?: UUID;
+          service_id: string;
+          label?: string | null;
+        };
+      }[];
+      active?: boolean;
+      options_config?: {
+        [key: string]: unknown;
+      };
+      package_version: string;
+      services: {
+        auth: string;
+      }[];
+    };
   };
   responses: never;
   parameters: never;
@@ -2167,7 +2185,7 @@ export interface operations {
       };
     };
   };
-  listPackageVersions: {
+  listPackageVersionDeprecateds: {
     parameters: {
       query?: {
         /** @description A page number within the paginated result set. */
@@ -2189,8 +2207,8 @@ export interface operations {
           Link?: unknown;
         };
         content: {
-          "application/json; version=2.0": components["schemas"]["PackageVersion"][];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PackageVersion"][];
+          "application/json; version=2.0": components["schemas"]["PackageVersionSlim"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PackageVersionSlim"][];
         };
       };
     };
@@ -2479,8 +2497,8 @@ export interface operations {
           Link?: unknown;
         };
         content: {
-          "application/json; version=2.0": components["schemas"]["PackageVersion"][];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PackageVersion"][];
+          "application/json; version=2.0": components["schemas"]["PackageVersionSlim"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PackageVersionSlim"][];
         };
       };
     };
@@ -2714,8 +2732,8 @@ export interface operations {
           Link?: unknown;
         };
         content: {
-          "application/json; version=2.0": components["schemas"]["UserDeploymentDetail"][];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["UserDeploymentDetail"][];
+          "application/json; version=2.0": components["schemas"]["DeploymentDetail"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeploymentDetail"][];
         };
       };
     };
@@ -2733,13 +2751,13 @@ export interface operations {
       201: {
         headers: {};
         content: {
-          "application/json; version=2.0": components["schemas"]["UserDeploymentDetail"];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["UserDeploymentDetail"];
+          "application/json; version=2.0": components["schemas"]["DeploymentDetail"];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeploymentDetail"];
         };
       };
     };
   };
-  /** @description View for admins to get/create/update/delete a deployment. */
+  /** @description View for admins to get/update/delete a single deployment. */
   retrieveDeploymentDetail: {
     parameters: {
       path: {
@@ -2756,7 +2774,7 @@ export interface operations {
       };
     };
   };
-  /** @description View for admins to get/create/update/delete a deployment. */
+  /** @description View for admins to get/update/delete a single deployment. */
   updateDeploymentDetail: {
     parameters: {
       path: {
@@ -2780,7 +2798,7 @@ export interface operations {
       };
     };
   };
-  /** @description View for admins to get/create/update/delete a deployment. */
+  /** @description View for admins to get/update/delete a single deployment. */
   destroyDeploymentDetail: {
     parameters: {
       path: {
@@ -2793,7 +2811,7 @@ export interface operations {
       };
     };
   };
-  /** @description View for admins to get/create/update/delete a deployment. */
+  /** @description View for admins to get/update/delete a single deployment. */
   partialUpdateDeploymentDetail: {
     parameters: {
       path: {
@@ -4125,7 +4143,7 @@ export interface operations {
       };
     };
   };
-  /** @description View for admins to get/create/update/delete deployments. */
+  /** @description View for admins to list/create deployments. */
   listDeployments: {
     parameters: {
       query?: {
@@ -4154,7 +4172,7 @@ export interface operations {
       };
     };
   };
-  /** @description View for admins to get/create/update/delete deployments. */
+  /** @description View for admins to list/create deployments. */
   createDeployment: {
     parameters: {
       path: {
@@ -4208,7 +4226,7 @@ export interface operations {
       };
     };
   };
-  listDeployableBlueprints: {
+  listPackageVersionSlims: {
     parameters: {
       query?: {
         /** @description A page number within the paginated result set. */
@@ -4230,8 +4248,8 @@ export interface operations {
           Link?: unknown;
         };
         content: {
-          "application/json; version=2.0": components["schemas"]["DeployableBlueprint"][];
-          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["DeployableBlueprint"][];
+          "application/json; version=2.0": components["schemas"]["PackageVersionSlim"][];
+          "application/vnd.pixiebrix.api+json; version=2.0": components["schemas"]["PackageVersionSlim"][];
         };
       };
     };
@@ -5187,6 +5205,17 @@ export interface operations {
         content: {
           "application/json; version=1.0": components["schemas"]["Package"];
           "application/vnd.pixiebrix.api+json; version=1.0": components["schemas"]["Package"];
+        };
+      };
+    };
+  };
+  listIntercoms: {
+    responses: {
+      200: {
+        headers: {};
+        content: {
+          "application/json; version=1.0": unknown[];
+          "application/vnd.pixiebrix.api+json; version=1.0": unknown[];
         };
       };
     };

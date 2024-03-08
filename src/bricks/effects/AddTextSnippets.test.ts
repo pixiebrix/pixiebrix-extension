@@ -27,32 +27,37 @@ afterEach(() => {
 });
 
 describe("AddTextSnippets", () => {
-  it("add registers snippets", async () => {
-    const options = brickOptionsFactory();
+  it.each(["test", "\\test", "/test"])(
+    "add registers snippets: %s",
+    async (shortcut) => {
+      const options = brickOptionsFactory();
 
-    await brick.run(
-      unsafeAssumeValidArg({
-        snippets: [
-          {
-            shortcut: "/test",
-            title: "Test",
-            text: "test",
-          },
-        ],
-      }),
-      options,
-    );
+      await brick.run(
+        unsafeAssumeValidArg({
+          snippets: [
+            {
+              shortcut,
+              title: "Test",
+              text: "test",
+            },
+          ],
+        }),
+        options,
+      );
 
-    expect(commandRegistry.commands).toStrictEqual([
-      {
-        // Leading slash is dropped
-        shortcut: "test",
-        title: "Test",
-        handler: expect.toBeFunction(),
-        componentId: options.logger.context.extensionId,
-      },
-    ]);
+      expect(commandRegistry.commands).toStrictEqual([
+        {
+          // Leading command key is dropped
+          shortcut: "test",
+          title: "Test",
+          handler: expect.toBeFunction(),
+          componentId: options.logger.context.extensionId,
+        },
+      ]);
 
-    await expect(commandRegistry.commands[0].handler("")).resolves.toBe("test");
-  });
+      await expect(commandRegistry.commands[0].handler("")).resolves.toBe(
+        "test",
+      );
+    },
+  );
 });

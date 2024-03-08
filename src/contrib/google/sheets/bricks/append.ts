@@ -397,7 +397,7 @@ export class GoogleSheetsAppend extends EffectABC {
       let firstHeaderIndex = 0;
       while (
         firstHeaderIndex < currentSheetHeaders.length &&
-        // eslint-disable-next-line security/detect-object-injection
+        // eslint-disable-next-line security/detect-object-injection -- firstHeaderIndex is controlled
         isNullOrBlank(currentSheetHeaders[firstHeaderIndex])
       ) {
         firstHeaderIndex++;

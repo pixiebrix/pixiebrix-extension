@@ -102,7 +102,7 @@ export function renderMustache(config: Args, ctxt: UnknownObject): unknown {
 
   if (isObject(config)) {
     return pickBy(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TODO: The whole type of renderMustache is too loose
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return -- TODO: The whole type of renderMustache is too loose
       mapValues(config, (subConfig) => renderMustache(subConfig as any, ctxt)),
       (x) => x != null,
     );

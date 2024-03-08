@@ -28,9 +28,9 @@ import {
   type SecretsConfig,
 } from "@/integrations/integrationTypes";
 import {
+  type Metadata,
   type RegistryId,
   type SemVerString,
-  type Metadata,
 } from "@/types/registryTypes";
 import {
   type ModDefinition,
@@ -39,47 +39,6 @@ import {
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
-
-type MeGroup = NonNullable<
-  components["schemas"]["Me"]["group_memberships"]
->[number] & {
-  id: UUID;
-};
-
-type MeMembershipOrganization = Except<
-  NonNullable<components["schemas"]["Me"]["organization_memberships"]>[number],
-  "is_deployment_manager"
-> & {
-  organization: UUID;
-  // The type is wrong in the Swagger
-  is_deployment_manager: boolean;
-};
-
-type MeOrganization = Required<components["schemas"]["Me"]["organization"]> & {
-  id: UUID;
-};
-
-export type Me = Except<
-  components["schemas"]["Me"],
-  | "flags"
-  | "is_onboarded"
-  | "organization"
-  | "telemetry_organization"
-  | "organization_memberships"
-  | "group_memberships"
-> & {
-  // Serializer method fields
-  flags: string[];
-  is_onboarded: boolean;
-
-  // Fix UUID types
-  organization: MeOrganization | null;
-  telemetry_organization: MeOrganization | null;
-  organization_memberships: MeMembershipOrganization[];
-  group_memberships: MeGroup[];
-};
-
-export type Milestone = components["schemas"]["Milestone"];
 
 export enum UserRole {
   member = 1,
@@ -96,13 +55,13 @@ export type Organization = components["schemas"]["Organization"] & {
   role: UserRole;
 };
 
-export type OrganizationTheme = components["schemas"]["Organization"]["theme"];
-
 export type Group = components["schemas"]["Group"];
 
 export type Database = components["schemas"]["Database"];
 
-export type PackageVersion = components["schemas"]["PackageVersion"];
+// TODO: Remove in https://github.com/pixiebrix/pixiebrix-extension/issues/7692
+export type PackageVersionDeprecated =
+  components["schemas"]["PackageVersionDeprecated"];
 
 export type PendingInvitation = components["schemas"]["PendingInvitation"];
 
@@ -162,13 +121,8 @@ export type Deployment = Except<
   options_config: OptionsArgs;
   package: Except<
     NonNullable<components["schemas"]["DeploymentDetail"]["package"]>,
-    // Patch types for the following properties which our automatic schema generation generated the wrong types for
-    "config" | "id" | "package_id"
-  > & {
-    id: UUID;
-    package_id: RegistryId;
-    config: ModDefinition;
-  };
+    "package_id"
+  > & { package_id: RegistryId };
 };
 
 /**
@@ -202,6 +156,35 @@ export type RegistryPackage = Pick<
    * @see https://github.com/pixiebrix/pixiebrix-app/blob/43f0a4b81d8b7aaaf11adbe7fd8e4530ca4b8bf0/api/serializers/brick.py#L204-L204
    */
   kind: "component" | "extensionPoint" | "recipe" | "service" | "reader";
+
+  // PackageConfigListSerializer adds updated_at and sharing to the PackageConfigList response:
+  // https://github.com/pixiebrix/pixiebrix-app/blob/368a0116edad2c115ae370b651f109619e621745/api/serializers/brick.py#L139-L139
+
+  updated_at: Timestamp;
+
+  // The exact shape isn't used for now in the extension. So keep as UnknownObject
+  sharing: UnknownObject;
+};
+
+export type PackageConfigDetail = Except<
+  components["schemas"]["PackageConfig"],
+  "config"
+> & {
+  /**
+   * Package registry id.
+   */
+  name: RegistryId;
+
+  /**
+   * The UnsavedModDefinition for the PackageVersion.
+   *
+   * NOTE: UnsavedModDefinition vs. ModDefinition distinction is a bit confusing. UnsavedModDefinition is raw
+   * content stored with the configuration. ModDefinition has been decorated with sharing information.
+   *
+   * @see UnsavedModDefinition
+   * @see ModDefinition
+   */
+  config: UnsavedModDefinition;
 };
 
 /**

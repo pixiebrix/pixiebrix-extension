@@ -8934,7 +8934,6 @@ exports[`Storyshots PageEditor/LoginCard Default 1`] = `
     href="/options.html"
     onClick={[Function]}
     onKeyDown={[Function]}
-    target="_blank"
   >
     <svg
       aria-hidden="true"
@@ -9684,7 +9683,6 @@ exports[`Storyshots Sidebar/LoginPanel Default 1`] = `
       href="https://app.pixiebrix.com"
       onClick={[Function]}
       onKeyDown={[Function]}
-      target="_blank"
     >
       <svg
         aria-hidden="true"

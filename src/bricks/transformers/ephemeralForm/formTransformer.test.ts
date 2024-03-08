@@ -34,7 +34,6 @@ const showModalMock = jest.mocked(showModal);
 const brick = new FormTransformer();
 
 afterEach(async () => {
-  // eslint-disable-next-line new-cap -- test method
   await TEST_cancelAll();
   jest.clearAllMocks();
 });
@@ -102,7 +101,6 @@ describe("FormTransformer", () => {
       brickOptionsFactory(),
     );
 
-    // eslint-disable-next-line new-cap -- test method
     await TEST_cancelAll();
 
     await expect(brickPromise).rejects.toThrow(CancelError);
@@ -134,7 +132,6 @@ describe("FormTransformer", () => {
       brickOptionsFactory(),
     );
 
-    // eslint-disable-next-line new-cap -- test method
     await TEST_cancelAll();
 
     await expect(brickPromise).rejects.toThrow(CancelError);
@@ -150,5 +147,40 @@ describe("FormTransformer", () => {
     );
 
     expect(JSON.parse(opener)).toStrictEqual({ tabId: 1, frameId: 1 });
+  });
+
+  it("cancels form if form already showing", async () => {
+    // Exposed via __mocks__/webext-messenger
+    (messenger as any).setFrameId(0);
+    jest.mocked(isLoadedInIframe).mockReturnValue(false);
+
+    // Use same options so they have the same extensionId
+    const options = brickOptionsFactory();
+
+    const firstPromise = brick.run(
+      unsafeAssumeValidArg({
+        location: "modal",
+        schema: {
+          tile: "Hello, World",
+        },
+      }),
+      options,
+    );
+
+    const secondPromise = brick.run(
+      unsafeAssumeValidArg({
+        location: "modal",
+        schema: {
+          tile: "Hello, Again",
+        },
+      }),
+      options,
+    );
+
+    await expect(firstPromise).rejects.toThrow(CancelError);
+
+    await TEST_cancelAll();
+
+    await expect(secondPromise).rejects.toThrow(CancelError);
   });
 });

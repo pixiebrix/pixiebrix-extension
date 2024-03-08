@@ -82,13 +82,13 @@ export class FormData extends TransformerABC {
     const result = $elements
       .find<HTMLInputElement | HTMLTextAreaElement>(":input")
       .get()
-      .map((input) => {
+      .map((input): [string, string | boolean] | undefined => {
         if (!input.name) {
           return;
         }
 
         if (!isCheckbox(input)) {
-          return [input.name, $(input).val()];
+          return [input.name, input.value];
         }
 
         // Cast `"on"` to `true`, un-checked to `false`

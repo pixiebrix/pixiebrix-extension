@@ -28,6 +28,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { array } from "cooky-cutter";
 import useCompareModComponentCounts from "@/pageEditor/hooks/useCompareModComponentCounts";
+import useCheckModStarterBrickInvariants from "@/pageEditor/hooks/useCheckModStarterBrickInvariants";
 
 const reportEventMock = jest.mocked(reportEvent);
 jest.mock("@/telemetry/trace");
@@ -35,7 +36,14 @@ jest.mock("@/telemetry/trace");
 jest.mock("@/pageEditor/hooks/useCompareModComponentCounts", () =>
   jest.fn().mockReturnValue(() => true),
 );
+jest.mock("@/pageEditor/hooks/useCheckModStarterBrickInvariants", () =>
+  jest.fn().mockReturnValue(async () => true),
+);
+
 const compareModComponentCountsMock = jest.mocked(useCompareModComponentCounts);
+const checkModStarterBrickInvariantsMock = jest.mocked(
+  useCheckModStarterBrickInvariants,
+);
 
 describe("useCreateModFromMod", () => {
   beforeEach(() => {
@@ -83,8 +91,42 @@ describe("useCreateModFromMod", () => {
     );
   });
 
-  it("does not throw an error if the mod fails an invariant check", async () => {
+  it("does not throw an error if the mod fails the compareModComponentCounts check", async () => {
     compareModComponentCountsMock.mockReturnValue(() => false);
+    const modMetadata = modMetadataFactory();
+    const installedModDefinition = modDefinitionFactory({
+      metadata: modMetadata,
+      extensionPoints: array(modComponentDefinitionFactory, 2),
+    });
+
+    appApiMock
+      .onPost("/api/bricks/")
+      .reply(200, { updated_at: "2024-01-01T00:00:00Z" });
+
+    const { result } = renderHook(() => useCreateModFromMod(), {
+      setupRedux(dispatch) {
+        dispatch(
+          extensionsActions.installMod({
+            modDefinition: installedModDefinition,
+            screen: "pageEditor",
+            isReinstall: false,
+          }),
+        );
+      },
+    });
+
+    await hookAct(async () => {
+      await result.current.createModFromMod(
+        installedModDefinition,
+        modMetadata,
+      );
+    });
+
+    expect(appApiMock.history.post).toHaveLength(0);
+  });
+
+  it("does not throw an error if the mod fails the checkModStarterBrickInvariants check", async () => {
+    checkModStarterBrickInvariantsMock.mockReturnValue(async () => false);
     const modMetadata = modMetadataFactory();
     const installedModDefinition = modDefinitionFactory({
       metadata: modMetadata,

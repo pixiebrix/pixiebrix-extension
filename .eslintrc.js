@@ -19,6 +19,25 @@ const boundaries = [
   "pageScript",
 ];
 
+const forbiddenDomPropsConfig = [
+  "error",
+  {
+    // Context: https://github.com/pixiebrix/pixiebrix-extension/pull/7832
+    forbid: [
+      {
+        propName: "target",
+        message:
+          'In this folder, `target="_blank"` already the default thanks to the `<base>` in the .html file',
+      },
+      {
+        propName: "rel",
+        message:
+          "This attribute was probably left behind after dropping the `target` attribute.",
+      },
+    ],
+  },
+];
+
 module.exports = {
   root: true,
   extends: [
@@ -30,7 +49,16 @@ module.exports = {
     "@shopify/react-hooks-strict-return": "error",
     "@shopify/prefer-module-scope-constants": "error",
     "@shopify/jest/no-snapshots": "warn",
-    "eslint-comments/require-description": "warn",
+    "new-cap": [
+      "error",
+      {
+        capIsNewExceptionPattern: "(TEST_|INTERNAL_|HACK_|UNSAFE_)",
+      },
+    ],
+    "eslint-comments/require-description": [
+      "error",
+      { ignore: ["eslint-enable"] },
+    ],
     "react/no-array-index-key": "error",
     "react/no-unstable-nested-components": ["error", { allowAsProps: true }],
     "react/forbid-elements": [
@@ -79,7 +107,6 @@ module.exports = {
     // TODO: Gradually fix and then drop https://github.com/pixiebrix/eslint-config-pixiebrix/pull/150
     "@typescript-eslint/no-unsafe-assignment": "warn",
     "@typescript-eslint/no-unsafe-member-access": "warn",
-    "@typescript-eslint/no-unsafe-return": "warn",
 
     "no-restricted-imports": [
       "error",
@@ -204,6 +231,13 @@ module.exports = {
             ],
           }),
         ],
+      },
+    },
+    {
+      files: ["./src/pageEditor/**.tsx", "./src/sidebar/**.tsx"],
+      rules: {
+        "react/forbid-dom-props": forbiddenDomPropsConfig,
+        "react/forbid-component-props": forbiddenDomPropsConfig,
       },
     },
   ],

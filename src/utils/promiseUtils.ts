@@ -189,11 +189,12 @@ export async function retryWithJitter<T>(
  * Returns a new object with all the values from the original resolved
  */
 export async function resolveObj<T>(
-  obj: Record<string, Promise<T>>,
+  object: Record<string, Promise<T>>,
 ): Promise<Record<string, T>> {
-  return Object.fromEntries(
-    await Promise.all(Object.entries(obj).map(async ([k, v]) => [k, await v])),
+  const entries = await Promise.all(
+    Object.entries(object).map(async ([k, v]) => [k, await v] as const),
   );
+  return Object.fromEntries(entries);
 }
 
 /**

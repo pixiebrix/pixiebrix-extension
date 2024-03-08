@@ -43,7 +43,6 @@ import { getReservedSidebarEntries } from "@/contentScript/messenger/strict/api"
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import useAsyncEffect from "use-async-effect";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
-
 import addFormPanel from "@/sidebar/thunks/addFormPanel";
 import addTemporaryPanel from "@/sidebar/thunks/addTemporaryPanel";
 import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";

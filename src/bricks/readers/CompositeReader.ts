@@ -63,10 +63,8 @@ class CompositeReader extends ReaderABC {
   }
 
   async read(root: HTMLElement | Document): Promise<JsonObject> {
-    const readOne = async (key: string, reader: Reader) => [
-      key,
-      await reader.read(root),
-    ];
+    const readOne = async (key: string, reader: Reader) =>
+      [key, await reader.read(root)] as const;
     const resultPairs = await Promise.all(
       Object.entries(this._readers).map(async ([key, reader]) =>
         readOne(key, reader),

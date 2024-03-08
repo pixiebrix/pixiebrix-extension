@@ -89,8 +89,8 @@ export async function runUserJs({
 }: JavaScriptPayload): Promise<string> {
   let userFunction: (context: JsonObject | undefined) => string;
   try {
-    // Returning the user-defined function allows for an anonymous function
-    // eslint-disable-next-line no-new-func, @typescript-eslint/no-unsafe-assignment
+    /* eslint-disable-next-line no-new-func, @typescript-eslint/no-unsafe-assignment
+    -- Returning the user-defined function allows for an anonymous function */
     userFunction = new Function(`return ${code}`)();
   } catch {
     throw new BusinessError("Failed to construct JavaScript function");

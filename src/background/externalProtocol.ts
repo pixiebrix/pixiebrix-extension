@@ -133,7 +133,7 @@ async function callBackground(
     });
     let response;
     try {
-      response = await sendMessage(extensionId, message, {});
+      response = (await sendMessage(extensionId, message, {})) as unknown;
     } catch (error) {
       console.debug(
         `Error sending background action ${type} (nonce: ${nonce})`,

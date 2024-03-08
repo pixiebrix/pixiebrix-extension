@@ -48,6 +48,7 @@ import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { showMySidePanel } from "@/background/messenger/strict/api";
 import { getSidebarElement } from "@/contentScript/sidebarDomControllerLite";
 import focusController from "@/utils/focusController";
+import selectionController from "@/utils/selectionController";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
@@ -554,6 +555,13 @@ export function initSidebarFocusEvents(): void {
         return;
       }
 
+      // Save focus on initial load, because the user may have `mouseenter`ed the sidebar before the React App
+      // fired the sidebarShowEvent event. For example, if the user clicked the browserAction toolbar button and
+      // immediately `mouseenter`ed the sidebar (because the top of the sidebar is very close to the top browserAction)
+      if (document.activeElement !== sidebar) {
+        focusController.save();
+      }
+
       const closeSignal = sidePanelOnCloseSignal();
 
       // Can't detect clicks in the sidebar itself. So need to just watch for enter/leave the sidebar element
@@ -563,7 +571,11 @@ export function initSidebarFocusEvents(): void {
           // If the user clicks into the sidebar and then leaves the sidebar, don't set the focus to the sidebar
           // when they re-enter the sidebar
           if (document.activeElement !== sidebar) {
+            // FIXME: If the user closes the sidebar when these two items are stored,
+            // both controllers will be stuck that way until some other .restore()/.clear() call resets it. It will need a "sidebar hide" listener to ensure it doesn't happen
+            // https://github.com/pixiebrix/pixiebrix-extension/pull/7842#discussion_r1516015396
             focusController.save();
+            selectionController.save();
           }
         },
         { passive: true, capture: true, signal: closeSignal },
@@ -573,6 +585,7 @@ export function initSidebarFocusEvents(): void {
         "mouseleave",
         () => {
           focusController.clear();
+          selectionController.clear();
         },
         { passive: true, capture: true, signal: closeSignal },
       );

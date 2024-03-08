@@ -28,11 +28,15 @@ import userEvent from "@testing-library/user-event";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { type ModComponentState } from "@/store/extensionsTypes";
 import { getLinkedApiClient } from "@/data/service/apiClient";
-import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
+import {
+  deploymentFactory,
+  activatableDeploymentFactory,
+} from "@/testUtils/factories/deploymentFactories";
+import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories";
 import { ExtensionNotLinkedError } from "@/errors/genericErrors";
 
 const axiosMock = new MockAdapter(axios);
-axiosMock.onGet("/api/me/").reply(200, []);
+axiosMock.onGet("/api/me/").reply(200, { flags: [] });
 
 const getLinkedApiClientMock = jest.mocked(getLinkedApiClient);
 
@@ -42,6 +46,7 @@ const Component: React.FC = () => {
   const deployments = useContext(DeploymentsContext);
   return (
     <div data-testid="Component">
+      {deployments.hasUpdate && <span>Has Update</span>}
       <AsyncButton onClick={async () => deployments.update()}>
         Update
       </AsyncButton>
@@ -86,12 +91,24 @@ describe("DeploymentsContext", () => {
       expect(axiosMock.history.post).toHaveLength(1);
     });
 
-    // Permissions only requested once because user clicked update once
-    expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
+    // Permissions not requested because there's no deployments to activate
+    expect(requestPermissionsMock).not.toHaveBeenCalled();
   });
 
   it("activate single deployment from empty state", async () => {
-    axiosMock.onPost("/api/deployments/").reply(200, [deploymentFactory()]);
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    const registryId = deployment.package.package_id;
+
+    axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
+    axiosMock
+      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
     requestPermissionsMock.mockResolvedValue(true);
 
     const { getReduxStore } = render(
@@ -123,7 +140,19 @@ describe("DeploymentsContext", () => {
   });
 
   it("remounting the DeploymentsProvider doesn't refetch the deployments", async () => {
-    axiosMock.onPost("/api/deployments/").reply(200, [deploymentFactory()]);
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    const registryId = deployment.package.package_id;
+
+    axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
+    axiosMock
+      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
     requestPermissionsMock.mockResolvedValue(true);
 
     const { rerender } = render(
@@ -137,6 +166,7 @@ describe("DeploymentsContext", () => {
       expect(axiosMock.history.post).toHaveLength(1);
     });
 
+    expect(screen.getByText("Has Update")).toBeInTheDocument();
     await userEvent.click(screen.getByText("Update"));
 
     await waitFor(() => {
@@ -159,8 +189,9 @@ describe("DeploymentsContext", () => {
 
     await userEvent.click(screen.getByText("Update"));
 
-    // Permissions requested twice because user has clicked update twice
-    expect(requestPermissionsMock).toHaveBeenCalledTimes(2);
+    // The user already has all deployments installed, so no new fetch
+    expect(screen.queryByText("Has Update")).not.toBeInTheDocument();
+    expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
 
     // Still no changes in deployments, so no new fetch even after remount
     await waitForEffect();
@@ -171,7 +202,19 @@ describe("DeploymentsContext", () => {
     jest.useFakeTimers();
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
 
-    axiosMock.onPost("/api/deployments/").reply(200, [deploymentFactory()]);
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    const registryId = deployment.package.package_id;
+
+    axiosMock.onPost("/api/deployments/").reply(200, [deployment]);
+    axiosMock
+      .onGet(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
     requestPermissionsMock.mockResolvedValue(true);
 
     const { rerender } = render(
@@ -185,6 +228,7 @@ describe("DeploymentsContext", () => {
       expect(axiosMock.history.post).toHaveLength(1);
     });
 
+    expect(screen.getByText("Has Update")).toBeInTheDocument();
     await user.click(screen.getByText("Update"));
 
     await waitFor(() => {
@@ -210,17 +254,13 @@ describe("DeploymentsContext", () => {
     });
 
     await user.click(screen.getByText("Update"));
+    await waitForEffect();
 
-    await waitFor(() => {
-      // This shouldn't be occurring. Something is wrong with the test store that's making the
-      // activeExtensions return an empty array.
-      expect(axiosMock.history.post).toHaveLength(4);
-    });
+    expect(axiosMock.history.post).toHaveLength(3);
 
-    console.log(axiosMock.history.post);
-
-    // Permissions requested twice because user has clicked update twice
-    expect(requestPermissionsMock).toHaveBeenCalledTimes(2);
+    expect(screen.queryByText("Has Update")).not.toBeInTheDocument();
+    // Not called because there are no new deployments
+    expect(requestPermissionsMock).toHaveBeenCalledTimes(1);
 
     jest.useRealTimers();
   });

@@ -43,7 +43,7 @@ function testItRenders<TProps = unknown>(
     renderFn = render,
   } = typeof options === "function" ? options() : options;
 
-  // eslint-disable-next-line jest/valid-title
+  // eslint-disable-next-line jest/valid-title -- testName is a string
   test(testName, async () => {
     const ui = TemplateComponent ? (
       <TemplateComponent>
