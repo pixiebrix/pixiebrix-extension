@@ -32,7 +32,6 @@ const LoginCard: React.VoidFunctionComponent = () => {
       <Button
         variant="primary"
         className="mt-2"
-        target="_blank"
         href={baseURL ?? "/options.html"}
       >
         <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account

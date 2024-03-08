@@ -40,19 +40,9 @@ const NeedHelp: React.FunctionComponent = () => (
     <h4 className={styles.tinyCallout}>Need more help?</h4>
     <p>
       Visit the{" "}
-      <a
-        href="https://docs.pixiebrix.com/quick-start"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Quick Start Guide
-      </a>{" "}
-      or ask questions in the{" "}
-      <a
-        href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <a href="https://docs.pixiebrix.com/quick-start">Quick Start Guide</a> or
+      ask questions in the{" "}
+      <a href="https://pixiebrixcommunity.slack.com/join/shared_invite/zt-13gmwdijb-Q5nVsSx5wRLmRwL3~lsDww#/shared-invite/email">
         Slack Community
       </a>
       .{" "}

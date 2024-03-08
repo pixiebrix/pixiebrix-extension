@@ -70,6 +70,7 @@ async function init(): Promise<void> {
   void initCopilotMessenger();
 
   // Edge crashes on plain target=_blank links
+  // https://github.com/pixiebrix/pixiebrix-extension/pull/7832
   if (isMicrosoftEdge()) {
     openAllLinksInPopups();
   }
