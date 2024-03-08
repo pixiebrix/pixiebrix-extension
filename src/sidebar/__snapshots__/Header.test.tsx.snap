@@ -37,8 +37,7 @@ exports[`Header renders 1`] = `
     </div>
     <a
       class="button themeColorOverride btn btn-link btn-sm"
-      href="/options.html"
-      target="_blank"
+      href="chrome-extension://abcxyz/options.html"
     >
       <svg
         aria-hidden="true"
@@ -97,8 +96,7 @@ exports[`Header renders sidebar header logo per organization theme 1`] = `
     </div>
     <a
       class="button themeColorOverride btn btn-link btn-sm"
-      href="/options.html"
-      target="_blank"
+      href="chrome-extension://abcxyz/options.html"
     >
       <svg
         aria-hidden="true"

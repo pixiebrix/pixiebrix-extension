@@ -19,6 +19,25 @@ const boundaries = [
   "pageScript",
 ];
 
+const forbiddenDomPropsConfig = [
+  "error",
+  {
+    // Context: https://github.com/pixiebrix/pixiebrix-extension/pull/7832
+    forbid: [
+      {
+        propName: "target",
+        message:
+          'In this folder, `target="_blank"` already the default thanks to the `<base>` in the .html file',
+      },
+      {
+        propName: "rel",
+        message:
+          "This attribute was probably left behind after dropping the `target` attribute.",
+      },
+    ],
+  },
+];
+
 module.exports = {
   root: true,
   extends: [
@@ -213,6 +232,13 @@ module.exports = {
             ],
           }),
         ],
+      },
+    },
+    {
+      files: ["./src/pageEditor/**.tsx", "./src/sidebar/**.tsx"],
+      rules: {
+        "react/forbid-dom-props": forbiddenDomPropsConfig,
+        "react/forbid-component-props": forbiddenDomPropsConfig,
       },
     },
   ],

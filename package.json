@@ -77,6 +77,7 @@
     "exifreader": "^4.21.0",
     "export-to-csv": "^1.2.3",
     "filenamify": "^6.0.0",
+    "filter-altered-clicks": "^2.0.1",
     "fit-textarea": "^3.0.0",
     "formik": "^2.4.5",
     "fuse.js": "^7.0.0",
