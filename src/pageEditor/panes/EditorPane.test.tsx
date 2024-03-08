@@ -47,7 +47,7 @@ import { act } from "react-dom/test-utils";
 import * as sinonTimers from "@sinonjs/fake-timers";
 import { array } from "cooky-cutter";
 import { appApiMock } from "@/testUtils/appApiMock";
-import { mockAuthenticatedUser } from "@/testUtils/userMock";
+import { mockAuthenticatedMeApiResponse } from "@/testUtils/userMock";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import {
   formStateFactory,
@@ -58,7 +58,7 @@ import {
   marketplaceListingFactory,
   marketplaceTagFactory,
 } from "@/testUtils/factories/marketplaceFactories";
-import { partnerUserFactory } from "@/testUtils/factories/authFactories";
+import { meWithPartnerApiResponseFactory } from "@/testUtils/factories/authFactories";
 import { toExpression } from "@/utils/expressionUtils";
 import { PipelineFlavor } from "@/bricks/types";
 
@@ -907,7 +907,7 @@ describe("brick validation in Add Brick Modal UI", () => {
   );
 
   test("hides UiPath bricks for AA users", async () => {
-    await mockAuthenticatedUser(partnerUserFactory());
+    await mockAuthenticatedMeApiResponse(meWithPartnerApiResponseFactory());
     const formState = formStateFactory();
     render(
       <>

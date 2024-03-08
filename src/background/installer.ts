@@ -186,7 +186,7 @@ export async function requirePartnerAuth(): Promise<void> {
 
     console.debug("requirePartnerAuth", userData);
 
-    if (userData.partner?.theme === "automation-anywhere") {
+    if (userData.partner?.partnerTheme === "automation-anywhere") {
       const configs = await serviceLocator.locateAllForService(
         CONTROL_ROOM_TOKEN_INTEGRATION_ID,
       );

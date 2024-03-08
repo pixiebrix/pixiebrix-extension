@@ -40,47 +40,6 @@ import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { type OptionsArgs } from "@/types/runtimeTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
 
-type MeGroup = NonNullable<
-  components["schemas"]["Me"]["group_memberships"]
->[number] & {
-  id: UUID;
-};
-
-type MeMembershipOrganization = Except<
-  NonNullable<components["schemas"]["Me"]["organization_memberships"]>[number],
-  "is_deployment_manager"
-> & {
-  organization: UUID;
-  // The type is wrong in the Swagger
-  is_deployment_manager: boolean;
-};
-
-type MeOrganization = Required<components["schemas"]["Me"]["organization"]> & {
-  id: UUID;
-};
-
-export type Me = Except<
-  components["schemas"]["Me"],
-  | "flags"
-  | "is_onboarded"
-  | "organization"
-  | "telemetry_organization"
-  | "organization_memberships"
-  | "group_memberships"
-> & {
-  // Serializer method fields
-  flags: string[];
-  is_onboarded: boolean;
-
-  // Fix UUID types
-  organization: MeOrganization | null;
-  telemetry_organization: MeOrganization | null;
-  organization_memberships: MeMembershipOrganization[];
-  group_memberships: MeGroup[];
-};
-
-export type Milestone = components["schemas"]["Milestone"];
-
 export enum UserRole {
   member = 1,
   admin = 2,
@@ -95,8 +54,6 @@ export type Organization = components["schemas"]["Organization"] & {
   // a Member or Developer role on the team
   role: UserRole;
 };
-
-export type OrganizationTheme = components["schemas"]["Organization"]["theme"];
 
 export type Group = components["schemas"]["Group"];
 

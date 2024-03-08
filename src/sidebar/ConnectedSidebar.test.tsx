@@ -21,12 +21,14 @@ import { render } from "@/sidebar/testHelpers";
 import { authActions } from "@/auth/authSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { MemoryRouter } from "react-router";
-import { mockAnonymousUser, mockAuthenticatedUser } from "@/testUtils/userMock";
+import {
+  mockAnonymousMeApiResponse,
+  mockAuthenticatedMeApiResponse,
+} from "@/testUtils/userMock";
 import useLinkState from "@/auth/useLinkState";
 import {
   authStateFactory,
-  partnerUserFactory,
-  userFactory,
+  meWithPartnerApiResponseFactory,
 } from "@/testUtils/factories/authFactories";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
@@ -53,7 +55,7 @@ describe("SidebarApp", () => {
   });
 
   test("renders not connected", async () => {
-    mockAnonymousUser();
+    mockAnonymousMeApiResponse();
     useLinkStateMock.mockReturnValue(valueToAsyncState(false));
 
     const { asFragment } = render(
@@ -67,7 +69,7 @@ describe("SidebarApp", () => {
   });
 
   test("renders connected partner view", async () => {
-    await mockAuthenticatedUser(partnerUserFactory());
+    await mockAuthenticatedMeApiResponse(meWithPartnerApiResponseFactory());
     useLinkStateMock.mockReturnValue(valueToAsyncState(true));
 
     const { asFragment } = render(
@@ -81,7 +83,7 @@ describe("SidebarApp", () => {
   });
 
   test("renders", async () => {
-    await mockAuthenticatedUser(userFactory());
+    await mockAuthenticatedMeApiResponse();
 
     const { asFragment } = render(
       <MemoryRouter>

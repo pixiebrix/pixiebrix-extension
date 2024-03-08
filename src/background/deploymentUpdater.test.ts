@@ -58,6 +58,8 @@ import {
 import { activatableDeploymentFactory } from "@/testUtils/factories/deploymentFactories";
 import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories";
 import { type RegistryPackage } from "@/types/contract";
+import { resetMeApiMocks } from "@/testUtils/userMock";
+import { resetFeatureFlags } from "@/auth/featureFlagStorage";
 
 setContext("background");
 
@@ -85,6 +87,7 @@ jest.mock("@/auth/authStorage", () => ({
   isLinked: jest.fn().mockResolvedValue(true),
   async updateUserData() {},
   addListener: jest.fn(),
+  TEST_setAuthData: jest.fn(),
 }));
 
 jest.mock("@/background/installer", () => ({
@@ -128,6 +131,11 @@ beforeEach(async () => {
   } as any);
 
   await resetManagedStorage();
+});
+
+afterEach(async () => {
+  await resetFeatureFlags();
+  await resetMeApiMocks();
 });
 
 describe("syncDeployments", () => {
