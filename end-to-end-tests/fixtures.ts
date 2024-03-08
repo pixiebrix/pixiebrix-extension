@@ -25,9 +25,32 @@ import path from "node:path";
 import { MV } from "./env";
 import fs from "node:fs/promises";
 
+const getStoredCookies = async (): Promise<Cookie[]> => {
+  let fileBuffer;
+  try {
+    fileBuffer = await fs.readFile(
+      // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname is throwing "cannot use 'import meta' outside a module"
+      path.join(__dirname, "./.auth/user.json"),
+    );
+  } catch (error) {
+    // If the file does not exist, we are likely running authenticate setup for the first time. Return an empty array.
+    if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+      return [];
+    }
+
+    throw error;
+  }
+
+  const { cookies } = JSON.parse(fileBuffer.toString()) as unknown as {
+    cookies: Cookie[];
+  };
+  return cookies;
+};
+
 export const test = base.extend<{
   context: BrowserContext;
   extensionId: string;
+  storageState: string;
 }>({
   // eslint-disable-next-line no-empty-pattern -- Playwright requires destructuring pattern as first argument
   async context({}, use) {
@@ -41,18 +64,9 @@ export const test = base.extend<{
       ],
     });
 
-    const fileBuffer = await fs.readFile(
-      // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname is throwing "cannot use 'import meta' outside a module"
-      path.join(__dirname, "./.auth/user.json"),
-    );
-
-    const { cookies } = JSON.parse(fileBuffer.toString()) as unknown as {
-      cookies: Cookie[];
-    };
-
     // Manually add session cookies instead of relying on storageState in playwright.config.ts because
     // launchPersistentContext does not support a storageState option
-    await context.addCookies(cookies);
+    await context.addCookies(await getStoredCookies());
     await use(context);
     await context.close();
   },
