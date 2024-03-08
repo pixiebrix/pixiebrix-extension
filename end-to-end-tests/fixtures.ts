@@ -29,9 +29,9 @@ export const test = base.extend<{
   context: BrowserContext;
   extensionId: string;
 }>({
-  // eslint-disable-next-line no-empty-pattern -- todo: why is this necessary?
+  // eslint-disable-next-line no-empty-pattern -- Playwright requires destructuring pattern as first argument
   async context({}, use) {
-    // eslint-disable-next-line unicorn/prefer-module -- todo: why isn't import.meta not working?
+    // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname is throwing "cannot use 'import meta' outside a module"
     const pathToExtension = path.join(__dirname, "../dist");
     const context = await chromium.launchPersistentContext("", {
       headless: false,
@@ -42,7 +42,7 @@ export const test = base.extend<{
     });
 
     const fileBuffer = await fs.readFile(
-      // eslint-disable-next-line unicorn/prefer-module -- todo: why isn't import.meta not working?
+      // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname is throwing "cannot use 'import meta' outside a module"
       path.join(__dirname, "./.auth/user.json"),
     );
 
