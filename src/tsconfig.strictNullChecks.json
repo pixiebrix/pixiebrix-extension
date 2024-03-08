@@ -744,6 +744,7 @@
     "./components/errors/InvalidSelectorErrorDetail.tsx",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/example.spec.ts",
+    "../end-to-end-tests/fixtures.ts",
     "./utils/deploymentUtils.ts"
   ]
 }

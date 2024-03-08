@@ -57,20 +57,19 @@ export const test = base.extend<{
     await context.close();
   },
   async extensionId({ context }, use) {
-    if (MV === "3") {
-      let [background] = context.serviceWorkers();
-      background = await context.waitForEvent("serviceworker");
+    let background;
 
-      const extensionId = background.url().split("/")[2];
-      await use(extensionId);
+    if (MV === "3") {
+      background = context.serviceWorkers()[0];
+      background = await context.waitForEvent("serviceworker");
     } else {
       // For manifest v2:
-      let [background] = context.backgroundPages();
+      background = context.backgroundPages()[0];
       background ||= await context.waitForEvent("backgroundpage");
-
-      const extensionId = background.url().split("/")[2];
-      await use(extensionId);
     }
+
+    const extensionId = background.url().split("/")[2];
+    await use(extensionId);
   },
 });
 export const { expect } = test;
