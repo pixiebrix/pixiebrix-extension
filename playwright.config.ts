@@ -37,8 +37,6 @@ export default defineConfig({
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
-        // Use auth state prepared by auth.setup.ts
-        storageState: "end-to-end-tests/.auth/user.json",
       },
       dependencies: ["setup"],
     },
