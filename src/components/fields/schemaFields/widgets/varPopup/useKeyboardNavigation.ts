@@ -16,19 +16,14 @@
  */
 
 import { type KeyPath } from "react-json-tree";
-import {
-  type MutableRefObject,
-  useCallback,
-  useEffect,
-  useState,
-  useRef,
-} from "react";
+import { type MutableRefObject, useCallback, useEffect, useState } from "react";
 import {
   defaultMenuOption,
   type MenuOptions,
   moveMenuOption,
 } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
 import { isEqual } from "lodash";
+import { usePrevious } from "@/hooks/usePrevious";
 
 /**
  * Hook to navigate the variable popover menu using the keyboard from the input field
@@ -132,14 +127,6 @@ function useResetActiveKeyPath({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only trigger when the menuOptions or likelyVariable changes
   }, [likelyVariable, menuOptions, setActiveKeyPath]);
-}
-
-function usePrevious<T>(value: T) {
-  const ref = useRef<T | null>();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
 }
 
 export default useKeyboardNavigation;

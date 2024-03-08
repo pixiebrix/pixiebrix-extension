@@ -19,12 +19,12 @@ import { selectTraceErrors } from "@/pageEditor/slices/runtimeSelectors";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { type UUID } from "@/types/stringTypes";
+import { usePrevious } from "@/hooks/usePrevious";
 
 /**
- * React Hook that reports when there's an error in a trace.
+ * React Hook that reports when there's an error in a trace. Reports the error once per runId.
  *
  * Too many trace errors may indicate the user is having trouble creating/editing a mod.
  */
@@ -34,16 +34,13 @@ function useReportTraceError(): void {
 
   const traceError = traceErrors.find((x) => x.runId);
   const runId: UUID | null = traceError?.runId;
-
-  useEffect(() => {
-    if (traceError) {
-      reportEvent(Events.PAGE_EDITOR_MOD_COMPONENT_ERROR, {
-        sessionId,
-        extensionId: traceError.extensionId,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- report trace error once per run
-  }, [runId, sessionId]);
+  const prevRunId = usePrevious(runId);
+  if (traceError && runId !== prevRunId) {
+    reportEvent(Events.PAGE_EDITOR_MOD_COMPONENT_ERROR, {
+      sessionId,
+      extensionId: traceError.extensionId,
+    });
+  }
 }
 
 export default useReportTraceError;
