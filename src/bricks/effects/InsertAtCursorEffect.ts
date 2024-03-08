@@ -25,6 +25,7 @@ import { type Schema } from "@/types/schemaTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { isEmpty } from "lodash";
 import focus from "@/utils/focusController";
+import selectionController from "@/utils/selectionController";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { insertAtCursorWithCustomEditorSupport } from "@/contentScript/textEditorDom";
 import { propertiesToSchema } from "@/utils/schemaUtils";
@@ -74,6 +75,12 @@ class InsertAtCursorEffect extends EffectABC {
     }
 
     const element = isDocument(root) ? focus.get() : root;
+
+    // When calling this brick from the sidebar, some editors intentionally clear the selection
+    // so we need to restore it before inserting the text. This isn't necessary on native
+    // input fields and contenteditable elements for example.
+    // https://github.com/pixiebrix/pixiebrix-extension/pull/7827#issuecomment-1979884573
+    selectionController.restoreWithoutClearing();
 
     if (!element) {
       throw new BusinessError("No active element");
