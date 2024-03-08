@@ -110,7 +110,7 @@ class AddTextSnippets extends EffectABC {
       platform.commandPopover.register({
         componentId: logger.context.extensionId,
         // Trim leading slash to be resilient to user input
-        shortcut: shortcut.replace(/^\//, ""),
+        shortcut: shortcut.replace(/^[/\\]/, ""),
         title,
         async handler(): Promise<string> {
           return text;
