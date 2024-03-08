@@ -406,6 +406,7 @@
     "./hooks/useKeyboardShortcut.ts",
     "./hooks/useMemoCompare.ts",
     "./hooks/useMergeAsyncState.ts",
+    "./hooks/usePrevious.ts",
     "./hooks/useQuickbarShortcut.ts",
     "./hooks/useReduxState.ts",
     "./hooks/useReportError.ts",
