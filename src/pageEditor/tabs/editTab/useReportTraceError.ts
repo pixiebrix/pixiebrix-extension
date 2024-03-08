@@ -21,7 +21,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useSelector } from "react-redux";
 import { type UUID } from "@/types/stringTypes";
-import { usePrevious } from "@/hooks/usePrevious";
+import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 /**
  * React Hook that reports when there's an error in a trace. Reports the error once per runId.
@@ -34,7 +34,7 @@ function useReportTraceError(): void {
 
   const traceError = traceErrors.find((x) => x.runId);
   const runId: UUID | null = traceError?.runId;
-  const prevRunId = usePrevious(runId);
+  const prevRunId = usePreviousValue(runId);
   if (traceError && runId !== prevRunId) {
     reportEvent(Events.PAGE_EDITOR_MOD_COMPONENT_ERROR, {
       sessionId,

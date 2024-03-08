@@ -18,9 +18,12 @@
 import { useEffect, useRef } from "react";
 
 /**
- * React hook to get the previous value of a prop or state.
+ * React hook to get the value of a variable from the previous render.
+ * This is useful for comparing the current value of a variable with its previous value
+ * to determine how it has changed, and avoids the needs for additional useEffects and state.
+ * @param value The value to get the previous value of.
  */
-export function usePrevious<T>(value: T) {
+export function usePreviousValue<T>(value: T) {
   const ref = useRef<T | null>();
   useEffect(() => {
     ref.current = value;

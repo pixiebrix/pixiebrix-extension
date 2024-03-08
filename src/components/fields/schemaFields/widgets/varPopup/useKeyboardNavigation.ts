@@ -23,7 +23,7 @@ import {
   moveMenuOption,
 } from "@/components/fields/schemaFields/widgets/varPopup/menuFilters";
 import { isEqual } from "lodash";
-import { usePrevious } from "@/hooks/usePrevious";
+import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 /**
  * Hook to navigate the variable popover menu using the keyboard from the input field
@@ -115,8 +115,8 @@ function useResetActiveKeyPath({
   likelyVariable: string;
   setActiveKeyPath: React.Dispatch<React.SetStateAction<KeyPath>>;
 }) {
-  const prevMenuOptions = usePrevious(menuOptions);
-  const prevLikelyVariable = usePrevious(likelyVariable);
+  const prevMenuOptions = usePreviousValue(menuOptions);
+  const prevLikelyVariable = usePreviousValue(likelyVariable);
 
   useEffect(() => {
     if (

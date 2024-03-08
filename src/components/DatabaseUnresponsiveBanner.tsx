@@ -23,7 +23,7 @@ import useTimeoutState from "@/hooks/useTimeoutState";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import reportError from "@/telemetry/reportError";
-import { usePrevious } from "@/hooks/usePrevious";
+import { usePreviousValue } from "@/hooks/usePreviousValue";
 
 const errorBanner = (
   <Banner variant="warning">
@@ -49,7 +49,7 @@ const DatabaseUnresponsiveBanner: React.VoidFunctionComponent<{
   const hasWaited = useTimeoutState(timeoutMillis);
 
   const showBanner = !state.isSuccess && hasWaited;
-  const prevShowBanner = usePrevious(showBanner);
+  const prevShowBanner = usePreviousValue(showBanner);
 
   if (showBanner && !prevShowBanner) {
     reportEvent(Events.IDB_UNRESPONSIVE_BANNER);
