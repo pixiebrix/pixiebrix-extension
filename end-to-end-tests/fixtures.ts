@@ -15,9 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test as base, chromium, type BrowserContext } from "@playwright/test";
+import {
+  test as base,
+  chromium,
+  type BrowserContext,
+  type Cookie,
+} from "@playwright/test";
 import path from "node:path";
 import { MV } from "./env";
+import fs from "node:fs/promises";
 
 export const test = base.extend<{
   context: BrowserContext;
@@ -34,6 +40,17 @@ export const test = base.extend<{
         `--load-extension=${pathToExtension}`,
       ],
     });
+
+    const fileBuffer = await fs.readFile(
+      // eslint-disable-next-line unicorn/prefer-module -- todo: why isn't import.meta not working?
+      path.join(__dirname, "./.auth/user.json"),
+    );
+
+    const { cookies } = JSON.parse(fileBuffer.toString()) as unknown as {
+      cookies: Cookie[];
+    };
+
+    await context.addCookies(cookies);
     await use(context);
     await context.close();
   },
