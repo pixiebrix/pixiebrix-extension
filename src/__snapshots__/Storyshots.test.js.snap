@@ -8807,112 +8807,116 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard Token (Unlinked Extension)
 
 exports[`Storyshots PageEditor/HomePane Default 1`] = `
 <div
-  className="pane row"
+  className="h-100 overflow-auto p-4 container-fluid"
 >
-  <img
-    alt="background illustration"
-    className="bgImage"
-    src="test-file-stub"
-  />
   <div
-    className="col-lg-auto col-12"
+    className="gap-2 row"
   >
     <img
-      alt="Page Editor logo"
+      alt="background illustration"
+      className="bgImage"
       src="test-file-stub"
     />
-  </div>
-  <div
-    className="col-xl-auto col-lg-7 col-12"
-  >
-    <h1
-      className="title"
-    >
-      Welcome to the Page Editor!
-    </h1>
     <div
-      className="lead"
+      className="col-lg-auto col-12"
     >
-      <div>
-        You might recognize it from the video on the home page.
-      </div>
-      <div>
-        Here, you can create mods that improve the UX of any web apps and sites you visit.
-      </div>
+      <img
+        alt="Page Editor logo"
+        src="test-file-stub"
+      />
     </div>
-    <div>
-      <div
-        className="text"
+    <div
+      className="col-xl-auto col-lg-7 col-12"
+    >
+      <h1
+        className="title"
       >
-        Not sure where to get started? Our Template Gallery has customizable templates with guides for the most popular use cases.
+        Welcome to the Page Editor!
+      </h1>
+      <div
+        className="lead"
+      >
+        <div>
+          You might recognize it from the video on the home page.
+        </div>
+        <div>
+          Here, you can create mods that improve the UX of any web apps and sites you visit.
+        </div>
       </div>
       <div>
-        <button
-          className="button btn btn-primary"
-          disabled={false}
-          onClick={[Function]}
-          type="button"
+        <div
+          className="text"
         >
-          Launch Template Gallery
-        </button>
+          Not sure where to get started? Our Template Gallery has customizable templates with guides for the most popular use cases.
+        </div>
+        <div>
+          <button
+            className="button btn btn-primary"
+            disabled={false}
+            onClick={[Function]}
+            type="button"
+          >
+            Launch Template Gallery
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-  <div
-    className="col-lg-auto col-12"
-  >
     <div
-      className="links"
+      className="col-lg-auto col-12"
     >
-      <ul>
-        <span
-          className="linkSectionHeader"
-        >
-          Support
-        </span>
-        <li>
-          <a
-            href="https://docs.pixiebrix.com/"
+      <div
+        className="links"
+      >
+        <ul>
+          <span
+            className="linkSectionHeader"
           >
-            Documentation
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://pixiebrix.thinkific.com/collections"
+            Support
+          </span>
+          <li>
+            <a
+              href="https://docs.pixiebrix.com/"
+            >
+              Documentation
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://pixiebrix.thinkific.com/collections"
+            >
+              PixieBrix Certification
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://slack.pixiebrix.com/"
+            >
+              Join the Community Slack
+            </a>
+          </li>
+        </ul>
+        <ul>
+          <span
+            className="linkSectionHeader"
           >
-            PixieBrix Certification
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://slack.pixiebrix.com/"
-          >
-            Join the Community Slack
-          </a>
-        </li>
-      </ul>
-      <ul>
-        <span
-          className="linkSectionHeader"
-        >
-          Helpful Links
-        </span>
-        <li>
-          <button
-            onClick={[Function]}
-          >
-            Extension Console
-          </button>
-        </li>
-        <li>
-          <a
-            href="https://app.pixiebrix.com/"
-          >
-            Admin Console
-          </a>
-        </li>
-      </ul>
+            Helpful Links
+          </span>
+          <li>
+            <button
+              onClick={[Function]}
+            >
+              Extension Console
+            </button>
+          </li>
+          <li>
+            <a
+              href="https://app.pixiebrix.com/"
+            >
+              Admin Console
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>
