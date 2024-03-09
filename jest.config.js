@@ -24,6 +24,7 @@ const esmPackages = [
   "copy-text-to-clipboard",
   "create-html-element",
   "escape-goat",
+  "escape-string-regexp",
   "filename-reserved-regex",
   "filenamify",
   "idb",
