@@ -21,11 +21,9 @@ import { MAX_Z_INDEX } from "@/domConstants";
  * Add a visual indicator to the top-left of the DOM.
  */
 export function addContentScriptIndicator() {
-  const indicator = document.createElement("div");
+  const indicator = document.createElement("a");
+  indicator.href = "https://github.com/pixiebrix/pixiebrix-extension/pull/5001";
   indicator.className = "pixiebrix-content-script-indicator";
-
-  // Hide on hover
-  indicator.addEventListener("mouseenter", indicator.remove);
 
   Object.assign(indicator.style, {
     position: "fixed",
