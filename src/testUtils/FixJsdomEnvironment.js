@@ -16,6 +16,10 @@
  */
 
 import JSDOMEnvironment from "jest-environment-jsdom";
+import nock from "nock";
+
+// Block HTTP requests from tests
+nock.disableNetConnect();
 
 // https://github.com/facebook/jest/blob/v29.4.3/website/versioned_docs/version-29.4/Configuration.md#testenvironment-string
 export default class FixJSDOMEnvironment extends JSDOMEnvironment {
@@ -24,5 +28,13 @@ export default class FixJSDOMEnvironment extends JSDOMEnvironment {
 
     // FIXME https://github.com/jsdom/jsdom/issues/3363
     this.global.structuredClone = structuredClone;
+
+    // Until https://github.com/jsdom/jsdom/issues/1724
+    // https://stackoverflow.com/questions/74945569/cannot-access-built-in-node-js-fetch-function-from-jest-tests/78051351#78051351
+    this.global.fetch = fetch;
+    this.global.Request = Request;
+    this.global.Response = Response;
+    this.global.ReadableStream = ReadableStream;
+    this.global.AbortController = AbortController;
   }
 }
