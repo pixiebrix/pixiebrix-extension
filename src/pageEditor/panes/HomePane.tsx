@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { useSelector } from "react-redux";
@@ -32,93 +32,91 @@ const TEMPLATE_TELEMETRY_SOURCE = "home_pane";
 const HomePane: React.FunctionComponent = () => {
   const sessionId = useSelector(selectSessionId);
   return (
-    <Container fluid className="h-100 overflow-auto">
-      <Row className={styles.pane}>
-        <img
-          src={bgIllustration}
-          alt="background illustration"
-          className={styles.bgImage}
-        />
+    <Row className={styles.pane}>
+      <img
+        src={bgIllustration}
+        alt="background illustration"
+        className={styles.bgImage}
+      />
 
-        <Col xs={12} lg="auto">
-          <img src={paintbrush} alt="Page Editor logo" />
-        </Col>
+      <Col xs={12} lg="auto">
+        <img src={paintbrush} alt="Page Editor logo" />
+      </Col>
 
-        <Col xs={12} lg={7} xl="auto">
-          <h1 className={styles.title}>Welcome to the Page Editor!</h1>
-          <div className={styles.lead}>
-            <div>You might recognize it from the video on the home page.</div>
-            <div>
-              Here, you can create mods that improve the UX of any web apps and
-              sites you visit.
-            </div>
+      <Col xs={12} lg={7} xl="auto">
+        <h1 className={styles.title}>Welcome to the Page Editor!</h1>
+        <div className={styles.lead}>
+          <div>You might recognize it from the video on the home page.</div>
+          <div>
+            Here, you can create mods that improve the UX of any web apps and
+            sites you visit.
+          </div>
+        </div>
+
+        <div>
+          <div className={styles.text}>
+            Not sure where to get started? Our Template Gallery has customizable
+            templates with guides for the most popular use cases.
           </div>
 
           <div>
-            <div className={styles.text}>
-              Not sure where to get started? Our Template Gallery has
-              customizable templates with guides for the most popular use cases.
-            </div>
+            <Button
+              variant="primary"
+              className={styles.button}
+              onClick={() => {
+                reportEvent(Events.PAGE_EDITOR_VIEW_TEMPLATES, {
+                  sessionId,
+                  source: TEMPLATE_TELEMETRY_SOURCE,
+                });
+                void browser.tabs.update(inspectedTab.tabId, {
+                  url: `https://www.pixiebrix.com/templates-gallery?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=${TEMPLATE_TELEMETRY_SOURCE}`,
+                });
+              }}
+            >
+              Launch Template Gallery
+            </Button>
+          </div>
+        </div>
+      </Col>
 
-            <div>
-              <Button
-                variant="primary"
-                className={styles.button}
-                onClick={() => {
-                  reportEvent(Events.PAGE_EDITOR_VIEW_TEMPLATES, {
-                    sessionId,
-                    source: TEMPLATE_TELEMETRY_SOURCE,
-                  });
-                  void browser.tabs.update(inspectedTab.tabId, {
-                    url: `https://www.pixiebrix.com/templates-gallery?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=${TEMPLATE_TELEMETRY_SOURCE}`,
-                  });
+      <Col xs={12} lg="auto">
+        <div className={styles.links}>
+          <ul>
+            <span className={styles.linkSectionHeader}>Support</span>
+            <li>
+              <a href="https://docs.pixiebrix.com/">Documentation</a>
+            </li>
+            <li>
+              <a href="https://pixiebrix.thinkific.com/collections">
+                PixieBrix Certification
+              </a>
+            </li>
+            <li>
+              <a href="https://slack.pixiebrix.com/">
+                Join the Community Slack
+              </a>
+            </li>
+          </ul>
+
+          <ul>
+            <span className={styles.linkSectionHeader}>Helpful Links</span>
+            <li>
+              <button
+                onClick={async (event) => {
+                  event.preventDefault();
+                  await browser.runtime.openOptionsPage();
                 }}
               >
-                Launch Template Gallery
-              </Button>
-            </div>
-          </div>
-        </Col>
-
-        <Col xs={12} lg="auto">
-          <div className={styles.links}>
-            <ul>
-              <span className={styles.linkSectionHeader}>Support</span>
-              <li>
-                <a href="https://docs.pixiebrix.com/">Documentation</a>
-              </li>
-              <li>
-                <a href="https://pixiebrix.thinkific.com/collections">
-                  PixieBrix Certification
-                </a>
-              </li>
-              <li>
-                <a href="https://slack.pixiebrix.com/">
-                  Join the Community Slack
-                </a>
-              </li>
-            </ul>
-
-            <ul>
-              <span className={styles.linkSectionHeader}>Helpful Links</span>
-              <li>
-                <button
-                  onClick={async (event) => {
-                    event.preventDefault();
-                    await browser.runtime.openOptionsPage();
-                  }}
-                >
-                  Extension Console
-                </button>
-              </li>
-              <li>
-                <a href="https://app.pixiebrix.com/">Admin Console</a>
-              </li>
-            </ul>
-          </div>
-        </Col>
-      </Row>
-    </Container>
+                Extension Console
+              </button>
+            </li>
+            <li>
+              <a href="https://app.pixiebrix.com/">Admin Console</a>
+            </li>
+          </ul>
+        </div>
+      </Col>
+    </Row>
   );
 };
 
