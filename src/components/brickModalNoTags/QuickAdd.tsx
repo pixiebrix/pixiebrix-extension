@@ -29,13 +29,13 @@ type OwnProps<T extends Metadata> = {
 };
 
 const QuickAdd = <T extends Metadata>({
-  recommendations = [],
+  recommendations,
   onSelect,
 }: OwnProps<T>) => (
   <div>
     <h4>Recommended Bricks</h4>
     <div className={styles.root}>
-      {recommendations.map((brick) => (
+      {(recommendations ?? []).map((brick) => (
         <Card
           className={styles.card}
           key={brick.id}

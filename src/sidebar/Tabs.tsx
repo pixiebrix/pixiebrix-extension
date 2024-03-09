@@ -104,11 +104,8 @@ const TabWithDivider = ({
     >
       <Nav.Link
         {...props}
+        as="button"
         className={styles.tabHeader}
-        // Added `target="_self"` due to stopPropagation on onCloseStaticPanel
-        // without it, the default behavior of the anchor tag (Nav.Link) is triggered
-        // and a new tab is opened
-        target="_self"
         eventKey={eventKey}
       >
         {children}
@@ -129,7 +126,17 @@ const Tabs: React.FC = () => {
   const getExtensionFromEventKey = useSelector(selectExtensionFromEventKey);
   const closedTabs = useSelector(selectClosedTabs);
 
+  const modLauncherEventKey = eventKeyForEntry(MOD_LAUNCHER);
+  const isModLauncherOpen =
+    // eslint-disable-next-line security/detect-object-injection -- modLauncherEventKey is not user input
+    !closedTabs[modLauncherEventKey];
+
   const onSelect = (eventKey: string) => {
+    // Automatically close the mod launcher if it's open, the + button will be shown instead
+    if (isModLauncherOpen) {
+      dispatch(sidebarSlice.actions.closeTab(modLauncherEventKey));
+    }
+
     reportEvent(Events.VIEW_SIDEBAR_PANEL, {
       ...selectEventData(getExtensionFromEventKey(eventKey)),
       initialLoad: false,
@@ -139,11 +146,6 @@ const Tabs: React.FC = () => {
   };
 
   const onOpenModLauncher = () => {
-    const modLauncherEventKey = eventKeyForEntry(MOD_LAUNCHER);
-    const isModLauncherOpen =
-      // eslint-disable-next-line security/detect-object-injection -- modLauncherEventKey is not user input
-      !closedTabs[modLauncherEventKey];
-
     reportEvent(Events.VIEW_SIDEBAR_PANEL, {
       ...selectEventData(getExtensionFromEventKey(modLauncherEventKey)),
       initialLoad: false,
@@ -281,15 +283,17 @@ const Tabs: React.FC = () => {
               />
             </TabWithDivider>
           ))}
-          <Button
-            size="sm"
-            variant="link"
-            className={styles.addButton}
-            aria-label="open mod launcher"
-            onClick={onOpenModLauncher}
-          >
-            <FontAwesomeIcon icon={faPlus} />
-          </Button>
+          {!isModLauncherOpen && (
+            <Button
+              size="sm"
+              variant="link"
+              className={styles.addButton}
+              aria-label="Open Mod Launcher"
+              onClick={onOpenModLauncher}
+            >
+              <FontAwesomeIcon icon={faPlus} />
+            </Button>
+          )}
         </Nav>
         <Tab.Content
           className={cx(

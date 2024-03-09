@@ -17,26 +17,27 @@
 
 import { locator as serviceLocator } from "@/background/locator";
 import { type Runtime } from "webextension-polyfill";
-import reportEvent from "@/telemetry/reportEvent";
-import { initTelemetry } from "@/background/telemetry";
-import { getUID } from "@/background/messenger/api";
+import { initTelemetry, recordEvent } from "@/background/telemetry";
+import { getUUID } from "@/telemetry/telemetryHelpers";
 import { allowsTrack, dntConfig } from "@/telemetry/dnt";
 import { gt } from "semver";
 import { getBaseURL } from "@/data/service/baseService";
-import { getExtensionToken, getUserData, isLinked } from "@/auth/token";
+import { getExtensionToken, getUserData, isLinked } from "@/auth/authStorage";
 import { isCommunityControlRoom } from "@/contrib/automationanywhere/aaUtils";
 import { isEmpty } from "lodash";
 import { expectContext } from "@/utils/expectContext";
 import {
-  readManagedStorage,
+  initManagedStorage,
   isInitialized as isManagedStorageInitialized,
+  readManagedStorage,
+  resetInitializationTimestamp as resetManagedStorageInitializationState,
+  watchForDelayedStorageInitialization,
 } from "@/store/enterprise/managedStorage";
 import { Events } from "@/telemetry/events";
-
 import { DEFAULT_SERVICE_URL, UNINSTALL_URL } from "@/urlConstants";
-
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import { oncePerSession } from "@/mv3/SessionStorage";
 
 /**
  * The latest version of PixieBrix available in the Chrome Web Store, or null if the version hasn't been fetched.
@@ -185,7 +186,7 @@ export async function requirePartnerAuth(): Promise<void> {
 
     console.debug("requirePartnerAuth", userData);
 
-    if (userData.partner?.theme === "automation-anywhere") {
+    if (userData.partner?.partnerTheme === "automation-anywhere") {
       const configs = await serviceLocator.locateAllForService(
         CONTROL_ROOM_TOKEN_INTEGRATION_ID,
       );
@@ -214,7 +215,7 @@ export async function requirePartnerAuth(): Promise<void> {
 }
 
 // Exported for testing
-export async function handleInstall({
+export async function showInstallPage({
   reason,
   previousVersion,
 }: Runtime.OnInstalledDetailsType): Promise<void> {
@@ -224,8 +225,11 @@ export async function handleInstall({
   const { version } = browser.runtime.getManifest();
 
   if (reason === "install") {
-    reportEvent(Events.PIXIEBRIX_INSTALL, {
-      version,
+    void recordEvent({
+      event: Events.PIXIEBRIX_INSTALL,
+      data: {
+        version,
+      },
     });
 
     // XXX: under what conditions could onInstalled fire, but the extension is already linked? Is this the case during
@@ -271,19 +275,27 @@ export async function handleInstall({
     void requirePartnerAuth();
 
     if (version === previousVersion) {
-      reportEvent(Events.PIXIEBRIX_RELOAD, {
-        version,
+      void recordEvent({
+        event: Events.PIXIEBRIX_RELOAD,
+        data: {
+          version,
+        },
       });
     } else {
-      reportEvent(Events.PIXIEBRIX_UPDATE, {
-        version,
-        previousVersion,
+      void recordEvent({
+        event: Events.PIXIEBRIX_UPDATE,
+        data: {
+          version,
+          previousVersion,
+        },
       });
     }
   }
 }
 
-function onUpdateAvailable({ version }: Runtime.OnUpdateAvailableDetailsType) {
+function setAvailableVersion({
+  version,
+}: Runtime.OnUpdateAvailableDetailsType): void {
   _availableVersion = version;
 }
 
@@ -305,17 +317,45 @@ export function isUpdateAvailable(): boolean {
 async function setUninstallURL(): Promise<void> {
   const url = new URL(UNINSTALL_URL);
   if (await allowsTrack()) {
-    url.searchParams.set("uid", await getUID());
+    url.searchParams.set("uid", await getUUID());
   }
 
   // We always want to show the uninstallation page so the user can optionally fill out the uninstallation survey
   await browser.runtime.setUninstallURL(url.href);
 }
 
-function initInstaller() {
-  browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
-  browser.runtime.onInstalled.addListener(handleInstall);
-  browser.runtime.onStartup.addListener(initTelemetry);
+// Using our own session value vs. webext-events because onExtensionStart has a 100ms delay
+// https://github.com/fregante/webext-events/blob/main/source/on-extension-start.ts#L56
+// eslint-disable-next-line local-rules/persistBackgroundData -- using SessionMap via oncePerSession
+const initManagedStorageOncePerSession = oncePerSession(
+  "initManagedStorage",
+  import.meta.url,
+  async () => {
+    await resetManagedStorageInitializationState();
+    await initManagedStorage();
+    void watchForDelayedStorageInitialization();
+  },
+);
+
+// eslint-disable-next-line local-rules/persistBackgroundData -- using SessionMap via oncePerSession
+const initTelemetryOncePerSession = oncePerSession(
+  "initTelemetry",
+  import.meta.url,
+  async () => {
+    if (await isLinked()) {
+      // Init telemetry is a no-op if not linked. So calling without being linked just delays the throttle
+      await initTelemetry();
+    }
+  },
+);
+
+function initInstaller(): void {
+  void initManagedStorageOncePerSession();
+  void initTelemetryOncePerSession();
+
+  browser.runtime.onInstalled.addListener(showInstallPage);
+  browser.runtime.onUpdateAvailable.addListener(setAvailableVersion);
+
   dntConfig.onChanged(() => {
     void setUninstallURL();
   });

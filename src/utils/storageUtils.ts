@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownObject } from "@/types/objectTypes";
 import { type MigrationManifest, type PersistedState } from "redux-persist";
 import migratePersistedState from "@/store/migratePersistedState";
 import { mapValues } from "lodash";
@@ -56,12 +55,12 @@ export function validateReduxStorageKey(key: string): ReduxStorageKey {
  * @param defaultValue default value to return if the key is not defined in storage, or a non-object value is found
  * @param inferPersistedVersion if needed, a function to infer the persisted version for the returned state/slice type
  */
-// We want to accept redux state objects here without making every state type
-// extend UnknownObject, or making the call-sites awful, so plain object works
-// better than Record or UnknownObject. There are type checks in the function
-// body for safety. We'll need to re-type all state slices and fix tests in
-// order to refactor this to use UnknownObject instead of object.
-// eslint-disable-next-line @typescript-eslint/ban-types
+/* eslint-disable-next-line @typescript-eslint/ban-types --
+We want to accept redux state objects here without making every state type
+extend UnknownObject, or making the call-sites awful, so plain object works
+better than Record or UnknownObject. There are type checks in the function
+body for safety. We'll need to re-type all state slices and fix tests in
+order to refactor this to use UnknownObject instead of object. */
 export async function readReduxStorage<T extends object>(
   storageKey: ReduxStorageKey,
   migrations: MigrationManifest,
@@ -111,12 +110,12 @@ export async function readReduxStorage<T extends object>(
  * @param state the redux state/slice to set in storage
  * @param defaultPersistenceVersion the default version to save in the redux-persist object; mostly only needed for testing
  */
-// We want to accept redux state objects here without making every state type
-// extend UnknownObject, or making the call-sites awful, so plain object works
-// better than Record or UnknownObject. There are type checks in the function
-// body for safety. We'll need to re-type all state slices and fix tests in
-// order to refactor this to use UnknownObject instead of object.
-// eslint-disable-next-line @typescript-eslint/ban-types
+/* eslint-disable-next-line @typescript-eslint/ban-types --
+We want to accept redux state objects here without making every state type
+extend UnknownObject, or making the call-sites awful, so plain object works
+better than Record or UnknownObject. There are type checks in the function
+body for safety. We'll need to re-type all state slices and fix tests in
+order to refactor this to use UnknownObject instead of object. */
 export async function setReduxStorage<T extends object>(
   storageKey: ReduxStorageKey,
   // Optional persistence for flexibility at call-sites

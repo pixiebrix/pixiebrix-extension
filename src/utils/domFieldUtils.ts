@@ -17,7 +17,7 @@
 
 import { setCKEditorData } from "@/pageScript/messenger/api";
 import { getSelectorForElement } from "@/contentScript/elementReference";
-import { hasCKEditorClass } from "@/contrib/ckeditor";
+import { hasCKEditorClass } from "@/contrib/ckeditor/ckeditorDom";
 import { boolean } from "@/utils/typeUtils";
 
 export type FieldElement =
@@ -45,7 +45,7 @@ export function isFieldElement(
  * event. Note that this event doesn't do anything in regular contentEditable fields.
  * Source: https://github.com/facebookarchive/draft-js/issues/616#issuecomment-426047799
  */
-function dispatchPasteForDraftJs(field: FieldElement, value: string) {
+export function dispatchPasteForDraftJs(field: HTMLElement, value: string) {
   const data = new DataTransfer();
   data.setData("text/plain", value);
   field.dispatchEvent(

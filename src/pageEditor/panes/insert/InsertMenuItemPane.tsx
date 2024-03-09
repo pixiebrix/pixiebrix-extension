@@ -42,9 +42,10 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
 
       <div>
         <Alert variant="info">
-          <FontAwesomeIcon icon={faInfo} /> <b>Tip:</b> to increase the accuracy
-          of detection, you can Shift+Click one or more buttons in the button
-          group. Click a button without holding Shift to complete placement.
+          <FontAwesomeIcon icon={faInfo} /> <strong>Tip:</strong> to increase
+          the accuracy of detection, you can Shift+Click one or more buttons in
+          the button group. Click a button without holding Shift to complete
+          placement.
         </Alert>
       </div>
     </div>

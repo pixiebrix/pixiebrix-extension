@@ -3505,10 +3505,6 @@ exports[`Storyshots Enhancements/SelectionToolbar Emoji Buttons 1`] = `<div />`;
 
 exports[`Storyshots Enhancements/SelectionToolbar Mixed Buttons 1`] = `<div />`;
 
-exports[`Storyshots Enhancements/SelectionToolbar Emoji Buttons 1`] = `<div />`;
-
-exports[`Storyshots Enhancements/SelectionToolbar Mixed Buttons 1`] = `<div />`;
-
 exports[`Storyshots ExtensionConsole/IDBErrorDisplay Connection Error 1`] = `
 <div
   className="p-3"
@@ -6601,7 +6597,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                     value="Chuck"
                   />
                   <div
-                    className="field-description text-muted"
+                    className="field-description mt-1 text-muted"
                   >
                     <div
                       dangerouslySetInnerHTML={
@@ -6655,7 +6651,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
                     value=""
                   />
                   <div
-                    className="field-description text-muted"
+                    className="field-description mt-1 text-muted"
                   >
                     <div
                       dangerouslySetInnerHTML={
@@ -8938,7 +8934,6 @@ exports[`Storyshots PageEditor/LoginCard Default 1`] = `
     href="/options.html"
     onClick={[Function]}
     onKeyDown={[Function]}
-    target="_blank"
   >
     <svg
       aria-hidden="true"
@@ -9688,7 +9683,6 @@ exports[`Storyshots Sidebar/LoginPanel Default 1`] = `
       href="https://app.pixiebrix.com"
       onClick={[Function]}
       onKeyDown={[Function]}
-      target="_blank"
     >
       <svg
         aria-hidden="true"

@@ -21,13 +21,12 @@ import { zip } from "lodash";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
   GOOGLE_OAUTH2_PKCE_INTEGRATION_ID,
-  SHEET_SERVICE_SCHEMA,
+  SHEET_INTEGRATION_SCHEMA,
 } from "@/contrib/google/sheets/core/schemas";
 import { type Schema } from "@/types/schemaTypes";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
@@ -57,7 +56,7 @@ export const LOOKUP_SCHEMA: Schema = {
           type: "string",
           minLength: 1,
         },
-        SHEET_SERVICE_SCHEMA,
+        SHEET_INTEGRATION_SCHEMA,
       ],
     },
     tabName: {

@@ -18,7 +18,7 @@
 import React, { useState } from "react";
 import { getBaseURL } from "@/data/service/baseService";
 import { useAsyncEffect } from "use-async-effect";
-import { isLinked } from "@/auth/token";
+import { isLinked } from "@/auth/authStorage";
 import { Card } from "react-bootstrap";
 import urljoin from "url-join";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

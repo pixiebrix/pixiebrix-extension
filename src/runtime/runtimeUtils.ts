@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { validateInput, validateOutput } from "@/validators/generic";
+import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import {
   arraySchema,
   castSchema,
@@ -52,7 +52,6 @@ import {
 import { excludeUndefined } from "@/utils/objectUtils";
 import { boolean } from "@/utils/typeUtils";
 import { $safeFind } from "@/utils/domUtils";
-import { type UnknownObject } from "@/types/objectTypes";
 
 /**
  * @throws InputValidationError if brickArgs does not match the input schema for brick
@@ -62,7 +61,7 @@ export async function throwIfInvalidInput(
   brick: Brick,
   brickArgs: RenderedArgs,
 ): Promise<void> {
-  const validationResult = await validateInput(
+  const validationResult = await validateBrickInputOutput(
     castSchema(brick.inputSchema),
     excludeUndefined(brickArgs),
   );
@@ -95,7 +94,7 @@ export async function logIfInvalidOutput(
 ): Promise<void> {
   if (!isEmpty(brick.outputSchema)) {
     const baseSchema = castSchema(brick.outputSchema);
-    const validationResult = await validateOutput(
+    const validationResult = await validateBrickInputOutput(
       hasMultipleTargets(window) ? arraySchema(baseSchema) : baseSchema,
       excludeUndefined(output),
     );
@@ -214,8 +213,8 @@ export async function selectBlockRootElement(
     }
 
     default: {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check
-      throw new BusinessError(`Invalid rootMode: ${rootMode}`);
+      const exhaustiveCheck: never = rootMode;
+      throw new BusinessError(`Invalid rootMode: ${exhaustiveCheck}`);
     }
   }
 

@@ -22,13 +22,14 @@ import {
   isDocument,
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
-import textFieldEdit from "text-field-edit";
 import { BusinessError } from "@/errors/businessErrors";
 import { isEmpty } from "lodash";
 import focus from "@/utils/focusController";
-
-import { isNativeField } from "@/types/inputTypes";
+import selectionController from "@/utils/selectionController";
+import type { PlatformCapability } from "@/platform/capabilities";
+import { insertAtCursorWithCustomEditorSupport } from "@/contentScript/textEditorDom";
+import { propertiesToSchema } from "@/utils/schemaUtils";
+import { expectContext } from "@/utils/expectContext";
 
 /**
  * Insert text at the cursor position. For use with text snippets, etc.
@@ -52,54 +53,43 @@ class InsertAtCursorEffect extends EffectABC {
     ["text"],
   );
 
+  override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
+    // Requires pageScript to support editors like CKEditor where we need to use their editor API
+    return ["dom", "contentScript", "pageScript"];
+  }
+
   override async isRootAware(): Promise<boolean> {
     return true;
   }
 
   async effect(
     { text }: BrickArgs<{ text: string }>,
-    { root }: BrickOptions,
+    { root, logger }: BrickOptions,
   ): Promise<void> {
+    expectContext("contentScript");
+
     if (isEmpty(text)) {
+      // Skip because inserting no text is a NOP
+      logger.debug("No text provided");
       return;
     }
 
     const element = isDocument(root) ? focus.get() : root;
 
+    // When calling this brick from the sidebar, some editors intentionally clear the selection
+    // so we need to restore it before inserting the text. This isn't necessary on native
+    // input fields and contenteditable elements for example.
+    // https://github.com/pixiebrix/pixiebrix-extension/pull/7827#issuecomment-1979884573
+    selectionController.restoreWithoutClearing();
+
     if (!element) {
       throw new BusinessError("No active element");
     }
 
-    // Demo page: https://pbx.vercel.app/bootstrap-5/
-    if (isNativeField(element)) {
-      textFieldEdit.insert(element, text);
-      return;
-    }
-
-    // Reference editors to check:
-    // - ✅ Vanilla content editable: https://pbx.vercel.app/react-admin/#/products/1/description
-    // - ⚠️ DraftJS: https://draftjs.org/ - doesn't advance the cursor
-    // - ⚠️ TinyMCE: https://www.tiny.cloud/docs/demo/basic-example/ - when using Run All Frames, doesn't advance cursor
-    // - ❌ CKEditor: https://ckeditor.com/ckeditor-5/demo/feature-rich/
-    if (element.contentEditable) {
-      // Ensure window is focused so, so that when calling from the sidebar, the browser will show the cursor and
-      // the user can keep typing
-      window.focus();
-
-      // Ensure the element has focus, so that text is inserted at the cursor position
-      if (document.activeElement !== element) {
-        element.focus();
-      }
-
-      // Using  document.execCommand seems to be more reliable than range.insertNode(document.createTextNode(text));
-      document.execCommand("insertText", false, text);
-
-      return;
-    }
-
-    throw new BusinessError(
-      "Target element is not an input, textarea, or contenteditable element.",
-    );
+    await insertAtCursorWithCustomEditorSupport({
+      element,
+      text,
+    });
   }
 }
 

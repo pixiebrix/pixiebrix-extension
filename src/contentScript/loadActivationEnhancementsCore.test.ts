@@ -32,7 +32,7 @@ import {
   TEST_unloadActivationEnhancements,
 } from "@/contentScript/loadActivationEnhancementsCore";
 import { isReadyInThisDocument } from "@/contentScript/ready";
-import { isLinked } from "@/auth/token";
+import { isLinked } from "@/auth/authStorage";
 import { array } from "cooky-cutter";
 import { MARKETPLACE_URL } from "@/urlConstants";
 
@@ -42,7 +42,7 @@ jest.mock("@/contentScript/sidebarController", () => ({
   showModActivationInSidebar: jest.fn(),
 }));
 
-jest.mock("@/auth/token", () => ({
+jest.mock("@/auth/authStorage", () => ({
   isLinked: jest.fn().mockResolvedValue(true),
 }));
 
@@ -85,7 +85,6 @@ describe("marketplace enhancements", () => {
 
   afterEach(async () => {
     jest.resetAllMocks();
-    // eslint-disable-next-line new-cap -- test method
     TEST_unloadActivationEnhancements();
   });
 

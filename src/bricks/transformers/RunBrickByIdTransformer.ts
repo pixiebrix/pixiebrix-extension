@@ -22,14 +22,12 @@ import {
   type RenderedArgs,
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { validateRegistryId } from "@/types/helpers";
-import type { RegistryProtocol } from "@/registry/memoryRegistry";
-import type { RegistryId } from "@/types/registryTypes";
+import type { RegistryId, RegistryProtocol } from "@/types/registryTypes";
 import type { Brick } from "@/types/brickTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { throwIfInvalidInput } from "@/runtime/runtimeUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 /**
  * An experimental brick that runs a brick by its registry ID.

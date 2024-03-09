@@ -35,9 +35,9 @@ import {
   type ResolvedModComponent,
 } from "@/types/modComponentTypes";
 import { allSettled, memoizeUntilSettled } from "@/utils/promiseUtils";
-import type { SelectionMenuOptions } from "@/platform/platformProtocol";
 import { ContextError } from "@/errors/genericErrors";
 import { selectEventData } from "@/telemetry/deployments";
+import type { SelectionMenuOptions } from "@/platform/platformTypes/contextMenuProtocol";
 
 const MENU_PREFIX = "pixiebrix-";
 

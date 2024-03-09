@@ -19,7 +19,6 @@ import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { BusinessError } from "@/errors/businessErrors";
-import { type UnknownObject } from "@/types/objectTypes";
 
 export class MappingTransformer extends TransformerABC {
   override defaultOutputKey = "value";
@@ -75,8 +74,7 @@ export class MappingTransformer extends TransformerABC {
     }
 
     if (Object.hasOwn(mapping, key)) {
-      // Checking for hasOwn
-      // eslint-disable-next-line security/detect-object-injection
+      // eslint-disable-next-line security/detect-object-injection -- Checking for hasOwn
       return mapping[key];
     }
 

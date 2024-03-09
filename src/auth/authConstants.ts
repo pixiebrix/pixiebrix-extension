@@ -28,7 +28,6 @@ export const anonAuth: AuthState = Object.freeze({
   isTestAccount: false,
   extension: true,
   scope: null,
-  flags: [],
   milestones: [],
   organizations: [],
   groups: [],

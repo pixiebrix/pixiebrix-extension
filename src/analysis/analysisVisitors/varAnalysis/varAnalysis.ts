@@ -48,7 +48,6 @@ import {
   isNunjucksExpression,
   isVarExpression,
 } from "@/utils/expressionUtils";
-import { type UnknownObject } from "@/types/objectTypes";
 import { MOD_VARIABLE_REFERENCE } from "@/runtime/extendModVariableContext";
 import { joinPathParts } from "@/utils/formUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
@@ -115,16 +114,19 @@ async function setIntegrationDependencyVars(
   contextVars: VarMap,
 ): Promise<void> {
   // Loop through all the integrations, so we can set the source for each dependency variable properly
-  for (const integrationDependency of extension.integrationDependencies ?? []) {
-    // eslint-disable-next-line no-await-in-loop
-    const serviceContext = await makeServiceContextFromDependencies([
-      integrationDependency,
-    ]);
-    contextVars.setExistenceFromValues({
-      source: `${KnownSources.SERVICE}:${integrationDependency.integrationId}`,
-      values: serviceContext,
-    });
-  }
+  await Promise.all(
+    (extension.integrationDependencies ?? []).map(
+      async (integrationDependency) => {
+        const serviceContext = await makeServiceContextFromDependencies([
+          integrationDependency,
+        ]);
+        contextVars.setExistenceFromValues({
+          source: `${KnownSources.SERVICE}:${integrationDependency.integrationId}`,
+          values: serviceContext,
+        });
+      },
+    ),
+  );
 }
 
 /**

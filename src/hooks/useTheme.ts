@@ -15,133 +15,61 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useContext, useEffect, useMemo } from "react";
-import { selectSettings } from "@/store/settings/settingsSelectors";
-import settingsSlice from "@/store/settings/settingsSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { DEFAULT_THEME, type ThemeName } from "@/themes/themeTypes";
-import { activateTheme } from "@/background/messenger/strict/api";
+import { useEffect, useMemo } from "react";
 import {
   addThemeClassToDocumentRoot,
-  getThemeLogo,
-  isValidThemeName,
   setThemeFavicon,
-  type ThemeLogo,
+  type ThemeAssets,
+  themeStorage,
 } from "@/themes/themeUtils";
-import { useGetMeQuery } from "@/data/service/api";
-import { selectAuth } from "@/auth/authSelectors";
-import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
-import { isEmpty } from "lodash";
-import ReduxPersistenceContext from "@/store/ReduxPersistenceContext";
+import { initialTheme } from "@/themes/themeStore";
+import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
+import { activateTheme } from "@/background/messenger/strict/api";
 
-async function activateBackgroundTheme(
-  flush: () => Promise<void>,
-): Promise<void> {
-  // Flush the Redux state to localStorage to ensure the background page sees the latest state
-  await flush();
-  await activateTheme();
-}
-
-/**
- * Calculate the active theme and set it on the settings slice.
- *
- * If not in a React context, use getActiveTheme instead.
- *
- * @see getActiveTheme
- * @returns the active theme name
- */
-export function useGetThemeName(): ThemeName {
-  const { theme, partnerId } = useSelector(selectSettings);
-  const { partner: cachedPartner } = useSelector(selectAuth);
-  const { data: me } = useGetMeQuery();
-  const dispatch = useDispatch();
-
-  const partnerTheme = useMemo(() => {
-    if (!isEmpty(me)) {
-      const meTheme = me.partner?.theme;
-      return isValidThemeName(meTheme) ? meTheme : null;
-    }
-
-    const cachedTheme = cachedPartner?.theme;
-    return isValidThemeName(cachedTheme) ? cachedTheme : null;
-  }, [me, cachedPartner?.theme]);
-
-  const { data: managedState, isLoading: managedPartnerIdIsLoading } =
-    useManagedStorageState();
-  const managedPartnerId = managedState?.partnerId;
-
-  useEffect(() => {
-    if (partnerId == null && !managedPartnerIdIsLoading) {
-      // Initialize initial partner id with the one in managed storage, if any
-      dispatch(
-        settingsSlice.actions.setPartnerId({
-          partnerId: managedPartnerId ?? "",
-        }),
-      );
-    }
-  }, [partnerId, dispatch, managedPartnerIdIsLoading, managedPartnerId]);
-
-  useEffect(() => {
-    // Update persisted Redux slice
-    dispatch(
-      settingsSlice.actions.setTheme({
-        theme: partnerTheme ?? partnerId ?? DEFAULT_THEME,
-      }),
-    );
-  }, [dispatch, partnerId, partnerTheme, theme]);
-
-  return theme;
-}
-
-export function useGetOrganizationTheme(): {
-  showSidebarLogo: boolean;
-  customSidebarLogo: string;
-  toolbarIcon: string;
-} {
-  const { data: me } = useGetMeQuery();
-  const { organization: cachedOrganization } = useSelector(selectAuth);
-
-  const organizationTheme = useMemo(
-    () => (me ? me.organization?.theme : cachedOrganization?.theme),
-    [cachedOrganization, me],
-  );
-
-  return {
-    showSidebarLogo: organizationTheme
-      ? Boolean(organizationTheme.show_sidebar_logo)
-      : true,
-    customSidebarLogo: organizationTheme?.logo || null,
-    toolbarIcon: organizationTheme?.toolbar_icon || null,
+const themeStorageSubscribe = (callback: () => void) => {
+  const abortController = new AbortController();
+  themeStorage.onChanged(callback, abortController.signal);
+  return () => {
+    abortController.abort();
   };
-}
-
-type ThemeAssets = {
-  logo: ThemeLogo;
-  showSidebarLogo: boolean;
-  customSidebarLogo: string | null;
-  toolbarIcon: string | null;
 };
 
 /**
- * Hook to activate the PixieBrix or partner theme.
- * @param themeName the themeName to use, or nullish to automatically determine the theme.
+ * Hook to retrieve the active theme. The source of truth for the current theme is in `themeStorage` which
+ * is updated by the background script's initTheme method.
+ * @see getActiveTheme
  */
-function useTheme(themeName?: ThemeName): ThemeAssets {
-  const { flush: flushReduxPersistence } = useContext(ReduxPersistenceContext);
-  const inferredTheme = useGetThemeName();
-  const organizationTheme = useGetOrganizationTheme();
-  const themeLogo = getThemeLogo(themeName ?? inferredTheme);
+function useTheme(): { activeTheme: ThemeAssets; isLoading: boolean } {
+  // The active theme is fetched with `getActiveTheme` in the background script and cached in the themeStorage,
+  // This hook subscribes to changes in themeStorage to retrieve the latest current activeTheme
+  const { data, isLoading } = useAsyncExternalStore(
+    themeStorageSubscribe,
+    themeStorage.get,
+  );
 
   useEffect(() => {
-    void activateBackgroundTheme(flushReduxPersistence);
-    addThemeClassToDocumentRoot(themeName ?? inferredTheme);
-    setThemeFavicon(themeName ?? inferredTheme);
-  }, [themeName, inferredTheme, flushReduxPersistence]);
+    if (
+      !isLoading &&
+      data &&
+      (!data.lastFetched || Date.now() > data.lastFetched + 120_000)
+    ) {
+      // Re-fetch the theme if it has not been fetched in the past 2 minutes
+      void activateTheme();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- re-activate theme when loading finishes on mount
+  }, [isLoading]);
 
-  return {
-    logo: themeLogo,
-    ...organizationTheme,
-  };
+  const activeTheme = useMemo(
+    () => (!isLoading && data ? data : initialTheme),
+    [data, isLoading],
+  );
+
+  useEffect(() => {
+    addThemeClassToDocumentRoot(activeTheme.themeName);
+    setThemeFavicon(activeTheme.themeName);
+  }, [activeTheme, data, isLoading]);
+
+  return { activeTheme, isLoading };
 }
 
 export default useTheme;

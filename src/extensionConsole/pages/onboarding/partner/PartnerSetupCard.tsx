@@ -29,7 +29,7 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { getBaseURL } from "@/data/service/baseService";
-import settingsSlice from "@/store/settings/settingsSlice";
+import { updateLocalPartnerTheme } from "@/store/settings/settingsSlice";
 import { useLocation } from "react-router";
 import {
   hostnameToUrl,
@@ -38,6 +38,8 @@ import {
 import useAsyncState from "@/hooks/useAsyncState";
 import useManagedStorageState from "@/store/enterprise/useManagedStorageState";
 import { type FetchableAsyncState } from "@/types/sliceTypes";
+import useLinkState from "@/auth/useLinkState";
+import Loader from "@/components/Loader";
 
 /**
  * Create the app URL for the partner start page. It shows content based on whether or not the hostname corresponds
@@ -115,8 +117,13 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   // Make sure to use useLocation because the location.search are on the hash route
   const location = useLocation();
   const mode = usePartnerLoginMode();
-  const { data: me } = useGetMeQuery();
   const managedStorage = useManagedStorageState();
+
+  const { data: isLinked, isLoading: isLinkedLoading } = useLinkState();
+  const { isLoading: isMeLoading, data: me } = useGetMeQuery(undefined, {
+    // Skip because useGetMeQuery throws an error if the user is not linked
+    skip: !isLinked,
+  });
 
   // Hostname passed from manual flow during manual setup initiated via Control Room link
   const hostname = new URLSearchParams(location.search).get("hostname");
@@ -129,7 +136,7 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   const controlRoomUrl =
     managedStorage.data?.controlRoomUrl ??
     hostnameToUrl(hostname) ??
-    me?.organization?.control_room?.url ??
+    me?.primaryOrganization?.controlRoom?.controlRoomUrl?.href ??
     "";
 
   const { data: installUrl } = usePartnerAppStartUrl(controlRoomUrl);
@@ -143,78 +150,72 @@ const PartnerSetupCard: React.FunctionComponent = () => {
 
   useEffect(() => {
     // Ensure the partner branding is applied
-    dispatch(
-      settingsSlice.actions.setPartnerId({
-        partnerId: "automation-anywhere",
-      }),
-    );
+    dispatch(updateLocalPartnerTheme("automation-anywhere"));
   }, [dispatch]);
+
+  if (isLinkedLoading || isMeLoading) {
+    return <Loader />;
+  }
+
+  const StepOne = (
+    <OnboardingStep number={1} title="Browser Extension installed" completed />
+  );
+
+  let StepTwo: React.ReactNode;
+  let StepThree: React.ReactNode = null;
 
   if (mode === "oauth2") {
     // For OAuth2, there's only 2 steps because the AA JWT is also used to communicate with the PixieBrix server
-    return (
-      <OnboardingChecklistCard title="Set up your account">
-        <OnboardingStep
-          number={1}
-          title="Browser Extension installed"
-          completed
+    StepTwo = (
+      <OnboardingStep number={2} title="Connect your AARI account" active>
+        <ControlRoomOAuthForm
+          initialValues={initialFormValues}
+          // Force re-render when control room URL changes, so that the control room URL will be pre-filled
+          key={controlRoomUrl}
         />
-        <OnboardingStep number={2} title="Connect your AARI account" active>
-          <ControlRoomOAuthForm
-            initialValues={initialFormValues}
-            // Force re-render when control room URL changes, so that the control room URL will be pre-filled
-            key={controlRoomUrl}
-          />
-        </OnboardingStep>
-      </OnboardingChecklistCard>
+      </OnboardingStep>
     );
-  }
-
-  if (!me?.id) {
-    return (
-      <OnboardingChecklistCard title="Set up your account">
-        <OnboardingStep
-          number={1}
-          title="Browser Extension installed"
-          completed
-        />
-        <OnboardingStep
-          number={2}
-          title="Link the extension to a PixieBrix account"
-          active
-        >
-          <Button
-            className="btn btn-primary mt-2"
-            // The async state for installUrl will be ready by the time the button is rendered/clicked
-            href={installUrl}
-            data-testid="link-account-btn"
-          >
-            <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
-          </Button>
-        </OnboardingStep>
-        <OnboardingStep number={3} title="Connect your AARI account" />
-      </OnboardingChecklistCard>
-    );
-  }
-
-  return (
-    <OnboardingChecklistCard title="Set up your account">
-      <OnboardingStep
-        number={1}
-        title="Browser Extension installed"
-        completed
-      />
+  } else if (me) {
+    StepTwo = (
       <OnboardingStep
         number={2}
         title="Link the extension to a PixieBrix account"
         completed
       />
+    );
+    StepThree = (
       <OnboardingStep number={3} title="Connect your AARI account" active>
         <ControlRoomTokenForm
           initialValues={initialFormValues}
           key={controlRoomUrl}
         />
       </OnboardingStep>
+    );
+  } else {
+    StepTwo = (
+      <OnboardingStep
+        number={2}
+        title="Link the extension to a PixieBrix account"
+        active
+      >
+        <Button
+          className="btn btn-primary mt-2"
+          // The async state for installUrl will be ready by the time the button is rendered/clicked
+          href={installUrl}
+          data-testid="link-account-btn"
+        >
+          <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix account
+        </Button>
+      </OnboardingStep>
+    );
+    StepThree = <OnboardingStep number={3} title="Connect your AARI account" />;
+  }
+
+  return (
+    <OnboardingChecklistCard title="Set up your account">
+      {StepOne}
+      {StepTwo}
+      {StepThree}
     </OnboardingChecklistCard>
   );
 };

@@ -18,13 +18,14 @@
 import { activateDeployments } from "@/extensionConsole/pages/deployments/activateDeployments";
 import useFlags from "@/hooks/useFlags";
 import useModPermissions from "@/mods/hooks/useModPermissions";
-import { type Deployment } from "@/types/contract";
 import { type ModComponentBase } from "@/types/modComponentTypes";
 import notify from "@/utils/notify";
 import { type Dispatch } from "@reduxjs/toolkit";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import useAsyncEffect from "use-async-effect";
+import type { ActivatableDeployment } from "@/types/deploymentTypes";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 type UseAutoDeployReturn = {
   /**
@@ -33,12 +34,16 @@ type UseAutoDeployReturn = {
   isAutoDeploying: boolean;
 };
 
-function useAutoDeploy(
-  // Deployments can be undefined if they are still being loaded
-  deployments: Deployment[] | undefined,
-  installedExtensions: ModComponentBase[],
-  { extensionUpdateRequired }: { extensionUpdateRequired: boolean },
-): UseAutoDeployReturn {
+function useAutoDeploy({
+  activatableDeployments,
+  installedExtensions,
+  extensionUpdateRequired,
+}: {
+  // Expects nullish value if activatableDeployments are uninitialized/not loaded yet
+  activatableDeployments: Nullishable<ActivatableDeployment[]>;
+  installedExtensions: ModComponentBase[];
+  extensionUpdateRequired: boolean;
+}): UseAutoDeployReturn {
   const dispatch = useDispatch<Dispatch>();
   // `true` until deployments have been fetched and activated
   const [
@@ -62,7 +67,7 @@ function useAutoDeploy(
       if (
         !isMounted() ||
         // Still loading deployments or already deploying
-        !deployments ||
+        !activatableDeployments ||
         isActivationInProgress
       ) {
         return;
@@ -70,7 +75,7 @@ function useAutoDeploy(
 
       // No deployments to deploy or user interaction required
       if (
-        deployments.length === 0 ||
+        activatableDeployments.length === 0 ||
         !hasPermissions ||
         extensionUpdateRequired ||
         !shouldAutoDeploy
@@ -82,7 +87,11 @@ function useAutoDeploy(
       // Attempt to automatically deploy the deployments
       try {
         setIsActivationInProgress(true);
-        await activateDeployments(dispatch, deployments, installedExtensions);
+        await activateDeployments({
+          dispatch,
+          activatableDeployments,
+          installed: installedExtensions,
+        });
         notify.success("Updated team deployments");
       } catch (error) {
         notify.error({ message: "Error updating team deployments", error });
@@ -91,7 +100,7 @@ function useAutoDeploy(
         setIsFetchingAndActivatingDeployments(false);
       }
     },
-    [hasPermissions, deployments],
+    [hasPermissions, activatableDeployments],
   );
 
   return { isAutoDeploying: isFetchingAndActivatingDeployments };

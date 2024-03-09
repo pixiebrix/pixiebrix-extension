@@ -31,18 +31,15 @@ import {
   selectExtensionContext,
 } from "@/starterBricks/helpers";
 import { type Metadata } from "@/types/registryTypes";
-import { type Logger } from "@/types/loggerTypes";
 import {
   StarterBrickABC,
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
-import { propertiesToSchema } from "@/validators/generic";
 import { render } from "@/starterBricks/dom";
 import { type Permissions } from "webextension-polyfill";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import notify from "@/utils/notify";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { selectEventData } from "@/telemetry/deployments";
@@ -50,7 +47,6 @@ import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import { PIXIEBRIX_DATA_ATTR } from "@/domConstants";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { type IconConfig } from "@/types/iconTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -68,6 +64,8 @@ import {
   type PlatformCapability,
 } from "@/platform/capabilities";
 import { RepeatableAbortController } from "abort-utils";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export type PanelConfig = {
   heading?: string;
@@ -124,8 +122,8 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     return { heading: "Custom Panel" };
   }
 
-  protected constructor(metadata: Metadata, logger: Logger) {
-    super(metadata, logger);
+  protected constructor(platform: PlatformProtocol, metadata: Metadata) {
+    super(platform, metadata);
     this.$container = null;
     this.collapsedExtensions = new Map();
     this.cancelRemovalMonitor = new Map();
@@ -462,8 +460,8 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
       }
 
       try {
-        // Running in loop to ensure consistent placement. OK because `installBody` in runExtension is runs asynchronously
-        // eslint-disable-next-line no-await-in-loop
+        /* eslint-disable-next-line no-await-in-loop
+        -- Running in loop to ensure consistent placement. OK because `installBody` in runExtension is runs asynchronously */
         await this.runExtension(readerContext, extension);
       } catch (error) {
         errors.push(error);
@@ -477,9 +475,13 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
     }
 
     if (errors.length > 0) {
-      notify.error(
-        `An error occurred adding ${pluralize(errors.length, "$$ panel")}`,
-      );
+      this.platform.toasts.showNotification({
+        type: "error",
+        message: `An error occurred adding ${pluralize(
+          errors.length,
+          "$$ panel",
+        )}`,
+      });
     }
   }
 }
@@ -511,10 +513,13 @@ class RemotePanelExtensionPoint extends PanelStarterBrickABC {
 
   public readonly rawConfig: StarterBrickConfig<PanelDefinition>;
 
-  constructor(config: StarterBrickConfig<PanelDefinition>) {
+  constructor(
+    platform: PlatformProtocol,
+    config: StarterBrickConfig<PanelDefinition>,
+  ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    super(cloned.metadata, new BackgroundLogger());
+    super(platform, cloned.metadata);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable } = cloned.definition;
@@ -549,16 +554,15 @@ class RemotePanelExtensionPoint extends PanelStarterBrickABC {
     switch (position) {
       case "prepend":
       case "append": {
-        // Safe because we're casing the method name
-        // eslint-disable-next-line security/detect-object-injection
+        // eslint-disable-next-line security/detect-object-injection -- Safe because we're casing the method name
         this.$container[position]($panel);
         break;
       }
 
       default: {
         // Type is `never` due to checks above
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        throw new Error(`Unexpected position: ${position}`);
+        const exhaustiveCheck: never = position;
+        throw new Error(`Unexpected position: ${exhaustiveCheck}`);
       }
     }
   }
@@ -578,6 +582,7 @@ class RemotePanelExtensionPoint extends PanelStarterBrickABC {
 }
 
 export function fromJS(
+  platform: PlatformProtocol,
   config: StarterBrickConfig<PanelDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
@@ -585,5 +590,5 @@ export function fromJS(
     throw new Error(`Expected type=panel, got ${type}`);
   }
 
-  return new RemotePanelExtensionPoint(config);
+  return new RemotePanelExtensionPoint(platform, config);
 }

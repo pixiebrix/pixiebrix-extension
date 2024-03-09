@@ -51,7 +51,8 @@
     "tabs",
     "webNavigation",
     "contextMenus",
-    "<all_urls>"
+    "<all_urls>",
+    "alarms"
   ],
   "devtools_page": "devtools.html",
   "externally_connectable": {

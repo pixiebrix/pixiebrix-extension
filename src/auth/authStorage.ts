@@ -26,7 +26,6 @@ import {
 import { isExtensionContext } from "webext-detect-page";
 import { expectContext } from "@/utils/expectContext";
 import { isEmpty, omit } from "lodash";
-import { type UnknownObject } from "@/types/objectTypes";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { StorageItem } from "webext-storage";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
@@ -169,7 +168,7 @@ export async function isLinked(): Promise<boolean> {
  * Return non-sensitive PixieBrix user profile data.
  * @see getExtensionAuth
  */
-export async function getUserData(): Promise<Partial<UserData>> {
+export async function getUserData(): Promise<UserData> {
   expectContext("extension");
   const data = await readAuthData();
   return omit(data, "token");

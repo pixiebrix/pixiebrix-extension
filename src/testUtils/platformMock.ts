@@ -17,28 +17,34 @@
 
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { platformCapabilities } from "@/platform/capabilities";
+import ConsoleLogger from "@/utils/ConsoleLogger";
+import type { Logger } from "@/types/loggerTypes";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
+import type { RunArgs } from "@/types/runtimeTypes";
+import { validateSemVerString } from "@/types/helpers";
+import type { ToastProtocol } from "@/platform/platformTypes/toastProtocol";
 
 /**
  * Implementation of PlatformProtocol that mocks all methods
  */
 export const platformMock: PlatformProtocol = {
+  platformName: "mock",
+  version: validateSemVerString("0.0.0"),
   capabilities: platformCapabilities,
   open: jest.fn(),
   alert: jest.fn(),
   prompt: jest.fn(),
-  notify: jest.fn(),
   userSelectElementRefs: jest.fn(),
   request: jest.fn(),
   runSandboxedJavascript: jest.fn(),
   form: jest.fn(),
-  panel: jest.fn(),
   audio: {
     play: jest.fn(),
   },
   badge: {
     setText: jest.fn(),
   },
-  contextMenu: {
+  contextMenus: {
     register: jest.fn(),
     unregister: jest.fn(),
   },
@@ -46,7 +52,7 @@ export const platformMock: PlatformProtocol = {
     getState: jest.fn(),
     setState: jest.fn(),
   },
-  template: {
+  templates: {
     render: jest.fn(),
     validate: jest.fn(),
   },
@@ -64,5 +70,35 @@ export const platformMock: PlatformProtocol = {
   quickBar: {
     addAction: jest.fn(),
     knownGeneratorRootIds: new Set<string>(),
+  },
+  get logger(): Logger {
+    return new ConsoleLogger();
+  },
+  get toasts(): ToastProtocol {
+    return {
+      showNotification: jest.fn(),
+      hideNotification: jest.fn(),
+    };
+  },
+  get debugger() {
+    return {
+      clear: jest.fn(),
+      traces: {
+        enter: jest.fn(),
+        exit: jest.fn(),
+      },
+    };
+  },
+  get panels() {
+    return {
+      isContainerVisible: jest.fn(),
+      unregisterExtensionPoint: jest.fn(),
+      removeComponents: jest.fn(),
+      reservePanels: jest.fn(),
+      updateHeading: jest.fn(),
+      upsertPanel: jest.fn(),
+      showEvent: new SimpleEventTarget<RunArgs>(),
+      showTemporary: jest.fn(),
+    };
   },
 };

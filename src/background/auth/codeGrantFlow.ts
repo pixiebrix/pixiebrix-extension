@@ -73,9 +73,9 @@ async function codeGrantFlow(
       code_challenge_method,
     );
   } else if (code_challenge_method != null) {
+    const exhaustiveCheck: never = code_challenge_method;
     throw new BusinessError(
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check; type is `never`
-      `Unsupported code challenge method: ${code_challenge_method}`,
+      `Unsupported code challenge method: ${exhaustiveCheck}`,
     );
   }
 
@@ -164,15 +164,13 @@ async function codeGrantFlow(
     }
 
     const json = Object.fromEntries(parsed.entries());
-    // TODO: Fix IntegrationConfig types
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Fix IntegrationConfig types
     await setCachedAuthData(auth.id!, json);
     return json as AuthData;
   }
 
   if (typeof data === "object") {
-    // TODO: Fix IntegrationConfig types
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Fix IntegrationConfig types
     await setCachedAuthData(auth.id!, data);
     return data as AuthData;
   }

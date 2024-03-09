@@ -16,6 +16,8 @@
  */
 
 import React from "react";
+import cx from "classnames";
+import styles from "./EditorNodeConfigPanel.module.scss";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import BrickConfiguration from "@/pageEditor/tabs/effect/BrickConfiguration";
 import blockRegistry from "@/bricks/registry";
@@ -35,9 +37,15 @@ const EditorNodeConfigPanel: React.FC = () => {
   const {
     blockId: brickId,
     path: brickFieldName,
-    blockConfig: { comments },
-  } = useSelector(selectActiveNodeInfo);
+    blockConfig,
+  } = useSelector(selectActiveNodeInfo) ?? {};
+  const { comments } = blockConfig ?? {};
+
   const { data: brickInfo } = useAsyncState(async () => {
+    if (brickId == null) {
+      return null;
+    }
+
     const brick = await blockRegistry.lookup(brickId);
     return {
       block: brick,
@@ -84,22 +92,23 @@ const EditorNodeConfigPanel: React.FC = () => {
         )}
       </h6>
 
-      <div className="mb-3 d-flex flex-wrap gap-column-4">
-        <ConnectedFieldTemplate
-          name={`${brickFieldName}.label`}
-          label="Step Name"
-          className="flex-grow-1"
-          fitLabelWidth
-          placeholder={brickInfo?.block.name}
-        />
-        <ConnectedFieldTemplate
-          name={`${brickFieldName}.outputKey`}
-          label={PopoverOutputLabel}
-          className="flex-grow-1"
-          fitLabelWidth
-          disabled={isOutputDisabled}
-          as={KeyNameWidget}
-        />
+      <div className={cx("mb-3", styles.coreFields)}>
+        {/* Do not merge divs, the outer div is a CSS @container */}
+        <div className="gap-column-4">
+          <ConnectedFieldTemplate
+            name={`${brickFieldName}.label`}
+            label="Step Name"
+            className="flex-grow-1"
+            placeholder={brickInfo?.block.name}
+          />
+          <ConnectedFieldTemplate
+            name={`${brickFieldName}.outputKey`}
+            label={PopoverOutputLabel}
+            className="flex-grow-1"
+            disabled={isOutputDisabled}
+            as={KeyNameWidget}
+          />
+        </div>
       </div>
 
       {comments && <CommentsPreview comments={comments} />}

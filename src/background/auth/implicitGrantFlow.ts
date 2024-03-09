@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownObject } from "@/types/objectTypes";
 import {
   type AuthData,
   type IntegrationConfig,
@@ -99,8 +98,7 @@ async function implicitGrantFlow(
   }
 
   const data: AuthData = { access_token, ...rest } as unknown as AuthData;
-  // TODO: Fix IntegrationConfig types
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Fix IntegrationConfig types
   await setCachedAuthData(auth.id!, data);
   return data;
 }

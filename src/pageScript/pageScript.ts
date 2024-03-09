@@ -32,6 +32,7 @@ import {
   SET_COMPONENT_DATA,
   type FrameworkAdapter,
   CKEDITOR_SET_VALUE,
+  CKEDITOR_INSERT_TEXT,
 } from "@/pageScript/messenger/constants";
 import adapters from "@/pageScript/frameworks/adapters";
 import {
@@ -50,10 +51,9 @@ import {
   noopProxy,
   type ReadProxy,
 } from "@/runtime/pathHelpers";
-import { type UnknownObject } from "@/types/objectTypes";
 import { initialize } from "./messenger/receiver";
 import { TimeoutError } from "p-timeout";
-import { setCKEditorData } from "@/contrib/ckeditor";
+import * as ckeditor from "@/contrib/ckeditor/ckeditorProtocol";
 import { awaitValue } from "@/utils/promiseUtils";
 import { findSingleElement } from "@/utils/domUtils";
 import { uuidv4 } from "@/types/helpers";
@@ -198,8 +198,8 @@ async function read<TComponent>(
   const target = traverse(adapter.getParent, component, traverseUp);
   const rawData = adapter.getData(target);
   const readData = readPathSpec(
-    // TODO: Find a better solution than casting to any
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, security/detect-object-injection
+    /* eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, security/detect-object-injection
+    -- TODO: Find a better solution than casting to any */
     rootProp ? (rawData as any)[rootProp] : rawData,
     pathSpec,
     adapter.proxy,
@@ -273,7 +273,15 @@ attachListener(
   CKEDITOR_SET_VALUE,
   async ({ selector, value }: { selector: string; value: string }) => {
     const element = findSingleElement(selector);
-    setCKEditorData(element, value);
+    ckeditor.setData(element, value);
+  },
+);
+
+attachListener(
+  CKEDITOR_INSERT_TEXT,
+  async ({ selector, value }: { selector: string; value: string }) => {
+    const element = findSingleElement(selector);
+    ckeditor.insertText(element, value);
   },
 );
 
@@ -284,7 +292,7 @@ setTimeout(() => {
   document.dispatchEvent(new CustomEvent(CONNECT_EXTENSION, {}));
 }, 0);
 
-// Ensure jquery is available for testing selectors when debugging PixieBrix errors
-// Cast as any because we don't want to pollute namespace with TypeScript declaration
-// eslint-disable-next-line security/detect-object-injection
+/* eslint-disable-next-line security/detect-object-injection
+-- Ensure jquery is available for testing selectors when debugging PixieBrix errors
+Cast as any because we don't want to pollute namespace with TypeScript declaration */
 window[JQUERY_WINDOW_PROP] = $;

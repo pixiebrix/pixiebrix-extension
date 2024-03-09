@@ -18,7 +18,6 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { pick } from "lodash";
 
 // Methods imported async in the brick
@@ -26,6 +25,7 @@ import type { ParsedDomain } from "psl";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { isNullOrBlank } from "@/utils/stringUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 const URL_PROPERTIES = [
   "port",
@@ -127,8 +127,7 @@ export class UrlParser extends TransformerABC {
 
     const searchParams: Record<string, string> = {};
     for (const [key, value] of parsed.searchParams.entries()) {
-      // Fine because value will always be a string
-      // eslint-disable-next-line security/detect-object-injection
+      // eslint-disable-next-line security/detect-object-injection -- Fine because value will always be a string
       searchParams[key] = value;
     }
 

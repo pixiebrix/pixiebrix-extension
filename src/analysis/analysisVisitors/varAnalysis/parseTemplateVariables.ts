@@ -30,7 +30,7 @@ const VARIABLE_START_INDEX = Symbol("#Variable_start_index");
 
 export interface VariableOptions {
   type?: string;
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- Cyclic dependency
   parent?: Variable | undefined;
   startIndex: number;
 }
@@ -234,7 +234,7 @@ function parseLookUp(node: any, inLoop = false): Variable[] {
       : parseLookUp(target, inLoop);
 
   if (val instanceof Literal) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- targetVars can't be empty
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- targetVars can't be empty
     const parentVar = targetVars.at(-1)!;
     const newVar = new Variable(String(val.value), {
       parent: parentVar,

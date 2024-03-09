@@ -42,18 +42,18 @@ describe("getToken", () => {
 
     const id1 = uuidv4();
     // Consecutive calls should make new requests
-    expect(await getOneToken(id1)).toBe(0);
-    expect(await getOneToken(id1)).toBe(1);
+    await expect(getOneToken(id1)).resolves.toBe(0);
+    await expect(getOneToken(id1)).resolves.toBe(1);
 
     // Parallel calls should make one request
-    expect(
-      await Promise.all([getOneToken(id1), getOneToken(id1)]),
-    ).toStrictEqual([2, 2]);
+    await expect(
+      Promise.all([getOneToken(id1), getOneToken(id1)]),
+    ).resolves.toStrictEqual([2, 2]);
 
     // Parallel calls but with different auth.id’s should make multiple requests
     const id2 = uuidv4();
-    expect(
-      await Promise.all([getOneToken(id1), getOneToken(id2)]),
-    ).toStrictEqual([3, 4]);
+    await expect(
+      Promise.all([getOneToken(id1), getOneToken(id2)]),
+    ).resolves.toStrictEqual([3, 4]);
   });
 });

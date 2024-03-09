@@ -24,36 +24,34 @@ import {
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
-} from "@/contentScript/lifecycle";
-import { insertPanel } from "@/contentScript/pageEditor/insertPanel";
-import { insertButton } from "@/contentScript/pageEditor/insertButton";
+} from "@/contentScript/lifecycle"; // 275 errors
+import { insertPanel } from "@/contentScript/pageEditor/insertPanel"; // 300 errors
+import { insertButton } from "@/contentScript/pageEditor/insertButton"; // 300 errors
 import {
   clearDynamicElements,
   disableOverlay,
   enableOverlay,
   runExtensionPointReader,
   updateDynamicElement,
-} from "@/contentScript/pageEditor/dynamic";
+} from "@/contentScript/pageEditor/dynamic"; // 300 errors
 import {
   runBlockPreview,
   resetTab,
   runRendererBlock,
-  navigateTab,
-} from "@/contentScript/pageEditor";
-import { runBrick } from "@/contentScript/executor";
+} from "@/contentScript/pageEditor"; // 300 errors
+import { runBrick } from "@/contentScript/executor"; // 290 errors
 import {
   cancelSelect,
   selectElement,
-} from "@/contentScript/pageEditor/elementPicker";
+} from "@/contentScript/pageEditor/elementPicker"; // 290 errors
 import {
   runHeadlessPipeline,
   runMapArgs,
   runRendererPipeline,
-} from "@/contentScript/pipelineProtocol";
-import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
-import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore";
-import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation";
-import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
+} from "@/contentScript/pipelineProtocol"; // Background/messenger import
+import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore"; // 248 errors
+import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation"; // 246 errors
+import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect"; // Background/messenger import
 
 expectContext("contentScript");
 
@@ -63,9 +61,6 @@ declare global {
     REACTIVATE_TAB: typeof reactivateTab;
     REMOVE_INSTALLED_EXTENSION: typeof removePersistedExtension;
     RESET_TAB: typeof resetTab;
-    NAVIGATE_TAB: typeof navigateTab;
-
-    TOGGLE_QUICK_BAR: typeof toggleQuickBar;
 
     INSERT_PANEL: typeof insertPanel;
     INSERT_BUTTON: typeof insertButton;
@@ -102,9 +97,6 @@ export default function registerMessenger(): void {
     REACTIVATE_TAB: reactivateTab,
     REMOVE_INSTALLED_EXTENSION: removePersistedExtension,
     RESET_TAB: resetTab,
-    NAVIGATE_TAB: navigateTab,
-
-    TOGGLE_QUICK_BAR: toggleQuickBar,
 
     INSERT_PANEL: insertPanel,
     INSERT_BUTTON: insertButton,

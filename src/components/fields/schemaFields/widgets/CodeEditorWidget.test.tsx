@@ -65,7 +65,7 @@ describe("CodeEditorWidget", () => {
       onSubmit: onSubmitMock,
     });
 
-    expect(await screen.findByRole("textbox")).toBeInTheDocument();
+    await expect(screen.findByRole("textbox")).resolves.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Submit" }));
 
     // We can't assert on the value of the AceEditor because it is not rendered in the DOM
@@ -89,9 +89,10 @@ describe("CodeEditorWidget", () => {
       },
     );
 
-    expect(await screen.findByRole("textbox")).toBeInTheDocument();
-    // The element that holds the value is not the input itself, but a div
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
+    await expect(screen.findByRole("textbox")).resolves.toBeInTheDocument();
+    /* eslint-disable-next-line testing-library/no-container, testing-library/no-node-access --
+     * The element that holds the value is not the input itself, but a div
+     * TODO: use better selector method */
     const editorInputField = container.querySelector('[class="ace_content"]');
     expect(editorInputField).toHaveClass("ace_content");
 

@@ -16,7 +16,6 @@
  */
 
 import { validateRegistryId } from "@/types/helpers";
-import { propertiesToSchema } from "@/validators/generic";
 import Icon from "@/icons/Icon";
 import React from "react";
 import {
@@ -24,13 +23,14 @@ import {
   type BrickOptions,
   type PipelineExpression,
 } from "@/types/runtimeTypes";
-import { type CustomAction } from "@/components/quickBar/quickbarTypes";
 import { type IconConfig } from "@/types/iconTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import type { BrickConfig } from "@/bricks/types";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { uniq } from "lodash";
+import type { CustomAction } from "@/platform/platformTypes/quickBarProtocol";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 type ActionConfig = {
   /**

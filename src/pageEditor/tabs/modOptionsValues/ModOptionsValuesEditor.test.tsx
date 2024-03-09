@@ -133,6 +133,7 @@ describe("ModOptionsValuesEditor", () => {
     const modDefinition = defaultModDefinitionFactory({
       options: {
         schema: {
+          // Interpreted as a schema because it has type: object
           type: "object",
           additionalProperties: {
             type: "string",
@@ -143,6 +144,9 @@ describe("ModOptionsValuesEditor", () => {
     mockModDefinition(modDefinition);
     const { asFragment } = render(<ModOptionsValuesEditor />);
     await waitForEffect();
+    await expect(
+      screen.findByText("This mod does not require any configuration"),
+    ).resolves.toBeVisible();
     expect(asFragment()).toMatchSnapshot();
   });
 
@@ -223,7 +227,7 @@ describe("ModOptionsValuesEditor", () => {
 
     selectEvent.openMenu(selectInput);
 
-    expect(await screen.findByText("No options")).toBeVisible();
+    await expect(screen.findByText("No options")).resolves.toBeVisible();
   });
 
   it("renders google sheet field with options", async () => {
@@ -284,8 +288,12 @@ describe("ModOptionsValuesEditor", () => {
 
     selectEvent.openMenu(selectInput);
 
-    expect(await screen.findByText("Spreadsheet1")).toBeVisible();
-    expect(await screen.findByText("AnotherSpreadsheet")).toBeVisible();
-    expect(await screen.findByText("One More Spreadsheet")).toBeVisible();
+    await expect(screen.findByText("Spreadsheet1")).resolves.toBeVisible();
+    await expect(
+      screen.findByText("AnotherSpreadsheet"),
+    ).resolves.toBeVisible();
+    await expect(
+      screen.findByText("One More Spreadsheet"),
+    ).resolves.toBeVisible();
   });
 });

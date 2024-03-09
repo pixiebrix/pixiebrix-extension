@@ -21,10 +21,12 @@ import styles from "./SettingsCard.module.scss";
 import { Button, Card, Form } from "react-bootstrap";
 import { useConfiguredHost } from "@/data/service/baseService";
 import React, { useCallback } from "react";
-import { clearCachedAuthSecrets, clearPartnerAuth } from "@/auth/token";
+import { clearCachedAuthSecrets, clearPartnerAuth } from "@/auth/authStorage";
 import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
-import settingsSlice from "@/store/settings/settingsSlice";
+import settingsSlice, {
+  updateLocalPartnerTheme,
+} from "@/store/settings/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { assertProtocolUrl } from "@/errors/assertProtocolUrl";
 import { selectSettings } from "@/store/settings/settingsSelectors";
@@ -198,11 +200,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
               placeholder="my-company"
               defaultValue={partnerId ?? ""}
               onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
-                dispatch(
-                  settingsSlice.actions.setPartnerId({
-                    partnerId: event.target.value,
-                  }),
-                );
+                dispatch(updateLocalPartnerTheme(event.target.value));
               }}
             />
             <Form.Text muted>The partner id of a PixieBrix partner</Form.Text>

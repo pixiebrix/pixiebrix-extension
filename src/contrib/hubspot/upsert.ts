@@ -22,10 +22,7 @@ import { type Schema } from "@/types/schemaTypes";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import type { PlatformCapability } from "@/platform/capabilities";
 
-function makeProperties(
-  obj: Record<string, unknown>,
-  propertyKey = "property",
-) {
+function makeProperties(obj: UnknownObject, propertyKey = "property") {
   return Object.entries(obj)
     .filter(([, value]) => Boolean(value))
     .map(([property, value]) => ({

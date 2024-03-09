@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { validateRegistryId } from "@/types/helpers";
@@ -42,6 +41,7 @@ import { modMetadataFactory } from "@/testUtils/factories/modComponentFactories"
 import { PANEL_FRAME_ID } from "@/domConstants";
 import brickRegistry from "@/bricks/registry";
 import { sleep } from "@/utils/timeUtils";
+import { getPlatform } from "@/platform/platformContext";
 
 const rootReader = new RootReader();
 
@@ -86,7 +86,7 @@ describe("sidebarExtension", () => {
   });
 
   it("reserves panel on load", async () => {
-    const extensionPoint = fromJS(starterBrickFactory()());
+    const extensionPoint = fromJS(getPlatform(), starterBrickFactory()());
 
     extensionPoint.registerModComponent(
       extensionFactory({
@@ -117,7 +117,7 @@ describe("sidebarExtension", () => {
   });
 
   it("synchronize clears panel", async () => {
-    const extensionPoint = fromJS(starterBrickFactory()());
+    const extensionPoint = fromJS(getPlatform(), starterBrickFactory()());
 
     extensionPoint.registerModComponent(
       extensionFactory({
@@ -138,7 +138,7 @@ describe("sidebarExtension", () => {
   });
 
   it("remove clears panel", async () => {
-    const extensionPoint = fromJS(starterBrickFactory()());
+    const extensionPoint = fromJS(getPlatform(), starterBrickFactory()());
 
     const extension = extensionFactory({
       extensionPointId: extensionPoint.id,
@@ -160,6 +160,7 @@ describe("sidebarExtension", () => {
 
   it("runs non-debounced state change trigger", async () => {
     const extensionPoint = fromJS(
+      getPlatform(),
       starterBrickFactory({
         trigger: "statechange",
       })(),
@@ -230,6 +231,7 @@ describe("sidebarExtension", () => {
     const debounceMillis = 100;
 
     const extensionPoint = fromJS(
+      getPlatform(),
       starterBrickFactory({
         trigger: "statechange",
         debounce: {

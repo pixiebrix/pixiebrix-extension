@@ -23,7 +23,6 @@ import {
   sidebarWasLoaded,
   updateSidebar,
   removeExtensions as removeSidebars,
-  reloadSidebar,
   getReservedPanelEntries,
 } from "@/contentScript/sidebarController";
 import { handleMenuAction } from "@/contentScript/contextMenus";
@@ -45,6 +44,7 @@ import {
 import { closeWalkthroughModal } from "@/contentScript/walkthroughModalProtocol";
 import showWalkthroughModal from "@/components/walkthroughModal/showWalkthroughModal";
 import { registerMethods } from "webext-messenger";
+import { toggleQuickBar } from "@/components/quickBar/QuickBarApp";
 
 declare global {
   interface MessengerMethods {
@@ -55,7 +55,6 @@ declare global {
     SIDEBAR_WAS_LOADED: typeof sidebarWasLoaded;
     SHOW_SIDEBAR: typeof showSidebar;
     HIDE_SIDEBAR: typeof hideSidebar;
-    RELOAD_SIDEBAR: typeof reloadSidebar;
     REMOVE_SIDEBARS: typeof removeSidebars;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
     GET_RESERVED_SIDEBAR_ENTRIES: typeof getReservedPanelEntries;
@@ -73,6 +72,7 @@ declare global {
     PANEL_GET_DEFINITION: typeof getPanelDefinition;
     WALKTHROUGH_MODAL_CLOSE: typeof closeWalkthroughModal;
     WALKTHROUGH_MODAL_SHOW: typeof showWalkthroughModal;
+    TOGGLE_QUICK_BAR: typeof toggleQuickBar;
   }
 }
 export default function registerMessenger(): void {
@@ -84,7 +84,6 @@ export default function registerMessenger(): void {
     SIDEBAR_WAS_LOADED: sidebarWasLoaded,
     SHOW_SIDEBAR: showSidebar,
     HIDE_SIDEBAR: hideSidebar,
-    RELOAD_SIDEBAR: reloadSidebar,
     REMOVE_SIDEBARS: removeSidebars,
     HANDLE_MENU_ACTION: handleMenuAction,
     GET_RESERVED_SIDEBAR_ENTRIES: getReservedPanelEntries,
@@ -102,5 +101,6 @@ export default function registerMessenger(): void {
     PANEL_GET_DEFINITION: getPanelDefinition,
     WALKTHROUGH_MODAL_CLOSE: closeWalkthroughModal,
     WALKTHROUGH_MODAL_SHOW: showWalkthroughModal,
+    TOGGLE_QUICK_BAR: toggleQuickBar,
   });
 }

@@ -237,8 +237,10 @@ export async function runRendererBlock({
         controller.abort();
       }
     } else {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-      throw new Error(`Support for previewing in ${location} not implemented`);
+      const exhaustiveCheck: never = location;
+      throw new Error(
+        `Support for previewing in ${exhaustiveCheck} not implemented`,
+      );
     }
   }
 }
@@ -247,12 +249,4 @@ export async function resetTab(): Promise<void> {
   stopInspectingNativeHandler();
   await clearDynamicElements({});
   await reactivateTab();
-}
-
-/**
- * Navigate to the given URL.
- * @param url the url to navigate to
- */
-export async function navigateTab({ url }: { url: string }): Promise<void> {
-  window.location.href = url;
 }

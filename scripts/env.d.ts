@@ -15,24 +15,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PlatformBase } from "@/platform/platformProtocol";
-import { showNotification } from "@/utils/notify";
-import type { PlatformCapability } from "@/platform/capabilities";
-
-/**
- * Sidebar platform capabilities. In general, brick execution occurs in the context of the host page.
- */
-class SidebarPlatform extends PlatformBase {
-  override capabilities: PlatformCapability[] = ["dom", "alert", "toast"];
-
-  constructor() {
-    super("sidebar");
-  }
-
-  override alert = window.alert;
-  override prompt = window.prompt;
-  override notify = showNotification;
-}
-
-const sidebarPlatform = new SidebarPlatform();
-export default sidebarPlatform;
+export function loadEnv(): void;
+export function parseEnv(): void;

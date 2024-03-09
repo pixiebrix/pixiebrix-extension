@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { propertiesToSchema } from "@/validators/generic";
 import { type AutocompleteItem } from "autocompleter";
 import {
   $safeFindElementsWithRootMode,
@@ -26,6 +25,7 @@ import injectStylesheet from "@/utils/injectStylesheet";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class AttachAutocomplete extends EffectABC {
   constructor() {

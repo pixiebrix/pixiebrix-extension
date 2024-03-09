@@ -17,14 +17,9 @@
 
 import { type Brick, BrickABC } from "@/types/brickTypes";
 import { readerFactory } from "@/bricks/readers/factory";
-import {
-  type Schema as ValidatorSchema,
-  Validator,
-} from "@cfworker/json-schema";
 import { castArray, cloneDeep, compact, flatten, pickBy, uniq } from "lodash";
 import { type InitialValues, reducePipeline } from "@/runtime/reducePipeline";
-import { dereference } from "@/validators/generic";
-import blockSchema from "@schemas/component.json";
+import { validatePackageDefinition } from "@/validators/schemaValidator";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import getType from "@/runtime/getType";
@@ -47,14 +42,12 @@ import {
   type RegistryId,
   type SemVerString,
 } from "@/types/registryTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { isPipelineExpression } from "@/utils/expressionUtils";
 import { isContentScript } from "webext-detect-page";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import { uuidv4 } from "@/types/helpers";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { HeadlessModeError } from "@/bricks/errors";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { runHeadlessPipeline } from "@/contentScript/messenger/api";
 import {
   inputProperties,
@@ -66,7 +59,7 @@ import type { PlatformCapability } from "@/platform/capabilities";
 // Interface to avoid circular dependency with the implementation
 type BrickRegistryProtocol = BaseRegistry<RegistryId, Brick>;
 
-type BrickDefinition = {
+export type BrickDefinition = {
   /**
    * The runtime version to use when running the Brick.
    */
@@ -119,17 +112,15 @@ type BrickDefinition = {
 function validateBrickDefinition(
   component: unknown,
 ): asserts component is BrickDefinition {
-  const validator = new Validator(
-    dereference(blockSchema as Schema) as ValidatorSchema,
-  );
-  const result = validator.validate(component);
+  const result = validatePackageDefinition("component", component);
+
   if (!result.valid) {
-    console.warn("Invalid block configuration", {
+    console.warn("Invalid user-defined brick configuration", {
       component,
       result,
     });
     throw new InvalidDefinitionError(
-      "Invalid block configuration",
+      "Invalid user-defined brick configuration",
       result.errors,
     );
   }
@@ -264,9 +255,14 @@ class UserDefinedBrick extends BrickABC {
     const pipeline = castArray(this.component.pipeline);
     const last = pipeline.at(-1);
 
+    if (this.id === last?.id) {
+      // Guard against infinite recursion
+      return null;
+    }
+
     try {
-      const block = await this.registry.lookup(last.id);
-      return await getType(block);
+      const lastBrick = await this.registry.lookup(last.id);
+      return await getType(lastBrick);
     } catch {
       return null;
     }
@@ -380,7 +376,8 @@ class UserDefinedBrick extends BrickABC {
         return renderer.run(continuation.args, {
           ...options,
           ctxt: continuation.ctxt,
-          logger: new BackgroundLogger(continuation.loggerContext),
+          // XXX: should this a fresh logger for the platform?
+          logger: options.logger.childLogger(continuation.loggerContext),
         });
       }
 

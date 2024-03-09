@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PIXIEBRIX_TOOLTIPS_CONTAINER_CLASS } from "@/domConstants";
+import {
+  MAX_Z_INDEX,
+  PIXIEBRIX_TOOLTIPS_CONTAINER_CLASS,
+} from "@/domConstants";
 import { onContextInvalidated } from "webext-events";
 
 /**
@@ -38,4 +41,51 @@ export function ensureTooltipsContainer(): Element {
   }
 
   return container;
+}
+
+/**
+ * Factory to create a new popover/tooltip element.
+ *
+ * Suitable for use with ShadowDOM content. (It uses max-content for width/height.). See popoverFactory for displaying
+ * iframes.
+ *
+ * @see ensureTooltipsContainer
+ * @see popoverFactory
+ * @return the tooltip HTMLElement
+ */
+// Currently using the tooltip terminology to match the filename, but will likely switch to popover in the future
+// to match the web popover API terminology.
+export function tooltipFactory(): HTMLElement {
+  const container = ensureTooltipsContainer();
+
+  const popover = document.createElement("div");
+  // TODO: figure out how to use with the popover API. Just setting "popover" attribute doesn't place the element on
+  //  the top layer. We need to call showPopover() on it but also make positioning work with
+  //  floating UI so we can target a virtual element (e..g, cursor position) with offset.
+  //  See https://github.com/floating-ui/floating-ui/issues/1842
+  // https://developer.chrome.com/blog/introducing-popover-api
+  // https://developer.mozilla.org/en-US/docs/Web/API/Popover_API
+  popover.setAttribute("popover", "manual");
+
+  Object.assign(popover.style, {
+    "z-index": (MAX_Z_INDEX - 1).toString(),
+    // Must be set before positioning: https://floating-ui.com/docs/computeposition#initial-layout
+    position: "fixed",
+    width: "max-content",
+    height: "max-content",
+    top: "0",
+    left: "0",
+    // Override Chrome's base styles for [popover] attribute and provide a consistent look across applications that
+    // override the browser defaults (e.g., Zendesk)
+    margin: "0",
+    padding: "0",
+    "border-radius": "5px",
+    // Can't use colors file because the element is being rendered directly on the host
+    "background-color": "#ffffff",
+    border: "2px solid #a8a1b4",
+  });
+
+  container.append(popover);
+
+  return popover;
 }

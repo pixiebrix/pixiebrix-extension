@@ -18,9 +18,9 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { castArray } from "lodash";
 import { stemmer } from "stemmer";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 /**
  * A text search match.

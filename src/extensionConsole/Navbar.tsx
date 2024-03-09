@@ -17,7 +17,7 @@
 
 import styles from "./Navbar.module.scss";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Nav } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
@@ -27,60 +27,53 @@ import {
   addListener as addAuthListener,
   readPartnerAuthData,
   removeListener as removeAuthListener,
-} from "@/auth/token";
+} from "@/auth/authStorage";
 import { useSelector } from "react-redux";
 import { toggleSidebar } from "./toggleSidebar";
-import { type SettingsState } from "@/store/settings/settingsTypes";
 import cx from "classnames";
 import { selectAuth } from "@/auth/authSelectors";
 import { type ThemeLogo } from "@/themes/themeUtils";
 import useLinkState from "@/auth/useLinkState";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
-import useAsyncState from "@/hooks/useAsyncState";
+import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
+
+// NOTE: can't share subscribe methods across generators currently for useAsyncExternalStore because it maintains
+// a map of subscriptions to state controllers. See https://github.com/pixiebrix/pixiebrix-extension/issues/7789
+const subscribe = (callback: () => void) => {
+  addAuthListener(callback);
+
+  return () => {
+    removeAuthListener(callback);
+  };
+};
+
+async function getAdminConsoleUrl(): Promise<string> {
+  const [baseUrl, partnerAuth] = await Promise.all([
+    getBaseURL(),
+    readPartnerAuthData(),
+  ]);
+  const url = partnerAuth?.token
+    ? new URL("partner-auth", baseUrl)
+    : new URL(baseUrl);
+  return url.toString();
+}
 
 function useAdminConsoleUrl(): string {
   // Need to update serviceURL on changes to partner auth data:
   // https://github.com/pixiebrix/pixiebrix-extension/issues/4594
-  const { data: serviceURL, refetch: refreshServiceUrl } =
-    useAsyncState<string>(async () => {
-      const baseURL = await getBaseURL();
-      const partnerAuth = await readPartnerAuthData();
-      const url = partnerAuth?.token
-        ? new URL("partner-auth", baseURL)
-        : new URL(baseURL);
-      return url.toString();
-    }, []);
-
-  useEffect(() => {
-    // Listen for token invalidation
-    const handler = () => {
-      refreshServiceUrl();
-    };
-
-    addAuthListener(handler);
-
-    return () => {
-      removeAuthListener(handler);
-    };
-  }, [refreshServiceUrl]);
-
-  return serviceURL ?? DEFAULT_SERVICE_URL;
+  const { data } = useAsyncExternalStore(subscribe, getAdminConsoleUrl);
+  return data ?? DEFAULT_SERVICE_URL;
 }
 
 const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
   const { email } = useSelector(selectAuth);
 
-  const { hasToken: connected, tokenLoading: connectedPending } =
-    useLinkState();
+  const { data: isLinked, isLoading: isLinkedLoading } = useLinkState();
 
-  const serviceURL = useAdminConsoleUrl();
+  const adminConsoleUrl = useAdminConsoleUrl();
 
-  const mode = useSelector<{ settings: SettingsState }, string>(
-    ({ settings }) => settings.mode,
-  );
-
-  // Use `connectedPending` to optimistically show the toggle
-  const showNavbarToggle = mode === "local" || connected || connectedPending;
+  // Only show sidebar toggle if the extension is linked. Allow `isLinkedLoading` to optimistically show the toggle
+  const showNavbarToggle = isLinked || isLinkedLoading;
 
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -120,12 +113,12 @@ const Navbar: React.FunctionComponent<{ logo: ThemeLogo }> = ({ logo }) => {
 
         <ul className="navbar-nav navbar-nav-right flex-grow-1 justify-content-end">
           {
-            <Nav.Link className="px-3" target="_blank" href={serviceURL}>
+            <Nav.Link className="px-3" target="_blank" href={adminConsoleUrl}>
               <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
               Open Admin Console
             </Nav.Link>
           }
-          {connected && email && <div className="text-black">{email}</div>}
+          {isLinked && email && <div className="text-black">{email}</div>}
         </ul>
       </div>
     </nav>

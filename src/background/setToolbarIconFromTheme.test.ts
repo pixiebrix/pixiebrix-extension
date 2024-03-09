@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import activateBrowserActionIcon, {
+import setToolbarIconFromTheme, {
   blobToImageData,
   getImageData,
-} from "@/background/activateBrowserActionIcon";
+} from "@/background/setToolbarIconFromTheme";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { browserAction } from "@/mv3/api";
@@ -30,7 +30,7 @@ jest.mock("@/mv3/api", () => ({
   },
 }));
 
-describe("activateBrowserActionIcon", () => {
+describe("setToolbarIconFromTheme", () => {
   const mock = new MockAdapter(axios);
   const url = "http://test.com/image.svg";
 
@@ -51,8 +51,7 @@ describe("activateBrowserActionIcon", () => {
   // @ts-expect-error -- No need to mock the whole class for the test
   global.Image = class {
     src = "";
-    // eslint-disable-next-line no-restricted-syntax
-    decode = jest.fn().mockResolvedValue(undefined);
+    decode = jest.fn();
   };
   // @ts-expect-error -- No need to mock the whole class for the test
   global.OffscreenCanvas = class {
@@ -66,10 +65,14 @@ describe("activateBrowserActionIcon", () => {
     jest.clearAllMocks();
   });
 
-  describe("activateBrowserActionIcon", () => {
-    it("skips fetching the image data and uses the default icon when no URL is provided", async () => {
+  describe("setToolbarIconFromTheme", () => {
+    it("uses the default manifest icon when no toolbarIcon is defined and the theme is default", async () => {
       const axiosSpy = jest.spyOn(axios, "get");
-      await activateBrowserActionIcon();
+      await setToolbarIconFromTheme({
+        toolbarIcon: null,
+        themeName: "default",
+        logo: { small: "smallLogoPath", regular: "regularLogoPath" },
+      });
 
       expect(axiosSpy).not.toHaveBeenCalled();
       expect(browserAction.setIcon).toHaveBeenCalledWith({
@@ -77,13 +80,17 @@ describe("activateBrowserActionIcon", () => {
       });
     });
 
-    it("fetches the image data and sets the browser action icon", async () => {
+    it("fetches the image data and sets the browser action icon, when toolbarIcon is defined", async () => {
       const url = "http://test.com/image.png";
       const blob = new Blob(["test"], { type: "image/svg+xml" });
 
       mock.onGet(url).reply(200, blob);
 
-      await activateBrowserActionIcon(url);
+      await setToolbarIconFromTheme({
+        toolbarIcon: url,
+        themeName: "default",
+        logo: { small: "smallLogoPath", regular: "regularLogoPath" },
+      });
 
       expect(browserAction.setIcon).toHaveBeenCalledWith({
         imageData: "image data",
@@ -93,10 +100,26 @@ describe("activateBrowserActionIcon", () => {
     it("uses the default icon when the request fails", async () => {
       mock.onGet(url).reply(500);
 
-      await activateBrowserActionIcon(url);
+      await setToolbarIconFromTheme({
+        toolbarIcon: url,
+        themeName: "default",
+        logo: { small: "smallLogoPath", regular: "regularLogoPath" },
+      });
 
       expect(browserAction.setIcon).toHaveBeenCalledWith({
         path: "path to icons",
+      });
+    });
+
+    it("uses the small logo image if toolbar is not defined, and theme is not default", async () => {
+      await setToolbarIconFromTheme({
+        toolbarIcon: null,
+        themeName: "automation-anywhere",
+        logo: { small: "smallLogoPath", regular: "regularLogoPath" },
+      });
+
+      expect(browserAction.setIcon).toHaveBeenCalledWith({
+        path: "smallLogoPath",
       });
     });
   });

@@ -57,3 +57,19 @@ export const registry = {
 };
 
 export const queryTabs = getMethod("QUERY_TABS", bg);
+
+// Use this instead: `import reportEvent from "@/telemetry/reportEvent"`
+// export const recordEvent = getNotifier("RECORD_EVENT", bg);
+
+export const recordLog = getNotifier("RECORD_LOG", bg);
+export const clearLogs = getMethod("CLEAR_LOGS", bg);
+export const clearLog = getMethod("CLEAR_LOG", bg);
+export const clearExtensionDebugLogs = getMethod(
+  "CLEAR_EXTENSION_DEBUG_LOGS",
+  bg,
+);
+
+export const fetchFeatureFlagsInBackground = getMethod(
+  "FETCH_FEATURE_FLAGS",
+  bg,
+);

@@ -267,7 +267,7 @@ const usePipelineNodes = (): {
     );
   }
 
-  // eslint-disable-next-line complexity
+  // eslint-disable-next-line complexity -- large number of parameters required to map a block to nodes
   function mapBlockToNodes({
     index,
     blockConfig,
@@ -559,7 +559,7 @@ const usePipelineNodes = (): {
           ...subPipelineNodes,
         );
 
-        extensionHasTraces = extensionHasTraces || subPipelineHasTraces;
+        extensionHasTraces ||= subPipelineHasTraces;
       }
 
       const footerNodeProps: PipelineFooterNodeProps = {
@@ -648,7 +648,7 @@ const usePipelineNodes = (): {
           extensionHasTraces,
         });
       nodes.push(...blockNodes);
-      extensionHasTraces = extensionHasTraces || extensionHasTracesOut;
+      extensionHasTraces ||= extensionHasTracesOut;
     }
 
     return {

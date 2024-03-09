@@ -36,7 +36,7 @@ import { escapeSingleQuotes, matchesAnyPattern } from "@/utils/stringUtils";
 import { $safeFind } from "@/utils/domUtils";
 import { type ElementInfo } from "@/utils/inference/selectorTypes";
 import { getAttributeSelectorRegex } from "@/utils/inference/selectorInferenceUtils";
-import { assertNotNullish } from "@/utils/nullishUtils";
+import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
 
 /** Valid selector that never returns any element (no `<selectnothing>` element exists) */
 const NON_EXISTENT_TAG_NAME = "selectnothing";
@@ -176,7 +176,7 @@ export function getSelectorPreference(selector: string): number {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Just checked
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Just checked
   const tokenCount = tokenized[0]!.length;
 
   if (selector.includes(":nth-child")) {
@@ -580,7 +580,7 @@ export function getCommonAncestor(...args: HTMLElement[]): HTMLElement | null {
 
   const [node, ...otherNodes] = args;
 
-  let currentNode: HTMLElement | undefined | null = node;
+  let currentNode: Nullishable<HTMLElement> = node;
 
   while (currentNode) {
     // eslint-disable-next-line @typescript-eslint/no-loop-func, @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Called immediately
@@ -598,8 +598,8 @@ function findContainerForElement(element: HTMLElement): {
   container: HTMLElement;
   selectors: string[];
 } {
-  /* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion */
-  /* We assume that the checked elements are not `html` and are attached to the page, so they all have a parentElement */
+  /* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion --
+   We assume that the checked elements are not `html` and are attached to the page, so they all have a parentElement */
   let container: HTMLElement = element;
   let level = 0;
 
@@ -615,7 +615,7 @@ function findContainerForElement(element: HTMLElement): {
     container = container.parentElement!;
     level++;
   }
-  /* eslint-enable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion */
+  /* eslint-enable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion  */
 
   const extra: string[] = [];
 

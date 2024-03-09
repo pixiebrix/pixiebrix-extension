@@ -1,12 +1,12 @@
 import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
-import { propertiesToSchema } from "@/validators/generic";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type JsonObject, type JsonPrimitive } from "type-fest";
 import { setState } from "@/platform/state/stateController";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickConfig } from "@/bricks/types";
 import { castTextLiteralOrThrow } from "@/utils/expressionUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 /**
  * A simple brick to assign a value to a Mod Variable.

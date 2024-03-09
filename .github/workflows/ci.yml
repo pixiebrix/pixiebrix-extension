@@ -7,6 +7,8 @@ env:
   PUBLIC_RELEASE: ${{ github.ref == 'refs/heads/main' }}
   # Staging URL, also directly used by webpack
   SERVICE_URL: https://app-stg.pixiebrix.com/
+  E2E_TEST_USER_EMAIL_UNAFFILIATED: ${{ secrets.E2E_TEST_USER_EMAIL_UNAFFILIATED }}
+  E2E_TEST_USER_PASSWORD_UNAFFILIATED: ${{ secrets.E2E_TEST_USER_PASSWORD_UNAFFILIATED }}
 
 jobs:
   test:
@@ -36,7 +38,7 @@ jobs:
         with:
           name: extension-test-coverage
       - name: Upload coverage to Codecov
-        uses: Wandalen/wretry.action@v1.4.4
+        uses: Wandalen/wretry.action@v1.4.5
         with:
           action: codecov/codecov-action@v3
           with: |
@@ -181,3 +183,26 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
       - uses: pre-commit/action@v3.0.1
+
+  end-to-end-tests:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install playwright browsers
+        run: npx playwright install chromium chrome
+      - name: Run end to end tests
+        # remove "|| exit 0" when these tests are ready to be used in CI
+        run: npm run test:e2e || exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: end-to-end-tests-report
+          path: end-to-end-tests/.report
+          retention-days: 5

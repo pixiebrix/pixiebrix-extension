@@ -21,9 +21,10 @@ import {
 } from "@/store/extensionsStorage";
 import { uuidv4, validateSemVerString } from "@/types/helpers";
 import nock from "nock";
-import { updateDeployments } from "@/background/deploymentUpdater";
+import { syncDeployments } from "@/background/deploymentUpdater";
+import { omit } from "lodash";
 import reportEvent from "@/telemetry/reportEvent";
-import { isLinked, readAuthData } from "@/auth/token";
+import { isLinked, readAuthData } from "@/auth/authStorage";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { isUpdateAvailable } from "@/background/installer";
 import {
@@ -49,10 +50,16 @@ import {
   modMetadataFactory,
 } from "@/testUtils/factories/modComponentFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
-import { starterBrickConfigFactory } from "@/testUtils/factories/modDefinitionFactories";
+import {
+  modComponentDefinitionFactory,
+  starterBrickConfigFactory,
+} from "@/testUtils/factories/modDefinitionFactories";
 
-import { deploymentFactory } from "@/testUtils/factories/deploymentFactories";
+import { activatableDeploymentFactory } from "@/testUtils/factories/deploymentFactories";
+import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories";
 import { type RegistryPackage } from "@/types/contract";
+import { resetMeApiMocks } from "@/testUtils/userMock";
+import { resetFeatureFlags } from "@/auth/featureFlagStorage";
 
 setContext("background");
 
@@ -73,7 +80,7 @@ jest.mock("@/telemetry/reportEvent");
 jest.mock("@/sidebar/messenger/api", () => {});
 jest.mock("@/contentScript/messenger/api");
 
-jest.mock("@/auth/token", () => ({
+jest.mock("@/auth/authStorage", () => ({
   getExtensionToken: async () => "TESTTOKEN",
   getAuthHeaders: jest.fn().mockResolvedValue({}),
   readAuthData: jest.fn().mockResolvedValue({
@@ -81,6 +88,8 @@ jest.mock("@/auth/token", () => ({
   }),
   isLinked: jest.fn().mockResolvedValue(true),
   async updateUserData() {},
+  addListener: jest.fn(),
+  TEST_setAuthData: jest.fn(),
 }));
 
 jest.mock("@/background/installer", () => ({
@@ -91,7 +100,6 @@ const registryFindMock = jest.mocked(registry.find);
 
 const isLinkedMock = jest.mocked(isLinked);
 const readAuthDataMock = jest.mocked(readAuthData);
-const getManifestMock = jest.mocked(browser.runtime.getManifest);
 const openOptionsPageMock = jest.mocked(browser.runtime.openOptionsPage);
 const browserManagedStorageMock = jest.mocked(browser.storage.managed.get);
 const refreshRegistriesMock = jest.mocked(refreshRegistries);
@@ -105,6 +113,8 @@ async function clearEditorReduxState() {
 
 beforeEach(async () => {
   jest.resetModules();
+  jest.clearAllMocks();
+  apiMock.reset();
 
   // Reset local states
   await Promise.all([
@@ -112,32 +122,25 @@ beforeEach(async () => {
     clearEditorReduxState(),
   ]);
 
-  isLinkedMock.mockClear();
-  readAuthDataMock.mockClear();
-
-  getSettingsStateMock.mockClear();
-  saveSettingsStateMock.mockClear();
-
   getSettingsStateMock.mockResolvedValue({
     nextUpdate: undefined,
   } as any);
 
   browserManagedStorageMock.mockResolvedValue({});
-  jest.mocked(browser.tabs.create).mockClear();
 
   readAuthDataMock.mockResolvedValue({
     organizationId: "00000000-00000000-00000000-00000000",
   } as any);
 
-  getManifestMock.mockClear();
-  refreshRegistriesMock.mockClear();
-  openOptionsPageMock.mockClear();
-  isUpdateAvailableMock.mockClear();
-
-  resetManagedStorage();
+  await resetManagedStorage();
 });
 
-describe("updateDeployments", () => {
+afterEach(async () => {
+  await resetFeatureFlags();
+  await resetMeApiMocks();
+});
+
+describe("syncDeployments", () => {
   test("opens options page if managed enterprise customer not linked", async () => {
     readAuthDataMock.mockResolvedValue({
       organizationId: null,
@@ -149,7 +152,7 @@ describe("updateDeployments", () => {
 
     isLinkedMock.mockResolvedValue(false);
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(reportEvent).toHaveBeenCalledWith(
       "OrganizationExtensionLink",
@@ -169,7 +172,7 @@ describe("updateDeployments", () => {
 
     isLinkedMock.mockResolvedValue(false);
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(reportEvent).toHaveBeenCalledWith(
       "OrganizationExtensionLink",
@@ -199,7 +202,7 @@ describe("updateDeployments", () => {
         disableLoginTab: true,
       });
 
-      await updateDeployments();
+      await syncDeployments();
 
       expect(openOptionsPageMock).not.toHaveBeenCalled();
       expect(browser.tabs.create).not.toHaveBeenCalled();
@@ -210,7 +213,7 @@ describe("updateDeployments", () => {
     // `readAuthDataMock` already has organizationId "00000000-00000000-00000000-00000000"
     isLinkedMock.mockResolvedValue(false);
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(reportEvent).toHaveBeenCalledWith(
       "OrganizationExtensionLink",
@@ -222,7 +225,8 @@ describe("updateDeployments", () => {
   test("can add deployment from empty state if deployment has permissions", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const deployment = deploymentFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    const registryId = deployment.package.package_id;
 
     apiMock.get("/api/me/").reply(200, {
       flags: [],
@@ -230,12 +234,81 @@ describe("updateDeployments", () => {
 
     apiMock.post("/api/deployments/").reply(201, [deployment]);
 
-    await updateDeployments();
+    apiMock
+      .get(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
+
+    await syncDeployments();
 
     const { extensions } = await getModComponentState();
 
     expect(extensions).toHaveLength(1);
     expect(saveSettingsStateMock).toHaveBeenCalledTimes(1);
+  });
+
+  test("can activate clipboardWrite automatically by default", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    // XXX: would be better to adjust mocking to allow integration test with checkDeploymentPermissions
+    jest.mocked(checkDeploymentPermissions).mockResolvedValueOnce({
+      hasPermissions: true,
+      permissions: {
+        permissions: ["clipboardWrite"],
+      },
+    });
+
+    const { deployment, modDefinition } = activatableDeploymentFactory({
+      modDefinitionOverride: {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            permissions: {
+              permissions: ["clipboardWrite"],
+            },
+          }),
+        ],
+      },
+    });
+    const registryId = deployment.package.package_id;
+
+    apiMock.get("/api/me/").reply(200, {
+      flags: [],
+    });
+
+    apiMock.post("/api/deployments/").reply(201, [deployment]);
+
+    apiMock
+      .get(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
+
+    await syncDeployments();
+
+    const { extensions } = await getModComponentState();
+
+    expect(jest.mocked(checkDeploymentPermissions).mock.calls[0]).toStrictEqual(
+      [
+        {
+          activatableDeployment: {
+            deployment,
+            modDefinition: omit(modDefinition, "options"),
+          },
+          locate: expect.anything(),
+          optionalPermissions: ["clipboardWrite"],
+        },
+      ],
+    );
+
+    expect(extensions).toHaveLength(1);
   });
 
   test("ignore other user extensions", async () => {
@@ -269,7 +342,8 @@ describe("updateDeployments", () => {
     );
     await saveEditorState(editorState);
 
-    const deployment = deploymentFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    const registryId = deployment.package.package_id;
 
     apiMock.get("/api/me/").reply(200, {
       flags: [],
@@ -277,7 +351,17 @@ describe("updateDeployments", () => {
 
     apiMock.post("/api/deployments/").reply(201, [deployment]);
 
-    await updateDeployments();
+    apiMock
+      .get(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
+
+    await syncDeployments();
 
     const { extensions } = await getModComponentState();
     expect(extensions).toBeArrayOfSize(2);
@@ -289,7 +373,8 @@ describe("updateDeployments", () => {
   test("uninstall existing recipe mod component with no dynamic elements", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const deployment = deploymentFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    const registryId = deployment.package.package_id;
 
     // A mod component without a recipe. Exclude _recipe entirely to handle the case where the property is missing
     const modComponent = modComponentFactory({
@@ -313,10 +398,20 @@ describe("updateDeployments", () => {
 
     apiMock.post("/api/deployments/").reply(201, [deployment]);
 
-    // Make sure we're testing the case where getEditorState() returns undefined
-    expect(await getEditorState()).toBeUndefined();
+    apiMock
+      .get(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
 
-    await updateDeployments();
+    // Make sure we're testing the case where getEditorState() returns undefined
+    await expect(getEditorState()).resolves.toBeUndefined();
+
+    await syncDeployments();
 
     const { extensions } = await getModComponentState();
     expect(extensions).toBeArrayOfSize(1);
@@ -326,7 +421,8 @@ describe("updateDeployments", () => {
   test("uninstall existing recipe mod component with dynamic element", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const deployment = deploymentFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    const registryId = deployment.package.package_id;
 
     const starterBrick = starterBrickConfigFactory();
     const brick = {
@@ -368,7 +464,17 @@ describe("updateDeployments", () => {
 
     apiMock.post("/api/deployments/").reply(201, [deployment]);
 
-    await updateDeployments();
+    apiMock
+      .get(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
+
+    await syncDeployments();
 
     const { extensions } = await getModComponentState();
     expect(extensions).toBeArrayOfSize(1);
@@ -385,7 +491,8 @@ describe("updateDeployments", () => {
       permissions: emptyPermissionsFactory(),
     });
 
-    const deployment = deploymentFactory();
+    const { deployment, modDefinition } = activatableDeploymentFactory();
+    const registryId = deployment.package.package_id;
 
     apiMock.get("/api/me/").reply(200, {
       flags: [],
@@ -393,9 +500,79 @@ describe("updateDeployments", () => {
 
     apiMock.post("/api/deployments/").reply(201, [deployment]);
 
-    await updateDeployments();
+    apiMock
+      .get(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
+
+    await syncDeployments();
 
     const { extensions } = await getModComponentState();
+
+    expect(extensions).toHaveLength(0);
+    expect(openOptionsPageMock.mock.calls).toHaveLength(1);
+  });
+
+  test("opens options page in strict permission mode if optional permission missing", async () => {
+    isLinkedMock.mockResolvedValue(true);
+    // XXX: would be better to adjust mocking to allow integration test with checkDeploymentPermissions
+    jest.mocked(checkDeploymentPermissions).mockResolvedValueOnce({
+      hasPermissions: false,
+      permissions: {
+        permissions: ["clipboardWrite"],
+      },
+    });
+
+    const { deployment, modDefinition } = activatableDeploymentFactory({
+      modDefinitionOverride: {
+        extensionPoints: [
+          modComponentDefinitionFactory({
+            permissions: {
+              permissions: ["clipboardWrite"],
+            },
+          }),
+        ],
+      },
+    });
+    const registryId = deployment.package.package_id;
+
+    apiMock.get("/api/me/").reply(200, {
+      flags: ["deployment-permissions-strict"],
+    });
+
+    apiMock.post("/api/deployments/").reply(201, [deployment]);
+
+    apiMock
+      .get(`/api/registry/bricks/${encodeURIComponent(registryId)}/`)
+      .reply(
+        200,
+        packageConfigDetailFactory({
+          modDefinition,
+          packageVersionUUID: deployment.package.id,
+        }),
+      );
+
+    await syncDeployments();
+
+    const { extensions } = await getModComponentState();
+
+    expect(jest.mocked(checkDeploymentPermissions).mock.calls[0]).toStrictEqual(
+      [
+        {
+          activatableDeployment: {
+            deployment,
+            modDefinition: omit(modDefinition, "options"),
+          },
+          locate: expect.anything(),
+          optionalPermissions: [],
+        },
+      ],
+    );
 
     expect(extensions).toHaveLength(0);
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
@@ -411,7 +588,7 @@ describe("updateDeployments", () => {
       "@/background/deploymentUpdater"
     );
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(jest.mocked(uninstallAllDeployments).mock.calls).toHaveLength(0);
     expect(refreshRegistriesMock.mock.calls).toHaveLength(0);
@@ -428,7 +605,7 @@ describe("updateDeployments", () => {
 
     apiMock.post("/api/deployments/").reply(201, []);
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
     expect(openOptionsPageMock.mock.calls).toHaveLength(0);
@@ -444,10 +621,10 @@ describe("updateDeployments", () => {
       flags: ["restricted-version"],
     });
 
-    const deployment = deploymentFactory();
+    const { deployment } = activatableDeploymentFactory();
     apiMock.post("/api/deployments/").reply(201, [deployment]);
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
     expect(refreshRegistriesMock.mock.calls).toHaveLength(1);
@@ -464,7 +641,7 @@ describe("updateDeployments", () => {
 
     apiMock.post("/api/deployments/").reply(201, []);
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
@@ -487,7 +664,7 @@ describe("updateDeployments", () => {
 
     apiMock.post("/api/deployments/").reply(201, []);
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
     expect(openOptionsPageMock.mock.calls).toHaveLength(1);
@@ -510,7 +687,7 @@ describe("updateDeployments", () => {
 
     apiMock.post("/api/deployments/").reply(201, []);
 
-    await updateDeployments();
+    await syncDeployments();
 
     expect(isUpdateAvailableMock.mock.calls).toHaveLength(1);
     expect(openOptionsPageMock.mock.calls).toHaveLength(0);
@@ -529,7 +706,8 @@ describe("updateDeployments", () => {
     });
 
     apiMock.post("/api/deployments/").reply(201, []);
-    await updateDeployments();
+
+    await syncDeployments();
 
     // Unmatched deployments are always uninstalled if snoozed
     expect(isUpdateAvailableMock.mock.calls).toHaveLength(0);
@@ -602,7 +780,7 @@ describe("updateDeployments", () => {
     isLinkedMock.mockResolvedValue(true);
     readAuthDataMock.mockResolvedValue({} as any);
 
-    await updateDeployments();
+    await syncDeployments();
 
     const { extensions } = await getModComponentState();
 

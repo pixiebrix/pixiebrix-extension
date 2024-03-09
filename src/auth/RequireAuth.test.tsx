@@ -17,9 +17,11 @@
 
 import React from "react";
 import RequireAuth from "@/auth/RequireAuth";
-import { mockAuthenticatedUser, mockErrorUser } from "@/testUtils/userMock";
+import {
+  mockAuthenticatedMeApiResponse,
+  mockErrorMeApiResponse,
+} from "@/testUtils/userMock";
 import { render, screen } from "@/pageEditor/testHelpers";
-import { userFactory } from "@/testUtils/factories/authFactories";
 import { waitFor } from "@testing-library/react";
 
 const MockLoginPage: React.VFC = () => <div>Login</div>;
@@ -30,7 +32,7 @@ beforeEach(() => {
 
 describe("RequireAuth", () => {
   test("authenticated user", async () => {
-    await mockAuthenticatedUser(userFactory());
+    await mockAuthenticatedMeApiResponse();
 
     render(
       <RequireAuth LoginPage={MockLoginPage}>
@@ -38,16 +40,16 @@ describe("RequireAuth", () => {
       </RequireAuth>,
     );
 
-    await waitFor(async () => {
-      expect(await screen.findByTestId("loader")).not.toBeInTheDocument();
-    });
+    await expect(
+      screen.findByTestId("loader"),
+    ).resolves.not.toBeInTheDocument();
     expect(
       screen.getByText("Only authenticated users should see me!"),
     ).toBeVisible();
   });
 
   test("unauthenticated user", async () => {
-    mockErrorUser({
+    mockErrorMeApiResponse({
       response: { status: 401 },
     });
 
@@ -58,7 +60,7 @@ describe("RequireAuth", () => {
     );
 
     await waitFor(async () => {
-      expect(await screen.findByText("Login")).toBeVisible();
+      await expect(screen.findByText("Login")).resolves.toBeVisible();
     });
     expect(screen.queryByTestId("loader")).not.toBeInTheDocument();
     expect(

@@ -24,7 +24,6 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Metadata } from "@/types/registryTypes";
 import { define } from "cooky-cutter";
 import { type StarterBrickConfig } from "@/starterBricks/types";
-import { type UnknownObject } from "@/types/objectTypes";
 import blockRegistry from "@/bricks/registry";
 import { getReferenceForElement } from "@/contentScript/elementReference";
 import {
@@ -38,6 +37,7 @@ import { type ResolvedModComponent } from "@/types/modComponentTypes";
 import { RunReason } from "@/types/runtimeTypes";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { getPlatform } from "@/platform/platformContext";
 
 jest.mock("@/runtime/reducePipeline");
 
@@ -110,6 +110,7 @@ describe("menuItemExtension", () => {
       document.body.innerHTML = getDocument("<div>foo</div>").body.innerHTML;
 
       const extensionPoint = fromJS(
+        getPlatform(),
         starterBrickFactory({
           position,
         })(),
@@ -136,6 +137,7 @@ describe("menuItemExtension", () => {
   it("can prepend menu item", async () => {
     document.body.innerHTML = getDocument("<div>foo</div>").body.innerHTML;
     const extensionPoint = fromJS(
+      getPlatform(),
       starterBrickFactory({
         position: "prepend",
       })(),
@@ -161,6 +163,7 @@ describe("menuItemExtension", () => {
   it("can use targetMode: eventTarget", async () => {
     document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
     const extensionPoint = fromJS(
+      getPlatform(),
       starterBrickFactory({
         targetMode: "eventTarget",
       })(),
@@ -201,6 +204,7 @@ describe("menuItemExtension", () => {
       '<div id="outer"><div id="toolbar"></div></div>',
     ).body.innerHTML;
     const extensionPoint = fromJS(
+      getPlatform(),
       starterBrickFactory({
         readerSelector: "div",
         containerSelector: "#toolbar",
@@ -245,6 +249,7 @@ describe("menuItemExtension", () => {
     async (targetMode) => {
       document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
       const extensionPoint = fromJS(
+        getPlatform(),
         starterBrickFactory({
           targetMode,
         })(),
@@ -284,7 +289,7 @@ describe("menuItemExtension", () => {
 
   it("re-attaches to container", async () => {
     document.body.innerHTML = getDocument("<div></div>").body.innerHTML;
-    const starterBrick = fromJS(starterBrickFactory()());
+    const starterBrick = fromJS(getPlatform(), starterBrickFactory()());
 
     starterBrick.registerModComponent(
       modComponentFactory({
@@ -311,6 +316,7 @@ describe("menuItemExtension", () => {
       '<div id="root"><div id="menu"></div></div>',
     ).body.innerHTML;
     const extensionPoint = fromJS(
+      getPlatform(),
       starterBrickFactory({
         containerSelector: ".newClass #menu",
       })(),
@@ -349,7 +355,7 @@ describe("menuItemExtension", () => {
     starterBrick.definition.containerSelector = ".menu";
     starterBrick.definition.attachMode = "watch";
 
-    const extensionPoint = fromJS(starterBrick);
+    const extensionPoint = fromJS(getPlatform(), starterBrick);
 
     extensionPoint.registerModComponent(
       modComponentFactory({
@@ -379,7 +385,7 @@ describe("menuItemExtension", () => {
     starterBrick.definition.containerSelector = ".menu";
     starterBrick.definition.attachMode = "once";
 
-    const extensionPoint = fromJS(starterBrick);
+    const extensionPoint = fromJS(getPlatform(), starterBrick);
 
     extensionPoint.registerModComponent(
       modComponentFactory({

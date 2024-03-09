@@ -19,7 +19,6 @@ import React from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { navigateTab } from "@/contentScript/messenger/api";
 import { useSelector } from "react-redux";
 import { selectSessionId } from "@/pageEditor/slices/sessionSelectors";
 import paintbrush from "@img/paintbrush.svg";
@@ -70,7 +69,7 @@ const HomePane: React.FunctionComponent = () => {
                     sessionId,
                     source: TEMPLATE_TELEMETRY_SOURCE,
                   });
-                  navigateTab(inspectedTab, {
+                  void browser.tabs.update(inspectedTab.tabId, {
                     url: `https://www.pixiebrix.com/templates-gallery?utm_source=pixiebrix&utm_medium=page_editor&utm_campaign=${TEMPLATE_TELEMETRY_SOURCE}`,
                   });
                 }}

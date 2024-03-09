@@ -181,12 +181,14 @@ const defaultAddCaption = (
   </span>
 );
 
+const defaultRecommendations: RegistryId[] = [] as const;
+
 function ActualModal<T extends Metadata>({
-  bricks = [],
+  bricks,
   close,
   onSelect,
   selectCaption = defaultAddCaption,
-  recommendations = [],
+  recommendations = defaultRecommendations,
   modalClassName,
 }: ModalProps<T>): React.ReactElement<T> {
   const [query, setQuery] = useState("");
@@ -200,7 +202,7 @@ function ActualModal<T extends Metadata>({
 
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
 
-  const searchResults = useSearch(bricks, query);
+  const searchResults = useSearch(bricks ?? [], query);
 
   const recommendedBricks = useMemo(() => {
     if (recommendations.length === 0) {
@@ -208,7 +210,7 @@ function ActualModal<T extends Metadata>({
     }
 
     // Retain the same order that the recommendations were passed in
-    const brickMap = new Map(bricks.map((brick) => [brick.id, brick]));
+    const brickMap = new Map((bricks ?? []).map((brick) => [brick.id, brick]));
     return compact(
       recommendations.map((registryId) => brickMap.get(registryId)),
     );

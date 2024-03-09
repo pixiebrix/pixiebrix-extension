@@ -37,7 +37,7 @@ import { templates } from "@/components/formBuilder/RjsfTemplates";
 import { cloneDeep } from "lodash";
 import useAsyncState from "@/hooks/useAsyncState";
 import { Stylesheets } from "@/components/Stylesheets";
-import EmotionShadowRoot from "react-shadow/emotion";
+import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
 import { type FormDefinition } from "@/platform/forms/formTypes";
 import { type UUID } from "@/types/stringTypes";
@@ -85,7 +85,7 @@ const EphemeralFormContent: React.FC<{
 
   return (
     <ErrorBoundary>
-      <EmotionShadowRoot.div>
+      <EmotionShadowRoot>
         <Stylesheets href={stylesheets}>
           <JsonSchemaForm
             // Deep clone the schema because otherwise the schema is not extensible, which
@@ -119,7 +119,7 @@ const EphemeralFormContent: React.FC<{
             </div>
           </JsonSchemaForm>
         </Stylesheets>
-      </EmotionShadowRoot.div>
+      </EmotionShadowRoot>
     </ErrorBoundary>
   );
 };

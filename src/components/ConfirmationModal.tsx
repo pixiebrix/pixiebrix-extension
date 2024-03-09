@@ -43,7 +43,12 @@ const initialModalState: ModalContextProps = {
   },
 };
 
-const ModalContext = createContext<ModalContextProps>(initialModalState);
+/**
+ * Exported for passing mocks during testing. Prefer ModalProvider.
+ * @see ModalProvider
+ * @deprecated
+ */
+export const ModalContext = createContext<ModalContextProps>(initialModalState);
 
 const ConfirmationModal: React.FunctionComponent<
   ConfirmationModalProps & {

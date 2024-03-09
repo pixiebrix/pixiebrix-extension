@@ -17,7 +17,7 @@
 
 import { uuidv4 } from "@/types/helpers";
 import { checkAvailable } from "@/bricks/available";
-import { castArray, cloneDeep, debounce, once, pick } from "lodash";
+import { castArray, cloneDeep, debounce, pick } from "lodash";
 import {
   type InitialValues,
   reduceExtensionPipeline,
@@ -35,17 +35,11 @@ import {
   type StarterBrickConfig,
   type StarterBrickDefinition,
 } from "@/starterBricks/types";
-import { type Logger } from "@/types/loggerTypes";
 import { type Metadata } from "@/types/registryTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { type Permissions } from "webextension-polyfill";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import notify, {
-  DEFAULT_ACTION_RESULTS,
-  type MessageConfig,
-  showNotification,
-} from "@/utils/notify";
+import { type MessageConfig } from "@/utils/notify";
 import { getNavigationId } from "@/contentScript/context";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { selectEventData } from "@/telemetry/deployments";
@@ -59,7 +53,6 @@ import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import sanitize from "@/utils/sanitize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/domConstants";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import reportError from "@/telemetry/reportError";
 import pluralize from "@/utils/pluralize";
 import {
@@ -91,6 +84,9 @@ import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
 } from "@/platform/capabilities";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -132,12 +128,6 @@ export type MenuItemStarterBrickConfig = {
    * @see if
    */
   if?: BrickConfig | BrickPipeline;
-
-  /**
-   * (Experimental) re-install the menu if an off the selectors change.
-   * @see if
-   */
-  dependencies?: string[];
 
   /**
    * True if caption is determined dynamically (using the reader and templating)
@@ -205,14 +195,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   private readonly cancelController = new RepeatableAbortController();
 
   /**
-   * Map from extension id to callback to cancel observers for its dependencies.
-   *
-   * @see MenuItemStarterBrickConfig.dependencies
-   * @private
-   */
-  private readonly cancelDependencyObservers: Map<UUID, () => void>;
-
-  /**
    * True if the extension point has been uninstalled
    * @private
    */
@@ -229,13 +211,17 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
   >();
 
   private readonly notifyError = debounce(
-    notify.error,
+    (payload: Parameters<PlatformProtocol["toasts"]["showNotification"]>[0]) =>
+      this.platform.toasts.showNotification({
+        type: "error",
+        ...payload,
+      }),
     MENU_INSTALL_ERROR_DEBOUNCE_MS,
     {
       leading: true,
       trailing: false,
     },
-  ) as typeof notify.error; // `debounce` loses the overloads
+  ) as PlatformProtocol["toasts"]["showNotification"]; // `debounce` loses the overloads
 
   public get kind(): "menuItem" {
     return "menuItem";
@@ -251,11 +237,10 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
     return { caption: "Custom Menu Item" };
   }
 
-  protected constructor(metadata: Metadata, logger: Logger) {
-    super(metadata, logger);
+  protected constructor(platform: PlatformProtocol, metadata: Metadata) {
+    super(platform, metadata);
     this.menus = new Map<UUID, HTMLElement>();
     this.removed = new Set<UUID>();
-    this.cancelDependencyObservers = new Map<UUID, () => void>();
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -270,13 +255,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         default: "false",
       },
       if: actionSchema,
-      dependencies: {
-        type: "array",
-        items: {
-          type: "string",
-        },
-        minItems: 1,
-      },
       action: actionSchema,
       icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
       shadowDOM: {
@@ -350,19 +328,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       } catch (error) {
         this.logger.error(error);
       }
-    }
-
-    for (const extension of extensions) {
-      const clear = this.cancelDependencyObservers.get(extension.id);
-      if (clear) {
-        try {
-          clear();
-        } catch {
-          console.error("Error cancelling dependency observer");
-        }
-      }
-
-      this.cancelDependencyObservers.delete(extension.id);
     }
   }
 
@@ -636,7 +601,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       });
 
       if (!show) {
-        this.watchDependencies(extension);
         return;
       }
     }
@@ -716,9 +680,11 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
 
           if (onSuccess) {
             if (typeof onSuccess === "boolean" && onSuccess) {
-              showNotification(DEFAULT_ACTION_RESULTS.success);
+              this.platform.toasts.showNotification(
+                DEFAULT_ACTION_RESULTS.success,
+              );
             } else {
-              showNotification({
+              this.platform.toasts.showNotification({
                 ...DEFAULT_ACTION_RESULTS.success,
                 ...pick(onSuccess, "message", "type"),
               });
@@ -726,13 +692,13 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
           }
         } catch (error) {
           if (hasSpecificErrorCause(error, CancelError)) {
-            showNotification({
+            this.platform.toasts.showNotification({
               ...DEFAULT_ACTION_RESULTS.cancel,
               ...pick(onCancel, "message", "type"),
             });
           } else {
             extensionLogger.error(error);
-            showNotification({
+            this.platform.toasts.showNotification({
               ...DEFAULT_ACTION_RESULTS.error,
               error, // Include more details in the notification
               reportError: false,
@@ -760,8 +726,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
       this.addMenuItem($menu, $menuItem);
     }
 
-    this.watchDependencies(extension);
-
     if (process.env.DEBUG) {
       onNodeRemoved(
         $menuItem.get(0),
@@ -773,70 +737,6 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
         },
         this.cancelController.signal,
       );
-    }
-  }
-
-  watchDependencies(
-    extension: ResolvedModComponent<MenuItemStarterBrickConfig>,
-  ): void {
-    const { dependencies = [] } = extension.config;
-
-    // Clean up old observers
-    if (this.cancelDependencyObservers.has(extension.id)) {
-      this.cancelDependencyObservers.get(extension.id)();
-      this.cancelDependencyObservers.delete(extension.id);
-    }
-
-    if (dependencies.length > 0) {
-      const rerun = once(() => {
-        console.debug("Dependency changed, re-running extension");
-        void this.runModComponents({
-          reason: RunReason.DEPENDENCY_CHANGED,
-          extensionIds: [extension.id],
-        });
-      });
-
-      const observer = new MutationObserver(rerun);
-
-      const abortController = new AbortController();
-
-      let elementCount = 0;
-      for (const dependency of dependencies) {
-        const $dependency = $safeFind(dependency);
-        if ($dependency.length > 0) {
-          for (const element of $dependency) {
-            elementCount++;
-            observer.observe(element, {
-              childList: true,
-              subtree: true,
-            });
-          }
-        } else {
-          void awaitElementOnce(
-            dependency,
-            abortController.signal,
-            // eslint-disable-next-line promise/prefer-await-to-then -- TODO: Maybe refactor
-          ).then(() => {
-            rerun();
-          });
-        }
-      }
-
-      console.debug(
-        `Observing ${elementCount} element(s) for extension: ${extension.id}`,
-      );
-
-      this.cancelDependencyObservers.set(extension.id, () => {
-        try {
-          observer.disconnect();
-        } catch (error) {
-          console.error("Error cancelling mutation observer", error);
-        }
-
-        abortController.abort();
-      });
-    } else {
-      console.debug(`Extension has no dependencies: ${extension.id}`);
     }
   }
 
@@ -1006,10 +906,13 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
     };
   }
 
-  constructor(config: StarterBrickConfig<MenuDefinition>) {
+  constructor(
+    platform: PlatformProtocol,
+    config: StarterBrickConfig<MenuDefinition>,
+  ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    super(cloned.metadata, new BackgroundLogger());
+    super(platform, cloned.metadata);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable } = cloned.definition;
@@ -1045,8 +948,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
       switch (position) {
         case "prepend":
         case "append": {
-          // Safe because we're checking the value in the case statements
-          // eslint-disable-next-line security/detect-object-injection
+          // eslint-disable-next-line security/detect-object-injection -- Safe because we're checking the value in the case statements
           $menu[position]($menuItem);
           break;
         }
@@ -1164,6 +1066,7 @@ export class RemoteMenuItemExtensionPoint extends MenuItemStarterBrickABC {
 }
 
 export function fromJS(
+  platform: PlatformProtocol,
   config: StarterBrickConfig<MenuDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
@@ -1172,5 +1075,5 @@ export function fromJS(
     throw new Error(`Expected type=menuItem, got ${type as string}`);
   }
 
-  return new RemoteMenuItemExtensionPoint(config);
+  return new RemoteMenuItemExtensionPoint(platform, config);
 }

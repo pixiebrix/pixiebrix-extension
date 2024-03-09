@@ -18,11 +18,11 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type BrickArgs } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { truncate } from "lodash";
 import { getEncodingName } from "@/vendors/encodings";
 import parseDataUrl from "@/utils/parseDataUrl";
 import { PropError } from "@/errors/businessErrors";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 /**
  * Length to trim URLs to in error messages.

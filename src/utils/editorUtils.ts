@@ -16,14 +16,12 @@
  */
 
 import {
-  type TextEditorElement,
   isTextControlElement,
-  isSelectableTextControlElement,
-  type SelectableTextEditorElement,
+  type TextEditorElement,
 } from "@/types/inputTypes";
 
 /**
- * Returns the current text content of the element to pass to the command handler
+ * Returns the current text content of the element, e.g., to pass to the text command popover handler
  * @param element the text editor element
  */
 export function getElementText(element: TextEditorElement): string {
@@ -33,72 +31,4 @@ export function getElementText(element: TextEditorElement): string {
   }
 
   return $(element).text();
-}
-
-/**
- * Replaces the text at the current command with the given text
- *
- * NOTE: currently, replaces all text from the command key to the next space. In the future, we might consider
- * only replacing the command key + query.
- *
- * @param element the text editor element
- * @param text the text to insert
- * @param commandKey the command key, e.g., "/"
- */
-export async function replaceAtCommand({
-  element,
-  text,
-  commandKey,
-}: {
-  element: SelectableTextEditorElement;
-  text: string;
-  commandKey: string;
-}): Promise<void> {
-  element.focus();
-
-  if (isSelectableTextControlElement(element)) {
-    const { selectionStart, value } = element;
-    if (selectionStart == null) {
-      return;
-    }
-
-    const commandStart = value.lastIndexOf(commandKey, selectionStart);
-    if (commandStart < 0) {
-      // Could happen if field's value was programmatically altered
-      throw new Error("Command key not found");
-    }
-
-    const endIndex = value.indexOf(" ", commandStart);
-    element.setSelectionRange(
-      commandStart,
-      endIndex >= 0 ? endIndex : value.length,
-    );
-    document.execCommand("insertText", false, text);
-
-    return;
-  }
-
-  // Content Editable
-  const selection = window.getSelection();
-  const range = selection?.getRangeAt(0);
-
-  if (range?.startContainer.nodeType === Node.TEXT_NODE) {
-    const { data } = range.startContainer as Text;
-
-    const commandStart = data.lastIndexOf(commandKey, range.startOffset);
-    if (commandStart < 0) {
-      // Could happen if field's value was programmatically altered
-      throw new Error("Command key not found");
-    }
-
-    const endIndex = data.indexOf(" ", commandStart);
-    range.setStart(range.startContainer, commandStart);
-    range.setEnd(range.startContainer, endIndex >= 0 ? endIndex : data.length);
-
-    // FIXME: this is not deleting the contents of the range or inserting the text
-    range.deleteContents();
-
-    document.execCommand("delete", false);
-    document.execCommand("insertText", false, text);
-  }
 }

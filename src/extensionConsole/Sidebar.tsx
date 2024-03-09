@@ -62,7 +62,8 @@ const Sidebar: React.FunctionComponent = () => {
           {permit("services") && (
             <SidebarLink
               route="/services"
-              title="Integrations"
+              // Help to distinguish vs. integrations defined in the Admin Console
+              title="Local Integrations"
               icon={faCloud}
             />
           )}
@@ -112,7 +113,9 @@ const Sidebar: React.FunctionComponent = () => {
 
           <li className="nav-item">
             <a
-              href={me?.partner?.documentation_url ?? DEFAULT_DOCUMENTATION_URL}
+              href={
+                me?.partner?.documentationUrl?.href ?? DEFAULT_DOCUMENTATION_URL
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="nav-link"

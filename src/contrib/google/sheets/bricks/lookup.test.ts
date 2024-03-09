@@ -18,7 +18,6 @@
 import { sheets } from "@/background/messenger/api";
 import { GoogleSheetsLookup } from "@/contrib/google/sheets/bricks/lookup";
 import { type ValueRange } from "@/contrib/google/sheets/core/types";
-import { type UnknownObject } from "@/types/objectTypes";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 

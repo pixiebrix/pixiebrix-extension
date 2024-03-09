@@ -31,14 +31,23 @@ import { initTelemetry } from "@/background/messenger/api";
 import { initMessengerLogging } from "@/development/messengerLogging";
 import { initPerformanceMonitoring } from "@/telemetry/performance";
 import { initRuntimeLogging } from "@/development/runtimeLogging";
+import { setPlatform } from "@/platform/platformContext";
+import extensionPagePlatform from "@/extensionPages/extensionPagePlatform";
 
-function init(): void {
+setPlatform(extensionPagePlatform);
+
+async function init() {
+  void initMessengerLogging();
+  void initRuntimeLogging();
+  initToaster();
+  initTelemetry();
+  try {
+    await initPerformanceMonitoring();
+  } catch (error) {
+    console.error("Failed to initialize performance monitoring", error);
+  }
+
   render(<App />, document.querySelector("#container"));
 }
 
-void initMessengerLogging();
-void initRuntimeLogging();
-initToaster();
-initTelemetry();
-void initPerformanceMonitoring();
-init();
+void init();

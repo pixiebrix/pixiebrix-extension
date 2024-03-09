@@ -29,6 +29,11 @@ https://github.com/typescript-eslint/typescript-eslint/issues/3295#issuecomment-
 
 declare const browser: import("webextension-polyfill").Browser;
 
+/* eslint-disable-next-line no-restricted-syntax --
+ * Type to be preferred over a plain `object`
+ * https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/ban-types.md */
+type UnknownObject = Record<string, unknown>;
+
 // https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
 declare module "*.svg" {
   const content: string;
@@ -64,7 +69,7 @@ declare module "*.txt" {
 }
 
 declare module "*.yaml" {
-  const content: Record<string, unknown>;
+  const content: UnknownObject;
   export default content;
 }
 
@@ -83,8 +88,6 @@ declare module "react-select-virtualized" {
 }
 
 declare module "generate-schema" {
-  import { type UnknownObject } from "@/types/objectTypes";
-
   const json: (title: string, obj: unknown) => UnknownObject;
 }
 
@@ -183,10 +186,8 @@ interface Promise<T> {
    * @returns A Promise for the completion of the callback.
    */
   catch<TResult = never>(
-    onrejected?:
-      | ((reason: unknown) => TResult | PromiseLike<TResult>)
-      | undefined
-      | null,
+    onrejected?: // eslint-disable-next-line local-rules/preferNullishable -- Importing here is not worth it
+    ((reason: unknown) => TResult | PromiseLike<TResult>) | undefined | null,
   ): Promise<T | TResult>;
 }
 

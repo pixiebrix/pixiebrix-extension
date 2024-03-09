@@ -16,7 +16,6 @@
  */
 
 import { cloneDeep, get, set, setWith, toPath } from "lodash";
-import { type UnknownObject } from "@/types/objectTypes";
 import { stripOptionalChaining } from "@/utils/variableUtils";
 
 export enum VarExistence {
@@ -83,7 +82,7 @@ type SetExistenceFromValuesArgs = {
   /**
    * The object containing the context values
    */
-  values: Record<string, unknown>;
+  values: UnknownObject;
 
   /**
    * Parent path for the values.
@@ -304,7 +303,7 @@ class VarMap {
       const pathPartsCopy = [...pathParts];
       let bag: ExistenceNode | undefined = sourceMap;
       while (pathPartsCopy.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Existence verified via `length` check so `!` is fine
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Existence verified via `length` check so `!` is fine
         const part = stripOptionalChaining(pathPartsCopy.shift()!);
 
         // Handle the array case (allow only numeric keys)

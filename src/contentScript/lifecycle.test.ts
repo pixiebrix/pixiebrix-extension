@@ -1,4 +1,3 @@
-/* eslint-disable new-cap -- using exposed TEST_ methods */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
@@ -16,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type UnknownObject } from "@/types/objectTypes";
 import { define } from "cooky-cutter";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import {
@@ -34,6 +32,7 @@ import { resolveExtensionInnerDefinitions } from "@/registry/internal";
 
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { type getModComponentState } from "@/store/extensionsStorage";
+import { getPlatform } from "@/platform/platformContext";
 
 let starterBrickRegistry: any;
 let lifecycleModule: any;
@@ -126,6 +125,7 @@ describe("lifecycle", () => {
 
   it("installs persisted trigger on first run", async () => {
     const starterBrick = fromJS(
+      getPlatform(),
       starterBrickConfigFactory({
         trigger: "load",
       })(),
@@ -149,6 +149,7 @@ describe("lifecycle", () => {
 
   it("runEditorExtension", async () => {
     const starterBrick = fromJS(
+      getPlatform(),
       starterBrickConfigFactory({
         trigger: "load",
       })(),
@@ -171,6 +172,7 @@ describe("lifecycle", () => {
 
   it("runEditorExtension removes existing", async () => {
     const starterBrick = fromJS(
+      getPlatform(),
       starterBrickConfigFactory({
         trigger: "load",
       })(),
@@ -216,6 +218,7 @@ describe("lifecycle", () => {
 
   it("Removes starter bricks from deactivated mods", async () => {
     const starterBrick = fromJS(
+      getPlatform(),
       starterBrickConfigFactory({
         trigger: "load",
       })(),
@@ -236,6 +239,7 @@ describe("lifecycle", () => {
     expect(lifecycleModule.getActiveExtensionPoints()).toEqual([starterBrick]);
 
     const updatedStarterBrick = fromJS(
+      getPlatform(),
       starterBrickConfigFactory({
         trigger: "initialize",
       })(),

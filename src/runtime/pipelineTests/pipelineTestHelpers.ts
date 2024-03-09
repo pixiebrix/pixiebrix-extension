@@ -1,5 +1,4 @@
 import ConsoleLogger from "@/utils/ConsoleLogger";
-import { propertiesToSchema } from "@/validators/generic";
 import { type InitialValues } from "@/runtime/reducePipeline";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { mapArgs } from "@/runtime/mapArgs";
@@ -13,11 +12,11 @@ import {
   type PipelineExpression,
 } from "@/types/runtimeTypes";
 import { BrickABC } from "@/types/brickTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { isDeferExpression } from "@/utils/expressionUtils";
 import isPromise from "is-promise";
 import { type JsonValue } from "type-fest";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 const logger = new ConsoleLogger();
 

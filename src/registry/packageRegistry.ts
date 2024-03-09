@@ -21,7 +21,6 @@ import { type RegistryPackage } from "@/types/contract";
 import { type Except } from "type-fest";
 import { deleteDatabase } from "@/utils/idbUtils";
 import { PACKAGE_REGEX } from "@/types/helpers";
-import { type UnknownObject } from "@/types/objectTypes";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { getApiClient } from "@/data/service/apiClient";
 import { type Nullishable, assertNotNullish } from "@/utils/nullishUtils";
@@ -47,7 +46,7 @@ export type Kind =
   | "extensionPoint"
   | "recipe";
 
-type PackageVersion = {
+export type PackageVersion = {
   id: string;
   version: Version;
   kind: Kind;
@@ -123,44 +122,6 @@ function latestVersion(
 }
 
 /**
- * Return all packages for the given kinds
- * @param kinds kinds of bricks
- */
-export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
-  const db = await openRegistryDB();
-
-  try {
-    const bricks = flatten(
-      await Promise.all(
-        kinds.map(async (kind) =>
-          db.getAllFromIndex(BRICK_STORE, "kind", kind),
-        ),
-      ),
-    );
-
-    return Object.entries(groupBy(bricks, (x) => x.id)).map(
-      ([, versions]) =>
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- there's at least one element per group
-        latestVersion(versions)!,
-    );
-  } finally {
-    db.close();
-  }
-}
-
-/**
- * Clear the brick definition registry
- */
-export async function clear(): Promise<void> {
-  const db = await openRegistryDB();
-  try {
-    await db.clear(BRICK_STORE);
-  } finally {
-    db.close();
-  }
-}
-
-/**
  * Replace the local database with the packages from the registry.
  *
  * Memoized to avoid multiple network requests across tabs.
@@ -169,6 +130,8 @@ export const syncPackages = memoizeUntilSettled(async () => {
   // The endpoint doesn't return the updated_at timestamp. So use the current local time as our timestamp.
   const timestamp = new Date();
 
+  // XXX: we currently don't have to worry about consecutive calls where the first call is unauthenticated and the
+  // second is after the user authenticates, because the extension reloads on linking
   const client = await getApiClient();
   // In the future, use the paginated endpoint?
   const { data } = await client.get<RegistryPackage[]>("/api/registry/bricks/");
@@ -184,6 +147,41 @@ export const syncPackages = memoizeUntilSettled(async () => {
 });
 
 /**
+ * Helper to ensure the IDB has synced packages. DOES NOT ensure the database has the latest package definitions --
+ * i.e., does not await any inflight syncPackages call if the database is already populated.
+ */
+// Memoize for slight performance gain for multiple concurrent callers
+const ensurePopulated = memoizeUntilSettled(async () => {
+  // Safe to assume everyone has access to at least one package
+  if ((await count()) > 0) {
+    // Already populated
+    return;
+  }
+
+  // XXX: there's a small chance of a race here, where an existing syncPackages call finishes after the count()
+  // call resolves, before executes switches back to this method.
+
+  try {
+    // `syncPackages` is memoized, so safe to call multiple times;
+    await syncPackages();
+  } catch {
+    // NOP - call-site will handle uninitialized state
+  }
+});
+
+/**
+ * Clear the brick definition registry.
+ */
+export async function clear(): Promise<void> {
+  const db = await openRegistryDB();
+  try {
+    await db.clear(BRICK_STORE);
+  } finally {
+    db.close();
+  }
+}
+
+/**
  * Deletes and recreates the brick definition database.
  */
 export async function recreateDB(): Promise<void> {
@@ -197,9 +195,38 @@ export async function recreateDB(): Promise<void> {
 }
 
 /**
+ * Return all packages for the given kinds
+ * @param kinds kinds of bricks
+ */
+export async function getByKinds(kinds: Kind[]): Promise<PackageVersion[]> {
+  await ensurePopulated();
+
+  const db = await openRegistryDB();
+
+  try {
+    const bricks = flatten(
+      await Promise.all(
+        kinds.map(async (kind) =>
+          db.getAllFromIndex(BRICK_STORE, "kind", kind),
+        ),
+      ),
+    );
+
+    return Object.entries(groupBy(bricks, (x) => x.id)).map(
+      ([, versions]) =>
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- there's at least one element per group
+        latestVersion(versions)!,
+    );
+  } finally {
+    db.close();
+  }
+}
+
+/**
  * Return the number of records in the registry.
  */
 export async function count(): Promise<number> {
+  // Don't need to ensure populated, because we're just counting current records
   const db = await openRegistryDB();
   try {
     return await db.count(BRICK_STORE);
@@ -268,10 +295,13 @@ export async function find(id: string): Promise<Nullishable<PackageVersion>> {
     throw new Error("invalid brick id");
   }
 
+  await ensurePopulated();
+
   const db = await openRegistryDB();
 
   try {
     const versions = await db.getAllFromIndex(BRICK_STORE, "id", id);
+
     return latestVersion(versions);
   } finally {
     db.close();

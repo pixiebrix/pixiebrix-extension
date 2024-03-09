@@ -30,7 +30,6 @@ import {
   type OptionsArgs,
   type TemplateEngine,
 } from "@/types/runtimeTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import {
   type IntegrationDependencyV1,
   type IntegrationDependencyV2,

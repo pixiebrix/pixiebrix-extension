@@ -25,13 +25,13 @@ import {
   isLinked,
   TEST_clearListeners,
   TEST_triggerListeners,
-} from "@/auth/token";
+} from "@/auth/authStorage";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { tabFactory } from "@/testUtils/factories/browserFactories";
 
-jest.mock("@/auth/token", () => ({
+jest.mock("@/auth/authStorage", () => ({
   __esModule: true,
-  ...jest.requireActual("@/auth/token"),
+  ...jest.requireActual("@/auth/authStorage"),
   isLinked: jest.fn(),
 }));
 
@@ -64,13 +64,11 @@ describe("enforceAuthentication", () => {
   });
 
   afterEach(async () => {
-    // eslint-disable-next-line new-cap -- used for testing
-    INTERNAL_reset();
+    await INTERNAL_reset();
     await browser.storage.managed.clear();
     await browser.storage.local.clear();
     axiosMock.reset();
     jest.clearAllMocks();
-    // eslint-disable-next-line new-cap -- used for testing
     TEST_clearListeners();
   });
 
@@ -123,13 +121,11 @@ describe("enforceAuthentication", () => {
     expect(addListenerSpy).toHaveBeenCalledTimes(1);
     expect(removeListenerSpy).toHaveBeenCalledTimes(0);
 
-    // eslint-disable-next-line new-cap -- used for testing
     TEST_triggerListeners({ token: "foo" });
 
     expect(removeListenerSpy).toHaveBeenCalledTimes(1);
     addListenerSpy.mockClear();
 
-    // eslint-disable-next-line new-cap -- used for testing
     TEST_triggerListeners(undefined);
     await waitForEffect();
     expect(addListenerSpy).toHaveBeenCalledTimes(1);
@@ -173,7 +169,6 @@ describe("enforceAuthentication", () => {
       }),
     );
 
-    // eslint-disable-next-line new-cap -- used for testing
     TEST_triggerListeners({ token: "foo" });
 
     await waitForEffect();
@@ -218,7 +213,6 @@ describe("enforceAuthentication", () => {
     // Mock that tab no longer exists
     jest.mocked(browser.tabs.get).mockResolvedValue(null);
 
-    // eslint-disable-next-line new-cap -- used for testing
     TEST_triggerListeners({ token: "foo" });
 
     await waitForEffect();

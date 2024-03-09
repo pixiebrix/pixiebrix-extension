@@ -16,10 +16,7 @@
  */
 
 import { type JsonObject } from "type-fest";
-import { uuidv4 } from "@/types/helpers";
-import { compact, debounce, once, throttle, uniq } from "lodash";
-import { isLinked } from "@/auth/token";
-import { type UUID } from "@/types/stringTypes";
+import { compact, debounce, throttle, uniq } from "lodash";
 import { getModComponentState } from "@/store/extensionsStorage";
 import {
   getLinkedApiClient,
@@ -27,17 +24,15 @@ import {
 } from "@/data/service/apiClient";
 import { allowsTrack } from "@/telemetry/dnt";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
-import { type UnknownObject } from "@/types/objectTypes";
 import { deleteDatabase } from "@/utils/idbUtils";
 import { detectBrowser } from "@/vendors/mixpanel";
 import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
 import { count as traceSize } from "@/telemetry/trace";
-import { StorageItem } from "webext-storage";
+import { getUUID } from "@/telemetry/telemetryHelpers";
 import { getTabsWithAccess } from "@/utils/extensionUtils";
 import { type Event } from "@/telemetry/events";
 
-const uidStorage = new StorageItem<UUID>("USER_UUID");
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
 const TELEMETRY_DB_NAME = "telemetrydb";
@@ -250,22 +245,6 @@ export async function clear(): Promise<void> {
   }
 }
 
-/**
- * Return a random ID for this browser profile.
- * It's persisted in storage via `chrome.storage.local` and in-memory via `once`
- */
-export const uid = once(async (): Promise<UUID> => {
-  const uid = await uidStorage.get();
-  if (uid) {
-    return uid;
-  }
-
-  const uuid = uuidv4();
-  console.debug("Generating UID for browser", { uuid });
-  await uidStorage.set(uuid);
-  return uuid;
-});
-
 async function flush(): Promise<void> {
   const client = await maybeGetLinkedApiClient();
   if (client) {
@@ -325,10 +304,11 @@ async function collectUserSummary(): Promise<UserSummary> {
 }
 
 async function init(): Promise<void> {
-  if ((await isLinked()) && (await allowsTrack())) {
-    const client = await getLinkedApiClient();
+  const client = await maybeGetLinkedApiClient();
+
+  if (client && (await allowsTrack())) {
     await client.post("/api/identify/", {
-      uid: await uid(),
+      uid: await getUUID(),
       data: await collectUserSummary(),
     });
   }
@@ -340,7 +320,9 @@ export const initTelemetry = throttle(init, 30 * 60 * 1000, {
   trailing: true,
 });
 
-/** @deprecated Use instead: `import reportEvent from "@/telemetry/reportEvent"` */
+/**
+ * @deprecated Only allowed in @/background files. Otherwise, use: `import reportEvent from "@/telemetry/reportEvent"`
+ */
 export async function recordEvent({
   event,
   data = {},
@@ -352,7 +334,7 @@ export async function recordEvent({
     const { version, version_name: versionName } =
       browser.runtime.getManifest();
     const telemetryEvent = {
-      uid: await uid(),
+      uid: await getUUID(),
       event,
       timestamp: Date.now(),
       data: {

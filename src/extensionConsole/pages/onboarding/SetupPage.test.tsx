@@ -29,8 +29,11 @@ import {
 } from "@/store/enterprise/managedStorage";
 import { render } from "@/extensionConsole/testHelpers";
 import settingsSlice from "@/store/settings/settingsSlice";
-import { mockAnonymousUser, mockAuthenticatedUser } from "@/testUtils/userMock";
-import { partnerUserFactory } from "@/testUtils/factories/authFactories";
+import {
+  mockAnonymousMeApiResponse,
+  mockAuthenticatedMeApiResponse,
+} from "@/testUtils/userMock";
+import { meWithPartnerApiResponseFactory } from "@/testUtils/factories/authFactories";
 import notify from "@/utils/notify";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
 
@@ -66,13 +69,13 @@ jest.mock("@/data/service/baseService", () => ({
 
 beforeEach(async () => {
   jest.clearAllMocks();
-  resetManagedStorage();
+  await resetManagedStorage();
   await browser.storage.managed.clear();
 });
 
 describe("SetupPage", () => {
   test("anonymous user with no partner", async () => {
-    mockAnonymousUser();
+    mockAnonymousMeApiResponse();
 
     render(
       <MemoryRouter>
@@ -88,7 +91,7 @@ describe("SetupPage", () => {
   });
 
   test("OAuth2 partner user with required service id in settings", async () => {
-    await mockAuthenticatedUser(partnerUserFactory());
+    await mockAuthenticatedMeApiResponse(meWithPartnerApiResponseFactory());
 
     render(
       <MemoryRouter>
@@ -109,14 +112,12 @@ describe("SetupPage", () => {
       expect(screen.queryByTestId("loader")).toBeNull();
     });
 
-    screen.debug();
-
     expect(screen.getByText("Connect your AARI account")).not.toBeNull();
   });
 
   test("Start URL for OAuth2 flow", async () => {
     const user = userEvent.setup();
-    mockAnonymousUser();
+    mockAnonymousMeApiResponse();
 
     location.href =
       "chrome-extension://abc123/options.html#/start?hostname=mycontrolroom.com";
@@ -154,7 +155,7 @@ describe("SetupPage", () => {
   });
 
   test("Start URL with Community Edition hostname if user is unauthenticated", async () => {
-    mockAnonymousUser();
+    mockAnonymousMeApiResponse();
 
     const history = createHashHistory();
     // Hostname comes as hostname, not URL
@@ -179,7 +180,7 @@ describe("SetupPage", () => {
   });
 
   test("Start URL with Community Edition hostname if authenticated", async () => {
-    await mockAuthenticatedUser(partnerUserFactory());
+    await mockAuthenticatedMeApiResponse(meWithPartnerApiResponseFactory());
     const history = createHashHistory();
 
     // Hostname comes as hostname, not URL
@@ -224,7 +225,7 @@ describe("SetupPage", () => {
   test("Managed Storage OAuth2 partner user", async () => {
     const controlRoomUrl = "https://notarealcontrolroom.com";
 
-    mockAnonymousUser();
+    mockAnonymousMeApiResponse();
 
     await browser.storage.managed.set({
       partnerId: "automation-anywhere",

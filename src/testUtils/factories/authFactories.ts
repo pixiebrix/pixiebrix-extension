@@ -24,15 +24,23 @@ import {
   type UserData,
 } from "@/auth/authTypes";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
-import { type Me, type Milestone, UserRole } from "@/types/contract";
+import { UserRole } from "@/types/contract";
 import { type AuthData } from "@/integrations/integrationTypes";
+import { type UserMilestone } from "@/data/model/UserMilestone";
+import type { components } from "@/types/swagger";
+import { type UserPartner } from "@/data/model/UserPartner";
+import {
+  type RequiredMeOrganizationResponse,
+  type RequiredMePartnerResponse,
+} from "@/data/service/responseTypeHelpers";
+import { type SetRequired } from "type-fest";
 
 function emailFactory(n: number): string {
   return `user${n}@test.com`;
 }
 
 /**
- * @see userOrganizationFactory
+ * @see meOrganizationApiResponseFactory
  */
 export const organizationStateFactory = define<AuthUserOrganization>({
   id: uuidSequence,
@@ -47,7 +55,7 @@ export const organizationStateFactory = define<AuthUserOrganization>({
 });
 
 /**
- * @see userFactory
+ * @see meApiResponseFactory
  */
 export const authStateFactory = define<AuthState>({
   userId: uuidSequence,
@@ -97,45 +105,49 @@ export const authStateFactory = define<AuthState>({
     const groups: AuthState["groups"] = [];
     return groups;
   },
-  flags() {
-    const flags: AuthState["flags"] = [];
-    return flags;
-  },
-  milestones(): Milestone[] {
+  milestones(): UserMilestone[] {
     return [];
   },
 });
 
-export const userOrganizationFactory = define<Me["organization"]>({
-  id: uuidSequence,
-  name(n: number): string {
-    return `Test Organization ${n}`;
-  },
-  scope(n: number): string {
-    return `@organization-${n}`;
-  },
-  control_room: null,
-  theme: null,
-});
+export const meOrganizationApiResponseFactory =
+  define<RequiredMeOrganizationResponse>({
+    id: uuidSequence,
+    name(n: number): string {
+      return `Test Organization ${n}`;
+    },
+    scope(n: number): string {
+      return `@organization-${n}`;
+    },
+    control_room: null,
+    theme: null,
+  });
 
-export const userFactory = define<Me>({
+export const meApiResponseFactory = define<components["schemas"]["Me"]>({
   id: uuidSequence,
   email: emailFactory,
   scope: (n: number) => `@user${n}`,
-  flags: () => [] as Me["flags"],
+  flags: (): components["schemas"]["Me"]["flags"] => [],
   is_onboarded: true,
   organization: null,
   telemetry_organization: null,
-  organization_memberships: () => [] as Me["organization_memberships"],
-  group_memberships: () => [] as Me["group_memberships"],
-  milestones: () => [] as Me["milestones"],
+  organization_memberships:
+    (): components["schemas"]["Me"]["organization_memberships"] => [],
+  group_memberships: (): components["schemas"]["Me"]["group_memberships"] => [],
+  milestones: (): components["schemas"]["Me"]["milestones"] => [],
 });
 
-export const partnerUserFactory = extend<Me, Me>(userFactory, {
-  partner: () => ({
-    name: "Automation Anywhere",
-    theme: "automation-anywhere",
-  }),
+export const meWithPartnerApiResponseFactory = extend<
+  components["schemas"]["Me"],
+  SetRequired<components["schemas"]["Me"], "partner">
+>(meApiResponseFactory, {
+  partner(n: number): RequiredMePartnerResponse {
+    return {
+      id: uuidSequence(n),
+      name: "Automation Anywhere",
+      theme: "automation-anywhere",
+    };
+  },
 });
 
 export const authDataFactory = define<AuthData>({
@@ -148,9 +160,6 @@ export const tokenAuthDataFactory = define<TokenAuthData>({
   email: emailFactory,
   user: uuidSequence,
   hostname: "app.pixiebrix.com",
-  flags(): string[] {
-    return [];
-  },
   organizations(): UserData["organizations"] {
     return [];
   },
@@ -160,4 +169,12 @@ export const tokenAuthDataFactory = define<TokenAuthData>({
   enforceUpdateMillis: null,
   partner: null,
   token: "1234567890abcdef",
+});
+
+export const userPartnerFactory = define<UserPartner>({
+  partnerId: uuidSequence,
+  partnerName(n: number): string {
+    return `Test AA Partner ${n}`;
+  },
+  partnerTheme: "automation-anywhere",
 });

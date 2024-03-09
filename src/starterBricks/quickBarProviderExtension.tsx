@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-import { propertiesToSchema } from "@/validators/generic";
 import {
   type Manifest,
   type Menus,
@@ -30,7 +29,6 @@ import {
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/bricks/available";
 import reportError from "@/telemetry/reportError";
-import notify from "@/utils/notify";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/starterBricks/helpers";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
@@ -38,7 +36,6 @@ import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
 import Icon from "@/icons/Icon";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { CancelError } from "@/errors/businessErrors";
 import { guessSelectedElement } from "@/utils/selectionController";
 import {
@@ -65,6 +62,8 @@ import makeServiceContextFromDependencies from "@/integrations/util/makeServiceC
 import pluralize from "@/utils/pluralize";
 import { allSettled } from "@/utils/promiseUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export type QuickBarProviderConfig = {
   /**
@@ -97,8 +96,8 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
   static isQuickBarProviderExtensionPoint(
     extensionPoint: StarterBrick,
   ): extensionPoint is QuickBarProviderStarterBrickABC {
-    // Need to a access a type specific property (QuickBarProviderExtensionPoint._definition) on a base-typed entity (StarterBrick)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any
+    -- Need to access a type specific property (QuickBarProviderStarterBrickABC._definition) on a base-typed entity (StarterBrick) */
     return (extensionPoint as any)?._definition?.type === "quickBarProvider";
   }
 
@@ -230,13 +229,14 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
     });
 
     await allSettled(promises, {
-      catch(errors) {
-        notify.error(
-          `An error occurred adding ${pluralize(
+      catch: (errors) => {
+        this.platform.toasts.showNotification({
+          type: "error",
+          message: `An error occurred adding ${pluralize(
             errors.length,
-            "$$ quick bar item",
+            "quick bar item",
           )}`,
-        );
+        });
       },
     });
   }
@@ -353,10 +353,13 @@ class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderStarterBrickA
 
   public readonly rawConfig: StarterBrickConfig<QuickBarProviderDefinition>;
 
-  constructor(config: StarterBrickConfig<QuickBarProviderDefinition>) {
+  constructor(
+    platform: PlatformProtocol,
+    config: StarterBrickConfig<QuickBarProviderDefinition>,
+  ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    super(cloned.metadata, new BackgroundLogger());
+    super(platform, cloned.metadata);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable, documentUrlPatterns } = cloned.definition;
@@ -397,6 +400,7 @@ class RemoteQuickBarProviderExtensionPoint extends QuickBarProviderStarterBrickA
 }
 
 export function fromJS(
+  platform: PlatformProtocol,
   config: StarterBrickConfig<QuickBarProviderDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
@@ -404,5 +408,5 @@ export function fromJS(
     throw new Error(`Expected type=quickBarProvider, got ${type}`);
   }
 
-  return new RemoteQuickBarProviderExtensionPoint(config);
+  return new RemoteQuickBarProviderExtensionPoint(platform, config);
 }

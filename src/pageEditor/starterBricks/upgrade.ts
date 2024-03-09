@@ -17,7 +17,6 @@
 
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import blockRegistry from "@/bricks/registry";
-import { type UnknownObject } from "@/types/objectTypes";
 import { cloneDeep } from "lodash";
 import { isSelectField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { type RegistryId } from "@/types/registryTypes";
@@ -100,9 +99,7 @@ async function upgradeBlock(blockConfig: BrickConfig): Promise<void> {
     }),
   );
 
-  if (blockConfig.if) {
-    blockConfig.if = upgradeStringToExpression(blockConfig.if, templateEngine);
-  }
+  blockConfig.if &&= upgradeStringToExpression(blockConfig.if, templateEngine);
 
   // Top-level `templateEngine` not supported in v3
   delete blockConfig.templateEngine;
@@ -275,7 +272,7 @@ async function upgradeValue({
       // to assign each extra item a schema in our itemSchemas array.
       for (const [index, element] of value.entries()) {
         if (index >= itemSchemas.length) {
-          // eslint-disable-next-line security/detect-object-injection
+          // eslint-disable-next-line security/detect-object-injection -- from Object.entries
           itemSchemas[index] = additionalItemSchemasByType[typeof element];
         }
       }
@@ -330,9 +327,9 @@ async function upgradeValue({
         for (const name of Object.keys(value).filter(
           (key) => !(key in propertySchemas),
         )) {
-          // eslint-disable-next-line security/detect-object-injection
+          // eslint-disable-next-line security/detect-object-injection -- from Object.keys
           const subValue = (value as UnknownObject)[name];
-          // eslint-disable-next-line security/detect-object-injection
+          // eslint-disable-next-line security/detect-object-injection -- from Object.keys
           propertySchemas[name] = additionalPropsByType[typeof subValue];
         }
       }
@@ -343,7 +340,7 @@ async function upgradeValue({
             blockId,
             config: value as UnknownObject,
             fieldName,
-            // eslint-disable-next-line security/detect-object-injection
+            // eslint-disable-next-line security/detect-object-injection -- from Object.keys
             fieldSchema: propertySchemas[fieldName],
             templateEngine,
           });

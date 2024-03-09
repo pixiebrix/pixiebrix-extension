@@ -21,7 +21,6 @@ import brickRegistry from "@/bricks/registry";
 import pipelineSchema from "@schemas/pipeline.json";
 import { type RegistryId } from "@/types/registryTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type Brick } from "@/types/brickTypes";
 import BlockIdVisitor from "@/analysis/analysisVisitors/blockIdVisitor";
 import { removeUndefined } from "@/utils/objectUtils";

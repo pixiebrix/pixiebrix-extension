@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line no-restricted-imports
-import MemoryRegistry from "../registry/memoryRegistry";
+import MemoryRegistry from "@/registry/memoryRegistry";
 import { fromJS } from "@/bricks/transformers/brickFactory";
 import { type BrickType } from "@/runtime/runtimeTypes";
 import getType from "@/runtime/getType";
@@ -44,10 +43,8 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
     // Can't reference "this" before the call to "super"
     this.setDeserialize(partial(fromJS, this));
 
-    this.addListener({
-      onCacheChanged: () => {
-        this.typeCachePromise = null;
-      },
+    this.onChange.add(() => {
+      this.typeCachePromise = null;
     });
   }
 
@@ -63,7 +60,7 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
 
     const items = this.isCachedInitialized ? this.cached : await this.all();
 
-    console.debug("Computing block types for %d block(s)", items.length);
+    console.debug("Computing types for %d brick(s)", items.length);
 
     await allSettled(
       items.map(async (item) => {
@@ -77,7 +74,7 @@ class BrickRegistry extends MemoryRegistry<RegistryId, Brick> {
       }),
       {
         catch(errors) {
-          console.warn(`Failed to compute type for ${errors.length} blocks`, {
+          console.warn(`Failed to compute type for ${errors.length} brick`, {
             errors,
           });
         },

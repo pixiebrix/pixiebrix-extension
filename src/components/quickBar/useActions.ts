@@ -40,9 +40,9 @@ function useActions(): void {
     // from the initial mount
     handler(quickBarRegistry.currentActions);
 
-    quickBarRegistry.addListener(handler);
+    quickBarRegistry.changeEvent.add(handler);
     return () => {
-      quickBarRegistry.removeListener(handler);
+      quickBarRegistry.changeEvent.remove(handler);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- the query is available on initial mount
   }, []);

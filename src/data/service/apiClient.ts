@@ -16,7 +16,7 @@
  */
 
 import { getBaseURL } from "@/data/service/baseService";
-import { getAuthHeaders } from "@/auth/token";
+import { getAuthHeaders } from "@/auth/authStorage";
 import {
   ExtensionNotLinkedError,
   SuspiciousOperationError,

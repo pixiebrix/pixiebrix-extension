@@ -24,9 +24,10 @@ import {
   loadingAsyncStateFactory,
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
-import type { TextCommand } from "@/platform/platformProtocol";
 
-type PopoverState = {
+import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
+
+export type PopoverState = {
   /**
    * The active query string corresponding to the search results, or null if there's no active query (e.g., because the
    * user pressed the escape key).

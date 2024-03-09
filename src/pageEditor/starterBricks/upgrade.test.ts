@@ -22,10 +22,10 @@ import {
 } from "@/pageEditor/starterBricks/upgrade";
 import blockRegistry from "@/bricks/registry";
 import { BrickABC } from "@/types/brickTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { type Schema } from "@/types/schemaTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { toExpression } from "@/utils/expressionUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 beforeEach(() => {
   blockRegistry.clear();

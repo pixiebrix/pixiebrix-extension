@@ -20,22 +20,17 @@ import { type RegistryId } from "@/types/registryTypes";
 import { pull, remove } from "lodash";
 import {
   type ActionGenerator,
-  type ActionsChangeHandler,
-  type CustomAction,
   type GeneratorArgs,
 } from "@/components/quickBar/quickbarTypes";
 import { allSettled } from "@/utils/promiseUtils";
 import { RepeatableAbortController } from "abort-utils";
+import type {
+  CustomAction,
+  QuickBarProtocol,
+} from "@/platform/platformTypes/quickBarProtocol";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 
-/**
- * Public interface for the Quick Bar registry.
- */
-export interface QuickBarRegistryProtocol {
-  addAction(action: CustomAction): void;
-  knownGeneratorRootIds: Set<string>;
-}
-
-class QuickBarRegistry implements QuickBarRegistryProtocol {
+class QuickBarRegistry implements QuickBarProtocol {
   /**
    * Current set of actions, including static and generated actions.
    * @see actionGenerators
@@ -46,9 +41,8 @@ class QuickBarRegistry implements QuickBarRegistryProtocol {
 
   /**
    * Registry of action listeners, called when the set of actions changes.
-   * @private
    */
-  private readonly listeners: ActionsChangeHandler[] = [];
+  readonly changeEvent = new SimpleEventTarget<CustomAction[]>();
 
   /**
    * Registry of action generators. The generators are called when the user types in the Quick Bar.
@@ -79,15 +73,12 @@ class QuickBarRegistry implements QuickBarRegistryProtocol {
 
   /**
    * Helper method to notify all action listeners that the set of actions changed.
-   * @private
    */
   private notifyListeners() {
     // Need to copy the array because the registry mutates the array in-place, and listeners might be keeping a
     // reference to the argument passed to them
     const copy = [...this.actions];
-    for (const listener of this.listeners) {
-      listener(copy);
-    }
+    this.changeEvent.emit(copy);
   }
 
   /**
@@ -154,22 +145,6 @@ class QuickBarRegistry implements QuickBarRegistryProtocol {
   removeAction(actionId: string): void {
     remove(this.actions, (x) => x.id === actionId);
     this.notifyListeners();
-  }
-
-  /**
-   * Add an action change handler.
-   * @param handler the action change handler
-   */
-  addListener(handler: ActionsChangeHandler): void {
-    this.listeners.push(handler);
-  }
-
-  /**
-   * Remove an action change handler.
-   * @param handler the action change handler
-   */
-  removeListener(handler: ActionsChangeHandler): void {
-    pull(this.listeners, handler);
   }
 
   /**

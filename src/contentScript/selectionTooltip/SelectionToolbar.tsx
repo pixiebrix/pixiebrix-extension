@@ -27,12 +27,8 @@ import useDocumentSelection from "@/hooks/useDocumentSelection";
 import type { Nullishable } from "@/utils/nullishUtils";
 import useActionRegistry from "@/contentScript/selectionTooltip/useActionRegistry";
 import { Stylesheets } from "@/components/Stylesheets";
-import EmotionShadowRoot from "react-shadow/emotion";
-
-// "Every property exists" (via Proxy), TypeScript doesn't offer such type
-// Also strictNullChecks config mismatch
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion
-const ShadowRoot = EmotionShadowRoot.div!;
+import EmotionShadowRoot from "@/components/EmotionShadowRoot";
+import { getSelection } from "@/utils/selectionController";
 
 const ICON_SIZE_PX = 16;
 
@@ -59,6 +55,8 @@ function selectButtonTitle(
   return text.replace("%s", selectionText);
 }
 
+let lastKnownSelection: string | undefined;
+
 const ToolbarItem: React.FC<
   RegisteredAction & ActionCallbacks & { selection: Nullishable<string> }
 > = ({ selection, title, handler, emoji, icon, onHide }) => (
@@ -70,12 +68,18 @@ const ToolbarItem: React.FC<
       fontSize: `${ICON_SIZE_PX}px`,
     }}
     title={selectButtonTitle(title, selection)}
+    onMouseDown={() => {
+      // Some websites like Gmail might change the selection on mousedown, so we save it before that happens:
+      // https://github.com/pixiebrix/pixiebrix-extension/issues/7729
+
+      // Don't use selectionController.save() because restoring it brings up the
+      // toolbar even after it's been hidden by onHide()
+      lastKnownSelection = getSelection().toString();
+    }}
     onClick={() => {
-      const selection = window.getSelection();
-      if (selection) {
-        handler(selection.toString());
-        onHide();
-      }
+      // Add fallback just in case the mousedown event didn't fire
+      handler(lastKnownSelection ?? getSelection().toString());
+      onHide();
     }}
   >
     {emoji ?? <Icon {...icon} size={ICON_SIZE_PX} />}
@@ -90,7 +94,7 @@ const SelectionToolbar: React.FC<
 
   // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menu_role
   return (
-    <ShadowRoot mode="open">
+    <EmotionShadowRoot mode="open">
       <Stylesheets href={[stylesUrl]}>
         <div
           role="menu"
@@ -108,7 +112,7 @@ const SelectionToolbar: React.FC<
           ))}
         </div>
       </Stylesheets>
-    </ShadowRoot>
+    </EmotionShadowRoot>
   );
 };
 

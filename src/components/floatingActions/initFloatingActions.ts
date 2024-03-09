@@ -19,7 +19,7 @@ import { isLoadedInIframe } from "@/utils/iframeUtils";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import { getUserData } from "@/background/messenger/api";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
-import { syncFlagOn } from "@/store/syncFlags";
+import { flagOn } from "@/auth/featureFlagStorage";
 
 /**
  * Add the floating action button to the page if the user is not an enterprise/partner user.
@@ -44,13 +44,13 @@ export default async function initFloatingActions(): Promise<void> {
   const isEnterpriseOrPartnerUser =
     Boolean(telemetryOrganizationId) || settings.theme !== DEFAULT_THEME;
 
+  const hasFeatureFlag = await flagOn("floating-quickbar-button-freemium");
+
   // Add floating action button if the feature flag and settings are enabled
   // XXX: consider moving checks into React component, so we can use the Redux context
   if (
     settings.isFloatingActionButtonEnabled &&
-    // XXX: there's likely a race here with when syncFlagOn gets the flag from localStorage. But in practice, this
-    // seems to work fine. (Likely because the flags will be loaded by the time the Promise.all above resolves)
-    syncFlagOn("floating-quickbar-button-freemium") &&
+    hasFeatureFlag &&
     !isEnterpriseOrPartnerUser
   ) {
     const { renderFloatingActions } = await import(

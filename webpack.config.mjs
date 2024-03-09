@@ -32,6 +32,7 @@ import { parseEnv, loadEnv } from "./scripts/env.mjs";
 import customizeManifest from "./scripts/manifest.mjs";
 import { createRequire } from "node:module";
 import DiscardFilePlugin from "./scripts/DiscardFilePlugin.mjs";
+import ReactRefreshWebpackPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 
 const require = createRequire(import.meta.url);
 
@@ -82,6 +83,8 @@ function mockHeavyDependencies() {
     };
   }
 }
+
+const isHMR = Boolean(process.env.HMR);
 
 const createConfig = (env, options) =>
   mergeWithShared({
@@ -173,6 +176,11 @@ const createConfig = (env, options) =>
       // Silence warnings because the size includes the sourcemaps
       maxEntrypointSize: 15_120_000,
       maxAssetSize: 15_120_000,
+    },
+
+    // Enable HMR
+    devServer: {
+      hot: true,
     },
     plugins: compact([
       produceSourcemap &&
@@ -277,6 +285,11 @@ const createConfig = (env, options) =>
         ],
       }),
       new DiscardFilePlugin(),
+
+      isHMR &&
+        new ReactRefreshWebpackPlugin({
+          overlay: false,
+        }),
     ]),
     module: {
       rules: [

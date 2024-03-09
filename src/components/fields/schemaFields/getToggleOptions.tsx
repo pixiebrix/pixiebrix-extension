@@ -6,7 +6,6 @@ import {
   type OmitOption,
   type StringOption,
 } from "./widgets/templateToggleWidgetTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import OptionIcon from "./optionIcon/OptionIcon";
 import widgetsRegistry from "./widgets/widgetsRegistry";
 import { type CustomFieldToggleMode } from "@/components/fields/schemaFields/schemaFieldTypes";
@@ -36,8 +35,7 @@ type ToggleOptionInputs = {
   allowExpressions: boolean;
 };
 
-// TODO refactor this function to be more readable (complexity of 28)
-// eslint-disable-next-line complexity
+// eslint-disable-next-line complexity -- TODO: refactor this function to be more readable (complexity of 28)
 export function getToggleOptions({
   fieldSchema,
   isRequired,
@@ -389,9 +387,7 @@ export function getToggleOptions({
     }).map((option) => {
       // Only use the schema description if a custom description wasn't already
       // set for the input mode option
-      if (!option.description) {
-        option.description = subSchema.description;
-      }
+      option.description ||= subSchema.description;
 
       return option;
     });

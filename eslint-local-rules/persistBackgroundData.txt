@@ -11,9 +11,10 @@
 ./src/analysis/analysisVisitors/regexAnalysis.ts
 ./src/analysis/analysisVisitors/varAnalysis/varMap.ts
 ./src/auth/authConstants.ts
+./src/auth/authStorage.ts
 ./src/auth/authTypes.ts
 ./src/auth/authUtils.ts
-./src/auth/token.ts
+./src/auth/featureFlags.ts
 ./src/components/annotationAlert/FieldAnnotationAlert.tsx
 ./src/components/AsyncButton.tsx
 ./src/components/DelayedRender.tsx
@@ -255,7 +256,6 @@
 ./src/store/settings/settingsStorage.ts
 ./src/store/settings/settingsTypes.ts
 ./src/store/StorageInterface.ts
-./src/store/syncFlags.ts
 ./src/telemetry/BackgroundLogger.ts
 ./src/telemetry/deployments.ts
 ./src/telemetry/dnt.ts
@@ -287,7 +287,6 @@
 ./src/types/modComponentTypes.ts
 ./src/types/modDefinitionTypes.ts
 ./src/types/modTypes.ts
-./src/types/objectTypes.ts
 ./src/types/registryTypes.ts
 ./src/types/rendererTypes.ts
 ./src/types/runtimeTypes.ts
@@ -346,7 +345,7 @@
 ./src/utils/urlUtils.ts
 ./src/utils/variableUtils.ts
 ./src/validators/formValidator.ts
-./src/validators/generic.ts
+./src/validators/schemaValidator.ts
 ./src/vendors/encodings.ts
 ./src/vendors/mixpanel.ts
 ./src/vendors/Overlay.tsx

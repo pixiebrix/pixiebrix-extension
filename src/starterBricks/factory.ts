@@ -25,6 +25,7 @@ import { fromJS as deserializeQuickBarProvider } from "@/starterBricks/quickBarP
 import { fromJS as deserializeTour } from "@/starterBricks/tourExtension";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type StarterBrickConfig } from "@/starterBricks/types";
+import { getPlatform } from "@/platform/platformContext";
 
 const TYPE_MAP = {
   panel: deserializePanel,
@@ -40,8 +41,8 @@ const TYPE_MAP = {
 export function fromJS(config: StarterBrickConfig): StarterBrick {
   if (config.kind !== "extensionPoint") {
     // Is `never` due to check, but needed because this method is called dynamically
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    throw new Error(`Expected kind extensionPoint, got ${config.kind}`);
+    const exhaustiveCheck: never = config.kind;
+    throw new Error(`Expected kind extensionPoint, got ${exhaustiveCheck}`);
   }
 
   if (!Object.hasOwn(TYPE_MAP, config.definition.type)) {
@@ -50,5 +51,5 @@ export function fromJS(config: StarterBrickConfig): StarterBrick {
 
   // TODO: Find a better solution than casting to any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- the factory methods perform validation
-  return TYPE_MAP[config.definition.type](config as any);
+  return TYPE_MAP[config.definition.type](getPlatform(), config as any);
 }

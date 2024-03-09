@@ -25,7 +25,6 @@ import {
 } from "@/contentScript/sidebarController";
 import sidebarInThisTab from "@/sidebar/messenger/api";
 import { isMV3 } from "@/mv3/api";
-import { propertiesToSchema } from "@/validators/generic";
 import { logPromiseDuration } from "@/utils/promiseUtils";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import {
@@ -33,6 +32,7 @@ import {
   type PlatformCapability,
 } from "@/platform/capabilities";
 import { expectContext } from "@/utils/expectContext";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class ShowSidebar extends EffectABC {
   constructor() {

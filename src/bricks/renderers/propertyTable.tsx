@@ -17,10 +17,10 @@
 
 import React from "react";
 import { RendererABC } from "@/types/bricks/rendererTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { sortBy, isPlainObject } from "lodash";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { isValidUrl } from "@/utils/urlUtils";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 interface Item {
   key: string;

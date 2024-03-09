@@ -23,15 +23,10 @@ import {
 import { appApiMock } from "@/testUtils/appApiMock";
 import { type Event } from "@/telemetry/events";
 
-jest.mock("@/store/syncFlags", () => ({
-  syncFlagOn: jest.fn().mockResolvedValue(true),
-}));
-
 beforeEach(async () => {
   appApiMock.reset();
   appApiMock.onPost("/api/events/").reply(201, {});
 
-  // eslint-disable-next-line new-cap -- test file
   await TEST_flushAll();
 });
 

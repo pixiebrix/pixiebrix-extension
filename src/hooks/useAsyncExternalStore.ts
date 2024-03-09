@@ -26,11 +26,12 @@ import {
 import { type UUID } from "@/types/stringTypes";
 import { uuidv4, validateUUID } from "@/types/helpers";
 import deepEquals from "fast-deep-equal";
+import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 
 type Subscribe = (callback: () => void) => () => void;
 
 class StateController<T = unknown> {
-  private readonly stateListeners = new Set<() => void>();
+  private readonly stateListeners = new SimpleEventTarget();
   private state: AsyncState<T> = uninitializedAsyncStateFactory();
   private nonce: UUID = validateUUID(null); // TODO: Drop after strictNullCheck transition; Silences TS bug
 
@@ -48,15 +49,9 @@ class StateController<T = unknown> {
     return () => {
       // Theoretically, we could also try unsubscribing from the external source when the last listener is removed.
       // However, in practice that was causing some bugs with component lifecycle.
-      this.stateListeners.delete(callback);
+      this.stateListeners.remove(callback);
     };
   };
-
-  notifyAll(): void {
-    for (const listener of this.stateListeners) {
-      listener();
-    }
-  }
 
   getSnapshot = (): AsyncState<T> => this.state;
 
@@ -73,7 +68,7 @@ class StateController<T = unknown> {
     this.nonce = nonce;
 
     // Inform subscribers of loading/fetching state
-    this.notifyAll();
+    this.stateListeners.emit();
 
     try {
       const data = await this.factory();
@@ -97,7 +92,7 @@ class StateController<T = unknown> {
       this.state = errorToAsyncState(error);
     }
 
-    this.notifyAll();
+    this.stateListeners.emit();
   };
 }
 
@@ -112,6 +107,10 @@ export function INTERNAL_reset(): void {
 
 /**
  * A version of useSyncExternalStore that accepts an async snapshot function and returns an AsyncState.
+ *
+ * KNOWN BUG: the subscribe function must not be shared across generators, because it maintains a map of subscriptions
+ * to value generator state controllers. See https://github.com/pixiebrix/pixiebrix-extension/issues/7789
+ *
  * @param subscribe see docs for useSyncExternalStore
  * @param factory an async function that returns the current snapshot of the external store
  * @see useSyncExternalStore

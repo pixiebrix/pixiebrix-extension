@@ -37,7 +37,7 @@ export type BlockOptionProps = {
 };
 
 const NoOptions: React.FunctionComponent = () => (
-  <div>This brick does not require any configuration</div>
+  <div className="my-3">This brick does not require any configuration</div>
 );
 
 /**

@@ -25,7 +25,6 @@ import { type BrickValidationResult, validateSchema } from "./validate";
 import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import useReinstall from "@/extensionConsole/pages/mods/utils/useReinstall";
 import notify from "@/utils/notify";
-import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import {
   clearServiceCache,
@@ -41,6 +40,9 @@ import { isSingleObjectBadRequestError } from "@/errors/networkErrorHelpers";
 import { type UUID } from "@/types/stringTypes";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 import { type Definition } from "@/types/registryTypes";
+import useUserAction from "@/hooks/useUserAction";
+import { useModals } from "@/components/ConfirmationModal";
+import { CancelError } from "@/errors/businessErrors";
 
 type SubmitOptions = {
   create: boolean;
@@ -48,7 +50,7 @@ type SubmitOptions = {
 
 type SubmitCallbacks = {
   validate: (values: EditorValues) => Promise<BrickValidationResult>;
-  remove: (id: UUID) => Promise<void>;
+  remove: ({ id, name }: { id: UUID; name: string }) => Promise<void>;
   submit: (
     values: EditorValues & { id: UUID },
     helpers: { setErrors: (errors: unknown) => void },
@@ -57,6 +59,7 @@ type SubmitCallbacks = {
 
 function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
   const [, refresh] = useRefreshRegistries({ refreshOnMount: false });
+  const modals = useModals();
   const reinstall = useReinstall();
   const history = useHistory();
   const dispatch = useDispatch();
@@ -70,21 +73,32 @@ function useSubmitBrick({ create = false }: SubmitOptions): SubmitCallbacks {
   const [updatePackage] = useUpdatePackageMutation();
   const [deletePackage] = useDeletePackageMutation();
 
-  const remove = useCallback(
-    async (id: UUID) => {
-      try {
-        await deletePackage({ id }).unwrap();
-      } catch (error) {
-        notify.error({ message: "Error deleting brick", error });
-        return;
+  const remove = useUserAction(
+    async ({ id, name }: { id: UUID; name?: string }) => {
+      const confirm = await modals.showConfirmation({
+        title: "Permanently Delete Brick",
+        message: `Permanently delete ${
+          name ?? "brick"
+        } from the server? This action cannot be undone.`,
+        cancelCaption: "Cancel",
+        submitCaption: "Permanently Delete",
+        submitVariant: "danger",
+      });
+
+      if (!confirm) {
+        throw new CancelError("User cancelled delete");
       }
 
-      notify.success("Deleted brick");
-      reportEvent(Events.BRICK_DELETE);
+      await deletePackage({ id }).unwrap();
 
       dispatch(push("/workshop"));
     },
-    [dispatch, deletePackage],
+    {
+      successMessage: "Deleted brick",
+      errorMessage: "Error deleting brick",
+      event: Events.BRICK_DELETE,
+    },
+    [dispatch, deletePackage, modals],
   );
 
   const submit = useCallback(

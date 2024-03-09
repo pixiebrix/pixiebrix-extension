@@ -15,8 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Type to be preferred over a plain `object`
- * https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/ban-types.md
- */
-export type UnknownObject = Record<string, unknown>;
+export const DEFAULT_ACTION_RESULTS = {
+  error: {
+    message: "Error running action",
+    type: "error",
+    reportError: false,
+  },
+  cancel: {
+    message: "The action was cancelled",
+    type: "info",
+  },
+  success: {
+    message: "Successfully ran action",
+    type: "success",
+  },
+} as const;

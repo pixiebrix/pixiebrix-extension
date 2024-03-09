@@ -36,14 +36,14 @@ type RowProps = {
   style?: CSSProperties | undefined;
 };
 interface TableProps<
-  Row extends Record<string, unknown>,
+  Row extends UnknownObject,
   Actions extends Record<string, Action>,
 > {
   data: Row[];
   columns: Array<Column<Row>>;
   actions?: Actions;
   initialPageSize?: number;
-  rowProps?: (row: Record<string, unknown>) => RowProps;
+  rowProps?: (row: UnknownObject) => RowProps;
   showSearchFilter: boolean;
 
   /**
@@ -107,7 +107,7 @@ function setSearchParams(
   });
 }
 
-function findPageIndex<TRow extends Record<string, unknown>>({
+function findPageIndex<TRow extends UnknownObject>({
   record,
   rows,
   pageSize,
@@ -127,8 +127,12 @@ function findPageIndex<TRow extends Record<string, unknown>>({
   return null;
 }
 
+/**
+ * A paginated table with sorting, resizing, and global filtering.
+ * TODO: This component is not fully accessible - it needs keyboard navigation support.
+ */
 function PaginatedTable<
-  Row extends Record<string, unknown>,
+  Row extends UnknownObject,
   Actions extends Record<string, Action>,
 >({
   data,
@@ -248,7 +252,8 @@ function PaginatedTable<
                 index !== headerGroup.headers.length - 1 ? (
                   <>
                     {column?.isResizing && <div className={styles.overlay} />}
-                    {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+                    {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+                    -- TODO: implement keyboard accessible column resizing */}
                     <div
                       className={styles.resize}
                       {...column.getResizerProps()}

@@ -18,19 +18,24 @@
 import React from "react";
 import { screen, render } from "@/sidebar/testHelpers";
 import Header from "@/sidebar/Header";
-import { mockAuthenticatedUser } from "@/testUtils/userMock";
+import useTheme from "@/hooks/useTheme";
 
-import {
-  userFactory,
-  userOrganizationFactory,
-} from "@/testUtils/factories/authFactories";
 import { waitFor } from "@testing-library/react";
+import { initialTheme } from "@/themes/themeStore";
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
+jest.mock("@/hooks/useTheme");
+
 describe("Header", () => {
+  beforeEach(() => {
+    jest
+      .mocked(useTheme)
+      .mockReturnValue({ activeTheme: initialTheme, isLoading: false });
+  });
+
   it("renders", () => {
     const { asFragment } = render(<Header />);
 
@@ -39,31 +44,16 @@ describe("Header", () => {
   });
 
   it("renders sidebar header logo per organization theme", async () => {
-    await mockAuthenticatedUser(
-      userFactory({
-        organization: userOrganizationFactory({
-          theme: {
-            show_sidebar_logo: true,
-          },
-        }),
-      }),
-    );
-
     const { asFragment } = render(<Header />);
     expect(asFragment()).toMatchSnapshot();
     expect(screen.getByTestId("sidebarHeaderLogo")).not.toBeNull();
   });
 
   it("renders no sidebar header logo per organization theme", async () => {
-    await mockAuthenticatedUser(
-      userFactory({
-        organization: userOrganizationFactory({
-          theme: {
-            show_sidebar_logo: false,
-          },
-        }),
-      }),
-    );
+    jest.mocked(useTheme).mockReturnValue({
+      activeTheme: { ...initialTheme, showSidebarLogo: false },
+      isLoading: false,
+    });
 
     render(<Header />);
 

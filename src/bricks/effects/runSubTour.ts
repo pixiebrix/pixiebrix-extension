@@ -18,10 +18,10 @@
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { propertiesToSchema } from "@/validators/generic";
 import { runSubTour } from "@/starterBricks/tourController";
 import { isEmpty } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class RunSubTourEffect extends EffectABC {
   constructor() {

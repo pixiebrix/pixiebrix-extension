@@ -41,7 +41,10 @@ import initFloatingActions from "@/components/floatingActions/initFloatingAction
 import { initSidebarActivation } from "@/contentScript/sidebarActivation";
 import { initPerformanceMonitoring } from "@/contentScript/performanceMonitoring";
 import { initRuntime } from "@/runtime/reducePipeline";
-import { renderPanelsIfVisible } from "./sidebarController";
+import {
+  initSidebarFocusEvents,
+  renderPanelsIfVisible,
+} from "./sidebarController";
 import {
   isSidebarFrameVisible,
   removeSidebarFrame,
@@ -51,8 +54,19 @@ import { onContextInvalidated } from "webext-events";
 import { setPlatform } from "@/platform/platformContext";
 import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
+import axios from "axios";
 
 setPlatform(contentScriptPlatform);
+
+// XXX: ideally would enforce via webpack config or eslint. Enforcing via transformRequest requires importing
+// axios in the content script bundle even though it should never be called. Could we somehow conditionally import
+// checking for process.env.DEBUG?
+axios.defaults.transformRequest = () => {
+  // The content Script is subject to the CSP of the page, so PixieBrix should call from background script instead
+  throw new Error(
+    "API calls from the content script are not allowed. Use the background messenger API/worker instead.",
+  );
+};
 
 // Must come before the default handler for ignoring errors. Otherwise, this handler might not be run
 onUncaughtError((error) => {
@@ -83,6 +97,7 @@ export async function init(): Promise<void> {
 
   void initNavigation();
 
+  initSidebarFocusEvents();
   void initSidebarActivation();
 
   // Notify `ensureContentScript`

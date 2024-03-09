@@ -17,14 +17,13 @@
 
 import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import { getBaseURL } from "@/data/service/baseService";
-import { validateInput } from "@/validators/generic";
+import { validateBrickInputOutput } from "@/validators/schemaValidator";
 import { type Webhook } from "@/contrib/zapier/contract";
 import { type Permissions } from "webextension-polyfill";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors/businessErrors";
 import { type Schema, type SchemaProperties } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { type UnknownObject } from "@/types/objectTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import type { PlatformCapability } from "@/platform/capabilities";
 
@@ -87,7 +86,10 @@ export class PushZap extends EffectABC {
       throw new BusinessError(`No Zapier hook found for name: ${pushKey}`);
     }
 
-    const validation = await validateInput(webhook.input_schema, data);
+    const validation = await validateBrickInputOutput(
+      webhook.input_schema,
+      data,
+    );
 
     if (!validation.valid) {
       options.logger.warn("Invalid data for Zapier effect");

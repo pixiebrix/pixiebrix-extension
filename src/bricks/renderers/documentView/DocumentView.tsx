@@ -17,7 +17,7 @@
 
 import { buildDocumentBranch } from "@/components/documentBuilder/documentTree";
 import React from "react";
-import EmotionShadowRoot from "react-shadow/emotion";
+import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { type DocumentViewProps } from "./DocumentViewProps";
 import DocumentContext from "@/components/documentBuilder/render/DocumentContext";
 import { Stylesheets } from "@/components/Stylesheets";
@@ -52,7 +52,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({
   return (
     // Wrap in a React context provider that passes BrickOptions down to any embedded bricks
     <DocumentContext.Provider value={{ options, onAction }}>
-      <EmotionShadowRoot.div className="h-100">
+      <EmotionShadowRoot className="h-100">
         <StylesheetsContext.Provider value={{ stylesheets }}>
           <Stylesheets href={stylesheets}>
             {body.map((documentElement, index) => {
@@ -72,7 +72,7 @@ const DocumentView: React.FC<DocumentViewProps> = ({
             })}
           </Stylesheets>
         </StylesheetsContext.Provider>
-      </EmotionShadowRoot.div>
+      </EmotionShadowRoot>
     </DocumentContext.Provider>
   );
 };

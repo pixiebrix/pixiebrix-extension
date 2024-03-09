@@ -19,8 +19,8 @@ import { type UUID } from "@/types/stringTypes";
 import { type RegistryId } from "@/types/registryTypes";
 import { cloneDeep, isEqual, merge } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
-import { expectContext } from "@/utils/expectContext";
 import { type JsonObject } from "type-fest";
+import { assertPlatformCapability } from "@/platform/platformContext";
 
 type MergeStrategy = "shallow" | "replace" | "deep";
 
@@ -53,8 +53,8 @@ function mergeState(
     }
 
     default: {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never type
-      throw new BusinessError(`Unknown merge strategy: ${strategy}`);
+      const exhaustiveCheck: never = strategy;
+      throw new BusinessError(`Unknown merge strategy: ${exhaustiveCheck}`);
     }
   }
 }
@@ -101,6 +101,8 @@ export function setState({
   extensionId: UUID;
   blueprintId: RegistryId | null;
 }) {
+  assertPlatformCapability("state");
+
   if (extensionId == null) {
     throw new Error("extensionId is required");
   }
@@ -156,7 +158,7 @@ export function getState({
   extensionId: UUID;
   blueprintId: RegistryId | null;
 }): JsonObject {
-  expectContext("contentScript");
+  assertPlatformCapability("state");
 
   switch (namespace) {
     case "shared": {

@@ -18,7 +18,6 @@
 import { type UUID } from "@/types/stringTypes";
 import { type RegistryId, type SemVerString } from "@/types/registryTypes";
 import { type ContextName } from "webext-detect-page";
-import { type UnknownObject } from "@/types/objectTypes";
 
 /**
  * Log event metadata for the extensions internal logging infrastructure.
@@ -49,6 +48,11 @@ export type MessageContext = {
   readonly serviceVersion?: SemVerString;
   readonly authId?: UUID;
   readonly pageName?: ContextName | "unknown";
+  /**
+   * The platform name
+   * @since 1.8.10
+   */
+  readonly platformName?: string;
 };
 
 export interface Logger {

@@ -20,18 +20,24 @@ export function isMac(): boolean {
   return globalThis.navigator?.platform.includes("Mac");
 }
 
+// https://github.com/google/closure-library/blob/master/closure/goog/labs/useragent/browser.js#L87
+// https://learn.microsoft.com/en-us/microsoft-edge/web-platform/user-agent-guidance
+// https://caniuse.com/mdn-api_navigator_useragentdata -- not defined for Firefox/Safari
+// eslint-disable-next-line local-rules/persistBackgroundData, @typescript-eslint/no-unsafe-assignment -- userAgentData is defined in Chrome
+const brands: Array<{ brand: string }> =
+  // @ts-expect-error -- userAgentData is defined in Chrome browser
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- userAgentData is defined in Chrome
+  globalThis.navigator?.userAgentData?.brands ?? [];
+
 /**
  * Return true if the browser is Google Chrome.
  *
  * Unlike webext-detect-page, attempts to exclude other Chromium-based browsers like Microsoft Edge, Brave, and Opera.
  */
 export function isGoogleChrome(): boolean {
-  // https://github.com/google/closure-library/blob/master/closure/goog/labs/useragent/browser.js#L87
-  // https://learn.microsoft.com/en-us/microsoft-edge/web-platform/user-agent-guidance
-  // https://caniuse.com/mdn-api_navigator_useragentdata -- not defined for Firefox/Safari
-  // @ts-expect-error -- userAgentData is defined in Chrome browser
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-  return navigator.userAgentData?.brands?.some(
-    (x: { brand: string }) => x.brand === "Google Chrome",
-  );
+  return brands.some((x) => x.brand === "Google Chrome");
+}
+
+export function isMicrosoftEdge(): boolean {
+  return brands.some((x) => x.brand === "Microsoft Edge");
 }

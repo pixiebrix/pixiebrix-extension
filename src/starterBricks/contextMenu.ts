@@ -19,7 +19,6 @@ import {
   type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-import { propertiesToSchema } from "@/validators/generic";
 import {
   type Manifest,
   type Menus,
@@ -35,11 +34,6 @@ import { castArray, cloneDeep, compact, isEmpty, pick, uniq } from "lodash";
 import { checkAvailable } from "@/bricks/available";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import reportError from "@/telemetry/reportError";
-import notify, {
-  DEFAULT_ACTION_RESULTS,
-  type MessageConfig,
-  showNotification,
-} from "@/utils/notify";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
@@ -54,7 +48,6 @@ import {
   ContextMenuReader,
   contextMenuReaderShim,
 } from "@/starterBricks/contextMenuReader";
-import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import { BusinessError, CancelError } from "@/errors/businessErrors";
 import { type Reader } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
@@ -72,27 +65,33 @@ import { getPlatform } from "@/platform/platformContext";
 import { initSelectionTooltip } from "@/contentScript/selectionTooltip/tooltipController";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import type { Except } from "type-fest";
+import type { PlatformProtocol } from "@/platform/platformProtocol";
+import { type MessageConfig } from "@/utils/notify";
+import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
+import { flagOn } from "@/auth/featureFlagStorage";
+import { propertiesToSchema } from "@/utils/schemaUtils";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 
-// eslint-disable-next-line local-rules/persistBackgroundData -- Function
-const groupRegistrationErrorNotification = batchedFunction(
-  (errors: unknown[][]): void => {
-    // `batchedFunction` will throttle the calls and coalesce all the errors into a
-    // single notification, even if they come from different extensions
-    // https://github.com/pixiebrix/pixiebrix-extension/issues/7353
-    notify.error({
-      message: `An error occurred adding ${pluralize(
-        errors.flat().length,
-        "$$ context menu item",
-      )}`,
-      reportError: false,
-    });
-  },
-  {
-    delay: 100,
-  },
-);
+const groupRegistrationErrorNotification = (platform: PlatformProtocol) =>
+  batchedFunction(
+    (errors: unknown[][]): void => {
+      // `batchedFunction` will throttle the calls and coalesce all the errors into a
+      // single notification, even if they come from different extensions
+      // https://github.com/pixiebrix/pixiebrix-extension/issues/7353
+      platform.toasts.showNotification({
+        type: "error",
+        message: `An error occurred adding ${pluralize(
+          errors.flat().length,
+          "$$ context menu item",
+        )}`,
+        reportError: false,
+      });
+    },
+    {
+      delay: 100,
+    },
+  );
 
 export type ContextMenuTargetMode =
   // In `legacy` mode, the target was passed to the readers but the document is passed to reducePipeline
@@ -195,7 +194,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     const extensions = this.modComponents.splice(0);
     if (global) {
       for (const extension of extensions) {
-        void getPlatform().contextMenu.unregister(extension.id);
+        void getPlatform().contextMenus.unregister(extension.id);
         getPlatform().selectionTooltip.unregister(extension.id);
       }
     }
@@ -214,7 +213,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     // re-activating a context menu (during re-activation, mod components get new extensionIds.)
 
     for (const extensionId of extensionIds) {
-      void getPlatform().contextMenu.unregister(extensionId);
+      void getPlatform().contextMenus.unregister(extensionId);
       getPlatform().selectionTooltip.unregister(extensionId);
     }
   }
@@ -224,8 +223,13 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     installMouseHandlerOnce();
 
     if (this.contexts.includes("selection") || this.contexts.includes("all")) {
-      const { selectionPopover } = await getSettingsState();
-      if (selectionPopover) {
+      const [{ selectionPopover: isPopoverSettingEnabled }, isPopoverFlagOn] =
+        await Promise.all([
+          getSettingsState(),
+          flagOn("text-selection-popover-force"),
+        ]);
+
+      if (isPopoverSettingEnabled || isPopoverFlagOn) {
         initSelectionTooltip();
       }
     }
@@ -268,7 +272,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       uniq([...this.documentUrlPatterns, ...(this.permissions?.origins ?? [])]),
     );
 
-    await getPlatform().contextMenu.register({
+    await getPlatform().contextMenus.register({
       extensionId: extension.id,
       contexts: this.contexts ?? ["all"],
       title,
@@ -300,7 +304,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     });
 
     await allSettled(promises, {
-      catch: groupRegistrationErrorNotification,
+      catch: groupRegistrationErrorNotification(this.platform),
     });
   }
 
@@ -316,8 +320,8 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       }
 
       default: {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
+        const exhaustiveCheck: never = this.targetMode;
+        throw new BusinessError(`Unknown targetMode: ${exhaustiveCheck}`);
       }
     }
   }
@@ -334,8 +338,8 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       }
 
       default: {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for never
-        throw new BusinessError(`Unknown targetMode: ${this.targetMode}`);
+        const exhaustiveCheck: never = this.targetMode;
+        throw new BusinessError(`Unknown targetMode: ${exhaustiveCheck}`);
       }
     }
   }
@@ -392,9 +396,11 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
         if (onSuccess) {
           if (typeof onSuccess === "boolean" && onSuccess) {
-            showNotification(DEFAULT_ACTION_RESULTS.success);
+            this.platform.toasts.showNotification(
+              DEFAULT_ACTION_RESULTS.success,
+            );
           } else {
-            showNotification({
+            this.platform.toasts.showNotification({
               ...DEFAULT_ACTION_RESULTS.success,
               ...pick(onSuccess, "message", "type"),
             });
@@ -402,10 +408,10 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
         }
       } catch (error) {
         if (hasSpecificErrorCause(error, CancelError)) {
-          showNotification(DEFAULT_ACTION_RESULTS.cancel);
+          this.platform.toasts.showNotification(DEFAULT_ACTION_RESULTS.cancel);
         } else {
           extensionLogger.error(error);
-          showNotification({
+          this.platform.toasts.showNotification({
             ...DEFAULT_ACTION_RESULTS.error,
             error, // Include more details in the notification
             reportError: false,
@@ -450,10 +456,13 @@ class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
 
   public readonly rawConfig: StarterBrickConfig<MenuDefinition>;
 
-  constructor(config: StarterBrickConfig<MenuDefinition>) {
+  constructor(
+    platform: PlatformProtocol,
+    config: StarterBrickConfig<MenuDefinition>,
+  ) {
     // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
     const cloned = cloneDeep(config);
-    super(cloned.metadata, new BackgroundLogger());
+    super(platform, cloned.metadata);
     this._definition = cloned.definition;
     this.rawConfig = cloned;
     const { isAvailable, documentUrlPatterns, contexts } = cloned.definition;
@@ -501,6 +510,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuStarterBrickABC {
 }
 
 export function fromJS(
+  platform: PlatformProtocol,
   config: StarterBrickConfig<MenuDefinition>,
 ): StarterBrick {
   const { type } = config.definition;
@@ -508,5 +518,5 @@ export function fromJS(
     throw new Error(`Expected type=contextMenu, got ${type}`);
   }
 
-  return new RemoteContextMenuExtensionPoint(config);
+  return new RemoteContextMenuExtensionPoint(platform, config);
 }

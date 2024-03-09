@@ -38,6 +38,16 @@ import { setToolbarBadge } from "@/background/toolbarBadge";
 import { rememberFocus } from "@/utils/focusTracker";
 import writeToClipboardInFocusedContext from "@/background/clipboard";
 import * as registry from "@/registry/packageRegistry";
+import serviceRegistry from "@/integrations/registry";
+import { getUserData } from "@/auth/authStorage";
+import {
+  clearExtensionDebugLogs,
+  clearLog,
+  clearLogs,
+  recordError,
+  recordLog,
+} from "@/telemetry/logging";
+import { fetchFeatureFlags } from "@/auth/featureFlagStorage";
 
 expectContext("background");
 
@@ -63,6 +73,15 @@ declare global {
     REGISTRY_GET_BY_KINDS: typeof registry.getByKinds;
     REGISTRY_FIND: typeof registry.find;
     QUERY_TABS: typeof browser.tabs.query;
+    FETCH_FEATURE_FLAGS: typeof fetchFeatureFlags;
+
+    CLEAR_SERVICE_CACHE: typeof serviceRegistry.clear;
+    GET_USER_DATA: typeof getUserData;
+    RECORD_LOG: typeof recordLog;
+    RECORD_ERROR: typeof recordError;
+    CLEAR_LOGS: typeof clearLogs;
+    CLEAR_LOG: typeof clearLog;
+    CLEAR_EXTENSION_DEBUG_LOGS: typeof clearExtensionDebugLogs;
   }
 }
 
@@ -88,5 +107,14 @@ export default function registerMessenger(): void {
     REGISTRY_GET_BY_KINDS: registry.getByKinds,
     REGISTRY_FIND: registry.find,
     QUERY_TABS: browser.tabs.query,
+    FETCH_FEATURE_FLAGS: fetchFeatureFlags,
+
+    CLEAR_SERVICE_CACHE: serviceRegistry.clear.bind(serviceRegistry),
+    GET_USER_DATA: getUserData,
+    RECORD_LOG: recordLog,
+    RECORD_ERROR: recordError,
+    CLEAR_LOGS: clearLogs,
+    CLEAR_LOG: clearLog,
+    CLEAR_EXTENSION_DEBUG_LOGS: clearExtensionDebugLogs,
   });
 }

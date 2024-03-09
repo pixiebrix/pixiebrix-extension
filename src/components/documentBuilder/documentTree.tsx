@@ -17,7 +17,6 @@
 
 import React, { type ElementType } from "react";
 import BlockElement from "@/components/documentBuilder/render/BlockElement";
-import { type UnknownObject } from "@/types/objectTypes";
 import { get } from "lodash";
 import { Col, Container, Row, Image } from "react-bootstrap";
 import {
@@ -95,7 +94,7 @@ export const buildDocumentBranch: BuildDocumentBranch = (root, tracePath) => {
   return componentDefinition;
 };
 
-// eslint-disable-next-line complexity
+// eslint-disable-next-line complexity -- We're handling a lot of different element types
 export function getComponentDefinition(
   element: DocumentElement,
   tracePath: DynamicPath,

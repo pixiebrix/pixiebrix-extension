@@ -15,9 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useMemo } from "react";
-import { selectFlags } from "@/auth/authSelectors";
-import { useSelector } from "react-redux";
+import { useEffect, useMemo } from "react";
+import { useGetFeatureFlagsQuery } from "@/data/service/api";
+import {
+  addListener as addAuthStorageListener,
+  removeListener as removeAuthStorageListener,
+} from "@/auth/authStorage";
+import type { AsyncState } from "@/types/sliceTypes";
+import { mergeAsyncState } from "@/utils/asyncStateUtils";
 
 const RESTRICTED_PREFIX = "restricted";
 
@@ -33,11 +38,18 @@ type RestrictedFeature =
   | "service-url"
   | "page-editor";
 
-type Restrict = {
+export type Restrict = {
   permit: (area: RestrictedFeature) => boolean;
   restrict: (area: RestrictedFeature) => boolean;
   flagOn: (flag: string) => boolean;
   flagOff: (flag: string) => boolean;
+};
+
+type HookResult = Restrict & {
+  // The async state for use in deriving values that require valid flags. NOTE: the data is not serializable,
+  // so the state might not work with any state helpers that require serializable data (e.g., due to cloning, Immer,
+  // or Redux).
+  state: AsyncState<Restrict>;
 };
 
 /**
@@ -45,13 +57,26 @@ type Restrict = {
  *
  * For permit/restrict, features will be restricted in the fetching/loading state
  */
-function useFlags(): Restrict {
-  const flags = useSelector(selectFlags);
+function useFlags(): HookResult {
+  const queryState = useGetFeatureFlagsQuery();
+  const { refetch } = queryState;
+
+  useEffect(() => {
+    const listener = () => {
+      void refetch();
+    };
+
+    addAuthStorageListener(listener);
+
+    return () => {
+      removeAuthStorageListener(listener);
+    };
+  }, [refetch]);
 
   return useMemo(() => {
-    const flagSet = new Set(flags);
+    const flagSet = new Set(queryState.data);
 
-    return {
+    const helpers: Restrict = {
       permit: (area: RestrictedFeature) =>
         !flagSet.has(`${RESTRICTED_PREFIX}-${area}`),
       restrict: (area: RestrictedFeature) =>
@@ -59,7 +84,12 @@ function useFlags(): Restrict {
       flagOn: (flag: string) => flagSet.has(flag),
       flagOff: (flag: string) => !flagSet.has(flag),
     };
-  }, [flags]);
+
+    return {
+      ...helpers,
+      state: mergeAsyncState(queryState, () => helpers),
+    };
+  }, [queryState]);
 }
 
 export default useFlags;

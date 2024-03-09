@@ -24,7 +24,7 @@ import tokenIntegrationDefinition from "@contrib/integrations/automation-anywher
 import oauthIntegrationDefinition from "@contrib/integrations/automation-anywhere-oauth2.yaml";
 import { locator as serviceLocator } from "@/background/locator";
 import { uuidv4 } from "@/types/helpers";
-import { readPartnerAuthData, setPartnerAuth } from "@/auth/token";
+import { readPartnerAuthData, setPartnerAuth } from "@/auth/authStorage";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { type RegistryId } from "@/types/registryTypes";
 import { type IntegrationConfig } from "@/integrations/integrationTypes";
@@ -45,7 +45,7 @@ const integrationDefinitionMap = new Map([
   [CONTROL_ROOM_OAUTH_INTEGRATION_ID, oauthIntegrationDefinition],
 ]);
 
-jest.mock("@/auth/token", () => ({
+jest.mock("@/auth/authStorage", () => ({
   readPartnerAuthData: jest.fn().mockResolvedValue({}),
   setPartnerAuth: jest.fn(),
 }));

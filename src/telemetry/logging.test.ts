@@ -22,7 +22,6 @@ import {
   getLogEntries,
   sweepLogs,
   reportToApplicationErrorTelemetry,
-  flattenStackForDatadog,
 } from "@/telemetry/logging";
 import { getErrorReporter } from "@/telemetry/initErrorReporter";
 import {
@@ -31,13 +30,12 @@ import {
 } from "@/testUtils/factories/logFactories";
 import { array } from "cooky-cutter";
 import { registryIdFactory } from "@/testUtils/factories/stringFactories";
-import { flagOn } from "@/auth/authUtils";
-import type { ErrorObject } from "serialize-error";
+import { flagOn } from "@/auth/featureFlagStorage";
 
 // Disable automatic __mocks__ resolution
 jest.mock("@/telemetry/logging", () => jest.requireActual("./logging.ts"));
 
-jest.mock("@/auth/authUtils", () => ({
+jest.mock("@/auth/featureFlagStorage", () => ({
   flagOn: jest.fn().mockRejectedValue(new Error("Not mocked")),
 }));
 
@@ -119,12 +117,29 @@ describe("logging", () => {
   test("allow Application error telemetry reporting", async () => {
     flagOnMock.mockResolvedValue(false);
 
-    await reportToApplicationErrorTelemetry(new Error("test"), null, null);
+    const nestedError = new Error("nested cause");
+    const reportedError = new Error("test", { cause: nestedError });
+    await reportToApplicationErrorTelemetry(
+      reportedError,
+      null,
+      "error message",
+    );
 
     expect(flagOnMock).toHaveBeenCalledExactlyOnceWith(
       "application-error-telemetry-disable-report",
     );
     expect(reportErrorMock).toHaveBeenCalledOnce();
+    expect(reportErrorMock).toHaveBeenCalledWith({
+      error: reportedError,
+      message: "error message",
+      messageContext: expect.objectContaining({
+        cause: nestedError,
+        code: undefined,
+        extensionVersion: "1.5.2",
+        name: "Error",
+        stack: expect.any(String),
+      }),
+    });
   });
 
   test("disable Application error telemetry reporting", async () => {
@@ -136,49 +151,5 @@ describe("logging", () => {
       "application-error-telemetry-disable-report",
     );
     expect(reportErrorMock).not.toHaveBeenCalled();
-  });
-});
-
-function errorFromStack(stack: string, cause?: ErrorObject): ErrorObject {
-  const [name, message] = stack.split(/[\n:]/);
-  return { name, message, stack, cause };
-}
-
-const stacks = [
-  "ContextError: High level error\n    at someFunction (charizard.js:1:1)",
-  "Error: Medium level error\n    at otherFunction (charmeleon.js:1:1)",
-  "TypeError: Low level error\n    at atob (charmander.js:1:1)",
-];
-
-describe("flattenStackForDatadog", () => {
-  test("preserves the stack unchanged if there's no cause", () => {
-    expect(flattenStackForDatadog(stacks[0])).toMatchInlineSnapshot(`
-      "ContextError: High level error
-          at someFunction (charizard.js:1:1)"
-    `);
-  });
-  test("appends the stack from the cause", () => {
-    expect(flattenStackForDatadog(stacks[0], errorFromStack(stacks[1])))
-      .toMatchInlineSnapshot(`
-        "ContextError: High level error
-            at someFunction (charizard.js:1:1)
-            at CAUSED (BY.js:0:0) Error:-Medium-level-error
-            at otherFunction (charmeleon.js:1:1)"
-      `);
-  });
-  test("appends the stack from the cause 2", () => {
-    expect(
-      flattenStackForDatadog(
-        stacks[0],
-        errorFromStack(stacks[1], errorFromStack(stacks[2])),
-      ),
-    ).toMatchInlineSnapshot(`
-      "ContextError: High level error
-          at someFunction (charizard.js:1:1)
-          at CAUSED (BY.js:0:0) Error:-Medium-level-error
-          at otherFunction (charmeleon.js:1:1)
-          at CAUSED (BY.js:0:0) TypeError:-Low-level-error
-          at atob (charmander.js:1:1)"
-    `);
   });
 });

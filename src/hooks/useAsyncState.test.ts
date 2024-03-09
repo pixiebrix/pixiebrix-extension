@@ -16,15 +16,16 @@
  */
 
 import pDefer from "p-defer";
-import { renderHook, act } from "@testing-library/react-hooks";
 import useAsyncState from "@/hooks/useAsyncState";
-import { waitForEffect } from "@/testUtils/testHelpers";
+import { renderHook } from "@/pageEditor/testHelpers";
 
 describe("useAsyncState", () => {
   it("should handle resolve promise", async () => {
     const dependency = pDefer<number>();
 
-    const { result } = renderHook(() => useAsyncState(dependency.promise, []));
+    const { result, waitFor } = renderHook(() =>
+      useAsyncState(dependency.promise, []),
+    );
 
     expect(result.current).toEqual({
       isFetching: true,
@@ -40,25 +41,27 @@ describe("useAsyncState", () => {
 
     dependency.resolve(42);
 
-    await waitForEffect();
-
-    expect(result.current).toEqual({
-      isFetching: false,
-      isLoading: false,
-      currentData: 42,
-      data: 42,
-      error: undefined,
-      isError: false,
-      isSuccess: true,
-      isUninitialized: false,
-      refetch: expect.toBeFunction(),
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        isFetching: false,
+        isLoading: false,
+        currentData: 42,
+        data: 42,
+        error: undefined,
+        isError: false,
+        isSuccess: true,
+        isUninitialized: false,
+        refetch: expect.toBeFunction(),
+      });
     });
   });
 
   it("should handle reject promise", async () => {
     const dependency = pDefer<number>();
 
-    const { result } = renderHook(() => useAsyncState(dependency.promise, []));
+    const { result, waitFor } = renderHook(() =>
+      useAsyncState(dependency.promise, []),
+    );
 
     expect(result.current).toEqual({
       isFetching: true,
@@ -74,18 +77,18 @@ describe("useAsyncState", () => {
 
     dependency.reject(new Error("Expected error"));
 
-    await waitForEffect();
-
-    expect(result.current).toEqual({
-      isFetching: false,
-      isLoading: false,
-      currentData: undefined,
-      data: undefined,
-      error: expect.toBeObject(),
-      isError: true,
-      isSuccess: false,
-      isUninitialized: false,
-      refetch: expect.toBeFunction(),
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        isFetching: false,
+        isLoading: false,
+        currentData: undefined,
+        data: undefined,
+        error: expect.toBeObject(),
+        isError: true,
+        isSuccess: false,
+        isUninitialized: false,
+        refetch: expect.toBeFunction(),
+      });
     });
   });
 
@@ -93,7 +96,7 @@ describe("useAsyncState", () => {
     let deferred = pDefer<number>();
     let factory = async () => deferred.promise;
 
-    const { result, rerender } = renderHook(
+    const { result, rerender, act } = renderHook(
       ({ factory, dependency }) => useAsyncState(factory, [dependency]),
       {
         initialProps: {
@@ -142,29 +145,31 @@ describe("useAsyncState", () => {
 
   it("should handle refetch for same arguments", async () => {
     const originalFactory = async () => 42;
-    const { result, rerender } = renderHook(
+    const { result, rerender, waitFor, act } = renderHook(
       (props) => useAsyncState(props, []),
       {
         initialProps: originalFactory,
       },
     );
 
-    await waitForEffect();
-
-    expect(result.current).toEqual(
-      expect.objectContaining({
-        data: 42,
-        currentData: 42,
-      }),
-    );
+    await waitFor(() => {
+      expect(result.current).toEqual(
+        expect.objectContaining({
+          data: 42,
+          currentData: 42,
+        }),
+      );
+    });
 
     const deferred = pDefer<number>();
     const deferredFactory = async () => deferred.promise;
 
     rerender(deferredFactory);
 
-    // Separate react to allow the factor to swap out
-    result.current.refetch();
+    // Separate refetch to allow the factory to swap out
+    await act(async () => {
+      result.current.refetch();
+    });
 
     expect(result.current).toEqual(
       expect.objectContaining({
@@ -185,5 +190,27 @@ describe("useAsyncState", () => {
         isFetching: false,
       }),
     );
+  });
+
+  it("should return a referentially equal (memoized) refetch callback on rerenders", async () => {
+    const factory = async () => 42;
+    const { result, rerender, waitForNextUpdate } = renderHook(
+      (props) => useAsyncState(props, []),
+      {
+        initialProps: factory,
+      },
+    );
+
+    await waitForNextUpdate();
+
+    const firstRefetch = result.current.refetch;
+
+    rerender(factory);
+
+    expect(result.current.refetch).toBe(firstRefetch);
+
+    rerender(factory);
+
+    expect(result.current.refetch).toBe(firstRefetch);
   });
 });

@@ -25,14 +25,15 @@ import {
   type SecretsConfig,
   type IntegrationDefinition,
 } from "@/integrations/integrationTypes";
+import { stringToBase64 } from "uint8array-extras";
 
 describe("UserDefinedIntegration", () => {
   test("includes version", () => {
     const integration = fromJS(
       automationAnywhere as unknown as IntegrationDefinition,
     );
-    expect(integration.version).toBe("1.0.0");
-    expect(integration.uiSchema["ui:order"]).toBeArrayOfSize(5);
+    expect(integration.version).toBe("1.0.2");
+    expect(integration.schema.properties).toBeObject();
   });
 
   test("get origins for oauth2 integration", () => {
@@ -118,7 +119,7 @@ describe("UserDefinedIntegration.authenticateBasicRequest", () => {
     expect(config.baseURL).toBe("https://harvest.greenhouse.io");
 
     expect(config.headers).toStrictEqual({
-      Authorization: `Basic ${btoa("topsecret:")}`,
+      Authorization: `Basic ${stringToBase64("topsecret:")}`,
     });
   });
 
