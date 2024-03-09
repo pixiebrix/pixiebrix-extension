@@ -153,9 +153,8 @@ const KBarComponent: React.FC = () => {
               <StopPropagation onKeyPress onKeyDown onKeyUp onInput>
                 {/* eslint-disable-next-line react/jsx-max-depth -- Not worth simplifying */}
                 <KBarSearch style={searchStyle} />
-                {/* eslint-disable-next-line react/jsx-max-depth -- Not worth simplifying */}
-                <QuickBarResults />
               </StopPropagation>
+              <QuickBarResults />
             </Stylesheets>
           </EmotionShadowRoot>
         </KBarAnimator>

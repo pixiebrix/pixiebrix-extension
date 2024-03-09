@@ -213,6 +213,9 @@ function PaginatedTable<
     }
   }, [forceShowRecord, gotoPage, pageSize, rows]);
 
+  // TODO: This component should be reviewed because it has several instances of d-block and w-100,
+  // which "break" the table and seem to do nothing. Also the CSS seems to suggest that some
+  // headers/footers should be sticky but they aren't
   return (
     <Table {...getTableProps()} responsive className={styles.paginatedTable}>
       <thead className="d-block w-100">
