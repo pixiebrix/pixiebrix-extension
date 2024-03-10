@@ -75,7 +75,7 @@
     "downloadjs": "^1.4.7",
     "escape-string-regexp": "^5.0.0",
     "exifreader": "^4.21.0",
-    "export-to-csv": "^1.2.3",
+    "export-to-csv": "^1.2.4",
     "filenamify": "^6.0.0",
     "filter-altered-clicks": "^2.0.1",
     "fit-textarea": "^3.0.0",
