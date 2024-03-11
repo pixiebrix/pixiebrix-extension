@@ -142,7 +142,7 @@ const ControlRoomTokenForm: React.FunctionComponent<{
         disabled={isSubmitting || !isValid}
         data-testid="connect-aari-token-btn"
       >
-        Connect AARI
+        Connect
       </Button>
     </div>
   );
