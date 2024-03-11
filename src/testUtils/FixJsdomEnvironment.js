@@ -35,6 +35,5 @@ export default class FixJSDOMEnvironment extends JSDOMEnvironment {
     this.global.Request = Request;
     this.global.Response = Response;
     this.global.ReadableStream = ReadableStream;
-    this.global.AbortController = AbortController;
   }
 }
