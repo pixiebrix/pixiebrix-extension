@@ -36,7 +36,6 @@ import {
 } from "@/background/executor"; // ContentScript/messenger import
 import { performConfiguredRequest } from "@/background/requests"; // 39 errors
 import { getAvailableVersion } from "@/background/installer"; // 300 errors
-import { locator, refreshServices } from "@/background/locator"; // 8 errors
 import { reactivateEveryTab } from "@/background/navigation"; // ContentScript/messenger import
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 300 errors
 import { debouncedInstallStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 300 errors
@@ -86,10 +85,6 @@ declare global {
     REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
     CLOSE_TAB: typeof closeTab;
     OPEN_TAB: typeof openTab;
-    LOCATE_SERVICES_FOR_ID: typeof locator.locateAllForService;
-    LOCATE_SERVICE: typeof locator.locate;
-    REFRESH_SERVICES: typeof refreshServices;
-    LOCATOR_REFRESH_LOCAL: typeof locator.refreshLocal;
 
     REQUEST_RUN_IN_OPENER: typeof requestRunInOpener;
     REQUEST_RUN_IN_TARGET: typeof requestRunInTarget;
@@ -136,10 +131,6 @@ export default function registerMessenger(): void {
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
     CLOSE_TAB: closeTab,
     OPEN_TAB: openTab,
-    LOCATE_SERVICES_FOR_ID: locator.locateAllForService.bind(locator),
-    LOCATE_SERVICE: locator.locate.bind(locator),
-    LOCATOR_REFRESH_LOCAL: locator.refreshLocal.bind(locator),
-    REFRESH_SERVICES: refreshServices,
 
     REQUEST_RUN_IN_OPENER: requestRunInOpener,
     REQUEST_RUN_IN_TARGET: requestRunInTarget,

@@ -39,6 +39,8 @@ import { DoesNotExistError, type RegistryId } from "@/types/registryTypes";
 import { sanitizeIntegrationConfig } from "@/integrations/sanitizeIntegrationConfig";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import { getLinkedApiClient } from "@/data/service/apiClient";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { type SetRequired } from "type-fest";
 
 enum Visibility {
   Private = 0,
@@ -97,13 +99,9 @@ class LazyLocatorFactory {
 
   private local: IntegrationConfig[] = [];
 
-  private options: Option[];
+  private options: Option[] | undefined;
 
-  private _initialized = false;
-
-  private _refreshPromise: Promise<void>;
-
-  private updateTimestamp: number = undefined;
+  private updateTimestamp: number | undefined;
 
   constructor() {
     forbidContext(
@@ -119,7 +117,7 @@ class LazyLocatorFactory {
   }
 
   get initialized(): boolean {
-    return this._initialized;
+    return Boolean(this.updateTimestamp);
   }
 
   async refreshRemote(): Promise<void> {
@@ -153,38 +151,31 @@ class LazyLocatorFactory {
   /**
    * Refreshes the local and remote integration configurations.
    */
-  async refresh(): Promise<void> {
-    // Avoid multiple concurrent requests. Could potentially replace with debouncer with both leading/trailing: true
-    // For example: https://github.com/sindresorhus/promise-fun/issues/15
-    this._refreshPromise ??= this._refresh();
-    try {
-      await this._refreshPromise;
-    } finally {
-      this._refreshPromise = undefined;
-    }
-  }
-
-  private async _refresh(): Promise<void> {
+  // eslint-disable-next-line unicorn/consistent-function-scoping -- Clearer here
+  refresh = memoizeUntilSettled(async () => {
     const timestamp = Date.now();
     await Promise.all([this.refreshLocal(), this.refreshRemote()]);
     this.initializeOptions();
-    this._initialized = true;
     this.updateTimestamp = timestamp;
     console.debug("Refreshed service configuration locator", {
       updateTimestamp: this.updateTimestamp,
     });
-  }
+  });
 
   private initializeOptions() {
     this.options = sortBy(
       [
-        ...this.local.map((x) => ({
-          ...x,
-          level: Visibility.Private,
-          local: true,
-          proxy: false,
-          serviceId: x.integrationId,
-        })),
+        ...this.local.map(
+          (x) =>
+            ({
+              ...x,
+              level: Visibility.Private,
+              local: true,
+              proxy: false,
+              serviceId: x.integrationId,
+              // TODO: Unsafe. Remove once the `id` in `IntegrationConfig` is not optional
+            }) as SetRequired<Option, "id">,
+        ),
         ...(this.remote ?? []).map((x) => ({
           ...x,
           level: x.organization ? Visibility.Team : Visibility.BuiltIn,
@@ -254,15 +245,16 @@ class LazyLocatorFactory {
       throw error;
     }
 
-    return this.options
-      .filter((x) => x.serviceId === serviceId)
-      .map((match) => ({
-        _sanitizedIntegrationConfigBrand: undefined,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Verified by `if(!this.initialized)` above
+    return this.options!.filter((x) => x.serviceId === serviceId).map(
+      (match) => ({
+        _sanitizedIntegrationConfigBrand: null,
         id: match.id,
         serviceId,
         proxy: match.proxy,
         config: sanitizeIntegrationConfig(service, match.config),
-      }));
+      }),
+    );
   }
 
   async locate(
@@ -292,7 +284,8 @@ class LazyLocatorFactory {
 
     const service = await servicesRegistry.lookup(serviceId);
 
-    const match = this.options.find(
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Verified by `if(!this.initialized)` above
+    const match = this.options!.find(
       (x) => x.serviceId === serviceId && x.id === authId,
     );
 
@@ -323,7 +316,7 @@ class LazyLocatorFactory {
     });
 
     return {
-      _sanitizedIntegrationConfigBrand: undefined,
+      _sanitizedIntegrationConfigBrand: null,
       id: authId,
       serviceId,
       proxy: match.proxy,
