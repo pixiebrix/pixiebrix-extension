@@ -41,7 +41,7 @@ function useMergeAsyncState<
     ...FetchableAsyncStateArray,
     (...args: AsyncValueArray<AsyncStates>) => Result,
   ]
-): FetchableAsyncState<Result> | undefined {
+): FetchableAsyncState<Result> {
   // @ts-expect-error -- getting last element
   const merge: (...args: AsyncValueArray<AsyncStates>) => Result = args.at(-1);
 

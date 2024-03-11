@@ -147,7 +147,8 @@ export class SetPageState extends TransformerABC {
       namespace,
       data,
       mergeStrategy,
-      extensionId,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: Fix nullable `extensionId` type in logger.context
+      extensionId: extensionId!,
       blueprintId,
     });
   }
@@ -195,6 +196,11 @@ export class GetPageState extends TransformerABC {
   ): Promise<JsonObject> {
     const { blueprintId = null, extensionId } = logger.context;
 
-    return platform.state.getState({ namespace, blueprintId, extensionId });
+    return platform.state.getState({
+      namespace,
+      blueprintId,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: Fix nullable `extensionId` type in logger.context
+      extensionId: extensionId!,
+    });
   }
 }

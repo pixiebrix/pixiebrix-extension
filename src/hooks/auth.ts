@@ -27,8 +27,9 @@ import { type FetchableAsyncState } from "@/types/sliceTypes";
 import useMergeAsyncState from "@/hooks/useMergeAsyncState";
 import { useGetIntegrationAuthsQuery } from "@/data/service/api";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
+import { type Nullishable } from "@/utils/nullishUtils";
 
-function defaultLabel(label: string): string {
+function defaultLabel(label: Nullishable<string>): string {
   const normalized = (label ?? "").trim();
   return normalized === "" ? "Default" : normalized;
 }
