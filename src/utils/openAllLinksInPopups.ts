@@ -18,9 +18,9 @@
 import excludeAltClicksEtc from "filter-altered-clicks";
 
 const listener = excludeAltClicksEtc((event: MouseEvent) => {
-  const link = event.target instanceof HTMLElement && event.target.closest("a");
+  const link = event.target instanceof Element && event.target.closest("a");
   if (link) {
-    void browser.tabs.create({ url: link.href });
+    window.open(link.href);
     event.preventDefault();
   }
 });
