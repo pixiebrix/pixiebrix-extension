@@ -37,7 +37,7 @@ export type RendererOptions = {
 export function engineRenderer(
   templateEngine: TemplateEngine,
   options: RendererOptions,
-): AsyncTemplateRenderer | undefined {
+): AsyncTemplateRenderer | null {
   const autoescape = options.autoescape ?? true;
 
   if (templateEngine == null) {
@@ -110,7 +110,7 @@ export function engineRenderer(
     }
 
     default: {
-      return undefined;
+      return null;
     }
   }
 }
