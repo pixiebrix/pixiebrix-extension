@@ -182,7 +182,7 @@ describe("SetupPage", () => {
     });
 
     expect(screen.getByTestId("link-account-btn")).not.toBeNull();
-    expect(screen.queryByTestId("connect-aari-token-btn")).toBeNull();
+    expect(screen.queryByTestId("connect-aa-copilot-token-btn")).toBeNull();
   });
 
   test("Start URL with Community Edition hostname if authenticated", async () => {
@@ -207,7 +207,7 @@ describe("SetupPage", () => {
     });
 
     expect(screen.queryByTestId("link-account-btn")).toBeNull();
-    expect(screen.queryByTestId("connect-aari-token-btn")).toBeVisible();
+    expect(screen.queryByTestId("connect-aa-copilot-token-btn")).toBeVisible();
 
     expect(
       screen.getByText("Connect your Automation Co-Pilot account"),
@@ -224,7 +224,7 @@ describe("SetupPage", () => {
     await act(async () => {
       await user.type(screen.getByLabelText("Username"), "test");
       await user.type(screen.getByLabelText("Password"), "test");
-      await user.click(screen.getByTestId("connect-aari-token-btn"));
+      await user.click(screen.getByTestId("connect-aa-copilot-token-btn"));
     });
 
     expect(notifySuccessMock).toHaveBeenCalledTimes(1);
