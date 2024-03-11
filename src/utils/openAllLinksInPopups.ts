@@ -20,7 +20,7 @@ import excludeAltClicksEtc from "filter-altered-clicks";
 const listener = excludeAltClicksEtc((event: MouseEvent) => {
   const link = event.target instanceof HTMLElement && event.target.closest("a");
   if (link) {
-    window.open(link.href);
+    void browser.tabs.create({ url: link.href });
     event.preventDefault();
   }
 });
