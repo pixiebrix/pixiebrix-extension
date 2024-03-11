@@ -17,7 +17,7 @@
 
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import useAsyncState from "@/hooks/useAsyncState";
-import { services as serviceLocator } from "@/background/messenger/api";
+import { services as serviceLocator } from "@/background/messenger/strict/api";
 import { type StandaloneModDefinition } from "@/types/contract";
 import { type AsyncState } from "@/types/sliceTypes";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";

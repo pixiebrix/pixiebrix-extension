@@ -43,7 +43,7 @@ import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 import { generateIntegrationAndRemoteConfig } from "@/testUtils/factories/integrationFactories";
-import { services } from "@/background/messenger/api";
+import { services } from "@/background/messenger/strict/api";
 import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { refreshServices } from "@/background/locator";

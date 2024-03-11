@@ -18,7 +18,8 @@
 import { render } from "@/pageEditor/testHelpers";
 import React from "react";
 import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
-import { services, sheets } from "@/background/messenger/api";
+import { sheets } from "@/background/messenger/api";
+import { services } from "@/background/messenger/strict/api";
 import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
 import { act, screen } from "@testing-library/react";

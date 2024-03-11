@@ -23,7 +23,8 @@ import { act, screen } from "@testing-library/react";
 import { validateRegistryId } from "@/types/helpers";
 import selectEvent from "react-select-event";
 import { render } from "@/pageEditor/testHelpers";
-import { services, sheets } from "@/background/messenger/api";
+import { sheets } from "@/background/messenger/api";
+import { services } from "@/background/messenger/strict/api";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import {
   integrationDependencyFactory,

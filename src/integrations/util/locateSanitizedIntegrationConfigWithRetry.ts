@@ -18,7 +18,7 @@
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { services } from "@/background/messenger/api";
+import { services } from "@/background/messenger/strict/api";
 import { isSpecificError } from "@/errors/errorHelpers";
 import { MissingConfigurationError } from "@/errors/businessErrors";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
