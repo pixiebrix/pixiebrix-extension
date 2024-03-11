@@ -97,12 +97,12 @@ export function readerFactory(component: unknown): Reader {
       super(id, name, description);
     }
 
-    public readonly version: SemVerString = version;
+    public readonly version: SemVerString | undefined = version;
 
     override outputSchema: Schema = outputSchema;
 
-    async isAvailable() {
-      return checkAvailable(isAvailable);
+    async isAvailable(): Promise<boolean> {
+      return Boolean(isAvailable && checkAvailable(isAvailable));
     }
 
     override async isPure(): Promise<boolean> {
