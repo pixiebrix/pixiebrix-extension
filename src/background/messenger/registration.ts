@@ -34,7 +34,7 @@ import {
   requestRunInTarget,
   requestRunInTop,
 } from "@/background/executor"; // ContentScript/messenger import
-import { performConfiguredRequest } from "@/background/requests"; // 39 errors
+import { performConfiguredRequest } from "@/background/requests"; // 30 errors
 import { getAvailableVersion } from "@/background/installer"; // 300 errors
 import { reactivateEveryTab } from "@/background/navigation"; // ContentScript/messenger import
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 300 errors

@@ -24,7 +24,7 @@ describe("safeGuessStatusText", () => {
   });
 
   it("doesn't throw error on invalid code", () => {
-    expect(safeGuessStatusText(-200)).toBeNull();
+    expect(safeGuessStatusText(-200)).toBe("Unknown HTTP status");
   });
 });
 

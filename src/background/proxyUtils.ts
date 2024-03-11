@@ -57,7 +57,7 @@ export function proxyResponseToAxiosResponse(
     return {
       data: data.json,
       status: data.status_code,
-      statusText: data.reason ?? data.message,
+      statusText: data.reason ?? data.message ?? "",
     };
   }
 
