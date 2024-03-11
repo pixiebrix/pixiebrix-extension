@@ -34,6 +34,7 @@ import {
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
 import { stringToBase64 } from "uint8array-extras";
+import ky from "ky";
 
 const TEN_HOURS = 1000 * 60 * 60 * 10;
 
@@ -133,13 +134,12 @@ export async function launchAuthIntegration({
     // in just-in-time user initialization.
     const baseURL = await getBaseURL();
     try {
-      await axios.get("/api/me/", {
-        baseURL,
+      await ky(new URL("/api/me/", baseURL), {
         headers: {
           Authorization: `Bearer ${data.access_token as string}`,
           "X-Control-Room": config.config.controlRoomUrl,
         },
-      });
+      }).json();
     } catch (error) {
       if (isAxiosError(error) && [401, 403].includes(error.response?.status)) {
         // Clear the token to allow the user re-login with the SAML/SSO provider
