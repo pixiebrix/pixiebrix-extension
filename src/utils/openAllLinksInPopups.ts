@@ -18,6 +18,7 @@
 import excludeAltClicksEtc from "filter-altered-clicks";
 
 const listener = excludeAltClicksEtc((event: MouseEvent) => {
+  // `event.target` can sometimes be an SVG path element and not an HTMLElement
   const link = event.target instanceof Element && event.target.closest("a");
   if (link) {
     window.open(link.href);
