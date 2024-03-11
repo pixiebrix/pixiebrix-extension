@@ -17,12 +17,14 @@
 
 import {
   test as base,
+  type Expect,
   chromium,
   type BrowserContext,
   type Cookie,
+  type Page,
 } from "@playwright/test";
 import path from "node:path";
-import { MV } from "./env";
+import { E2E_TEST_USER_EMAIL_UNAFFILIATED, MV, SERVICE_URL } from "./env";
 import fs from "node:fs/promises";
 
 const getStoredCookies = async (): Promise<Cookie[]> => {
@@ -46,6 +48,27 @@ const getStoredCookies = async (): Promise<Cookie[]> => {
   };
   return cookies;
 };
+
+/**
+ * Link the Browser Extension to the user's account via the admin console.
+ * TODO: refactor into the fixture definition and figure out a way to save the
+ *  linked extension state into chrome storage so we don't have to load the admin
+ *  page for every test.
+ */
+export async function linkBrowserExtensionViaAdminConsole(
+  page: Page,
+  expect: Expect,
+) {
+  await page.goto(SERVICE_URL);
+  await expect(page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED)).toBeVisible();
+  await expect(async () =>
+    expect(
+      page.getByText(
+        "Successfully linked the Browser Extension to your PixieBrix account",
+      ),
+    ).toBeVisible(),
+  ).toPass({ timeout: 5000 });
+}
 
 export const test = base.extend<{
   context: BrowserContext;
