@@ -31,7 +31,7 @@ import { PlatformBase } from "@/platform/platformBase";
  * The extension page platform.
  *
  * Extension pages generally don't run bricks. However:
- * - The sidebar runs bricks, e.g., in PanelBody
+ * - The sidebar and ephemeral panel runs bricks, e.g., in PanelBody
  * - The Extension Console and Page Editor instantiate bricks to access the brick instance method and clear traces
  */
 class ExtensionPagePlatform extends PlatformBase {
