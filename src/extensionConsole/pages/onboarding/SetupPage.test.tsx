@@ -87,7 +87,9 @@ describe("SetupPage", () => {
       expect(screen.queryByTestId("loader")).toBeNull();
     });
 
-    expect(screen.queryByText("Connect your AARI account")).toBeNull();
+    expect(
+      screen.queryByText("Connect your Automation Co-Pilot account"),
+    ).toBeNull();
   });
 
   test("OAuth2 partner user with required service id in settings", async () => {
@@ -112,7 +114,9 @@ describe("SetupPage", () => {
       expect(screen.queryByTestId("loader")).toBeNull();
     });
 
-    expect(screen.getByText("Connect your AARI account")).not.toBeNull();
+    expect(
+      screen.getByText("Connect your Automation Co-Pilot account"),
+    ).not.toBeNull();
   });
 
   test("Start URL for OAuth2 flow", async () => {
@@ -134,7 +138,9 @@ describe("SetupPage", () => {
       expect(screen.queryByTestId("loader")).toBeNull();
     });
 
-    expect(screen.getByText("Connect your AARI account")).not.toBeNull();
+    expect(
+      screen.getByText("Connect your Automation Co-Pilot account"),
+    ).not.toBeNull();
     expect(
       screen.getByLabelText("Control Room URL").getAttribute("value"),
       // Schema should get pre-pended automatically from hostname
@@ -145,7 +151,7 @@ describe("SetupPage", () => {
       "chrome-extension://abc123/options.html#/start?hostname=mycontrolroom.com",
     );
 
-    const button = screen.getByText("Connect AARI");
+    const button = screen.getByText("Connect");
     await user.click(button);
 
     await waitForEffect();
@@ -176,7 +182,7 @@ describe("SetupPage", () => {
     });
 
     expect(screen.getByTestId("link-account-btn")).not.toBeNull();
-    expect(screen.queryByTestId("connect-aari-token-btn")).toBeNull();
+    expect(screen.queryByTestId("connect-aa-copilot-token-btn")).toBeNull();
   });
 
   test("Start URL with Community Edition hostname if authenticated", async () => {
@@ -201,9 +207,11 @@ describe("SetupPage", () => {
     });
 
     expect(screen.queryByTestId("link-account-btn")).toBeNull();
-    expect(screen.queryByTestId("connect-aari-token-btn")).toBeVisible();
+    expect(screen.queryByTestId("connect-aa-copilot-token-btn")).toBeVisible();
 
-    expect(screen.getByText("Connect your AARI account")).not.toBeNull();
+    expect(
+      screen.getByText("Connect your Automation Co-Pilot account"),
+    ).not.toBeNull();
     expect(
       screen.getByLabelText("Control Room URL").getAttribute("value"),
       // Schema get pre-pended automatically
@@ -216,7 +224,7 @@ describe("SetupPage", () => {
     await act(async () => {
       await user.type(screen.getByLabelText("Username"), "test");
       await user.type(screen.getByLabelText("Password"), "test");
-      await user.click(screen.getByTestId("connect-aari-token-btn"));
+      await user.click(screen.getByTestId("connect-aa-copilot-token-btn"));
     });
 
     expect(notifySuccessMock).toHaveBeenCalledTimes(1);
@@ -247,7 +255,9 @@ describe("SetupPage", () => {
       expect(screen.queryByTestId("loader")).toBeNull();
     });
 
-    expect(screen.getByText("Connect your AARI account")).not.toBeNull();
+    expect(
+      screen.getByText("Connect your Automation Co-Pilot account"),
+    ).not.toBeNull();
     expect(
       screen.getByLabelText("Control Room URL").getAttribute("value"),
     ).toStrictEqual(controlRoomUrl);

@@ -116,8 +116,8 @@ export async function openInstallPage() {
         // Case 1a: Admin Console is showing enterprise onboarding flow
         //
         // Show the Extension Console /start page, where the user will be prompted to use OAuth2 to connect their
-        // AARI account. Include the Control Room hostname in the URL so that the ControlRoomOAuthForm can pre-fill
-        // the URL
+        // AA Automation Business Co-Pilot account (formerly called AARI). Include the Control Room hostname in the
+        // URL so that the ControlRoomOAuthForm can pre-fill the URL
         const extensionStartUrl = getExtensionConsoleUrl(
           `start${appOnboardingTabUrl.search}`,
         );
