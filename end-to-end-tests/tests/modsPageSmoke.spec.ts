@@ -18,11 +18,8 @@
 import { test, expect } from "../fixtures/extensionBase";
 import { ModsPage } from "../pageObjects/modsPage";
 
-test.describe("extension console smoke test", () => {
-  test("can open the mods page in the extension console and view available mods", async ({
-    page,
-    extensionId,
-  }) => {
+test.describe("extension console mods page smoke test", () => {
+  test("can view available mods", async ({ page, extensionId }) => {
     const modsPage = new ModsPage(page, extensionId);
     await modsPage.goto();
     const pageTitle = await page.title();
