@@ -15,16 +15,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "../fixtures/extensionBase";
-
-test.describe("extension console smoke test", () => {
-  test("can open the extension console", async ({ page, extensionId }) => {
-    await page.goto(`chrome-extension://${extensionId}/options.html`);
-    await expect(page.getByText("Extension Console")).toBeVisible();
-    await expect(
-      page.getByRole("heading", {
-        name: "Active Mods",
-      }),
-    ).toBeVisible();
-  });
-});
+export const getBaseExtensionConsoleUrl = (extensionId: string) =>
+  `chrome-extension://${extensionId}/options.html`;

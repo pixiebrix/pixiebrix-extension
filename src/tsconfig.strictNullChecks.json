@@ -761,8 +761,11 @@
     "./vendors/validateUuid.ts",
     "./components/errors/InvalidSelectorErrorDetail.tsx",
     "../end-to-end-tests/auth.setup.ts",
-    "../end-to-end-tests/tests/extensionConsoleSmoke.spec.ts",
+    "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/extensionBase.ts",
+    "../end-to-end-tests/pageObjects/modsPage.ts",
+    "../end-to-end-tests/pageObjects/constants.ts",
+    "../end-to-end-tests/tests/modsPageSmoke.spec.ts",
     "./utils/deploymentUtils.ts"
   ]
 }
