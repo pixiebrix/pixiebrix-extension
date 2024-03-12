@@ -9,20 +9,13 @@ test.describe("Extension Console Activation", () => {
 
     await page.goto(
       `chrome-extension://${extensionId}/options.html#/marketplace/activate/${encodeURIComponent(
-        "@pixies/template/translation",
+        "@pixies/giphy/giphy-search",
       )}`,
     );
-    await expect(page.getByText("Activate Mod")).toBeVisible();
-    await expect(page.getByText("[Template]: Translation")).toBeVisible();
 
-    page.on("dialog", async (dialog) => {
-      console.log("*** dialog handler");
-      return dialog.accept();
-    });
+    await expect(page.getByText("Activate Mod")).toBeVisible();
+    await expect(page.getByText("GIPHY Search")).toBeVisible();
     await page.click("button:has-text('Activate')");
-    await page.waitForURL(`chrome-extension://${extensionId}/options.html`);
-    await expect(
-      page.getByText("Installed [Template]: Translation"),
-    ).toBeVisible();
+    await expect(page.getByText("Installed GIPHY Search")).toBeVisible();
   });
 });
