@@ -31,11 +31,12 @@ export class ModsPage {
   async goto() {
     await this.page.goto(this.extensionConsoleUrl);
     await expect(this.page.getByText("Extension Console")).toBeVisible();
-    await expect(
-      this.page.getByRole("heading", {
-        name: "Active Mods",
-      }),
-    ).toBeVisible();
+    const activeModsHeading = this.page.getByRole("heading", {
+      name: "Active Mods",
+    });
+    // `activeModsHeading` may be initially hidden, so toBeVisible() would immediately fail
+    await expect(activeModsHeading).toBeAttached();
+    await expect(activeModsHeading).not.toBeHidden();
   }
 
   async viewAllMods() {

@@ -21,27 +21,11 @@ import {
   E2E_TEST_USER_PASSWORD_UNAFFILIATED,
   SERVICE_URL,
 } from "./env";
-import { type Page } from "@playwright/test";
 
 const authFile = "end-to-end-tests/.auth/user.json";
 
-const waitForAdminConsoleToLoad = async (page: Page) => {
-  await expect(
-    page
-      .getByLabel("Email")
-      .or(page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED)),
-  ).toBeVisible();
-};
-
 setup("authenticate", async ({ page }) => {
   await page.goto(`${SERVICE_URL}/login/email`);
-  await waitForAdminConsoleToLoad(page);
-
-  if (await page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED).isVisible()) {
-    // If the user is already authenticated, reuse the existing session
-    await page.context().storageState({ path: authFile });
-    return;
-  }
 
   await page.getByLabel("Email").fill(E2E_TEST_USER_EMAIL_UNAFFILIATED);
   await page.getByLabel("Password").fill(E2E_TEST_USER_PASSWORD_UNAFFILIATED);
