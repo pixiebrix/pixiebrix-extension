@@ -20,13 +20,11 @@ import { test, expect } from "../fixtures/extensionBase";
 test.describe("extension console smoke test", () => {
   test("can open the extension console", async ({ page, extensionId }) => {
     await page.goto(`chrome-extension://${extensionId}/options.html`);
-    await expect(page.getByText("Extension Console")).toBeInViewport();
-    const activeModsHeading = page.getByRole("heading", {
-      name: "Active Mods",
-    });
-    // The heading may be temporarily hidden, so we use toBeAttached and not.toBeHidden instead of toBeVisible
-    // since toBeVisible will immediately fail if the element is in the dom and hidden
-    await expect(activeModsHeading).toBeAttached();
-    await expect(activeModsHeading).not.toBeHidden();
+    await expect(page.getByText("Extension Console")).toBeVisible();
+    await expect(
+      page.getByRole("heading", {
+        name: "Active Mods",
+      }),
+    ).toBeVisible();
   });
 });
