@@ -46,7 +46,7 @@ function useGoogleAccount(): FetchableAsyncState<SanitizedIntegrationConfig | nu
         googleDependency.integrationId,
         googleDependency.configId,
       );
-    } catch (error: unknown) {
+    } catch (error) {
       reportError(error);
       return null;
     }

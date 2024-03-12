@@ -117,7 +117,7 @@ export function useRemoveModComponentFromStorage(): (
         }
 
         removeExtensionsFromAllTabs([extensionId]);
-      } catch (error: unknown) {
+      } catch (error) {
         notify.error({
           message: "Error removing mod",
           error,

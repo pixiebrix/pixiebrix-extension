@@ -131,7 +131,7 @@ function useSpreadsheetId(
       }
 
       return lastGoodSpreadsheetId.current;
-    } catch (error: unknown) {
+    } catch (error) {
       setError(getErrorMessage(error));
       return null;
     }

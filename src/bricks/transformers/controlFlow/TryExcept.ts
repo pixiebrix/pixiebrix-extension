@@ -85,7 +85,7 @@ class TryExcept extends TransformerABC {
         key: "try",
         counter: 0,
       });
-    } catch (error: unknown) {
+    } catch (error) {
       options.logger.debug("Caught error", { error });
       if (!exceptPipeline) {
         return;
