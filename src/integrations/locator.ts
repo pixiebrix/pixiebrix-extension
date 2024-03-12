@@ -99,7 +99,7 @@ class LazyLocatorFactory {
 
   private local: IntegrationConfig[] = [];
 
-  private options: Option[] | undefined;
+  private options: Option[] = [];
 
   private updateTimestamp: number | undefined;
 
@@ -245,16 +245,15 @@ class LazyLocatorFactory {
       throw error;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Verified by `if(!this.initialized)` above
-    return this.options!.filter((x) => x.serviceId === serviceId).map(
-      (match) => ({
+    return this.options
+      .filter((x) => x.serviceId === serviceId)
+      .map((match) => ({
         _sanitizedIntegrationConfigBrand: null,
         id: match.id,
         serviceId,
         proxy: match.proxy,
         config: sanitizeIntegrationConfig(service, match.config),
-      }),
-    );
+      }));
   }
 
   async locate(
@@ -284,8 +283,7 @@ class LazyLocatorFactory {
 
     const service = await servicesRegistry.lookup(serviceId);
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Verified by `if(!this.initialized)` above
-    const match = this.options!.find(
+    const match = this.options.find(
       (x) => x.serviceId === serviceId && x.id === authId,
     );
 

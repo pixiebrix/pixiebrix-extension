@@ -79,6 +79,6 @@ describe("TryExcept", () => {
       simpleInput({}),
       testOptions("v3"),
     );
-    expect(result).toBeNull();
+    expect(result).toBeUndefined();
   });
 });

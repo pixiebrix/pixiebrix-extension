@@ -36,8 +36,7 @@ import {
   integrationDependencyFactory,
 } from "@/testUtils/factories/integrationFactories";
 import getModDefinitionIntegrationIds from "@/integrations/util/getModDefinitionIntegrationIds";
-import { registry } from "@/background/messenger/strict/api";
-import { services } from "@/background/messenger/strict/api";
+import { registry, services } from "@/background/messenger/strict/api";
 import { refreshServices } from "@/background/locator";
 import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { type ModDefinition } from "@/types/modDefinitionTypes";

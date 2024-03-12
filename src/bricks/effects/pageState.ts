@@ -147,7 +147,7 @@ export class SetPageState extends TransformerABC {
       namespace,
       data,
       mergeStrategy,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: Fix nullable `extensionId` type in logger.context
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/7891
       extensionId: extensionId!,
       blueprintId,
     });
@@ -199,7 +199,7 @@ export class GetPageState extends TransformerABC {
     return platform.state.getState({
       namespace,
       blueprintId,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- TODO: Fix nullable `extensionId` type in logger.context
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/7891
       extensionId: extensionId!,
     });
   }
