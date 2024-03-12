@@ -761,8 +761,8 @@
     "./vendors/validateUuid.ts",
     "./components/errors/InvalidSelectorErrorDetail.tsx",
     "../end-to-end-tests/auth.setup.ts",
-    "../end-to-end-tests/example.spec.ts",
-    "../end-to-end-tests/fixtures.ts",
+    "../end-to-end-tests/tests/extensionConsoleSmoke.spec.ts",
+    "../end-to-end-tests/fixtures/extensionBase.ts",
     "./utils/deploymentUtils.ts"
   ]
 }
