@@ -78,6 +78,7 @@ export const test = base.extend<{
     // Link the Browser Extension to the user's account via the admin console.
     // TODO: figure out a way to save the linked extension state into chrome
     //  storage so we don't have to load the admin page for every test.
+    //  https://github.com/pixiebrix/pixiebrix-extension/issues/7898
     await page.goto(SERVICE_URL);
     await baseExpect(
       page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
