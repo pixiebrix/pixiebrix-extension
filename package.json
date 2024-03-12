@@ -181,6 +181,7 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.8.5",
     "@fortawesome/fontawesome-common-types": "^0.2.36",
     "@playwright/test": "^1.42.1",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.11",

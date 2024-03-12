@@ -17,6 +17,8 @@
 
 import { test, expect } from "../fixtures/extensionBase";
 import { ModsPage } from "../pageObjects/modsPage";
+import AxeBuilder from "@axe-core/playwright";
+import { checkForCriticalViolations } from "../utils";
 
 test.describe("extension console mods page smoke test", () => {
   test("can view available mods", async ({ page, extensionId }) => {
@@ -28,5 +30,21 @@ test.describe("extension console mods page smoke test", () => {
     const modTableItems = await modsPage.getAllModTableItems();
     // There is at least one mod visible
     await expect(modTableItems.nth(0)).toBeVisible();
+
+    const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
+
+    // TODO: fix these accessibility issues
+    //   https://github.com/pixiebrix/pixiebrix-extension/issues/7900
+    checkForCriticalViolations(accessibilityScanResults, [
+      "color-contrast",
+      "heading-order",
+      "label-title-only",
+      "landmark-one-main",
+      "landmark-unique",
+      "link-in-text-block",
+      "list",
+      "page-has-heading-one",
+      "region",
+    ]);
   });
 });
