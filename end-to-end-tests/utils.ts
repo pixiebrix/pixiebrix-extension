@@ -16,16 +16,12 @@
  */
 
 import { expect } from "./fixtures/extensionBase";
+import type AxeBuilder from "@axe-core/playwright";
 
-type PartialAxeResults = {
-  violations: Array<{
-    id: string;
-    impact?: "critical" | "serious" | "moderate" | "minor";
-  }>;
-};
+type AxeResults = Awaited<ReturnType<typeof AxeBuilder.prototype.analyze>>;
 
 function criticalViolationsFromAxeResults(
-  accessibilityScanResults: PartialAxeResults,
+  accessibilityScanResults: AxeResults,
 ) {
   return new Set(
     accessibilityScanResults.violations.flatMap(({ id, impact }) =>
@@ -35,7 +31,7 @@ function criticalViolationsFromAxeResults(
 }
 
 export function checkForCriticalViolations(
-  accessibilityScanResults: PartialAxeResults,
+  accessibilityScanResults: AxeResults,
   allowedViolations: string[] = [],
 ) {
   const criticalViolations = [
