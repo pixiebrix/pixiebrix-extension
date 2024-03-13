@@ -146,7 +146,6 @@ async function getStarterMods(): Promise<ModDefinition[]> {
   try {
     const { data: starterMods } = await client.get<ModDefinition[]>(
       "/api/onboarding/starter-blueprints/",
-      { params: { ignore_user_state: true } },
     );
     return starterMods;
   } catch (error) {

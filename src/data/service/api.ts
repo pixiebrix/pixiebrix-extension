@@ -428,9 +428,6 @@ export const appApi = createApi({
       query: () => ({
         url: "/api/onboarding/starter-blueprints/",
         method: "get",
-        data: {
-          ignore_user_state: true,
-        },
       }),
       providesTags: (result, error) => [
         { type: "StarterBlueprints", id: "LIST" },

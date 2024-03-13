@@ -5,8 +5,13 @@
   },
   "files": [
     "../end-to-end-tests/auth.setup.ts",
+    "../end-to-end-tests/env.ts",
     "../end-to-end-tests/example.spec.ts",
     "../end-to-end-tests/fixtures.ts",
+    "../end-to-end-tests/fixtures/extensionBase.ts",
+    "../end-to-end-tests/pageObjects/constants.ts",
+    "../end-to-end-tests/pageObjects/modsPage.ts",
+    "../end-to-end-tests/tests/modsPageSmoke.spec.ts",
     "./__mocks__/@/auth/featureFlagStorage.ts",
     "./__mocks__/@/auth/useLinkState.ts",
     "./__mocks__/@/background/messenger/strict/api.ts",
