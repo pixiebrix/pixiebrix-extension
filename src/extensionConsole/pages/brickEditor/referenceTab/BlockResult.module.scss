@@ -68,6 +68,7 @@
 .sharing {
   max-width: 40%;
   color: $body-color;
+  flex-shrink: 0;
 }
 
 .id {

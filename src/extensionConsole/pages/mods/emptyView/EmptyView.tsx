@@ -45,26 +45,23 @@ const EmptyView: React.VoidFunctionComponent<{
     >
       <Card className={styles.card}>
         <Card.Body>
-          <div className={styles.suggestions}>
-            <img src={workshopImage} alt="Workshop" width={300} />
-            <h3>No mods found {filterName && `in "${filterName}"`}</h3>
-            <div className="mb-4">
-              There {"weren't"} any mods with a name, description, or id
-              containing your search term <strong>{`"${globalFilter}"`}</strong>
-              .
-            </div>
-            <div>
-              Try different search terms or search in the{" "}
-              <a
-                href={`${MARKETPLACE_URL}search/?q=${encodeURI(
-                  String(globalFilter),
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FontAwesomeIcon icon={faExternalLinkAlt} /> Public Marketplace
-              </a>
-            </div>
+          <img src={workshopImage} alt="Workshop" width={300} />
+          <h3>No mods found {filterName && `in "${filterName}"`}</h3>
+          <div className="mb-4">
+            There {"weren't"} any mods with a name, description, or id
+            containing your search term <strong>{`"${globalFilter}"`}</strong>.
+          </div>
+          <div>
+            Try different search terms or search in the{" "}
+            <a
+              href={`${MARKETPLACE_URL}search/?q=${encodeURI(
+                String(globalFilter),
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FontAwesomeIcon icon={faExternalLinkAlt} /> Public Marketplace
+            </a>
           </div>
         </Card.Body>
       </Card>

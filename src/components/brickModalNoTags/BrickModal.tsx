@@ -27,13 +27,10 @@ import React, {
 } from "react";
 import {
   Button,
-  Col,
-  Container,
   // eslint-disable-next-line no-restricted-imports -- TODO: Fix over time
   Form,
   InputGroup,
   Modal,
-  Row,
 } from "react-bootstrap";
 import { compact, sortBy } from "lodash";
 import { useDebounce } from "use-debounce";
@@ -237,78 +234,66 @@ function ActualModal<T extends Metadata>({
       backdrop
       keyboard={false}
     >
-      <Modal.Body className={styles.body}>
-        <Container fluid>
-          <Row>
-            <Col xs={5} className={styles.results}>
-              <Form>
-                <InputGroup>
-                  <InputGroup.Prepend>
-                    <InputGroup.Text>Search</InputGroup.Text>
-                  </InputGroup.Prepend>
-                  <Form.Control
-                    ref={searchInput}
-                    placeholder="Start typing to find results"
-                    value={query}
-                    onChange={({ target }) => {
-                      setQuery(target.value);
-                    }}
-                  />
-                </InputGroup>
-              </Form>
-              <div>
-                <AutoSizer>
-                  {({ height, width }: Size) => (
-                    <LazyList
-                      height={height}
-                      width={width}
-                      itemCount={searchResults.length}
-                      itemSize={brickResultSizePx}
-                      itemKey={itemKey}
-                      itemData={
-                        {
-                          searchResults,
-                          setDetailBrick,
-                          activeBrick: detailBrick,
-                          selectCaption,
-                          onSelect,
-                          close,
-                        } as ItemType<T>
-                      }
-                    >
-                      {ItemRenderer}
-                    </LazyList>
-                  )}
-                </AutoSizer>
-              </div>
-            </Col>
-            <Col
-              xs={7}
-              className={cx(styles.brickDetail)}
-              key={detailBrick?.id}
-            >
-              {detailBrick ? (
-                <BrickDetail
-                  brick={detailBrick}
-                  listing={listings[detailBrick.id]}
-                  selectCaption={selectCaption}
-                  onSelect={() => {
-                    onSelect(detailBrick);
-                    close();
-                  }}
-                />
-              ) : (
-                <QuickAdd
-                  onSelect={(brick) => {
-                    onSelect(brick);
-                    close();
-                  }}
-                  recommendations={recommendedBricks}
-                />
+      <Modal.Body className={cx(styles.body, "gap-4")}>
+        <div className="d-flex flex-column gap-3">
+          <InputGroup>
+            <InputGroup.Prepend>
+              <InputGroup.Text>Search</InputGroup.Text>
+            </InputGroup.Prepend>
+            <Form.Control
+              ref={searchInput}
+              placeholder="Start typing to find results"
+              value={query}
+              onChange={({ target }) => {
+                setQuery(target.value);
+              }}
+            />
+          </InputGroup>
+          <div className="flex-grow-1">
+            <AutoSizer>
+              {({ height, width }: Size) => (
+                <LazyList
+                  height={height}
+                  width={width}
+                  itemCount={searchResults.length}
+                  itemSize={brickResultSizePx}
+                  itemKey={itemKey}
+                  itemData={
+                    {
+                      searchResults,
+                      setDetailBrick,
+                      activeBrick: detailBrick,
+                      selectCaption,
+                      onSelect,
+                      close,
+                    } as ItemType<T>
+                  }
+                >
+                  {ItemRenderer}
+                </LazyList>
               )}
-            </Col>
-          </Row>
-        </Container>
+            </AutoSizer>
+          </div>
+        </div>
+        {detailBrick ? (
+          <BrickDetail
+            brick={detailBrick}
+            listing={listings[detailBrick.id]}
+            selectCaption={selectCaption}
+            onSelect={() => {
+              onSelect(detailBrick);
+              close();
+            }}
+          />
+        ) : (
+          <QuickAdd
+            onSelect={(brick) => {
+              onSelect(brick);
+              close();
+            }}
+            recommendations={recommendedBricks}
+          />
+        )}
       </Modal.Body>
     </Modal>
   );

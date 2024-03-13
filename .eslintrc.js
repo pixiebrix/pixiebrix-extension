@@ -70,6 +70,7 @@ module.exports = {
         ],
       },
     ],
+    "react/jsx-max-depth": ["error", { max: 5 }],
     "local-rules/noNullRtkQueryArgs": "error",
     "local-rules/noInvalidDataTestId": "error",
     "local-rules/noExpressionLiterals": "error",

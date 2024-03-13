@@ -61,7 +61,8 @@ interface TableProps<
 
 const SearchFilter: React.FunctionComponent<{
   setGlobalFilter: (filterValue: FilterValue) => void;
-}> = ({ setGlobalFilter: setFilter }) => {
+  style?: CSSProperties;
+}> = ({ setGlobalFilter: setFilter, style }) => {
   const [value, setValue] = useState("");
   const onChange = useAsyncDebounce((value) => {
     setFilter(value || undefined);
@@ -73,6 +74,7 @@ const SearchFilter: React.FunctionComponent<{
       type="text"
       placeholder="Filter records..."
       value={value ?? ""}
+      style={style}
       onChange={({ target }) => {
         setValue(target.value);
         onChange(target.value);
@@ -211,6 +213,9 @@ function PaginatedTable<
     }
   }, [forceShowRecord, gotoPage, pageSize, rows]);
 
+  // TODO: This component should be reviewed because it has several instances of d-block and w-100,
+  // which "break" the table and seem to do nothing. Also the CSS seems to suggest that some
+  // headers/footers should be sticky but they aren't
   return (
     <Table {...getTableProps()} responsive className={styles.paginatedTable}>
       <thead className="d-block w-100">
@@ -301,48 +306,40 @@ function PaginatedTable<
       </tbody>
       <tfoot className={styles.tfoot}>
         <tr className="d-block w-100">
-          <td className="d-block w-100">
-            <div className="d-flex align-items-center">
-              <div className="text-muted">
-                Showing {rowNumber} to{" "}
-                {Math.min(rowNumber + pageSize - 1, rows.length)} of{" "}
-                {rows.length}
-              </div>
-              {showSearchFilter ? (
-                <div className="flex-grow-1 px-3">
-                  <div style={{ maxWidth: 300 }}>
-                    <SearchFilter setGlobalFilter={setGlobalFilter} />
-                  </div>
-                </div>
-              ) : (
-                ""
-              )}
-
-              <div className="flex-grow-1">
-                <Pagination className="m-0 float-right">
-                  <Pagination.First
-                    onClick={() => {
-                      gotoPage(0);
-                    }}
-                    disabled={!canPreviousPage}
-                  />
-                  <Pagination.Prev
-                    onClick={previousPage}
-                    disabled={!canPreviousPage}
-                  />
-                  <Pagination.Item disabled>
-                    Page {pageIndex + 1} of {pageCount === 0 ? 1 : pageCount}
-                  </Pagination.Item>
-                  <Pagination.Next onClick={nextPage} disabled={!canNextPage} />
-                  <Pagination.Last
-                    onClick={() => {
-                      gotoPage(pageCount - 1);
-                    }}
-                    disabled={!canNextPage}
-                  />
-                </Pagination>
-              </div>
+          <td className="d-flex align-items-center justify-content-between w-100">
+            <div className="text-muted">
+              Showing {rowNumber} to{" "}
+              {Math.min(rowNumber + pageSize - 1, rows.length)} of {rows.length}
             </div>
+            <div className="flex-grow-1 px-3">
+              <SearchFilter
+                style={{ maxWidth: 300 }}
+                setGlobalFilter={setGlobalFilter}
+              />
+            </div>
+
+            <Pagination className="m-0">
+              <Pagination.First
+                onClick={() => {
+                  gotoPage(0);
+                }}
+                disabled={!canPreviousPage}
+              />
+              <Pagination.Prev
+                onClick={previousPage}
+                disabled={!canPreviousPage}
+              />
+              <Pagination.Item disabled>
+                Page {pageIndex + 1} of {pageCount === 0 ? 1 : pageCount}
+              </Pagination.Item>
+              <Pagination.Next onClick={nextPage} disabled={!canNextPage} />
+              <Pagination.Last
+                onClick={() => {
+                  gotoPage(pageCount - 1);
+                }}
+                disabled={!canNextPage}
+              />
+            </Pagination>
           </td>
         </tr>
       </tfoot>

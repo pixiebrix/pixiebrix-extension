@@ -43,27 +43,23 @@ class GridCardErrorBoundary extends ErrorBoundary<Props> {
           <Card className={styles.card}>
             <Card.Body className={styles.cardBody}>
               <div className={styles.primaryInfo}>
-                <div className="d-flex justify-content-between">
-                  <div>
-                    <h5 className={styles.name}>
-                      {this.props.modViewItem.name}
-                    </h5>
-                    <span className={cx(styles.description, "text-muted")}>
-                      An error occurred retrieving mod
-                    </span>
-                    <div className={styles.packageId}>
-                      {this.props.modViewItem.sharing.packageId}
-                    </div>
-                  </div>
-                  <span className="mb-2">
-                    <FontAwesomeIcon
-                      icon={faExclamationCircle}
-                      color={DEFAULT_TEXT_ICON_COLOR}
-                      size="2x"
-                      fixedWidth
-                    />
+                <div>
+                  <h5 className={styles.name}>{this.props.modViewItem.name}</h5>
+                  <span className={cx(styles.description, "text-muted")}>
+                    An error occurred retrieving mod
                   </span>
+                  <div className={styles.packageId}>
+                    {this.props.modViewItem.sharing.packageId}
+                  </div>
                 </div>
+                <span className="mb-2">
+                  <FontAwesomeIcon
+                    icon={faExclamationCircle}
+                    color={DEFAULT_TEXT_ICON_COLOR}
+                    size="2x"
+                    fixedWidth
+                  />
+                </span>
               </div>
               <div>
                 <div className={styles.actions}></div>
