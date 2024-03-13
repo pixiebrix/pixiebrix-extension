@@ -15,22 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expect, test as setup } from "@playwright/test";
-import {
-  E2E_TEST_USER_EMAIL_UNAFFILIATED,
-  E2E_TEST_USER_PASSWORD_UNAFFILIATED,
-  SERVICE_URL,
-} from "./env";
+import { test, expect } from "../fixtures/extensionBase";
+import { ModsPage } from "../pageObjects/modsPage";
 
-const authFile = "end-to-end-tests/.auth/user.json";
-
-setup("authenticate", async ({ page }) => {
-  await page.goto(`${SERVICE_URL}/login/email`);
-
-  await page.getByLabel("Email").fill(E2E_TEST_USER_EMAIL_UNAFFILIATED);
-  await page.getByLabel("Password").fill(E2E_TEST_USER_PASSWORD_UNAFFILIATED);
-  await page.getByRole("button", { name: "Log in" }).click();
-  await page.waitForURL(SERVICE_URL);
-  await expect(page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED)).toBeVisible();
-  await page.context().storageState({ path: authFile });
+test.describe("extension console mods page smoke test", () => {
+  test("can view available mods", async ({ page, extensionId }) => {
+    const modsPage = new ModsPage(page, extensionId);
+    await modsPage.goto();
+    const pageTitle = await page.title();
+    expect(pageTitle).toBe("Mods | PixieBrix");
+    await modsPage.viewAllMods();
+    const modTableItems = await modsPage.getAllModTableItems();
+    // There is at least one mod visible
+    await expect(modTableItems.nth(0)).toBeVisible();
+  });
 });

@@ -140,6 +140,13 @@ module.exports = {
   },
   overrides: [
     {
+      // (TODO: consider packaging e2e tests in a mono-repo structure)
+      files: ["end-to-end-tests/**"], // Or *.test.js
+      rules: {
+        "no-restricted-imports": "off",
+      },
+    },
+    {
       files: [
         "webpack.*.js",
         "*.config.js",
