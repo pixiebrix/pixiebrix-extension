@@ -23,10 +23,8 @@ type AxeResults = Awaited<ReturnType<typeof AxeBuilder.prototype.analyze>>;
 function criticalViolationsFromAxeResults(
   accessibilityScanResults: AxeResults,
 ) {
-  return new Set(
-    accessibilityScanResults.violations.flatMap(({ id, impact }) =>
-      impact === "critical" ? [] : [id],
-    ),
+  return accessibilityScanResults.violations.flatMap((violation) =>
+    violation.impact === "critical" ? [] : [violation],
   );
 }
 
@@ -34,15 +32,26 @@ export function checkForCriticalViolations(
   accessibilityScanResults: AxeResults,
   allowedViolations: string[] = [],
 ) {
-  const criticalViolations = [
-    ...criticalViolationsFromAxeResults(accessibilityScanResults),
-  ];
-  if (criticalViolations.some((rule) => !allowedViolations.includes(rule))) {
-    console.warn(
-      "Found Critical Accessibility Violations. Full report:",
-      JSON.stringify(accessibilityScanResults.violations, null, 2),
+  const criticalViolations = criticalViolationsFromAxeResults(
+    accessibilityScanResults,
+  );
+
+  const unallowedViolations = criticalViolations.filter(
+    (violation) =>
+      !allowedViolations.some((allowed) => violation.id === allowed),
+  );
+
+  const absentAllowedViolations = allowedViolations.filter(
+    (allowed) =>
+      !criticalViolations.some((violation) => violation.id === allowed),
+  );
+
+  for (const rule of absentAllowedViolations) {
+    console.info(
+      `Allowed a11y violation rule "${rule}" is not present anymore. It can be removed.`,
     );
   }
 
-  expect(criticalViolations).toEqual(allowedViolations);
+  // Expectation only fails if there are any criticalViolations that aren't explicitly allowed
+  expect(unallowedViolations).toEqual([]);
 }
