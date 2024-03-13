@@ -766,6 +766,7 @@
     "../end-to-end-tests/pageObjects/modsPage.ts",
     "../end-to-end-tests/pageObjects/constants.ts",
     "../end-to-end-tests/tests/modsPageSmoke.spec.ts",
+    "../end-to-end-tests/tests/extensionConsoleActivation.spec.ts",
     "./utils/deploymentUtils.ts"
   ]
 }
