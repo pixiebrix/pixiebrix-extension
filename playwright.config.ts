@@ -17,6 +17,9 @@ export default defineConfig({
   workers: CI ? 1 : undefined,
   /* Timeout for each test */
   timeout: 30_000,
+  expect: {
+    timeout: 10_000,
+  },
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [["html", { outputFolder: "./end-to-end-tests/.report" }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
