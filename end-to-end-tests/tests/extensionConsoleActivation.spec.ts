@@ -17,10 +17,9 @@
 
 import { test, expect } from "../fixtures/extensionBase";
 
-test("can activate a mod with config options", async ({
+test("can activate and use highlight keywords mod", async ({
   page,
   extensionId,
-  baseURL,
 }) => {
   const modName = "Highlight Specific Keywords When Page Loads";
   const modId = "@pixies/highlight-keywords";
@@ -36,7 +35,7 @@ test("can activate a mod with config options", async ({
   await page.click("button:has-text('Activate')");
   await expect(page.getByText(`Installed ${modName}`)).toBeVisible();
 
-  await page.goto(`${baseURL}/bootstrap-5`);
+  await page.goto("/bootstrap-5");
 
   const highlightedElements = await page.locator("mark").all();
 
