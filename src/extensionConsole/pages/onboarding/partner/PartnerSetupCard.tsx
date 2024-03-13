@@ -167,7 +167,11 @@ const PartnerSetupCard: React.FunctionComponent = () => {
   if (mode === "oauth2") {
     // For OAuth2, there's only 2 steps because the AA JWT is also used to communicate with the PixieBrix server
     StepTwo = (
-      <OnboardingStep number={2} title="Connect your AARI account" active>
+      <OnboardingStep
+        number={2}
+        title="Connect your Automation Co-Pilot account"
+        active
+      >
         <ControlRoomOAuthForm
           initialValues={initialFormValues}
           // Force re-render when control room URL changes, so that the control room URL will be pre-filled
@@ -184,7 +188,11 @@ const PartnerSetupCard: React.FunctionComponent = () => {
       />
     );
     StepThree = (
-      <OnboardingStep number={3} title="Connect your AARI account" active>
+      <OnboardingStep
+        number={3}
+        title="Connect your Automation Co-Pilot account"
+        active
+      >
         <ControlRoomTokenForm
           initialValues={initialFormValues}
           key={controlRoomUrl}
@@ -208,7 +216,12 @@ const PartnerSetupCard: React.FunctionComponent = () => {
         </Button>
       </OnboardingStep>
     );
-    StepThree = <OnboardingStep number={3} title="Connect your AARI account" />;
+    StepThree = (
+      <OnboardingStep
+        number={3}
+        title="Connect your Automation Co-Pilot account"
+      />
+    );
   }
 
   return (

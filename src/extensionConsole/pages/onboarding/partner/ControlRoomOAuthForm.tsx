@@ -121,7 +121,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
           const newIntegrationConfig = {
             id: configId,
             integrationId: CONTROL_ROOM_OAUTH_INTEGRATION_ID,
-            label: "Primary AARI Account",
+            label: "Primary Automation Co-Pilot Account",
             config: secretsConfig,
           } as IntegrationConfig;
 
@@ -194,7 +194,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
   const renderSubmit: RenderSubmit = ({ isSubmitting, isValid }) => (
     <div className="text-left">
       <Button type="submit" disabled={isSubmitting || !isValid}>
-        Connect AARI
+        Connect
       </Button>
     </div>
   );

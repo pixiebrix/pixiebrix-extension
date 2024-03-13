@@ -105,7 +105,7 @@ export function useOpenEditorTab(): (id: RegistryId) => Promise<void> {
   );
 }
 
-const Editor = ({ showLogs = true }: OwnProps) => {
+const Content = ({ showLogs }: { showLogs: boolean }) => {
   const [activeTab, setTab] = useState("edit");
   const [editorWidth, setEditorWidth] = useState<number>();
   const [selectedReference, setSelectedReference] = useState<Metadata>();
@@ -147,101 +147,104 @@ const Editor = ({ showLogs = true }: OwnProps) => {
       setEditorWidth(editorRef.current.offsetWidth);
     }
   }, [editorRef]);
-
   return (
-    <div>
-      <ConfirmNavigationModal />
-      <div className="mb-3">
-        <ul className="list-unstyled list-inline">
-          <li className="list-inline-item">
-            <kbd>{isMac() ? "Cmd" : "Ctrl"}</kbd> + <kbd>S</kbd>: Save
-          </li>
-          <li className="list-inline-item mx-3">
-            <kbd>{isMac() ? "Cmd" : "Ctrl"}</kbd> + <kbd>B</kbd>: View Reference
-          </li>
-          <li className="list-inline-item mx-3">
-            <kbd>{isMac() ? "Cmd" : "Ctrl"}</kbd> + <kbd>O</kbd>: Open Brick
-          </li>
-          <li className="list-inline-item mx-3">
-            <kbd>{isMac() ? "Cmd" : "Ctrl"}</kbd> + <kbd>F</kbd>: Search
-          </li>
-        </ul>
-      </div>
+    <Tab.Container
+      id="editor-container"
+      defaultActiveKey={activeTab}
+      activeKey={activeTab}
+    >
       <Card ref={editorRef}>
-        <Tab.Container
-          id="editor-container"
-          defaultActiveKey={activeTab}
-          activeKey={activeTab}
-        >
-          <Card.Header>
-            <Nav variant="tabs" onSelect={setTab}>
-              <Nav.Link eventKey="edit">
-                {dirty ? (
-                  <span className="text-danger">
-                    Editor{" "}
-                    <FontAwesomeIcon
-                      icon={errors.config ? faTimesCircle : faSave}
-                    />
-                  </span>
-                ) : (
-                  "Editor"
-                )}
-              </Nav.Link>
-              <Nav.Link eventKey="share">
-                Sharing{" "}
-                <SharingIcon
-                  isPublic={values.public}
-                  organizations={values.organizations.length > 0}
-                />
-              </Nav.Link>
-              {showLogs && <Nav.Link eventKey="logs">Logs</Nav.Link>}
-              <Nav.Link eventKey="reference">Reference</Nav.Link>
-              <Nav.Link eventKey="history" disabled={!brickId}>
-                History
-              </Nav.Link>
-            </Nav>
-          </Card.Header>
-
-          <Tab.Content className="p-0">
-            <Tab.Pane eventKey="edit" className="p-0">
-              <CodeEditor
-                name="config"
-                width={editorWidth}
-                openDefinition={openReference}
-                openEditor={openEditorTab}
-              />
-            </Tab.Pane>
-            <Tab.Pane eventKey="share" className="p-0">
-              <SharingTable />
-            </Tab.Pane>
-
-            {showLogs && (
-              <Tab.Pane eventKey="logs" className="p-0">
-                <LogCard />
-              </Tab.Pane>
-            )}
-
-            <Tab.Pane eventKey="reference" className="p-0">
-              <BrickReference
-                key={selectedReference?.id}
-                bricks={bricks}
-                initialSelected={selectedReference}
-              />
-            </Tab.Pane>
-
-            <Tab.Pane eventKey="history" className="p-0">
-              {brickId ? (
-                <BrickHistory brickId={brickId} />
+        <Card.Header>
+          <Nav variant="tabs" onSelect={setTab}>
+            <Nav.Link eventKey="edit">
+              {dirty ? (
+                <span className="text-danger">
+                  Editor{" "}
+                  <FontAwesomeIcon
+                    icon={errors.config ? faTimesCircle : faSave}
+                  />
+                </span>
               ) : (
-                // This should never be shown since we disable the tab when creating a new brick
-                <div>Save the brick to view its version history</div>
+                "Editor"
               )}
+            </Nav.Link>
+            <Nav.Link eventKey="share">
+              Sharing{" "}
+              <SharingIcon
+                isPublic={values.public}
+                organizations={values.organizations.length > 0}
+              />
+            </Nav.Link>
+            {showLogs && <Nav.Link eventKey="logs">Logs</Nav.Link>}
+            <Nav.Link eventKey="reference">Reference</Nav.Link>
+            <Nav.Link eventKey="history" disabled={!brickId}>
+              History
+            </Nav.Link>
+          </Nav>
+        </Card.Header>
+
+        <Tab.Content className="p-0">
+          <Tab.Pane eventKey="edit" className="p-0">
+            <CodeEditor
+              name="config"
+              width={editorWidth}
+              openDefinition={openReference}
+              openEditor={openEditorTab}
+            />
+          </Tab.Pane>
+          <Tab.Pane eventKey="share" className="p-0">
+            <SharingTable />
+          </Tab.Pane>
+
+          {showLogs && (
+            <Tab.Pane eventKey="logs" className="p-0">
+              <LogCard />
             </Tab.Pane>
-          </Tab.Content>
-        </Tab.Container>
+          )}
+
+          <Tab.Pane eventKey="reference" className="p-0">
+            <BrickReference
+              key={selectedReference?.id}
+              bricks={bricks}
+              initialSelected={selectedReference}
+            />
+          </Tab.Pane>
+
+          <Tab.Pane eventKey="history" className="p-0">
+            {brickId ? (
+              <BrickHistory brickId={brickId} />
+            ) : (
+              // This should never be shown since we disable the tab when creating a new brick
+              <div>Save the brick to view its version history</div>
+            )}
+          </Tab.Pane>
+        </Tab.Content>
       </Card>
-    </div>
+    </Tab.Container>
   );
 };
+
+const Editor = ({ showLogs = true }: OwnProps) => (
+  <div>
+    <ConfirmNavigationModal />
+    <div className="mb-3">
+      <ul className="list-unstyled list-inline">
+        <li className="list-inline-item">
+          <kbd>{isMac() ? "Cmd" : "Ctrl"}</kbd> + <kbd>S</kbd>: Save
+        </li>
+        <li className="list-inline-item mx-3">
+          <kbd>{isMac() ? "Cmd" : "Ctrl"}</kbd> + <kbd>B</kbd>: View Reference
+        </li>
+        <li className="list-inline-item mx-3">
+          <kbd>{isMac() ? "Cmd" : "Ctrl"}</kbd> + <kbd>O</kbd>: Open Brick
+        </li>
+        <li className="list-inline-item mx-3">
+          <kbd>{isMac() ? "Cmd" : "Ctrl"}</kbd> + <kbd>F</kbd>: Search
+        </li>
+      </ul>
+    </div>
+    <Content showLogs={showLogs} />
+  </div>
+);
 
 export default Editor;

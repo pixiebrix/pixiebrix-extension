@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// eslint-disable-next-line no-restricted-imports -- used for testing
 import { loadEnv } from "../scripts/env";
 
 process.env.ENV_FILE ??= ".env.development";

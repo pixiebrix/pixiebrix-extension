@@ -8401,7 +8401,7 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard OAuth2 1`] = `
               <h3
                 className="stepTitle"
               >
-                Connect your AARI account
+                Connect your Automation Co-Pilot account
               </h3>
               <div
                 className="stepBody"
@@ -8461,7 +8461,7 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard OAuth2 1`] = `
                       disabled={false}
                       type="submit"
                     >
-                      Connect AARI
+                      Connect
                     </button>
                   </div>
                 </form>
@@ -8629,7 +8629,7 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard Token (Linked Extension) 1
               <h3
                 className="stepTitle"
               >
-                Connect your AARI account
+                Connect your Automation Co-Pilot account
               </h3>
             </div>
           </div>
@@ -8794,7 +8794,7 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard Token (Unlinked Extension)
               <h3
                 className="stepTitle"
               >
-                Connect your AARI account
+                Connect your Automation Co-Pilot account
               </h3>
             </div>
           </div>
@@ -8807,10 +8807,10 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard Token (Unlinked Extension)
 
 exports[`Storyshots PageEditor/HomePane Default 1`] = `
 <div
-  className="h-100 overflow-auto container-fluid"
+  className="h-100 overflow-auto p-4 container-fluid"
 >
   <div
-    className="pane row"
+    className="gap-2 row"
   >
     <img
       alt="background illustration"
