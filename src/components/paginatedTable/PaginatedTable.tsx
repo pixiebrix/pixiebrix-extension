@@ -133,7 +133,7 @@ function findPageIndex<TRow extends UnknownObject>({
  */
 function PaginatedTable<
   Row extends UnknownObject,
-  Actions extends Record<string, Action>,
+  Actions extends Record<string, Action> = Record<string, Action>,
 >({
   data,
   columns,
