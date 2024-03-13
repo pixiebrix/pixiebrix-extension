@@ -59,6 +59,9 @@ export const test = base.extend<{
     const pathToExtension = path.join(__dirname, "../../dist");
 
     const context = await chromium.launchPersistentContext("", {
+      // Test against the branded Chrome browser
+      // See: https://playwright.dev/docs/browsers#google-chrome--microsoft-edge
+      channel: "chrome",
       headless: false,
       args: [
         `--disable-extensions-except=${pathToExtension}`,

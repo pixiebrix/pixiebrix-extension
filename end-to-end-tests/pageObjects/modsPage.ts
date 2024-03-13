@@ -34,9 +34,10 @@ export class ModsPage {
     const activeModsHeading = this.page.getByRole("heading", {
       name: "Active Mods",
     });
-    // `activeModsHeading` may be initially hidden, so toBeVisible() would immediately fail
-    await expect(activeModsHeading).toBeAttached();
-    await expect(activeModsHeading).not.toBeHidden();
+    // `activeModsHeading` may be initially be detached and hidden, so toBeVisible() would immediately fail
+    await expect(async () => {
+      await expect(activeModsHeading).toBeVisible();
+    }).toPass();
   }
 
   async viewAllMods() {
