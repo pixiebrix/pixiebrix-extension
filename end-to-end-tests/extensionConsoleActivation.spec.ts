@@ -19,11 +19,10 @@ test("can activate a mod with config options", async ({
   await page.click("button:has-text('Activate')");
   await expect(page.getByText(`Installed ${modName}`)).toBeVisible();
 
-  // TODO -- assert on mods page that the mod is activated
   await page.goto(baseURL);
   await page.click("a[title='/bootstrap-5']");
 
-  for (const element of await page.locator("mark").all()) {
+  (await page.locator("mark").all()).map(async (element) => {
     await expect(element).toHaveText("PixieBrix");
-  }
+  });
 });
