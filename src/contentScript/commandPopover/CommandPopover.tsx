@@ -105,7 +105,7 @@ const ResultItem: React.FunctionComponent<{
         shortcut={command.shortcut}
         commandKey={commandKey}
       />
-      <div className="preview">{normalizePreview(command.preview)}</div>
+      <div className="result__preview">{normalizePreview(command.preview)}</div>
     </button>
   );
 };

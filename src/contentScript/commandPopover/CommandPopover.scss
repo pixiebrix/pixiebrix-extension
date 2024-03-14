@@ -17,6 +17,8 @@
 
 /**
  * @file Imported into the shadow DOM of the CommandPopover component
+
+ * https://www.figma.com/file/0FSyxGoz2Pk1gtvrzWNe7G/Business-User-Onboarding-Mods?type=design&node-id=241-2243&mode=design&t=3mXfdNhsvsgVm2zO-0
  */
 
 @import "@/themes/colors.scss";
@@ -44,29 +46,39 @@
   background-color: $N0;
   justify-content: center;
   text-align: center;
-  color: $D600;
+  color: $N300;
   font-size: 0.875em;
+  font-family:
+    Ubuntu,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  font-weight: 500;
+  line-height: 14.4px;
+  word-wrap: break-word;
 
   // Font Awesome stylesheet is not available in the Shadow DOM
   svg {
+    margin-bottom: 8px;
     width: 1.5em;
     height: 1.5em;
   }
 }
 
-.preview {
-  color: $N400;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .footer {
   padding: 0.5rem;
   font-size: 0.625rem;
-  color: #9c9fa6;
+  color: $S600;
   text-transform: uppercase;
-  font-family: monospace;
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  font-weight: 600;
+
+  border-top: 1px solid $S3;
 
   .key {
     color: $P600;
@@ -84,21 +96,29 @@
   text-align: left;
 
   border: 0;
-  padding: 0.5em 0.5em;
+  padding: 6px 8px;
 
-  color: black;
+  color: $S800;
   background-color: $N0;
 
   &--selected {
-    background-color: $P100;
+    background-color: $S200;
   }
 
   &:active {
-    background-color: $P300;
+    background-color: $P100;
   }
 
   &__match {
     font-weight: bold;
+  }
+
+  &__preview {
+    margin-top: 3px;
+    color: $N600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
