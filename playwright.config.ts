@@ -18,6 +18,7 @@ export default defineConfig({
   /* Timeout for each test */
   timeout: 30_000,
   expect: {
+    /* Timeout for each assertion. Increased from the default of 5000 due to Extension Console loading times. */
     timeout: 10_000,
   },
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
