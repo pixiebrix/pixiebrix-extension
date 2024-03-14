@@ -23,6 +23,7 @@ import {
 import { waitAnimationFrame } from "@/utils/domUtils";
 import { expectContext } from "@/utils/expectContext";
 import { insertAtCursorWithCustomEditorSupport } from "@/contentScript/textEditorDom";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 /**
  * Replaces the text at the current command + query with the given text
@@ -109,4 +110,11 @@ export async function replaceAtCommand({
 
     await insertAtCursorWithCustomEditorSupport(text);
   }
+}
+
+/**
+ * Remove newlines and excess whitespace from a snippet preview.
+ */
+export function normalizePreview(preview: Nullishable<string>): string {
+  return (preview ?? "No preview available").replaceAll(/\s+/g, " ").trim();
 }

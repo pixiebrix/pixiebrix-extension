@@ -15,13 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { replaceAtCommand } from "@/contentScript/commandPopover/commandUtils";
+import {
+  normalizePreview,
+  replaceAtCommand,
+} from "@/contentScript/commandPopover/commandUtils";
 
 // `jsdom` doesn't implement execCommand
 document.execCommand = jest.fn().mockReturnValue(true);
 
 // Can only do very limited testing due to lack of jsdom support for execCommand and selection/focus
-describe("commandUtils", () => {
+describe("replaceAtCommand", () => {
   it("inserts in normal text field", async () => {
     document.body.innerHTML =
       '<input type="text" value="\\hello world" id="input" />';
@@ -39,5 +42,11 @@ describe("commandUtils", () => {
       false,
       "new text",
     );
+  });
+});
+
+describe("normalizePreview", () => {
+  it("removes excess space", () => {
+    expect(normalizePreview("  hello \n\n world  ")).toBe("hello world");
   });
 });

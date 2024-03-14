@@ -76,6 +76,9 @@ export function isNunjucksExpression(
   return isExpression(value) && value.__type__ === "nunjucks";
 }
 
+/**
+ * Returns true if value represents a brick pipeline expression
+ */
 export function isPipelineExpression(
   value: unknown,
 ): value is PipelineExpression {
