@@ -67,10 +67,7 @@ export async function replaceAtCommand({
     // Ensure the selection update has propagated
     await waitAnimationFrame();
 
-    await insertAtCursorWithCustomEditorSupport({
-      element,
-      text,
-    });
+    await insertAtCursorWithCustomEditorSupport(text);
   }
 
   if (isNativeField(element)) {
@@ -108,9 +105,6 @@ export async function replaceAtCommand({
       throw new Error("Selection has no parent element");
     }
 
-    await insertAtCursorWithCustomEditorSupport({
-      element: parentElement,
-      text,
-    });
+    await insertAtCursorWithCustomEditorSupport(text);
   }
 }

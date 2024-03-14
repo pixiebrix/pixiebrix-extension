@@ -18,9 +18,9 @@
 import * as ckeditorDom from "@/contrib/ckeditor/ckeditorDom";
 import * as pageScript from "@/pageScript/messenger/api";
 import { getSelectorForElement } from "@/contentScript/elementReference";
-import textFieldEdit from "text-field-edit";
 import { expectContext } from "@/utils/expectContext";
 import { dispatchPasteForDraftJs } from "@/utils/domFieldUtils";
+import focusController from "@/utils/focusController";
 
 /**
  * @file Text Editor DOM utilities that might call the pageScript.
@@ -39,24 +39,16 @@ import { dispatchPasteForDraftJs } from "@/utils/domFieldUtils";
  * - Plain content editable (Gmail, etc.)
  * - CKEditor 4/5
  *
- * @param element the element to insert text into. Can be a text input, textarea, or contenteditable element.
- * @param text the text to insert
  */
-export async function insertAtCursorWithCustomEditorSupport({
-  element,
-  text,
-}: {
-  element: HTMLElement;
-  text: string;
-}) {
+export async function insertAtCursorWithCustomEditorSupport(text: string) {
   expectContext(
     "contentScript",
     "contentScript context required for editor JavaScript integrations",
   );
 
-  // `textFieldEdit` handles focus required to insert the text. But, force focus to enable the user to keep typing
-  window.focus();
-  element.focus();
+  // TODO: Some fields might require: getSelection()?.anchorNode?.parentElement;
+  //   https://github.com/pixiebrix/pixiebrix-extension/issues/7779#issuecomment-1994463140
+  const element = focusController.get();
 
   const ckeditor = ckeditorDom.selectCKEditorElement(element);
   if (ckeditor) {
@@ -75,5 +67,10 @@ export async function insertAtCursorWithCustomEditorSupport({
     return;
   }
 
-  textFieldEdit.insert(element, text);
+  // Only needed for native input fields
+  focusController.restoreWithoutClearing();
+
+  if (!document.execCommand("insertText", false, text)) {
+    throw new Error("Failed to insert text using execCommand");
+  }
 }
