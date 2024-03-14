@@ -68,13 +68,20 @@ const focusController = {
    *  https://github.com/pixiebrix/pixiebrix-extension/issues/7774#issuecomment-1980041738
    */
   restore(): void {
+    focusController.restoreWithoutClearing();
+    focusController.clear();
+  },
+
+  restoreWithoutClearing(): void {
+    if (!focusedElement) {
+      return;
+    }
+
     // `focusedElement === body`: This restores its focus. `body.focus()` doesn't do anything
     (document.activeElement as HTMLElement)?.blur?.();
 
     // `focusedElement === HTMLElement`: Restore focus if it's an HTMLElement, otherwise silently ignore it
-    focusedElement?.focus?.();
-
-    focusedElement = undefined;
+    focusedElement.focus?.();
   },
 
   /** Clear saved value without restoring focus */
@@ -87,6 +94,10 @@ const focusController = {
    */
   get(): HTMLElement {
     return focusedElement ?? (document.activeElement as HTMLElement);
+  },
+
+  wasSaved(): boolean {
+    return focusedElement != null;
   },
 } as const;
 
