@@ -25,6 +25,6 @@ const brick = new InsertAtCursorEffect();
 
 describe("InsertAtCursorEffect", () => {
   it("is root-aware", async () => {
-    await expect(brick.isRootAware()).resolves.toBe(true);
+    await expect(brick.isRootAware()).resolves.toBe(false);
   });
 });

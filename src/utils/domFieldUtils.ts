@@ -100,6 +100,8 @@ export async function setFieldValue(
   }
 
   if (field.isContentEditable) {
+    // XXX: Maybe use text-field-edit so that the focus is not altered
+
     // Field needs to be focused first
     field.focus();
 

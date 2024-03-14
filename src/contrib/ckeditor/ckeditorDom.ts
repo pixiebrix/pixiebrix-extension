@@ -17,8 +17,6 @@
 
 /** @file CKEditor methods that don't require pageScript access to the CKEditor instance */
 
-import type { Nullishable } from "@/utils/nullishUtils";
-
 /**
  * Returns true if the element appears to be a CKEditor 5 instance based on its class name.
  * Can be called from either the contentScript or web/pageScript context.
@@ -30,12 +28,16 @@ export function hasCKEditorClass(element: HTMLElement): boolean {
 }
 
 /**
- * Returns the CKEditor element that contains the given element, or null if the element is not in a CKEditor instance.
+ * Returns the CKEditor 5 element that contains the given element, or null if the element is not in a CKEditor instance.
  * Can be called from either the contentScript or web/pageScript context.
  */
 export function selectCKEditorElement(
-  element: HTMLElement,
-): Nullishable<HTMLElement> {
+  element: HTMLElement | undefined,
+): HTMLElement | null {
+  if (!element) {
+    return null;
+  }
+
   // Likely faster than repeatedly calling hasCKEditorClass
   return element.closest<HTMLElement>(".ck-editor__editable");
 }

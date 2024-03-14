@@ -16,15 +16,9 @@
  */
 
 import { EffectABC } from "@/types/bricks/effectTypes";
-import {
-  type BrickArgs,
-  type BrickOptions,
-  isDocument,
-} from "@/types/runtimeTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { BusinessError } from "@/errors/businessErrors";
 import { isEmpty } from "lodash";
-import focus from "@/utils/focusController";
 import selectionController from "@/utils/selectionController";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { insertAtCursorWithCustomEditorSupport } from "@/contentScript/textEditorDom";
@@ -59,12 +53,13 @@ class InsertAtCursorEffect extends EffectABC {
   }
 
   override async isRootAware(): Promise<boolean> {
-    return true;
+    // Always targets the active field/editor
+    return false;
   }
 
   async effect(
     { text }: BrickArgs<{ text: string }>,
-    { root, logger }: BrickOptions,
+    { logger }: BrickOptions,
   ): Promise<void> {
     expectContext("contentScript");
 
@@ -74,22 +69,13 @@ class InsertAtCursorEffect extends EffectABC {
       return;
     }
 
-    const element = isDocument(root) ? focus.get() : root;
-
-    // When calling this brick from the sidebar, some editors intentionally clear the selection
+    // When calling this brick from the sidebar, some editors intentionally clear the selection,
     // so we need to restore it before inserting the text. This isn't necessary on native
     // input fields and contenteditable elements for example.
     // https://github.com/pixiebrix/pixiebrix-extension/pull/7827#issuecomment-1979884573
     selectionController.restoreWithoutClearing();
 
-    if (!element) {
-      throw new BusinessError("No active element");
-    }
-
-    await insertAtCursorWithCustomEditorSupport({
-      element,
-      text,
-    });
+    await insertAtCursorWithCustomEditorSupport(text);
   }
 }
 
