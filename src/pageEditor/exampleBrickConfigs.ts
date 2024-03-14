@@ -32,6 +32,8 @@ import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import { minimalUiSchemaFactory } from "@/utils/schemaUtils";
 import { toExpression } from "@/utils/expressionUtils";
 import CommentEffect from "@/bricks/effects/comment";
+import AddTextCommand from "@/bricks/effects/AddTextCommand";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 /**
  * Get an example brick config for a given brick id.
@@ -180,6 +182,22 @@ export function getExampleBrickConfig(
       return {
         variableName: "",
         value: toExpression("nunjucks", ""),
+      };
+    }
+
+    case AddTextCommand.BRICK_ID: {
+      return {
+        shortcut: "command",
+        title: "Example Command",
+        generate: toExpression("pipeline", [
+          {
+            ...createNewConfiguredBrick(IdentityTransformer.BRICK_ID, {
+              parentBrickId: AddTextCommand.BRICK_ID,
+            }),
+            config: toExpression("nunjucks", ""),
+            outputKey: validateOutputKey("generatedText"),
+          },
+        ]),
       };
     }
 

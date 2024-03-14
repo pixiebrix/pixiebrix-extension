@@ -43,6 +43,7 @@ import { Stylesheets } from "@/components/Stylesheets";
 import useIsMounted from "@/hooks/useIsMounted";
 import { replaceAtCommand } from "@/contentScript/commandPopover/commandUtils";
 import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
+import type { Nullishable } from "@/utils/nullishUtils";
 
 type PopoverActionCallbacks = {
   onHide: () => void;
@@ -53,15 +54,22 @@ const CommandTitle: React.FunctionComponent<{
   shortcut: string;
   commandKey: string;
 }> = ({ query, shortcut, commandKey }) => (
-  <span>
+  <div>
     {commandKey}
     {!isEmpty(query) && (
       // Highlight the match. Use the shortcut vs. query directly because search is case-insensitive
       <span className="result__match">{shortcut.slice(0, query.length)}</span>
     )}
     {shortcut.slice(query.length)}
-  </span>
+  </div>
 );
+
+/**
+ * Remove newlines and excess whitespace from a snippet preview
+ */
+function normalizePreview(preview: Nullishable<string>): string {
+  return (preview ?? "No preview available").replaceAll(/\s+/g, " ").trim();
+}
 
 const ResultItem: React.FunctionComponent<{
   command: TextCommand;
@@ -96,6 +104,7 @@ const ResultItem: React.FunctionComponent<{
         shortcut={command.shortcut}
         commandKey={commandKey}
       />
+      <div className="preview">{normalizePreview(command.preview)}</div>
     </button>
   );
 };

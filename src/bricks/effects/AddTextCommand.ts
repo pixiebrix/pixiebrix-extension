@@ -33,13 +33,17 @@ import { normalizeShortcut } from "@/bricks/effects/AddTextSnippets";
 
 type CommandArgs = {
   /**
-   * The shortcut for the text command.
+   * The shortcut for the text command
    */
   shortcut: string;
   /**
    * The title for the Text Command
    */
   title: string;
+  /**
+   * An optional preview of the text to insert
+   */
+  preview?: string;
   /**
    * The text generator to run
    */
@@ -79,6 +83,11 @@ class AddTextCommand extends EffectABC {
         type: "string",
         description: "The title for the Text Command",
       },
+      preview: {
+        type: "string",
+        title: "Text Preview",
+        description: "An optional preview of the text to insert",
+      },
       generate: {
         $ref: "https://app.pixiebrix.com/schemas/pipeline#",
         description: "The text generator to run",
@@ -92,7 +101,12 @@ class AddTextCommand extends EffectABC {
   }
 
   async effect(
-    { shortcut, title, generate: generatePipeline }: BrickArgs<CommandArgs>,
+    {
+      shortcut,
+      title,
+      preview,
+      generate: generatePipeline,
+    }: BrickArgs<CommandArgs>,
     { logger, runPipeline, platform, abortSignal }: BrickOptions,
   ): Promise<void> {
     // The runtime checks the abortSignal for each brick. But check here too to avoid flickering in the popover
@@ -112,6 +126,7 @@ class AddTextCommand extends EffectABC {
       // Trim leading command key in shortcut to be resilient to user input
       shortcut: normalizeShortcut(shortcut),
       title,
+      preview,
       async handler(currentText: string): Promise<string> {
         counter++;
 
