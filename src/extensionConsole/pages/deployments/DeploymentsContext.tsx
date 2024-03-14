@@ -25,7 +25,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectExtensions } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
-import { services } from "@/background/messenger/api";
+import { services } from "@/background/messenger/strict/api";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import { type Dispatch } from "@reduxjs/toolkit";
 import useFlags, { type Restrict } from "@/hooks/useFlags";

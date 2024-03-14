@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { services } from "@/background/messenger/api";
+import { services } from "@/background/messenger/strict/api";
 import extensionsSlice from "@/store/extensionsSlice";
 import { Events } from "@/telemetry/events";
 import reportEvent from "@/telemetry/reportEvent";

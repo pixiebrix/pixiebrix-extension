@@ -215,7 +215,7 @@ class FormValidator<
         // https://github.com/rjsf-team/react-jsonschema-form/blob/main/packages/validator-ajv6/src/validator.ts#L99
         errors: result.errors as unknown as Result[],
       };
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof Error) {
         return { validationError: error };
       }

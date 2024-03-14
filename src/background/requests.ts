@@ -267,8 +267,8 @@ async function proxyRequest<T>(
 }
 
 function isAuthenticationError(error: Pick<AxiosError, "response">): boolean {
-  // Response should be an object, but be defensive
-  if (error.response == null || !isObject(error.response)) {
+  // Response should be an object
+  if (!isObject(error.response)) {
     return false;
   }
 
@@ -287,6 +287,8 @@ function isAuthenticationError(error: Pick<AxiosError, "response">): boolean {
   ) {
     return true;
   }
+
+  return false;
 }
 
 async function _performConfiguredRequest(
@@ -368,7 +370,7 @@ async function getIntegrationMessageContext(
   config: SanitizedIntegrationConfig,
 ): Promise<MessageContext> {
   // Try resolving the integration to get metadata to include with the error
-  let resolvedIntegration: Integration;
+  let resolvedIntegration: Integration | undefined;
   try {
     resolvedIntegration = await serviceRegistry.lookup(config.serviceId);
   } catch {

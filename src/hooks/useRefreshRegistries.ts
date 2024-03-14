@@ -19,10 +19,8 @@ import { useAsyncEffect } from "use-async-effect";
 import { stubTrue, throttle } from "lodash";
 import { useCallback, useState } from "react";
 import notify from "@/utils/notify";
-import {
-  clearServiceCache,
-  services as serviceAuthRegistry,
-} from "@/background/messenger/api";
+import { clearServiceCache } from "@/background/messenger/api";
+import { services as serviceAuthRegistry } from "@/background/messenger/strict/api";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 
 const syncServiceAuths = async () => {

@@ -164,7 +164,7 @@ export async function shouldRunBlock(
  * @see BrickConfig.rootMode
  * @see BrickConfig.root
  */
-export async function selectBlockRootElement(
+export async function selectBrickRootElement(
   brickConfig: BrickConfig,
   defaultRoot: SelectorRoot,
   context: BrickArgsContext,
@@ -172,7 +172,7 @@ export async function selectBlockRootElement(
 ): Promise<SelectorRoot> {
   const rootMode = brickConfig.rootMode ?? "inherit";
 
-  let root;
+  let root: HTMLElement | Document = document;
 
   switch (rootMode) {
     case "inherit": {
@@ -218,31 +218,28 @@ export async function selectBlockRootElement(
     }
   }
 
-  const $root = $(root ?? document);
-
   // Passing a selector for root is an old behavior from when the rootModes were just inherit and document
   if (
-    typeof brickConfig.root === "string" &&
-    brickConfig.rootMode !== "element"
+    typeof brickConfig.root !== "string" ||
+    brickConfig.rootMode === "element"
   ) {
-    const $stageRoot = $safeFind(brickConfig.root, $root);
-
-    if ($stageRoot.length > 1) {
-      throw new BusinessError(`Multiple roots found for ${brickConfig.root}`);
-    }
-
-    if ($stageRoot.length === 0) {
-      const rootDescriptor =
-        (defaultRoot as HTMLElement)?.tagName ?? "document";
-      throw new BusinessError(
-        `No roots found for ${brickConfig.root} (root=${rootDescriptor})`,
-      );
-    }
-
-    return $stageRoot.get(0);
+    return root;
   }
 
-  return $root.get(0);
+  const [stageRoot, multipleStageRoots] = $safeFind(brickConfig.root, root);
+
+  if (multipleStageRoots) {
+    throw new BusinessError(`Multiple roots found for ${brickConfig.root}`);
+  }
+
+  if (stageRoot) {
+    return stageRoot;
+  }
+
+  const rootDescriptor = (defaultRoot as HTMLElement)?.tagName ?? "document";
+  throw new BusinessError(
+    `No roots found for ${brickConfig.root} (root=${rootDescriptor})`,
+  );
 }
 
 export function assertModComponentNotResolved<

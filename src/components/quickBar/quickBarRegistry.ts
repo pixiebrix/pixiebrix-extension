@@ -23,7 +23,7 @@ import {
   type GeneratorArgs,
 } from "@/components/quickBar/quickbarTypes";
 import { allSettled } from "@/utils/promiseUtils";
-import { RepeatableAbortController } from "abort-utils";
+import { ReusableAbortController } from "abort-utils";
 import type {
   CustomAction,
   QuickBarProtocol,
@@ -54,7 +54,7 @@ class QuickBarRegistry implements QuickBarProtocol {
    * Abort controller for the currently running action generator.
    * @private
    */
-  private readonly generatorAbortController = new RepeatableAbortController();
+  private readonly generatorAbortController = new ReusableAbortController();
 
   /**
    * Mapping from action generator to the rootActionId.
