@@ -53,11 +53,9 @@ async function convert({
   }
 
   if (sourceFormat === "html" && targetFormat === "text") {
-    const { convert: htmlToText } = await import(
-      /* webpackChunkName: "html-to-text" */ "html-to-text"
-    );
-
-    return htmlToText(input);
+    const element = document.createElement("div");
+    element.innerHTML = input;
+    return element.textContent;
   }
 
   if (sourceFormat === "markdown" && targetFormat === "html") {
