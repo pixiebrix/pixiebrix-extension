@@ -63,7 +63,7 @@ import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
 } from "@/platform/capabilities";
-import { RepeatableAbortController } from "abort-utils";
+import { ReusableAbortController } from "abort-utils";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 
@@ -107,7 +107,7 @@ export abstract class PanelStarterBrickABC extends StarterBrickABC<PanelConfig> 
 
   private readonly collapsedExtensions: Map<UUID, boolean>;
 
-  private readonly cancelController = new RepeatableAbortController();
+  private readonly cancelController = new ReusableAbortController();
 
   private uninstalled = false;
 

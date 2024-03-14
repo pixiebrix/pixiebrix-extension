@@ -19,7 +19,7 @@ import {
   type InitialValues,
   reduceExtensionPipeline,
 } from "@/runtime/reducePipeline";
-import { RepeatableAbortController } from "abort-utils";
+import { ReusableAbortController } from "abort-utils";
 import {
   type CustomEventOptions,
   type DebounceOptions,
@@ -195,12 +195,12 @@ export abstract class TriggerStarterBrickABC extends StarterBrickABC<TriggerConf
    * Controller to drop observers
    * @private
    */
-  private readonly observersController = new RepeatableAbortController();
+  private readonly observersController = new ReusableAbortController();
 
   /**
    * Controller to drop event listeners and timers
    */
-  private readonly cancelHandlers = new RepeatableAbortController();
+  private readonly cancelHandlers = new ReusableAbortController();
 
   // Extensions that have errors/events reported. NOTE: this tracked per contentScript instance. These are not
   // reset on Single Page Application navigation events

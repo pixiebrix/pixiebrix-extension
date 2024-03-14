@@ -35,7 +35,7 @@ import SelectionToolbar from "@/contentScript/selectionTooltip/SelectionToolbar"
 import { expectContext } from "@/utils/expectContext";
 import { onContextInvalidated } from "webext-events";
 import { isNativeField } from "@/types/inputTypes";
-import { onAbort, RepeatableAbortController } from "abort-utils";
+import { onAbort, ReusableAbortController } from "abort-utils";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
@@ -46,7 +46,7 @@ let selectionTooltip: Nullishable<HTMLElement>;
 /**
  * AbortController fired when the popover is hidden/destroyed.
  */
-const hideController = new RepeatableAbortController();
+const hideController = new ReusableAbortController();
 
 async function showTooltip(): Promise<void> {
   if (tooltipActionRegistry.actions.size === 0) {
