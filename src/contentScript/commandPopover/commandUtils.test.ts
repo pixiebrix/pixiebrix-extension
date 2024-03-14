@@ -20,7 +20,7 @@ import { replaceAtCommand } from "@/contentScript/commandPopover/commandUtils";
 // `jsdom` doesn't implement execCommand
 document.execCommand = jest.fn().mockReturnValue(true);
 
-// Can ony do very limited testing due to lack of jsdom support for execCommand and selection/focus
+// Can only do very limited testing due to lack of jsdom support for execCommand and selection/focus
 describe("commandUtils", () => {
   it("inserts in normal text field", async () => {
     document.body.innerHTML =
@@ -34,7 +34,7 @@ describe("commandUtils", () => {
       commandKey: "\\",
     });
 
-    expect(jest.mocked(document.execCommand)).toHaveBeenCalledWith(
+    expect(document.execCommand).toHaveBeenCalledWith(
       "insertText",
       false,
       "new text",
