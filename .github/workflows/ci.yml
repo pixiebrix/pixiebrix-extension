@@ -224,6 +224,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: end-to-end-tests-report
+          name: end-to-end-tests-report${{ matrix.PUBLIC_NAME }}
           path: end-to-end-tests/.report
           retention-days: 5
