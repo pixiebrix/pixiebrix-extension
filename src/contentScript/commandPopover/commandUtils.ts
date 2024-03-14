@@ -68,6 +68,8 @@ export async function replaceAtCommand({
     await waitAnimationFrame();
 
     await insertAtCursorWithCustomEditorSupport(text);
+
+    return;
   }
 
   if (isNativeField(element)) {
