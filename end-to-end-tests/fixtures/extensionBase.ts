@@ -112,7 +112,7 @@ export const test = base.extend<{
     await linkExtensionViaAdminConsole(page);
 
     // After linking, the Extension will reload, causing errors if the Extension Console is accessed too soon.
-    // Wait for the Extension Console to be visible before proceeding.
+    // Wait for the Extension Console to be available before proceeding.
     await ensureExtensionIsLoaded(page, extensionId);
 
     await use(page);
