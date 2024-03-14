@@ -42,7 +42,7 @@ import {
   type TextEditorElement,
 } from "@/types/inputTypes";
 import { expectContext } from "@/utils/expectContext";
-import { RepeatableAbortController } from "abort-utils";
+import { ReusableAbortController } from "abort-utils";
 import { waitAnimationFrame } from "@/utils/domUtils";
 
 const COMMAND_KEY = "\\";
@@ -53,7 +53,7 @@ let targetElement: Nullishable<TextEditorElement>;
 
 let commandPopover: Nullishable<HTMLElement>;
 
-const hideController = new RepeatableAbortController();
+const hideController = new ReusableAbortController();
 
 async function showPopover(element: HTMLElement): Promise<void> {
   if (targetElement != null) {

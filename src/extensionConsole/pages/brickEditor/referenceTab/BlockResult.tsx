@@ -118,14 +118,14 @@ const BlockResult = <T extends Metadata>({
           <div className={cx(styles.ellipsis, "mb-1")}>{block.name}</div>
           <OfficialBadge id={block.id} />
         </div>
-        <div className="d-flex justify-content-between align-items-center">
+        <div className="d-flex justify-content-between align-items-center gap-2">
           <code className={cx(styles.id, "flex-shrink-1 small")}>
             {block.id}
           </code>
-          <div className={cx(styles.sharing)}>
-            <div className={cx(styles.ellipsis, "small text-right pl-2")}>
-              <SharingTag block={block} organizations={organizations} />
-            </div>
+          <div
+            className={cx(styles.sharing, styles.ellipsis, "small text-right")}
+          >
+            <SharingTag block={block} organizations={organizations} />
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import { type MarketplaceListing } from "@/types/contract";
-import { Button, Col, Row } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
@@ -21,8 +21,8 @@ const BrickDetail = <T extends Metadata>({
   listing,
   onSelect,
 }: BrickDetailProps<T>) => (
-  <Row>
-    <Col xs={12} className="d-flex justify-content-between mb-3">
+  <div>
+    <div className="d-flex justify-content-between mb-3">
       <div>
         <h4>
           {brick.name} <BrickIcon brick={brick} />
@@ -46,27 +46,27 @@ const BrickDetail = <T extends Metadata>({
           {selectCaption}
         </Button>
       </div>
-    </Col>
+    </div>
 
     {"inputSchema" in brick && (
-      <Col xs={12} className="small mb-3">
+      <div className="small mb-3">
         <h6 className="my-3">Input Schema</h6>
         <SchemaTree schema={brick.inputSchema} />
-      </Col>
+      </div>
     )}
     {"outputSchema" in brick && (
-      <Col xs={12} className="small mb-3">
+      <div className="small mb-3">
         <h6 className="my-3">Output Schema</h6>
         <SchemaTree schema={brick.outputSchema} />
-      </Col>
+      </div>
     )}
     {"schema" in brick && (
-      <Col xs={12} className="small mb-3">
+      <div className="small mb-3">
         <h6 className="my-3">Schema</h6>
         <SchemaTree schema={brick.schema} />
-      </Col>
+      </div>
     )}
-  </Row>
+  </div>
 );
 
 export default BrickDetail;

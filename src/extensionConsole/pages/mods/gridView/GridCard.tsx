@@ -40,16 +40,14 @@ const GridCard: React.VoidFunctionComponent<GridCardProps> = ({
       <Card className={styles.card}>
         <Card.Body className={styles.cardBody}>
           <div className={styles.primaryInfo}>
-            <div className="d-flex justify-content-between">
-              <div>
-                <h5 className={styles.name}>{name}</h5>
-                <span className={styles.description}>{description}</span>
-                <div className={styles.packageId}>{sharing.packageId}</div>
-              </div>
-              <span className="mb-2">
-                <ModIcon size="2x" mod={mod} />
-              </span>
+            <div>
+              <h5 className={styles.name}>{name}</h5>
+              <span className={styles.description}>{description}</span>
+              <div className={styles.packageId}>{sharing.packageId}</div>
             </div>
+            <span className="mb-2">
+              <ModIcon size="2x" mod={mod} />
+            </span>
           </div>
           <div>
             <div className={styles.actions}>

@@ -8807,10 +8807,10 @@ exports[`Storyshots Onboarding/Setup/PartnerSetupCard Token (Unlinked Extension)
 
 exports[`Storyshots PageEditor/HomePane Default 1`] = `
 <div
-  className="h-100 overflow-auto container-fluid"
+  className="h-100 overflow-auto p-4 container-fluid"
 >
   <div
-    className="pane row"
+    className="gap-2 row"
   >
     <img
       alt="background illustration"

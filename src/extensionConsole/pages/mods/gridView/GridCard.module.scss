@@ -45,6 +45,8 @@
 }
 
 .primaryInfo {
+  display: flex;
+  justify-content: space-between;
   max-height: 110px;
   overflow: hidden;
 }
