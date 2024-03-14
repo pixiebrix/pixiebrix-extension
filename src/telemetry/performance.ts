@@ -18,7 +18,7 @@
 import { datadogRum } from "@datadog/browser-rum";
 import { getDNT } from "@/telemetry/dnt";
 import { getBaseURL } from "@/data/service/baseService";
-import { expectContext, forbidContext } from "@/utils/expectContext";
+import { forbidContext } from "@/utils/expectContext";
 import {
   addListener as addAuthListener,
   readAuthData,
@@ -41,12 +41,10 @@ export async function initPerformanceMonitoring(): Promise<void> {
   const applicationId = process.env.DATADOG_APPLICATION_ID;
   const clientToken = process.env.DATADOG_CLIENT_TOKEN;
 
-  // Require the extension context because we don't want to track performance of the host sites
-  expectContext("extension");
+  // We don't want to track performance of the host sites
+  forbidContext("web"); // Includes the content script
 
-  forbidContext("contentScript");
-  forbidContext("web");
-  // There's no user interactions to  track in the background page
+  // There's no user interactions to track in the background page
   forbidContext("background");
 
   if (await getDNT()) {
