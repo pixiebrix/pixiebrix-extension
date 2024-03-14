@@ -124,7 +124,7 @@ describe("AddTextCommand", () => {
     },
   );
 
-  it("includes and example", () => {
+  it("provides an example config", () => {
     expect(getExampleBrickConfig(AddTextCommand.BRICK_ID)).toStrictEqual({
       generate: toExpression("pipeline", [
         {

@@ -63,7 +63,7 @@ describe("AddTextSnippets", () => {
     },
   );
 
-  it("includes and example", () => {
+  it("provides an example config", () => {
     expect(getExampleBrickConfig(AddTextSnippets.BRICK_ID)).toStrictEqual({
       snippets: [
         {
