@@ -95,10 +95,6 @@ const focusController = {
   get(): HTMLElement {
     return focusedElement ?? (document.activeElement as HTMLElement);
   },
-
-  wasSaved(): boolean {
-    return focusedElement != null;
-  },
 } as const;
 
 export default focusController;

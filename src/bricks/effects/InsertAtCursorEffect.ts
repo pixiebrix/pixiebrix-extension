@@ -53,6 +53,7 @@ class InsertAtCursorEffect extends EffectABC {
   }
 
   override async isRootAware(): Promise<boolean> {
+    // Always targets the active field/editor
     return false;
   }
 
@@ -68,7 +69,7 @@ class InsertAtCursorEffect extends EffectABC {
       return;
     }
 
-    // When calling this brick from the sidebar, some editors intentionally clear the selection
+    // When calling this brick from the sidebar, some editors intentionally clear the selection,
     // so we need to restore it before inserting the text. This isn't necessary on native
     // input fields and contenteditable elements for example.
     // https://github.com/pixiebrix/pixiebrix-extension/pull/7827#issuecomment-1979884573
