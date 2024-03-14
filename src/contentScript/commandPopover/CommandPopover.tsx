@@ -91,7 +91,6 @@ const ResultItem: React.FunctionComponent<{
       disabled={disabled}
       key={command.shortcut}
       aria-label={command.title}
-      aria-selected={isSelected}
       title={command.title}
       role="menuitem"
       className={cx("result", { "result--selected": isSelected })}
