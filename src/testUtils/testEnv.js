@@ -54,10 +54,16 @@ global.AbortSignal.timeout ??= (milliseconds) => {
 };
 
 // For some reason, throwIfAborted is not available in Jest environment even though it appears to be in JSDOM
-// https://github.com/jsdom/jsdom/blob/2f8a7302a43fff92f244d5f3426367a8eb2b8896/lib/jsdom/living/aborting/AbortSignal-impl.js#L24
+// TODO: Drop after jest-environment-jsdom@30
 AbortSignal.prototype.throwIfAborted ??= function () {
   if (this.aborted) {
     // eslint-disable-next-line @typescript-eslint/no-throw-literal -- copy implementation from JSDOM
     throw this.reason;
   }
+};
+
+// This satisfies the tests, but it will never be implemented by JSDOM
+// https://github.com/jsdom/jsdom/issues/135#issuecomment-29812947
+globalThis.Element.prototype.checkVisibility ??= function () {
+  return this.isConnected;
 };
