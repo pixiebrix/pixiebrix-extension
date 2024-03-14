@@ -200,8 +200,6 @@ jobs:
     env:
       SERVICE_URL: https://app.pixiebrix.com
       MV: ${{ matrix.MV }}
-      MARKETPLACE_URL: ${{ secrets.STAGING_MARKETPLACE_URL }}
-      CHROME_EXTENSION_ID: mpjjildhmpddojocokjkgmlkkkfjnepo
       CHROME_MANIFEST_KEY: ${{ matrix.CHROME_MANIFEST_KEY }}
       DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
       DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
