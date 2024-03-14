@@ -46,8 +46,6 @@ export async function insertAtCursorWithCustomEditorSupport(text: string) {
     "contentScript context required for editor JavaScript integrations",
   );
 
-  // TODO: Some fields might require: getSelection()?.anchorNode?.parentElement;
-  //   https://github.com/pixiebrix/pixiebrix-extension/issues/7779#issuecomment-1994463140
   const element = focusController.get();
 
   const ckeditor = ckeditorDom.selectCKEditorElement(element);
