@@ -21,6 +21,7 @@ import {
   chromium,
   type BrowserContext,
   type Cookie,
+  type Page,
 } from "@playwright/test";
 import path from "node:path";
 import { E2E_TEST_USER_EMAIL_UNAFFILIATED, MV, SERVICE_URL } from "../env";
@@ -46,6 +47,32 @@ const getStoredCookies = async (): Promise<Cookie[]> => {
     cookies: Cookie[];
   };
   return cookies;
+};
+
+const linkExtensionViaAdminConsole = async (page: Page) => {
+  await page.goto(SERVICE_URL);
+  await baseExpect(
+    page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
+  ).toBeVisible();
+  await baseExpect(async () => {
+    await baseExpect(
+      page.getByText(
+        "Successfully linked the Browser Extension to your PixieBrix account",
+      ),
+    ).toBeVisible();
+  }).toPass({ timeout: 5000 });
+};
+
+const ensureExtensionIsLoaded = async (page: Page, extensionId: string) => {
+  await baseExpect(async () => {
+    await page.goto(`chrome-extension://${extensionId}/options.html`);
+    await baseExpect(page.getByText("Extension Console")).toBeVisible();
+    await baseExpect(
+      page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
+    ).toBeVisible();
+  }).toPass({
+    timeout: 10_000,
+  });
 };
 
 export const test = base.extend<{
@@ -76,23 +103,18 @@ export const test = base.extend<{
     await use(context);
     await context.close();
   },
-  async page({ context }, use) {
+  async page({ context, extensionId }, use) {
     const page = await context.newPage();
     // Link the Browser Extension to the user's account via the admin console.
     // TODO: figure out a way to save the linked extension state into chrome
     //  storage so we don't have to load the admin page for every test.
     //  https://github.com/pixiebrix/pixiebrix-extension/issues/7898
-    await page.goto(SERVICE_URL);
-    await baseExpect(
-      page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
-    ).toBeVisible();
-    await baseExpect(async () => {
-      await baseExpect(
-        page.getByText(
-          "Successfully linked the Browser Extension to your PixieBrix account",
-        ),
-      ).toBeVisible();
-    }).toPass({ timeout: 5000 });
+    await linkExtensionViaAdminConsole(page);
+
+    // After linking, the Extension will reload, causing errors if the Extension Console is accessed too soon.
+    // Wait for the Extension Console to be available before proceeding.
+    await ensureExtensionIsLoaded(page, extensionId);
+
     await use(page);
   },
   async extensionId({ context }, use) {

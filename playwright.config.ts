@@ -17,6 +17,10 @@ export default defineConfig({
   workers: CI ? 1 : undefined,
   /* Timeout for each test */
   timeout: 30_000,
+  expect: {
+    /* Timeout for each assertion. Increased from the default of 5000 due to Extension Console loading times. */
+    timeout: 10_000,
+  },
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [["html", { outputFolder: "./end-to-end-tests/.report" }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
