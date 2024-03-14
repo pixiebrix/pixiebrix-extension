@@ -17,7 +17,7 @@
 
 /** @file CKEditor methods that call JS methods on the CKEditor instance */
 
-import { expectContext } from "@/utils/expectContext";
+import { forbidContext } from "@/utils/expectContext";
 import { BusinessError } from "@/errors/businessErrors";
 
 /**
@@ -95,7 +95,10 @@ interface CKEditor5Instance {
 export function isCKEditorElement(
   element: HTMLElement,
 ): element is HTMLElement & { ckeditorInstance: CKEditor5Instance } {
-  expectContext("web", "Element properties only available in web context");
+  forbidContext(
+    "extension",
+    "Element properties only available outside the isolated word",
+  );
 
   // Verified on version v36.0.0 (CKEditor 5 series)
   return "ckeditorInstance" in element;
@@ -105,7 +108,10 @@ export function isCKEditorElement(
  * Sets the root value of a CKEditor instance.
  */
 export function setData(element: HTMLElement, value: string): void {
-  expectContext("web", "Element properties only available in web context");
+  forbidContext(
+    "extension",
+    "Element properties only available outside the isolated word",
+  );
 
   if (!isCKEditorElement(element)) {
     throw new BusinessError(
@@ -117,7 +123,10 @@ export function setData(element: HTMLElement, value: string): void {
 }
 
 export function insertText(element: HTMLElement, value: string): void {
-  expectContext("web", "Element properties only available in web context");
+  forbidContext(
+    "extension",
+    "Element properties only available outside the isolated word",
+  );
 
   if (!isCKEditorElement(element)) {
     throw new BusinessError(
