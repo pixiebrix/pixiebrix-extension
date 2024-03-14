@@ -6,7 +6,12 @@ const config = configFactory(process.env, {});
 const knipConfig = {
   $schema: "https://unpkg.com/knip@4/schema.json",
   webpack: {
-    config: ["webpack.config.mjs", ".storybook/main.js"],
+    config: [
+      "webpack.config.mjs",
+      // `sharedConfig` not getting picked up automatically: https://github.com/pixiebrix/pixiebrix-extension/pull/7869
+      "webpack.sharedConfig.js",
+      ".storybook/main.js",
+    ],
   },
   entry: [
     ...Object.values(config.entry).map((x) =>
@@ -27,6 +32,8 @@ const knipConfig = {
     "src/contentScript/contentScriptCore.ts",
     // Type-only strictNullChecks helper
     "src/types/typeOnlyMessengerRegistration.ts",
+    // Lint rules
+    "eslint-local-rules/noCrossBoundaryImports.js",
   ],
   project: ["src/**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"],
   // https://knip.dev/guides/handling-issues#mocks-and-other-implicit-imports
