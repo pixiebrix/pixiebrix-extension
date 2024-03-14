@@ -164,7 +164,7 @@ export async function shouldRunBlock(
  * @see BrickConfig.rootMode
  * @see BrickConfig.root
  */
-export async function selectBlockRootElement(
+export async function selectBrickRootElement(
   brickConfig: BrickConfig,
   defaultRoot: SelectorRoot,
   context: BrickArgsContext,

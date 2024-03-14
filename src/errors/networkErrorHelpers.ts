@@ -78,15 +78,15 @@ export function selectNetworkErrorMessage(error: unknown): string | null {
 }
 
 /**
- * Version of getReasonPhrase that returns null for unknown status codes (i.e., instead of throwing an error)
+ * Version of getReasonPhrase that returns "Unknown" for unknown status codes (i.e., instead of throwing an error)
  * @param code the HTTP status code
- * @see getReasonPhrase statusText from the HTTP standard
+ * @see getReasonPhrase
  */
 export function safeGuessStatusText(code: string | number): string {
   try {
     return getReasonPhrase(code);
   } catch {
-    return "Unknown HTTP status";
+    return "Unknown";
   }
 }
 
