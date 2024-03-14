@@ -41,9 +41,11 @@ import { Events } from "@/telemetry/events";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { Stylesheets } from "@/components/Stylesheets";
 import useIsMounted from "@/hooks/useIsMounted";
-import { replaceAtCommand } from "@/contentScript/commandPopover/commandUtils";
+import {
+  normalizePreview,
+  replaceAtCommand,
+} from "@/contentScript/commandPopover/commandUtils";
 import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
-import type { Nullishable } from "@/utils/nullishUtils";
 
 type PopoverActionCallbacks = {
   onHide: () => void;
@@ -63,13 +65,6 @@ const CommandTitle: React.FunctionComponent<{
     {shortcut.slice(query.length)}
   </div>
 );
-
-/**
- * Remove newlines and excess whitespace from a snippet preview
- */
-function normalizePreview(preview: Nullishable<string>): string {
-  return (preview ?? "No preview available").replaceAll(/\s+/g, " ").trim();
-}
 
 const ResultItem: React.FunctionComponent<{
   command: TextCommand;
