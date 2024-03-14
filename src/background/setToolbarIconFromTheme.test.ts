@@ -15,10 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import setToolbarIconFromTheme, {
-  blobToImageData,
-  getImageData,
-} from "@/background/setToolbarIconFromTheme";
+import setToolbarIconFromTheme from "@/background/setToolbarIconFromTheme";
+import { blobToImageData, loadImageData } from "@/utils/canvasUtils";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { browserAction } from "@/mv3/api";
@@ -35,30 +33,23 @@ describe("setToolbarIconFromTheme", () => {
   const url = "http://test.com/image.svg";
 
   const drawImageMock = jest.fn();
-  const getImageDataMock = jest.fn().mockReturnValue("image data");
+  const loadImageDataMock = jest.fn().mockReturnValue("image data");
   const getContextMock = jest.fn().mockReturnValue({
     drawImage: drawImageMock,
-    getImageData: getImageDataMock,
+    loadImageData: loadImageDataMock,
   });
 
-  // @ts-expect-error -- No need to mock the whole class for the test
-  global.browser = {
-    runtime: {
-      getManifest: () => ({ icons: "path to icons" }),
-    },
-  };
+  jest
+    .mocked(browser.runtime.getManifest)
+    // @ts-expect-error -- No need to mock the whole class for the test
+    .mockReturnValue({ icons: "path to icons" });
 
   // @ts-expect-error -- No need to mock the whole class for the test
-  global.Image = class {
-    src = "";
-    decode = jest.fn();
-  };
-  // @ts-expect-error -- No need to mock the whole class for the test
-  global.OffscreenCanvas = class {
+  globalThis.OffscreenCanvas = class {
     getContext = getContextMock;
   };
 
-  URL.createObjectURL = jest.fn();
+  globalThis.createImageBitmap = jest.fn().mockResolvedValue("image bitmap");
 
   beforeEach(() => {
     mock.reset();
@@ -128,27 +119,21 @@ describe("setToolbarIconFromTheme", () => {
     it("should return ImageData from a Blob", async () => {
       const blob = new Blob(["test"], { type: "image/svg+xml" });
 
-      const result = await blobToImageData(blob);
+      const result = await blobToImageData(blob, 32, 32);
 
       expect(result).toBe("image data");
       expect(getContextMock).toHaveBeenCalledWith("2d");
-      expect(drawImageMock).toHaveBeenCalledWith(
-        expect.any(Image),
-        0,
-        0,
-        16,
-        16,
-      );
-      expect(getImageDataMock).toHaveBeenCalledWith(0, 0, 16, 16);
+      expect(drawImageMock).toHaveBeenCalledWith("image bitmap", 0, 0, 32, 32);
+      expect(loadImageDataMock).toHaveBeenCalledWith(0, 0, 16, 16);
     });
   });
 
-  describe("getImageData", () => {
+  describe("loadImageData", () => {
     it("should return ImageData when the request is successful", async () => {
       const blob = new Blob(["test"], { type: "image/svg+xml" });
       mock.onGet(url).reply(200, blob);
 
-      const result = await getImageData(url);
+      const result = await loadImageData(url, 32, 32);
 
       expect(result).toBe("image data");
     });
@@ -156,9 +141,9 @@ describe("setToolbarIconFromTheme", () => {
     it("should return null when the request fails", async () => {
       mock.onGet(url).reply(500);
 
-      const result = await getImageData(url);
-
-      expect(result).toBeNull();
+      await expect(loadImageData(url, 32, 32)).rejects.toThrow(
+        "Request failed with status code 500",
+      );
     });
   });
 });
