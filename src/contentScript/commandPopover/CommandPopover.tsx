@@ -141,7 +141,7 @@ const PopoverFooter: React.ReactElement = (
   <div className="footer" role="navigation" aria-label="Text commands">
     Navigate{" "}
     <span className="key">
-      <FontAwesomeIcon icon={faCaretDown} fixedWidth size="xs" aria-label="" />
+      <FontAwesomeIcon icon={faCaretDown} fixedWidth size="xs" />
       &nbsp;
       <FontAwesomeIcon icon={faCaretUp} fixedWidth size="xs" />
     </span>{" "}
