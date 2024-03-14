@@ -220,7 +220,7 @@ function useSaveMod(): ModSaver {
         notify.success("Saved mod");
         reactivateEveryTab();
       }
-    } catch (error: unknown) {
+    } catch (error) {
       notify.error({
         message: "Failed saving mod",
         error,

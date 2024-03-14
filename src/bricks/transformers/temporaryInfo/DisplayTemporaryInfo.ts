@@ -114,6 +114,8 @@ class DisplayTemporaryInfo extends TransformerABC {
 
     const target = isRootAware ? root : document;
     assumeNotNullish_UNSAFE(extensionId);
+    // XXX: blueprintId can actually be nullish if not running on the context of a mod. But assume it's non-nullish
+    //  for passing to the panel for now. The panel can gracefully handle nullish blueprintId.
     assumeNotNullish_UNSAFE(blueprintId);
 
     // Counter for tracking branch execution

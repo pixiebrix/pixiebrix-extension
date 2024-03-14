@@ -73,13 +73,6 @@ export const contextMenus = {
   preload: getMethod("PRELOAD_CONTEXT_MENUS", bg),
 };
 
-export const services = {
-  locateAllForId: getMethod("LOCATE_SERVICES_FOR_ID", bg),
-  locate: getMethod("LOCATE_SERVICE", bg),
-  refresh: getMethod("REFRESH_SERVICES", bg),
-  refreshLocal: getMethod("LOCATOR_REFRESH_LOCAL", bg),
-};
-
 // `getMethod` currently strips generics, so we must copy the function signature here
 export const performConfiguredRequestInBackground = getMethod(
   "CONFIGURED_REQUEST",

@@ -48,6 +48,7 @@ import {
   recordLog,
 } from "@/telemetry/logging";
 import { fetchFeatureFlags } from "@/auth/featureFlagStorage";
+import { locator, refreshServices } from "@/background/locator";
 
 expectContext("background");
 
@@ -82,6 +83,11 @@ declare global {
     CLEAR_LOGS: typeof clearLogs;
     CLEAR_LOG: typeof clearLog;
     CLEAR_EXTENSION_DEBUG_LOGS: typeof clearExtensionDebugLogs;
+
+    LOCATE_SERVICES_FOR_ID: typeof locator.locateAllForService;
+    LOCATE_SERVICE: typeof locator.locate;
+    REFRESH_SERVICES: typeof refreshServices;
+    LOCATOR_REFRESH_LOCAL: typeof locator.refreshLocal;
   }
 }
 
@@ -116,5 +122,10 @@ export default function registerMessenger(): void {
     CLEAR_LOGS: clearLogs,
     CLEAR_LOG: clearLog,
     CLEAR_EXTENSION_DEBUG_LOGS: clearExtensionDebugLogs,
+
+    LOCATE_SERVICES_FOR_ID: locator.locateAllForService.bind(locator),
+    LOCATE_SERVICE: locator.locate.bind(locator),
+    LOCATOR_REFRESH_LOCAL: locator.refreshLocal.bind(locator),
+    REFRESH_SERVICES: refreshServices,
   });
 }

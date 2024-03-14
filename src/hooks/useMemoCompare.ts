@@ -25,7 +25,7 @@ import { useEffect, useRef } from "react";
 function useMemoCompare<T>(
   next: T,
   compare: (previous: T | undefined, next: T) => boolean,
-): T | undefined {
+): T {
   // https://usehooks.com/useMemoCompare/
   // Ref for storing previous value
   const previousRef = useRef<T>();
@@ -41,7 +41,8 @@ function useMemoCompare<T>(
   });
 
   // Finally, if equal then return the previous value
-  return isEqual ? previous : next;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Can't be undefined if it's equal to T
+  return isEqual ? previous! : next;
 }
 
 export default useMemoCompare;

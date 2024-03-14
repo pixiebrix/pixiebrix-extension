@@ -22,7 +22,7 @@ import { useField } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import registry from "@/integrations/registry";
 import { uuidv4 } from "@/types/helpers";
-import { services } from "@/background/messenger/api";
+import { services } from "@/background/messenger/strict/api";
 import { Button } from "react-bootstrap";
 import IntegrationConfigEditorModal from "@/components/integrations/IntegrationConfigEditorModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

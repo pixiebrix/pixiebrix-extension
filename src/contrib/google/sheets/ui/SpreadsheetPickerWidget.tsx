@@ -125,7 +125,7 @@ const SpreadsheetPickerWidget: React.FC<SchemaFieldProps> = (props) => {
 
         setIsSchemaError(false);
         return schemaResult;
-      } catch (error: unknown) {
+      } catch (error) {
         console.error(error);
         setIsSchemaError(true);
         return {

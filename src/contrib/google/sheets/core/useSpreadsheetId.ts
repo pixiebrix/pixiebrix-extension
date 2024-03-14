@@ -18,7 +18,7 @@
 import { useField } from "formik";
 import { isIntegrationDependencyValueFormat } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isEmpty } from "lodash";
-import { services } from "@/background/messenger/api";
+import { services } from "@/background/messenger/strict/api";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { getOptionsArgForFieldValue } from "@/utils/getOptionsArgForFieldValue";
 import { getSheetIdIntegrationOutputKey } from "@/contrib/google/sheets/core/getSheetIdIntegrationOutputKey";
@@ -131,7 +131,7 @@ function useSpreadsheetId(
       }
 
       return lastGoodSpreadsheetId.current;
-    } catch (error: unknown) {
+    } catch (error) {
       setError(getErrorMessage(error));
       return null;
     }

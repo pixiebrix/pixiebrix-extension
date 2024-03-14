@@ -152,7 +152,7 @@ export class HighlightEffect extends EffectABC {
       } else {
         const { condition, selector, backgroundColor } = element;
 
-        if (condition && boolean(condition)) {
+        if (condition && boolean(condition) && backgroundColor) {
           $roots.find(selector).css({ backgroundColor });
         }
       }

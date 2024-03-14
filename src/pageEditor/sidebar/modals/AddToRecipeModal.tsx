@@ -114,7 +114,7 @@ const AddToRecipeModal: React.FC = () => {
       helpers.setSubmitting(false);
 
       hideModal();
-    } catch (error: unknown) {
+    } catch (error) {
       if (isSingleObjectBadRequestError(error) && error.response.data.config) {
         helpers.setStatus(error.response.data.config);
         return;
