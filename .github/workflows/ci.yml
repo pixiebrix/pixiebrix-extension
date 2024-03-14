@@ -185,6 +185,7 @@ jobs:
       - uses: pre-commit/action@v3.0.1
 
   end-to-end-tests:
+    name: end-to-end-tests${{ matrix.PUBLIC_NAME }}
     strategy:
       matrix:
         include:
@@ -201,7 +202,7 @@ jobs:
       MV: ${{ matrix.MV }}
       MARKETPLACE_URL: ${{ secrets.STAGING_MARKETPLACE_URL }}
       CHROME_EXTENSION_ID: mpjjildhmpddojocokjkgmlkkkfjnepo
-      CHROME_MANIFEST_KEY: ${{ matrix.CHROME_MANIFEST_PUBLIC_KEY }}
+      CHROME_MANIFEST_KEY: ${{ matrix.CHROME_MANIFEST_KEY }}
       DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
       DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
     steps:
