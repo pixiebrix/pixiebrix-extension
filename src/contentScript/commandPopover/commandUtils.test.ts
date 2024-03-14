@@ -27,7 +27,7 @@ describe("commandUtils", () => {
       '<input type="text" value="\\hello world" id="input" />';
 
     await replaceAtCommand({
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- defined above
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- defined above
       element: document.querySelector("#input")!,
       text: "new text",
       query: "",
