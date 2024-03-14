@@ -156,6 +156,7 @@ const CommandPopover: React.FunctionComponent<
           dispatch(popoverSlice.actions.setCommandSuccess({ text }));
         }
       } catch (error) {
+        console.warn("Error filling at cursor", error);
         dispatch(popoverSlice.actions.setCommandError({ error }));
       }
     },
