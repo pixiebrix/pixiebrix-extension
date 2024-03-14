@@ -47,7 +47,7 @@ import {
 import { $safeFind } from "@/utils/domUtils";
 import { onContextInvalidated } from "webext-events";
 import { ContextMenuStarterBrickABC } from "@/starterBricks/contextMenu";
-import { RepeatableAbortController } from "abort-utils";
+import { ReusableAbortController } from "abort-utils";
 
 /**
  * True if handling the initial page load.
@@ -95,7 +95,7 @@ let lastUrl: string | undefined;
 /**
  * Abort controller for navigation events for Single Page Applications (SPAs).
  */
-const navigationListeners = new RepeatableAbortController();
+const navigationListeners = new ReusableAbortController();
 
 const WAIT_LOADED_INTERVAL_MS = 25;
 

@@ -52,7 +52,7 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { isLoadedInIframe } from "@/utils/iframeUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
-import { RepeatableAbortController } from "abort-utils";
+import { ReusableAbortController } from "abort-utils";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { propertiesToSchema } from "@/utils/schemaUtils";
@@ -106,7 +106,7 @@ export abstract class SidebarStarterBrickABC extends StarterBrickABC<SidebarConf
    * Controller to drop all listeners and timers
    * @private
    */
-  private readonly abortController = new RepeatableAbortController();
+  private readonly abortController = new ReusableAbortController();
 
   inputSchema: Schema = propertiesToSchema(
     {

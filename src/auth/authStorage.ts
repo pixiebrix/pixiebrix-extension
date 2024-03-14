@@ -29,7 +29,7 @@ import { isEmpty, omit } from "lodash";
 import { syncRemotePackages } from "@/registry/memoryRegistry";
 import { StorageItem } from "webext-storage";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
-import { RepeatableAbortController } from "abort-utils";
+import { ReusableAbortController } from "abort-utils";
 
 const extensionKeyStorage = new StorageItem("extensionKey", {
   defaultValue: {} as Partial<TokenAuthData>,
@@ -41,7 +41,7 @@ const partnerTokenStorage = new StorageItem("partnerToken", {
 type AuthListener = (auth: Partial<TokenAuthData | PartnerAuthData>) => void;
 
 // Used only for testing
-const controller = new RepeatableAbortController();
+const controller = new ReusableAbortController();
 
 const authChanges = new SimpleEventTarget<
   Partial<TokenAuthData | PartnerAuthData>

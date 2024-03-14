@@ -27,7 +27,7 @@ import pMemoize, { pMemoizeClear } from "p-memoize";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import type { Nullishable } from "@/utils/nullishUtils";
-import { mergeSignals, RepeatableAbortController } from "abort-utils";
+import { mergeSignals, ReusableAbortController } from "abort-utils";
 import { StorageItem } from "webext-storage";
 import type { Timestamp } from "@/types/stringTypes";
 import { PromiseCancelled } from "@/errors/genericErrors";
@@ -43,7 +43,7 @@ const MAX_MANAGED_STORAGE_WAIT_MILLIS = 4500;
 let managedStorageSnapshot: Nullishable<ManagedStorageState>;
 
 // Used only for testing
-const controller = new RepeatableAbortController();
+const controller = new ReusableAbortController();
 
 /**
  * The initialization timestamp of managed storage, or null/undefined if it hasn't been initialized yet for the

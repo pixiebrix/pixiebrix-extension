@@ -79,7 +79,7 @@ import { type Reader } from "@/types/bricks/readerTypes";
 import initialize from "@/vendors/initialize";
 import { $safeFind } from "@/utils/domUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
-import { RepeatableAbortController, onAbort } from "abort-utils";
+import { ReusableAbortController, onAbort } from "abort-utils";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
@@ -192,7 +192,7 @@ export abstract class MenuItemStarterBrickABC extends StarterBrickABC<MenuItemSt
    * Set of methods to call to cancel any DOM watchers associated with this extension point
    * @private
    */
-  private readonly cancelController = new RepeatableAbortController();
+  private readonly cancelController = new ReusableAbortController();
 
   /**
    * True if the extension point has been uninstalled
