@@ -20,15 +20,11 @@ import { ActivateModPage } from "../pageObjects/modsPage";
 
 test("can activate and use highlight keywords mod", async ({
   page,
-  // extensionId,
+  extensionId,
 }) => {
   const modId = "@pixies/highlight-keywords";
 
-  const modActivationPage = new ActivateModPage(
-    page,
-    "mpjjildhmpddojocokjkgmlkkkfjnepo",
-    modId,
-  );
+  const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.goto();
 
   await modActivationPage.clickActivateAndWaitForModsPageRedirect();

@@ -21,8 +21,8 @@ import AxeBuilder from "@axe-core/playwright";
 import { checkForCriticalViolations } from "../utils";
 
 test.describe("extension console mods page smoke test", () => {
-  test("can view available mods", async ({ page }) => {
-    const modsPage = new ModsPage(page, "mpjjildhmpddojocokjkgmlkkkfjnepo");
+  test("can view available mods", async ({ page, extensionId }) => {
+    const modsPage = new ModsPage(page, extensionId);
     await modsPage.goto();
     const pageTitle = await page.title();
     expect(pageTitle).toBe("Mods | PixieBrix");

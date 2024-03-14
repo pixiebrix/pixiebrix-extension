@@ -80,7 +80,7 @@ const getExtensionId = async (context: BrowserContext) => {
 
   if (MV === "3") {
     background = context.serviceWorkers()[0];
-    background = await context.waitForEvent("serviceworker");
+    background ||= await context.waitForEvent("serviceworker");
   } else {
     // For manifest v2:
     background = context.backgroundPages()[0];
@@ -101,7 +101,6 @@ const getExtensionId = async (context: BrowserContext) => {
 export const test = base.extend<{
   context: BrowserContext;
   extensionId: string;
-  storageState: string;
 }>({
   // eslint-disable-next-line no-empty-pattern -- Playwright requires destructuring pattern as first argument as it uses it to detect the dependent fixtures
   async context({}, use) {
