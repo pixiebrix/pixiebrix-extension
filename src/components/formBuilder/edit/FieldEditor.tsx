@@ -92,18 +92,26 @@ function shouldShowPlaceholderText(uiType: UiType): boolean {
   }
 }
 
-const TextAreaFields: React.FC<{ name: string; propertyName: string }> = ({
-  name,
-  propertyName,
+const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
+  uiOptionsPath,
 }) => {
   const [{ value: submitToolbar }] = useField<boolean>(
-    `${name}.uiSchema.${propertyName}.ui:options.submitToolbar`,
+    `${uiOptionsPath}.submitToolbar`,
   );
 
   return (
     <>
       <SchemaField
-        name={`${name}.uiSchema.${propertyName}.ui:options.submitOnEnter`}
+        name={`${uiOptionsPath}.rows`}
+        schema={{
+          type: "number",
+          title: "# Rows",
+          description:
+            "The number of visible text lines for the control. If it is not specified, the default value is 2.",
+        }}
+      />
+      <SchemaField
+        name={`${uiOptionsPath}.submitOnEnter`}
         schema={{
           type: "boolean",
           title: "Submit Form on Enter?",
@@ -113,7 +121,7 @@ const TextAreaFields: React.FC<{ name: string; propertyName: string }> = ({
         isRequired
       />
       <SchemaField
-        name={`${name}.uiSchema.${propertyName}.ui:options.submitToolbar`}
+        name={`${uiOptionsPath}.submitToolbar`}
         schema={{
           type: "boolean",
           title: "Include Submit Toolbar?",
@@ -124,7 +132,7 @@ const TextAreaFields: React.FC<{ name: string; propertyName: string }> = ({
       />
       {submitToolbar && (
         <SchemaField
-          name={`${name}.uiSchema.${propertyName}.ui:options.submitToolbarIcon`}
+          name={`${uiOptionsPath}.submitToolbarIcon`}
           schema={{ $ref: "https://app.pixiebrix.com/schemas/icon#" }}
           label="Select Icon"
           description="Select the icon that appears in the bottom right of the Submit Toolbar"
@@ -436,7 +444,9 @@ const FieldEditor: React.FC<{
       />
 
       {uiType.uiWidget === "textarea" && (
-        <TextAreaFields name={name} propertyName={propertyName} />
+        <TextAreaFields
+          uiOptionsPath={`${name}.uiSchema.${propertyName}.ui:options`}
+        />
       )}
     </div>
   );

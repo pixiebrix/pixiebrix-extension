@@ -115,26 +115,21 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
           <Button
             variant="link"
             type="button"
+            className={styles.button}
             onClick={() => {
               onChange("");
             }}
           >
             Clear
           </Button>
-          <button
-            onClick={async (event) => {
-              event.preventDefault();
-              event.stopPropagation();
-
-              await submitForm();
-            }}
-          >
+          <Button type="submit" variant="link" className={styles.button}>
             <Icon
               icon={submitToolbarIcon.id}
               library={submitToolbarIcon.library}
               size={submitToolbarIcon.size}
+              color="#807691" // See colors.scss:$N300
             />
-          </button>
+          </Button>
         </div>
       )}
     </>

@@ -24,9 +24,11 @@ import {
 } from "@/runtime/pipelineTests/pipelineTestHelpers";
 import { toExpression } from "@/utils/expressionUtils";
 import { reducePipeline } from "@/runtime/reducePipeline";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import ConsoleLogger from "@/utils/ConsoleLogger";
 import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
+import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
+import { validateOutputKey } from "@/runtime/runtimeTypes";
 
 const brick = new AddTextCommand();
 const identity = new IdentityTransformer();
@@ -69,6 +71,8 @@ describe("AddTextCommand", () => {
           // Any leading slash is dropped
           shortcut: "echo",
           title: "Echo",
+          // Preview is optional
+          preview: undefined,
           handler: expect.toBeFunction(),
           componentId: extensionId,
         },
@@ -79,4 +83,60 @@ describe("AddTextCommand", () => {
       ).resolves.toBe("current text");
     },
   );
+
+  it.each(["preview text", undefined])(
+    "passes preview directly: %s",
+    async (preview) => {
+      const extensionId = uuidv4();
+      const logger = new ConsoleLogger({ extensionId });
+
+      const pipeline = {
+        id: brick.id,
+        config: {
+          shortcut: "echo",
+          preview,
+          title: "Echo",
+          generate: toExpression("pipeline", [
+            { id: identity.id, config: toExpression("var", "@currentText") },
+          ]),
+        },
+      };
+
+      await reducePipeline(pipeline, simpleInput({}), {
+        ...testOptions("v3"),
+        extensionId,
+        logger,
+      });
+
+      expect(commandRegistry.commands).toStrictEqual([
+        {
+          shortcut: "echo",
+          title: "Echo",
+          preview,
+          handler: expect.toBeFunction(),
+          componentId: extensionId,
+        },
+      ]);
+
+      await expect(
+        commandRegistry.commands[0].handler("current text"),
+      ).resolves.toBe("current text");
+    },
+  );
+
+  it("provides an example config", () => {
+    expect(getExampleBrickConfig(AddTextCommand.BRICK_ID)).toStrictEqual({
+      generate: toExpression("pipeline", [
+        {
+          config: toExpression("nunjucks", ""),
+          id: validateRegistryId("@pixiebrix/identity"),
+          instanceId: expect.any(String),
+          outputKey: validateOutputKey("generatedText"),
+          rootMode: "document",
+        },
+      ]),
+      shortcut: "command",
+      title: "Example Command",
+    });
+  });
 });
