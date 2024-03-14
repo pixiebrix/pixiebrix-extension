@@ -106,8 +106,10 @@ export const popoverSlice = createSlice({
         state.results = sortedCommands;
         state.selectedIndex = null;
       } else {
+        // Allow case-insensitive search
+        const normalizedQuery = query.toLowerCase();
         state.results = sortedCommands.filter((command) =>
-          command.shortcut.startsWith(query),
+          command.shortcut.toLowerCase().startsWith(normalizedQuery),
         );
         state.selectedIndex = state.results.length > 0 ? 0 : null;
       }
