@@ -138,10 +138,10 @@ const StatusBar: React.FunctionComponent<{
 };
 
 const PopoverFooter: React.ReactElement = (
-  <div className="footer" role="navigation" aria-label="Text command">
+  <div className="footer" role="navigation" aria-label="Text commands">
     Navigate{" "}
     <span className="key">
-      <FontAwesomeIcon icon={faCaretDown} fixedWidth size="xs" />
+      <FontAwesomeIcon icon={faCaretDown} fixedWidth size="xs" aria-label="" />
       &nbsp;
       <FontAwesomeIcon icon={faCaretUp} fixedWidth size="xs" />
     </span>{" "}
