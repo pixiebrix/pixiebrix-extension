@@ -24,7 +24,11 @@ import autocompleterStyleUrl from "autocompleter/autocomplete.css?loadAsUrl";
 import injectStylesheet from "@/utils/injectStylesheet";
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
+import {
+  isDocument,
+  type BrickArgs,
+  type BrickOptions,
+} from "@/types/runtimeTypes";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 
 export class AttachAutocomplete extends EffectABC {
@@ -78,7 +82,7 @@ export class AttachAutocomplete extends EffectABC {
 
     const inputs = $elements
       .toArray()
-      .filter((x) => !(x instanceof Document) && x.tagName === "INPUT");
+      .filter((x) => !isDocument(x) && x.tagName === "INPUT");
 
     if (inputs.length === 0) {
       logger.warn("No input elements found", {
