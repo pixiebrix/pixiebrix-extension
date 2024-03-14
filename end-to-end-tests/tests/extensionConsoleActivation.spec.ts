@@ -16,6 +16,7 @@
  */
 
 import { test, expect } from "../fixtures/extensionBase";
+import { ActivateModPage } from "../pageObjects/modsPage";
 
 test("can activate and use highlight keywords mod", async ({
   page,
@@ -24,16 +25,11 @@ test("can activate and use highlight keywords mod", async ({
   const modName = "Highlight Specific Keywords When Page Loads";
   const modId = "@pixies/highlight-keywords";
 
-  await page.goto(
-    `chrome-extension://${extensionId}/options.html#/marketplace/activate/${encodeURIComponent(
-      modId,
-    )}`,
-  );
-
-  await expect(page.getByText("Activate Mod")).toBeVisible();
+  const modActivationPage = new ActivateModPage(page, extensionId, modId);
+  await modActivationPage.goto();
   await expect(page.getByText(modName)).toBeVisible();
-  await page.click("button:has-text('Activate')");
-  await expect(page.getByText(`Installed ${modName}`)).toBeVisible();
+
+  await modActivationPage.clickActivateAndNavigateToAllMods();
 
   await page.goto("/bootstrap-5");
 

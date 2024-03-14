@@ -48,3 +48,37 @@ export class ModsPage {
     return this.page.getByRole("table").locator(".list-group-item");
   }
 }
+
+export class ActivateModPage {
+  private readonly baseConsoleUrl: string;
+  private readonly activateModUrl: string;
+
+  constructor(
+    private readonly page: Page,
+    extensionId: string,
+    private readonly modId: string,
+  ) {
+    this.baseConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
+    this.activateModUrl = `${
+      this.baseConsoleUrl
+    }#/marketplace/activate/${encodeURIComponent(modId)}`;
+  }
+
+  async goto() {
+    await this.page.goto(this.activateModUrl);
+
+    await expect(this.page.getByText("Activate Mod")).toBeVisible();
+    await expect(this.page.getByText(this.modId)).toBeVisible();
+  }
+
+  activateButton() {
+    return this.page.getByRole("button", { name: "Activate" });
+  }
+
+  /** Successfully activating the mod will navigate to the "All Mods" page */
+  async clickActivateAndNavigateToAllMods() {
+    await this.activateButton().click();
+    await this.page.waitForURL(`${this.baseConsoleUrl}#/mods`);
+    await expect(this.page.getByText("Installed ")).toBeVisible();
+  }
+}
