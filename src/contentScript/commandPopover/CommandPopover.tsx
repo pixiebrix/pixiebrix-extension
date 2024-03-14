@@ -47,7 +47,11 @@ import {
 } from "@/contentScript/commandPopover/commandUtils";
 import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCaretDown,
+  faCaretUp,
+  faExclamationCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 type PopoverActionCallbacks = {
   onHide: () => void;
@@ -126,18 +130,22 @@ const StatusBar: React.FunctionComponent<{
     );
   }
 
-  if (results.length === 0) {
-    return (
-      <div role="status" className="status status--empty">
-        No matches found
-      </div>
-    );
-  }
-
   return null;
 };
 
-const PopoverFooter: React.ReactElement = (
+const noResultsPane: React.ReactElement = (
+  <div className="noResults">
+    <div>
+      <div>
+        <FontAwesomeIcon icon={faExclamationCircle} />
+      </div>
+      <div>{"We couldn't find any matching snippets"}</div>
+    </div>
+  </div>
+);
+
+
+const popoverFooter: React.ReactElement = (
   // TODO: determine a11y: https://github.com/pixiebrix/pixiebrix-extension/issues/7936
   <div className="footer">
     Navigate{" "}
@@ -220,6 +228,8 @@ const CommandPopover: React.FunctionComponent<
         <div role="menu" aria-label="Text command menu" className="root">
           <StatusBar {...state} />
           <div className="results">
+            {state.results.length === 0 && noResultsPane}
+
             {state.results.map((command) => {
               const isSelected = selectedCommand?.shortcut === command.shortcut;
               return (
@@ -237,7 +247,7 @@ const CommandPopover: React.FunctionComponent<
               );
             })}
           </div>
-          {PopoverFooter}
+          {popoverFooter}
         </div>
       </Stylesheets>
     </EmotionShadowRoot>
