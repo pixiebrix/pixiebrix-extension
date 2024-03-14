@@ -199,7 +199,6 @@ jobs:
     env:
       SERVICE_URL: https://app.pixiebrix.com
       MV: ${{ matrix.MV }}
-      EXTERNALLY_CONNECTABLE: "${{ env.SERVICE_URL }}*"
       MARKETPLACE_URL: ${{ secrets.STAGING_MARKETPLACE_URL }}
       CHROME_EXTENSION_ID: mpjjildhmpddojocokjkgmlkkkfjnepo
       CHROME_MANIFEST_KEY: ${{ matrix.CHROME_MANIFEST_PUBLIC_KEY }}
