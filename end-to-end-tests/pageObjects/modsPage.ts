@@ -44,8 +44,16 @@ export class ModsPage {
     await this.page.getByTestId("all-mods-mod-tab").click();
   }
 
-  async getAllModTableItems() {
+  async viewActiveMods() {
+    await this.page.getByTestId("active-mod-tab").click();
+  }
+
+  modTableItems() {
     return this.page.getByRole("table").locator(".list-group-item");
+  }
+
+  searchModsInput() {
+    return this.page.getByTestId("blueprints-search-input");
   }
 }
 
@@ -55,7 +63,7 @@ export class ActivateModPage {
 
   constructor(
     private readonly page: Page,
-    extensionId: string,
+    private readonly extensionId: string,
     private readonly modId: string,
   ) {
     this.baseConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
@@ -75,10 +83,13 @@ export class ActivateModPage {
     return this.page.getByRole("button", { name: "Activate" });
   }
 
-  /** Successfully activating the mod will navigate to the "All Mods" page */
-  async clickActivateAndNavigateToAllMods() {
+  /** Successfully activating the mod will navigate to the "All Mods" page. */
+  async clickActivateAndWaitForModsPageRedirect() {
     await this.activateButton().click();
     await this.page.waitForURL(`${this.baseConsoleUrl}#/mods`);
-    await expect(this.page.getByText("Installed ")).toBeVisible();
+    const modsPage = new ModsPage(this.page, this.extensionId);
+    await modsPage.viewActiveMods();
+    await expect(modsPage.modTableItems().getByText(this.modId)).toBeVisible();
+    return modsPage;
   }
 }

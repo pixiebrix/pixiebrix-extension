@@ -22,14 +22,12 @@ test("can activate and use highlight keywords mod", async ({
   page,
   extensionId,
 }) => {
-  const modName = "Highlight Specific Keywords When Page Loads";
   const modId = "@pixies/highlight-keywords";
 
   const modActivationPage = new ActivateModPage(page, extensionId, modId);
   await modActivationPage.goto();
-  await expect(page.getByText(modName)).toBeVisible();
 
-  await modActivationPage.clickActivateAndNavigateToAllMods();
+  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
   await page.goto("/bootstrap-5");
 
