@@ -295,6 +295,7 @@
     "./contentScript/commandPopover/CommandRegistry.ts",
     "./contentScript/commandPopover/commandController.tsx",
     "./contentScript/commandPopover/commandPopoverSlice.ts",
+    "./contentScript/commandPopover/commandPopoverSlice.test.ts",
     "./contentScript/commandPopover/commandUtils.ts",
     "./contentScript/commandPopover/useCommandRegistry.ts",
     "./contentScript/commandPopover/useKeyboardQuery.ts",
