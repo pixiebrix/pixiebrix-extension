@@ -499,7 +499,7 @@ describe("FormEditor", () => {
         ).toBeInTheDocument();
       });
 
-      test.only("displays submit form on enter field for textarea", async () => {
+      test("displays submit form on enter field for textarea", async () => {
         const fieldName = "foo";
         const onSubmitMock = jest.fn();
         const FormikTemplate = createFormikTemplate(
