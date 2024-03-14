@@ -119,20 +119,20 @@ const columnFactory = ({
   },
   {
     Header: "Type",
-    accessor: "integrationId",
-    Cell({ row }) {
+    accessor: "integration",
+    Cell({ row, value }) {
       if (row.index === 0) {
         return <div className="text-muted">N/A</div>;
       }
 
       return (
         <>
-          <BrickIcon brick={row.original.integration} size="1x" />
+          <BrickIcon brick={value} size="1x" />
           <div className="ml-2">
-            <div className="text-wrap">{row.original.integration.name}</div>
+            <div className="text-wrap">{value.name}</div>
             <div className="text-wrap">
               <code className="p-0" style={{ fontSize: "0.7rem" }}>
-                {row.original.integration.id}
+                {value.id}
               </code>
             </div>
           </div>
@@ -224,7 +224,7 @@ const PrivateIntegrationsCard: React.FunctionComponent<OwnProps> = ({
   );
 
   return (
-    <PaginatedTable
+    <PaginatedTable<TableData>
       columns={columns}
       data={data}
       showSearchFilter

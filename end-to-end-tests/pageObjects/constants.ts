@@ -15,13 +15,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: flex;
-  justify-content: center;
-  text-align: center;
-}
-
-.card {
-  width: 100%;
-  height: 100%;
-}
+export const getBaseExtensionConsoleUrl = (extensionId: string) =>
+  `chrome-extension://${extensionId}/options.html`;

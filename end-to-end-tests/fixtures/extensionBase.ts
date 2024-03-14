@@ -17,12 +17,13 @@
 
 import {
   test as base,
+  expect as baseExpect,
   chromium,
   type BrowserContext,
   type Cookie,
 } from "@playwright/test";
 import path from "node:path";
-import { MV } from "./env";
+import { E2E_TEST_USER_EMAIL_UNAFFILIATED, MV, SERVICE_URL } from "../env";
 import fs from "node:fs/promises";
 
 const getStoredCookies = async (): Promise<Cookie[]> => {
@@ -30,7 +31,7 @@ const getStoredCookies = async (): Promise<Cookie[]> => {
   try {
     fileBuffer = await fs.readFile(
       // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname throws "cannot use 'import meta' outside a module"
-      path.join(__dirname, "./.auth/user.json"),
+      path.join(__dirname, "../.auth/user.json"),
     );
   } catch (error) {
     // If the file does not exist, we are likely running authenticate setup for the first time. Return an empty array.
@@ -55,9 +56,12 @@ export const test = base.extend<{
   // eslint-disable-next-line no-empty-pattern -- Playwright requires destructuring pattern as first argument
   async context({}, use) {
     // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname throws "cannot use 'import meta' outside a module"
-    const pathToExtension = path.join(__dirname, "../dist");
+    const pathToExtension = path.join(__dirname, "../../dist");
 
     const context = await chromium.launchPersistentContext("", {
+      // Test against the branded Chrome browser
+      // See: https://playwright.dev/docs/browsers#google-chrome--microsoft-edge
+      channel: "chrome",
       headless: false,
       args: [
         `--disable-extensions-except=${pathToExtension}`,
@@ -71,6 +75,25 @@ export const test = base.extend<{
     await context.addCookies(await getStoredCookies());
     await use(context);
     await context.close();
+  },
+  async page({ context }, use) {
+    const page = await context.newPage();
+    // Link the Browser Extension to the user's account via the admin console.
+    // TODO: figure out a way to save the linked extension state into chrome
+    //  storage so we don't have to load the admin page for every test.
+    //  https://github.com/pixiebrix/pixiebrix-extension/issues/7898
+    await page.goto(SERVICE_URL);
+    await baseExpect(
+      page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
+    ).toBeVisible();
+    await baseExpect(async () => {
+      await baseExpect(
+        page.getByText(
+          "Successfully linked the Browser Extension to your PixieBrix account",
+        ),
+      ).toBeVisible();
+    }).toPass({ timeout: 5000 });
+    await use(page);
   },
   async extensionId({ context }, use) {
     let background;

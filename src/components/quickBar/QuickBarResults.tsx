@@ -154,20 +154,23 @@ const QuickBarResults: React.FC = () => {
   const { results, rootActionId } = useMatches();
 
   return (
-    <KBarResults
-      items={results}
-      onRender={({ item, active }) =>
-        typeof item === "string" ? (
-          <div style={groupNameStyle}>{item}</div>
-        ) : (
-          <ResultItem
-            action={item}
-            active={active}
-            currentRootActionId={rootActionId}
-          />
-        )
-      }
-    />
+    // Avoid black scrollbars on dark sites #7695
+    <div style={{ colorScheme: "light" }}>
+      <KBarResults
+        items={results}
+        onRender={({ item, active }) =>
+          typeof item === "string" ? (
+            <div style={groupNameStyle}>{item}</div>
+          ) : (
+            <ResultItem
+              action={item}
+              active={active}
+              currentRootActionId={rootActionId}
+            />
+          )
+        }
+      />
+    </div>
   );
 };
 

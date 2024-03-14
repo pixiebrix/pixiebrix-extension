@@ -15,34 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$maxHeight: calc(100vh - 50px);
-$bootstrapPadding: 15px;
-
 .root {
-  display: grid;
-  place-content: center center;
-  & > :first-child {
-    margin: 20px auto;
+  :global(.modal-dialog) {
+    height: calc(100% - 60px);
     width: 89vw;
     max-width: 1220px; // Fits 3 "recommended bricks" columns
+  }
+  :global(.modal-content) {
+    height: 100%;
   }
 }
 
 .body {
-  padding: 0;
-}
-
-.results {
-  height: $maxHeight;
   display: grid;
-  grid-template-rows: min-content 1fr;
-  padding-top: $bootstrapPadding;
-  gap: $bootstrapPadding;
-}
-
-.brickDetail {
-  height: $maxHeight;
-  padding-top: $bootstrapPadding;
-  padding-bottom: $bootstrapPadding;
-  overflow: auto;
+  grid-template-columns: 5fr 7fr;
 }

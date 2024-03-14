@@ -46,6 +46,34 @@ import ModIcon from "@/mods/ModIcon";
 import WizardValuesModIntegrationsContextAdapter from "@/activation/WizardValuesModIntegrationsContextAdapter";
 import Markdown from "@/components/Markdown";
 import { getModActivationInstructions } from "@/utils/modUtils";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+
+const WizardHeader: React.VoidFunctionComponent<{
+  mod: ModDefinition;
+  isReactivate: boolean;
+  isSubmitting: boolean;
+}> = ({ mod, isReactivate, isSubmitting }) => (
+  <>
+    <div className={styles.wizardHeaderLayout}>
+      <div className={styles.wizardMainInfo}>
+        <span className={styles.blueprintIcon}>
+          <ModIcon mod={mod} />
+        </span>
+        <span>
+          <Card.Title>{mod.metadata.name}</Card.Title>
+          <code className={styles.packageId}>{mod.metadata.id}</code>
+        </span>
+      </div>
+      <div className={styles.wizardDescription}>{mod.metadata.description}</div>
+    </div>
+    <div className={styles.activateButtonContainer}>
+      <Button className="text-nowrap" type="submit" disabled={isSubmitting}>
+        <FontAwesomeIcon icon={faMagic} />{" "}
+        {isReactivate ? "Reactivate" : "Activate"}
+      </Button>
+    </div>
+  </>
+);
 
 const ActivateModCard: React.FC = () => {
   const dispatch = useDispatch();
@@ -92,30 +120,11 @@ const ActivateModCard: React.FC = () => {
       <BlockFormSubmissionViaEnterIfFirstChild />
       <Card>
         <Card.Header className={styles.wizardHeader}>
-          <div className={styles.wizardHeaderLayout}>
-            <div className={styles.wizardMainInfo}>
-              <span className={styles.blueprintIcon}>
-                <ModIcon mod={mod} />
-              </span>
-              <span>
-                <Card.Title>{mod.metadata.name}</Card.Title>
-                <code className={styles.packageId}>{mod.metadata.id}</code>
-              </span>
-            </div>
-            <div className={styles.wizardDescription}>
-              {mod.metadata.description}
-            </div>
-          </div>
-          <div className={styles.activateButtonContainer}>
-            <Button
-              className="text-nowrap"
-              type="submit"
-              disabled={isSubmitting}
-            >
-              <FontAwesomeIcon icon={faMagic} />{" "}
-              {isReactivate ? "Reactivate" : "Activate"}
-            </Button>
-          </div>
+          <WizardHeader
+            mod={mod}
+            isReactivate={isReactivate}
+            isSubmitting={isSubmitting}
+          />
         </Card.Header>
         <Card.Body className={styles.wizardBody}>
           {activationError && <Alert variant="danger">{activationError}</Alert>}

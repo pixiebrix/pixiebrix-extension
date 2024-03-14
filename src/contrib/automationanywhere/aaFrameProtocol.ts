@@ -34,6 +34,7 @@ export type ProcessDataMap = Record<string, UnknownObject>;
  * https://docs.automationanywhere.com/bundle/enterprise-v2019/page/co-pilot-map-host-data.html
  */
 type AariDataRequestData = {
+  // NOTE: the frame messaging protocol still uses aari naming, and not automation co-pilot
   aariDataRequest: "aari-data-request";
   processId: string;
   // XXX: when would botId be non-null?

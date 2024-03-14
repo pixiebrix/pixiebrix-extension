@@ -50,18 +50,17 @@ const ZapierIntegrationModal: React.FunctionComponent<OwnProps> = ({
       </Modal.Header>
       <Modal.Body>
         <p>Use this key to log in to PixieBrix from Zapier</p>
-        <Form.Group>
-          <Form.Group controlId="label">
-            <Form.Label>PixieBrix API Key</Form.Label>
-            <InputGroup>
-              <Form.Control type="text" readOnly defaultValue={data?.api_key} />
-              <InputGroup.Append>
-                <Button variant="info" onClick={handleCopy}>
-                  <FontAwesomeIcon icon={faCopy} />
-                </Button>
-              </InputGroup.Append>
-            </InputGroup>
-          </Form.Group>
+        <Form.Group controlId="label">
+          <Form.Label>PixieBrix API Key</Form.Label>
+          <InputGroup>
+            <Form.Control type="text" readOnly defaultValue={data?.api_key} />
+            <InputGroup.Append>
+              <Button variant="info" onClick={handleCopy}>
+                {/* eslint-disable-next-line react/jsx-max-depth -- Not worth extracting */}
+                <FontAwesomeIcon icon={faCopy} />
+              </Button>
+            </InputGroup.Append>
+          </InputGroup>
         </Form.Group>
       </Modal.Body>
     </Modal>

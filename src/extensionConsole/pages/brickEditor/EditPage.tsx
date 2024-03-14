@@ -169,23 +169,19 @@ const EditForm: React.FC<{ id: UUID; data: Package }> = ({ id, data }) => {
                         <span className="ml-2">Re-activate Mod</span>
                       </div>
                     )}
-                    <div>
-                      <Button
-                        disabled={!isValid || isSubmitting || isRemoving}
-                        type="submit"
-                      >
-                        {values.public ? "Publish Brick" : "Update Brick"}
-                      </Button>
-                    </div>
-                    <div>
-                      <Button
-                        disabled={isSubmitting || isRemoving}
-                        variant="danger"
-                        onClick={onRemove}
-                      >
-                        Delete Brick
-                      </Button>
-                    </div>
+                    <Button
+                      disabled={!isValid || isSubmitting || isRemoving}
+                      type="submit"
+                    >
+                      {values.public ? "Publish Brick" : "Update Brick"}
+                    </Button>
+                    <Button
+                      disabled={isSubmitting || isRemoving}
+                      variant="danger"
+                      onClick={onRemove}
+                    >
+                      Delete Brick
+                    </Button>
                   </div>
                 </div>
               </div>

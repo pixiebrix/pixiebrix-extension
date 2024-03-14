@@ -15,37 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expect, test as setup } from "./fixtures";
+import { expect, test as setup } from "@playwright/test";
 import {
   E2E_TEST_USER_EMAIL_UNAFFILIATED,
   E2E_TEST_USER_PASSWORD_UNAFFILIATED,
   SERVICE_URL,
 } from "./env";
-import { type Page } from "@playwright/test";
 
 const authFile = "end-to-end-tests/.auth/user.json";
 
-const waitForAdminConsoleToLoad = async (page: Page) => {
-  await expect(async () => {
-    expect(
-      (await page.getByLabel("Email").isVisible()) ||
-        (await page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED).isVisible()),
-    ).toBeTruthy();
-  }).toPass({
-    timeout: 5000,
-  });
-};
-
 setup("authenticate", async ({ page }) => {
   await page.goto(`${SERVICE_URL}/login/email`);
-
-  await waitForAdminConsoleToLoad(page);
-
-  if (await page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED).isVisible()) {
-    // If the user is already authenticated, reuse the existing session
-    await page.context().storageState({ path: authFile });
-    return;
-  }
 
   await page.getByLabel("Email").fill(E2E_TEST_USER_EMAIL_UNAFFILIATED);
   await page.getByLabel("Password").fill(E2E_TEST_USER_PASSWORD_UNAFFILIATED);
