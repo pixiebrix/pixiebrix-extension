@@ -76,6 +76,7 @@
     "ephemeralPanel.html",
     "ephemeralModal.css",
     "DocumentView.css",
+    "TextAreaWidget.css",
     "audio/*",
     "user-icons/*",
     "img/*"

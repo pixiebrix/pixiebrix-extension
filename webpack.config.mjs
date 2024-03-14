@@ -113,6 +113,7 @@ const createConfig = (env, options) =>
         // classes used by components in the rendered document. Build styles for DocumentView to add only the styles
         // that are needed to render the document without also including our custom theme in sidebar.css.
         "bricks/renderers/documentView/DocumentView",
+        "components/formBuilder/TextAreaWidget",
         "contentScript/contentScript",
         "contentScript/loadActivationEnhancements",
         "contentScript/browserActionInstantHandler",

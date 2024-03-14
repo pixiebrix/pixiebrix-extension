@@ -25,6 +25,9 @@ import React, {
 import { type WidgetProps } from "@rjsf/utils";
 import { isNumber } from "lodash";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
+import { Button } from "react-bootstrap";
+import styles from "./TextAreaWidget.module.scss";
+import cx from "classnames";
 
 const TextAreaWidget: React.FC<WidgetProps> = ({
   id,
@@ -37,7 +40,6 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
   onChange,
   onFocus,
   onBlur,
-  label,
 }) => {
   const { submitForm } = useContext(RjsfSubmitContext);
 
@@ -79,23 +81,33 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
     [onChange],
   );
 
+  const onClear = useCallback(() => {
+    onChange("");
+  }, [onChange]);
+
   // @see @rjsf/core/lib/components/widgets/TextareaWidget.js
-  // @see https://github.com/pixiebrix/pixiebrix-extension/pull/6899 for why we added the label
   return (
-    <textarea
-      id={id}
-      className="form-control"
-      value={String(value ?? "")}
-      placeholder={placeholder}
-      required={required}
-      disabled={disabled}
-      readOnly={readonly}
-      rows={isNumber(options.rows) ? options.rows : undefined}
-      onKeyPress={onKeyPress}
-      onChange={onChangeHandler}
-      onFocus={onFocusHandler}
-      onBlur={onBlurHandler}
-    />
+    <>
+      <textarea
+        id={id}
+        className={cx("form-control", { [styles.hasSubmitToolbar]: true })}
+        value={String(value ?? "")}
+        placeholder={placeholder}
+        required={required}
+        disabled={disabled}
+        readOnly={readonly}
+        rows={isNumber(options.rows) ? options.rows : undefined}
+        onKeyPress={onKeyPress}
+        onChange={onChangeHandler}
+        onFocus={onFocusHandler}
+        onBlur={onBlurHandler}
+      />
+      <div className={styles.submitToolbar}>
+        <Button variant="link" type="button" onClick={onClear}>
+          Clear
+        </Button>
+      </div>
+    </>
   );
 };
 

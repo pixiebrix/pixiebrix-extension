@@ -70,12 +70,14 @@ export function useStylesheetsContextWithDocumentDefault({
   return useStylesheetsContextWithDefaultValues({
     newStylesheets,
     defaultStylesheets: [
-      // DocumentView.css is an artifact produced by webpack, see the DocumentView entrypoint included in
-      // `webpack.config.mjs`. We build styles needed to render documents separately from the rest of the sidebar
-      // in order to isolate the rendered document from the custom Bootstrap theme included in the Sidebar app
-      "/DocumentView.css",
       bootstrap,
       bootstrapOverrides,
+      // DocumentView.css and TextAreaWidget.css are artifacts produced by webpack, see the DocumentView and TextAreaWidget
+      // entrypoints included in `webpack.config.mjs`. We build styles needed to render documents separately from the rest
+      // of the sidebar in order to isolate the rendered document from the custom Bootstrap theme included in the Sidebar app
+      // place last to override the default bootstrap styles via the cascade
+      "/DocumentView.css",
+      "/TextAreaWidget.css",
     ],
     disableParentStyles,
   });

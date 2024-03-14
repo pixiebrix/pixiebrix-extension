@@ -41,6 +41,7 @@ import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { useStylesheetsContextWithFormDefault } from "@/components/StylesheetsContext";
 import { type FormDefinition } from "@/platform/forms/formTypes";
 import { type UUID } from "@/types/stringTypes";
+import TextAreaWidget from "@/components/formBuilder/TextAreaWidget";
 
 const fields = {
   DescriptionField,
@@ -48,7 +49,8 @@ const fields = {
 const uiWidgets = {
   imageCrop: ImageCropWidget,
   SelectWidget: RjsfSelectWidget,
-};
+  TextareaWidget: TextAreaWidget,
+} as const;
 
 const ModalLayout: React.FC = ({ children }) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
