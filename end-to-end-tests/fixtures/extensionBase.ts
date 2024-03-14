@@ -21,6 +21,7 @@ import {
   chromium,
   type BrowserContext,
   type Cookie,
+  Page,
 } from "@playwright/test";
 import path from "node:path";
 import { E2E_TEST_USER_EMAIL_UNAFFILIATED, MV, SERVICE_URL } from "../env";
@@ -46,6 +47,18 @@ const getStoredCookies = async (): Promise<Cookie[]> => {
     cookies: Cookie[];
   };
   return cookies;
+};
+
+const ensureExtensionIsLoaded = async (page: Page, extensionId: string) => {
+  await baseExpect(async () => {
+    await page.goto(`chrome-extension://${extensionId}/options.html`);
+    await baseExpect(page.getByText("Extension Console")).toBeVisible();
+    await baseExpect(
+      page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
+    ).toBeVisible();
+  }).toPass({
+    timeout: 10_000,
+  });
 };
 
 export const test = base.extend<{
@@ -96,15 +109,7 @@ export const test = base.extend<{
 
     // After linking, the Extension will reload, causing errors if the Extension Console is accessed too soon.
     // Wait for the Extension Console to be visible before proceeding.
-    await baseExpect(async () => {
-      await page.goto(`chrome-extension://${extensionId}/options.html`);
-      await baseExpect(page.getByText("Extension Console")).toBeVisible();
-      await baseExpect(
-        page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
-      ).toBeVisible();
-    }).toPass({
-      timeout: 10_000,
-    });
+    await ensureExtensionIsLoaded(page, extensionId);
 
     await use(page);
   },
