@@ -34,6 +34,7 @@ import { toExpression } from "@/utils/expressionUtils";
 import CommentEffect from "@/bricks/effects/comment";
 import AddTextCommand from "@/bricks/effects/AddTextCommand";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
+import AddTextSnippets from "@/bricks/effects/AddTextSnippets";
 
 /**
  * Get an example brick config for a given brick id.
@@ -182,6 +183,18 @@ export function getExampleBrickConfig(
       return {
         variableName: "",
         value: toExpression("nunjucks", ""),
+      };
+    }
+
+    case AddTextSnippets.BRICK_ID: {
+      return {
+        snippets: [
+          {
+            shortcut: "example",
+            title: "Example Snippet",
+            text: "Example snippet text",
+          },
+        ],
       };
     }
 

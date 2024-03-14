@@ -19,6 +19,7 @@ import AddTextSnippets from "@/bricks/effects/AddTextSnippets";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { commandRegistry } from "@/contentScript/commandPopover/commandController";
+import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
 
 const brick = new AddTextSnippets();
 
@@ -38,7 +39,7 @@ describe("AddTextSnippets", () => {
             {
               shortcut,
               title: "Test",
-              text: "test",
+              text: "test text",
             },
           ],
         }),
@@ -50,14 +51,27 @@ describe("AddTextSnippets", () => {
           // Leading command key is dropped
           shortcut: "test",
           title: "Test",
+          preview: "test text",
           handler: expect.toBeFunction(),
           componentId: options.logger.context.extensionId,
         },
       ]);
 
       await expect(commandRegistry.commands[0].handler("")).resolves.toBe(
-        "test",
+        "test text",
       );
     },
   );
+
+  it("includes and example", () => {
+    expect(getExampleBrickConfig(AddTextSnippets.BRICK_ID)).toStrictEqual({
+      snippets: [
+        {
+          shortcut: "example",
+          text: "Example snippet text",
+          title: "Example Snippet",
+        },
+      ],
+    });
+  });
 });
