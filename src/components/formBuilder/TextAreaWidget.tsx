@@ -28,6 +28,8 @@ import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import { Button } from "react-bootstrap";
 import styles from "./TextAreaWidget.module.scss";
 import cx from "classnames";
+import Icon from "@/icons/Icon";
+import { type IconLibrary } from "@/types/iconTypes";
 
 const TextAreaWidget: React.FC<WidgetProps> = ({
   id,
@@ -42,11 +44,17 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
   onBlur,
 }) => {
   const { submitForm } = useContext(RjsfSubmitContext);
+  const { submitOnEnter, submitToolbar, rows } = options;
+  const submitToolbarIcon = options.submitToolbarIcon as {
+    id: string;
+    library: IconLibrary;
+    size: number;
+  };
 
   const onKeyPress = useCallback<KeyboardEventHandler<HTMLTextAreaElement>>(
     async (event) => {
       if (
-        options.submitOnEnter &&
+        submitOnEnter &&
         event.key === "Enter" &&
         !(event.shiftKey || event.altKey || event.ctrlKey) // Do not submit on enter when a modifier key is held
       ) {
@@ -57,7 +65,7 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
         await submitForm();
       }
     },
-    [options.submitOnEnter, submitForm],
+    [submitOnEnter, submitForm],
   );
 
   const onFocusHandler = useCallback<FocusEventHandler<HTMLTextAreaElement>>(
@@ -81,32 +89,54 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
     [onChange],
   );
 
-  const onClear = useCallback(() => {
-    onChange("");
-  }, [onChange]);
-
   // @see @rjsf/core/lib/components/widgets/TextareaWidget.js
   return (
     <>
       <textarea
         id={id}
-        className={cx("form-control", { [styles.hasSubmitToolbar]: true })}
+        className={cx("form-control", {
+          [styles.hasSubmitToolbar]: submitToolbar,
+        })}
         value={String(value ?? "")}
         placeholder={placeholder}
         required={required}
         disabled={disabled}
         readOnly={readonly}
-        rows={isNumber(options.rows) ? options.rows : undefined}
+        rows={isNumber(rows) ? rows : undefined}
         onKeyPress={onKeyPress}
         onChange={onChangeHandler}
         onFocus={onFocusHandler}
         onBlur={onBlurHandler}
       />
-      <div className={styles.submitToolbar}>
-        <Button variant="link" type="button" onClick={onClear}>
-          Clear
-        </Button>
-      </div>
+      {submitToolbar && (
+        <div
+          className={cx("d-flex justify-content-between", styles.submitToolbar)}
+        >
+          <Button
+            variant="link"
+            type="button"
+            onClick={() => {
+              onChange("");
+            }}
+          >
+            Clear
+          </Button>
+          <button
+            onClick={async (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+
+              await submitForm();
+            }}
+          >
+            <Icon
+              icon={submitToolbarIcon.id}
+              library={submitToolbarIcon.library}
+              size={submitToolbarIcon.size}
+            />
+          </button>
+        </div>
+      )}
     </>
   );
 };

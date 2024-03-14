@@ -92,6 +92,51 @@ function shouldShowPlaceholderText(uiType: UiType): boolean {
   }
 }
 
+const TextAreaFields: React.FC<{ name: string; propertyName: string }> = ({
+  name,
+  propertyName,
+}) => {
+  const [{ value: submitToolbar }] = useField<boolean>(
+    `${name}.uiSchema.${propertyName}.ui:options.submitToolbar`,
+  );
+
+  return (
+    <>
+      <SchemaField
+        name={`${name}.uiSchema.${propertyName}.ui:options.submitOnEnter`}
+        schema={{
+          type: "boolean",
+          title: "Submit Form on Enter?",
+          description:
+            "If enabled, pressing Enter will submit the form. Press Shift+Enter for newlines in this mode",
+        }}
+        isRequired
+      />
+      <SchemaField
+        name={`${name}.uiSchema.${propertyName}.ui:options.submitToolbar`}
+        schema={{
+          type: "boolean",
+          title: "Include Submit Toolbar?",
+          description:
+            "Select the icon that appears in the bottom right of the Submit Toolbar",
+        }}
+        isRequired
+      />
+      {submitToolbar && (
+        <SchemaField
+          name={`${name}.uiSchema.${propertyName}.ui:options.submitToolbarIcon`}
+          schema={{ $ref: "https://app.pixiebrix.com/schemas/icon#" }}
+          label="Select Icon"
+          description="Select the icon that appears in the bottom right of the Submit Toolbar"
+          uiSchema={{
+            "ui:widget": "IconWidget",
+          }}
+        />
+      )}
+    </>
+  );
+};
+
 const FieldEditor: React.FC<{
   name: string;
   propertyName: string;
@@ -382,19 +427,6 @@ const FieldEditor: React.FC<{
         />
       )}
 
-      {uiType.uiWidget === "textarea" && (
-        <SchemaField
-          name={`${name}.uiSchema.${propertyName}.ui:options.submitOnEnter`}
-          schema={{
-            type: "boolean",
-            title: "Submit Form on Enter?",
-            description:
-              "If enabled, pressing Enter will submit the form. Press Shift+Enter for newlines in this mode",
-          }}
-          isRequired
-        />
-      )}
-
       <FieldTemplate
         name={`${name}.schema.required`}
         label="Required Field?"
@@ -402,6 +434,10 @@ const FieldEditor: React.FC<{
         value={isRequired}
         onChange={onRequiredChange}
       />
+
+      {uiType.uiWidget === "textarea" && (
+        <TextAreaFields name={name} propertyName={propertyName} />
+      )}
     </div>
   );
 };
