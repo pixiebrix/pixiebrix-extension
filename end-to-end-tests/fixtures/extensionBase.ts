@@ -26,6 +26,7 @@ import {
 import path from "node:path";
 import { E2E_TEST_USER_EMAIL_UNAFFILIATED, MV, SERVICE_URL } from "../env";
 import fs from "node:fs/promises";
+import { getBaseExtensionConsoleUrl } from "../pageObjects/constants";
 
 const getStoredCookies = async (): Promise<Cookie[]> => {
   let fileBuffer;
@@ -65,7 +66,7 @@ const linkExtensionViaAdminConsole = async (page: Page) => {
 
 const ensureExtensionIsLoaded = async (page: Page, extensionId: string) => {
   await baseExpect(async () => {
-    await page.goto(`chrome-extension://${extensionId}/options.html`);
+    await page.goto(getBaseExtensionConsoleUrl(extensionId));
     await baseExpect(page.getByText("Extension Console")).toBeVisible();
     await baseExpect(
       page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
