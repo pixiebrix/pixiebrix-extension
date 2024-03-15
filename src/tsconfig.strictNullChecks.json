@@ -148,6 +148,7 @@
     "./bricks/transformers/detect.ts",
     "./bricks/transformers/encode.ts",
     "./bricks/transformers/ephemeralForm/formTransformer.ts",
+    "./bricks/transformers/ephemeralForm/EphemeralFormContent.tsx",
     "./bricks/transformers/httpGet.ts",
     "./bricks/transformers/javascript.ts",
     "./bricks/transformers/jquery/JQueryReader.ts",

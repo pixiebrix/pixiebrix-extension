@@ -52,7 +52,7 @@ export const EphemeralFormContent: React.FC<{
     cancelable,
     submitCaption,
     stylesheets: newStylesheets,
-    disableParentStyles,
+    disableParentStyles = false,
   } = definition;
 
   // Ephemeral form can never be nested, but we use this to pull in
