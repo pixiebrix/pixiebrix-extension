@@ -41,7 +41,10 @@ import { Events } from "@/telemetry/events";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { Stylesheets } from "@/components/Stylesheets";
 import useIsMounted from "@/hooks/useIsMounted";
-import { replaceAtCommand } from "@/contentScript/commandPopover/commandUtils";
+import {
+  normalizePreview,
+  replaceAtCommand,
+} from "@/contentScript/commandPopover/commandUtils";
 import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
 
 type PopoverActionCallbacks = {
@@ -53,11 +56,14 @@ const CommandTitle: React.FunctionComponent<{
   shortcut: string;
   commandKey: string;
 }> = ({ query, shortcut, commandKey }) => (
-  <span>
+  <div>
     {commandKey}
-    {!isEmpty(query) && <span className="result__match">{query}</span>}
+    {!isEmpty(query) && (
+      // Highlight the match. Use the shortcut vs. query directly because search is case-insensitive
+      <span className="result__match">{shortcut.slice(0, query.length)}</span>
+    )}
     {shortcut.slice(query.length)}
-  </span>
+  </div>
 );
 
 const ResultItem: React.FunctionComponent<{
@@ -93,6 +99,7 @@ const ResultItem: React.FunctionComponent<{
         shortcut={command.shortcut}
         commandKey={commandKey}
       />
+      <div className="preview">{normalizePreview(command.preview)}</div>
     </button>
   );
 };
@@ -156,6 +163,7 @@ const CommandPopover: React.FunctionComponent<
           dispatch(popoverSlice.actions.setCommandSuccess({ text }));
         }
       } catch (error) {
+        console.warn("Error filling at cursor", error);
         dispatch(popoverSlice.actions.setCommandError({ error }));
       }
     },

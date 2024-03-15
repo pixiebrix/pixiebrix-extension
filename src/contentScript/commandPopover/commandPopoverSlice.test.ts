@@ -15,27 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { test, expect } from "../fixtures/extensionBase";
-import { ActivateModPage } from "../pageObjects/modsPage";
+import { popoverSlice } from "@/contentScript/commandPopover/commandPopoverSlice";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
-test("can activate and use highlight keywords mod", async ({
-  page,
-  extensionId,
-}) => {
-  const modId = "@pixies/highlight-keywords";
+describe("commandPopoverSlice", () => {
+  it.each(["test", "TeSt"])("case matches query: %s", (query) => {
+    const command = {
+      componentId: autoUUIDSequence(),
+      shortcut: "test",
+      title: "Test",
+      handler: jest.fn(),
+    };
 
-  const modActivationPage = new ActivateModPage(page, extensionId, modId);
-  await modActivationPage.goto();
-
-  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
-
-  await page.goto("/bootstrap-5");
-
-  const highlightedElements = await page.locator("mark").all();
-
-  await Promise.all(
-    highlightedElements.map(async (element) => {
-      await expect(element).toHaveText("PixieBrix");
-    }),
-  );
+    expect(
+      popoverSlice.reducer(
+        undefined,
+        popoverSlice.actions.search({
+          query,
+          commands: [command],
+        }),
+      ),
+    ).toStrictEqual({
+      activeCommand: null,
+      query,
+      results: [command],
+      selectedIndex: 0,
+    });
+  });
 });

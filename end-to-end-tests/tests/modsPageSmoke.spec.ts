@@ -27,7 +27,7 @@ test.describe("extension console mods page smoke test", () => {
     const pageTitle = await page.title();
     expect(pageTitle).toBe("Mods | PixieBrix");
     await modsPage.viewAllMods();
-    const modTableItems = await modsPage.getAllModTableItems();
+    const modTableItems = modsPage.modTableItems();
     // There is at least one mod visible
     await expect(modTableItems.nth(0)).toBeVisible();
 

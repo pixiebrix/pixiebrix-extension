@@ -22,8 +22,8 @@
 @import "@/themes/colors.scss";
 
 .root {
-  height: 100px;
-  width: 200px;
+  height: 200px;
+  width: 240px;
   overflow-y: auto;
 }
 
@@ -32,6 +32,13 @@
   flex-direction: column;
   background-color: $N0;
   color: black;
+}
+
+.preview {
+  color: $N400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .result {

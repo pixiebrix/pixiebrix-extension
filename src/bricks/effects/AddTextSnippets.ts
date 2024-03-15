@@ -124,6 +124,7 @@ class AddTextSnippets extends EffectABC {
         componentId: logger.context.extensionId,
         shortcut: normalizeShortcut(shortcut),
         title,
+        preview: text,
         async handler(): Promise<string> {
           return text;
         },

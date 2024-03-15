@@ -383,16 +383,27 @@ const FieldEditor: React.FC<{
       )}
 
       {uiType.uiWidget === "textarea" && (
-        <SchemaField
-          name={`${name}.uiSchema.${propertyName}.ui:options.submitOnEnter`}
-          schema={{
-            type: "boolean",
-            title: "Submit Form on Enter?",
-            description:
-              "If enabled, pressing Enter will submit the form. Press Shift+Enter for newlines in this mode",
-          }}
-          isRequired
-        />
+        <>
+          <SchemaField
+            name={`${name}.uiSchema.${propertyName}.ui:options.rows`}
+            schema={{
+              type: "number",
+              title: "# Rows",
+              description:
+                "The number of visible text lines for the control. If it is not specified, the default value is 2.",
+            }}
+          />
+          <SchemaField
+            name={`${name}.uiSchema.${propertyName}.ui:options.submitOnEnter`}
+            schema={{
+              type: "boolean",
+              title: "Submit Form on Enter?",
+              description:
+                "If enabled, pressing Enter will submit the form. Press Shift+Enter for newlines in this mode",
+            }}
+            isRequired
+          />
+        </>
       )}
 
       <FieldTemplate
