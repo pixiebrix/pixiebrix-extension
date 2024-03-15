@@ -67,3 +67,6 @@ AbortSignal.prototype.throwIfAborted ??= function () {
 globalThis.Element.prototype.checkVisibility ??= function () {
   return this.isConnected;
 };
+
+// Waiting for https://github.com/jsdom/jsdom/issues/2154
+globalThis.HTMLImageElement.prototype.decode = jest.fn();
