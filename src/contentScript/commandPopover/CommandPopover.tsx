@@ -46,6 +46,12 @@ import {
   replaceAtCommand,
 } from "@/contentScript/commandPopover/commandUtils";
 import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCaretDown,
+  faCaretUp,
+  faExclamationCircle,
+} from "@fortawesome/free-solid-svg-icons";
 
 type PopoverActionCallbacks = {
   onHide: () => void;
@@ -99,7 +105,7 @@ const ResultItem: React.FunctionComponent<{
         shortcut={command.shortcut}
         commandKey={commandKey}
       />
-      <div className="preview">{normalizePreview(command.preview)}</div>
+      <div className="result__preview">{normalizePreview(command.preview)}</div>
     </button>
   );
 };
@@ -124,16 +130,32 @@ const StatusBar: React.FunctionComponent<{
     );
   }
 
-  if (results.length === 0) {
-    return (
-      <div role="status" className="status status--empty">
-        No matches found
-      </div>
-    );
-  }
-
   return null;
 };
+
+const noResultsPane: React.ReactElement = (
+  <div className="noResults">
+    <div>
+      <div>
+        <FontAwesomeIcon icon={faExclamationCircle} />
+      </div>
+      <div>{"We couldn't find any matching snippets"}</div>
+    </div>
+  </div>
+);
+
+const popoverFooter: React.ReactElement = (
+  // TODO: determine a11y: https://github.com/pixiebrix/pixiebrix-extension/issues/7936
+  <div className="footer">
+    Navigate{" "}
+    <span className="key">
+      <FontAwesomeIcon icon={faCaretDown} fixedWidth size="xs" />
+      &nbsp;
+      <FontAwesomeIcon icon={faCaretUp} fixedWidth size="xs" />
+    </span>{" "}
+    Select <span className="key">TAB</span>
+  </div>
+);
 
 const CommandPopover: React.FunctionComponent<
   {
@@ -205,6 +227,8 @@ const CommandPopover: React.FunctionComponent<
         <div role="menu" aria-label="Text command menu" className="root">
           <StatusBar {...state} />
           <div className="results">
+            {state.results.length === 0 && noResultsPane}
+
             {state.results.map((command) => {
               const isSelected = selectedCommand?.shortcut === command.shortcut;
               return (
@@ -222,6 +246,7 @@ const CommandPopover: React.FunctionComponent<
               );
             })}
           </div>
+          {popoverFooter}
         </div>
       </Stylesheets>
     </EmotionShadowRoot>

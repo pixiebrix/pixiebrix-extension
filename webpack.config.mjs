@@ -42,6 +42,7 @@ console.log("SOURCE_VERSION:", process.env.SOURCE_VERSION);
 console.log("SERVICE_URL:", process.env.SERVICE_URL);
 console.log("MARKETPLACE_URL:", process.env.MARKETPLACE_URL);
 console.log("CHROME_EXTENSION_ID:", process.env.CHROME_EXTENSION_ID);
+console.log("MV:", process.env.MV);
 
 if (!process.env.SOURCE_VERSION) {
   process.env.SOURCE_VERSION = execSync("git rev-parse --short HEAD")
