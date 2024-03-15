@@ -20,13 +20,6 @@ import type { ThemeAssets } from "@/themes/themeUtils";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { loadImageData } from "@/utils/canvasUtils";
 
-async function setToolbarIcon(toolbarIcon: string) {
-  // The icon is shown in 16x16 logical pixels, but we want to make it look
-  // good on retina displays too
-  const imageData = await loadImageData(toolbarIcon, 32, 32);
-  browserAction.setIcon({ imageData });
-}
-
 export default async function setToolbarIconFromTheme({
   logo,
   toolbarIcon,
@@ -34,9 +27,15 @@ export default async function setToolbarIconFromTheme({
 }: Pick<ThemeAssets, "logo" | "toolbarIcon" | "themeName">) {
   if (toolbarIcon) {
     try {
-      await setToolbarIcon(toolbarIcon);
+      // The icon is shown in 16x16 logical pixels, but we want to make it look
+      // good on retina displays too
+      const imageData = await loadImageData(toolbarIcon, 32, 32);
+      browserAction.setIcon({ imageData });
       return;
-    } catch {
+    } catch (error) {
+      console.warn("Failed to load toolbar icon from theme", {
+        error,
+      });
       // Ignore and continue
     }
   }

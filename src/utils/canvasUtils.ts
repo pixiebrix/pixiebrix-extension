@@ -46,7 +46,7 @@ export async function blobToImageBitmapWithDom(
 /**
  * Converts a Blob object into ImageBitmap. Compatible with the background page and worker.
  */
-export async function blobToImageBitmapFromAnyContext(
+async function blobToImageBitmapFromAnyContext(
   blob: Blob,
 ): Promise<ImageBitmap> {
   if (blob.type === "image/svg+xml" && typeof Image !== "function") {
