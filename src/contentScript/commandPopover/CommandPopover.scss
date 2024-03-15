@@ -37,6 +37,23 @@
   color: black;
 }
 
+.noResults {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: $N0;
+  justify-content: center;
+  text-align: center;
+  color: $D600;
+  font-size: 0.875em;
+
+  // Font Awesome stylesheet is not available in the Shadow DOM
+  svg {
+    width: 1.5em;
+    height: 1.5em;
+  }
+}
+
 .preview {
   color: $N400;
   overflow: hidden;
