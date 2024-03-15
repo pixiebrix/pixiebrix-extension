@@ -19,6 +19,7 @@ import { browserAction } from "@/mv3/api";
 import type { ThemeAssets } from "@/themes/themeUtils";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { loadImageData } from "@/utils/canvasUtils";
+import { throwAsync } from "@/utils/promiseUtils";
 
 export default async function setToolbarIconFromTheme({
   logo,
@@ -33,10 +34,7 @@ export default async function setToolbarIconFromTheme({
       browserAction.setIcon({ imageData });
       return;
     } catch (error) {
-      console.warn("Failed to load toolbar icon from theme", {
-        error,
-      });
-      // Ignore and continue
+      throwAsync(error);
     }
   }
 
