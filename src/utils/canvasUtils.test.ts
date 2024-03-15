@@ -22,28 +22,10 @@ import MockAdapter from "axios-mock-adapter";
 const mock = new MockAdapter(axios);
 const url = "http://test.com/image.svg";
 
-const drawImageMock = jest.fn();
-const getImageDataMock = jest.fn().mockReturnValue("image data");
-const getContextMock = jest.fn().mockReturnValue({
-  drawImage: drawImageMock,
-  getImageData: getImageDataMock,
-});
-
 jest
   .mocked(browser.runtime.getManifest)
   // @ts-expect-error -- No need to mock the whole manifest for the test
   .mockReturnValue({ icons: "path to icons" });
-
-// @ts-expect-error -- No need to mock the whole class for the test
-globalThis.OffscreenCanvas = class {
-  getContext = getContextMock;
-};
-
-URL.createObjectURL = jest.fn();
-
-globalThis.createImageBitmap = jest
-  .fn()
-  .mockReturnValue({ width: 32, height: 32, close() {} });
 
 describe("blobToImageData", () => {
   it("should return ImageData from a Blob", async () => {
@@ -52,15 +34,18 @@ describe("blobToImageData", () => {
     const result = await blobToImageData(blob, 32, 32);
 
     expect(result).toBe("image data");
-    expect(getContextMock).toHaveBeenCalledWith("2d");
-    expect(drawImageMock).toHaveBeenCalledWith(
+
+    expect(OffscreenCanvas.prototype.getContext).toHaveBeenCalledWith("2d");
+    expect(CanvasRenderingContext2D.prototype.drawImage).toHaveBeenCalledWith(
       { width: 32, height: 32, close: expect.any(Function) },
       0,
       0,
       32,
       32,
     );
-    expect(getImageDataMock).toHaveBeenCalledWith(0, 0, 32, 32);
+    expect(
+      CanvasRenderingContext2D.prototype.getImageData,
+    ).toHaveBeenCalledWith(0, 0, 32, 32);
   });
 });
 
