@@ -291,6 +291,7 @@
     "./contentScript/activationConstants.ts",
     "./contentScript/browserActionInstantHandler.ts",
     "./contentScript/commandPopover/CommandPopover.stories.tsx",
+    "./contentScript/commandPopover/CommandPopover.test.tsx",
     "./contentScript/commandPopover/CommandPopover.tsx",
     "./contentScript/commandPopover/CommandRegistry.ts",
     "./contentScript/commandPopover/commandController.tsx",

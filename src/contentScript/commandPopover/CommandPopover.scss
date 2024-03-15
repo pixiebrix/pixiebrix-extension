@@ -24,14 +24,34 @@
 .root {
   height: 200px;
   width: 240px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .results {
+  flex-grow: 1;
   display: flex;
+  overflow-y: auto;
   flex-direction: column;
   background-color: $N0;
   color: black;
+}
+
+.noResults {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: $N0;
+  justify-content: center;
+  text-align: center;
+  color: $D600;
+  font-size: 0.875em;
+
+  // Font Awesome stylesheet is not available in the Shadow DOM
+  svg {
+    width: 1.5em;
+    height: 1.5em;
+  }
 }
 
 .preview {
@@ -39,6 +59,24 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.footer {
+  padding: 0.5rem;
+  font-size: 0.625rem;
+  color: #9c9fa6;
+  text-transform: uppercase;
+  font-family: monospace;
+
+  .key {
+    color: $P600;
+  }
+
+  // Font Awesome stylesheet is not available in the Shadow DOM
+  svg {
+    width: 1em;
+    height: 1em;
+  }
 }
 
 .result {
