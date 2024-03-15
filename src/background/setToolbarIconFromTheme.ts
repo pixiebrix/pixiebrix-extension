@@ -28,8 +28,9 @@ export default async function setToolbarIconFromTheme({
   if (toolbarIcon) {
     try {
       // The icon is shown in 16x16 logical pixels, but we want to make it look
-      // good on retina displays too
-      const imageData = await loadImageData(toolbarIcon, 32, 32);
+      // good on retina displays too. Also the scaling quality of drawImage() is not great
+      // so we the use a larger size and let the browser scale it down with a better algo.
+      const imageData = await loadImageData(toolbarIcon, 128, 128);
       browserAction.setIcon({ imageData });
       return;
     } catch (error) {
