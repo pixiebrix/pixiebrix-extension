@@ -138,7 +138,8 @@ const StatusBar: React.FunctionComponent<{
 };
 
 const PopoverFooter: React.ReactElement = (
-  <div className="footer" role="navigation" aria-label="Text commands">
+  // TODO: determine a11y: https://github.com/pixiebrix/pixiebrix-extension/issues/7936
+  <div className="footer">
     Navigate{" "}
     <span className="key">
       <FontAwesomeIcon icon={faCaretDown} fixedWidth size="xs" />
