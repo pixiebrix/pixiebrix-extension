@@ -19,7 +19,6 @@ import React, { useRef, useState } from "react";
 import ReactCrop, { type Crop } from "react-image-crop";
 import { type WidgetProps } from "@rjsf/utils";
 import "react-image-crop/src/ReactCrop.scss";
-import { assertNotNullish } from "@/utils/nullishUtils";
 
 const ImageCropWidget: React.VFC<WidgetProps> = ({
   schema,
@@ -62,8 +61,9 @@ const ImageCropWidget: React.VFC<WidgetProps> = ({
     const pixelRatio = window.devicePixelRatio;
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
-    const canvasContext = canvas.getContext("2d");
-    assertNotNullish(canvasContext, "Browser did not provide canvas context");
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- 2d always exists
+    const canvasContext = canvas.getContext("2d")!;
 
     canvas.width = crop.width * pixelRatio * scaleX;
     canvas.height = crop.height * pixelRatio * scaleY;
