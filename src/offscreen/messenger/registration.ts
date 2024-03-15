@@ -15,17 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { blobToImageBitmapWithDom } from "@/utils/canvasUtils";
+import { blobToImageBitmapWithDom, loadImageData } from "@/utils/canvasUtils";
 import { registerMethods } from "webext-messenger";
 
 declare global {
   interface MessengerMethods {
     BLOB_TO_IMAGE_BITMAP_WITH_DOM: typeof blobToImageBitmapWithDom;
+    LOAD_IMAGE_DATA: typeof loadImageData;
   }
 }
 
 export default function registerMessenger(): void {
   registerMethods({
     BLOB_TO_IMAGE_BITMAP_WITH_DOM: blobToImageBitmapWithDom,
+    LOAD_IMAGE_DATA: loadImageData,
   });
 }

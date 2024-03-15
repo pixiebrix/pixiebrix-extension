@@ -25,3 +25,5 @@ export const blobToImageBitmapWithDom = getMethod(
   "BLOB_TO_IMAGE_BITMAP_WITH_DOM",
   target,
 );
+
+export const loadImageData = getMethod("LOAD_IMAGE_DATA", target);

@@ -24,6 +24,11 @@ export async function loadImageData(
   width: number,
   height: number,
 ): Promise<ImageData> {
+  if (typeof Image !== "function") {
+    await ensureOffscreenDocument("offscreen.html");
+    return offscreen.loadImageData(url, width, height);
+  }
+
   const { data: blob } = await axios.get<Blob>(url, { responseType: "blob" });
   return blobToImageData(blob, width, height);
 }
@@ -44,20 +49,6 @@ export async function blobToImageBitmapWithDom(
 }
 
 /**
- * Converts a Blob object into ImageBitmap. Compatible with the background page and worker.
- */
-async function blobToImageBitmapFromAnyContext(
-  blob: Blob,
-): Promise<ImageBitmap> {
-  if (blob.type === "image/svg+xml" && typeof Image !== "function") {
-    await ensureOffscreenDocument("offscreen.html");
-    return offscreen.blobToImageBitmapWithDom(blob);
-  }
-
-  return blobToImageBitmapWithDom(blob);
-}
-
-/**
  * Converts a ImageBitmap into ImageData. Compatible with the background page and worker.
  *
  * You can specify the desired width and height of the resulting ImageData.
@@ -67,7 +58,7 @@ export async function blobToImageData(
   width: number,
   height: number,
 ): Promise<ImageData> {
-  const imageBitmap = await blobToImageBitmapFromAnyContext(blob);
+  const imageBitmap = await blobToImageBitmapWithDom(blob);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- 2d always exists
   const context = new OffscreenCanvas(width, height).getContext("2d")!;
