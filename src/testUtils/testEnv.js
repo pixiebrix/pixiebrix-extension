@@ -71,12 +71,14 @@ globalThis.Element.prototype.checkVisibility ??= function () {
 // Waiting for https://github.com/jsdom/jsdom/issues/2154
 globalThis.HTMLImageElement.prototype.decode = jest.fn();
 
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class -- The mocks must be defined in the prototype
 globalThis.CanvasRenderingContext2D = class {};
 globalThis.CanvasRenderingContext2D.prototype.drawImage = jest.fn();
 globalThis.CanvasRenderingContext2D.prototype.getImageData = jest
   .fn()
   .mockReturnValue("image data");
 
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class -- The mocks must be defined in the prototype
 globalThis.OffscreenCanvas = class {};
 globalThis.OffscreenCanvas.prototype.getContext = jest.fn(
   () => new CanvasRenderingContext2D(),

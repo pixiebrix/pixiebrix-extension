@@ -41,7 +41,7 @@ async function blobToImageBitmapWithDom(blob: Blob): Promise<ImageBitmap> {
 }
 
 /**
- * Converts a ImageBitmap into ImageData.
+ * Converts a blob into ImageData.
  *
  * You can specify the desired width and height of the resulting ImageData, the aspect ratio will be preserved
  */
