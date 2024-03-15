@@ -33,6 +33,9 @@ async function blobToImageBitmapWithDom(blob: Blob): Promise<ImageBitmap> {
     return createImageBitmap(blob);
   }
 
+  // TODO: URL.createObjectURL() and Image() is not available in service workers
+  // https://groups.google.com/a/chromium.org/g/chromium-extensions/c/u0NH7L3v9L4
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/7622
   const url = URL.createObjectURL(blob);
   const image = new Image();
   image.src = url;
