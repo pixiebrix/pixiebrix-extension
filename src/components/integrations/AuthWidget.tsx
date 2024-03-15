@@ -97,25 +97,35 @@ export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
       if (value.default !== undefined) {
         // eslint-disable-next-line security/detect-object-injection -- Schema property keys
         result[key] = value.default;
+        continue;
       }
 
-      if (value.type === "boolean") {
-        // eslint-disable-next-line security/detect-object-injection -- Schema property keys
-        result[key] = false;
-      }
+      switch (value.type) {
+        case "boolean": {
+          // eslint-disable-next-line security/detect-object-injection -- Schema property keys
+          result[key] = false;
+          break;
+        }
 
-      if (value.type === "number" || value.type === "integer") {
-        // eslint-disable-next-line security/detect-object-injection -- Schema property keys
-        result[key] = 0;
-      }
+        case "number":
+        case "integer": {
+          // eslint-disable-next-line security/detect-object-injection -- Schema property keys
+          result[key] = 0;
+          break;
+        }
 
-      if (value.type === "array") {
-        // eslint-disable-next-line security/detect-object-injection -- Schema property keys
-        result[key] = [];
-      }
+        case "array": {
+          // eslint-disable-next-line security/detect-object-injection -- Schema property keys
+          result[key] = [];
+          break;
+        }
 
-      // eslint-disable-next-line security/detect-object-injection -- Schema property keys
-      result[key] = "";
+        default: {
+          // eslint-disable-next-line security/detect-object-injection -- Schema property keys
+          result[key] = "";
+          break;
+        }
+      }
     }
   }
 
