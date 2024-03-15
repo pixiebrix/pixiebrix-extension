@@ -29,7 +29,7 @@ import { Button } from "react-bootstrap";
 import styles from "./TextAreaWidget.module.scss";
 import cx from "classnames";
 import Icon from "@/icons/Icon";
-import { type IconLibrary } from "@/types/iconTypes";
+import { type IconValue } from "@/components/fields/IconWidget";
 
 const TextAreaWidget: React.FC<WidgetProps> = ({
   id,
@@ -50,11 +50,7 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
     submitToolbarIcon = {},
     rows,
   } = options;
-  const icon = submitToolbarIcon as {
-    id: string;
-    library: IconLibrary;
-    size: number;
-  };
+  const icon = submitToolbarIcon as IconValue;
 
   const onKeyPress = useCallback<KeyboardEventHandler<HTMLTextAreaElement>>(
     async (event) => {
