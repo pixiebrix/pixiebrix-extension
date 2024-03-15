@@ -127,7 +127,7 @@ const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
           type: "boolean",
           title: "Include Submit Toolbar?",
           description:
-            "Select the icon that appears in the bottom right of the Submit Toolbar",
+            "Enable the submit toolbar that has a selectable icon to act as a submit button",
         }}
         isRequired
       />
@@ -142,8 +142,6 @@ const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
           }}
         />
       </Collapse>
-      {/* {submitToolbar && (
-      )} */}
     </>
   );
 };
