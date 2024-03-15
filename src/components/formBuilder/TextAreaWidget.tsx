@@ -96,11 +96,11 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
 
   // @see @rjsf/core/lib/components/widgets/TextareaWidget.js
   return (
-    <div className={cx({ [styles.submitToolbarRoot]: submitToolbar })}>
+    <div className={cx({ [styles.submitToolbarRoot ?? ""]: submitToolbar })}>
       <textarea
         id={id}
         className={cx("form-control", {
-          [styles.hasSubmitToolbar]: submitToolbar,
+          [styles.hasSubmitToolbar ?? ""]: submitToolbar,
         })}
         value={String(value ?? "")}
         placeholder={placeholder}
@@ -126,7 +126,7 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
           >
             Clear
           </Button>
-          <Button type="submit" variant="link">
+          <Button type="submit" variant="link" aria-label="submit">
             <Icon
               icon={icon.id}
               library={icon.library}

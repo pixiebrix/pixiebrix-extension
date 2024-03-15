@@ -241,6 +241,7 @@ export const initRenamingCases = () => {
           [fieldName]: {
             "ui:options": {
               submitOnEnter: false,
+              submitToolbar: false,
             },
             "ui:widget": "textarea",
           },
@@ -266,6 +267,7 @@ export const initRenamingCases = () => {
           [newFieldName]: {
             "ui:options": {
               submitOnEnter: false,
+              submitToolbar: false,
             },
             "ui:widget": "textarea",
           },
