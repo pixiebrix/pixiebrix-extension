@@ -32,23 +32,19 @@ export default async function setToolbarIconFromTheme({
   toolbarIcon,
   themeName,
 }: Pick<ThemeAssets, "logo" | "toolbarIcon" | "themeName">) {
+  if (toolbarIcon) {
+    try {
+      await setToolbarIcon(toolbarIcon);
+      return;
+    } catch {
+      // Ignore and continue
+    }
+  }
+
   if (themeName === DEFAULT_THEME) {
     const { icons: path } = browser.runtime.getManifest();
     browserAction.setIcon({ path });
   } else {
     browserAction.setIcon({ path: logo.small });
-  }
-
-  if (!toolbarIcon) {
-    return;
-  }
-
-  try {
-    await setToolbarIcon(toolbarIcon);
-  } catch (error) {
-    console.warn("Failed to load image data for browser action icon.", {
-      url: toolbarIcon,
-      error,
-    });
   }
 }

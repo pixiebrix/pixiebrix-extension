@@ -33,15 +33,15 @@ describe("setToolbarIconFromTheme", () => {
   const url = "http://test.com/image.svg";
 
   const drawImageMock = jest.fn();
-  const loadImageDataMock = jest.fn().mockReturnValue("image data");
+  const getImageDataDataMock = jest.fn().mockReturnValue("image data");
   const getContextMock = jest.fn().mockReturnValue({
     drawImage: drawImageMock,
-    loadImageData: loadImageDataMock,
+    getImageData: getImageDataDataMock,
   });
 
   jest
     .mocked(browser.runtime.getManifest)
-    // @ts-expect-error -- No need to mock the whole class for the test
+    // @ts-expect-error -- No need to mock the whole manifest for the test
     .mockReturnValue({ icons: "path to icons" });
 
   // @ts-expect-error -- No need to mock the whole class for the test
@@ -49,7 +49,11 @@ describe("setToolbarIconFromTheme", () => {
     getContext = getContextMock;
   };
 
-  globalThis.createImageBitmap = jest.fn().mockResolvedValue("image bitmap");
+  URL.createObjectURL = jest.fn();
+
+  globalThis.createImageBitmap = jest
+    .fn()
+    .mockImplementation((x) => `image bitmap:${x}`);
 
   beforeEach(() => {
     mock.reset();
@@ -123,8 +127,14 @@ describe("setToolbarIconFromTheme", () => {
 
       expect(result).toBe("image data");
       expect(getContextMock).toHaveBeenCalledWith("2d");
-      expect(drawImageMock).toHaveBeenCalledWith("image bitmap", 0, 0, 32, 32);
-      expect(loadImageDataMock).toHaveBeenCalledWith(0, 0, 16, 16);
+      expect(drawImageMock).toHaveBeenCalledWith(
+        "image bitmap:[object HTMLImageElement]",
+        0,
+        0,
+        32,
+        32,
+      );
+      expect(getImageDataDataMock).toHaveBeenCalledWith(0, 0, 32, 32);
     });
   });
 
@@ -138,7 +148,7 @@ describe("setToolbarIconFromTheme", () => {
       expect(result).toBe("image data");
     });
 
-    it("should return null when the request fails", async () => {
+    it("should throw when the request fails", async () => {
       mock.onGet(url).reply(500);
 
       await expect(loadImageData(url, 32, 32)).rejects.toThrow(

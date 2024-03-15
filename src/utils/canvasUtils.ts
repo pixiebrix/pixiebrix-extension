@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { ensureOffscreenDocument } from "@/offscreen/offscreenManager";
 import axios from "axios";
+import * as offscreen from "@/offscreen/messenger/api";
 
 export async function loadImageData(
   url: string,
@@ -26,15 +28,33 @@ export async function loadImageData(
   return blobToImageData(blob, width, height);
 }
 
+export async function blobToImageBitmapWithDom(
+  blob: Blob,
+): Promise<ImageBitmap> {
+  // `createImageBitmap` does not support SVGs directly from blobs, but it supports them via <img>
+  if (blob.type !== "image/svg+xml") {
+    return createImageBitmap(blob);
+  }
+
+  const url = URL.createObjectURL(blob);
+  const image = new Image();
+  image.src = url;
+  await image.decode();
+  return createImageBitmap(image);
+}
+
 /**
  * Converts a Blob object into ImageBitmap. Compatible with the background page and worker.
  */
-export async function blobToImageBitmap(blob: Blob): Promise<ImageBitmap> {
-  if (blob.type === "image/svg+xml") {
-    // TODO: chrome.offscreen support
+export async function blobToImageBitmapFromAnyContext(
+  blob: Blob,
+): Promise<ImageBitmap> {
+  if (blob.type === "image/svg+xml" && typeof Image !== "function") {
+    await ensureOffscreenDocument("offscreen.html");
+    return offscreen.blobToImageBitmapWithDom(blob);
   }
 
-  return createImageBitmap(blob);
+  return blobToImageBitmapWithDom(blob);
 }
 
 /**
@@ -47,7 +67,7 @@ export async function blobToImageData(
   width: number,
   height: number,
 ): Promise<ImageData> {
-  const imageBitmap = await blobToImageBitmap(blob);
+  const imageBitmap = await blobToImageBitmapFromAnyContext(blob);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- 2d always exists
   const context = new OffscreenCanvas(width, height).getContext("2d")!;
