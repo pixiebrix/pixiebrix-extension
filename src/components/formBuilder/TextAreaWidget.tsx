@@ -44,8 +44,13 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
   onBlur,
 }) => {
   const { submitForm } = useContext(RjsfSubmitContext);
-  const { submitOnEnter, submitToolbar, rows } = options;
-  const submitToolbarIcon = options.submitToolbarIcon as {
+  const {
+    submitOnEnter,
+    submitToolbar,
+    submitToolbarIcon = {},
+    rows,
+  } = options;
+  const icon = submitToolbarIcon as {
     id: string;
     library: IconLibrary;
     size: number;
@@ -123,9 +128,9 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
           </Button>
           <Button type="submit" variant="link">
             <Icon
-              icon={submitToolbarIcon.id}
-              library={submitToolbarIcon.library}
-              size={submitToolbarIcon.size}
+              icon={icon.id}
+              library={icon.library}
+              size={icon.size}
               color="#807691" // See colors.scss:$N300
             />
           </Button>
