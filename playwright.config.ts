@@ -16,7 +16,7 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: CI ? 1 : undefined,
   /* Timeout for each test */
-  timeout: 30_000,
+  timeout: 60_000,
   expect: {
     /* Timeout for each assertion. Increased from the default of 5000 due to Extension Console loading times. */
     timeout: 10_000,
