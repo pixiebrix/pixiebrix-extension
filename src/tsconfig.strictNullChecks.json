@@ -724,6 +724,8 @@
     "./utils/asyncStateUtils.ts",
     "./utils/browserUtils.ts",
     "./utils/cachePromise.ts",
+    "./utils/canvasUtils.ts",
+    "./utils/canvasUtils.test.ts",
     "./utils/clipboardUtils.ts",
     "./utils/debugUtils.ts",
     "./utils/deploymentUtils.ts",

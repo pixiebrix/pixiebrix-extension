@@ -28,6 +28,7 @@ const esmPackages = [
   "filename-reserved-regex",
   "filenamify",
   "idb",
+  "intrinsic-scale",
   "is-network-error",
   "ky",
   "linkify-urls",

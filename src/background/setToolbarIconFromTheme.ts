@@ -16,21 +16,25 @@
  */
 
 import { browserAction } from "@/mv3/api";
-import axios from "axios";
 import type { ThemeAssets } from "@/themes/themeUtils";
 import { DEFAULT_THEME } from "@/themes/themeTypes";
+import { loadImageData } from "@/utils/canvasUtils";
 
 export default async function setToolbarIconFromTheme({
-  logo: { small: smallLogo },
+  logo,
   toolbarIcon,
   themeName,
 }: Pick<ThemeAssets, "logo" | "toolbarIcon" | "themeName">) {
   if (toolbarIcon) {
-    const imageData = await getImageData(toolbarIcon);
-
-    if (imageData) {
+    try {
+      // The icon is shown in 16x16 logical pixels, but we want to make it look
+      // good on retina displays too. Also the scaling quality of drawImage() is not great
+      // so we the use a larger size and let the browser scale it down with a better algo.
+      const imageData = await loadImageData(toolbarIcon, 128, 128);
       browserAction.setIcon({ imageData });
       return;
+    } catch (error) {
+      console.error("Failed to load toolbar icon", error);
     }
   }
 
@@ -38,56 +42,6 @@ export default async function setToolbarIconFromTheme({
     const { icons: path } = browser.runtime.getManifest();
     browserAction.setIcon({ path });
   } else {
-    browserAction.setIcon({ path: smallLogo });
-  }
-}
-
-/**
- * Converts a Blob object into ImageData.
- *
- * This function creates an Image object from a Blob, decodes the image,
- * draws it in 16x16 on an offscreen canvas, and then returns the image data from the canvas.
- *
- * @param {Blob} blob - The Blob object to convert into ImageData.
- * @returns {Promise<ImageData>} A promise that resolves to the ImageData of the Blob.
- * @throws {Error} Throws an error if it fails to get the 2D context for the canvas.
- *
- * @todo Add MV3 support: https://github.com/pixiebrix/pixiebrix-extension/issues/7622
- */
-export async function blobToImageData(blob: Blob): Promise<ImageData> {
-  // TODO: Add MV3 support: https://github.com/pixiebrix/pixiebrix-extension/issues/7622
-
-  const img = new Image();
-  img.src = URL.createObjectURL(blob);
-  await img.decode();
-
-  // Paint on canvas and return
-  const canvas = new OffscreenCanvas(16, 16);
-  const context = canvas.getContext("2d");
-
-  if (!context) {
-    throw new Error("Failed to get 2d context for canvas");
-  }
-
-  context.drawImage(img, 0, 0, 16, 16);
-  return context.getImageData(0, 0, 16, 16);
-}
-
-export async function getImageData(
-  url?: string | null,
-): Promise<ImageData | null> {
-  if (!url) {
-    return null;
-  }
-
-  try {
-    const { data } = await axios.get<Blob>(url, { responseType: "blob" });
-    return await blobToImageData(data);
-  } catch (error) {
-    console.warn("Failed to load image data for browser action icon.", {
-      url,
-      error,
-    });
-    return null;
+    browserAction.setIcon({ path: logo.small });
   }
 }
