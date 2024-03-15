@@ -144,7 +144,6 @@ const noResultsPane: React.ReactElement = (
   </div>
 );
 
-
 const popoverFooter: React.ReactElement = (
   // TODO: determine a11y: https://github.com/pixiebrix/pixiebrix-extension/issues/7936
   <div className="footer">

@@ -27,7 +27,9 @@ export async function loadImageData(
   return blobToImageData(blob, width, height);
 }
 
-async function blobToImageBitmapWithDom(blob: Blob): Promise<ImageBitmap> {
+async function loadBlobAsImage(
+  blob: Blob,
+): Promise<ImageBitmap | HTMLImageElement> {
   // `createImageBitmap` does not support SVGs directly from blobs, but it supports them via <img>
   if (blob.type !== "image/svg+xml") {
     return createImageBitmap(blob);
@@ -40,7 +42,8 @@ async function blobToImageBitmapWithDom(blob: Blob): Promise<ImageBitmap> {
   const image = new Image();
   image.src = url;
   await image.decode();
-  return createImageBitmap(image);
+  // `createImageBitmap` will fail on SVGs that lack width/height attributes, so we must use <img>
+  return image;
 }
 
 /**
@@ -53,20 +56,30 @@ export async function blobToImageData(
   width: number,
   height: number,
 ): Promise<ImageData> {
-  const imageBitmap = await blobToImageBitmapWithDom(blob);
+  const image = await loadBlobAsImage(blob);
+  const isImageElement = image instanceof HTMLImageElement;
+
+  // SVGs might not have width/height attributes, but they likely have a viewBox
+  // so their aspect ratio is natively preserved, regardless of `resizeToFit`
+  const imageSize = isImageElement ? { width, height } : image;
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- 2d always exists
   const context = new OffscreenCanvas(width, height).getContext("2d")!;
 
-  // Preserve aspect ratio
-  const target = resizeToFit("contain", imageBitmap, { width, height });
+  // Preserve aspect ratio (width/height) and center it (x/y)
+  const target = resizeToFit("contain", imageSize, { width, height });
   context.drawImage(
-    imageBitmap,
-    Math.trunc(target.x),
-    Math.trunc(target.y),
-    Math.trunc(target.width),
-    Math.trunc(target.height),
+    image,
+    Math.floor(target.x),
+    Math.floor(target.y),
+    Math.floor(target.width),
+    Math.floor(target.height),
   );
-  imageBitmap.close();
+  if (isImageElement) {
+    URL.revokeObjectURL(image.src);
+  } else {
+    image.close();
+  }
+
   return context.getImageData(0, 0, width, height);
 }

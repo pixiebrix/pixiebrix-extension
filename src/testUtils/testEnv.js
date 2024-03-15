@@ -64,12 +64,15 @@ AbortSignal.prototype.throwIfAborted ??= function () {
 
 // This satisfies the tests, but it will never be implemented by JSDOM
 // https://github.com/jsdom/jsdom/issues/135#issuecomment-29812947
-globalThis.Element.prototype.checkVisibility ??= function () {
+Element.prototype.checkVisibility ??= function () {
   return this.isConnected;
 };
 
 // Waiting for https://github.com/jsdom/jsdom/issues/2154
-globalThis.HTMLImageElement.prototype.decode = jest.fn();
+HTMLImageElement.prototype.decode = jest.fn();
+
+URL.createObjectURL = jest.fn();
+URL.revokeObjectURL = jest.fn();
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class -- The mocks must be defined in the prototype
 globalThis.CanvasRenderingContext2D = class {};
@@ -83,8 +86,6 @@ globalThis.OffscreenCanvas = class {};
 globalThis.OffscreenCanvas.prototype.getContext = jest.fn(
   () => new CanvasRenderingContext2D(),
 );
-
-globalThis.URL.createObjectURL = jest.fn();
 
 globalThis.createImageBitmap = jest
   .fn()

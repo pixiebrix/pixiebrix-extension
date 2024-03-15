@@ -37,7 +37,7 @@ describe("blobToImageData", () => {
 
     expect(OffscreenCanvas.prototype.getContext).toHaveBeenCalledWith("2d");
     expect(CanvasRenderingContext2D.prototype.drawImage).toHaveBeenCalledWith(
-      { width: 32, height: 32, close: expect.any(Function) },
+      expect.any(HTMLImageElement),
       0,
       0,
       32,
