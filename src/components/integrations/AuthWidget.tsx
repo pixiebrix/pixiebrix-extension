@@ -83,10 +83,18 @@ const RefreshButton: React.VFC<{
   );
 };
 
+function isRequired(schema: Schema, key: string): boolean {
+  return schema.required && schema.required.includes(key);
+}
+
 export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
   const result: UnknownObject = {};
   for (const [key, value] of Object.entries(inputSchema.properties)) {
-    if (typeof value === "boolean" || value.type === "null") {
+    if (
+      typeof value === "boolean" ||
+      value.type === "null" ||
+      !isRequired(inputSchema, key)
+    ) {
       continue;
     }
 
