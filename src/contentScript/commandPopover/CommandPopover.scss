@@ -24,11 +24,14 @@
 .root {
   height: 200px;
   width: 240px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .results {
+  flex-grow: 1;
   display: flex;
+  overflow-y: auto;
   flex-direction: column;
   background-color: $N0;
   color: black;
@@ -39,6 +42,24 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.footer {
+  padding: 0.5rem;
+  font-size: 0.625rem;
+  color: #9c9fa6;
+  text-transform: uppercase;
+  font-family: monospace;
+
+  .key {
+    color: $P600;
+  }
+
+  // Font Awesome stylesheet is not available in the Shadow DOM
+  svg {
+    width: 1em;
+    height: 1em;
+  }
 }
 
 .result {

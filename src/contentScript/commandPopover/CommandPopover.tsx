@@ -46,6 +46,8 @@ import {
   replaceAtCommand,
 } from "@/contentScript/commandPopover/commandUtils";
 import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 
 type PopoverActionCallbacks = {
   onHide: () => void;
@@ -135,6 +137,19 @@ const StatusBar: React.FunctionComponent<{
   return null;
 };
 
+const PopoverFooter: React.ReactElement = (
+  // TODO: determine a11y: https://github.com/pixiebrix/pixiebrix-extension/issues/7936
+  <div className="footer">
+    Navigate{" "}
+    <span className="key">
+      <FontAwesomeIcon icon={faCaretDown} fixedWidth size="xs" />
+      &nbsp;
+      <FontAwesomeIcon icon={faCaretUp} fixedWidth size="xs" />
+    </span>{" "}
+    Select <span className="key">TAB</span>
+  </div>
+);
+
 const CommandPopover: React.FunctionComponent<
   {
     commandKey: string;
@@ -222,6 +237,7 @@ const CommandPopover: React.FunctionComponent<
               );
             })}
           </div>
+          {PopoverFooter}
         </div>
       </Stylesheets>
     </EmotionShadowRoot>
