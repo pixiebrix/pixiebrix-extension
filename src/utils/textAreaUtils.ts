@@ -131,10 +131,21 @@ export function getCaretCoordinates(element: NativeField, position: number) {
   span.textContent = element.value.slice(Math.max(0, position)) || "."; // || because a completely empty faux span doesn't render at all
   div.append(span);
 
+  let lineHeight: number;
+  if (computed.lineHeight === "normal") {
+    // Use a default value of 1.125 multiplied by the fontSize if the line-height is normal. This seems to be the default
+    // line-height in textareas for most browsers from observation during manual testing (not 1.2).
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/line-height#normal
+    const fontSize = Number.parseInt(computed.fontSize, 10);
+    lineHeight = fontSize * 1.125;
+  } else {
+    lineHeight = Number.parseInt(computed.lineHeight, 10);
+  }
+
   const coordinates = {
     top: span.offsetTop + Number.parseInt(computed.borderTopWidth, 10),
     left: span.offsetLeft + Number.parseInt(computed.borderLeftWidth, 10),
-    height: Number.parseInt(computed.lineHeight, 10),
+    height: lineHeight,
   };
 
   div.remove();
