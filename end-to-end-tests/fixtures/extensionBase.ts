@@ -108,7 +108,6 @@ export const test = base.extend<{
     // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname throws "cannot use 'import meta' outside a module"
     const pathToExtension = path.join(__dirname, "../../dist");
 
-    console.log(chromiumChannel);
     const context = await chromium.launchPersistentContext("", {
       // Test against the branded Chrome browser
       // See: https://playwright.dev/docs/browsers#google-chrome--microsoft-edge
