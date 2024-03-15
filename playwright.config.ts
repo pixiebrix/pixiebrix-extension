@@ -4,7 +4,7 @@ import { CI } from "./end-to-end-tests/env";
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-export default defineConfig({
+export default defineConfig<{ chromiumChannel: string }>({
   testDir: "./end-to-end-tests",
   outputDir: "./end-to-end-tests/.output",
   /* Run tests in files in parallel */
@@ -38,7 +38,17 @@ export default defineConfig({
       testMatch: /.*\.setup\.ts/,
     },
     {
-      name: "chromium",
+      name: "chrome",
+      use: {
+        chromiumChannel: "chrome",
+      },
+      dependencies: ["setup"],
+    },
+    {
+      name: "edge",
+      use: {
+        chromiumChannel: "msedge",
+      },
       dependencies: ["setup"],
     },
   ],
