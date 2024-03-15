@@ -17,18 +17,48 @@
 
 @import "@/themes/colors.scss";
 
+.submitToolbarRoot {
+  &:has(:global(.form-control:focus)) {
+    border-color: $input-focus-border-color;
+    border-radius: 0.25rem;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+}
+
 .hasSubmitToolbar {
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 0px;
+
+  border-color: $input-border-color;
+  // Prevent doubling the border because of the submitToolbar
+  border-bottom: none;
+
+  // Disable textarea focus styling when toolbar is present (handled by container)
+  &:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0 $input-border-color;
+
+    & + div {
+      border-color: $input-focus-border-color;
+      border-top-color: $input-border-color;
+    }
+  }
 }
 
 .submitToolbar {
-  border-style: solid;
-  width: 100%;
-}
+  border-bottom-left-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
 
-.button {
-  color: $N300;
-  background-color: inherit;
-  border: none;
+  border-style: solid;
+  border-color: $input-border-color;
+  border-width: 1px;
+
+  width: 100%;
+
+  button {
+    color: $N300;
+    background-color: inherit;
+    border: none;
+  }
 }

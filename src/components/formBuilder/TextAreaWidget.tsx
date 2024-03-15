@@ -91,7 +91,7 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
 
   // @see @rjsf/core/lib/components/widgets/TextareaWidget.js
   return (
-    <>
+    <div className={cx({ [styles.submitToolbarRoot]: submitToolbar })}>
       <textarea
         id={id}
         className={cx("form-control", {
@@ -115,14 +115,13 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
           <Button
             variant="link"
             type="button"
-            className={styles.button}
             onClick={() => {
               onChange("");
             }}
           >
             Clear
           </Button>
-          <Button type="submit" variant="link" className={styles.button}>
+          <Button type="submit" variant="link">
             <Icon
               icon={submitToolbarIcon.id}
               library={submitToolbarIcon.library}
@@ -132,7 +131,7 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
           </Button>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
