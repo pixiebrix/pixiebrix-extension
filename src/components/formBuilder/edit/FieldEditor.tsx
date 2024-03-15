@@ -55,6 +55,7 @@ import {
 import { type Schema, type SchemaPropertyType } from "@/types/schemaTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
+import { Collapse } from "react-bootstrap";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",
@@ -130,7 +131,7 @@ const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
         }}
         isRequired
       />
-      {submitToolbar && (
+      <Collapse in={submitToolbar}>
         <SchemaField
           name={`${uiOptionsPath}.submitToolbarIcon`}
           schema={{ $ref: "https://app.pixiebrix.com/schemas/icon#" }}
@@ -140,7 +141,9 @@ const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
             "ui:widget": "IconWidget",
           }}
         />
-      )}
+      </Collapse>
+      {/* {submitToolbar && (
+      )} */}
     </>
   );
 };
