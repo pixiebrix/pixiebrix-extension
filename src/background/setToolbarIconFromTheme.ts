@@ -25,6 +25,8 @@ export default async function setToolbarIconFromTheme({
   toolbarIcon,
   themeName,
 }: Pick<ThemeAssets, "logo" | "toolbarIcon" | "themeName">) {
+  toolbarIcon =
+    "https://upload.wikimedia.org/wikipedia/commons/f/fd/Ghostscript_Tiger.svg";
   if (toolbarIcon) {
     try {
       // The icon is shown in 16x16 logical pixels, but we want to make it look
