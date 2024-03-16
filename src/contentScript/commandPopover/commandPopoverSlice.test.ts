@@ -15,19 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { blobToImageBitmapWithDom, loadImageData } from "@/utils/canvasUtils";
-import { registerMethods } from "webext-messenger";
+import { popoverSlice } from "@/contentScript/commandPopover/commandPopoverSlice";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
-declare global {
-  interface MessengerMethods {
-    BLOB_TO_IMAGE_BITMAP_WITH_DOM: typeof blobToImageBitmapWithDom;
-    LOAD_IMAGE_DATA: typeof loadImageData;
-  }
-}
+describe("commandPopoverSlice", () => {
+  it.each(["test", "TeSt"])("case matches query: %s", (query) => {
+    const command = {
+      componentId: autoUUIDSequence(),
+      shortcut: "test",
+      title: "Test",
+      handler: jest.fn(),
+    };
 
-export default function registerMessenger(): void {
-  registerMethods({
-    BLOB_TO_IMAGE_BITMAP_WITH_DOM: blobToImageBitmapWithDom,
-    LOAD_IMAGE_DATA: loadImageData,
+    expect(
+      popoverSlice.reducer(
+        undefined,
+        popoverSlice.actions.search({
+          query,
+          commands: [command],
+        }),
+      ),
+    ).toStrictEqual({
+      activeCommand: null,
+      query,
+      results: [command],
+      selectedIndex: 0,
+    });
   });
-}
+});

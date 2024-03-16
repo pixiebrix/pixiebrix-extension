@@ -21,10 +21,12 @@ import {
   chromium,
   type BrowserContext,
   type Cookie,
+  type Page,
 } from "@playwright/test";
 import path from "node:path";
-import { E2E_TEST_USER_EMAIL_UNAFFILIATED, MV, SERVICE_URL } from "../env";
+import { E2E_TEST_USER_EMAIL_UNAFFILIATED, MV } from "../env";
 import fs from "node:fs/promises";
+import { getBaseExtensionConsoleUrl } from "../pageObjects/constants";
 
 const getStoredCookies = async (): Promise<Cookie[]> => {
   let fileBuffer;
@@ -48,73 +50,105 @@ const getStoredCookies = async (): Promise<Cookie[]> => {
   return cookies;
 };
 
+const linkExtensionViaAdminConsole = async (page: Page) => {
+  await baseExpect(async () => {
+    await baseExpect(
+      page.getByText(
+        "Successfully linked the Browser Extension to your PixieBrix account",
+      ),
+    ).toBeVisible();
+  }).toPass({ timeout: 5000 });
+  await baseExpect(
+    page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
+  ).toBeVisible();
+};
+
+const ensureExtensionIsLoaded = async (page: Page, extensionId: string) => {
+  await baseExpect(async () => {
+    await page.goto(getBaseExtensionConsoleUrl(extensionId));
+    await baseExpect(page.getByText("Extension Console")).toBeVisible();
+    await baseExpect(
+      page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
+    ).toBeVisible();
+  }).toPass({
+    timeout: 10_000,
+  });
+};
+
+const getExtensionId = async (context: BrowserContext) => {
+  let background;
+
+  if (MV === "3") {
+    background = context.serviceWorkers()[0];
+    background ||= await context.waitForEvent("serviceworker");
+  } else {
+    // For manifest v2:
+    background = context.backgroundPages()[0];
+    background ||= await context.waitForEvent("backgroundpage");
+  }
+
+  const extensionId = background.url().split("/")[2];
+
+  if (!extensionId) {
+    throw new Error(
+      "Could not find extensionId during test setup. Did the extension load correctly?",
+    );
+  }
+
+  return extensionId;
+};
+
 export const test = base.extend<{
   context: BrowserContext;
   extensionId: string;
-  storageState: string;
+  chromiumChannel: "chrome" | "msedge";
 }>({
-  // eslint-disable-next-line no-empty-pattern -- Playwright requires destructuring pattern as first argument
-  async context({}, use) {
+  chromiumChannel: ["chrome", { option: true }],
+  async context({ chromiumChannel }, use) {
     // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname throws "cannot use 'import meta' outside a module"
     const pathToExtension = path.join(__dirname, "../../dist");
 
     const context = await chromium.launchPersistentContext("", {
       // Test against the branded Chrome browser
       // See: https://playwright.dev/docs/browsers#google-chrome--microsoft-edge
-      channel: "chrome",
+      channel: chromiumChannel,
       headless: false,
       args: [
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
+        // Chrome extensions are not supported in the traditional headless mode,
+        // but we can use the "new" flag to enable headless mode.
+        // This mode is not officially supported by Playwright and might result in unexpected behavior,
+        // so only use in local development for now.
+        // https://playwright.dev/docs/chrome-extensions#headless-mode
+        // "--headless=new", // uncomment to enable headless mode
       ],
     });
+    // The admin console automatically opens a new tab to link the newly installed extension to the user's account.
+    const pagePromise = context.waitForEvent("page");
 
     // Manually add session cookies instead of relying on storageState in playwright.config.ts because
     // launchPersistentContext does not support a storageState option
-    // see https://github.com/microsoft/playwright/issues/7634
+    // see https://github.com/microsoft/playwright/issues/7634 and https://github.com/microsoft/playwright/issues/14949
     await context.addCookies(await getStoredCookies());
+    const extensionId = await getExtensionId(context);
+
+    const page = await pagePromise;
+
+    // Link the Browser Extension to the user's account via the admin console.
+    // TODO: figure out a way to save the linked extension state into chrome
+    //  storage so the admin page doesn't get loaded for every test.
+    //  https://github.com/pixiebrix/pixiebrix-extension/issues/7898
+    await linkExtensionViaAdminConsole(page);
+
+    // After linking, the Extension will reload, causing errors if the Extension Console is accessed too soon.
+    // Wait for the Extension Console to be available before proceeding.
+    await ensureExtensionIsLoaded(page, extensionId);
     await use(context);
     await context.close();
   },
-  async page({ context }, use) {
-    const page = await context.newPage();
-    // Link the Browser Extension to the user's account via the admin console.
-    // TODO: figure out a way to save the linked extension state into chrome
-    //  storage so we don't have to load the admin page for every test.
-    //  https://github.com/pixiebrix/pixiebrix-extension/issues/7898
-    await page.goto(SERVICE_URL);
-    await baseExpect(
-      page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
-    ).toBeVisible();
-    await baseExpect(async () => {
-      await baseExpect(
-        page.getByText(
-          "Successfully linked the Browser Extension to your PixieBrix account",
-        ),
-      ).toBeVisible();
-    }).toPass({ timeout: 5000 });
-    await use(page);
-  },
   async extensionId({ context }, use) {
-    let background;
-
-    if (MV === "3") {
-      background = context.serviceWorkers()[0];
-      background = await context.waitForEvent("serviceworker");
-    } else {
-      // For manifest v2:
-      background = context.backgroundPages()[0];
-      background ||= await context.waitForEvent("backgroundpage");
-    }
-
-    const extensionId = background.url().split("/")[2];
-
-    if (!extensionId) {
-      throw new Error(
-        "Could not find extensionId during test setup. Did the extension load correctly?",
-      );
-    }
-
+    const extensionId = await getExtensionId(context);
     await use(extensionId);
   },
 });

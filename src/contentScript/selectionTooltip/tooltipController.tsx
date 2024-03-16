@@ -218,7 +218,7 @@ async function updatePosition(): Promise<void> {
         referenceElement,
         selectionTooltip,
         {
-          placement: "top",
+          placement: "bottom",
           strategy: "fixed",
           // `inline` prevents from appearing detached if multiple lines selected: https://floating-ui.com/docs/inline
           middleware: [

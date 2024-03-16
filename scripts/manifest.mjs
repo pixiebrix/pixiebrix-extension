@@ -55,8 +55,8 @@ function updateManifestToV3(manifestV2) {
   // https://developer.chrome.com/docs/extensions/reference/api/sidePanel#method-open
   manifest.minimum_chrome_version = "116.0";
 
-  // Add MV3-only permissions
-  manifest.permissions.push("sidePanel", "offscreen");
+  // Add sidePanel
+  manifest.permissions.push("sidePanel");
 
   manifest.side_panel = {
     default_path: "sidebar.html",

@@ -4,7 +4,7 @@ import { CI } from "./end-to-end-tests/env";
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-export default defineConfig({
+export default defineConfig<{ chromiumChannel: string }>({
   testDir: "./end-to-end-tests",
   outputDir: "./end-to-end-tests/.output",
   /* Run tests in files in parallel */
@@ -16,7 +16,11 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: CI ? 1 : undefined,
   /* Timeout for each test */
-  timeout: 30_000,
+  timeout: 60_000,
+  expect: {
+    /* Timeout for each assertion. Increased from the default of 5000 due to Extension Console loading times. */
+    timeout: 10_000,
+  },
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [["html", { outputFolder: "./end-to-end-tests/.report" }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
@@ -34,7 +38,17 @@ export default defineConfig({
       testMatch: /.*\.setup\.ts/,
     },
     {
-      name: "chromium",
+      name: "chrome",
+      use: {
+        chromiumChannel: "chrome",
+      },
+      dependencies: ["setup"],
+    },
+    {
+      name: "edge",
+      use: {
+        chromiumChannel: "msedge",
+      },
       dependencies: ["setup"],
     },
   ],

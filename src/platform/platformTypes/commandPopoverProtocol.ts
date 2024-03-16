@@ -31,6 +31,11 @@ export type TextCommand = {
    */
   title: string;
   /**
+   * An optional preview of the text to insert
+   * @since 1.8.11
+   */
+  preview?: string;
+  /**
    * The text generator
    * @param currentText current text in the editor
    */

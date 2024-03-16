@@ -20,7 +20,13 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import testItRenders, {
   type ItRendersOptions,
 } from "@/testUtils/testItRenders";
-import { fireEvent, render, screen } from "@/pageEditor/testHelpers";
+import {
+  fireEvent,
+  render,
+  screen,
+  userEvent,
+  within,
+} from "@/pageEditor/testHelpers";
 import React from "react";
 import { type Except } from "type-fest";
 import {
@@ -393,10 +399,12 @@ describe("FormEditor", () => {
     ).toBeUndefined();
   });
 
-  describe("Placeholder Field tests", () => {
-    const fields = FORM_FIELD_TYPE_OPTIONS.map((field) => field.label);
+  describe("Individual Field tests", () => {
+    const fieldsWithoutPlaceholder = FORM_FIELD_TYPE_OPTIONS.map(
+      (field) => field.label,
+    );
 
-    const placeholderFields = remove(fields, (field) =>
+    const fieldsWithPlaceholder = remove(fieldsWithoutPlaceholder, (field) =>
       [
         "Single line text",
         "Paragraph text",
@@ -406,7 +414,7 @@ describe("FormEditor", () => {
       ].includes(field),
     );
 
-    test.each(placeholderFields)(
+    test.each(fieldsWithPlaceholder)(
       "displays the placeholder field for %s",
       async (inputType: string) => {
         const fieldName = "foo";
@@ -432,7 +440,7 @@ describe("FormEditor", () => {
       },
     );
 
-    test.each(fields)(
+    test.each(fieldsWithoutPlaceholder)(
       "does not render the placeholder field for %s",
       async (inputType: string) => {
         const fieldName = "foo";
@@ -457,5 +465,67 @@ describe("FormEditor", () => {
         ).not.toBeInTheDocument();
       },
     );
+
+    describe("Paragraph specific tests", () => {
+      test("displays the rows field for textarea", async () => {
+        const fieldName = "foo";
+        const onSubmitMock = jest.fn();
+        const FormikTemplate = createFormikTemplate(
+          { [RJSF_SCHEMA_PROPERTY_NAME]: initOneFieldSchemaCase(fieldName) },
+          onSubmitMock,
+        );
+
+        render(
+          <FormikTemplate>
+            <FormEditor activeField={fieldName} {...defaultProps} />
+          </FormikTemplate>,
+        );
+
+        await selectEvent.select(
+          screen.getByRole("combobox"),
+          "Paragraph text",
+        );
+
+        await userEvent.click(
+          screen.getByRole("textbox", {
+            name: /# rows/i,
+          }),
+        );
+
+        expect(
+          screen.getByRole("spinbutton", {
+            name: "# Rows",
+          }),
+        ).toBeInTheDocument();
+      });
+
+      test("displays submit form on enter field for textarea", async () => {
+        const fieldName = "foo";
+        const onSubmitMock = jest.fn();
+        const FormikTemplate = createFormikTemplate(
+          { [RJSF_SCHEMA_PROPERTY_NAME]: initOneFieldSchemaCase(fieldName) },
+          onSubmitMock,
+        );
+
+        render(
+          <FormikTemplate>
+            <FormEditor activeField={fieldName} {...defaultProps} />
+          </FormikTemplate>,
+        );
+
+        await selectEvent.select(
+          screen.getByRole("combobox"),
+          "Paragraph text",
+        );
+
+        const view = screen.getByTestId(
+          "toggle-rjsfSchema.uiSchema.foo.ui:options.submitOnEnter",
+        );
+
+        const toggle = within(view).getByRole("button");
+
+        expect(toggle).toBeInTheDocument();
+      });
+    });
   });
 });

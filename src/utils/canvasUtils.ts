@@ -15,56 +15,71 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ensureOffscreenDocument } from "@/offscreen/offscreenManager";
 import axios from "axios";
-import * as offscreen from "@/offscreen/messenger/api";
+import resizeToFit from "intrinsic-scale";
 
 export async function loadImageData(
   url: string,
   width: number,
   height: number,
 ): Promise<ImageData> {
-  if (typeof Image !== "function") {
-    await ensureOffscreenDocument("offscreen.html");
-    return offscreen.loadImageData(url, width, height);
-  }
-
   const { data: blob } = await axios.get<Blob>(url, { responseType: "blob" });
   return blobToImageData(blob, width, height);
 }
 
-export async function blobToImageBitmapWithDom(
+async function loadBlobAsImage(
   blob: Blob,
-): Promise<ImageBitmap> {
+): Promise<ImageBitmap | HTMLImageElement> {
   // `createImageBitmap` does not support SVGs directly from blobs, but it supports them via <img>
   if (blob.type !== "image/svg+xml") {
     return createImageBitmap(blob);
   }
 
+  // TODO: URL.createObjectURL() and Image() is not available in service workers
+  // https://groups.google.com/a/chromium.org/g/chromium-extensions/c/u0NH7L3v9L4
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/7622
   const url = URL.createObjectURL(blob);
   const image = new Image();
   image.src = url;
   await image.decode();
-  return createImageBitmap(image);
+  // `createImageBitmap` will fail on SVGs that lack width/height attributes, so we must use <img>
+  return image;
 }
 
 /**
- * Converts a ImageBitmap into ImageData. Compatible with the background page and worker.
+ * Converts a blob into ImageData.
  *
- * You can specify the desired width and height of the resulting ImageData.
+ * You can specify the desired width and height of the resulting ImageData, the aspect ratio will be preserved
  */
 export async function blobToImageData(
   blob: Blob,
   width: number,
   height: number,
 ): Promise<ImageData> {
-  const imageBitmap = await blobToImageBitmapWithDom(blob);
+  const image = await loadBlobAsImage(blob);
+  const isImageElement = image instanceof HTMLImageElement;
+
+  // SVGs might not have width/height attributes, but they likely have a viewBox
+  // so their aspect ratio is natively preserved, regardless of `resizeToFit`
+  const imageSize = isImageElement ? { width, height } : image;
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- 2d always exists
   const context = new OffscreenCanvas(width, height).getContext("2d")!;
 
-  // TODO: Add support for scaling the image to the proper size even if it's not a square
-  // e.g. via https://github.com/fregante/intrinsic-scale
-  context.drawImage(imageBitmap, 0, 0, width, width);
-  return context.getImageData(0, 0, width, width);
+  // Preserve aspect ratio (width/height) and center it (x/y)
+  const target = resizeToFit("contain", imageSize, { width, height });
+  context.drawImage(
+    image,
+    Math.floor(target.x),
+    Math.floor(target.y),
+    Math.floor(target.width),
+    Math.floor(target.height),
+  );
+  if (isImageElement) {
+    URL.revokeObjectURL(image.src);
+  } else {
+    image.close();
+  }
+
+  return context.getImageData(0, 0, width, height);
 }

@@ -281,11 +281,3 @@ export async function isPromiseFulfilled(
     return false;
   }
 }
-
-/**
- * Make the error appear in the console and have it be caught by the global error handler
- */
-export function throwAsync(error: unknown): void {
-  // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- Throwing async
-  void Promise.reject(error);
-}
