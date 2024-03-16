@@ -18,32 +18,34 @@
 import axios from "axios";
 import resizeToFit from "intrinsic-scale";
 
+async function loadAsBlob(url: string): Promise<Blob> {
+  const response = await axios.get<Blob>(url, { responseType: "blob" });
+  return response.data;
+}
+
+function getSvgProxyUrl(url: string): string {
+  return `https://svg-to-png.mrproper.dev/${url}`;
+}
+
 export async function loadImageData(
   url: string,
   width: number,
   height: number,
 ): Promise<ImageData> {
-  const { data: blob } = await axios.get<Blob>(url, { responseType: "blob" });
-  return blobToImageData(blob, width, height);
-}
-
-async function loadBlobAsImage(
-  blob: Blob,
-): Promise<ImageBitmap | HTMLImageElement> {
-  // `createImageBitmap` does not support SVGs directly from blobs, but it supports them via <img>
-  if (blob.type !== "image/svg+xml") {
-    return createImageBitmap(blob);
+  // Try to detect SVG files via URL
+  if (new URL(url).pathname.endsWith(".svg")) {
+    url = getSvgProxyUrl(url);
   }
 
-  // TODO: URL.createObjectURL() and Image() is not available in service workers
-  // https://groups.google.com/a/chromium.org/g/chromium-extensions/c/u0NH7L3v9L4
-  // https://github.com/pixiebrix/pixiebrix-extension/issues/7622
-  const url = URL.createObjectURL(blob);
-  const image = new Image();
-  image.src = url;
-  await image.decode();
-  // `createImageBitmap` will fail on SVGs that lack width/height attributes, so we must use <img>
-  return image;
+  let blob = await loadAsBlob(url);
+
+  if (blob.type === "image/svg+xml") {
+    // The URL check failed, fetch again, using the proxy this time
+    url = getSvgProxyUrl(url);
+    blob = await loadAsBlob(url);
+  }
+
+  return blobToImageData(blob, width, height);
 }
 
 /**
@@ -56,18 +58,13 @@ export async function blobToImageData(
   width: number,
   height: number,
 ): Promise<ImageData> {
-  const image = await loadBlobAsImage(blob);
-  const isImageElement = image instanceof HTMLImageElement;
-
-  // SVGs might not have width/height attributes, but they likely have a viewBox
-  // so their aspect ratio is natively preserved, regardless of `resizeToFit`
-  const imageSize = isImageElement ? { width, height } : image;
+  const image = await createImageBitmap(blob);
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- 2d always exists
   const context = new OffscreenCanvas(width, height).getContext("2d")!;
 
   // Preserve aspect ratio (width/height) and center it (x/y)
-  const target = resizeToFit("contain", imageSize, { width, height });
+  const target = resizeToFit("contain", image, { width, height });
   context.drawImage(
     image,
     Math.floor(target.x),
@@ -75,11 +72,8 @@ export async function blobToImageData(
     Math.floor(target.width),
     Math.floor(target.height),
   );
-  if (isImageElement) {
-    URL.revokeObjectURL(image.src);
-  } else {
-    image.close();
-  }
+
+  image.close();
 
   return context.getImageData(0, 0, width, height);
 }
