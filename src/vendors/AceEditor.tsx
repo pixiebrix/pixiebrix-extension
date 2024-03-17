@@ -17,12 +17,6 @@
 
 import React from "react";
 
-const AceEditor = React.lazy(
-  async () =>
-    import(
-      /* webpackChunkName: "ace-editor" */
-      "./AceEditorSync"
-    ),
-);
+const AceEditor = React.lazy(async () => import("./AceEditorSync"));
 
 export default AceEditor;
