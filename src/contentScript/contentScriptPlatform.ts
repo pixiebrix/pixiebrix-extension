@@ -53,6 +53,10 @@ import * as sidebarController from "@/contentScript/sidebarController";
 import { validateSemVerString } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
 import { PlatformBase } from "@/platform/platformBase";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import type { AxiosRequestConfig } from "axios";
+import type { RemoteResponse } from "@/types/contract";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -127,7 +131,17 @@ class ContentScriptPlatform extends PlatformBase {
 
   // Perform requests via the background so 1/ the host pages CSP doesn't conflict, and 2/ credentials aren't
   // passed to the content script
-  override request = performConfiguredRequestInBackground;
+  override request = async <TData>(
+    integrationConfig: Nullishable<SanitizedIntegrationConfig>,
+    requestConfig: AxiosRequestConfig,
+  ): Promise<RemoteResponse<TData>> =>
+    performConfiguredRequestInBackground<TData>(
+      integrationConfig,
+      requestConfig,
+      // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/7956
+      // Update pass interactiveLogin and handle InteractiveLoginRequiredError
+      { interactiveLogin: true },
+    );
 
   override form = ephemeralForm;
 
