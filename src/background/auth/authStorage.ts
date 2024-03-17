@@ -20,8 +20,13 @@ import { expectContext } from "@/utils/expectContext";
 import { type AuthData } from "@/integrations/integrationTypes";
 import { oauth2Storage } from "@/auth/authConstants";
 
+/**
+ * Set the cached auth data for the given integration configId
+ * @param configId the integration configuration id
+ * @param data the data, typically the OAuth2 response
+ */
 export async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
-  serviceAuthId: UUID,
+  configId: UUID,
   data: TAuthData,
 ): Promise<void> {
   expectContext(
@@ -32,8 +37,22 @@ export async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
   const current = await oauth2Storage.get();
   await oauth2Storage.set({
     ...current,
-    [serviceAuthId]: data,
+    [configId]: data,
   });
+}
+
+/**
+ * Returns true if the configId has cached auth data. NOTE: this does not check if the token is expired.
+ * @param configId the integration configuration id
+ */
+export async function hasCachedAuthData(configId: UUID): Promise<boolean> {
+  expectContext(
+    "background",
+    "Only the background page can access token and oauth2 data",
+  );
+
+  const current = await oauth2Storage.get();
+  return Object.hasOwn(current, configId);
 }
 
 export async function getCachedAuthData(
@@ -51,25 +70,27 @@ export async function getCachedAuthData(
   }
 }
 
-export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
+/**
+ * Delete the cached auth data for the given configId
+ * @param configId the integration configuration id
+ */
+export async function deleteCachedAuthData(configId: UUID): Promise<void> {
   expectContext(
     "background",
     "Only the background page can access oauth2 information",
   );
 
   const current = await oauth2Storage.get();
-  if (Object.hasOwn(current, serviceAuthId)) {
-    console.debug(
-      `deleteCachedAuthData: removed data for auth ${serviceAuthId}`,
-    );
+  if (Object.hasOwn(current, configId)) {
+    console.debug(`deleteCachedAuthData: removed data for auth ${configId}`);
     // eslint-disable-next-line security/detect-object-injection -- OK because we're guarding with hasOwn
-    delete current[serviceAuthId];
+    delete current[configId];
 
     await oauth2Storage.set(current);
   } else {
     console.warn(
       "deleteCachedAuthData: No cached auth data exists for key: %s",
-      serviceAuthId,
+      configId,
     );
   }
 }

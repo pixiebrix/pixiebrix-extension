@@ -18,7 +18,6 @@
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
-import * as sheets from "@/contrib/google/sheets/core/sheetsApi"; // Background/messenger import
 import {
   ensureContextMenu,
   preloadContextMenus,
@@ -56,16 +55,6 @@ expectContext("background");
 
 declare global {
   interface MessengerMethods {
-    GOOGLE_DRIVE_IS_LOGGED_IN: typeof sheets.isLoggedIn;
-    GOOGLE_DRIVE_GET_USER_EMAIL: typeof sheets.getGoogleUserEmail;
-
-    GOOGLE_SHEETS_GET_ALL_SPREADSHEETS: typeof sheets.getAllSpreadsheets;
-    GOOGLE_SHEETS_GET_SPREADSHEET: typeof sheets.getSpreadsheet;
-    GOOGLE_SHEETS_GET_HEADERS: typeof sheets.getHeaders;
-    GOOGLE_SHEETS_GET_ALL_ROWS: typeof sheets.getAllRows;
-    GOOGLE_SHEETS_CREATE_TAB: typeof sheets.createTab;
-    GOOGLE_SHEETS_APPEND_ROWS: typeof sheets.appendRows;
-
     GET_AVAILABLE_VERSION: typeof getAvailableVersion;
     PRELOAD_CONTEXT_MENUS: typeof preloadContextMenus;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
@@ -101,16 +90,6 @@ declare global {
 
 export default function registerMessenger(): void {
   registerMethods({
-    GOOGLE_DRIVE_IS_LOGGED_IN: sheets.isLoggedIn,
-    GOOGLE_DRIVE_GET_USER_EMAIL: sheets.getGoogleUserEmail,
-
-    GOOGLE_SHEETS_GET_ALL_SPREADSHEETS: sheets.getAllSpreadsheets,
-    GOOGLE_SHEETS_GET_SPREADSHEET: sheets.getSpreadsheet,
-    GOOGLE_SHEETS_GET_HEADERS: sheets.getHeaders,
-    GOOGLE_SHEETS_GET_ALL_ROWS: sheets.getAllRows,
-    GOOGLE_SHEETS_CREATE_TAB: sheets.createTab,
-    GOOGLE_SHEETS_APPEND_ROWS: sheets.appendRows,
-
     GET_PARTNER_PRINCIPALS: getPartnerPrincipals,
     LAUNCH_AUTH_INTEGRATION: launchAuthIntegration,
     SET_PARTNER_COPILOT_DATA: setCopilotProcessData,
