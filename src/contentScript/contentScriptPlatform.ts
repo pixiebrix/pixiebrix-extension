@@ -57,6 +57,10 @@ import type { Nullishable } from "@/utils/nullishUtils";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { AxiosRequestConfig } from "axios";
 import type { RemoteResponse } from "@/types/contract";
+import { hasSpecificErrorCause } from "@/errors/errorHelpers";
+import { InteractiveLoginRequiredError } from "@/errors/authErrors";
+import { deferLogin } from "@/contentScript/integrations/deferredLoginController";
+import { flagOn } from "@/auth/featureFlagStorage";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -134,14 +138,32 @@ class ContentScriptPlatform extends PlatformBase {
   override request = async <TData>(
     integrationConfig: Nullishable<SanitizedIntegrationConfig>,
     requestConfig: AxiosRequestConfig,
-  ): Promise<RemoteResponse<TData>> =>
-    performConfiguredRequestInBackground<TData>(
-      integrationConfig,
-      requestConfig,
-      // TODO: https://github.com/pixiebrix/pixiebrix-extension/issues/7956
-      // Update pass interactiveLogin and handle InteractiveLoginRequiredError
-      { interactiveLogin: true },
-    );
+  ): Promise<RemoteResponse<TData>> => {
+    const requestGenerator = async (options: { interactiveLogin: boolean }) =>
+      performConfiguredRequestInBackground<TData>(
+        integrationConfig,
+        requestConfig,
+        options,
+      );
+
+    if (await flagOn("integration-login-banner")) {
+      try {
+        return await requestGenerator({ interactiveLogin: false });
+      } catch (error) {
+        if (!hasSpecificErrorCause(error, InteractiveLoginRequiredError)) {
+          // Error that can't be solved by an interactive login
+          throw error;
+        }
+      }
+
+      // `deferLogin` resolves when the user has logged in, rejects if the request is superseded
+      await deferLogin(integrationConfig);
+      return requestGenerator({ interactiveLogin: false });
+    }
+
+    // Legacy behavior is to always show the interactive login, if possible
+    return requestGenerator({ interactiveLogin: true });
+  };
 
   override form = ephemeralForm;
 

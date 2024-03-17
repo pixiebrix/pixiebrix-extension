@@ -15,25 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { launchWebAuthFlow } from "@/background/auth/authHelpers";
-import { InteractiveLoginRequiredError } from "@/errors/authErrors";
+import type {
+  Integration,
+  SanitizedIntegrationConfig,
+} from "@/integrations/integrationTypes";
 
-browser.identity = {
-  launchWebAuthFlow: jest.fn(),
-  getRedirectURL: jest.fn(),
+/**
+ * An interactive login that's being deferred until the user initiates the login.
+ * @since 1.8.11
+ */
+export type DeferredLogin = {
+  /**
+   * Integration metadata to display in the UI.
+   */
+  integration: Pick<Integration, "name">;
+  /**
+   * Configuration for the integration.
+   */
+  config: SanitizedIntegrationConfig;
 };
-
-describe("launchWebAuthFlow", () => {
-  it("wraps interaction error in InteractiveLoginRequiredError", async () => {
-    jest
-      .mocked(browser.identity.launchWebAuthFlow)
-      .mockRejectedValue(new Error("User interaction required."));
-
-    await expect(
-      launchWebAuthFlow({
-        url: "https://www.example.com",
-        interactive: false,
-      }),
-    ).rejects.toThrow(InteractiveLoginRequiredError);
-  });
-});

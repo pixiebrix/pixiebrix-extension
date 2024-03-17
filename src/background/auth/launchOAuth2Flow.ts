@@ -29,6 +29,9 @@ import codeGrantFlow from "@/background/auth/codeGrantFlow";
 
 /**
  * Perform the OAuth2 flow for the given integration.
+ * @param integration the integration, or nullish to lookup by id
+ * @param integrationConfig the integration configuration
+ * @param options options for the flow
  */
 async function launchOAuth2Flow(
   integration: Integration,

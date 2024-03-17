@@ -24,6 +24,8 @@ import { BusinessError } from "@/errors/businessErrors";
  * @since 1.8.11
  */
 export class InteractiveLoginRequiredError extends BusinessError {
+  override name = "InteractiveLoginRequiredError";
+
   constructor(message: string, { cause }: { cause?: unknown } = {}) {
     super(message ?? "An interactive login is required", { cause });
   }

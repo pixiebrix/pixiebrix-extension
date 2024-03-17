@@ -34,21 +34,31 @@ import { setContext } from "@/testUtils/detectPageMock";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { getToken } from "@/background/auth/getToken";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
+import { hasSpecificErrorCause } from "@/errors/errorHelpers";
+import { InteractiveLoginRequiredError } from "@/errors/authErrors";
+import { deserializeError, serializeError } from "serialize-error";
 
 // Disable automatic __mocks__ resolution #6799
 jest.mock("@/data/service/apiClient", () =>
   jest.requireActual("@/data/service/apiClient.ts"),
 );
 
+browser.identity = {
+  launchWebAuthFlow: jest.fn(),
+  getRedirectURL: jest.fn(),
+};
+
 setContext("background");
 
 const axiosMock = new MockAdapter(axios);
 const mockGetToken = jest.mocked(getToken);
+const launchWebAuthFlowMock = jest.mocked(browser.identity.launchWebAuthFlow);
 
 browser.permissions.contains = jest.fn().mockResolvedValue(true);
 
 jest.mock("@/background/auth/authStorage", () => ({
   getCachedAuthData: jest.fn().mockResolvedValue(null),
+  hasCachedAuthData: jest.fn().mockResolvedValue(false),
   deleteCachedAuthData: jest.fn(),
 }));
 jest.mock("@/background/auth/getToken", () => ({
@@ -74,6 +84,7 @@ afterEach(() => {
 jest.mocked(token.getExtensionToken).mockResolvedValue("abc123");
 
 const EXAMPLE_SERVICE_API = validateRegistryId("example/api");
+const EXAMPLE_SERVICE_PKCE_API = validateRegistryId("example/pkce");
 const EXAMPLE_SERVICE_TOKEN_API = validateRegistryId("example/token");
 
 serviceRegistry.register([
@@ -99,6 +110,22 @@ serviceRegistry.register([
     ) => requestConfig,
     isToken: true,
   },
+  {
+    id: EXAMPLE_SERVICE_PKCE_API,
+    authenticateRequest: (
+      serviceConfig: SecretsConfig,
+      requestConfig: AxiosRequestConfig,
+    ) => requestConfig,
+    getOAuth2Context: () => ({
+      host: "example.com",
+      authorizeUrl: "https://example.com/authorize",
+      tokenUrl: "https://example.com/token",
+      clientId: "abc123",
+      redirectUri: "https://example.com/redirect",
+    }),
+    isOAuth2PKCE: true,
+    isOAuth2: true,
+  },
 ] as IntegrationABC[]);
 
 const requestConfig: AxiosRequestConfig = {
@@ -119,6 +146,11 @@ const directTokenIntegrationConfig = sanitizedIntegrationConfigFactory({
 const proxiedIntegrationConfig = sanitizedIntegrationConfigFactory({
   proxy: true,
   serviceId: EXAMPLE_SERVICE_API,
+});
+
+const pkceIntegrationConfig = sanitizedIntegrationConfigFactory({
+  proxy: false,
+  serviceId: EXAMPLE_SERVICE_PKCE_API,
 });
 
 describe("unauthenticated direct requests", () => {
@@ -204,6 +236,48 @@ describe("authenticated direct requests", () => {
       "cause.cause.response.status",
       403,
     );
+  });
+});
+
+describe("interactive", () => {
+  it("throws on interactive: false if no cached auth data", async () => {
+    jest
+      .spyOn(Locator.prototype, "findIntegrationConfig")
+      .mockResolvedValue(pkceIntegrationConfig as any);
+
+    launchWebAuthFlowMock.mockRejectedValue(
+      new Error("User interaction required. Blah blah blah"),
+    );
+
+    const request = performConfiguredRequest(
+      pkceIntegrationConfig,
+      requestConfig,
+      { interactiveLogin: false },
+    );
+
+    await expect(request).rejects.toThrow(ContextError);
+
+    try {
+      await request;
+    } catch (error) {
+      // We're using the itInteractiveLoginRequiredError error type for control flow. Test that it doesn't swallow the
+      // the InteractiveLoginRequiredError event if it crosses the messenger boundary
+      expect(
+        hasSpecificErrorCause(error, InteractiveLoginRequiredError),
+      ).toBeTrue();
+      expect(
+        hasSpecificErrorCause(
+          serializeError(error),
+          InteractiveLoginRequiredError,
+        ),
+      ).toBeTrue();
+      expect(
+        hasSpecificErrorCause(
+          deserializeError(serializeError(error)),
+          InteractiveLoginRequiredError,
+        ),
+      ).toBeTrue();
+    }
   });
 });
 

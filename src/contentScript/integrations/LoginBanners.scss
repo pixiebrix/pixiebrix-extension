@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2024 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,25 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { launchWebAuthFlow } from "@/background/auth/authHelpers";
-import { InteractiveLoginRequiredError } from "@/errors/authErrors";
+// Using bootstrap styles in the host page, so need to override any styles that rely on REM to use EM
+.login-alert {
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
 
-browser.identity = {
-  launchWebAuthFlow: jest.fn(),
-  getRedirectURL: jest.fn(),
-};
+  font-size: 16px;
+  padding: 0.75em 1.25em;
 
-describe("launchWebAuthFlow", () => {
-  it("wraps interaction error in InteractiveLoginRequiredError", async () => {
-    jest
-      .mocked(browser.identity.launchWebAuthFlow)
-      .mockRejectedValue(new Error("User interaction required."));
-
-    await expect(
-      launchWebAuthFlow({
-        url: "https://www.example.com",
-        interactive: false,
-      }),
-    ).rejects.toThrow(InteractiveLoginRequiredError);
-  });
-});
+  button {
+    font-size: 13px;
+    padding: 0.25em 0.5em;
+    border-radius: 0.2em;
+  }
+}
