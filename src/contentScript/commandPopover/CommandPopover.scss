@@ -32,7 +32,9 @@
   // https://github.com/pixiebrix/pixiebrix-extension/pull/7699
   color-scheme: light;
 
-  max-height: 200px;
+  // Set specific height because 1) users will generally have 3+ commands, and 2) we want consistent height
+  // for empty, error, and running states
+  height: 200px;
   width: 240px;
   display: flex;
   flex-direction: column;
