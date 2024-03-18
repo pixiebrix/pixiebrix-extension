@@ -100,7 +100,7 @@ class ExtensionPagePlatform extends PlatformBase {
       integrationConfig.serviceId,
     );
 
-    // Use the background messenger to perform 3rd party API that may require refreshing credentials so that
+    // Use the background messenger to perform 3rd party API calls that may require refreshing credentials so that
     // the background worker can memoize the refresh calls and calls to launch the web auth flow
     if (integration.isToken || integration.isOAuth2) {
       return performConfiguredRequestInBackground(
