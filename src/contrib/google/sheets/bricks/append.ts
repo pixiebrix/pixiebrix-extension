@@ -18,7 +18,7 @@
 import { isEmpty, isEqual, unary, uniq } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
 import { normalizeHeader } from "@/contrib/google/sheets/core/sheetsHelpers";
-import { sheets } from "@/background/messenger/api";
+import * as sheets from "@/contrib/google/sheets/core/sheetsApi";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
   GOOGLE_OAUTH2_PKCE_INTEGRATION_ID,

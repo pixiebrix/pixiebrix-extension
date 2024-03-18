@@ -421,7 +421,6 @@
     "./extensionConsole/pages/workshop/workshopUtils.ts",
     "./extensionConsole/toggleSidebar.tsx",
     "./extensionContext.ts",
-    "./extensionPages/extensionPagePlatform.ts",
     "./globals.d.ts",
     "./hooks/logging.ts",
     "./hooks/useAsyncExternalStore.ts",

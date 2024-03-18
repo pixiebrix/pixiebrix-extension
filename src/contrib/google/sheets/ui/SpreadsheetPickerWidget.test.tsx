@@ -18,7 +18,6 @@
 import { render } from "@/pageEditor/testHelpers";
 import React from "react";
 import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
-import { sheets } from "@/background/messenger/api";
 import { services } from "@/background/messenger/strict/api";
 import { validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -35,8 +34,12 @@ import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/reg
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import selectEvent from "react-select-event";
 import { SHEET_FIELD_SCHEMA } from "@/contrib/google/sheets/core/schemas";
+import { getAllSpreadsheets } from "@/contrib/google/sheets/core/sheetsApi";
 
-const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
+// XXX: sheetsApi should likely be mocked at the network level, not the module level
+jest.mock("@/contrib/google/sheets/core/sheetsApi");
+
+const getAllSpreadsheetsMock = jest.mocked(getAllSpreadsheets);
 
 let idSequence = 0;
 function newId(): UUID {
