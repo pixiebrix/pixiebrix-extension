@@ -56,7 +56,7 @@ import { type Schema, type SchemaPropertyType } from "@/types/schemaTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { Collapse } from "react-bootstrap";
-import { joinPathParts } from "@/utils/formUtils";
+import { joinName, joinPathParts } from "@/utils/formUtils";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",
@@ -104,7 +104,7 @@ const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
   return (
     <>
       <SchemaField
-        name={`${uiOptionsPath}.rows`}
+        name={joinName(uiOptionsPath, "rows")}
         schema={{
           type: "number",
           title: "# Rows",
@@ -113,7 +113,7 @@ const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
         }}
       />
       <SchemaField
-        name={`${uiOptionsPath}.submitOnEnter`}
+        name={joinName(uiOptionsPath, "submitOnEnter")}
         schema={{
           type: "boolean",
           title: "Submit Form on Enter?",
@@ -123,7 +123,7 @@ const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
         isRequired
       />
       <SchemaField
-        name={`${uiOptionsPath}.submitToolbar`}
+        name={joinName(uiOptionsPath, "submitToolbar")}
         schema={{
           type: "boolean",
           title: "Include Submit Toolbar?",
@@ -134,7 +134,7 @@ const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
       />
       <Collapse in={submitToolbar}>
         <SchemaField
-          name={`${uiOptionsPath}.submitToolbarIcon`}
+          name={joinName(uiOptionsPath, "submitToolbarIcon")}
           schema={{ $ref: "https://app.pixiebrix.com/schemas/icon#" }}
           label="Select Icon"
           description="Select the icon that appears in the bottom right of the Submit Toolbar"
