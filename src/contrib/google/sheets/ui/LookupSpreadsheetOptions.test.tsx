@@ -23,8 +23,7 @@ import { act, screen } from "@testing-library/react";
 import { validateRegistryId } from "@/types/helpers";
 import selectEvent from "react-select-event";
 import { render } from "@/pageEditor/testHelpers";
-import { sheets } from "@/background/messenger/api";
-import { services } from "@/background/messenger/strict/api";
+import { services, hasCachedAuthData } from "@/background/messenger/strict/api";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import {
   integrationDependencyFactory,
@@ -41,17 +40,24 @@ import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { type FormikValues } from "formik";
 import IntegrationsSliceModIntegrationsContextAdapter from "@/integrations/store/IntegrationsSliceModIntegrationsContextAdapter";
 import { toExpression } from "@/utils/expressionUtils";
+import {
+  getAllSpreadsheets,
+  getHeaders,
+  getSpreadsheet,
+} from "@/contrib/google/sheets/core/sheetsApi";
 
 const servicesLocateMock = jest.mocked(services.locate);
 
+// XXX: sheetsApi should likely be mocked at the network level, not the module level
+jest.mock("@/contrib/google/sheets/core/sheetsApi");
 jest.mock("@/hooks/auth");
 
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
 
-const isLoggedInMock = jest.mocked(sheets.isLoggedIn);
-const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
-const getSpreadsheetMock = jest.mocked(sheets.getSpreadsheet);
-const getHeadersMock = jest.mocked(sheets.getHeaders);
+const isLoggedInMock = jest.mocked(hasCachedAuthData);
+const getAllSpreadsheetsMock = jest.mocked(getAllSpreadsheets);
+const getSpreadsheetMock = jest.mocked(getSpreadsheet);
+const getHeadersMock = jest.mocked(getHeaders);
 
 const TEST_SPREADSHEET_ID = autoUUIDSequence();
 const GOOGLE_SHEET_SERVICE_ID = validateRegistryId("google/sheet");

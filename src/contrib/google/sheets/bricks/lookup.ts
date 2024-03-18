@@ -16,7 +16,6 @@
  */
 
 import { validateRegistryId } from "@/types/helpers";
-import { sheets } from "@/background/messenger/api";
 import { zip } from "lodash";
 import { BusinessError, PropError } from "@/errors/businessErrors";
 import {
@@ -27,7 +26,10 @@ import { type Schema } from "@/types/schemaTypes";
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
-import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
+import {
+  getAllRows,
+  type SpreadsheetTarget,
+} from "@/contrib/google/sheets/core/sheetsApi";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { SERVICES_BASE_SCHEMA_URL } from "@/integrations/util/makeServiceContextFromDependencies";
 
@@ -172,7 +174,7 @@ export class GoogleSheetsLookup extends TransformerABC {
       spreadsheetId,
       tabName,
     };
-    const valueRange = await sheets.getAllRows(target);
+    const valueRange = await getAllRows(target);
     const [headers, ...rows] = valueRange?.values ?? [[], []];
 
     logger.debug(`Tab ${tabName} has headers`, { headers });

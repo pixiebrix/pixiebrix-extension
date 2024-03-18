@@ -43,17 +43,6 @@ export const removeExtensionForEveryTab = getNotifier(
 export const closeTab = getMethod("CLOSE_TAB", bg);
 export const clearServiceCache = getMethod("CLEAR_SERVICE_CACHE", bg);
 
-export const sheets = {
-  isLoggedIn: getMethod("GOOGLE_DRIVE_IS_LOGGED_IN", bg),
-  getUserEmail: getMethod("GOOGLE_DRIVE_GET_USER_EMAIL", bg),
-  getAllSpreadsheets: getMethod("GOOGLE_SHEETS_GET_ALL_SPREADSHEETS", bg),
-  getSpreadsheet: getMethod("GOOGLE_SHEETS_GET_SPREADSHEET", bg),
-  getHeaders: getMethod("GOOGLE_SHEETS_GET_HEADERS", bg),
-  getAllRows: getMethod("GOOGLE_SHEETS_GET_ALL_ROWS", bg),
-  createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB", bg),
-  appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS", bg),
-};
-
 /**
  * Uninstall context menu and return whether the context menu was uninstalled.
  */
