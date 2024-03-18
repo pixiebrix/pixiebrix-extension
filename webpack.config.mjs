@@ -109,10 +109,12 @@ const createConfig = (env, options) =>
     entry: Object.fromEntries(
       [
         "background/background",
-        // Components rendered by the Document Renderer brick in the sidebar are placed in a shadow dom. This is how we
-        // isolate our custom Bootstrap theme to just the sidebar. However, this also prevents access to CSS module
-        // classes used by components in the rendered document. Build styles for DocumentView to add only the styles
-        // that are needed to render the document without also including our custom theme in sidebar.css.
+        // Components rendered within the Shadow DOM, such as those used by the Document Renderer brick in the sidebar,
+        // are isolated from global styles. This prevents access to CSS module classes used by these components.
+        // To resolve this, add the root component of the affected component hierarchy to the webpack function that
+        // bundles styles. This will make the CSS available to be loaded by the component tree.
+        // Additionally, remember to add the related JavaScript file to the DiscardFilePlugin.mjs file to exclude
+        // it from the bundle, as it is not needed for rendering in this context.
         "bricks/renderers/documentView/DocumentView",
         "bricks/transformers/ephemeralForm/EphemeralFormContent",
         "contentScript/contentScript",
