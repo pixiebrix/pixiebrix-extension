@@ -56,6 +56,7 @@ import { type Schema, type SchemaPropertyType } from "@/types/schemaTypes";
 import { AnnotationType } from "@/types/annotationTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { Collapse } from "react-bootstrap";
+import { joinPathParts } from "@/utils/formUtils";
 
 const imageForCroppingSourceSchema: Schema = {
   type: "string",
@@ -446,7 +447,12 @@ const FieldEditor: React.FC<{
 
       {uiType.uiWidget === "textarea" && (
         <TextAreaFields
-          uiOptionsPath={`${name}.uiSchema.${propertyName}.ui:options`}
+          uiOptionsPath={joinPathParts(
+            name,
+            "uiSchema",
+            propertyName,
+            "ui:options",
+          )}
         />
       )}
     </div>
