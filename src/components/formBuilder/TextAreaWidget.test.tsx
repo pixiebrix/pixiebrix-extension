@@ -114,7 +114,7 @@ describe("TextAreaWidget", () => {
       render(
         <TextAreaWidget
           {...defaultProps}
-          options={{ submitToolbar: true, submitToolbarIcon: {} }}
+          options={{ submitToolbar: { show: true } }}
         />,
         {
           wrapper: ({ children }) => (
@@ -143,7 +143,7 @@ describe("TextAreaWidget", () => {
       render(
         <TextAreaWidget
           {...defaultProps}
-          options={{ submitToolbar: true, submitToolbarIcon: {} }}
+          options={{ submitToolbar: { show: true } }}
         />,
         {
           wrapper: ({ children }) => (
@@ -169,7 +169,11 @@ describe("TextAreaWidget", () => {
       render(
         <TextAreaWidget
           {...defaultProps}
-          options={{ submitToolbar: true, submitToolbarIcon: {} }}
+          options={{
+            submitToolbar: {
+              show: true,
+            },
+          }}
         />,
         {
           wrapper: ({ children }) => (

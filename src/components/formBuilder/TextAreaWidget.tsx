@@ -31,6 +31,13 @@ import cx from "classnames";
 import Icon from "@/icons/Icon";
 import { type IconValue } from "@/components/fields/IconWidget";
 
+type SubmitToolbar =
+  | {
+      show?: boolean;
+      icon?: IconValue;
+    }
+  | undefined;
+
 const TextAreaWidget: React.FC<WidgetProps> = ({
   id,
   options,
@@ -44,13 +51,9 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
   onBlur,
 }) => {
   const { submitForm } = useContext(RjsfSubmitContext);
-  const {
-    submitOnEnter,
-    submitToolbar,
-    submitToolbarIcon = {},
-    rows,
-  } = options;
-  const icon = submitToolbarIcon as IconValue;
+  const { submitOnEnter, submitToolbar, rows } = options;
+  const showSubmitToolbar = (submitToolbar as SubmitToolbar)?.show ?? false;
+  const submitToolbarIcon = (submitToolbar as SubmitToolbar)?.icon;
 
   const onKeyPress = useCallback<KeyboardEventHandler<HTMLTextAreaElement>>(
     async (event) => {
@@ -92,11 +95,13 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
 
   // @see @rjsf/core/lib/components/widgets/TextareaWidget.js
   return (
-    <div className={cx({ [styles.submitToolbarRoot ?? ""]: submitToolbar })}>
+    <div
+      className={cx({ [styles.submitToolbarRoot ?? ""]: showSubmitToolbar })}
+    >
       <textarea
         id={id}
         className={cx("form-control", {
-          [styles.hasSubmitToolbar ?? ""]: submitToolbar,
+          [styles.hasSubmitToolbar ?? ""]: showSubmitToolbar,
         })}
         value={String(value ?? "")}
         placeholder={placeholder}
@@ -109,7 +114,7 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
         onFocus={onFocusHandler}
         onBlur={onBlurHandler}
       />
-      {submitToolbar && (
+      {showSubmitToolbar && (
         <div
           className={cx("d-flex justify-content-between", styles.submitToolbar)}
         >
@@ -124,9 +129,9 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
           </Button>
           <Button type="submit" variant="link" aria-label="submit">
             <Icon
-              icon={icon.id}
-              library={icon.library}
-              size={icon.size}
+              icon={submitToolbarIcon?.id}
+              library={submitToolbarIcon?.library}
+              size={submitToolbarIcon?.size}
               color="#807691" // See colors.scss:$N300
             />
           </Button>

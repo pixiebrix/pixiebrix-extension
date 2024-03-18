@@ -547,7 +547,7 @@ describe("FormEditor", () => {
         );
 
         const view = screen.getByTestId(
-          "toggle-rjsfSchema.uiSchema.foo.ui:options.submitToolbar",
+          "toggle-rjsfSchema.uiSchema.foo.ui:options.submitToolbar.show",
         );
 
         const toggle = within(view).getByRole("button");

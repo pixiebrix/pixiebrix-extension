@@ -267,7 +267,9 @@ export const initRenamingCases = () => {
           [newFieldName]: {
             "ui:options": {
               submitOnEnter: false,
-              submitToolbar: false,
+              submitToolbar: {
+                show: false,
+              },
             },
             "ui:widget": "textarea",
           },

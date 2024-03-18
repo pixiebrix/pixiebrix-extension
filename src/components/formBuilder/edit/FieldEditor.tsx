@@ -123,7 +123,7 @@ const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
         isRequired
       />
       <SchemaField
-        name={joinName(uiOptionsPath, "submitToolbar")}
+        name={joinName(uiOptionsPath, "submitToolbar", "show")}
         schema={{
           type: "boolean",
           title: "Include Submit Toolbar?",
@@ -134,7 +134,7 @@ const TextAreaFields: React.FC<{ uiOptionsPath: string }> = ({
       />
       <Collapse in={submitToolbar}>
         <SchemaField
-          name={joinName(uiOptionsPath, "submitToolbarIcon")}
+          name={joinName(uiOptionsPath, "submitToolbar", "icon")}
           schema={{ $ref: "https://app.pixiebrix.com/schemas/icon#" }}
           label="Select Icon"
           description="Select the icon that appears in the bottom right of the Submit Toolbar"
