@@ -526,6 +526,34 @@ describe("FormEditor", () => {
 
         expect(toggle).toBeInTheDocument();
       });
+
+      test("displays include submit toolbar field for textarea", async () => {
+        const fieldName = "foo";
+        const onSubmitMock = jest.fn();
+        const FormikTemplate = createFormikTemplate(
+          { [RJSF_SCHEMA_PROPERTY_NAME]: initOneFieldSchemaCase(fieldName) },
+          onSubmitMock,
+        );
+
+        render(
+          <FormikTemplate>
+            <FormEditor activeField={fieldName} {...defaultProps} />
+          </FormikTemplate>,
+        );
+
+        await selectEvent.select(
+          screen.getByRole("combobox"),
+          "Paragraph text",
+        );
+
+        const view = screen.getByTestId(
+          "toggle-rjsfSchema.uiSchema.foo.ui:options.submitToolbar.show",
+        );
+
+        const toggle = within(view).getByRole("button");
+
+        expect(toggle).toBeInTheDocument();
+      });
     });
   });
 });

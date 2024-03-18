@@ -26,7 +26,7 @@ import {
   type RowValues,
   type Shape,
 } from "@/contrib/google/sheets/bricks/append";
-import { sheets } from "@/background/messenger/api";
+import * as sheets from "@/contrib/google/sheets/core/sheetsApi";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
@@ -35,6 +35,9 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import type { Spreadsheet } from "@/contrib/google/sheets/core/types";
 import { produce } from "immer";
+
+// XXX: sheetsApi should likely be mocked at the network level, not the module level
+jest.mock("@/contrib/google/sheets/core/sheetsApi");
 
 describe("Infer shape", () => {
   it("Infer entries shape", () => {

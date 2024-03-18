@@ -25,6 +25,18 @@ import React, {
 import { type WidgetProps } from "@rjsf/utils";
 import { isNumber } from "lodash";
 import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
+import { Button } from "react-bootstrap";
+import styles from "./TextAreaWidget.module.scss";
+import cx from "classnames";
+import Icon from "@/icons/Icon";
+import { type IconValue } from "@/components/fields/IconWidget";
+
+type SubmitToolbar =
+  | {
+      show?: boolean;
+      icon?: IconValue;
+    }
+  | undefined;
 
 const TextAreaWidget: React.FC<WidgetProps> = ({
   id,
@@ -37,14 +49,16 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
   onChange,
   onFocus,
   onBlur,
-  label,
 }) => {
   const { submitForm } = useContext(RjsfSubmitContext);
+  const { submitOnEnter, submitToolbar, rows } = options;
+  const showSubmitToolbar = (submitToolbar as SubmitToolbar)?.show ?? false;
+  const submitToolbarIcon = (submitToolbar as SubmitToolbar)?.icon;
 
   const onKeyPress = useCallback<KeyboardEventHandler<HTMLTextAreaElement>>(
     async (event) => {
       if (
-        options.submitOnEnter &&
+        submitOnEnter &&
         event.key === "Enter" &&
         !(event.shiftKey || event.altKey || event.ctrlKey) // Do not submit on enter when a modifier key is held
       ) {
@@ -55,7 +69,7 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
         await submitForm();
       }
     },
-    [options.submitOnEnter, submitForm],
+    [submitOnEnter, submitForm],
   );
 
   const onFocusHandler = useCallback<FocusEventHandler<HTMLTextAreaElement>>(
@@ -80,22 +94,50 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
   );
 
   // @see @rjsf/core/lib/components/widgets/TextareaWidget.js
-  // @see https://github.com/pixiebrix/pixiebrix-extension/pull/6899 for why we added the label
   return (
-    <textarea
-      id={id}
-      className="form-control"
-      value={String(value ?? "")}
-      placeholder={placeholder}
-      required={required}
-      disabled={disabled}
-      readOnly={readonly}
-      rows={isNumber(options.rows) ? options.rows : undefined}
-      onKeyPress={onKeyPress}
-      onChange={onChangeHandler}
-      onFocus={onFocusHandler}
-      onBlur={onBlurHandler}
-    />
+    <div
+      className={cx({ [styles.submitToolbarRoot ?? ""]: showSubmitToolbar })}
+    >
+      <textarea
+        id={id}
+        className={cx("form-control", {
+          [styles.hasSubmitToolbar ?? ""]: showSubmitToolbar,
+        })}
+        value={String(value ?? "")}
+        placeholder={placeholder}
+        required={required}
+        disabled={disabled}
+        readOnly={readonly}
+        rows={isNumber(rows) ? rows : undefined}
+        onKeyPress={onKeyPress}
+        onChange={onChangeHandler}
+        onFocus={onFocusHandler}
+        onBlur={onBlurHandler}
+      />
+      {showSubmitToolbar && (
+        <div
+          className={cx("d-flex justify-content-between", styles.submitToolbar)}
+        >
+          <Button
+            variant="link"
+            type="button"
+            onClick={() => {
+              onChange("");
+            }}
+          >
+            Clear
+          </Button>
+          <Button type="submit" variant="link" aria-label="submit">
+            <Icon
+              icon={submitToolbarIcon?.id}
+              library={submitToolbarIcon?.library}
+              size={submitToolbarIcon?.size}
+              color="#807691" // See colors.scss:$N300
+            />
+          </Button>
+        </div>
+      )}
+    </div>
   );
 };
 
