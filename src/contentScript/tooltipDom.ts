@@ -79,10 +79,12 @@ export function tooltipFactory(): HTMLElement {
     // override the browser defaults (e.g., Zendesk)
     margin: "0",
     padding: "0",
-    "border-radius": "5px",
     // Can't use colors file because the element is being rendered directly on the host
+    // Design reference: https://www.figma.com/file/0FSyxGoz2Pk1gtvrzWNe7G/Business-User-Onboarding-Mods?type=design&node-id=241-2275&mode=design&t=3mXfdNhsvsgVm2zO-0
     "background-color": "#ffffff",
-    border: "2px solid #a8a1b4",
+    "border-radius": "4px",
+    border: "1px solid #DEDBE3",
+    "box-shadow": "0px 4px 8px -4px rgba(56, 51, 66, 0.16)",
   });
 
   container.append(popover);
