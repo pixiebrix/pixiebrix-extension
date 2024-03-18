@@ -16,7 +16,7 @@
  */
 
 import React, { useContext } from "react";
-import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
+import bootstrap from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
 import bootstrapOverrides from "@/pageEditor/sidebar/sidebarBootstrapOverrides.scss?loadAsUrl";
 import custom from "@/bricks/renderers/customForm.css?loadAsUrl";
 
