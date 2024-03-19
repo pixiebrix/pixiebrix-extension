@@ -260,7 +260,7 @@ describe("interactive", () => {
     try {
       await request;
     } catch (error) {
-      // We're using the itInteractiveLoginRequiredError error type for control flow. Test that it doesn't swallow the
+      // We're using the InteractiveLoginRequiredError error type for control flow. Test that it doesn't swallow the
       // the InteractiveLoginRequiredError event if it crosses the messenger boundary
       expect(
         hasSpecificErrorCause(error, InteractiveLoginRequiredError),
