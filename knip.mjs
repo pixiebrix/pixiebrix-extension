@@ -43,7 +43,7 @@ const knipConfig = {
     "**/__mocks__/**",
     "src/testUtils/detectPageMock.ts",
     // Dummy file to test lint rules
-    "eslint-local-rules/noRestrictedSyntax.ts",
+    "eslint-local-rules/noRestrictedSyntax.tsx",
     // `Render` method is unused currently, but may be used in the future. Keep for consistency of API with other
     // render helper modules.
     "src/testUtils/renderWithCommonStore.ts",

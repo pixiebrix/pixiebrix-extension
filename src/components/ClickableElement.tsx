@@ -38,7 +38,7 @@ const ClickableElement: React.FC<
     // XXX: If needed, add support for that by merging it with the `onKeyPress` in the props
     "role" | "tabIndex" | "onKeyPress"
   >
-> = (props) => (
+> = ({ children, ...props }) => (
   <div
     {...props}
     tabIndex={0}
@@ -49,7 +49,9 @@ const ClickableElement: React.FC<
       }
     }}
     // TODO: also handle onMouseOver -> onFocus
-  />
+  >
+    {children}
+  </div>
 );
 
 export default ClickableElement;

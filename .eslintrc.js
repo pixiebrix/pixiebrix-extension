@@ -141,7 +141,7 @@ module.exports = {
         selector:
           "JSXOpeningElement[name.name='div'][attributes.0.name.name='onClick']",
       },
-      // NOTE: If you add more rules, add the tests to eslint-local-rules/noRestrictedSyntax.ts
+      // NOTE: If you add more rules, add the tests to eslint-local-rules/noRestrictedSyntax.tsx
     ],
   },
   overrides: [

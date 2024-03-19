@@ -20,13 +20,39 @@ import { render, fireEvent, screen } from "@testing-library/react";
 import ClickableElement from "./ClickableElement";
 
 describe("ClickableElement", () => {
-  it("should be focusable", () => {
+  it("creates a focusable element with the right role", () => {
+    const handleClick = jest.fn();
+    render(<ClickableElement onClick={handleClick}>Click me</ClickableElement>);
+    const clickableElement = screen.getByRole("button");
+    expect(clickableElement).toHaveTextContent("Click me");
+    expect(clickableElement).toHaveAttribute("tabIndex", "0");
+  });
+
+  it("registers the onKeyPress event", () => {
     const handleClick = jest.fn();
     render(<ClickableElement onClick={handleClick} />);
     const clickableElement = screen.getByRole("button");
-
-    fireEvent.click(clickableElement);
-
+    fireEvent.keyPress(clickableElement, {
+      key: "Enter",
+      code: 13,
+      charCode: 13,
+    });
     expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("ignores keys other than Enter", () => {
+    const handleClick = jest.fn();
+    render(<ClickableElement onClick={handleClick} />);
+    const clickableElement = screen.getByRole("button");
+    fireEvent.keyPress(clickableElement, {
+      key: "Space",
+      code: 32,
+      charCode: 32,
+    });
+    expect(handleClick).not.toHaveBeenCalled();
+  });
+
+  it("renders children", () => {
+    const handleClick = jest.fn();
   });
 });
