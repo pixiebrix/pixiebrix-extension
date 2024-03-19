@@ -44,14 +44,18 @@ const ElementEditor: React.FC<ElementEditorProps> = ({ documentBodyName }) => {
 
   return (
     <>
-      <p className="small text-muted">
-        Use the Preview Tab on the right to select an element to edit ⟶
-      </p>
       <ConnectedCollapsibleFieldSection
-        title={`Current Element: ${currentElementName}`}
+        title="Document Elements"
         initialExpanded
       >
-        <RemoveElement documentBodyName={documentBodyName} />
+        <p className="small text-muted">
+          Use the Preview Tab on the right to select an element to edit ⟶
+        </p>
+        <p>
+          <RemoveElement documentBodyName={documentBodyName} />
+        </p>
+
+        <h6>Current element: {currentElementName}</h6>
 
         <ElementOptions />
         <MoveElement documentBodyName={documentBodyName} />

@@ -54,7 +54,7 @@ const DocumentOptions: React.FC<{
       {activeElement ? (
         <ElementEditor documentBodyName={documentBodyName} />
       ) : (
-        <UncollapsibleFieldSection title="Current Element">
+        <UncollapsibleFieldSection title="Document Elements">
           <p className="small text-muted">
             Nothing selected. Use the Preview Tab on the right to select an
             element to edit ⟶
