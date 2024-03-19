@@ -17,28 +17,7 @@
 
 import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
-
-// Copied from https://stackoverflow.com/questions/934012/get-image-data-url-in-javascript
-// TODO: Replace with `getData` from ImageExifReader?
-function getBase64Image(img: HTMLImageElement) {
-  // Create an empty canvas element
-  const canvas = document.createElement("canvas");
-  canvas.width = img.width;
-  canvas.height = img.height;
-
-  // Copy the image contents to the canvas
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- 2d always exists
-  const context = canvas.getContext("2d")!;
-  context.drawImage(img, 0, 0);
-
-  // Get the data-URL formatted image
-  // Firefox supports PNG and JPEG. You could check img.src to
-  // guess the original format, but be aware the using "image/jpg"
-  // will re-encode the image.
-  const dataURL = canvas.toDataURL("image/png");
-
-  return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-}
+import { loadImageAsBase64 } from "@/utils/fileUtils";
 
 export class ImageReader extends ReaderABC {
   override defaultOutputKey = "image";
@@ -57,7 +36,7 @@ export class ImageReader extends ReaderABC {
     if (element?.tagName === "IMG") {
       return {
         src: element.src,
-        img: getBase64Image(element),
+        img: await loadImageAsBase64(element),
       };
     }
 
