@@ -48,7 +48,7 @@ const ClickableElement: React.FC<
         props.onClick(event);
       }
     }}
-    // TODO: also handle onMouseOver -> onFocus
+    // TODO: also handle onMouseOver -> onFocus as defined in https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/main/docs/rules/mouse-events-have-key-events.md
   >
     {children}
   </div>
