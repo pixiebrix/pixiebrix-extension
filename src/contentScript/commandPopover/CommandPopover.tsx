@@ -153,7 +153,7 @@ const popoverFooter: React.ReactElement = (
       &nbsp;
       <FontAwesomeIcon icon={faCaretUp} fixedWidth size="xs" />
     </span>{" "}
-    Select <span className="key">TAB</span>
+    Insert <span className="key">Enter</span>
   </div>
 );
 

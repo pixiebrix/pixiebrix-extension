@@ -31,6 +31,11 @@ const stopPropagation = (event: React.SyntheticEvent) => {
   event.stopPropagation();
 };
 
+/**
+ * Ensure that events inside this component do not bubble up
+ *
+ * @example <StopPropagation onClick onKeyPress><button/></StopPropagation>
+ */
 const StopPropagation: React.FC<StopPropagationProps> = ({
   children,
   ...events
