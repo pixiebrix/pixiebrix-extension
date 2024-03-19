@@ -750,6 +750,7 @@
     "./utils/getOptionsArgForFieldValue.ts",
     "./utils/idbUtils.ts",
     "./utils/iframeUtils.ts",
+    "./utils/imageUtils.ts",
     "./utils/inference/inferSingleElementSelector.ts",
     "./utils/inference/selectorInference.ts",
     "./utils/inference/selectorInferenceUtils.ts",
