@@ -18,11 +18,19 @@
 import React from "react";
 import { Button } from "react-bootstrap";
 import useContextInvalidated from "@/hooks/useContextInvalidated";
+import useDocumentVisibility from "@/hooks/useDocumentVisibility";
 
 const InvalidatedContextGate: React.FunctionComponent<{
   contextNameTitleCase: string;
-}> = ({ children, contextNameTitleCase }) => {
+  autoReload?: boolean;
+}> = ({ children, contextNameTitleCase, autoReload }) => {
   const wasContextInvalidated = useContextInvalidated();
+  // Only auto-reload if the document is in the background
+  const isDocumentVisible = useDocumentVisibility();
+  if (wasContextInvalidated && autoReload && !isDocumentVisible) {
+    location.reload();
+  }
+
   return wasContextInvalidated ? (
     <div className="d-flex flex-column align-items-center justify-content-center">
       <p>
