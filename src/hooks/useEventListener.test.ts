@@ -15,22 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect } from "react";
+import { renderHook } from "@testing-library/react-hooks";
+import useEventListener from "./useEventListener";
 
-export default function useEventListener<E extends Event>(
-  target: EventTarget,
-  eventName: string,
-  listener: (event: E) => void,
-  // Only support passive option for now
-  { passive }: { passive?: true } = {},
-) {
-  useEffect(() => {
-    const controller = new AbortController();
-    const { signal } = controller;
-    target.addEventListener(eventName, listener, { passive, signal });
+test("useEventListener", () => {
+  const mockElement = document.createElement("div");
+  const mockEvent = new Event("click");
+  const mockHandler = jest.fn();
 
-    return () => {
-      controller.abort();
-    };
-  }, [target, eventName, listener, passive]);
-}
+  renderHook(() => {
+    useEventListener(mockElement, "click", mockHandler);
+  });
+  mockElement.dispatchEvent(mockEvent);
+
+  expect(mockHandler).toHaveBeenCalledTimes(1);
+  expect(mockHandler).toHaveBeenCalledWith(mockEvent);
+});
