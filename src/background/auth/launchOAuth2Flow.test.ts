@@ -53,7 +53,7 @@ describe("oauth2 event reporting", () => {
     const auth = integrationConfigFactory({
       label: "test auth label",
     });
-    await launchOAuth2Flow(integration, auth);
+    await launchOAuth2Flow(integration, auth, { interactive: true });
 
     const expectedEventPayload = {
       integration_id: integration.id,
@@ -93,7 +93,9 @@ describe("oauth2 event reporting", () => {
 
     const error = new Error("test error");
     codeGrantFlowMock.mockRejectedValueOnce(error);
-    await expect(launchOAuth2Flow(integration, auth)).rejects.toThrow(error);
+    await expect(
+      launchOAuth2Flow(integration, auth, { interactive: true }),
+    ).rejects.toThrow(error);
 
     const expectedEventPayload = {
       integration_id: integration.id,

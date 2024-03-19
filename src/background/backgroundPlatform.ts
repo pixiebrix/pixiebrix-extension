@@ -54,7 +54,11 @@ class BackgroundPlatform extends PlatformBase {
     integrationConfig: Nullishable<SanitizedIntegrationConfig>,
     requestConfig: AxiosRequestConfig,
   ): Promise<RemoteResponse<TData>> {
-    return performConfiguredRequest(integrationConfig, requestConfig);
+    // XXX: keep the previous default behavior of interactiveLogin: true. Interactive logins will likely
+    // fail though because they must be initiated from a user gesture.
+    return performConfiguredRequest(integrationConfig, requestConfig, {
+      interactiveLogin: true,
+    });
   }
 }
 

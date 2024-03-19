@@ -23,6 +23,7 @@ import {
 import { getRandomString } from "@/vendors/pkce";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 import { assertNotNullish } from "@/utils/nullishUtils";
+import { launchWebAuthFlow } from "@/background/auth/authHelpers";
 
 function parseResponseParams(url: URL): UnknownObject {
   const hasSearchParams = [...url.searchParams.keys()].length > 0;
@@ -44,6 +45,7 @@ function parseResponseParams(url: URL): UnknownObject {
 async function implicitGrantFlow(
   auth: IntegrationConfig,
   oauth2: OAuth2Context,
+  { interactive }: { interactive: boolean },
 ): Promise<AuthData> {
   const redirect_uri = browser.identity.getRedirectURL("oauth2");
 
@@ -72,14 +74,10 @@ async function implicitGrantFlow(
     authorize_url: authorizeURL,
   });
 
-  const responseUrl = await browser.identity.launchWebAuthFlow({
+  const responseUrl = await launchWebAuthFlow({
     url: authorizeURL.href,
-    interactive: true,
+    interactive,
   });
-
-  if (!responseUrl) {
-    throw new Error("Authentication cancelled");
-  }
 
   const responseParams = parseResponseParams(new URL(responseUrl));
 

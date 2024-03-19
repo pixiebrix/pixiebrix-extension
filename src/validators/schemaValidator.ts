@@ -80,11 +80,17 @@ export const KIND_SCHEMAS: Readonly<Record<string, ValidatorSchema>> =
 /**
  * $ref resolver factory that fetches the integration definition from the integration definition registry.
  * @param sanitize true to exclude properties associated with secrets
+ * @param mode properties to include only the properties of the schema, configuration to match an
+ *  IntegrationConfiguration
+ * @see IntegrationConfig
+ * @see SanitizedIntegrationConfig
  */
 function integrationResolverFactory({
   sanitize,
+  mode,
 }: {
   sanitize: boolean;
+  mode: "properties" | "configuration";
 }): ResolverOptions {
   return {
     order: 1,
@@ -106,6 +112,8 @@ function integrationResolverFactory({
           validateRegistryId(integrationId),
         );
 
+        let propertiesSchema = integrationDefinition.schema;
+
         if (sanitize) {
           const sanitizedProperties = pickBy(
             inputProperties(integrationDefinition.schema),
@@ -114,11 +122,7 @@ function integrationResolverFactory({
               x.$ref == null || !REF_SECRETS.includes(trimEnd(x.$ref, "#")),
           );
 
-          return {
-            // NOTE: including the $id cause duplicate schema errors when validating a dereferenced schema if the
-            // reference is used in multiple places. But including an $id is useful for preserving field toggling
-            // based on well-known schema $ids.
-            $id: file.url,
+          propertiesSchema = {
             type: "object",
             // Strip out the properties containing secrets because those are excluded during runtime execution
             properties: sanitizedProperties,
@@ -128,10 +132,37 @@ function integrationResolverFactory({
           };
         }
 
-        return {
-          ...integrationDefinition.schema,
-          $id: file.url,
-        };
+        switch (mode) {
+          // NOTE: including the $id cause duplicate schema errors when validating a dereferenced schema if the
+          // reference is used in multiple places. But including an $id is useful for preserving field toggling
+          // based on well-known schema $ids and it's safe to use in our code to convert JSON Schema to Yup schema.
+          case "properties": {
+            return {
+              ...propertiesSchema,
+              $id: file.url,
+            };
+          }
+
+          case "configuration": {
+            return {
+              $id: file.url,
+              type: "object",
+              properties: {
+                serviceId: {
+                  type: "string",
+                  const: integrationId,
+                },
+                config: propertiesSchema,
+              },
+              required: ["serviceId", "config"],
+            };
+          }
+
+          default: {
+            const modeNever: never = mode;
+            throw new Error(`Unknown mode: ${modeNever}`);
+          }
+        }
       } catch (error) {
         console.warn("Error resolving integration definition schema", error);
         // Don't block on lookup failure
@@ -189,6 +220,8 @@ export async function dereference(
       resolve: {
         integrationDefinitionResolver: integrationResolverFactory({
           sanitize: sanitizeIntegrationDefinitions,
+          // When dereferencing to generate a configuration UI, we only want the properties
+          mode: "properties",
         }),
         builtInSchemaResolver,
         // Disable built-in resolvers: https://apitools.dev/json-schema-ref-parser/docs/options.html
@@ -226,6 +259,8 @@ export async function validateBrickInputOutput(
       // Exclude secret properties, because they aren't passed to the runtime
       integrationDefinitionResolver: integrationResolverFactory({
         sanitize: true,
+        // The runtime passes the whole configuration
+        mode: "configuration",
       }),
       builtInSchemaResolver,
       // Disable built-in resolvers: https://apitools.dev/json-schema-ref-parser/docs/options.html

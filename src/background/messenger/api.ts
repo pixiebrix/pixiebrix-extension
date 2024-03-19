@@ -69,6 +69,7 @@ export const performConfiguredRequestInBackground = getMethod(
 ) as <TData>(
   integrationConfig: SanitizedIntegrationConfig | null,
   requestConfig: AxiosRequestConfig,
+  options: { interactiveLogin: boolean },
 ) => Promise<RemoteResponse<TData>>;
 
 // Use this instead: `import reportError from "@/telemetry/reportError"`
@@ -88,5 +89,10 @@ export const ping = getMethod("PING", bg);
 
 export const collectPerformanceDiagnostics = getMethod(
   "COLLECT_PERFORMANCE_DIAGNOSTICS",
+  bg,
+);
+
+export const launchInteractiveOAuthFlow = getMethod(
+  "LAUNCH_INTERACTIVE_OAUTH_FLOW",
   bg,
 );

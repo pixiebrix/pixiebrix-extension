@@ -44,6 +44,7 @@ jest.mock("@/contentScript/sidebarController", () => ({
 
 jest.mock("@/auth/authStorage", () => ({
   isLinked: jest.fn().mockResolvedValue(true),
+  addListener: jest.fn(),
 }));
 
 const isLinkedMock = jest.mocked(isLinked);
