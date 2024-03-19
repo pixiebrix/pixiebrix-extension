@@ -145,10 +145,13 @@
   display: flex;
   flex-wrap: nowrap;
   flex-grow: 1;
+  align-items: center;
 
   border: none !important;
   background: transparent !important;
   padding: 0.5rem 0.5rem 0.7rem !important;
+
+  overflow: hidden;
 
   // Add padding between each item without padding the outside
   & > * {
@@ -161,8 +164,6 @@
   & > *:last-child {
     padding-right: 0;
   }
-
-  overflow: hidden;
 
   :global .close {
     // The close icon is the actual letter "X" so this thins the icon
