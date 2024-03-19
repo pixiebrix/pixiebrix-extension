@@ -59,6 +59,22 @@ async function showTooltip(): Promise<void> {
   selectionTooltip.setAttribute("aria-hidden", "false");
   selectionTooltip.style.setProperty("display", "block");
 
+  // Check visibility to avoid re-animating the tooltip fade in as selection changes
+  const isShowing = selectionTooltip.checkVisibility();
+  if (!isShowing) {
+    selectionTooltip.animate(
+      [
+        { opacity: 0, margin: "4px 0" },
+        { opacity: 1, margin: "0" },
+      ],
+      {
+        easing: "ease-in-out",
+        duration: 150,
+        fill: "forwards",
+      },
+    );
+  }
+
   // For now hide the tooltip on document/element scroll to avoid gotchas with floating UI's `position: fixed` strategy.
   // See updatePosition for more context. Without this, the tooltip moves with the scroll to keep its position in the
   // viewport fixed.

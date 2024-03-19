@@ -69,6 +69,22 @@ async function showPopover(element: HTMLElement): Promise<void> {
   commandPopover.setAttribute("aria-hidden", "false");
   commandPopover.style.setProperty("display", "block");
 
+  // Check visibility to avoid re-animating the tooltip fade in as selection changes
+  const isShowing = commandPopover.checkVisibility();
+  if (!isShowing) {
+    commandPopover.animate(
+      [
+        { opacity: 0, margin: "8px 0" },
+        { opacity: 1, margin: "0" },
+      ],
+      {
+        easing: "ease-in-out",
+        duration: 300,
+        fill: "forwards",
+      },
+    );
+  }
+
   // For now just destroy the tooltip on document/element scroll to avoid gotchas with floating UI's `position: fixed`
   // strategy. See tooltipController.ts for more details.
   document.activeElement?.addEventListener(
