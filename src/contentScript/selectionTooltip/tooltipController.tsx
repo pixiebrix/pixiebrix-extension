@@ -37,6 +37,7 @@ import { onContextInvalidated } from "webext-events";
 import { isNativeField } from "@/types/inputTypes";
 import { onAbort, ReusableAbortController } from "abort-utils";
 import { prefersReducedMotion } from "@/utils/a11yUtils";
+import { getFirstSelectionRange } from "@/utils/domUtils";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
@@ -149,7 +150,11 @@ function createTooltip(): HTMLElement {
   return selectionTooltip;
 }
 
-function getPositionReference(selection: Selection): VirtualElement | Element {
+/**
+ * Get the reference element for the tooltip position.
+ * @param range - The current selection range. Allows us to measure where the selection is on the page relative to the viewport
+ */
+function getPositionReference(range: Range): VirtualElement | Element {
   const { activeElement } = document;
 
   // Browsers don't report an accurate selection within inputs/textarea
@@ -194,9 +199,6 @@ function getPositionReference(selection: Selection): VirtualElement | Element {
     } satisfies VirtualElement;
   }
 
-  // Allows us to measure where the selection is on the page relative to the viewport
-  const range = selection.getRangeAt(0);
-
   // https://floating-ui.com/docs/virtual-elements#getclientrects
   return {
     getBoundingClientRect: () => range.getBoundingClientRect(),
@@ -205,16 +207,16 @@ function getPositionReference(selection: Selection): VirtualElement | Element {
 }
 
 async function updatePosition(): Promise<void> {
-  const selection = window.getSelection();
+  const selectionRange = getFirstSelectionRange();
 
-  if (!selectionTooltip || !selection || selection.rangeCount === 0) {
+  if (!selectionTooltip || selectionRange == null) {
     hideTooltip();
     // Guard against race condition
     return;
   }
 
   // https://floating-ui.com/docs/getting-started
-  const referenceElement = getPositionReference(selection);
+  const referenceElement = getPositionReference(selectionRange);
   const supportsInline = "getClientRects" in referenceElement;
 
   // Keep anchored on scroll/resize: https://floating-ui.com/docs/computeposition#anchoring

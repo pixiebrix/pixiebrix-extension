@@ -202,3 +202,8 @@ export function runOnDocumentVisible<Args extends unknown[], TReturn = unknown>(
 
   return runOnce;
 }
+
+export const getFirstSelectionRange = (): Range | null => {
+  const selection = window.getSelection();
+  return selection?.rangeCount ? selection?.getRangeAt(0) : null;
+};

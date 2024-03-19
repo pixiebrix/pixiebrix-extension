@@ -20,7 +20,7 @@ import {
   isSelectableTextControlElement,
   type SelectableTextEditorElement,
 } from "@/types/inputTypes";
-import { waitAnimationFrame } from "@/utils/domUtils";
+import { getFirstSelectionRange, waitAnimationFrame } from "@/utils/domUtils";
 import { expectContext } from "@/utils/expectContext";
 import { insertAtCursorWithCustomEditorSupport } from "@/contentScript/textEditorDom";
 import type { Nullishable } from "@/utils/nullishUtils";
@@ -79,10 +79,9 @@ export async function replaceAtCommand({
   }
 
   // Content Editable
-  const selection = window.getSelection();
-  const range = selection.rangeCount > 0 && selection?.getRangeAt(0);
+  const range = getFirstSelectionRange();
 
-  if (range && range?.startContainer.nodeType === Node.TEXT_NODE) {
+  if (range?.startContainer.nodeType === Node.TEXT_NODE) {
     if (range.startOffset !== range.endOffset) {
       // Shouldn't happen in practice because commandController hides the popover on selection
       throw new Error("Expected a single cursor position");
