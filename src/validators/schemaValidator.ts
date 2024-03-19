@@ -148,10 +148,13 @@ function integrationResolverFactory({
                 $id: file.url,
                 type: "object",
                 properties: {
-                  config: {
-                    ...propertiesSchema,
+                  serviceId: {
+                    type: "string",
+                    const: integrationId,
                   },
+                  config: propertiesSchema,
                 },
+                required: ["serviceId", "config"],
               };
             }
 
