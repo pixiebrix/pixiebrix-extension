@@ -106,10 +106,15 @@ class ExtensionPagePlatform extends PlatformBase {
       return performConfiguredRequestInBackground(
         integrationConfig,
         requestConfig,
+        // XXX: match the legacy behavior for now - always try to show the interactive login if possible
+        { interactiveLogin: true },
       );
     }
 
-    return performConfiguredRequest(integrationConfig, requestConfig);
+    // `interactiveLogin: false` because interactive logins are only required for token-based authentication
+    return performConfiguredRequest(integrationConfig, requestConfig, {
+      interactiveLogin: false,
+    });
   }
 }
 

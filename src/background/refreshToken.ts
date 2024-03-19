@@ -63,7 +63,8 @@ export default async function refreshPKCEToken(
       integrationConfig.id,
     );
     const { tokenUrl, client_id, client_secret } =
-      integration.getOAuth2Context(config);
+      // XXX: pass interactive: true to match the legacy behavior
+      integration.getOAuth2Context(config, { interactive: true });
 
     // https://axios-http.com/docs/urlencoded
     const params = new URLSearchParams();

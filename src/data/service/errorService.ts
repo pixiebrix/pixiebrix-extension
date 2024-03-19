@@ -31,7 +31,11 @@ import {
 } from "@/data/service/requestErrorUtils";
 import { type ErrorItem } from "@/types/contract";
 import { expectContext } from "@/utils/expectContext";
-import { BusinessError, CancelError } from "@/errors/businessErrors";
+import {
+  BusinessError,
+  CancelError,
+  RequestSupersededError,
+} from "@/errors/businessErrors";
 import { type SerializedError } from "@/types/messengerTypes";
 import { type SemVerString } from "@/types/registryTypes";
 import { type MessageContext } from "@/types/loggerTypes";
@@ -103,6 +107,17 @@ export async function selectExtraContext(
 }
 
 /**
+ * Returns true if the error should be ignored for error telemetry purposes.
+ */
+export function shouldIgnoreError(error: Error): boolean {
+  // Cannot rely on subclassing due to serialization/deserialization across messenger boundaries
+  return (
+    hasSpecificErrorCause(error, CancelError) ||
+    hasSpecificErrorCause(error, RequestSupersededError)
+  );
+}
+
+/**
  * Report to the PixieBrix error telemetry service
  * @see reportToApplicationErrorTelemetry
  */
@@ -123,7 +138,7 @@ export async function reportToErrorService(
     return;
   }
 
-  if (hasSpecificErrorCause(error, CancelError)) {
+  if (shouldIgnoreError(error)) {
     return;
   }
 

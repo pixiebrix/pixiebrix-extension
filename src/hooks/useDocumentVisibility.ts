@@ -15,21 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useEventListener from "./useEventListener";
+import { useSyncExternalStore } from "use-sync-external-store/shim";
 
-/**
- * Basic keyboard shortcut hook. If we introduce more shortcuts, we should consider using a library.
- * @param code the key code, e.g., "F5"
- * @param callback the callback to call when the key is pressed.
- */
-function useKeyboardShortcut(code: string, callback: () => void): void {
-  const handleShortcut = (event: KeyboardEvent) => {
-    if (event.code === code) {
-      callback();
-    }
+function subscribe(callback: VoidFunction) {
+  document.addEventListener("visibilitychange", callback);
+
+  return () => {
+    document.removeEventListener("visibilitychange", callback);
   };
-
-  useEventListener(document, "keydown", handleShortcut);
 }
 
-export default useKeyboardShortcut;
+function getSnapshot() {
+  return !document.hidden;
+}
+
+export default function useDocumentVisibility(): boolean {
+  return useSyncExternalStore(subscribe, getSnapshot);
+}

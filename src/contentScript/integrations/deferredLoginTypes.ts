@@ -15,21 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useEventListener from "./useEventListener";
+import type {
+  Integration,
+  SanitizedIntegrationConfig,
+} from "@/integrations/integrationTypes";
 
 /**
- * Basic keyboard shortcut hook. If we introduce more shortcuts, we should consider using a library.
- * @param code the key code, e.g., "F5"
- * @param callback the callback to call when the key is pressed.
+ * An interactive login that's being deferred until the user initiates the login.
+ * @since 1.8.11
  */
-function useKeyboardShortcut(code: string, callback: () => void): void {
-  const handleShortcut = (event: KeyboardEvent) => {
-    if (event.code === code) {
-      callback();
-    }
-  };
-
-  useEventListener(document, "keydown", handleShortcut);
-}
-
-export default useKeyboardShortcut;
+export type DeferredLogin = {
+  /**
+   * Integration metadata to display in the UI.
+   */
+  integration: Pick<Integration, "name">;
+  /**
+   * Configuration for the integration.
+   */
+  config: SanitizedIntegrationConfig;
+};

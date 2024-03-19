@@ -60,6 +60,17 @@ export class CancelError extends BusinessError {
   }
 }
 
+/**
+ * Error that a request was superseded by another request. In practice, will be because user needs to log in.
+ */
+export class RequestSupersededError extends CancelError {
+  override name = "RequestSupersededError";
+
+  constructor(message?: string) {
+    super(message ?? "Request superseded");
+  }
+}
+
 export class NoRendererError extends BusinessError {
   override name = "NoRendererError";
 

@@ -92,16 +92,16 @@ export async function getPartnerPrincipals(): Promise<PartnerPrincipal[]> {
  * calling this method.
  */
 export async function launchAuthIntegration({
-  serviceId,
+  integrationId,
 }: {
-  serviceId: RegistryId;
+  integrationId: RegistryId;
 }): Promise<void> {
   expectContext("background");
 
-  const service = await serviceRegistry.lookup(serviceId);
+  const service = await serviceRegistry.lookup(integrationId);
 
   await serviceLocator.refreshLocal();
-  const allAuths = await serviceLocator.locateAllForService(serviceId);
+  const allAuths = await serviceLocator.locateAllForService(integrationId);
   const localAuths = allAuths.filter((x) => !x.proxy);
 
   if (localAuths.length === 0) {
@@ -115,9 +115,9 @@ export async function launchAuthIntegration({
   // `launchOAuth2Flow` expects the raw auth. In the case of CONTROL_ROOM_OAUTH_SERVICE_ID, they'll be the same
   // because it doesn't have any secrets.
   const config = await serviceLocator.findIntegrationConfig(localAuths[0].id);
-  const data = await launchOAuth2Flow(service, config);
+  const data = await launchOAuth2Flow(service, config, { interactive: true });
 
-  if (serviceId === CONTROL_ROOM_OAUTH_INTEGRATION_ID) {
+  if (integrationId === CONTROL_ROOM_OAUTH_INTEGRATION_ID) {
     // Hard-coding headers for now. In the future, will want to add support for defining in the service definition.
 
     if (isEmpty(config.config.controlRoomUrl)) {
@@ -171,7 +171,7 @@ export async function launchAuthIntegration({
     });
   } else {
     throw new Error(
-      `Support for login with integration not implemented: ${serviceId}`,
+      `Support for login with integration not implemented: ${integrationId}`,
     );
   }
 }

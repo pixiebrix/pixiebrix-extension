@@ -15,21 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { renderHook } from "@testing-library/react-hooks";
 import useEventListener from "./useEventListener";
 
-/**
- * Basic keyboard shortcut hook. If we introduce more shortcuts, we should consider using a library.
- * @param code the key code, e.g., "F5"
- * @param callback the callback to call when the key is pressed.
- */
-function useKeyboardShortcut(code: string, callback: () => void): void {
-  const handleShortcut = (event: KeyboardEvent) => {
-    if (event.code === code) {
-      callback();
-    }
-  };
+test("useEventListener", () => {
+  const mockElement = document.createElement("div");
+  const mockEvent = new Event("click");
+  const mockHandler = jest.fn();
 
-  useEventListener(document, "keydown", handleShortcut);
-}
+  renderHook(() => {
+    useEventListener(mockElement, "click", mockHandler);
+  });
+  mockElement.dispatchEvent(mockEvent);
 
-export default useKeyboardShortcut;
+  expect(mockHandler).toHaveBeenCalledTimes(1);
+  expect(mockHandler).toHaveBeenCalledWith(mockEvent);
+});

@@ -15,21 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useEventListener from "./useEventListener";
+import { BusinessError } from "@/errors/businessErrors";
 
 /**
- * Basic keyboard shortcut hook. If we introduce more shortcuts, we should consider using a library.
- * @param code the key code, e.g., "F5"
- * @param callback the callback to call when the key is pressed.
+ * Thrown when an interactive login is required to proceed but is not available, e.g., for use with
+ * `identity.launchWebAuthFlow`
+ * https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/identity/launchWebAuthFlow#interactive
+ * @since 1.8.11
  */
-function useKeyboardShortcut(code: string, callback: () => void): void {
-  const handleShortcut = (event: KeyboardEvent) => {
-    if (event.code === code) {
-      callback();
-    }
-  };
+export class InteractiveLoginRequiredError extends BusinessError {
+  override name = "InteractiveLoginRequiredError";
 
-  useEventListener(document, "keydown", handleShortcut);
+  constructor(message: string, { cause }: { cause?: unknown } = {}) {
+    super(message ?? "An interactive login is required", { cause });
+  }
 }
-
-export default useKeyboardShortcut;

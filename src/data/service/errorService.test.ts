@@ -15,23 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BusinessError } from "@/errors/businessErrors";
+import {
+  BusinessError,
+  CancelError,
+  RequestSupersededError,
+} from "@/errors/businessErrors";
+import { shouldIgnoreError } from "@/data/service/errorService";
 import { serializeError } from "serialize-error";
 import { InteractiveLoginRequiredError } from "@/errors/authErrors";
-import { isSpecificError } from "@/errors/errorHelpers";
 
-describe("BusinessError", () => {
-  it("records cause", () => {
-    const cause = new Error("Pylon Error");
-    const error = new BusinessError("You Must Construct Additional Pylons", {
-      cause,
-    });
-    expect(serializeError(error).cause).toStrictEqual(serializeError(cause));
-  });
-});
+describe("shouldIgnoreError", () => {
+  it.each([CancelError, RequestSupersededError])(
+    "should ignore: %s",
+    (CustomError) => {
+      expect(shouldIgnoreError(new CustomError())).toBeTrue();
+      expect(
+        shouldIgnoreError(serializeError(new CustomError() as any)),
+      ).toBeTrue();
+    },
+  );
 
-test("is business error", () => {
-  const error = new InteractiveLoginRequiredError("message");
-  expect(isSpecificError(error, BusinessError)).toBeTrue();
-  expect(isSpecificError(serializeError(error), BusinessError)).toBeTrue();
+  it.each([BusinessError, Error, InteractiveLoginRequiredError])(
+    "should not ignore: %s",
+    (CustomError) => {
+      expect(shouldIgnoreError(new CustomError("test message"))).toBeFalse();
+      expect(
+        shouldIgnoreError(
+          serializeError(new CustomError("test message") as any),
+        ),
+      ).toBeFalse();
+    },
+  );
 });
