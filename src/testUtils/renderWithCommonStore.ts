@@ -54,6 +54,8 @@ const renderHookWithWrappers = createRenderHookWithWrappers(
 
 // eslint-disable-next-line import/export -- re-export RTL
 export * from "@testing-library/react";
+
+/** @knip Keep for consistency of API with other render helper modules */
 // eslint-disable-next-line import/export -- override render
 export { renderWithWrappers as render };
 export { renderHookWithWrappers as renderHook };
