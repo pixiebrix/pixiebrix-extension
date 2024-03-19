@@ -16,10 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { diff as DiffEditorSync } from "react-ace";
+
 import "ace-builds/src-noconflict/mode-yaml";
 import "ace-builds/src-noconflict/theme-chrome";
 
 /**
  * Bundles DiffEditor. Use "./DiffEditor.tsx" for dynamic import.
  */
-export { diff as default } from "react-ace";
+// eslint-disable-next-line unicorn/prefer-export-from -- Jest ESM-to-CJS doesn't support this
+export default DiffEditorSync;
