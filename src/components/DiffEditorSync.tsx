@@ -22,5 +22,4 @@ import "ace-builds/src-noconflict/theme-chrome";
 /**
  * Bundles DiffEditor. Use "./DiffEditor.tsx" for dynamic import.
  */
-
 export { diff as default } from "react-ace";
