@@ -31,16 +31,69 @@ import { BrickABC } from "@/types/brickTypes";
 import { validateRegistryId } from "@/types/helpers";
 import integrationRegistry from "@/integrations/registry";
 import { fromJS } from "@/integrations/UserDefinedIntegration";
-import { keyAuthIntegrationDefinitionFactory } from "@/testUtils/factories/integrationFactories";
+import {
+  keyAuthIntegrationDefinitionFactory,
+  sanitizedIntegrationConfigFactory,
+} from "@/testUtils/factories/integrationFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { ContextError } from "@/errors/genericErrors";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
+import type {
+  SanitizedConfig,
+  SanitizedIntegrationConfig,
+} from "@/integrations/integrationTypes";
+import { toExpression } from "@/utils/expressionUtils";
+import { services } from "@/background/messenger/strict/api";
+import apiVersionOptions from "@/runtime/apiVersionOptions";
+
+const locateMock = jest.mocked(services.locate);
 
 beforeEach(() => {
   integrationRegistry.clear();
   brickRegistry.clear();
   brickRegistry.register([echoBrick, contextBrick]);
+});
+
+class IntegrationBrick extends BrickABC {
+  static BRICK_ID = validateRegistryId("test/integration");
+  constructor() {
+    super(IntegrationBrick.BRICK_ID, "Integration Brick");
+  }
+
+  inputSchema = propertiesToSchema(
+    {
+      config: {
+        $ref: "https://app.pixiebrix.com/schemas/services/@scope/collection/name",
+      },
+    },
+    ["config"],
+  );
+
+  async run(args: unknown) {
+    return args;
+  }
+}
+
+const integrationDefinition = keyAuthIntegrationDefinitionFactory({
+  metadata: metadataFactory({
+    id: validateRegistryId("@scope/collection/name"),
+  }),
+  inputSchema: {
+    $schema: "https://json-schema.org/draft/2019-09/schema#",
+    type: "object",
+    properties: {
+      apiKey: {
+        $ref: "https://app.pixiebrix.com/schemas/key#",
+        title: "API Key",
+      },
+      baseURL: {
+        type: "string",
+      },
+    },
+    required: ["apiKey", "baseURL"],
+  },
 });
 
 describe("apiVersion: v1", () => {
@@ -127,61 +180,55 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
     });
   });
 
-  test("validate integration configuration", async () => {
-    class IntegrationBrick extends BrickABC {
-      static BRICK_ID = validateRegistryId("test/integration");
-      constructor() {
-        super(IntegrationBrick.BRICK_ID, "Integration Brick");
-      }
-
-      inputSchema = propertiesToSchema(
-        {
-          config: {
-            $ref: "https://app.pixiebrix.com/schemas/services/@scope/collection/name",
-          },
-        },
-        ["config"],
-      );
-
-      async run() {}
-    }
-
-    const integrationDefinition = keyAuthIntegrationDefinitionFactory({
-      metadata: metadataFactory({
-        id: validateRegistryId("@scope/collection/name"),
-      }),
-      inputSchema: {
-        $schema: "https://json-schema.org/draft/2019-09/schema#",
-        type: "object",
-        properties: {
-          apiKey: {
-            $ref: "https://app.pixiebrix.com/schemas/key#",
-            title: "API Key",
-          },
-          baseURL: {
-            type: "string",
-          },
-        },
-        required: ["apiKey", "baseURL"],
-      },
-    });
+  async function testConfig(
+    config: SanitizedIntegrationConfig,
+    apiVersion: ApiVersion,
+  ) {
+    locateMock.mockResolvedValue(config);
 
     integrationRegistry.register([fromJS(integrationDefinition)]);
     brickRegistry.register([new IntegrationBrick()]);
+
+    const serviceContext = await makeServiceContextFromDependencies([
+      {
+        integrationId: integrationDefinition.metadata.id,
+        configId: config.id,
+        outputKey: validateOutputKey("foo"),
+      },
+    ]);
 
     const pipeline = [
       {
         id: IntegrationBrick.BRICK_ID,
         config: {
-          config: {},
+          config: apiVersionOptions(apiVersion).explicitRender
+            ? toExpression("var", "@foo")
+            : "@foo",
         },
       },
     ];
 
+    return reducePipeline(
+      pipeline,
+      {
+        ...simpleInput({}),
+        serviceContext,
+      },
+      testOptions(apiVersion),
+    );
+  }
+
+  test("rejects invalid integration configuration", async () => {
+    const config = sanitizedIntegrationConfigFactory({
+      serviceId: integrationDefinition.metadata.id,
+      // Intentionally leave off both properties
+      config: {} as unknown as SanitizedConfig,
+    });
+
     let actualError: unknown;
 
     try {
-      await reducePipeline(pipeline, simpleInput({}), testOptions(apiVersion));
+      await testConfig(config, apiVersion);
     } catch (error) {
       actualError = error;
     }
@@ -205,13 +252,33 @@ describe.each([["v2"], ["v3"]])("apiVersion: %s", (apiVersion: ApiVersion) => {
         keywordLocation: "#/properties/config/$ref",
       },
       {
-        // No error for apiKey because secrets are stripped out
-        error: 'Instance does not have required property "baseURL".',
+        error: 'Property "config" does not match schema.',
         instanceLocation: "#/config",
+        keyword: "properties",
+        keywordLocation: "#/properties/config/$ref/properties",
+      },
+      // No error for apiKey because secrets are stripped out
+      {
+        error: 'Instance does not have required property "baseURL".',
+        instanceLocation: "#/config/config",
         keyword: "required",
-        keywordLocation: "#/properties/config/$ref/required",
+        keywordLocation: "#/properties/config/$ref/properties/config/required",
       },
     ]);
+  });
+
+  test("accepts valid integration configuration", async () => {
+    const config = sanitizedIntegrationConfigFactory({
+      serviceId: integrationDefinition.metadata.id,
+      config: {
+        apiKey: "not-a-real-key",
+        baseURL: "https://example.com",
+      } as unknown as SanitizedConfig,
+    });
+
+    await expect(testConfig(config, apiVersion)).resolves.toStrictEqual({
+      config,
+    });
   });
 
   test("validate multiple database configuration", async () => {

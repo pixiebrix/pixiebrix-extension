@@ -16,6 +16,7 @@
  */
 
 import {
+  dereference,
   validateBrickInputOutput,
   validatePackageDefinition,
 } from "@/validators/schemaValidator";
@@ -27,9 +28,17 @@ import emberJsReaderDefinition from "@contrib/readers/linkedin-organization-read
 import windowReader from "@contrib/readers/trello-card-reader.yaml";
 import reactReader from "@contrib/readers/redfin-reader.yaml";
 import { type Schema } from "@/types/schemaTypes";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { timestampFactory } from "@/testUtils/factories/stringFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
+import { keyAuthIntegrationDefinitionFactory } from "@/testUtils/factories/integrationFactories";
+import integrationRegistry from "@/integrations/registry";
+import { fromJS } from "@/integrations/UserDefinedIntegration";
+import { metadataFactory } from "@/testUtils/factories/metadataFactory";
+
+beforeEach(() => {
+  integrationRegistry.clear();
+});
 
 describe("validateKind", () => {
   test("can validate integration definition", async () => {
@@ -106,5 +115,90 @@ describe("validateBrickInputOutput", () => {
     const result = await validateBrickInputOutput(inputSchema, inputInstance);
     expect(result.errors).toHaveLength(0);
     expect(result.valid).toBe(true);
+  });
+});
+
+const integrationDefinition = keyAuthIntegrationDefinitionFactory({
+  metadata: metadataFactory({
+    id: validateRegistryId("@scope/collection/name"),
+  }),
+  inputSchema: {
+    $schema: "https://json-schema.org/draft/2019-09/schema#",
+    type: "object",
+    properties: {
+      apiKey: {
+        $ref: "https://app.pixiebrix.com/schemas/key#",
+        title: "API Key",
+      },
+      baseURL: {
+        type: "string",
+      },
+    },
+    required: ["apiKey", "baseURL"],
+  },
+});
+
+describe("dereference", () => {
+  test("can dereference and sanitize schema with an integration", async () => {
+    integrationRegistry.register([fromJS(integrationDefinition)]);
+
+    await expect(
+      dereference(
+        {
+          type: "object",
+          properties: {
+            service: {
+              $ref: "https://app.pixiebrix.com/schemas/services/@scope/collection/name",
+            },
+          },
+        },
+        {
+          sanitizeIntegrationDefinitions: true,
+        },
+      ),
+    ).resolves.toStrictEqual({
+      properties: {
+        service: {
+          $id: "https://app.pixiebrix.com/schemas/services/@scope/collection/name",
+          properties: {
+            // `apiKey` is stripped because sanitizeIntegrationDefinitions is true
+            baseURL: {
+              type: "string",
+            },
+          },
+          required: ["baseURL"],
+          type: "object",
+        },
+      },
+      type: "object",
+    });
+  });
+
+  test("can dereference schema without an integration", async () => {
+    integrationRegistry.register([fromJS(integrationDefinition)]);
+
+    await expect(
+      dereference(
+        {
+          type: "object",
+          properties: {
+            service: {
+              $ref: "https://app.pixiebrix.com/schemas/services/@scope/collection/name",
+            },
+          },
+        },
+        {
+          sanitizeIntegrationDefinitions: false,
+        },
+      ),
+    ).resolves.toStrictEqual({
+      properties: {
+        service: {
+          ...integrationDefinition.inputSchema,
+          $id: "https://app.pixiebrix.com/schemas/services/@scope/collection/name",
+        },
+      },
+      type: "object",
+    });
   });
 });
