@@ -44,6 +44,7 @@ import { getPageState } from "@/contentScript/messenger/strict/api";
 import { isEmpty } from "lodash";
 import { getSelectedLineVirtualElement } from "@/components/fields/schemaFields/widgets/varPopup/utils";
 import { inspectedTab } from "@/pageEditor/context/connection";
+import useEventListener from "@/hooks/useEventListener";
 
 const emptyVarMap = new VarMap();
 
@@ -175,19 +176,12 @@ const VarMenu: React.FunctionComponent<VarMenuProps> = ({
     [],
   );
 
-  useEffect(() => {
-    const handleClick = (event: MouseEvent) => {
-      const parent = rootElementRef.current?.parentElement;
-      if (parent && !parent.contains(event.target as Node)) {
-        onClose();
-      }
-    };
-
-    document.addEventListener("click", handleClick);
-    return () => {
-      document.removeEventListener("click", handleClick);
-    };
-  }, [onClose, rootElementRef]);
+  useEventListener(document, "click", (event: MouseEvent) => {
+    const parent = rootElementRef.current?.parentElement;
+    if (parent && !parent.contains(event.target as Node)) {
+      onClose();
+    }
+  });
 
   useEffect(() => {
     dispatch(editorActions.showVariablePopover());

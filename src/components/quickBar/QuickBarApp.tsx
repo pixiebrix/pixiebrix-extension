@@ -34,7 +34,7 @@ import {
   MAX_Z_INDEX,
   PIXIEBRIX_QUICK_BAR_CONTAINER_CLASS,
 } from "@/domConstants";
-import { useEventListener } from "@/hooks/useEventListener";
+import useEventListener from "@/hooks/useEventListener";
 import { Stylesheets } from "@/components/Stylesheets";
 import selection from "@/utils/selectionController";
 import focus from "@/utils/focusController";
@@ -70,7 +70,7 @@ export const QUICKBAR_EVENT_NAME = "pixiebrix-quickbar";
 function useAutoShow(): void {
   const { query } = useKBar();
 
-  useEventListener(QUICKBAR_EVENT_NAME, () => {
+  useEventListener(window, QUICKBAR_EVENT_NAME, () => {
     query.toggle();
   });
 

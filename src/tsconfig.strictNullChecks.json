@@ -435,6 +435,7 @@
     "./hooks/useDocumentVisibility.ts",
     "./hooks/useDocumentVisibility.test.ts",
     "./hooks/useEventListener.ts",
+    "./hooks/useEventListener.test.ts",
     "./hooks/useFlags.ts",
     "./hooks/useIsEnterpriseUser.ts",
     "./hooks/useIsMounted.ts",
