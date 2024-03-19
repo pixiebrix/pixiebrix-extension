@@ -118,28 +118,28 @@ describe("validateBrickInputOutput", () => {
   });
 });
 
-describe("dereference", () => {
-  test("can dereference schema with an integration", async () => {
-    const integrationDefinition = keyAuthIntegrationDefinitionFactory({
-      metadata: metadataFactory({
-        id: validateRegistryId("@scope/collection/name"),
-      }),
-      inputSchema: {
-        $schema: "https://json-schema.org/draft/2019-09/schema#",
-        type: "object",
-        properties: {
-          apiKey: {
-            $ref: "https://app.pixiebrix.com/schemas/key#",
-            title: "API Key",
-          },
-          baseURL: {
-            type: "string",
-          },
-        },
-        required: ["apiKey", "baseURL"],
+const integrationDefinition = keyAuthIntegrationDefinitionFactory({
+  metadata: metadataFactory({
+    id: validateRegistryId("@scope/collection/name"),
+  }),
+  inputSchema: {
+    $schema: "https://json-schema.org/draft/2019-09/schema#",
+    type: "object",
+    properties: {
+      apiKey: {
+        $ref: "https://app.pixiebrix.com/schemas/key#",
+        title: "API Key",
       },
-    });
+      baseURL: {
+        type: "string",
+      },
+    },
+    required: ["apiKey", "baseURL"],
+  },
+});
 
+describe("dereference", () => {
+  test("can dereference and sanitize schema with an integration", async () => {
     integrationRegistry.register([fromJS(integrationDefinition)]);
 
     await expect(
@@ -168,6 +168,34 @@ describe("dereference", () => {
           },
           required: ["baseURL"],
           type: "object",
+        },
+      },
+      type: "object",
+    });
+  });
+
+  test("can dereference schema without an integration", async () => {
+    integrationRegistry.register([fromJS(integrationDefinition)]);
+
+    await expect(
+      dereference(
+        {
+          type: "object",
+          properties: {
+            service: {
+              $ref: "https://app.pixiebrix.com/schemas/services/@scope/collection/name",
+            },
+          },
+        },
+        {
+          sanitizeIntegrationDefinitions: false,
+        },
+      ),
+    ).resolves.toStrictEqual({
+      properties: {
+        service: {
+          ...integrationDefinition.inputSchema,
+          $id: "https://app.pixiebrix.com/schemas/services/@scope/collection/name",
         },
       },
       type: "object",

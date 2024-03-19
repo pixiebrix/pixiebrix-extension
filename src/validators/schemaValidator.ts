@@ -112,6 +112,8 @@ function integrationResolverFactory({
           validateRegistryId(integrationId),
         );
 
+        let propertiesSchema = integrationDefinition.schema;
+
         if (sanitize) {
           const sanitizedProperties = pickBy(
             inputProperties(integrationDefinition.schema),
@@ -120,7 +122,7 @@ function integrationResolverFactory({
               x.$ref == null || !REF_SECRETS.includes(trimEnd(x.$ref, "#")),
           );
 
-          const propertiesSchema = {
+          propertiesSchema = {
             type: "object",
             // Strip out the properties containing secrets because those are excluded during runtime execution
             properties: sanitizedProperties,
@@ -128,47 +130,42 @@ function integrationResolverFactory({
               (x) => x in sanitizedProperties,
             ),
           };
-
-          switch (mode) {
-            case "properties": {
-              return {
-                // NOTE: including the $id cause duplicate schema errors when validating a dereferenced schema if the
-                // reference is used in multiple places. But including an $id is useful for preserving field toggling
-                // based on well-known schema $ids.
-                $id: file.url,
-                ...propertiesSchema,
-              };
-            }
-
-            case "configuration": {
-              return {
-                // NOTE: including the $id cause duplicate schema errors when validating a dereferenced schema if the
-                // reference is used in multiple places. But including an $id is useful for preserving field toggling
-                // based on well-known schema $ids.
-                $id: file.url,
-                type: "object",
-                properties: {
-                  serviceId: {
-                    type: "string",
-                    const: integrationId,
-                  },
-                  config: propertiesSchema,
-                },
-                required: ["serviceId", "config"],
-              };
-            }
-
-            default: {
-              const modeNever: never = mode;
-              throw new Error(`Unknown mode: ${modeNever}`);
-            }
-          }
         }
 
-        return {
-          ...integrationDefinition.schema,
-          $id: file.url,
-        };
+        switch (mode) {
+          case "properties": {
+            return {
+              ...propertiesSchema,
+              // NOTE: including the $id cause duplicate schema errors when validating a dereferenced schema if the
+              // reference is used in multiple places. But including an $id is useful for preserving field toggling
+              // based on well-known schema $ids.
+              $id: file.url,
+            };
+          }
+
+          case "configuration": {
+            return {
+              // NOTE: including the $id cause duplicate schema errors when validating a dereferenced schema if the
+              // reference is used in multiple places. But including an $id is useful for preserving field toggling
+              // based on well-known schema $ids.
+              $id: file.url,
+              type: "object",
+              properties: {
+                serviceId: {
+                  type: "string",
+                  const: integrationId,
+                },
+                config: propertiesSchema,
+              },
+              required: ["serviceId", "config"],
+            };
+          }
+
+          default: {
+            const modeNever: never = mode;
+            throw new Error(`Unknown mode: ${modeNever}`);
+          }
+        }
       } catch (error) {
         console.warn("Error resolving integration definition schema", error);
         // Don't block on lookup failure
