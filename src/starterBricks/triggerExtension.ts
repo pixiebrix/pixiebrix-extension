@@ -41,7 +41,7 @@ import { selectEventData } from "@/telemetry/deployments";
 import apiVersionOptions from "@/runtime/apiVersionOptions";
 import { collectAllBricks } from "@/bricks/util";
 import { mergeReaders } from "@/bricks/readers/readerUtils";
-import initialize from "@/vendors/initialize";
+import initialize from "@/vendors/jQueryInitialize";
 import pluralize from "@/utils/pluralize";
 import { PromiseCancelled } from "@/errors/genericErrors";
 import { BusinessError } from "@/errors/businessErrors";

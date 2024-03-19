@@ -17,34 +17,9 @@
 
 import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
-import axios from "axios";
 import { type JsonObject } from "type-fest";
 import { ensureJsonObject } from "@/utils/objectUtils";
-import { convertDataUrl } from "@/utils/parseDataUrl";
-
-// TODO: I think axios alone can handle all of this, or FileReader can handle both data and blob in a CSP-safe way
-async function getData(img: HTMLImageElement): Promise<ArrayBuffer> {
-  // Adapted from https://github.com/exif-js/exif-js/blob/master/exif.js#L384
-  if (/^data:/i.test(img.src)) {
-    // Data URI
-    return convertDataUrl(img.src, "ArrayBuffer");
-  }
-
-  if (/^blob:/i.test(img.src)) {
-    // Object URL
-    const blob = await fetch(img.src).then(async (r) => r.blob());
-    return blob.arrayBuffer();
-  }
-
-  const response = await axios.get<ArrayBuffer>(img.src, {
-    responseType: "arraybuffer",
-  });
-  if (response.status !== 200) {
-    throw new Error(`Error fetching image ${img.src}: ${response.statusText}`);
-  }
-
-  return response.data;
-}
+import { loadImageBinaryData } from "@/utils/imageUtils";
 
 export class ImageExifReader extends ReaderABC {
   override defaultOutputKey = "image";
@@ -65,7 +40,7 @@ export class ImageExifReader extends ReaderABC {
     const element = elementOrDocument as HTMLImageElement;
 
     if (element?.tagName === "IMG") {
-      const buffer = await getData(element);
+      const buffer = await loadImageBinaryData(element.src);
       // Ensure serializable output
       return ensureJsonObject(ExifReader.load(buffer));
     }

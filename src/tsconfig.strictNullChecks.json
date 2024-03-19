@@ -750,6 +750,7 @@
     "./utils/getOptionsArgForFieldValue.ts",
     "./utils/idbUtils.ts",
     "./utils/iframeUtils.ts",
+    "./utils/imageUtils.ts",
     "./utils/inference/inferSingleElementSelector.ts",
     "./utils/inference/selectorInference.ts",
     "./utils/inference/selectorInferenceUtils.ts",
@@ -789,12 +790,15 @@
     "./utils/variableUtils.ts",
     "./validators/formValidator.ts",
     "./validators/schemaValidator.ts",
-    "./vendors/AceEditor.tsx",
-    "./vendors/AceEditorSync.tsx",
-    "./vendors/DiffEditor.tsx",
-    "./vendors/DiffEditorSync.tsx",
+    "./components/AceEditor.tsx",
+    "./components/AceEditorSync.tsx",
+    "./components/DiffEditor.tsx",
+    "./components/DiffEditorSync.tsx",
     "./vendors/encodings.ts",
-    "./vendors/mixpanel.ts",
+    "./vendors/hoverintent.d.ts",
+    "./vendors/jQueryInitialize.d.ts",
+    "./vendors/mixpanelDetectBrowser.ts",
+    "./vendors/page-metadata-parser/parser.d.ts",
     "./vendors/pkce.ts",
     "./vendors/randomStringDetection/detector.ts",
     "./vendors/reactPerformanceTesting/constants/globalOption.ts",
@@ -807,7 +811,6 @@
     "./vendors/reactPerformanceTesting/utils/isMemoComponent.ts",
     "./vendors/reactPerformanceTesting/utils/pushTask.ts",
     "./vendors/reactPerformanceTesting/utils/shouldTrack.ts",
-    "./vendors/reactPerformanceTesting/utils/symbols.ts",
-    "./vendors/validateUuid.ts"
+    "./vendors/reactPerformanceTesting/utils/symbols.ts"
   ]
 }
