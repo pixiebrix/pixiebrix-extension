@@ -432,6 +432,8 @@
     "./hooks/useDebouncedEffect.ts",
     "./hooks/useDeriveAsyncState.ts",
     "./hooks/useDocumentSelection.ts",
+    "./hooks/useDocumentVisibility.ts",
+    "./hooks/useDocumentVisibility.test.ts",
     "./hooks/useEventListener.ts",
     "./hooks/useFlags.ts",
     "./hooks/useIsEnterpriseUser.ts",
