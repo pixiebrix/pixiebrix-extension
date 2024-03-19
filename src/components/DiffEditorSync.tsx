@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unassigned-import -- Automatic registration */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
@@ -15,12 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { diff as DiffEditorSync } from "react-ace";
-
 import "ace-builds/src-noconflict/mode-yaml";
 import "ace-builds/src-noconflict/theme-chrome";
 
 /**
  * Bundles DiffEditor. Use "./DiffEditor.tsx" for dynamic import.
  */
-export default DiffEditorSync;
+
+export { diff as default } from "react-ace";

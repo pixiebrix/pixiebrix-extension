@@ -17,7 +17,7 @@
 
 // Keep in order so precedence is preserved
 import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
+import "@/utils/global.scss";
 import "@/utils/layout.scss";
 import "./sidebar.scss";
 
