@@ -239,9 +239,11 @@ function getCursorPositionReference(): Nullishable<VirtualElement | Element> {
   }
 
   // Allows us to measure where the selection is on the page relative to the viewport
-  const range = window.getSelection()?.getRangeAt(0);
+  const selection = window.getSelection();
+  const range =
+    selection && selection.rangeCount > 0 && selection.getRangeAt(0);
 
-  if (range == null) {
+  if (!range) {
     return;
   }
 
@@ -342,7 +344,9 @@ function isTextSelected(target: unknown): boolean {
   }
 
   if (isContentEditableElement(target)) {
-    const range = window.getSelection()?.getRangeAt(0);
+    const selection = window.getSelection();
+    const range =
+      selection && selection.rangeCount > 0 && selection.getRangeAt(0);
     return range != null && range.toString().length > 0;
   }
 

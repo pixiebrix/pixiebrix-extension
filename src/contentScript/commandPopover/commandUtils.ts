@@ -80,9 +80,9 @@ export async function replaceAtCommand({
 
   // Content Editable
   const selection = window.getSelection();
-  const range = selection?.getRangeAt(0);
+  const range = selection.rangeCount > 0 && selection?.getRangeAt(0);
 
-  if (range?.startContainer.nodeType === Node.TEXT_NODE) {
+  if (range && range?.startContainer.nodeType === Node.TEXT_NODE) {
     if (range.startOffset !== range.endOffset) {
       // Shouldn't happen in practice because commandController hides the popover on selection
       throw new Error("Expected a single cursor position");

@@ -207,7 +207,8 @@ function getPositionReference(selection: Selection): VirtualElement | Element {
 async function updatePosition(): Promise<void> {
   const selection = window.getSelection();
 
-  if (!selectionTooltip || !selection) {
+  if (!selectionTooltip || !selection || selection.rangeCount === 0) {
+    hideTooltip();
     // Guard against race condition
     return;
   }
