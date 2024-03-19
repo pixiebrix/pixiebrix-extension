@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unassigned-import -- Automatic registration */
 /*
  * Copyright (C) 2024 PixieBrix, Inc.
  *
@@ -15,16 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AceEditorSync from "react-ace";
+import { diff as DiffEditorSync } from "react-ace";
 
 import "ace-builds/src-noconflict/mode-yaml";
 import "ace-builds/src-noconflict/theme-chrome";
-import "ace-builds/src-noconflict/mode-javascript";
-import "ace-builds/src-noconflict/theme-chrome";
-import "ace-builds/src-noconflict/ext-searchbox";
-import "ace-builds/src-noconflict/ext-language_tools";
 
 /**
- * Bundles AceEditor. Use "./AceEditor.tsx" for dynamic import.
+ * Bundles DiffEditor. Use "./DiffEditor.tsx" for dynamic import.
  */
-export default AceEditorSync;
+// eslint-disable-next-line unicorn/prefer-export-from -- Jest ESM-to-CJS doesn't support this
+export default DiffEditorSync;

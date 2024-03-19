@@ -17,13 +17,13 @@
 
 import { valid as semVerValid } from "semver";
 import { startsWith } from "lodash";
-import validUuidRegex from "@/vendors/validateUuid";
+
 import {
   type Timestamp,
   type TimedSequence,
   type UUID,
 } from "@/types/stringTypes";
-import { v4 } from "uuid";
+import { v4, validate } from "uuid";
 import {
   INNER_SCOPE,
   type RegistryId,
@@ -66,7 +66,7 @@ export function uuidv4(): UUID {
 }
 
 export function isUUID(uuid: string): uuid is UUID {
-  return validUuidRegex.test(uuid);
+  return validate(uuid);
 }
 
 /**
