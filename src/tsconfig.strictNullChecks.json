@@ -726,6 +726,7 @@
     "./urlConstants.ts",
     "./utils/ConsoleLogger.ts",
     "./utils/SimpleEventTarget.ts",
+    "./utils/a11yUtils.ts",
     "./utils/arrayUtils.ts",
     "./utils/asyncStateUtils.ts",
     "./utils/browserUtils.ts",

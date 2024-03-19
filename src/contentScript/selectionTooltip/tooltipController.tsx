@@ -36,6 +36,7 @@ import { expectContext } from "@/utils/expectContext";
 import { onContextInvalidated } from "webext-events";
 import { isNativeField } from "@/types/inputTypes";
 import { onAbort, ReusableAbortController } from "abort-utils";
+import { prefersReducedMotion } from "@/utils/a11yUtils";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
@@ -56,23 +57,24 @@ async function showTooltip(): Promise<void> {
 
   selectionTooltip ??= createTooltip();
 
-  selectionTooltip.setAttribute("aria-hidden", "false");
-  selectionTooltip.style.setProperty("display", "block");
-
   // Check visibility to avoid re-animating the tooltip fade in as selection changes
   const isShowing = selectionTooltip.checkVisibility();
   if (!isShowing) {
-    selectionTooltip.animate(
-      [
-        { opacity: 0, margin: "4px 0" },
-        { opacity: 1, margin: "0" },
-      ],
-      {
-        easing: "ease-in-out",
-        duration: 150,
-        fill: "forwards",
-      },
-    );
+    selectionTooltip.setAttribute("aria-hidden", "false");
+    selectionTooltip.style.setProperty("display", "block");
+    if (!prefersReducedMotion()) {
+      selectionTooltip.animate(
+        [
+          { opacity: 0, margin: "4px 0" },
+          { opacity: 1, margin: "0" },
+        ],
+        {
+          easing: "ease-in-out",
+          duration: 150,
+          fill: "forwards",
+        },
+      );
+    }
   }
 
   // For now hide the tooltip on document/element scroll to avoid gotchas with floating UI's `position: fixed` strategy.
