@@ -71,6 +71,7 @@ const knipConfig = {
     // Referenced in global.d.ts
     "@total-typescript/ts-reset",
     // Referenced in scss files
+    "bootstrap",
     "compass-mixins",
     // Not getting detected by webpack plugin for .storybook/main.js
     "style-loader",

@@ -22,6 +22,8 @@ import RjsfSubmitContext from "@/components/formBuilder/RjsfSubmitContext";
 import userEvent from "@testing-library/user-event";
 
 describe("TextAreaWidget", () => {
+  const onChangeMock = jest.fn();
+
   const defaultProps = {
     id: "rjsf-textarea",
     name: "rjsf-textarea",
@@ -36,13 +38,17 @@ describe("TextAreaWidget", () => {
     readonly: false,
     autofocus: false,
     multiple: false,
-    onChange: jest.fn(),
+    onChange: onChangeMock,
     onBlur: jest.fn(),
     onFocus: jest.fn(),
     WidgetProps: {},
     formContext: {},
     registry: {} as any,
   };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   test("renders the textarea--label provided by FieldTemplate", () => {
     render(<TextAreaWidget {...defaultProps} />, {
@@ -63,7 +69,7 @@ describe("TextAreaWidget", () => {
     expect(screen.queryByLabelText(defaultProps.label)).not.toBeInTheDocument();
   });
 
-  test("it submits the form when enter key is pressed", async () => {
+  test("submits the form when enter key is pressed", async () => {
     const submitForm = jest.fn();
     render(
       <TextAreaWidget {...defaultProps} options={{ submitOnEnter: true }} />,
@@ -82,7 +88,7 @@ describe("TextAreaWidget", () => {
     expect(submitForm).toHaveBeenCalledOnce();
   });
 
-  test("it does not submit the form when enter key is pressed alongside a modifier key", async () => {
+  test("does not submit the form when enter key is pressed alongside a modifier key", async () => {
     const submitForm = jest.fn();
     render(
       <TextAreaWidget {...defaultProps} options={{ submitOnEnter: true }} />,
@@ -101,5 +107,83 @@ describe("TextAreaWidget", () => {
     await userEvent.keyboard("{Shift>}{Enter}{/Shift}");
     await userEvent.keyboard("{Alt>}{Enter}{/Alt}");
     expect(submitForm).not.toHaveBeenCalled();
+  });
+
+  describe("submit toolbar", () => {
+    test("renders the submit toolbar when submitToolbar is true", async () => {
+      render(
+        <TextAreaWidget
+          {...defaultProps}
+          options={{ submitToolbar: { show: true } }}
+        />,
+        {
+          wrapper: ({ children }) => (
+            <RjsfSubmitContext.Provider
+              value={{
+                async submitForm() {
+                  jest.fn();
+                },
+              }}
+            >
+              {children}
+            </RjsfSubmitContext.Provider>
+          ),
+        },
+      );
+
+      expect(
+        screen.getByRole("button", { name: /clear/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /submit/i }),
+      ).toBeInTheDocument();
+    });
+
+    test("clicking the clear button clears all text", async () => {
+      render(
+        <TextAreaWidget
+          {...defaultProps}
+          options={{ submitToolbar: { show: true } }}
+        />,
+        {
+          wrapper: ({ children }) => (
+            <RjsfSubmitContext.Provider
+              value={{
+                async submitForm() {
+                  jest.fn();
+                },
+              }}
+            >
+              {children}
+            </RjsfSubmitContext.Provider>
+          ),
+        },
+      );
+
+      await userEvent.click(screen.getByRole("button", { name: /clear/i }));
+      expect(onChangeMock).toHaveBeenCalledWith("");
+    });
+
+    test("clicking the submit button submits the form", async () => {
+      const submitForm = jest.fn();
+      render(
+        <TextAreaWidget
+          {...defaultProps}
+          options={{
+            submitToolbar: {
+              show: true,
+            },
+          }}
+        />,
+        {
+          wrapper: ({ children }) => (
+            <form onSubmit={submitForm}>{children}</form>
+          ),
+        },
+      );
+
+      await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+      expect(submitForm).toHaveBeenCalledOnce();
+    });
   });
 });

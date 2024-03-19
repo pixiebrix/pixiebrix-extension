@@ -24,6 +24,16 @@
 @import "@/themes/colors.scss";
 
 .root {
+  // All widgets should start with zero style
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/7670
+  all: initial;
+
+  // Avoid dark scrollbar on dark websites
+  // https://github.com/pixiebrix/pixiebrix-extension/pull/7699
+  color-scheme: light;
+
+  // Set specific height because 1) users will generally have 3+ commands, and 2) we want consistent height
+  // for empty, error, and running states
   height: 200px;
   width: 240px;
   display: flex;
@@ -115,7 +125,7 @@
 
   &__preview {
     margin-top: 3px;
-    color: $N600;
+    color: $S600;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

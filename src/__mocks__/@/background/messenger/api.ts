@@ -31,17 +31,6 @@ export const pong = jest.fn(() => ({
 }));
 
 export const clearServiceCache = jest.fn();
-export const sheets = {
-  isLoggedIn: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  getAllSpreadsheets: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  getSpreadsheet: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  getTabNames: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  getSheetProperties: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  getHeaders: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  getAllRows: jest.fn().mockRejectedValue(new Error("Not implemented")),
-  createTab: getMethod("GOOGLE_SHEETS_CREATE_TAB", bg),
-  appendRows: getMethod("GOOGLE_SHEETS_APPEND_ROWS", bg),
-};
 
 export const dataStore = {
   get: jest.fn().mockRejectedValue(new Error("Not implemented in mock")),

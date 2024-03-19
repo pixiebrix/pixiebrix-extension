@@ -17,7 +17,7 @@
 
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { Stylesheets } from "@/components/Stylesheets";
-import bootstrap from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
+import bootstrap from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
 import React from "react";
 import styles from "./FloatingActions.scss?loadAsUrl";
 import ReactDOM from "react-dom";
