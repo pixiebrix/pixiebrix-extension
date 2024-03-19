@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import AceEditorSync from "react-ace";
+
 import "ace-builds/src-noconflict/mode-yaml";
 import "ace-builds/src-noconflict/theme-chrome";
 import "ace-builds/src-noconflict/mode-javascript";
@@ -25,5 +27,5 @@ import "ace-builds/src-noconflict/ext-language_tools";
 /**
  * Bundles AceEditor. Use "./AceEditor.tsx" for dynamic import.
  */
-
-export { default } from "react-ace";
+// eslint-disable-next-line unicorn/prefer-export-from -- Jest ESM-to-CJS doesn't support this
+export default AceEditorSync;
