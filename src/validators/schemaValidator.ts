@@ -133,21 +133,18 @@ function integrationResolverFactory({
         }
 
         switch (mode) {
+          // NOTE: including the $id cause duplicate schema errors when validating a dereferenced schema if the
+          // reference is used in multiple places. But including an $id is useful for preserving field toggling
+          // based on well-known schema $ids and it's safe to use in our code to convert JSON Schema to Yup schema.
           case "properties": {
             return {
               ...propertiesSchema,
-              // NOTE: including the $id cause duplicate schema errors when validating a dereferenced schema if the
-              // reference is used in multiple places. But including an $id is useful for preserving field toggling
-              // based on well-known schema $ids.
               $id: file.url,
             };
           }
 
           case "configuration": {
             return {
-              // NOTE: including the $id cause duplicate schema errors when validating a dereferenced schema if the
-              // reference is used in multiple places. But including an $id is useful for preserving field toggling
-              // based on well-known schema $ids.
               $id: file.url,
               type: "object",
               properties: {
