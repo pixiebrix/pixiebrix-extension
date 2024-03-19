@@ -292,7 +292,7 @@ export interface Integration<
   TConfig extends IntegrationConfigArgs = IntegrationConfigArgs,
   TSanitized = TConfig & { _sanitizedConfigBrand: null },
   TSecret = TConfig & { _integrationConfigBrand: null },
-  TOAuth extends AuthData = AuthData,
+  TAuthData extends AuthData = AuthData,
 > extends Metadata {
   schema: Schema;
 
@@ -318,14 +318,17 @@ export interface Integration<
 
   getOrigins: (integrationConfig: TSanitized) => string[];
 
-  getOAuth2Context: (integrationConfig: TSecret) => OAuth2Context | undefined;
+  getOAuth2Context: (
+    integrationConfig: TSecret,
+    options: { interactive: boolean },
+  ) => OAuth2Context | undefined;
 
   getTokenContext: (integrationConfig: TSecret) => TokenContext | undefined;
 
   authenticateRequest: (
     integrationConfig: TSecret,
     requestConfig: AxiosRequestConfig,
-    oauthConfig?: TOAuth,
+    oauthConfig?: TAuthData,
   ) => AxiosRequestConfig;
 }
 
@@ -334,7 +337,7 @@ export interface Integration<
  */
 export abstract class IntegrationABC<
   TConfig extends IntegrationConfigArgs = IntegrationConfigArgs,
-  TOAuth extends AuthData = AuthData,
+  TAuthData extends AuthData = AuthData,
 > implements Integration<TConfig>
 {
   abstract schema: Schema;
@@ -376,6 +379,6 @@ export abstract class IntegrationABC<
   abstract authenticateRequest(
     integrationConfig: TConfig & SecretBrand,
     requestConfig: AxiosRequestConfig,
-    authConfig?: TOAuth,
+    authData?: TAuthData,
   ): AxiosRequestConfig;
 }

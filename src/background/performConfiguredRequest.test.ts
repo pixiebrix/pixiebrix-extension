@@ -124,22 +124,30 @@ const proxiedIntegrationConfig = sanitizedIntegrationConfigFactory({
 describe("unauthenticated direct requests", () => {
   it("makes an unauthenticated request", async () => {
     axiosMock.onAny().reply(200, {});
-    const { status } = await performConfiguredRequest(null, requestConfig);
+    const { status } = await performConfiguredRequest(null, requestConfig, {
+      interactiveLogin: false,
+    });
     expect(status).toBe(200);
   });
 
   it("requires absolute URL for unauthenticated requests", async () => {
     await expect(async () => {
-      await performConfiguredRequest(null, {
-        url: "api/foo/",
-      });
+      await performConfiguredRequest(
+        null,
+        {
+          url: "api/foo/",
+        },
+        { interactiveLogin: false },
+      );
     }).rejects.toThrow(/expected absolute URL for request without integration/);
   });
 
   it("handles remote internal server error", async () => {
     axiosMock.onAny().reply(500);
 
-    const request = performConfiguredRequest(null, requestConfig);
+    const request = performConfiguredRequest(null, requestConfig, {
+      interactiveLogin: false,
+    });
     await expect(request).rejects.toThrow(RemoteServiceError);
     await expect(request).rejects.toHaveProperty("cause.response.status", 500);
   });
@@ -162,6 +170,7 @@ describe("authenticated direct requests", () => {
     const response = await performConfiguredRequest(
       directIntegrationConfig,
       requestConfig,
+      { interactiveLogin: false },
     );
     expect(response.status).toBe(200);
   });
@@ -172,7 +181,9 @@ describe("authenticated direct requests", () => {
       .mockResolvedValue(null);
 
     await expect(async () =>
-      performConfiguredRequest(directIntegrationConfig, requestConfig),
+      performConfiguredRequest(directIntegrationConfig, requestConfig, {
+        interactiveLogin: false,
+      }),
     ).rejects.toThrow("Local integration configuration not found:");
   });
 
@@ -182,6 +193,7 @@ describe("authenticated direct requests", () => {
     const request = performConfiguredRequest(
       directIntegrationConfig,
       requestConfig,
+      { interactiveLogin: false },
     );
 
     await expect(request).rejects.toThrow(ContextError);
@@ -204,6 +216,7 @@ describe("proxy service requests", () => {
     const { status, data } = await performConfiguredRequest(
       proxiedIntegrationConfig,
       requestConfig,
+      { interactiveLogin: false },
     );
     expect(JSON.parse(String(axiosMock.history.post[0].data))).toEqual({
       ...requestConfig,
@@ -229,6 +242,7 @@ describe("proxy service requests", () => {
         const request = performConfiguredRequest(
           proxiedIntegrationConfig,
           requestConfig,
+          { interactiveLogin: false },
         );
 
         await expect(request).rejects.toThrow(ContextError);
@@ -249,6 +263,7 @@ describe("proxy service requests", () => {
     const request = performConfiguredRequest(
       proxiedIntegrationConfig,
       requestConfig,
+      { interactiveLogin: false },
     );
 
     await expect(request).rejects.toThrow(ContextError);
@@ -270,6 +285,7 @@ describe("proxy service requests", () => {
     const request = performConfiguredRequest(
       proxiedIntegrationConfig,
       requestConfig,
+      { interactiveLogin: false },
     );
 
     await expect(request).rejects.toThrow(ContextError);
@@ -302,6 +318,7 @@ describe("Retry token request", () => {
       const response = performConfiguredRequest(
         directTokenIntegrationConfig,
         requestConfig,
+        { interactiveLogin: false },
       );
       await expect(response).rejects.toThrow(ContextError);
       // Once on the initial call b/c no cached auth data, and once for the retry
@@ -316,6 +333,7 @@ describe("Retry token request", () => {
     const response = performConfiguredRequest(
       directTokenIntegrationConfig,
       requestConfig,
+      { interactiveLogin: false },
     );
     await expect(response).rejects.toThrow(ContextError);
     // Once on the initial call b/c no cached auth data, and once for the retry

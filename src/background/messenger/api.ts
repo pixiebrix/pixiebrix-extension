@@ -69,6 +69,7 @@ export const performConfiguredRequestInBackground = getMethod(
 ) as <TData>(
   integrationConfig: SanitizedIntegrationConfig | null,
   requestConfig: AxiosRequestConfig,
+  options: { interactiveLogin: boolean },
 ) => Promise<RemoteResponse<TData>>;
 
 // Use this instead: `import reportError from "@/telemetry/reportError"`
