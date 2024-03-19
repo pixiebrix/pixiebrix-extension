@@ -783,12 +783,12 @@
     "./utils/variableUtils.ts",
     "./validators/formValidator.ts",
     "./validators/schemaValidator.ts",
-    "./vendors/AceEditor.tsx",
-    "./vendors/AceEditorSync.tsx",
-    "./vendors/DiffEditor.tsx",
-    "./vendors/DiffEditorSync.tsx",
+    "./components/AceEditor.tsx",
+    "./components/AceEditorSync.tsx",
+    "./components/DiffEditor.tsx",
+    "./components/DiffEditorSync.tsx",
     "./vendors/encodings.ts",
-    "./vendors/mixpanel.ts",
+    "./vendors/mixpanelDetectBrowser.ts",
     "./vendors/pkce.ts",
     "./vendors/randomStringDetection/detector.ts",
     "./vendors/reactPerformanceTesting/constants/globalOption.ts",
@@ -801,7 +801,6 @@
     "./vendors/reactPerformanceTesting/utils/isMemoComponent.ts",
     "./vendors/reactPerformanceTesting/utils/pushTask.ts",
     "./vendors/reactPerformanceTesting/utils/shouldTrack.ts",
-    "./vendors/reactPerformanceTesting/utils/symbols.ts",
-    "./vendors/validateUuid.ts"
+    "./vendors/reactPerformanceTesting/utils/symbols.ts"
   ]
 }
