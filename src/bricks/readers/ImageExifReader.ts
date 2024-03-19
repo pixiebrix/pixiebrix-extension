@@ -19,7 +19,7 @@ import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { type JsonObject } from "type-fest";
 import { ensureJsonObject } from "@/utils/objectUtils";
-import { loadImageBinaryData } from "@/utils/fileUtils";
+import { loadImageBinaryData } from "@/utils/imageUtils";
 
 export class ImageExifReader extends ReaderABC {
   override defaultOutputKey = "image";

@@ -66,7 +66,8 @@ async function getBase64FromImageViaCanvas(
   const canvas = paintImageOntoNewCanvas(image);
   const dataURL = canvas.toDataURL("image/png");
   const parsed = parseDataUrl(dataURL);
-  return parsed.body;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- The browser just generated it, it's safe. If it fails, then it's likely a bug in `parseDataUrl` and it should be fixed.
+  return parsed!.encodedBody;
 }
 
 /**
@@ -78,24 +79,27 @@ async function getBase64FromImageViaCanvas(
 export async function loadImageAsBase64(
   image: HTMLImageElement,
 ): Promise<string> {
+  // Attempt to use the existing base64 data, if any
   if (image.src.startsWith("data:image")) {
     const parsed = parseDataUrl(image.src);
-    if (parsed.isBase64) {
-      return parsed.body;
+    if (parsed?.isBase64) {
+      return parsed?.encodedBody;
     }
   }
 
   try {
     return await getBase64FromImageViaCanvas(image);
   } catch (error) {
-    if (!getErrorMessage(error).startsWith("Tainted canvases")) {
+    if (!getErrorMessage(error).includes("Tainted canvases")) {
       throw error;
     }
+
+    // It's a CORS issue https://github.com/pixiebrix/pixiebrix-extension/issues/7673
   }
 
   // We could use `loadImageBinaryData`, but this method also supports SVGs
   const corsSafeImage = new Image();
   corsSafeImage.crossOrigin = "anonymous";
   corsSafeImage.src = image.src;
-  return getBase64FromImageViaCanvas(image);
+  return getBase64FromImageViaCanvas(corsSafeImage);
 }

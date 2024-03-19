@@ -17,7 +17,7 @@
 
 import { ReaderABC } from "@/types/bricks/readerTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { loadImageAsBase64 } from "@/utils/fileUtils";
+import { loadImageAsBase64 } from "@/utils/imageUtils";
 
 export class ImageReader extends ReaderABC {
   override defaultOutputKey = "image";
