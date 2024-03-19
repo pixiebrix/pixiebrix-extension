@@ -178,6 +178,8 @@
     "./components/AsyncStateGate.tsx",
     "./components/BlockFormSubmissionViaEnterIfFirstChild.tsx",
     "./components/Centered.tsx",
+    "./components/ClickableElement.tsx",
+    "./components/ClickableElement.test.tsx",
     "./components/ConfirmNavigationModal.tsx",
     "./components/ConfirmationModal.tsx",
     "./components/DatabaseUnresponsiveBanner.tsx",

@@ -40,7 +40,7 @@ const knipConfig = {
     "**/__mocks__/**",
     "src/testUtils/detectPageMock.ts",
     // Dummy file to test lint rules
-    "eslint-local-rules/noRestrictedSyntax.ts",
+    "eslint-local-rules/noRestrictedSyntax.tsx",
     // Polyfills
     "src/vendors/process.js",
     // Aliases defined in tsconfig.json
