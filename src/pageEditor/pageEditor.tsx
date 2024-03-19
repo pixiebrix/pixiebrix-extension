@@ -16,7 +16,7 @@
  */
 
 import "@/vendors/bootstrapWithoutRem.css";
-import "@/vendors/overrides.scss";
+import "@/utils/global.scss";
 import "@/utils/layout.scss";
 
 import "@/extensionContext";

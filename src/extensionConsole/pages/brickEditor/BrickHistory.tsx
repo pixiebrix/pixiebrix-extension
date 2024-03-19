@@ -19,7 +19,7 @@ import styles from "./BrickHistory.module.scss";
 
 import React, { Suspense, useEffect, useMemo, useState } from "react";
 import Select, { components, type OptionProps } from "react-select";
-import DiffEditor from "@/vendors/DiffEditor";
+import DiffEditor from "@/components/DiffEditor";
 import objectHash from "object-hash";
 import { type UUID } from "@/types/stringTypes";
 import {

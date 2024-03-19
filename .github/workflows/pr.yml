@@ -23,7 +23,7 @@ jobs:
                 cat REASON | sed 's/.$/\n/'
                 echo 'EOF'
               } >> "$GITHUB_OUTPUT"
-              exit 1
+              exit 1 # Make the job fail for visibility https://github.com/pixiebrix/pixiebrix-extension/pull/7700#issuecomment-1969527384
             fi
           }
       - name: Hide previous comment if resolved
@@ -131,3 +131,24 @@ jobs:
             You might want to click on "Update branch" first so that the results are accurate.
       - if: steps.stats.outputs.changes > 1000
         run: exit 1
+
+  vendors:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Get list of changed vendored files
+        id: changedfiles
+        uses: tj-actions/changed-files@v42
+        with:
+          files: "src/vendors/**/*.*"
+      - name: Leave annotations
+        if: steps.changedfiles.outputs.any_changed == 'true'
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changedfiles.outputs.all_changed_files }}
+        run: |
+          for FILE in ${ALL_CHANGED_FILES}; do
+            echo "::warning file=$FILE,line=0::Vendored files should rarely change: https://github.com/pixiebrix/pixiebrix-extension/pull/7941"
+          done
+          exit 1 # Make the job fail for visibility https://github.com/pixiebrix/pixiebrix-extension/pull/7941#discussion_r1528517121

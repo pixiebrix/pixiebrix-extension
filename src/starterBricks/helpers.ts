@@ -16,7 +16,7 @@
  */
 
 import { castArray } from "lodash";
-import initialize from "@/vendors/initialize";
+import initialize from "@/vendors/jQueryInitialize";
 import { EXTENSION_POINT_DATA_ATTR } from "@/domConstants";
 import {
   type ModComponentBase,
