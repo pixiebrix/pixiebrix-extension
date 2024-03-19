@@ -229,8 +229,5 @@ function getMetadata(doc, url, customRuleSets) {
 }
 
 module.exports = {
-  buildRuleSet,
   getMetadata,
-  getProvider,
-  metadataRuleSets,
 };

@@ -4,7 +4,7 @@ const config = configFactory(process.env, {});
 
 // https://knip.dev/overview/configuration#customize
 const knipConfig = {
-  $schema: "https://unpkg.com/knip@4/schema.json",
+  $schema: "https://unpkg.com/knip@5/schema.json",
   webpack: {
     config: [
       "webpack.config.mjs",
@@ -53,12 +53,6 @@ const knipConfig = {
     "src/contrib/uipath/quietLogger.ts",
     // Development/debugging helpers
     "src/development/hooks/**",
-    // Vendor files, to keep parity with upstream
-    "src/vendors/page-metadata-parser/**",
-    // False positive - dynamically imported in initRobot
-    "src/contrib/uipath/UiPathRobot.ts",
-    // Unused, but we'll likely need this again in the future
-    "src/hooks/useContextInvalidated.ts",
   ],
   ignoreDependencies: [
     // Browser environment types
