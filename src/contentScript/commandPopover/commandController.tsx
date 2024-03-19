@@ -132,13 +132,6 @@ function createPopover(element: TextEditorElement): HTMLElement {
   commandPopover = tooltipFactory();
   commandPopover.dataset.testid = "pixiebrix-command-tooltip";
 
-  // Design reference: https://www.figma.com/file/0FSyxGoz2Pk1gtvrzWNe7G/Business-User-Onboarding-Mods?type=design&node-id=241-2275&mode=design&t=3mXfdNhsvsgVm2zO-0
-  Object.assign(commandPopover.style, {
-    "border-radius": "4px",
-    border: "1px solid #DEDBE3",
-    "box-shadow": "0px 4px 8px -4px rgba(56, 51, 66, 0.16)",
-  });
-
   render(
     <CommandPopover
       registry={commandRegistry}

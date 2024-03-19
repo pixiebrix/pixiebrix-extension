@@ -56,7 +56,7 @@ jobs:
           fetch-depth: 0
       - name: Get list of changed files
         id: changedfiles
-        uses: tj-actions/changed-files@v42
+        uses: tj-actions/changed-files@v43
         with:
           json: "true"
           files: "src/**/*.{ts,tsx}"

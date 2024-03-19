@@ -21,15 +21,19 @@ updates:
       rjsf:
         patterns:
           - "@rjsf/*"
-      storybook:
-        patterns:
-          - "*storybook*"
+      # Until https://github.com/pixiebrix/pixiebrix-extension/issues/7915
+      # storybook:
+      #   patterns:
+      #     - "*storybook*"
       fontawesome:
         patterns:
           - "@fortawesome/*"
       datadog:
         patterns:
           - "@datadog/*"
+    ignore:
+      # Until https://github.com/pixiebrix/pixiebrix-extension/issues/7915
+      - dependency-name: "*storybook*"
   - package-ecosystem: github-actions
     directory: /
     schedule:
