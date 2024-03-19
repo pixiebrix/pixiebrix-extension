@@ -91,3 +91,8 @@ export const collectPerformanceDiagnostics = getMethod(
   "COLLECT_PERFORMANCE_DIAGNOSTICS",
   bg,
 );
+
+export const launchInteractiveOAuthFlow = getMethod(
+  "LAUNCH_INTERACTIVE_OAUTH_FLOW",
+  bg,
+);

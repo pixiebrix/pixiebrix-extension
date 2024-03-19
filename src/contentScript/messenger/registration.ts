@@ -51,7 +51,8 @@ import {
 } from "@/contentScript/pipelineProtocol"; // Background/messenger import
 import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore"; // 248 errors
 import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation"; // 246 errors
-import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect"; // Background/messenger import
+import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
+import { showBannerInTopFrame } from "@/contentScript/integrations/deferredLoginController"; // Background/messenger import
 
 expectContext("contentScript");
 
@@ -86,6 +87,8 @@ declare global {
     RUN_MAP_ARGS: typeof runMapArgs;
 
     GET_COPILOT_HOST_DATA: typeof getCopilotHostData;
+
+    SHOW_LOGIN_BANNER: typeof showBannerInTopFrame;
 
     RELOAD_MARKETPLACE_ENHANCEMENTS: typeof reloadActivationEnhancements;
   }
@@ -122,6 +125,8 @@ export default function registerMessenger(): void {
     RUN_MAP_ARGS: runMapArgs,
 
     GET_COPILOT_HOST_DATA: getCopilotHostData,
+
+    SHOW_LOGIN_BANNER: showBannerInTopFrame,
 
     RELOAD_MARKETPLACE_ENHANCEMENTS: reloadActivationEnhancements,
   });

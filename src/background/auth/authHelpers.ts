@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { InteractiveLoginRequiredError } from "@/background/auth/authErrors";
+import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import type { Identity } from "webextension-polyfill";
 import { getErrorMessage } from "@/errors/errorHelpers";
 

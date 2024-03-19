@@ -58,3 +58,5 @@ export const getCopilotHostData = getMethod("GET_COPILOT_HOST_DATA");
 export const reloadMarketplaceEnhancements = getMethod(
   "RELOAD_MARKETPLACE_ENHANCEMENTS",
 );
+
+export const showLoginBanner = getMethod("SHOW_LOGIN_BANNER");

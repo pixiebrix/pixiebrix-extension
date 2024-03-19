@@ -55,6 +55,7 @@ import { setPlatform } from "@/platform/platformContext";
 import { markDocumentAsFocusableByUser } from "@/utils/focusTracker";
 import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 import axios from "axios";
+import { initDeferredLoginController } from "@/contentScript/integrations/deferredLoginController";
 
 setPlatform(contentScriptPlatform);
 
@@ -91,6 +92,7 @@ export async function init(): Promise<void> {
   // Since 1.8.2, the brick registry was de-coupled from the runtime to avoid circular dependencies
   // Since 1.8.10, we inject the platform into the runtime
   initRuntime(brickRegistry);
+  initDeferredLoginController();
 
   initTelemetry();
   initToaster();

@@ -186,7 +186,14 @@ export interface SanitizedIntegrationConfig {
   /**
    * UUID of the integration configuration.
    */
+  // XXX: document why id is optional
   id?: UUID;
+
+  /**
+   * Human-readable label for the configuration to distinguish it from other configurations for the same integration in the
+   * interface.
+   */
+  label: string | undefined;
 
   /**
    * Registry identifier for the integration, e.g., @pixiebrix/api
