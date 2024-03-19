@@ -51,8 +51,4 @@ describe("ClickableElement", () => {
     });
     expect(handleClick).not.toHaveBeenCalled();
   });
-
-  it("renders children", () => {
-    const handleClick = jest.fn();
-  });
 });
