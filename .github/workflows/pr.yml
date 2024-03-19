@@ -151,3 +151,4 @@ jobs:
           for FILE in ${ALL_CHANGED_FILES}; do
             echo "::warning file=$FILE,line=1::Vendored files should rarely change, our safety checks/linters don't run there. Make sure that any new business logic lives outside the vendored folder."
           done
+          exit 1
