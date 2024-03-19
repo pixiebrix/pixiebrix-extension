@@ -25,6 +25,7 @@ import Icon from "@/icons/Icon";
 import { type BlockResult } from "@/components/addBlockModal/addBlockModalTypes";
 import cx from "classnames";
 import Alert from "@/components/Alert";
+import ClickableElement from "@/components/ClickableElement";
 
 export const BLOCK_ITEM_FIXED_HEIGHT_PX = 89;
 
@@ -41,17 +42,7 @@ const BlockGridItem: React.VFC<BlockItemProps> = ({
   onShowDetail,
   invalidMessage,
 }) => (
-  <div
-    onClick={onShowDetail}
-    onKeyPress={(event) => {
-      if (event.key === "Enter") {
-        onShowDetail();
-      }
-    }}
-    tabIndex={0}
-    role="button"
-    className={styles.root}
-  >
+  <ClickableElement onClick={onShowDetail} className={styles.root}>
     <div
       className={cx(styles.content, {
         [styles.invalid ?? ""]: Boolean(invalidMessage),
@@ -92,7 +83,7 @@ const BlockGridItem: React.VFC<BlockItemProps> = ({
         {invalidMessage}
       </Alert>
     )}
-  </div>
+  </ClickableElement>
 );
 
 export default BlockGridItem;

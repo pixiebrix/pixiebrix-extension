@@ -25,6 +25,7 @@ import OutputKeyView from "@/pageEditor/tabs/editTab/editorNodes/OutputKeyView";
 import PipelineOffsetView from "@/pageEditor/tabs/editTab/editorNodes/PipelineOffsetView";
 import { type OutputKey } from "@/types/runtimeTypes";
 import TrailingMessage from "@/pageEditor/tabs/editTab/editorNodes/TrailingMessage";
+import ClickableElement from "@/components/ClickableElement";
 
 export type PipelineFooterNodeProps = {
   outputKey: OutputKey;
@@ -52,14 +53,7 @@ const PipelineFooterNode: React.VFC<PipelineFooterNodeProps> = ({
   onClick,
 }) => (
   <>
-    <div
-      role="button"
-      tabIndex={0}
-      onKeyPress={(event) => {
-        if (event.key === "Enter") {
-          onClick();
-        }
-      }}
+    <ClickableElement
       className={cx(styles.footer, {
         [styles.active ?? ""]: active,
         [styles.nestedActive ?? ""]: nestedActive,
@@ -93,7 +87,7 @@ const PipelineFooterNode: React.VFC<PipelineFooterNodeProps> = ({
           [styles.active ?? ""]: active && !nestedActive,
         })}
       />
-    </div>
+    </ClickableElement>
     <NodeActionsView
       nodeActions={nodeActions}
       showBiggerActions={showBiggerActions}
