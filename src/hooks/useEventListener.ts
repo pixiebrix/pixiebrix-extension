@@ -22,7 +22,7 @@ export default function useEventListener<E extends Event>(
   eventName: string,
   listener: (event: E) => void,
   // Only support passive option for now
-  { passive }: { passive?: true } = {},
+  { passive }: { passive?: boolean } = {},
 ) {
   useEffect(() => {
     const controller = new AbortController();

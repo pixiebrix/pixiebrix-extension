@@ -433,6 +433,7 @@
     "./hooks/useDeriveAsyncState.ts",
     "./hooks/useDocumentSelection.ts",
     "./hooks/useEventListener.ts",
+    "./hooks/useEventListener.test.ts",
     "./hooks/useFlags.ts",
     "./hooks/useIsEnterpriseUser.ts",
     "./hooks/useIsMounted.ts",
