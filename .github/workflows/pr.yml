@@ -149,6 +149,6 @@ jobs:
           ALL_CHANGED_FILES: ${{ steps.changedfiles.outputs.all_changed_files }}
         run: |
           for FILE in ${ALL_CHANGED_FILES}; do
-            echo "::warning file=$FILE,line=1::Vendored files should rarely change, our safety checks/linters don't run there. Make sure that any new business logic lives outside the vendored folder."
+            echo "::warning file=$FILE,line=1::Vendored files should rarely change: https://github.com/pixiebrix/pixiebrix-extension/pull/7941"
           done
           exit 1
