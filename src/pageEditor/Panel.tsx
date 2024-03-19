@@ -47,7 +47,7 @@ const UnguardedPanel: React.VoidFunctionComponent = () => {
 };
 
 const Panel: React.VoidFunctionComponent = () => (
-  <InvalidatedContextGate contextNameTitleCase="Page Editor">
+  <InvalidatedContextGate autoReload contextNameTitleCase="Page Editor">
     <TabInspectionGate>
       <UnguardedPanel />
     </TabInspectionGate>

@@ -47,6 +47,7 @@ describe("getOAuth2AuthData", () => {
         {} as unknown as Integration,
         integrationConfigFactory(),
         sanitizedConfig,
+        { interactive: true },
       ),
     ).resolves.toEqual(data);
     expect(getCachedAuthDataMock).toHaveBeenCalledWith(sanitizedConfig.id);
@@ -67,12 +68,18 @@ describe("getOAuth2AuthData", () => {
     } as unknown as Integration;
     launchOAuth2FlowMock.mockResolvedValue(data);
     await expect(
-      getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig),
+      getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig, {
+        interactive: true,
+      }),
     ).resolves.toEqual(data);
     expect(getCachedAuthDataMock).toHaveBeenCalledWith(
       sanitizedIntegrationConfig.id,
     );
-    expect(launchOAuth2FlowMock).toHaveBeenCalledWith(integration, localConfig);
+    expect(launchOAuth2FlowMock).toHaveBeenCalledWith(
+      integration,
+      localConfig,
+      { interactive: true },
+    );
   });
 
   it("only requests 1 login if multiple requests are made asynchronously with no cached auth data", async () => {
@@ -88,22 +95,18 @@ describe("getOAuth2AuthData", () => {
       id: integrationId,
     } as unknown as Integration;
     launchOAuth2FlowMock.mockResolvedValue(data);
+
+    const promiseFactory = async () =>
+      getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig, {
+        interactive: true,
+      });
+
     await Promise.all([
-      expect(
-        getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig),
-      ).resolves.toEqual(data),
-      expect(
-        getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig),
-      ).resolves.toEqual(data),
-      expect(
-        getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig),
-      ).resolves.toEqual(data),
-      expect(
-        getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig),
-      ).resolves.toEqual(data),
-      expect(
-        getOAuth2AuthData(integration, localConfig, sanitizedIntegrationConfig),
-      ).resolves.toEqual(data),
+      expect(promiseFactory()).resolves.toEqual(data),
+      expect(promiseFactory()).resolves.toEqual(data),
+      expect(promiseFactory()).resolves.toEqual(data),
+      expect(promiseFactory()).resolves.toEqual(data),
+      expect(promiseFactory()).resolves.toEqual(data),
     ]);
     expect(getCachedAuthDataMock).toHaveBeenCalledTimes(1);
     expect(launchOAuth2FlowMock).toHaveBeenCalledTimes(1);

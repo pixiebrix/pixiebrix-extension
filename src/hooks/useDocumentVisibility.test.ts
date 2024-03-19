@@ -15,21 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useEventListener from "./useEventListener";
+import { renderHook } from "@testing-library/react-hooks";
+import useDocumentVisibility from "./useDocumentVisibility";
 
-/**
- * Basic keyboard shortcut hook. If we introduce more shortcuts, we should consider using a library.
- * @param code the key code, e.g., "F5"
- * @param callback the callback to call when the key is pressed.
- */
-function useKeyboardShortcut(code: string, callback: () => void): void {
-  const handleShortcut = (event: KeyboardEvent) => {
-    if (event.code === code) {
-      callback();
-    }
-  };
+test("useDocumentVisibility", () => {
+  const addEventListenerSpy = jest.spyOn(document, "addEventListener");
 
-  useEventListener(document, "keydown", handleShortcut);
-}
+  const { result } = renderHook(() => useDocumentVisibility());
+  expect(result.current).toBe(true);
 
-export default useKeyboardShortcut;
+  expect(addEventListenerSpy).toHaveBeenCalledWith(
+    "visibilitychange",
+    expect.any(Function),
+  );
+
+  addEventListenerSpy.mockRestore();
+});
