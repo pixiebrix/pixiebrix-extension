@@ -154,8 +154,8 @@ class AddTextCommand extends EffectABC {
       },
     });
 
-    const { textCommandPopover } = await getSettingsState();
-    if (textCommandPopover) {
+    const { snippetShortcutMenu } = await getSettingsState();
+    if (snippetShortcutMenu) {
       initCommandController();
     }
   }

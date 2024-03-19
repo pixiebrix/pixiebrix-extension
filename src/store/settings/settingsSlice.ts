@@ -37,6 +37,11 @@ export const initialSettingsState: SettingsState = {
   suggestElements: false,
   browserWarningDismissed: false,
   /**
+   * @since 1.8.11 default to true
+   */
+  textSelectionMenu: true,
+  snippetShortcutMenu: true,
+  /**
    * @since 1.8.6 default to true
    */
   // The variable popover was GA in 1.8.4; we wrote a migration to turn it on for existing installs, but forgot

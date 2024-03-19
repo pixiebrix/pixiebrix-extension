@@ -46,18 +46,6 @@ export type SkunkworksSettingsFlags = {
    * Experimental setting to run some code in a sandbox
    */
   sandboxedCode?: boolean;
-
-  /**
-   * Experimental setting to enable the selection popover for all/text context menu items
-   * @since 1.8.10
-   */
-  selectionPopover?: boolean;
-
-  /**
-   * Experimental setting to enable a text command popover
-   * @since 1.8.10
-   */
-  textCommandPopover?: boolean;
 };
 
 export type GeneralSettingsFlags = {
@@ -70,6 +58,18 @@ export type GeneralSettingsFlags = {
    * Button to enable the floating action button on the page
    */
   isFloatingActionButtonEnabled?: boolean;
+
+  /**
+   * Setting to enable the text selection menu for all/text context menu items
+   * @since 1.8.11
+   */
+  textSelectionMenu?: boolean;
+
+  /**
+   * Setting to enable the snippet shortcut menu
+   * @since 1.8.11
+   */
+  snippetShortcutMenu?: boolean;
 };
 
 export type SettingsFlags = SkunkworksSettingsFlags & GeneralSettingsFlags;
@@ -162,7 +162,15 @@ export type SettingsStateV3 = SettingsStateV2 & {
   varAutosuggest: boolean;
 };
 
-export type SettingsState = SettingsStateV3;
+export type SettingsStateV4 = SettingsStateV3 & {
+  /**
+   * @since 1.8.11 SettingsStateV4 makes textSelectionMenu and snippetShortcutMenu required
+   */
+  textSelectionMenu: boolean;
+  snippetShortcutMenu: boolean;
+};
+
+export type SettingsState = SettingsStateV4;
 
 export type SettingsRootState = {
   settings: SettingsState;
