@@ -4,6 +4,7 @@
 // - Dropped Node fallback
 // See: https://github.com/pixiebrix/pixiebrix-extension/issues/6889
 
+/** @knip Used in @/vendors/page-metadata-parser/parser.js */
 module.exports = {
   makeUrlAbsolute(base, relative) {
     try {
