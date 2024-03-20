@@ -272,6 +272,7 @@
     "./components/formBuilder/preview/ImageCropWidgetPreview.tsx",
     "./components/formBuilder/schemaFieldNames.ts",
     "./components/imagePlaceholder/ImagePlaceholder.tsx",
+    "./components/integrations/integrationHelpers.ts",
     "./components/jsonTree/JsonTree.tsx",
     "./components/jsonTree/treeHooks.tsx",
     "./components/logViewer/LogToolbar.tsx",
