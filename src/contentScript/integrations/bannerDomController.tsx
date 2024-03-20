@@ -61,6 +61,9 @@ export function showLoginBanner(login: DeferredLogin): void {
       style: "all: initial",
       position: "relative",
       width: "100%",
+      // See https://getbootstrap.com/docs/4.6/layout/overview/#z-index
+      // We want the z-index to be high as possible, but lower than the modal
+      zIndex: "1030",
     });
 
     // Insert the banner at the top of the body
