@@ -28,8 +28,7 @@ import { getToggleOptions } from "@/components/fields/schemaFields/getToggleOpti
 import SpreadsheetPickerWidget from "@/contrib/google/sheets/ui/SpreadsheetPickerWidget";
 import { render } from "@/pageEditor/testHelpers";
 import { validateRegistryId } from "@/types/helpers";
-import { sheets } from "@/background/messenger/api";
-import { services } from "@/background/messenger/strict/api";
+import { hasCachedAuthData, services } from "@/background/messenger/strict/api";
 import {
   integrationDependencyFactory,
   sanitizedIntegrationConfigFactory,
@@ -38,7 +37,12 @@ import {
   type FileList,
   type Spreadsheet,
 } from "@/contrib/google/sheets/core/types";
-import { type SpreadsheetTarget } from "@/contrib/google/sheets/core/sheetsApi";
+import {
+  getAllSpreadsheets,
+  getHeaders,
+  getSpreadsheet,
+  type SpreadsheetTarget,
+} from "@/contrib/google/sheets/core/sheetsApi";
 import { useAuthOptions } from "@/hooks/auth";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
 import { type AuthOption } from "@/auth/authTypes";
@@ -53,13 +57,16 @@ import {
 } from "@/contrib/google/sheets/core/schemas";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
+// XXX: sheetsApi should likely be mocked at the network level, not the module level
+jest.mock("@/contrib/google/sheets/core/sheetsApi");
+
 jest.mock("@/hooks/auth");
 const servicesLocateMock = jest.mocked(services.locate);
 const useAuthOptionsMock = jest.mocked(useAuthOptions);
-const isLoggedInMock = jest.mocked(sheets.isLoggedIn);
-const getAllSpreadsheetsMock = jest.mocked(sheets.getAllSpreadsheets);
-const getSpreadsheetMock = jest.mocked(sheets.getSpreadsheet);
-const getHeadersMock = jest.mocked(sheets.getHeaders);
+const isLoggedInMock = jest.mocked(hasCachedAuthData);
+const getAllSpreadsheetsMock = jest.mocked(getAllSpreadsheets);
+const getSpreadsheetMock = jest.mocked(getSpreadsheet);
+const getHeadersMock = jest.mocked(getHeaders);
 
 const TEST_SPREADSHEET_ID = autoUUIDSequence();
 const OTHER_TEST_SPREADSHEET_ID = autoUUIDSequence();

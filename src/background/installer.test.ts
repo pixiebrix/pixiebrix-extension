@@ -38,6 +38,7 @@ jest.mock("@/auth/authStorage", () => ({
   isLinked: jest.fn().mockResolvedValue(false),
   getExtensionToken: jest.fn().mockResolvedValue(null),
   getUserData: jest.fn().mockResolvedValue(null),
+  addListener: jest.fn(),
 }));
 
 jest.mock("@/background/telemetry");

@@ -33,6 +33,7 @@ import { captureTab } from "@/background/capture";
 import {
   deleteCachedAuthData,
   getCachedAuthData,
+  hasCachedAuthData,
 } from "@/background/auth/authStorage";
 import { setToolbarBadge } from "@/background/toolbarBadge";
 import { rememberFocus } from "@/utils/focusTracker";
@@ -66,6 +67,7 @@ declare global {
     CAPTURE_TAB: typeof captureTab;
     DELETE_CACHED_AUTH: typeof deleteCachedAuthData;
     GET_CACHED_AUTH: typeof getCachedAuthData;
+    HAS_CACHED_AUTH: typeof hasCachedAuthData;
     SET_TOOLBAR_BADGE: typeof setToolbarBadge;
     DOCUMENT_RECEIVED_FOCUS: typeof rememberFocus;
     WRITE_TO_CLIPBOARD_IN_FOCUSED_DOCUMENT: typeof writeToClipboardInFocusedContext;
@@ -105,6 +107,7 @@ export default function registerMessenger(): void {
     CAPTURE_TAB: captureTab,
     DELETE_CACHED_AUTH: deleteCachedAuthData,
     GET_CACHED_AUTH: getCachedAuthData,
+    HAS_CACHED_AUTH: hasCachedAuthData,
     SET_TOOLBAR_BADGE: setToolbarBadge,
     DOCUMENT_RECEIVED_FOCUS: rememberFocus,
     WRITE_TO_CLIPBOARD_IN_FOCUSED_DOCUMENT: writeToClipboardInFocusedContext,

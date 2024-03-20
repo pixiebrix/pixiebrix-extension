@@ -20,7 +20,7 @@ import styles from "./BrickDetail.module.scss";
 import React, { Suspense } from "react";
 import { Button } from "react-bootstrap";
 import { isEmpty } from "lodash";
-import AceEditor from "@/vendors/AceEditor";
+import AceEditor from "@/components/AceEditor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faClipboard,

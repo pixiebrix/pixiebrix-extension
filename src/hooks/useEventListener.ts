@@ -15,36 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
-type Handler = (event: Event) => void;
-
-export function useEventListener(
+export default function useEventListener<E extends Event>(
+  target: EventTarget,
   eventName: string,
-  handler: Handler,
-  element: HTMLElement | Window = window,
+  listener: (event: E) => void,
+  // Only support passive option for now
+  { passive }: { passive?: boolean } = {},
 ) {
-  const savedHandler = useRef<Handler>();
-
   useEffect(() => {
-    savedHandler.current = handler;
-  }, [handler]);
-
-  useEffect(() => {
-    const isSupported = Boolean(element?.addEventListener);
-    if (!isSupported) {
-      console.warn("Element does not support addEventListener", { element });
-      return;
-    }
-
-    const eventListener = (event: Event) => {
-      savedHandler.current?.(event);
-    };
-
-    element.addEventListener(eventName, eventListener);
+    const controller = new AbortController();
+    const { signal } = controller;
+    target.addEventListener(eventName, listener, { passive, signal });
 
     return () => {
-      element.removeEventListener(eventName, eventListener);
+      controller.abort();
     };
-  }, [eventName, element]);
+  }, [target, eventName, listener, passive]);
 }

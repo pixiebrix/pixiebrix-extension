@@ -15,12 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { diff as DiffEditorSync } from "react-ace";
+import { renderHook } from "@testing-library/react-hooks";
+import useEventListener from "./useEventListener";
 
-import "ace-builds/src-noconflict/mode-yaml";
-import "ace-builds/src-noconflict/theme-chrome";
+test("useEventListener", () => {
+  const mockElement = document.createElement("div");
+  const mockEvent = new Event("click");
+  const mockHandler = jest.fn();
 
-/**
- * Bundles DiffEditor. Use "./DiffEditor.tsx" for dynamic import.
- */
-export default DiffEditorSync;
+  renderHook(() => {
+    useEventListener(mockElement, "click", mockHandler);
+  });
+  mockElement.dispatchEvent(mockEvent);
+
+  expect(mockHandler).toHaveBeenCalledTimes(1);
+  expect(mockHandler).toHaveBeenCalledWith(mockEvent);
+});

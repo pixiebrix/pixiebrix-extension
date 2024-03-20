@@ -43,7 +43,8 @@ import {
 } from "@/types/inputTypes";
 import { expectContext } from "@/utils/expectContext";
 import { ReusableAbortController } from "abort-utils";
-import { waitAnimationFrame } from "@/utils/domUtils";
+import { getSelectionRange, waitAnimationFrame } from "@/utils/domUtils";
+import { prefersReducedMotion } from "@/utils/a11yUtils";
 
 const COMMAND_KEY = "\\";
 
@@ -66,8 +67,26 @@ async function showPopover(element: HTMLElement): Promise<void> {
 
   targetElement = element;
   commandPopover ??= createPopover(targetElement);
-  commandPopover.setAttribute("aria-hidden", "false");
-  commandPopover.style.setProperty("display", "block");
+
+  // Check visibility to avoid re-animating the tooltip fade in as selection changes
+  const isShowing = commandPopover.checkVisibility();
+  if (!isShowing) {
+    commandPopover.setAttribute("aria-hidden", "false");
+    commandPopover.style.setProperty("display", "block");
+    if (!prefersReducedMotion()) {
+      commandPopover.animate(
+        [
+          { opacity: 0, margin: "8px 0" },
+          { opacity: 1, margin: "0" },
+        ],
+        {
+          easing: "ease-in-out",
+          duration: 300,
+          fill: "forwards",
+        },
+      );
+    }
+  }
 
   // For now just destroy the tooltip on document/element scroll to avoid gotchas with floating UI's `position: fixed`
   // strategy. See tooltipController.ts for more details.
@@ -131,13 +150,6 @@ function createPopover(element: TextEditorElement): HTMLElement {
 
   commandPopover = tooltipFactory();
   commandPopover.dataset.testid = "pixiebrix-command-tooltip";
-
-  // Design reference: https://www.figma.com/file/0FSyxGoz2Pk1gtvrzWNe7G/Business-User-Onboarding-Mods?type=design&node-id=241-2275&mode=design&t=3mXfdNhsvsgVm2zO-0
-  Object.assign(commandPopover.style, {
-    "border-radius": "4px",
-    border: "1px solid #DEDBE3",
-    "box-shadow": "0px 4px 8px -4px rgba(56, 51, 66, 0.16)",
-  });
 
   render(
     <CommandPopover
@@ -227,7 +239,7 @@ function getCursorPositionReference(): Nullishable<VirtualElement | Element> {
   }
 
   // Allows us to measure where the selection is on the page relative to the viewport
-  const range = window.getSelection()?.getRangeAt(0);
+  const range = getSelectionRange();
 
   if (range == null) {
     return;
@@ -330,7 +342,7 @@ function isTextSelected(target: unknown): boolean {
   }
 
   if (isContentEditableElement(target)) {
-    const range = window.getSelection()?.getRangeAt(0);
+    const range = getSelectionRange();
     return range != null && range.toString().length > 0;
   }
 

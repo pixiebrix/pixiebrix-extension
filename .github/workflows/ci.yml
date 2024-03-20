@@ -38,7 +38,7 @@ jobs:
         with:
           name: extension-test-coverage
       - name: Upload coverage to Codecov
-        uses: Wandalen/wretry.action@v1.4.8
+        uses: Wandalen/wretry.action@v1.4.10
         with:
           action: codecov/codecov-action@v3
           with: |
@@ -164,17 +164,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: package.json
-          cache: npm
-      - run: npm ci
       # https://knip.dev/overview/getting-started#without-installation
-      - run: npm install -D knip@4
-      # Do a run without an exit code. Knip's "warn" setting is not working for files and devDependencies.
-      - run: npm run dead-code:base -- --no-exit-code
-      # Automatically excludes exports tagged with `@knip` in their JSDoc
+      - run: npm install -D knip@5.1.2
+      # Detect dead code with enforced rules
       - run: npm run dead-code
+      # Also run the remaining "warn" rules
+      - run: npm run dead-code:base -- --no-exit-code
 
   # https://pre-commit.com/#usage-in-continuous-integration
   prettier:
@@ -212,7 +207,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Install playwright browsers
-        run: npx playwright install chromium chrome
+        run: npx playwright install chromium chrome msedge
       - name: Build the extension
         run: npm run build:webpack
       - name: Run end to end tests

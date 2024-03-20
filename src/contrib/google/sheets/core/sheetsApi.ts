@@ -18,8 +18,6 @@
 import { columnToLetter } from "@/contrib/google/sheets/core/sheetsHelpers";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type AxiosRequestConfig } from "axios";
-import { getCachedAuthData } from "@/background/messenger/strict/api";
-import { isEmpty } from "lodash";
 import { handleGoogleRequestRejection } from "@/contrib/google/sheets/core/handleGoogleRequestRejection";
 import {
   type AppendValuesResponse,
@@ -41,13 +39,6 @@ export type SpreadsheetTarget = {
   spreadsheetId: string;
   tabName?: string;
 };
-
-export async function isLoggedIn(
-  googleAccount: SanitizedIntegrationConfig,
-): Promise<boolean> {
-  const authData = await getCachedAuthData(googleAccount.id);
-  return !isEmpty(authData);
-}
 
 async function executeRequest<Response, RequestData = never>(
   requestConfig: AxiosRequestConfig<RequestData>,

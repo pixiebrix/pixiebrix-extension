@@ -26,6 +26,13 @@ import {
   clearExtensionDebugLogs,
 } from "@/background/messenger/strict/api";
 import { PlatformBase } from "@/platform/platformBase";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import type { AxiosRequestConfig } from "axios";
+import type { RemoteResponse } from "@/types/contract";
+import { performConfiguredRequestInBackground } from "@/background/messenger/api";
+import integrationRegistry from "@/integrations/registry";
+import { performConfiguredRequest } from "@/background/requests";
 
 /**
  * The extension page platform.
@@ -41,6 +48,7 @@ class ExtensionPagePlatform extends PlatformBase {
     "toast",
     "logs",
     "debugger",
+    "http",
   ];
 
   private readonly _logger = new BackgroundLogger({
@@ -82,6 +90,31 @@ class ExtensionPagePlatform extends PlatformBase {
       showNotification,
       hideNotification,
     };
+  }
+
+  override async request<TData>(
+    integrationConfig: Nullishable<SanitizedIntegrationConfig>,
+    requestConfig: AxiosRequestConfig,
+  ): Promise<RemoteResponse<TData>> {
+    const integration = await integrationRegistry.lookup(
+      integrationConfig.serviceId,
+    );
+
+    // Use the background messenger to perform 3rd party API calls that may require refreshing credentials so that
+    // the background worker can memoize the refresh calls and calls to launch the web auth flow
+    if (integration.isToken || integration.isOAuth2) {
+      return performConfiguredRequestInBackground(
+        integrationConfig,
+        requestConfig,
+        // XXX: match the legacy behavior for now - always try to show the interactive login if possible
+        { interactiveLogin: true },
+      );
+    }
+
+    // `interactiveLogin: false` because interactive logins are only required for token-based authentication
+    return performConfiguredRequest(integrationConfig, requestConfig, {
+      interactiveLogin: false,
+    });
   }
 }
 

@@ -101,21 +101,23 @@ const getExtensionId = async (context: BrowserContext) => {
 export const test = base.extend<{
   context: BrowserContext;
   extensionId: string;
+  chromiumChannel: "chrome" | "msedge";
 }>({
-  // eslint-disable-next-line no-empty-pattern -- Playwright requires destructuring pattern as first argument as it uses it to detect the dependent fixtures
-  async context({}, use) {
+  chromiumChannel: ["chrome", { option: true }],
+  async context({ chromiumChannel }, use) {
     // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname throws "cannot use 'import meta' outside a module"
     const pathToExtension = path.join(__dirname, "../../dist");
 
     const context = await chromium.launchPersistentContext("", {
       // Test against the branded Chrome browser
       // See: https://playwright.dev/docs/browsers#google-chrome--microsoft-edge
-      channel: "chrome",
+      channel: chromiumChannel,
       headless: false,
       args: [
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
-        // Chrome extensions are not supported in headless mode, so we use the "new" flag to enable headless mode.
+        // Chrome extensions are not supported in the traditional headless mode,
+        // but we can use the "new" flag to enable headless mode.
         // This mode is not officially supported by Playwright and might result in unexpected behavior,
         // so only use in local development for now.
         // https://playwright.dev/docs/chrome-extensions#headless-mode

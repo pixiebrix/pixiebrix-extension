@@ -22,18 +22,12 @@
 .toolbar {
   background-color: $S0;
   display: flex;
-
-  height: 30px;
   font-size: 16px;
-
-  padding-left: 3px;
-  padding-right: 3px;
 }
 
 .toolbarItem {
   background-color: $S0;
   color: black;
-  border-radius: 0;
   border: 0;
   cursor: pointer;
 
@@ -41,9 +35,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 32px;
+  height: 32px;
 
   &:hover {
-    background-color: $P100;
+    background-color: $S2;
   }
 
   &:active {

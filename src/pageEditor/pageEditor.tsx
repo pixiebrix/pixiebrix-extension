@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "@/vendors/overrides.scss";
+import "@/vendors/bootstrapWithoutRem.css";
+import "@/utils/global.scss";
 import "@/utils/layout.scss";
 
 import "@/extensionContext";

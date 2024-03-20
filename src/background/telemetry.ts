@@ -25,7 +25,7 @@ import {
 import { allowsTrack } from "@/telemetry/dnt";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { deleteDatabase } from "@/utils/idbUtils";
-import { detectBrowser } from "@/vendors/mixpanel";
+import { detectBrowser } from "@/vendors/mixpanelDetectBrowser";
 import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
 import { count as traceSize } from "@/telemetry/trace";

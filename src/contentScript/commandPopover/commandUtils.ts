@@ -20,7 +20,7 @@ import {
   isSelectableTextControlElement,
   type SelectableTextEditorElement,
 } from "@/types/inputTypes";
-import { waitAnimationFrame } from "@/utils/domUtils";
+import { getSelectionRange, waitAnimationFrame } from "@/utils/domUtils";
 import { expectContext } from "@/utils/expectContext";
 import { insertAtCursorWithCustomEditorSupport } from "@/contentScript/textEditorDom";
 import type { Nullishable } from "@/utils/nullishUtils";
@@ -79,8 +79,7 @@ export async function replaceAtCommand({
   }
 
   // Content Editable
-  const selection = window.getSelection();
-  const range = selection?.getRangeAt(0);
+  const range = getSelectionRange();
 
   if (range?.startContainer.nodeType === Node.TEXT_NODE) {
     if (range.startOffset !== range.endOffset) {

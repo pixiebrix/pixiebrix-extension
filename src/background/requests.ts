@@ -145,13 +145,14 @@ export const getOAuth2AuthData = memoizeUntilSettled(
     integration: Integration,
     localConfig: IntegrationConfig,
     sanitizedIntegrationConfig: SanitizedIntegrationConfig,
+    options: { interactive: boolean },
   ): Promise<AuthData> => {
     // We wrap both the cache data lookup and the login request in the memoization here
     // instead of only around the login call, in order to avoid a race condition between
     // writing the new auth token and a second request reading from cached auth storage.
     let data = await getCachedAuthData(sanitizedIntegrationConfig.id);
     if (isEmpty(data)) {
-      data = await launchOAuth2Flow(integration, localConfig);
+      data = await launchOAuth2Flow(integration, localConfig, options);
     }
 
     return data;
@@ -161,6 +162,7 @@ export const getOAuth2AuthData = memoizeUntilSettled(
 async function authenticate(
   config: SanitizedIntegrationConfig,
   request: AxiosRequestConfig,
+  options: { interactive: boolean },
 ): Promise<AxiosRequestConfig> {
   expectContext("background");
 
@@ -200,7 +202,12 @@ async function authenticate(
   }
 
   if (integration.isOAuth2) {
-    const data = await getOAuth2AuthData(integration, localConfig, config);
+    const data = await getOAuth2AuthData(
+      integration,
+      localConfig,
+      config,
+      options,
+    );
     return integration.authenticateRequest(localConfig.config, request, data);
   }
 
@@ -242,6 +249,8 @@ async function proxyRequest<T>(
         service_id: integrationConfig.serviceId,
       },
     },
+    // The PixieBrix API uses a token, so does not require/support interactive authentication
+    { interactive: false },
   );
 
   const proxyResponse = await serializableAxiosRequest<ProxyResponseData>(
@@ -294,6 +303,7 @@ function isAuthenticationError(error: Pick<AxiosError, "response">): boolean {
 async function _performConfiguredRequest(
   integrationConfig: SanitizedIntegrationConfig,
   requestConfig: AxiosRequestConfig,
+  options: { interactiveLogin: boolean },
 ): Promise<RemoteResponse> {
   if (integrationConfig.proxy) {
     // Service uses the PixieBrix remote proxy to perform authentication. Proxy the request.
@@ -302,7 +312,9 @@ async function _performConfiguredRequest(
 
   try {
     return await serializableAxiosRequest(
-      await authenticate(integrationConfig, requestConfig),
+      await authenticate(integrationConfig, requestConfig, {
+        interactive: options.interactiveLogin,
+      }),
     );
   } catch (error) {
     // Try again - automatically try to get a new token using the refresh token (if applicable)
@@ -329,7 +341,9 @@ async function _performConfiguredRequest(
 
             if (isTokenRefreshed) {
               return serializableAxiosRequest(
-                await authenticate(integrationConfig, requestConfig),
+                await authenticate(integrationConfig, requestConfig, {
+                  interactive: options.interactiveLogin,
+                }),
               );
             }
           } catch (error) {
@@ -348,7 +362,9 @@ async function _performConfiguredRequest(
         await deleteCachedAuthData(integrationConfig.id);
 
         return serializableAxiosRequest(
-          await authenticate(integrationConfig, requestConfig),
+          await authenticate(integrationConfig, requestConfig, {
+            interactive: options.interactiveLogin,
+          }),
         );
       }
     }
@@ -388,12 +404,14 @@ async function getIntegrationMessageContext(
  * Perform a request either directly, or via the PixieBrix authentication proxy
  * @param integrationConfig the PixieBrix integration configuration (used to locate the full configuration)
  * @param requestConfig the unauthenticated axios request configuration
+ * @param options options, e.g., whether to prompt the user for login if necessary
  */
 export async function performConfiguredRequest<TData>(
+  // Note: This signature is ignored by `webext-messenger` due to the generic,
+  // so it must be copied into `background/messenger/api.ts`
   integrationConfig: SanitizedIntegrationConfig | null,
   requestConfig: AxiosRequestConfig,
-  // Note: This signature is ignored by `webext-messenger`
-  // so it must be copied into `background/messenger/api.ts`
+  options: { interactiveLogin: boolean },
 ): Promise<RemoteResponse<TData>> {
   if (integrationConfig != null && typeof integrationConfig !== "object") {
     throw new TypeError(
@@ -426,6 +444,7 @@ export async function performConfiguredRequest<TData>(
     return (await _performConfiguredRequest(
       integrationConfig,
       requestConfig,
+      options,
     )) as RemoteResponse<TData>;
   } catch (error) {
     throw new ContextError("Error performing request", {
