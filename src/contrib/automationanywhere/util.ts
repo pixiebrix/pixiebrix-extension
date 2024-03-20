@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const WORKSPACE_OPTIONS = [
+import { type Option } from "@/components/form/widgets/SelectWidget";
+import { type WorkspaceType } from "@/contrib/automationanywhere/contract";
+
+export const WORKSPACE_OPTIONS: Array<Option<WorkspaceType>> = [
   { value: "public", label: "Public" },
   { value: "private", label: "Private/Local" },
 ];

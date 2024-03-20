@@ -29,7 +29,7 @@ export const API_TASK_TYPE = "application/vnd.aa.headlessbot";
 
 // Bots in the "Private" workspace are also referred to as Local bots
 export type WorkspaceType = "public" | "private";
-type VariableType = "STRING" | "NUMBER" | "BOOLEAN";
+type VariableType = "STRING" | "NUMBER" | "BOOLEAN" | "DICTIONARY";
 
 export type Variable = {
   name: string;
@@ -124,6 +124,10 @@ export type OutputValue = {
   string: string;
   number: string;
   boolean: string;
+  dictionary: Array<{
+    key: string;
+    value: OutputValue;
+  }>;
 };
 
 export type Activity = {

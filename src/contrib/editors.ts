@@ -56,6 +56,8 @@ import CommentEffect from "@/bricks/effects/comment";
 import CommentOptions from "@/bricks/effects/CommentOptions";
 import { DocumentRenderer } from "@/bricks/renderers/document";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
+import { RunApiTask } from "@/contrib/automationanywhere/RunApiTask";
+import ApiTaskOptions from "@/contrib/automationanywhere/ApiTaskOptions";
 
 /**
  * Custom BlockConfiguration pageEditor components.
@@ -82,4 +84,5 @@ export default function registerEditors() {
   optionsRegistry.set(AssignModVariable.BRICK_ID, AssignModVariableOptions);
   optionsRegistry.set(IdentityTransformer.BRICK_ID, IdentityTransformerOptions);
   optionsRegistry.set(CommentEffect.BRICK_ID, CommentOptions);
+  optionsRegistry.set(RunApiTask.BRICK_ID, ApiTaskOptions);
 }

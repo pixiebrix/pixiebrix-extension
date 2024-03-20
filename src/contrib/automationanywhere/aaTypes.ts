@@ -48,7 +48,7 @@ export type BotArgs = (CommunityBotArgs | EnterpriseBotArgs) & {
 export type ApiTaskArgs = {
   integrationConfig: SanitizedIntegrationConfig;
   botId: string;
-  sharedRunAsUserId: number[];
+  sharedRunAsUserId: number;
   data: UnknownObject;
   automationName: string;
   awaitResult: boolean;

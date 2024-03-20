@@ -20,7 +20,7 @@ import { type Option } from "@/components/form/widgets/SelectWidget";
 import {
   type Activity,
   API_TASK_TYPE,
-  ApiTaskResponse,
+  type ApiTaskResponse,
   type Bot,
   BOT_TYPE,
   type DeployResponse,

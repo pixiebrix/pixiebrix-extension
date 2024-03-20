@@ -17,7 +17,7 @@
 
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import { validateRegistryId } from "@/types/helpers";
-import { Schema } from "@/types/schemaTypes";
+import { type Schema } from "@/types/schemaTypes";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
@@ -27,9 +27,63 @@ import {
   pollEnterpriseResult,
   runApiTask,
 } from "@/contrib/automationanywhere/aaApi";
-import { ApiTaskArgs } from "@/contrib/automationanywhere/aaTypes";
-import { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
+import { type ApiTaskArgs } from "@/contrib/automationanywhere/aaTypes";
+import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { BusinessError } from "@/errors/businessErrors";
+
+export const RUN_API_TASK_INPUT_SCHEMA: Schema = {
+  $schema: "https://json-schema.org/draft/2019-09/schema#",
+  type: "object",
+  properties: {
+    integrationConfig: {
+      oneOf: [
+        {
+          $ref: `https://app.pixiebrix.com/schemas/services/${CONTROL_ROOM_TOKEN_INTEGRATION_ID}`,
+        },
+        {
+          $ref: `https://app.pixiebrix.com/schemas/services/${CONTROL_ROOM_OAUTH_INTEGRATION_ID}`,
+        },
+      ],
+    },
+    botId: {
+      type: "string",
+      title: "Automation ID",
+      description: "The id of the api task to deploy",
+      format: "\\d+",
+    },
+    sharedRunAsUserId: {
+      type: "number",
+      title: "Run As User ID",
+      description: "The user to run the api task",
+    },
+    data: {
+      type: "object",
+      title: "Automation Inputs",
+      description: "The input data for the api task",
+      additionalProperties: true,
+    },
+    automationName: {
+      type: "string",
+      title: "Automation Name",
+      description:
+        "Name of the api task to be deployed. You can enter a name to easily identify your task.",
+    },
+    awaitResult: {
+      type: "boolean",
+      title: "Await Result",
+      default: false,
+      description: "Wait for the api task to complete and return the output",
+    },
+    maxWaitMillis: {
+      type: "number",
+      title: "Result Timeout",
+      default: DEFAULT_MAX_WAIT_MILLIS,
+      description:
+        "Maximum time (in milliseconds) to wait for the api task to complete when awaiting result.",
+    },
+  },
+  required: ["integrationConfig", "botId", "sharedRunAsUserId", "awaitResult"],
+};
 
 export class RunApiTask extends TransformerABC {
   static BRICK_ID = validateRegistryId(
@@ -39,64 +93,12 @@ export class RunApiTask extends TransformerABC {
   constructor() {
     super(
       RunApiTask.BRICK_ID,
-      "Run API Task",
+      "Run Automation Anywhere API Task",
       "Run an Automation Anywhere API task",
     );
   }
 
-  inputSchema: Schema = {
-    $schema: "https://json-schema.org/draft/2019-09/schema#",
-    type: "object",
-    properties: {
-      integrationConfig: {
-        oneOf: [
-          {
-            $ref: `https://app.pixiebrix.com/schemas/services/${CONTROL_ROOM_TOKEN_INTEGRATION_ID}`,
-          },
-          {
-            $ref: `https://app.pixiebrix.com/schemas/services/${CONTROL_ROOM_OAUTH_INTEGRATION_ID}`,
-          },
-        ],
-      },
-      botId: {
-        type: "string",
-        title: "Automation ID",
-        description: "The id of the api task to deploy",
-        format: "\\d+",
-      },
-      sharedRunAsUserId: {
-        type: "string",
-        title: "Run As User",
-        description: "The user to run the api task",
-      },
-      data: {
-        type: "object",
-        title: "Automation Inputs",
-        description: "The input data for the api task",
-        additionalProperties: true,
-      },
-      automationName: {
-        type: "string",
-        title: "Automation Name",
-        description:
-          "Name of the api task to be deployed. You can enter a name to easily identify your task.",
-      },
-      awaitResult: {
-        type: "boolean",
-        title: "Await Result",
-        default: false,
-        description: "Wait for the api task to complete and return the output",
-      },
-      maxWaitMillis: {
-        type: "number",
-        title: "Result Timeout",
-        default: DEFAULT_MAX_WAIT_MILLIS,
-        description:
-          "Maximum time (in milliseconds) to wait for the api task to complete when awaiting result.",
-      },
-    },
-    required: ["integrationConfig", "botId", "sharedRunAsUserId"],
-  };
+  inputSchema = RUN_API_TASK_INPUT_SCHEMA;
 
   override defaultOutputKey = "apiTask";
 
