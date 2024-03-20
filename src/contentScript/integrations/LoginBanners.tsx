@@ -39,9 +39,7 @@ const LoginBanner: React.FC<DeferredLogin & { dismissLogin: () => void }> = ({
       className="login-alert"
       data-configid={config.id}
       dismissible
-      onClose={() => {
-        dismissLogin();
-      }}
+      onClose={dismissLogin}
     >
       <div className="flex-grow-1">
         One or more mods are having a problem connecting to {label}. Please
