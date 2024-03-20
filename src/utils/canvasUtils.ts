@@ -83,3 +83,41 @@ export async function blobToImageData(
 
   return context.getImageData(0, 0, width, height);
 }
+
+type Rect = { width: number; height: number; x: number; y: number };
+/**
+ * Calculates the intersection of two rectangles and returns the result as a new rectangle.
+ * If the inner box is outside the outer box, it will return a rectangle with zero area at the closest overlapping edge (if any).
+ *
+ * @param {Rect} innerBox - The first rectangle, defined by an object with properties: x, y, width, height.
+ * @param {Rect} outerBox - The second rectangle, defined by an object with properties: x, y, width, height.
+ * @returns The intersection of the two rectangles, defined by an object with properties: x, y, width, height, top, left, bottom, right.
+ */
+export function snapWithin(innerBox: Rect, outerBox: Rect) {
+  const left = Math.min(
+    Math.max(innerBox.x, outerBox.x),
+    outerBox.x + outerBox.width,
+  );
+  const top = Math.min(
+    Math.max(innerBox.y, outerBox.y),
+    outerBox.y + outerBox.height,
+  );
+  const right = Math.max(
+    Math.min(innerBox.x + innerBox.width, outerBox.x + outerBox.width),
+    outerBox.x,
+  );
+  const bottom = Math.max(
+    Math.min(innerBox.y + innerBox.height, outerBox.y + outerBox.height),
+    outerBox.y,
+  );
+  return {
+    x: left,
+    y: top,
+    width: right - left,
+    height: bottom - top,
+    top,
+    left,
+    bottom,
+    right,
+  };
+}
