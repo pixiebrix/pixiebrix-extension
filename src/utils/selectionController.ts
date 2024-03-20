@@ -39,10 +39,7 @@ export function guessSelectedElement(): HTMLElement | null {
 
   const start = range.startContainer.parentElement ?? document.documentElement;
   const end = range.endContainer.parentElement ?? document.documentElement;
-  const node = getCommonAncestor(start, end);
-  if (node instanceof HTMLElement) {
-    return node;
-  }
+  return getCommonAncestor(start, end);
 }
 
 /**
@@ -54,7 +51,7 @@ let selectionOverride: Range | undefined;
 const selectionController = {
   save(): void {
     // It must be set to "undefined" even if there are no selections
-    selectionOverride = getSelectionRange() ?? undefined;
+    selectionOverride = getSelectionRange();
   },
   restore(): void {
     selectionController.restoreWithoutClearing();
