@@ -20,7 +20,7 @@ import { isRequired } from "@/utils/schemaUtils";
 
 export function convertSchemaToConfigState(inputSchema: Schema): UnknownObject {
   const result: UnknownObject = {};
-  for (const [key, value] of Object.entries(inputSchema.properties)) {
+  for (const [key, value] of Object.entries(inputSchema.properties ?? {})) {
     if (
       typeof value === "boolean" ||
       value.type === "null" ||

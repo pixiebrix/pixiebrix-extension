@@ -133,7 +133,7 @@ function isComplexSchema(schema: Schema): boolean {
  * @param key the property key
  */
 export function isRequired(schema: Schema, key: string): boolean {
-  return schema.required && schema.required.includes(key);
+  return schema.required?.includes(key) ?? false;
 }
 
 /**
