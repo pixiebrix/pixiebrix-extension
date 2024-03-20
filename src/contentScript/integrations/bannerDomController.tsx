@@ -91,7 +91,7 @@ export function showLoginBanner(
   const { id: configId } = login.config;
 
   if (dismissedLoginBanners.has(configId)) {
-    dismissLogin(configId);
+    dismissDeferredLogin(configId);
   }
 
   if (deferredLogins.has(configId)) {
