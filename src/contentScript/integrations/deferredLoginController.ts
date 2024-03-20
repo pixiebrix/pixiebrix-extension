@@ -38,11 +38,6 @@ import { getTopLevelFrame } from "webext-messenger";
  */
 const deferredLogins = new Map<UUID, DeferredPromise<void>>();
 
-/*
- * Login requests that have been dismissed by the user. They should not be shown again.
- */
-const dismissedLogins = new Set<UUID>();
-
 /**
  * Content script messenger handler to show a login banner. Should only be run in the top-level frame.
  */
@@ -62,7 +57,6 @@ export async function showBannerInTopFrame(
       integration,
       config,
     },
-    dismissedLogins,
     dismissDeferredLogin,
   );
 }
@@ -105,12 +99,12 @@ export function clearDeferredLogins(): void {
 }
 
 export function dismissDeferredLogin(id: UUID): void {
-  dismissedLogins.add(id);
-
   const deferredLogin = deferredLogins.get(id);
   if (deferredLogin) {
     deferredLogin.reject(new CancelError("User dismissed login"));
   }
+
+  deferredLogins.delete(id);
 
   hideLoginBanner(id);
 }
@@ -135,6 +129,5 @@ export function initDeferredLoginController(): void {
   // Clean up the UI if the extension context is invalidated
   onContextInvalidated.addListener(() => {
     clearDeferredLogins();
-    dismissedLogins.clear();
   });
 }
