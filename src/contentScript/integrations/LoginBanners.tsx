@@ -19,23 +19,35 @@ import React from "react";
 import AsyncButton from "@/components/AsyncButton";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { Alert } from "react-bootstrap";
-import bootstrapUrl from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
+import bootstrapUrl from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
 import stylesUrl from "./LoginBanners.scss?loadAsUrl";
 import { Stylesheets } from "@/components/Stylesheets";
 import type { DeferredLogin } from "@/contentScript/integrations/deferredLoginTypes";
 import { launchInteractiveOAuthFlow } from "@/background/messenger/api";
+import { type UUID } from "@/types/stringTypes";
 
-const LoginBanner: React.FC<DeferredLogin> = ({ integration, config }) => {
+const LoginBanner: React.FC<DeferredLogin & { dismissLogin: () => void }> = ({
+  integration,
+  config,
+  dismissLogin,
+}) => {
   const label = config.label ?? integration.name;
 
   return (
-    <Alert variant="danger" className="login-alert" data-configid={config.id}>
+    <Alert
+      variant="danger"
+      className="login-alert"
+      data-configid={config.id}
+      dismissible
+      onClose={dismissLogin}
+    >
       <div className="flex-grow-1">
         One or more mods are having a problem connecting to {label}. Please
         login to continue
       </div>
       <div>
         <AsyncButton
+          className="login-button"
           variant="danger"
           size="sm"
           onClick={async () => {
@@ -50,9 +62,10 @@ const LoginBanner: React.FC<DeferredLogin> = ({ integration, config }) => {
   );
 };
 
-const LoginBanners: React.FC<{ deferredLogins: DeferredLogin[] }> = ({
-  deferredLogins,
-}) => {
+const LoginBanners: React.FC<{
+  deferredLogins: DeferredLogin[];
+  dismissLogin: (configId: UUID) => void;
+}> = ({ deferredLogins, dismissLogin }) => {
   if (deferredLogins.length === 0) {
     return null;
   }
@@ -61,7 +74,13 @@ const LoginBanners: React.FC<{ deferredLogins: DeferredLogin[] }> = ({
     <EmotionShadowRoot mode="open">
       <Stylesheets href={[bootstrapUrl, stylesUrl]}>
         {deferredLogins.map((x) => (
-          <LoginBanner key={x.config.id} {...x} />
+          <LoginBanner
+            key={x.config.id}
+            {...x}
+            dismissLogin={() => {
+              dismissLogin(x.config.id);
+            }}
+          />
         ))}
       </Stylesheets>
     </EmotionShadowRoot>
