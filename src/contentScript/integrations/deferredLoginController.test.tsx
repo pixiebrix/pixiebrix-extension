@@ -20,6 +20,7 @@ import {
   deferLogin,
   showBannerInTopFrame,
   clearDeferredLogins,
+  dismissDeferredLogin,
 } from "@/contentScript/integrations/deferredLoginController";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { screen } from "@testing-library/react";
@@ -97,5 +98,25 @@ describe("deferredLoginController", () => {
     clearDeferredLogins();
     // Throws due to test cleanup
     await expect(nextPromise).rejects.toThrow();
+  });
+
+  it("dismissDeferredLogin cancels the deferredLogin and removes the banner", async () => {
+    jest
+      .mocked(showLoginBanner)
+      .mockImplementation(
+        async (_target: Target, config: SanitizedIntegrationConfig) =>
+          showBannerInTopFrame(config),
+      );
+    jest
+      .mocked(integrationRegistry.lookup)
+      .mockResolvedValue({ name: "Integration Name" } as any);
+
+    const config = sanitizedIntegrationConfigFactory({ label: "Test Config" });
+
+    const promise = deferLogin(config);
+
+    dismissDeferredLogin(config.id);
+
+    await expect(promise).rejects.toThrow("User dismissed login");
   });
 });
