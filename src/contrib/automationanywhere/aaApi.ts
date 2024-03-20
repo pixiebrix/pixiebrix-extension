@@ -19,6 +19,8 @@ import { type Logger } from "@/types/loggerTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import {
   type Activity,
+  API_TASK_TYPE,
+  ApiTaskResponse,
   type Bot,
   BOT_TYPE,
   type DeployResponse,
@@ -39,6 +41,7 @@ import {
   selectBotOutput,
 } from "@/contrib/automationanywhere/aaUtils";
 import {
+  type ApiTaskArgs,
   type CommunityBotArgs,
   type EnterpriseBotArgs,
 } from "@/contrib/automationanywhere/aaTypes";
@@ -261,6 +264,100 @@ export const cachedSearchBots = cachePromiseMethod(
   searchBots,
 );
 
+async function searchApiTasks(
+  config: SanitizedIntegrationConfig,
+  options: {
+    workspaceType: WorkspaceType;
+    query: string;
+    value: string | null;
+  },
+): Promise<Option[]> {
+  if (isNullOrBlank(options.workspaceType)) {
+    throw new TypeError("workspaceType is required");
+  }
+
+  let searchPayload = {
+    ...SORT_BY_NAME,
+    filter: {
+      operator: "and",
+      operands: [
+        {
+          operator: "substring",
+          field: "name",
+          value: options.query ?? "",
+        },
+        {
+          operator: "eq",
+          field: "type",
+          value: API_TASK_TYPE,
+        },
+      ],
+    },
+  };
+
+  if (isNullOrBlank(options.query) && !isNullOrBlank(options.value)) {
+    // If the value is set, but not the query just return the result set for the current value to ensure we can show
+    // the label for the value. Ideally we'd show the value + a page of results to allow easily switching the value
+    // but that would require an extra request unless the sort could somehow put the known value first
+    searchPayload = {
+      ...SORT_BY_NAME,
+      filter: {
+        operator: "and",
+        operands: [
+          {
+            operator: "eq",
+            field: "id",
+            value: options.value,
+          },
+          {
+            operator: "eq",
+            field: "type",
+            value: API_TASK_TYPE,
+          },
+        ],
+      },
+    };
+  }
+
+  let bots: Bot[];
+
+  // The folderId field on the integration is now deprecated. See BotOptions for the alert shown to user if
+  // the Page Editor configuration is only showing bots for the folder id.
+  if (isEmpty(config.config.folderId)) {
+    bots = await fetchPages<Bot>(
+      config,
+      {
+        url: `/v2/repository/workspaces/${options.workspaceType}/files/list`,
+        method: "POST",
+        data: searchPayload,
+      },
+      { maxPages: 1 },
+    );
+  } else {
+    // The /folders/:id/list endpoint works on both community and Enterprise. The /v2/repository/file/list doesn't
+    // include `type` field for filters or in the body or the response
+    bots = await fetchPages<Bot>(
+      config,
+      {
+        url: `/v2/repository/folders/${config.config.folderId}/list`,
+        method: "POST",
+        data: searchPayload,
+      },
+      { maxPages: 1 },
+    );
+  }
+
+  return bots.map((bot) => ({
+    value: bot.id,
+    label: bot.name,
+  }));
+}
+
+export const cachedSearchApiTasks = cachePromiseMethod(
+  ["aa:fetchApiTasks"],
+  searchApiTasks,
+);
+
 async function fetchDevices(
   config: SanitizedIntegrationConfig,
 ): Promise<Option[]> {
@@ -389,6 +486,42 @@ export async function runEnterpriseBot({
   );
 
   return deployData;
+}
+
+export async function runApiTask({
+  integrationConfig,
+  botId,
+  sharedRunAsUserId,
+  data,
+  automationName,
+}: Pick<
+  ApiTaskArgs,
+  | "integrationConfig"
+  | "botId"
+  | "sharedRunAsUserId"
+  | "data"
+  | "automationName"
+>): Promise<ApiTaskResponse> {
+  const { data: response } = await getPlatform().request<ApiTaskResponse>(
+    integrationConfig,
+    {
+      url: "/v4/automations/deploy",
+      method: "post",
+      data: {
+        botId,
+        automationName,
+        executionType: "RUN_NOW",
+        headlessRequest: {
+          numberOfExecutions: 1,
+          queueOnSlotsExhaustion: false,
+          sharedRunAsUserId,
+        },
+        botInput: mapBotInput(data),
+      },
+    },
+  );
+
+  return response;
 }
 
 export async function pollEnterpriseResult({

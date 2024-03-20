@@ -44,3 +44,13 @@ export type BotArgs = (CommunityBotArgs | EnterpriseBotArgs) & {
   awaitResult: boolean;
   maxWaitMillis: number;
 };
+
+export type ApiTaskArgs = {
+  integrationConfig: SanitizedIntegrationConfig;
+  botId: string;
+  sharedRunAsUserId: number[];
+  data: UnknownObject;
+  automationName: string;
+  awaitResult: boolean;
+  maxWaitMillis: number;
+};

@@ -52,11 +52,7 @@ import AsyncRemoteSelectWidget from "@/components/form/widgets/AsyncRemoteSelect
 import { joinName } from "@/utils/formUtils";
 import useAsyncState from "@/hooks/useAsyncState";
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
-
-const WORKSPACE_OPTIONS = [
-  { value: "public", label: "Public" },
-  { value: "private", label: "Private/Local" },
-];
+import { WORKSPACE_OPTIONS } from "@/contrib/automationanywhere/util";
 
 const BotLoadingMessage: React.FC = () => <span>Searching bots...</span>;
 const BotNoOptionsMessage: React.FC = () => (

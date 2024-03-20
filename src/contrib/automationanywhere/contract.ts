@@ -25,6 +25,7 @@ export type ListResponse<TData> = {
 };
 
 export const BOT_TYPE = "application/vnd.aa.taskbot";
+export const API_TASK_TYPE = "application/vnd.aa.headlessbot";
 
 // Bots in the "Private" workspace are also referred to as Local bots
 export type WorkspaceType = "public" | "private";
@@ -97,6 +98,17 @@ export type DeployResponse = {
   // https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-deploy.html
   automationId: string;
   deploymentId: string;
+};
+
+/**
+ * The response from the Automation Anywhere API Task endpoint.
+ *
+ * @see https://docs.automationanywhere.com/bundle/enterprise-v2019/page/api-task-on-demand-endpoint.html
+ */
+export type ApiTaskResponse = {
+  deploymentId: string;
+  // If an automation name is not given in the request, a random name will be assigned to the automation and returned here
+  automationName: string;
 };
 
 export const FAILURE_STATUSES = new Set([

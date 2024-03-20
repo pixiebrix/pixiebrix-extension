@@ -25,7 +25,7 @@ import { UIPATH_ID } from "@/contrib/uipath/process";
 import RunLocalProcess from "@/contrib/uipath/localProcess";
 import { GOOGLE_SHEETS_APPEND_ID } from "@/contrib/google/sheets/bricks/append";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
-import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/RunBot";
+import { RunBot } from "@/contrib/automationanywhere/RunBot";
 import FormModalOptions, {
   FORM_MODAL_ID,
 } from "@/pageEditor/fields/FormModalOptions";
@@ -69,7 +69,7 @@ export default function registerEditors() {
   optionsRegistry.set(RunLocalProcess.BRICK_ID, LocalProcessOptions);
   optionsRegistry.set(GOOGLE_SHEETS_APPEND_ID, AppendSpreadsheetOptions);
   optionsRegistry.set(GOOGLE_SHEETS_LOOKUP_ID, LookupSpreadsheetOptions);
-  optionsRegistry.set(AUTOMATION_ANYWHERE_RUN_BOT_ID, BotOptions);
+  optionsRegistry.set(RunBot.BRICK_ID, BotOptions);
   optionsRegistry.set(FORM_MODAL_ID, FormModalOptions);
   optionsRegistry.set(CustomFormRenderer.BRICK_ID, FormRendererOptions);
   optionsRegistry.set(DATABASE_GET_ID, DatabaseGetOptions);

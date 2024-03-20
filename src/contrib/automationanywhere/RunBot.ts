@@ -40,10 +40,6 @@ import {
 } from "@/integrations/constants";
 import { urlsMatch } from "@/utils/urlUtils";
 
-export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
-  "@pixiebrix/automation-anywhere/run-bot",
-);
-
 export const COMMON_PROPERTIES: SchemaProperties = {
   service: {
     anyOf: [
@@ -117,9 +113,13 @@ const ENTERPRISE_EDITION_PUBLIC_PROPERTIES: SchemaProperties = {
 };
 
 export class RunBot extends TransformerABC {
+  static BRICK_ID = validateRegistryId(
+    "@pixiebrix/automation-anywhere/run-bot",
+  );
+
   constructor() {
     super(
-      AUTOMATION_ANYWHERE_RUN_BOT_ID,
+      RunBot.BRICK_ID,
       "Run Automation Anywhere Bot",
       "Run an Automation Anywhere Bot via the Control Room API",
     );
