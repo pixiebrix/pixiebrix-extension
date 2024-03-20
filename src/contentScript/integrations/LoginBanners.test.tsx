@@ -19,6 +19,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import LoginBanners from "@/contentScript/integrations/LoginBanners";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
+import userEvent from "@testing-library/user-event";
 
 // I couldn't get shadow-dom-testing-library working
 jest.mock("react-shadow/emotion", () => ({
@@ -32,7 +33,7 @@ jest.mock("react-shadow/emotion", () => ({
 
 describe("LoginBanners", () => {
   test("smoke test no banners", () => {
-    render(<LoginBanners deferredLogins={[]} />);
+    render(<LoginBanners deferredLogins={[]} dismissLogin={jest.fn()} />);
     expect(true).toBeTrue();
   });
 
@@ -45,11 +46,37 @@ describe("LoginBanners", () => {
             config: sanitizedIntegrationConfigFactory({ label: "My Config" }),
           },
         ]}
+        dismissLogin={jest.fn()}
       />,
     );
 
     expect(
       screen.getByRole("button", { name: "Log in to My Config" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: /close alert/i,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  test("clicking the close alert button calls dismissLogin", async () => {
+    const dismissLogin = jest.fn();
+    const config = sanitizedIntegrationConfigFactory({ label: "My Config" });
+    render(
+      <LoginBanners
+        deferredLogins={[
+          {
+            integration: { name: "test" },
+            config,
+          },
+        ]}
+        dismissLogin={dismissLogin}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: /close alert/i }));
+
+    expect(dismissLogin).toHaveBeenCalledWith(config.id);
   });
 });

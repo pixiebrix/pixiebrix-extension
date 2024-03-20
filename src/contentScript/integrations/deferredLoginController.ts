@@ -52,10 +52,13 @@ export async function showBannerInTopFrame(
 
   const integration = await integrationRegistry.lookup(config.serviceId);
 
-  showLoginBanner({
-    integration,
-    config,
-  });
+  showLoginBanner(
+    {
+      integration,
+      config,
+    },
+    dismissDeferredLogin,
+  );
 }
 
 /**
@@ -93,6 +96,17 @@ export function clearDeferredLogins(): void {
 
   deferredLogins.clear();
   hideAllLoginBanners();
+}
+
+export function dismissDeferredLogin(id: UUID): void {
+  const deferredLogin = deferredLogins.get(id);
+  if (deferredLogin) {
+    deferredLogin.reject(new CancelError("User dismissed login"));
+  }
+
+  deferredLogins.delete(id);
+
+  hideLoginBanner(id);
 }
 
 export function initDeferredLoginController(): void {

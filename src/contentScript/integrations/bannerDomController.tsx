@@ -22,11 +22,19 @@ import LoginBanners from "@/contentScript/integrations/LoginBanners";
 import type { DeferredLogin } from "@/contentScript/integrations/deferredLoginTypes";
 
 let bannerContainer: HTMLDivElement | null = null;
+let dismissLogin: (configId: UUID) => void = null;
 
 /**
  * Mapping from integration configuration id to deferred login.
  */
 const deferredLogins = new Map<UUID, DeferredLogin>();
+
+/*
+ * Login requests that have been dismissed by the user.
+ * When showLoginBanner is called, it will check if the banner has been dismissed before and if so,
+ * it will dismiss it again.
+ */
+const dismissedLoginBanners = new Set<UUID>();
 
 function renderOrUnmountBanners(): void {
   if (!bannerContainer) {
@@ -40,11 +48,15 @@ function renderOrUnmountBanners(): void {
 
     bannerContainer.remove();
     bannerContainer = null;
+    dismissLogin = null;
     return;
   }
 
   render(
-    <LoginBanners deferredLogins={[...deferredLogins.values()]} />,
+    <LoginBanners
+      deferredLogins={[...deferredLogins.values()]}
+      dismissLogin={dismissLogin}
+    />,
     bannerContainer,
   );
 }
@@ -52,7 +64,15 @@ function renderOrUnmountBanners(): void {
 /**
  * Show a banner for the given integration configuration. Is a no-op if the banner is already showing.
  */
-export function showLoginBanner(login: DeferredLogin): void {
+export function showLoginBanner(
+  login: DeferredLogin,
+  dismissDeferredLogin: (configId: UUID) => void,
+): void {
+  dismissLogin ??= (configId: UUID) => {
+    dismissDeferredLogin(configId);
+    dismissedLoginBanners.add(configId);
+  };
+
   if (!bannerContainer) {
     // Create a new banner container
     bannerContainer = document.createElement("div");
@@ -61,18 +81,28 @@ export function showLoginBanner(login: DeferredLogin): void {
       style: "all: initial",
       position: "relative",
       width: "100%",
+      // See https://getbootstrap.com/docs/4.6/layout/overview/#z-index
+      // We want the z-index to be high as possible, but lower than the modal
+      zIndex: "1030",
     });
 
     // Insert the banner at the top of the body
     document.body.insertBefore(bannerContainer, document.body.firstChild);
   }
 
-  if (deferredLogins.has(login.config.id)) {
+  const { id: configId } = login.config;
+
+  if (dismissedLoginBanners.has(configId)) {
+    // Previously dismissed, need to dismiss again
+    dismissDeferredLogin(configId);
+  }
+
+  if (deferredLogins.has(configId)) {
     // Already showing
     return;
   }
 
-  deferredLogins.set(login.config.id, login);
+  deferredLogins.set(configId, login);
 
   renderOrUnmountBanners();
 }
@@ -89,6 +119,7 @@ export function hideLoginBanner(integrationConfigId: UUID): void {
  * Hide all login banners. Does NOT cancel their deferred login promises.
  */
 export function hideAllLoginBanners(): void {
+  dismissedLoginBanners.clear();
   deferredLogins.clear();
   renderOrUnmountBanners();
 }
