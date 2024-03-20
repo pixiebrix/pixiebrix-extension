@@ -68,7 +68,10 @@ export function showLoginBanner(
   login: DeferredLogin,
   dismissDeferredLogin: (configId: UUID) => void,
 ): void {
-  dismissLogin ??= dismissDeferredLogin;
+  dismissLogin ??= (configId: UUID) => {
+    dismissDeferredLogin(configId);
+    dismissedLoginBanners.add(configId);
+  };
 
   if (!bannerContainer) {
     // Create a new banner container
@@ -91,7 +94,7 @@ export function showLoginBanner(
 
   if (dismissedLoginBanners.has(configId)) {
     // Previously dismissed, need to dismiss again
-    dismissLogin(configId);
+    dismissDeferredLogin(configId);
   }
 
   if (deferredLogins.has(configId)) {
@@ -108,7 +111,6 @@ export function showLoginBanner(
  * Hide a banner for the given integration configuration. Is a no-op if the banner is not currently showing.
  */
 export function hideLoginBanner(integrationConfigId: UUID): void {
-  dismissedLoginBanners.add(integrationConfigId);
   deferredLogins.delete(integrationConfigId);
   renderOrUnmountBanners();
 }
