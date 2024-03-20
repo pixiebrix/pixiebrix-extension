@@ -68,7 +68,6 @@ import type { Except } from "type-fest";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { type MessageConfig } from "@/utils/notify";
 import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
-import { flagOn } from "@/auth/featureFlagStorage";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
@@ -223,13 +222,10 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     installMouseHandlerOnce();
 
     if (this.contexts.includes("selection") || this.contexts.includes("all")) {
-      const [{ selectionPopover: isPopoverSettingEnabled }, isPopoverFlagOn] =
-        await Promise.all([
-          getSettingsState(),
-          flagOn("text-selection-popover-force"),
-        ]);
+      const { textSelectionMenu: isTextSelectionMenuEnabled } =
+        await getSettingsState();
 
-      if (isPopoverSettingEnabled || isPopoverFlagOn) {
+      if (isTextSelectionMenuEnabled) {
         initSelectionTooltip();
       }
     }

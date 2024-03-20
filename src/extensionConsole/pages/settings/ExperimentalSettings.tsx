@@ -24,18 +24,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { selectSettings } from "@/store/settings/settingsSelectors";
 import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
 import { isMV3 } from "@/mv3/api";
-import useFlags from "@/hooks/useFlags";
 
 const ExperimentalSettings: React.FunctionComponent = () => {
-  const { flagOn } = useFlags();
-
   const {
     suggestElements,
     excludeRandomClasses,
     performanceTracing,
     sandboxedCode,
-    selectionPopover,
-    textCommandPopover,
   } = useSelector(selectSettings);
 
   return (
@@ -77,32 +72,6 @@ const ExperimentalSettings: React.FunctionComponent = () => {
               flag="sandboxedCode"
             />
           )}
-          {flagOn("text-selection-popover-force") ? (
-            // We're doing limited rollouts of the text selection popover via feature flag
-            <SettingToggle
-              controlId="selectionPopover"
-              label="Selection Popover"
-              description="Show context menu items in a selection popover."
-              isEnabled={true}
-              disabled={true}
-              flag="selectionPopover"
-            />
-          ) : (
-            <SettingToggle
-              controlId="selectionPopover"
-              label="Selection Popover"
-              description="Show context menu items in a selection popover"
-              isEnabled={selectionPopover}
-              flag="selectionPopover"
-            />
-          )}
-          <SettingToggle
-            controlId="textCommandPopover"
-            label="Text Command Popover"
-            description="Show a text command popover"
-            isEnabled={textCommandPopover}
-            flag="textCommandPopover"
-          />
         </Form>
       </Card.Body>
     </Card>

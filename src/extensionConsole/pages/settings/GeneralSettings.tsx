@@ -24,8 +24,12 @@ import useIsEnterpriseUser from "@/hooks/useIsEnterpriseUser";
 import SettingToggle from "@/extensionConsole/pages/settings/SettingToggle";
 
 const GeneralSettings: React.FunctionComponent = () => {
-  const { isFloatingActionButtonEnabled, varAutosuggest } =
-    useSelector(selectSettings);
+  const {
+    isFloatingActionButtonEnabled,
+    varAutosuggest,
+    textSelectionMenu,
+    snippetShortcutMenu,
+  } = useSelector(selectSettings);
 
   // Disable FAB for enterprise and partner users
   const disableFloatingActionButton = useIsEnterpriseUser();
@@ -56,6 +60,22 @@ const GeneralSettings: React.FunctionComponent = () => {
             description="Toggle on to enable variable autosuggest for variable and text template entry modes"
             isEnabled={varAutosuggest}
             flag="varAutosuggest"
+          />
+
+          <SettingToggle
+            controlId="textSelectionMenu"
+            label="Text Selection Menu"
+            description="Show context menu items in a selection menu"
+            isEnabled={textSelectionMenu}
+            flag="textSelectionMenu"
+          />
+
+          <SettingToggle
+            controlId="snippetShortcutMenu"
+            label="Snippet Shortcut Menu"
+            description="Show a text snippet shortcut menu"
+            isEnabled={snippetShortcutMenu}
+            flag="snippetShortcutMenu"
           />
         </Form>
       </Card.Body>
