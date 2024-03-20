@@ -24,8 +24,11 @@ import stylesUrl from "./LoginBanners.scss?loadAsUrl";
 import { Stylesheets } from "@/components/Stylesheets";
 import type { DeferredLogin } from "@/contentScript/integrations/deferredLoginTypes";
 import { launchInteractiveOAuthFlow } from "@/background/messenger/api";
+import { type UUID } from "@/types/stringTypes";
 
-const LoginBanner: React.FC<DeferredLogin> = ({ integration, config }) => {
+const LoginBanner: React.FC<
+  DeferredLogin & { dismissLogin: (configId: UUID) => void }
+> = ({ integration, config, dismissLogin }) => {
   const label = config.label ?? integration.name;
 
   return (
@@ -35,7 +38,7 @@ const LoginBanner: React.FC<DeferredLogin> = ({ integration, config }) => {
       data-configid={config.id}
       dismissible
       onClose={() => {
-        console.log("Dismiss Clicked!!!");
+        dismissLogin(config.id);
       }}
     >
       <div className="flex-grow-1">
@@ -59,20 +62,19 @@ const LoginBanner: React.FC<DeferredLogin> = ({ integration, config }) => {
   );
 };
 
-const LoginBanners: React.FC<{ deferredLogins: DeferredLogin[] }> = ({
-  deferredLogins,
-}) => {
+const LoginBanners: React.FC<{
+  deferredLogins: DeferredLogin[];
+  dismissLogin: (configId: UUID) => void;
+}> = ({ deferredLogins, dismissLogin }) => {
   if (deferredLogins.length === 0) {
     return null;
   }
-
-  console.log({ deferredLogins });
 
   return (
     <EmotionShadowRoot mode="open">
       <Stylesheets href={[bootstrapUrl, stylesUrl]}>
         {deferredLogins.map((x) => (
-          <LoginBanner key={x.config.id} {...x} />
+          <LoginBanner key={x.config.id} {...x} dismissLogin={dismissLogin} />
         ))}
       </Stylesheets>
     </EmotionShadowRoot>

@@ -28,7 +28,7 @@ let bannerContainer: HTMLDivElement | null = null;
  */
 const deferredLogins = new Map<UUID, DeferredLogin>();
 
-function renderOrUnmountBanners(): void {
+function renderOrUnmountBanners(dismissLogin?: (configId: UUID) => void): void {
   if (!bannerContainer) {
     return;
   }
@@ -44,7 +44,10 @@ function renderOrUnmountBanners(): void {
   }
 
   render(
-    <LoginBanners deferredLogins={[...deferredLogins.values()]} />,
+    <LoginBanners
+      deferredLogins={[...deferredLogins.values()]}
+      dismissLogin={dismissLogin}
+    />,
     bannerContainer,
   );
 }
@@ -52,7 +55,11 @@ function renderOrUnmountBanners(): void {
 /**
  * Show a banner for the given integration configuration. Is a no-op if the banner is already showing.
  */
-export function showLoginBanner(login: DeferredLogin): void {
+export function showLoginBanner(
+  login: DeferredLogin,
+  dismissedLogins: Set<UUID>,
+  dismissLogin: (configId: UUID) => void,
+): void {
   if (!bannerContainer) {
     // Create a new banner container
     bannerContainer = document.createElement("div");
@@ -70,28 +77,36 @@ export function showLoginBanner(login: DeferredLogin): void {
     document.body.insertBefore(bannerContainer, document.body.firstChild);
   }
 
-  if (deferredLogins.has(login.config.id)) {
-    // Already showing
+  if (
+    deferredLogins.has(login.config.id) ||
+    dismissedLogins.has(login.config.id)
+  ) {
+    // Already showing or has been dismissed
     return;
   }
 
   deferredLogins.set(login.config.id, login);
 
-  renderOrUnmountBanners();
+  renderOrUnmountBanners(dismissLogin);
 }
 
 /**
  * Hide a banner for the given integration configuration. Is a no-op if the banner is not currently showing.
  */
-export function hideLoginBanner(integrationConfigId: UUID): void {
+export function hideLoginBanner(
+  integrationConfigId: UUID,
+  dismissLogin: (configId: UUID) => void,
+): void {
   deferredLogins.delete(integrationConfigId);
-  renderOrUnmountBanners();
+  renderOrUnmountBanners(dismissLogin);
 }
 
 /**
  * Hide all login banners. Does NOT cancel their deferred login promises.
  */
-export function hideAllLoginBanners(): void {
+export function hideAllLoginBanners(
+  dismissLogin: (configId: UUID) => void,
+): void {
   deferredLogins.clear();
-  renderOrUnmountBanners();
+  renderOrUnmountBanners(dismissLogin);
 }
