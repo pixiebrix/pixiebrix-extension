@@ -101,7 +101,7 @@ export function clearDeferredLogins(): void {
   }
 
   deferredLogins.clear();
-  hideAllLoginBanners(dismissDeferredLogin);
+  hideAllLoginBanners();
 }
 
 export function dismissDeferredLogin(id: UUID): void {
@@ -112,7 +112,7 @@ export function dismissDeferredLogin(id: UUID): void {
     deferredLogin.reject(new CancelError("User dismissed login"));
   }
 
-  hideLoginBanner(id, dismissDeferredLogin);
+  hideLoginBanner(id);
 }
 
 export function initDeferredLoginController(): void {
@@ -126,7 +126,7 @@ export function initDeferredLoginController(): void {
     for (const [id, deferredLogin] of deferredLogins.entries()) {
       if (authenticatedIds.has(id)) {
         deferredLogin.resolve();
-        hideLoginBanner(id, dismissDeferredLogin);
+        hideLoginBanner(id);
         deferredLogins.delete(id);
       }
     }
