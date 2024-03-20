@@ -43,7 +43,7 @@ import {
 } from "@/types/inputTypes";
 import { expectContext } from "@/utils/expectContext";
 import { ReusableAbortController } from "abort-utils";
-import { waitAnimationFrame } from "@/utils/domUtils";
+import { getSelectionRange, waitAnimationFrame } from "@/utils/domUtils";
 import { prefersReducedMotion } from "@/utils/a11yUtils";
 
 const COMMAND_KEY = "\\";
@@ -239,7 +239,7 @@ function getCursorPositionReference(): Nullishable<VirtualElement | Element> {
   }
 
   // Allows us to measure where the selection is on the page relative to the viewport
-  const range = window.getSelection()?.getRangeAt(0);
+  const range = getSelectionRange();
 
   if (range == null) {
     return;
@@ -342,7 +342,7 @@ function isTextSelected(target: unknown): boolean {
   }
 
   if (isContentEditableElement(target)) {
-    const range = window.getSelection()?.getRangeAt(0);
+    const range = getSelectionRange();
     return range != null && range.toString().length > 0;
   }
 

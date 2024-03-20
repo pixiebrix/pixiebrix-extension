@@ -17,3 +17,10 @@ export const X = () => (
     onKeyPress={console.log}
   />
 );
+
+const selection = getSelection();
+// eslint-disable-next-line no-restricted-syntax
+export const range = selection?.getRangeAt(0).startContainer;
+
+// This should be allowed
+export const string = selection.toString();
