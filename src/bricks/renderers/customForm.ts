@@ -285,8 +285,9 @@ export class CustomFormRenderer extends RendererABC {
       normalizedData,
     });
 
+    // Changed webpackChunkName to deconflict with the manual entry in webpack used to load in the stylesheets
     const { default: CustomFormComponent } = await import(
-      /* webpackChunkName: "CustomFormComponent" */
+      /* webpackChunkName: "CustomFormRendererComponent" */
       "./CustomFormComponent"
     );
 
