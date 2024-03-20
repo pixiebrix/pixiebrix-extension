@@ -37,7 +37,7 @@ import { onContextInvalidated } from "webext-events";
 import { isNativeField } from "@/types/inputTypes";
 import { onAbort, ReusableAbortController } from "abort-utils";
 import { prefersReducedMotion } from "@/utils/a11yUtils";
-import { getFirstSelectionRange } from "@/utils/domUtils";
+import { getSelectionRange } from "@/utils/domUtils";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
@@ -207,7 +207,7 @@ function getPositionReference(range: Range): VirtualElement | Element {
 }
 
 async function updatePosition(): Promise<void> {
-  const selectionRange = getFirstSelectionRange();
+  const selectionRange = getSelectionRange();
 
   if (!selectionTooltip || selectionRange == null) {
     hideTooltip();

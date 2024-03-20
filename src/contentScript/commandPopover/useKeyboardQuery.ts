@@ -22,6 +22,7 @@ import {
   isContentEditableElement,
 } from "@/types/inputTypes";
 import { useEffect, useRef, useState } from "react";
+import { getSelectionRange } from "@/utils/domUtils";
 
 /**
  * Set of keys that clear the query/hide the popover.
@@ -83,7 +84,7 @@ function selectActiveQuery({
   }
 
   if (isContentEditableElement(element)) {
-    const range = window.getSelection()?.getRangeAt(0);
+    const range = getSelectionRange();
     if (range?.startContainer.nodeType === Node.TEXT_NODE) {
       const { data } = range.startContainer as Text;
 

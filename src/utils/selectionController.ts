@@ -16,6 +16,7 @@
  */
 
 import { getCommonAncestor } from "@/utils/inference/selectorInference";
+import { getSelectionRange } from "./domUtils";
 
 export function getSelection(): Selection {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- Firefox-only iframe-only "null"
@@ -31,23 +32,17 @@ export function getSelection(): Selection {
  * @see setActiveElement
  */
 export function guessSelectedElement(): HTMLElement | null {
-  const selection = getSelection();
-  if (selection?.rangeCount) {
-    const start =
-      selection.getRangeAt(0).startContainer.parentElement ??
-      document.documentElement;
-    const end =
-      selection.getRangeAt(selection.rangeCount - 1).endContainer
-        .parentElement ?? document.documentElement;
-    const node = getCommonAncestor(start, end);
-    if (node instanceof HTMLElement) {
-      return node;
-    }
-
+  const range = getSelectionRange();
+  if (!range) {
     return null;
   }
 
-  return null;
+  const start = range.startContainer.parentElement ?? document.documentElement;
+  const end = range.endContainer.parentElement ?? document.documentElement;
+  const node = getCommonAncestor(start, end);
+  if (node instanceof HTMLElement) {
+    return node;
+  }
 }
 
 /**
@@ -58,11 +53,8 @@ let selectionOverride: Range | undefined;
 // eslint-disable-next-line local-rules/persistBackgroundData -- Not used there
 const selectionController = {
   save(): void {
-    const selection = getSelection();
     // It must be set to "undefined" even if there are no selections
-    selectionOverride = selection.rangeCount
-      ? selection.getRangeAt(0)
-      : undefined;
+    selectionOverride = getSelectionRange() ?? undefined;
   },
   restore(): void {
     selectionController.restoreWithoutClearing();

@@ -203,7 +203,8 @@ export function runOnDocumentVisible<Args extends unknown[], TReturn = unknown>(
   return runOnce;
 }
 
-export const getFirstSelectionRange = (): Range | null => {
+export const getSelectionRange = (): Range | null => {
   const selection = window.getSelection();
-  return selection?.rangeCount ? selection?.getRangeAt(0) : null;
+  // eslint-disable-next-line no-restricted-syntax -- The rule points to this helper
+  return selection?.rangeCount ? selection.getRangeAt(0) : null;
 };
