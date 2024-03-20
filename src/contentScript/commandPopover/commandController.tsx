@@ -72,7 +72,9 @@ async function showPopover(element: HTMLElement): Promise<void> {
   const isShowing = commandPopover.checkVisibility();
   if (!isShowing) {
     commandPopover.setAttribute("aria-hidden", "false");
-    if (!prefersReducedMotion()) {
+    if (prefersReducedMotion()) {
+      commandPopover.style.setProperty("display", "block");
+    } else {
       commandPopover.animate(
         [
           { opacity: 0, margin: "8px 0", display: "block" },
@@ -84,8 +86,6 @@ async function showPopover(element: HTMLElement): Promise<void> {
           fill: "forwards",
         },
       );
-    } else {
-      commandPopover.style.setProperty("display", "block");
     }
   }
 
