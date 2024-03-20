@@ -26,9 +26,11 @@ import type { DeferredLogin } from "@/contentScript/integrations/deferredLoginTy
 import { launchInteractiveOAuthFlow } from "@/background/messenger/api";
 import { type UUID } from "@/types/stringTypes";
 
-const LoginBanner: React.FC<
-  DeferredLogin & { dismissLogin: (configId: UUID) => void }
-> = ({ integration, config, dismissLogin }) => {
+const LoginBanner: React.FC<DeferredLogin & { dismissLogin: () => void }> = ({
+  integration,
+  config,
+  dismissLogin,
+}) => {
   const label = config.label ?? integration.name;
 
   return (
@@ -38,7 +40,7 @@ const LoginBanner: React.FC<
       data-configid={config.id}
       dismissible
       onClose={() => {
-        dismissLogin(config.id);
+        dismissLogin();
       }}
     >
       <div className="flex-grow-1">
@@ -74,7 +76,13 @@ const LoginBanners: React.FC<{
     <EmotionShadowRoot mode="open">
       <Stylesheets href={[bootstrapUrl, stylesUrl]}>
         {deferredLogins.map((x) => (
-          <LoginBanner key={x.config.id} {...x} dismissLogin={dismissLogin} />
+          <LoginBanner
+            key={x.config.id}
+            {...x}
+            dismissLogin={() => {
+              dismissLogin(x.config.id);
+            }}
+          />
         ))}
       </Stylesheets>
     </EmotionShadowRoot>
