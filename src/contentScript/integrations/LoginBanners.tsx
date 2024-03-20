@@ -19,7 +19,7 @@ import React from "react";
 import AsyncButton from "@/components/AsyncButton";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { Alert } from "react-bootstrap";
-import bootstrapUrl from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
+import bootstrapUrl from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
 import stylesUrl from "./LoginBanners.scss?loadAsUrl";
 import { Stylesheets } from "@/components/Stylesheets";
 import type { DeferredLogin } from "@/contentScript/integrations/deferredLoginTypes";
@@ -29,13 +29,22 @@ const LoginBanner: React.FC<DeferredLogin> = ({ integration, config }) => {
   const label = config.label ?? integration.name;
 
   return (
-    <Alert variant="danger" className="login-alert" data-configid={config.id}>
+    <Alert
+      variant="danger"
+      className="login-alert"
+      data-configid={config.id}
+      dismissible
+      onClose={() => {
+        console.log("Dismiss Clicked!!!");
+      }}
+    >
       <div className="flex-grow-1">
         One or more mods are having a problem connecting to {label}. Please
         login to continue
       </div>
       <div>
         <AsyncButton
+          className="login-button"
           variant="danger"
           size="sm"
           onClick={async () => {
@@ -56,6 +65,8 @@ const LoginBanners: React.FC<{ deferredLogins: DeferredLogin[] }> = ({
   if (deferredLogins.length === 0) {
     return null;
   }
+
+  console.log({ deferredLogins });
 
   return (
     <EmotionShadowRoot mode="open">
