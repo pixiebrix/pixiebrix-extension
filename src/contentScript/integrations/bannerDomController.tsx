@@ -30,7 +30,9 @@ let dismissLogin: (configId: UUID) => void = null;
 const deferredLogins = new Map<UUID, DeferredLogin>();
 
 /*
- * Login requests that have been dismissed by the user. They should not be shown again.
+ * Login requests that have been dismissed by the user.
+ * When showLoginBanner is called, it will check if the banner has been dismissed before and if so,
+ * it will dismiss it again.
  */
 const dismissedLoginBanners = new Set<UUID>();
 
@@ -66,10 +68,7 @@ export function showLoginBanner(
   login: DeferredLogin,
   dismissDeferredLogin: (configId: UUID) => void,
 ): void {
-  dismissLogin ??= (configId: UUID) => {
-    dismissedLoginBanners.add(configId);
-    dismissDeferredLogin(configId);
-  };
+  dismissLogin ??= dismissDeferredLogin;
 
   if (!bannerContainer) {
     // Create a new banner container
@@ -91,7 +90,8 @@ export function showLoginBanner(
   const { id: configId } = login.config;
 
   if (dismissedLoginBanners.has(configId)) {
-    dismissDeferredLogin(configId);
+    // Previously dismissed, need to dismiss again
+    dismissLogin(configId);
   }
 
   if (deferredLogins.has(configId)) {
@@ -108,6 +108,7 @@ export function showLoginBanner(
  * Hide a banner for the given integration configuration. Is a no-op if the banner is not currently showing.
  */
 export function hideLoginBanner(integrationConfigId: UUID): void {
+  dismissedLoginBanners.add(integrationConfigId);
   deferredLogins.delete(integrationConfigId);
   renderOrUnmountBanners();
 }
@@ -116,7 +117,7 @@ export function hideLoginBanner(integrationConfigId: UUID): void {
  * Hide all login banners. Does NOT cancel their deferred login promises.
  */
 export function hideAllLoginBanners(): void {
-  deferredLogins.clear();
   dismissedLoginBanners.clear();
+  deferredLogins.clear();
   renderOrUnmountBanners();
 }
