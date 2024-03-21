@@ -764,6 +764,8 @@
     "./utils/injectScriptTag.tsx",
     "./utils/injectStylesheet.tsx",
     "./utils/legacyMessengerUtils.ts",
+    "./utils/mathUtils.test.ts",
+    "./utils/mathUtils.ts",
     "./utils/modUtils.ts",
     "./utils/notificationTypes.ts",
     "./utils/notify.tsx",
