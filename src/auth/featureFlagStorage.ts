@@ -49,6 +49,10 @@ export async function resetFeatureFlagsCache(): Promise<void> {
   await featureFlags.get();
 }
 
+export async function TEST_clearCache(): Promise<void> {
+  await featureFlags.delete();
+}
+
 export async function TEST_overrideFeatureFlags(
   flags: string[],
 ): Promise<void> {

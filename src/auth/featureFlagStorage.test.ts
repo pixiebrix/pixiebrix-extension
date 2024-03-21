@@ -15,12 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Use ./featureFlagStorage relative import to avoid testing the manual `__mocks__` implementation. There's no easy
+// way to unmock the module in the test file: https://github.com/jestjs/jest/issues/2649
 import {
   fetchFeatureFlags,
   flagOn,
-  resetFeatureFlagsCache,
+  TEST_clearCache,
   TEST_overrideFeatureFlags,
-} from "@/auth/featureFlagStorage";
+} from "./featureFlagStorage";
+import * as featureFlagStorage from "./featureFlagStorage";
+
 import { appApiMock } from "@/testUtils/appApiMock";
 import { TEST_setAuthData, TEST_triggerListeners } from "@/auth/authStorage";
 import { tokenAuthDataFactory } from "@/testUtils/factories/authFactories";
@@ -28,7 +32,7 @@ import { fetchFeatureFlagsInBackground } from "@/background/messenger/strict/api
 
 describe("featureFlags", () => {
   beforeEach(async () => {
-    // Wire up the real fetch function so we can mock the api responses
+    // Wire up the real fetch function, so we can mock the api responses
     jest
       .mocked(fetchFeatureFlagsInBackground)
       .mockImplementation(fetchFeatureFlags);
@@ -39,7 +43,11 @@ describe("featureFlags", () => {
   });
 
   afterEach(async () => {
-    await resetFeatureFlagsCache();
+    await TEST_clearCache();
+  });
+
+  it("not using mock", () => {
+    expect((featureFlagStorage as any).isMocked).toBeUndefined();
   });
 
   it("returns true if flag is present", async () => {

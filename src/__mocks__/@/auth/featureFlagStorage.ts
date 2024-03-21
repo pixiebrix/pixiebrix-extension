@@ -21,20 +21,27 @@ import { addListener as addAuthStorageListener } from "@/auth/authStorage";
 
 let flags: string[] | null = null;
 
+export const isMocked = true;
+
 /**
  * Suggested that you call this in afterEach() in your tests:
  *    afterEach(async () => {
  *      await resetFeatureFlags();
  *    });
  */
-export async function resetFeatureFlags(): Promise<void> {
+export async function resetFeatureFlagsCache(): Promise<void> {
   flags = null;
+  flags = await fetchFeatureFlags();
 }
 
 export async function TEST_overrideFeatureFlags(
   newFlags: string[],
 ): Promise<void> {
   flags = newFlags;
+}
+
+export async function TEST_clearCache(newFlags: string[]): Promise<void> {
+  flags = null;
 }
 
 export async function flagOn(flag: string): Promise<boolean> {
@@ -45,5 +52,5 @@ export async function flagOn(flag: string): Promise<boolean> {
 }
 
 addAuthStorageListener(async () => {
-  await resetFeatureFlags();
+  await resetFeatureFlagsCache();
 });
