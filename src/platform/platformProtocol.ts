@@ -161,7 +161,7 @@ export interface PlatformProtocol {
   get quickBar(): QuickBarProtocol;
 
   /**
-   * The registry for the text selection tooltip.
+   * The registry for the text selection menu.
    * @since 1.8.10
    */
   get textSelectionMenu(): TextSelectionMenuProtocol;
