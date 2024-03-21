@@ -15,12 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  type ReactElement,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { type ReactElement, useCallback, useState } from "react";
 import { type Spreadsheet } from "@/contrib/google/sheets/core/types";
 import { type Schema } from "@/types/schemaTypes";
 import useGoogleAccount from "@/contrib/google/sheets/core/useGoogleAccount";
@@ -40,6 +35,7 @@ import { getErrorMessage } from "@/errors/errorHelpers";
 import { SHEET_FIELD_SCHEMA } from "@/contrib/google/sheets/core/schemas";
 import { getSpreadsheet } from "@/contrib/google/sheets/core/sheetsApi";
 import { hasCachedAuthData } from "@/background/messenger/strict/api";
+import useOnUnmountOnly from "@/hooks/useOnUnmountOnly";
 
 type GoogleSheetState = {
   googleAccount: SanitizedIntegrationConfig | null;
@@ -82,13 +78,9 @@ const RequireGoogleSheet: React.FC<{
   }
 
   // Clean up the listener on unmount if it hasn't fired yet
-  useEffect(
-    () => () => {
-      loginController?.abort();
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount/unmount
-    [],
-  );
+  useOnUnmountOnly(() => {
+    loginController?.abort();
+  });
 
   const resultAsyncState: AsyncState<GoogleSheetState> = useDeriveAsyncState(
     googleAccountAsyncState,

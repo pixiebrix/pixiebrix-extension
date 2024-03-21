@@ -16,8 +16,9 @@
  */
 
 import { type Action, useKBar } from "kbar";
-import React, { useEffect } from "react";
+import React from "react";
 import quickBarRegistry from "@/components/quickBar/quickBarRegistry";
+import useOnMountOnly from "@/hooks/useOnMountOnly";
 
 function useActions(): void {
   // The useActions hook is included in KBarComponent, which mounts/unmounts when the kbar is toggled
@@ -28,7 +29,8 @@ function useActions(): void {
   // Listen for changes while the kbar is mounted:
   // - The user is making edits in the Page Editor
   // - Generators are producing new actions in response to the search query changing
-  useEffect(() => {
+  // The query is available on initial mount
+  useOnMountOnly(() => {
     const handler = (nextActions: Action[]) => {
       uninstallActionsRef.current?.();
       // Potential improvement: to avoid flickering, we could register actions individually and keep track of
@@ -44,8 +46,7 @@ function useActions(): void {
     return () => {
       quickBarRegistry.changeEvent.remove(handler);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- the query is available on initial mount
-  }, []);
+  });
 }
 
 export default useActions;
