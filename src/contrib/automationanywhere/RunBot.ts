@@ -39,6 +39,7 @@ import {
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
 import { urlsMatch } from "@/utils/urlUtils";
+import { minimalSchemaFactory } from "@/utils/schemaUtils";
 
 export const COMMON_PROPERTIES: SchemaProperties = {
   service: {
@@ -155,11 +156,7 @@ export class RunBot extends TransformerABC {
 
   override defaultOutputKey = "bot";
 
-  override outputSchema: Schema = {
-    $schema: "https://json-schema.org/draft/2019-09/schema#",
-    type: "object",
-    additionalProperties: true,
-  };
+  override outputSchema = minimalSchemaFactory();
 
   async transform(
     args: BrickArgs<BotArgs>,

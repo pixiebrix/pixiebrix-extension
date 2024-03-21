@@ -30,6 +30,7 @@ import {
 import { type ApiTaskArgs } from "@/contrib/automationanywhere/aaTypes";
 import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { BusinessError } from "@/errors/businessErrors";
+import { minimalSchemaFactory } from "@/utils/schemaUtils";
 
 export const RUN_API_TASK_INPUT_SCHEMA: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -48,31 +49,31 @@ export const RUN_API_TASK_INPUT_SCHEMA: Schema = {
     botId: {
       type: "string",
       title: "Automation ID",
-      description: "The id of the api task to deploy",
+      description: "The id of the API Task to deploy",
       format: "\\d+",
     },
     sharedRunAsUserId: {
       type: "number",
       title: "Run As User ID",
-      description: "The user to run the api task",
+      description: "The user to run the API Task",
     },
     data: {
       type: "object",
       title: "Automation Inputs",
-      description: "The input data for the api task",
+      description: "The input data for the API Task",
       additionalProperties: true,
     },
     automationName: {
       type: "string",
       title: "Automation Name",
       description:
-        "Name of the api task to be deployed. You can enter a name to easily identify your task.",
+        "Name of the API Task to be deployed. You can enter a name to easily identify your task.",
     },
     awaitResult: {
       type: "boolean",
       title: "Await Result",
       default: false,
-      description: "Wait for the api task to complete and return the output",
+      description: "Wait for the API Task to complete and return the output",
     },
     maxWaitMillis: {
       type: "number",
@@ -94,7 +95,7 @@ export class RunApiTask extends TransformerABC {
     super(
       RunApiTask.BRICK_ID,
       "Run Automation Anywhere API Task",
-      "Run an Automation Anywhere API task",
+      "Run an Automation Anywhere API Task",
     );
   }
 
@@ -102,11 +103,7 @@ export class RunApiTask extends TransformerABC {
 
   override defaultOutputKey = "apiTask";
 
-  override outputSchema: Schema = {
-    $schema: "https://json-schema.org/draft/2019-09/schema#",
-    type: "object",
-    additionalProperties: true,
-  };
+  override outputSchema = minimalSchemaFactory();
 
   async transform(
     {
