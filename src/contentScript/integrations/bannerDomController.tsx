@@ -20,6 +20,10 @@ import { render, unmountComponentAtNode } from "react-dom";
 import React from "react";
 import LoginBanners from "@/contentScript/integrations/LoginBanners";
 import type { DeferredLogin } from "@/contentScript/integrations/deferredLoginTypes";
+import {
+  SIDEBAR_EASING_FUNCTION,
+  SIDEBAR_WIDTH_CSS_PROPERTY,
+} from "@/contentScript/sidebarDomControllerLite";
 
 let bannerContainer: HTMLDivElement | null = null;
 let dismissLogin: (configId: UUID) => void = null;
@@ -80,10 +84,13 @@ export function showLoginBanner(
     Object.assign(bannerContainer.style, {
       style: "all: initial",
       position: "relative",
-      width: "100%",
+      width: `calc(100% - var(${SIDEBAR_WIDTH_CSS_PROPERTY}))`,
       // See https://getbootstrap.com/docs/4.6/layout/overview/#z-index
       // We want the z-index to be high as possible, but lower than the modal
-      zIndex: "1030",
+      zIndex: "100300",
+      // Prevent the sidebar from overlapping the banner
+      marginRight: SIDEBAR_WIDTH_CSS_PROPERTY,
+      transition: `width 0.5s ${SIDEBAR_EASING_FUNCTION}`,
     });
 
     // Insert the banner at the top of the body

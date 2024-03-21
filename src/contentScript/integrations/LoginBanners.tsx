@@ -71,7 +71,7 @@ const LoginBanners: React.FC<{
   }
 
   return (
-    <EmotionShadowRoot mode="open">
+    <EmotionShadowRoot mode="open" style={{ all: "initial" }}>
       <Stylesheets href={[bootstrapUrl, stylesUrl]}>
         {deferredLogins.map((x) => (
           <LoginBanner

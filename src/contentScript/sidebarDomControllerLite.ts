@@ -28,6 +28,7 @@ import { uuidv4 } from "@/types/helpers";
 
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
+export const SIDEBAR_EASING_FUNCTION = "cubic-bezier(0.23, 1, 0.32, 1)";
 
 // Use ? because it's not defined during header generation. But otherwise it will always be defined.
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
@@ -132,7 +133,7 @@ export function insertSidebarFrame(): boolean {
 
   iframe.animate([{ translate: "50%" }, { translate: 0 }], {
     duration: 500,
-    easing: "cubic-bezier(0.23, 1, 0.32, 1)",
+    easing: SIDEBAR_EASING_FUNCTION,
   });
 
   if (!isSidebarFrameVisible()) {
