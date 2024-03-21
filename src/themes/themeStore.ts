@@ -54,7 +54,8 @@ export const initialTheme: ThemeAssets = {
  * @see useTheme
  */
 export async function getActiveTheme(): Promise<ThemeAssets> {
-  expectContext("extension");
+  // Requires background to use the memoized getMe() method
+  expectContext("background");
   try {
     const client = await getApiClient();
     const [

@@ -373,6 +373,7 @@
     "./data/model/UserOrganizationMembershipRole.ts",
     "./data/model/UserPartner.ts",
     "./data/service/api.ts",
+    "./data/service/backgroundApi.ts",
     "./data/service/apiClient.ts",
     "./data/service/apiVersioning.ts",
     "./data/service/baseQuery.ts",
