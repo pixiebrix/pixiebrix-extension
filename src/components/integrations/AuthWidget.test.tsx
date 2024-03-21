@@ -22,6 +22,7 @@ import { generateIntegrationAndRemoteConfig } from "@/testUtils/factories/integr
 import { appApiMock } from "@/testUtils/appApiMock";
 import {
   screen,
+  waitFor,
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
@@ -33,6 +34,9 @@ import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { services, registry } from "@/background/messenger/strict/api";
 import { refreshServices } from "@/background/locator";
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
+import { produce } from "immer";
+import { userEvent } from "@/pageEditor/testHelpers";
+import { waitForEffect } from "@/testUtils/testHelpers";
 
 const { remoteConfig, integrationDefinition } =
   generateIntegrationAndRemoteConfig();
@@ -145,5 +149,91 @@ describe("AuthWidget", () => {
     const modal = await screen.findByRole("dialog");
     expect(modal).toBeVisible();
     expect(within(modal).getByLabelText("API Key")).toBeVisible();
+  });
+
+  it("handles default values properly for non-required config fields", async () => {
+    const optionalFieldDefaultValue = "Optional_field_default_value";
+    const integrationWithOptionalField = produce(
+      integrationDefinition,
+      (draft) => {
+        draft.inputSchema.properties.optionalField = {
+          type: "string",
+          title: "Optional Field",
+          default: optionalFieldDefaultValue,
+        };
+      },
+    );
+
+    appApiMock
+      .onGet("/api/services/")
+      .reply(200, [integrationWithOptionalField]);
+    appApiMock
+      .onGet("/api/registry/bricks/")
+      .reply(200, [integrationWithOptionalField]);
+    await refreshRegistries();
+
+    renderContent(authOption1, authOption2);
+
+    expect(screen.getByTestId("loader")).toBeVisible();
+
+    await waitForElementToBeRemoved(() => screen.queryByTestId("loader"));
+
+    const configSelect = await screen.findByRole("combobox");
+
+    selectEvent.openMenu(configSelect);
+    expect(screen.getByText("+ Add new")).toBeVisible();
+    await selectEvent.select(configSelect, "+ Add new");
+
+    const modal = await screen.findByRole("dialog");
+    expect(modal).toBeVisible();
+
+    await waitForEffect();
+
+    const apiKeyField: HTMLInputElement =
+      within(modal).getByLabelText("API Key");
+    expect(apiKeyField).toBeVisible();
+    expect(apiKeyField).toHaveValue("");
+    expect(apiKeyField).not.toHaveAttribute("readonly");
+
+    let optionalField: HTMLInputElement =
+      within(modal).getByLabelText("Optional Field");
+    expect(optionalField).toBeVisible();
+    expect(optionalField).toHaveValue("");
+    expect(optionalField).toHaveAttribute("readonly");
+
+    // Click to enable & focus the disabled input
+    await userEvent.click(optionalField);
+
+    // Re-select input after widget changes
+    optionalField = within(modal).getByLabelText("Optional Field");
+    expect(optionalField).not.toHaveAttribute("readonly");
+    expect(optionalField).toHaveValue(optionalFieldDefaultValue);
+
+    // Change the value
+    await userEvent.type(optionalField, "_test");
+    expect(optionalField).toHaveValue(optionalFieldDefaultValue + "_test");
+
+    // Toggle the field back to Exclude
+    const optionalFieldToggle = within(
+      screen.getByTestId("toggle-config.optionalField"),
+    ).getByRole("button");
+    expect(optionalFieldToggle).toBeVisible();
+    await waitFor(async () => {
+      await selectEvent.select(optionalFieldToggle, "Exclude");
+    });
+
+    // Re-select input after widget changes
+    optionalField = within(modal).getByLabelText("Optional Field");
+    expect(optionalField).toHaveAttribute("readonly");
+    expect(optionalField).toHaveValue("");
+
+    // Click again to re-enable the input
+    await userEvent.click(optionalField);
+
+    // Re-select input after widget changes
+    optionalField = within(modal).getByLabelText("Optional Field");
+    expect(optionalField).not.toHaveAttribute("readonly");
+    // Should have default value again
+    expect(optionalField).toHaveValue(optionalFieldDefaultValue);
   });
 });

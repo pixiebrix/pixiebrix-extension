@@ -27,9 +27,9 @@ import automationAnywhereYaml from "@contrib/integrations/automation-anywhere.ya
 import registerDefaultWidgets from "@/components/fields/schemaFields/widgets/registerDefaultWidgets";
 import userEvent from "@testing-library/user-event";
 import { type IntegrationConfig } from "@/integrations/integrationTypes";
-import { convertSchemaToConfigState } from "@/components/integrations/AuthWidget";
 import { within } from "@testing-library/react";
 import { fieldLabel } from "@/components/fields/fieldUtils";
+import { convertSchemaToConfigState } from "@/components/integrations/integrationHelpers";
 
 beforeAll(() => {
   registerDefaultWidgets();
