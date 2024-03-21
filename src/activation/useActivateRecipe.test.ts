@@ -22,7 +22,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type MenuDefinition } from "@/starterBricks/contextMenu";
 import { uninstallRecipe } from "@/store/uninstallUtils";
-import { reactivateEveryTab } from "@/background/navigation";
+import { reactivateEveryTab } from "@/utils/extensionUtils";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
@@ -36,7 +36,6 @@ import {
   defaultModDefinitionFactory,
 } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
-
 import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 
 const checkPermissionsMock = jest.mocked(checkModDefinitionPermissions);
@@ -45,7 +44,7 @@ const reactivateEveryTabMock = jest.mocked(reactivateEveryTab);
 
 const createDatabaseMock = jest.fn();
 
-jest.mock("@/background/navigation");
+jest.mock("@/utils/extensionUtils");
 jest.mock("@/data/service/api", () => {
   const actual = jest.requireActual("@/data/service/api");
   return {

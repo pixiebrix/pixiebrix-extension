@@ -27,7 +27,7 @@ import useReinstall from "@/extensionConsole/pages/mods/utils/useReinstall";
 import notify from "@/utils/notify";
 import { Events } from "@/telemetry/events";
 import { clearServiceCache } from "@/background/messenger/api";
-import { reactivateEveryTab } from "@/background/navigation";
+import { reactivateEveryTab } from "@/utils/extensionUtils";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import {
   useCreatePackageMutation,

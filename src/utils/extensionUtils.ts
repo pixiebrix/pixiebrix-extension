@@ -20,6 +20,7 @@ import { foreverPendingPromise } from "@/utils/promiseUtils";
 import { type Promisable } from "type-fest";
 import { isScriptableUrl } from "webext-content-scripts";
 import { type Runtime } from "webextension-polyfill";
+import { reactivateTab } from "@/contentScript/messenger/api";
 
 export const SHORTCUTS_URL = "chrome://extensions/shortcuts";
 type Command = "toggle-quick-bar";
@@ -133,4 +134,9 @@ export async function forEachTab<
   // `forEachTab` to preserve its ease of use and the warning.
   // eslint-disable-next-line no-restricted-syntax -- Allowed for now
   return Promise.allSettled(promises);
+}
+
+export function reactivateEveryTab(): void {
+  console.debug("Reactivate all tabs");
+  void forEachTab(reactivateTab);
 }
