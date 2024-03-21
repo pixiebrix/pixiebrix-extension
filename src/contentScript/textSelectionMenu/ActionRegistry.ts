@@ -21,9 +21,9 @@ import { splitStartingEmoji } from "@/utils/stringUtils";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type {
-  SelectionTooltipProtocol,
+  TextSelectionMenuProtocol,
   TextSelectionAction,
-} from "@/platform/platformTypes/selectionTooltipProtocol";
+} from "@/platform/platformTypes/textSelectionMenuProtocol";
 
 /**
  * A registered text selection action.
@@ -44,7 +44,7 @@ const defaultIcon: IconConfig = {
  * Registry for text selection actions.
  * @since 1.8.10
  */
-class ActionRegistry implements SelectionTooltipProtocol {
+class ActionRegistry implements TextSelectionMenuProtocol {
   /**
    * Map from component UUID to registered action
    */
