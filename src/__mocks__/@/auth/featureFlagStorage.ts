@@ -20,9 +20,6 @@ import { fetchFeatureFlags } from "../../../auth/featureFlagStorage";
 
 let flags: string[] | null = null;
 
-// Helper to check if the test is using a mock or not
-export const isMocked = true;
-
 /**
  * Suggested that you call this in afterEach() in your tests:
  *    afterEach(async () => {
@@ -46,9 +43,10 @@ export async function TEST_deleteFeatureFlagsCache(
   flags = null;
 }
 
-export async function flagOn(flag: string): Promise<boolean> {
+// Wrapped in jest.fn() so test file can check if it's using the mock or not.
+export const flagOn = jest.fn().mockImplementation(async (flag: string) => {
   if (flags === null) {
     flags = await fetchFeatureFlags();
   }
   return flags?.includes(flag) ?? false;
-}
+});

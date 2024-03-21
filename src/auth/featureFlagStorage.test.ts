@@ -24,7 +24,6 @@ import {
   TEST_deleteFeatureFlagsCache,
   TEST_overrideFeatureFlags,
 } from "./featureFlagStorage";
-import * as featureFlagStorage from "./featureFlagStorage";
 
 import { appApiMock } from "@/testUtils/appApiMock";
 import {
@@ -54,7 +53,7 @@ describe("featureFlags", () => {
   });
 
   it("not using mock", () => {
-    expect((featureFlagStorage as any).isMocked).toBeUndefined();
+    expect("mock" in flagOn).toBeFalse();
   });
 
   it("returns true if flag is present", async () => {
