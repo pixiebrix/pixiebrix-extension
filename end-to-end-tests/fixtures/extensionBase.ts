@@ -24,7 +24,7 @@ import {
   type Page,
 } from "@playwright/test";
 import path from "node:path";
-import { E2E_TEST_USER_EMAIL_UNAFFILIATED, MV } from "../env";
+import { E2E_TEST_USER_EMAIL_UNAFFILIATED, MV, SLOWMO } from "../env";
 import fs from "node:fs/promises";
 import { getBaseExtensionConsoleUrl } from "../pageObjects/constants";
 
@@ -123,6 +123,7 @@ export const test = base.extend<{
         // https://playwright.dev/docs/chrome-extensions#headless-mode
         // "--headless=new", // uncomment to enable headless mode
       ],
+      slowMo: SLOWMO ? 3000 : undefined,
     });
     // The admin console automatically opens a new tab to link the newly installed extension to the user's account.
     const pagePromise = context.waitForEvent("page");
