@@ -60,7 +60,7 @@ import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { deferLogin } from "@/contentScript/integrations/deferredLoginController";
 import { flagOn } from "@/auth/featureFlagStorage";
-import { tooltipActionRegistry } from "@/contentScript/textSelectionMenu/selectionMenuController";
+import { selectionMenuActionRegistry } from "@/contentScript/textSelectionMenu/selectionMenuController";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -276,7 +276,7 @@ class ContentScriptPlatform extends PlatformBase {
   }
 
   override get textSelectionMenu(): PlatformProtocol["textSelectionMenu"] {
-    return tooltipActionRegistry;
+    return selectionMenuActionRegistry;
   }
 
   override get commandPopover(): PlatformProtocol["commandPopover"] {

@@ -32,10 +32,10 @@ describe("selectionMenuController", () => {
   });
 
   // TODO: re-enable flaky test https://github.com/pixiebrix/pixiebrix-extension/issues/7682
-  it.skip("attach tooltip when user selects text", async () => {
+  it.skip("attach selection menu when user selects text", async () => {
     module.initSelectionMenu();
 
-    module.tooltipActionRegistry.register(uuidv4(), {
+    module.selectionMenuActionRegistry.register(uuidv4(), {
       title: "Copy",
       icon: undefined,
       handler() {},
@@ -46,7 +46,7 @@ describe("selectionMenuController", () => {
     // I couldn't get screen from shadow-dom-testing-library to work, otherwise I would have use getByRole for 'menu'
     // I think it might only work with render().
     await expect(
-      screen.findByTestId("pixiebrix-selection-tooltip"),
+      screen.findByTestId("pixiebrix-selection-menu"),
     ).resolves.toBeInTheDocument();
   });
 });
