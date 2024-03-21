@@ -26,6 +26,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import implicitGrantFlow from "@/background/auth/implicitGrantFlow";
 import codeGrantFlow from "@/background/auth/codeGrantFlow";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
 /**
  * Perform the OAuth2 flow for the given integration.
@@ -94,4 +95,6 @@ async function launchOAuth2Flow(
   }
 }
 
-export default launchOAuth2Flow;
+export default memoizeUntilSettled(launchOAuth2Flow, {
+  cacheKey: ([_, integrationConfig]) => integrationConfig.id,
+});
