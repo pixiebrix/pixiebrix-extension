@@ -33,6 +33,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 const modId = validateRegistryId("@test/mod");
 
 jest.mock("@/utils/notify");
+jest.mock("@/background/navigation");
 
 jest.mock("@/components/ConfirmationModal", () => ({
   __esModule: true,

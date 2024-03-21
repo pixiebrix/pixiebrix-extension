@@ -45,6 +45,7 @@ const reactivateEveryTabMock = jest.mocked(reactivateEveryTab);
 
 const createDatabaseMock = jest.fn();
 
+jest.mock("@/background/navigation");
 jest.mock("@/data/service/api", () => {
   const actual = jest.requireActual("@/data/service/api");
   return {
