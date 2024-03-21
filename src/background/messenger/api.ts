@@ -21,7 +21,7 @@ import {
   getMethod,
   getNotifier,
 } from "webext-messenger";
-import type { AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 
@@ -68,7 +68,7 @@ export const performConfiguredRequestInBackground = getMethod(
   bg,
 ) as <TData>(
   integrationConfig: SanitizedIntegrationConfig | null,
-  requestConfig: AxiosRequestConfig,
+  requestConfig: NetworkRequestConfig,
   options: { interactiveLogin: boolean },
 ) => Promise<RemoteResponse<TData>>;
 

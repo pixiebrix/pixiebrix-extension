@@ -15,12 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios, {
-  type AxiosError,
-  type AxiosRequestConfig,
-  type AxiosResponse,
-  type Method,
-} from "axios";
+import axios, { type AxiosError, type AxiosResponse, type Method } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { pixiebrixConfigurationFactory } from "@/integrations/locator";
 import serviceRegistry from "@/integrations/registry";
 import { getExtensionToken } from "@/auth/authStorage";
@@ -118,7 +114,7 @@ function prepareErrorForMessenger(error: unknown): unknown {
 }
 
 async function serializableAxiosRequest<T>(
-  config: AxiosRequestConfig,
+  config: NetworkRequestConfig,
 ): Promise<SanitizedResponse<T>> {
   // Network requests must go through background page for permissions/CORS to work properly
   expectContext(
@@ -161,9 +157,9 @@ export const getOAuth2AuthData = memoizeUntilSettled(
 
 async function authenticate(
   config: SanitizedIntegrationConfig,
-  request: AxiosRequestConfig,
+  request: NetworkRequestConfig,
   options: { interactive: boolean },
-): Promise<AxiosRequestConfig> {
+): Promise<NetworkRequestConfig> {
   expectContext("background");
 
   if (config == null) {
@@ -232,7 +228,7 @@ async function authenticate(
 
 async function proxyRequest<T>(
   integrationConfig: SanitizedIntegrationConfig,
-  requestConfig: AxiosRequestConfig,
+  requestConfig: NetworkRequestConfig,
 ): Promise<RemoteResponse<T>> {
   if (integrationConfig == null) {
     throw new Error("Integration configuration is required for proxyRequest");
@@ -302,7 +298,7 @@ function isAuthenticationError(error: Pick<AxiosError, "response">): boolean {
 
 async function _performConfiguredRequest(
   integrationConfig: SanitizedIntegrationConfig,
-  requestConfig: AxiosRequestConfig,
+  requestConfig: NetworkRequestConfig,
   options: { interactiveLogin: boolean },
 ): Promise<RemoteResponse> {
   if (integrationConfig.proxy) {
@@ -410,7 +406,7 @@ export async function performConfiguredRequest<TData>(
   // Note: This signature is ignored by `webext-messenger` due to the generic,
   // so it must be copied into `background/messenger/api.ts`
   integrationConfig: SanitizedIntegrationConfig | null,
-  requestConfig: AxiosRequestConfig,
+  requestConfig: NetworkRequestConfig,
   options: { interactiveLogin: boolean },
 ): Promise<RemoteResponse<TData>> {
   if (integrationConfig != null && typeof integrationConfig !== "object") {

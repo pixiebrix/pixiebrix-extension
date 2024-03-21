@@ -18,7 +18,7 @@
 import { type PlatformCapability } from "@/platform/capabilities";
 import type { ElementReference } from "@/types/runtimeTypes";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import type { AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { FormDefinition } from "@/platform/forms/formTypes";
@@ -115,7 +115,7 @@ export interface PlatformProtocol {
    */
   request: <TData>(
     integrationConfig: Nullishable<SanitizedIntegrationConfig>,
-    requestConfig: AxiosRequestConfig,
+    requestConfig: NetworkRequestConfig,
   ) => Promise<RemoteResponse<TData>>;
 
   /**

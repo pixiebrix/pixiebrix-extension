@@ -20,7 +20,7 @@ import { renderMustache } from "@/runtime/mapArgs";
 import { testMatchPatterns } from "@/bricks/available";
 import { isEmpty, castArray, uniq, compact } from "lodash";
 import urljoin from "url-join";
-import { type AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { BusinessError, NotConfiguredError } from "@/errors/businessErrors";
 import { IncompatibleServiceError } from "@/errors/genericErrors";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
@@ -45,7 +45,7 @@ import { type SetRequired } from "type-fest";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { stringToBase64 } from "uint8array-extras";
 
-type RequestConfig = SetRequired<AxiosRequestConfig, "url">;
+type RequestConfig = SetRequired<NetworkRequestConfig, "url">;
 
 /**
  * An integration hydrated from a user-defined definition. Has the ability to authenticate requests because it has

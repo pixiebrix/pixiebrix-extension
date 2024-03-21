@@ -47,7 +47,7 @@ import {
 } from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { castArray, cloneDeep, isEmpty, sortBy } from "lodash";
-import { type AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
@@ -88,6 +88,10 @@ const SORT_BY_NAME: Pick<SearchPayload, "sort"> = {
   ],
 };
 
+type PaginationPayload = {
+  page: { offset: number; length: number };
+};
+
 /**
  * Fetch paginated Control Room responses.
  * @param config the control room integration configuration
@@ -96,7 +100,9 @@ const SORT_BY_NAME: Pick<SearchPayload, "sort"> = {
  */
 async function fetchPages<TData>(
   config: SanitizedIntegrationConfig,
-  requestConfig: AxiosRequestConfig,
+  requestConfig: NetworkRequestConfig & {
+    data: Partial<SearchPayload & PaginationPayload>;
+  },
   { maxPages = Number.MAX_SAFE_INTEGER }: { maxPages?: number } = {},
 ): Promise<TData[]> {
   // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html

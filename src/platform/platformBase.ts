@@ -24,7 +24,7 @@ import type { FormDefinition } from "@/platform/forms/formTypes";
 import type { UUID } from "@/types/stringTypes";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import type { AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
 import type { JavaScriptPayload } from "@/sandbox/messenger/api";
 import type { ElementReference } from "@/types/runtimeTypes";
@@ -86,7 +86,7 @@ export class PlatformBase implements PlatformProtocol {
 
   async request<TData>(
     _integrationConfig: Nullishable<SanitizedIntegrationConfig>,
-    _requestConfig: AxiosRequestConfig,
+    _requestConfig: NetworkRequestConfig,
   ): Promise<RemoteResponse<TData>> {
     throw new PlatformCapabilityNotAvailableError(this.platformName, "http");
   }

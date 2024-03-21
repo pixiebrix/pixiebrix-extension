@@ -16,7 +16,6 @@
  */
 
 import { isErrorObject } from "@/errors/errorHelpers";
-import { type AxiosRequestConfig } from "axios";
 import { testMatchPatterns } from "@/bricks/available";
 import { getBaseURL } from "@/data/service/baseService";
 import urljoin from "url-join";
@@ -35,9 +34,10 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 export function selectAbsoluteUrl({
   url,
   baseURL,
-}: // Using AxiosRequestConfig since the actual request object doesn't seem
-// to be available in all the places we use this method
-AxiosRequestConfig): string {
+}: {
+  url?: string;
+  baseURL?: string;
+}): string {
   assertNotNullish(url, "axios: The URL was not provided");
   if (isAbsoluteUrl(url)) {
     return url;
@@ -54,7 +54,10 @@ export async function isAppRequestError(
   error: SerializableAxiosError,
 ): Promise<boolean> {
   const baseURL = await getBaseURL();
-  const requestUrl = selectAbsoluteUrl(error.config);
+  const requestUrl = selectAbsoluteUrl({
+    url: error.config.url,
+    baseURL: error.config.baseURL,
+  });
   const patterns = [baseURL, DEFAULT_SERVICE_URL].map(
     (url) => `${withoutTrailingSlash(url)}/*`,
   );

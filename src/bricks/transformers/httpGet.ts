@@ -21,7 +21,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { type Schema } from "@/types/schemaTypes";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { type AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { propertiesToSchema } from "@/utils/schemaUtils";
@@ -73,10 +73,10 @@ export class GetAPITransformer extends TransformerABC {
   async transform(
     {
       service: integrationConfig,
-      ...requestProps
+      requestConfig,
     }: BrickArgs<{
       service: SanitizedIntegrationConfig;
-      requestConfig: AxiosRequestConfig;
+      requestConfig: NetworkRequestConfig;
     }>,
     { platform }: BrickOptions,
   ): Promise<unknown> {
@@ -95,7 +95,7 @@ export class GetAPITransformer extends TransformerABC {
     const { data } = await platform.request(
       isNullOrBlank(integrationConfig) ? null : integrationConfig,
       {
-        ...requestProps,
+        ...requestConfig,
         method: "get",
       },
     );

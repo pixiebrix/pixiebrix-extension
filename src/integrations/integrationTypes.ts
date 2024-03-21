@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { type OutputKey } from "@/types/runtimeTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
@@ -334,9 +334,9 @@ export interface Integration<
 
   authenticateRequest: (
     integrationConfig: TSecret,
-    requestConfig: AxiosRequestConfig,
+    requestConfig: NetworkRequestConfig,
     oauthConfig?: TAuthData,
-  ) => AxiosRequestConfig;
+  ) => NetworkRequestConfig;
 }
 
 /**
@@ -385,7 +385,7 @@ export abstract class IntegrationABC<
 
   abstract authenticateRequest(
     integrationConfig: TConfig & SecretBrand,
-    requestConfig: AxiosRequestConfig,
+    requestConfig: NetworkRequestConfig,
     authData?: TAuthData,
-  ): AxiosRequestConfig;
+  ): NetworkRequestConfig;
 }
