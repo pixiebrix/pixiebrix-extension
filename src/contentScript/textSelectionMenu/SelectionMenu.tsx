@@ -86,7 +86,7 @@ const ToolbarItem: React.FC<
   </button>
 );
 
-const SelectionToolbar: React.FC<
+const SelectionMenu: React.FC<
   { registry: ActionRegistry } & ActionCallbacks
 > = ({ registry, onHide }) => {
   const selection = useDocumentSelection();
@@ -117,4 +117,4 @@ const SelectionToolbar: React.FC<
   );
 };
 
-export default SelectionToolbar;
+export default SelectionMenu;

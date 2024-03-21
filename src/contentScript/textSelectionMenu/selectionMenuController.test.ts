@@ -13,7 +13,7 @@ document.body.innerHTML =
 (Range.prototype.getBoundingClientRect as any) = jest.fn(() => rectFactory());
 (Range.prototype.getClientRects as any) = jest.fn(() => [rectFactory()]);
 
-describe("tooltipController", () => {
+describe("selectionMenuController", () => {
   let module: typeof controllerModule;
 
   async function selectText() {

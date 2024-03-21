@@ -30,7 +30,7 @@ import {
   type VirtualElement,
 } from "@floating-ui/dom";
 import { getCaretCoordinates } from "@/utils/textAreaUtils";
-import SelectionToolbar from "@/contentScript/textSelectionMenu/SelectionToolbar";
+import TextSelectionMenu from "@/contentScript/textSelectionMenu/SelectionMenu";
 import { expectContext } from "@/utils/expectContext";
 import { onContextInvalidated } from "webext-events";
 import { isNativeField } from "@/types/inputTypes";
@@ -158,7 +158,7 @@ function createTooltip(): HTMLElement {
   selectionTooltip.dataset.testid = "pixiebrix-selection-tooltip";
 
   render(
-    <SelectionToolbar registry={tooltipActionRegistry} onHide={hideTooltip} />,
+    <TextSelectionMenu registry={tooltipActionRegistry} onHide={hideTooltip} />,
     selectionTooltip,
   );
 
