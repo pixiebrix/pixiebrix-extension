@@ -65,6 +65,15 @@ function renderOrUnmountBanners(): void {
   );
 }
 
+// XXX Remove when MV2 is sunset
+const mv2SidebarStyleSupport = {
+  // Prevent the sidebar from overlapping the banner
+  // SIDEBAR_WIDTH_CSS_PROPERTY is a CSS variable that changes based on the sidebar open state
+  width: `calc(100% - var(${SIDEBAR_WIDTH_CSS_PROPERTY}))`,
+  marginRight: SIDEBAR_WIDTH_CSS_PROPERTY,
+  transition: `width 0.5s ${SIDEBAR_EASING_FUNCTION}`,
+} as const;
+
 /**
  * Show a banner for the given integration configuration. Is a no-op if the banner is already showing.
  */
@@ -84,13 +93,11 @@ export function showLoginBanner(
     Object.assign(bannerContainer.style, {
       style: "all: initial",
       position: "relative",
-      width: `calc(100% - var(${SIDEBAR_WIDTH_CSS_PROPERTY}))`,
       // See https://getbootstrap.com/docs/4.6/layout/overview/#z-index
       // We want the z-index to be high as possible, but lower than the modal
       zIndex: "100300",
-      // Prevent the sidebar from overlapping the banner
-      marginRight: SIDEBAR_WIDTH_CSS_PROPERTY,
-      transition: `width 0.5s ${SIDEBAR_EASING_FUNCTION}`,
+      width: "100%",
+      ...mv2SidebarStyleSupport,
     });
 
     // Insert the banner at the top of the body
