@@ -55,15 +55,6 @@ export function makeURL(
   return result.href;
 }
 
-/** Like `new URL(url)` except it never throws and always returns an URL object, empty if the url is invalid */
-export function safeParseUrl(url: string, baseUrl?: string): URL {
-  try {
-    return new URL(url, baseUrl);
-  } catch {
-    return new URL("invalid-url://");
-  }
-}
-
 /**
  * Returns true if `value` is a valid absolute URL with a protocol in `protocols`
  * @param value the value to check

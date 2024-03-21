@@ -39,7 +39,7 @@ import {
   type TokenContext,
 } from "@/integrations/integrationTypes";
 import { type SemVerString } from "@/types/registryTypes";
-import { isAbsoluteUrl, safeParseUrl } from "@/utils/urlUtils";
+import { isAbsoluteUrl } from "@/utils/urlUtils";
 import { missingProperties } from "@/utils/schemaUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { stringToBase64 } from "uint8array-extras";
@@ -151,14 +151,11 @@ class UserDefinedIntegration<
       this._definition.authentication.baseURL;
     if (baseUrlTemplate) {
       // Convert into a real match pattern: https://developer.chrome.com/docs/extensions/mv3/match_patterns/
-      const baseUrl = safeParseUrl(
-        renderMustache(baseUrlTemplate, integrationConfig),
-      );
-
-      if (baseUrl.hostname) {
-        // Ignore invalid URLs. When the user makes a request, they'll get an error that it's an invalid URL
-        patterns.push(baseUrl.href + (baseUrl.href.endsWith("/") ? "*" : "/*"));
+      const baseUrl = renderMustache(baseUrlTemplate, integrationConfig);
+      if (URL.canParse(baseUrl)) {
+        patterns.push(baseUrl + (baseUrl.endsWith("/") ? "*" : "/*"));
       } else {
+        // Ignore invalid URLs. When the user makes a request, they'll get an error that it's an invalid URL
         console.warn("Invalid baseURL provided by configuration", {
           baseUrlTemplate,
           baseUrl,
@@ -174,7 +171,7 @@ class UserDefinedIntegration<
       // Don't add wildcard because the URL can't change per request.
       const authUrls = [oauth.oauth2.authorizeUrl, oauth.oauth2.tokenUrl]
         .map((template) => renderMustache(template, integrationConfig))
-        .filter((url) => Boolean(safeParseUrl(url).hostname));
+        .filter((url) => URL.canParse(url));
       patterns.push(...authUrls);
     }
 

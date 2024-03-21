@@ -17,8 +17,6 @@
 
 import { BusinessError } from "@/errors/businessErrors";
 
-import { safeParseUrl } from "@/utils/urlUtils";
-
 /**
  * Returns a URL with one of the allow-listed schemas, or throws a BusinessError
  * @param url an absolute or relative URL
@@ -31,19 +29,21 @@ export function assertProtocolUrl(
   url: string,
   allowedProtocols: string[],
 ): URL {
-  const parsedUrl = safeParseUrl(url);
+  let parsedUrl: URL | undefined;
 
-  if (allowedProtocols.includes(parsedUrl.protocol)) {
-    return parsedUrl;
+  try {
+    parsedUrl = new URL(url);
+  } catch (error) {
+    throw new BusinessError(`Invalid URL: ${url}`, { cause: error });
   }
 
-  if (parsedUrl.protocol === "invalid-url:") {
-    throw new BusinessError(`Invalid URL: ${url}`);
+  if (!allowedProtocols.includes(parsedUrl.protocol)) {
+    throw new BusinessError(
+      `Unsupported protocol: ${parsedUrl.protocol}. Use ${allowedProtocols.join(
+        ", ",
+      )}`,
+    );
   }
 
-  throw new BusinessError(
-    `Unsupported protocol: ${parsedUrl.protocol}. Use ${allowedProtocols.join(
-      ", ",
-    )}`,
-  );
+  return parsedUrl;
 }

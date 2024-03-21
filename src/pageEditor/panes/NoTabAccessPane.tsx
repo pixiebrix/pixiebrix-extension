@@ -19,11 +19,13 @@ import React from "react";
 import Centered from "@/components/Centered";
 import { parse as parseDomain } from "psl";
 import useCurrentInspectedUrl from "@/pageEditor/hooks/useCurrentInspectedUrl";
-import { safeParseUrl } from "@/utils/urlUtils";
 
-function getPageLabel(url: string): string {
-  const { hostname } = safeParseUrl(url);
-  const result = parseDomain(hostname);
+function getPageLabel(url: string): string | undefined {
+  if (!URL.canParse(url)) {
+    return;
+  }
+
+  const result = parseDomain(new URL(url).hostname);
   if ("domain" in result && result.domain) {
     return result.domain;
   }

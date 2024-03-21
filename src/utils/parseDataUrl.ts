@@ -18,8 +18,6 @@
 import MIMEType from "whatwg-mimetype";
 import { base64ToString, base64ToUint8Array } from "uint8array-extras";
 
-import { safeParseUrl } from "@/utils/urlUtils";
-
 const base64Ending = /; *base64$/; // Step 11, 11.4, 11.5
 
 // Vocabulary from https://www.npmjs.com/package/whatwg-mimetype
@@ -62,11 +60,18 @@ interface ParsedDataURL {
 
 export default function parseDataUrl(url: string): ParsedDataURL | undefined {
   // Following https://fetch.spec.whatwg.org/#data-urls
-  const { protocol, pathname } = safeParseUrl(url); // Step 2, 3, 4
-  if (protocol !== "data:") {
+  if (!url.startsWith("data:")) {
     // Step 1
     return;
   }
+
+  // Step 2, 3, 4
+  if (!URL.canParse(url)) {
+    return;
+  }
+
+  // Step 2, 3, 4
+  const { pathname } = new URL(url);
 
   const commaPosition = pathname.indexOf(","); // Step 5
   if (commaPosition < 0) {
