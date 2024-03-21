@@ -15,33 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getApiClient } from "@/data/service/apiClient";
-import { type components } from "@/types/swagger";
 import { addListener as addAuthStorageListener } from "@/auth/authStorage";
 import { CachedFunction } from "webext-storage-cache";
 import { expectContext } from "@/utils/expectContext";
 import { fetchFeatureFlagsInBackground } from "@/background/messenger/strict/api";
-import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import { getMe } from "@/data/service/backgroundApi";
 
 /**
  * DO NOT CALL DIRECTLY. Call via fetchFeatureFlagsInBackground instead to memoize/de-duplicate calls initiated
  * from multiple contexts.
  * @see fetchFeatureFlagsInBackground
  */
-// Safe to memoize in-memory because the background page/worker is reloaded when the authenticated user changes.
-// When the user changes, the background page/worker is reloaded, the memoizeUntilSettled cache is cleared so the
-// next call to fetchFeatureFlagsInBackground will fetch the using the new user's credentials.
-export const fetchFeatureFlags = memoizeUntilSettled(
-  async (): Promise<string[]> => {
-    expectContext(
-      "background",
-      "fetchFeatureFlags should be called via fetchFeatureFlagsInBackground",
-    );
-    const client = await getApiClient();
-    const { data } = await client.get<components["schemas"]["Me"]>("/api/me/");
-    return [...(data?.flags ?? [])];
-  },
-);
+// getMe is memoized in-memory, so don't need to memoizeUntilSettled this function
+export async function fetchFeatureFlags(): Promise<string[]> {
+  expectContext(
+    "background",
+    "fetchFeatureFlags should be called via fetchFeatureFlagsInBackground",
+  );
+  const data = await getMe();
+  return [...(data?.flags ?? [])];
+}
 
 const featureFlags = new CachedFunction("getFeatureFlags", {
   updater: fetchFeatureFlagsInBackground,

@@ -29,6 +29,7 @@ import { DEFAULT_THEME } from "@/themes/themeTypes";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import type { components } from "@/types/swagger";
 import { type Nullishable } from "@/utils/nullishUtils";
+import { getMe } from "@/data/service/backgroundApi";
 
 export const initialTheme: ThemeAssets = {
   logo: getThemeLogo(DEFAULT_THEME),
@@ -58,12 +59,12 @@ export async function getActiveTheme(): Promise<ThemeAssets> {
     const client = await getApiClient();
     const [
       { partnerId: managedPartnerId, managedOrganizationId },
-      { data: meApiResponse },
+      meApiResponse,
       { partnerId: settingsPartnerId },
     ] = await Promise.all([
       // Enterprise managed storage, if provided, always takes precedence over the user's theme settings
       readManagedStorage(),
-      client.get<components["schemas"]["Me"]>("/api/me/"),
+      getMe(),
       getSettingsState(),
     ]);
 
