@@ -51,6 +51,9 @@ const featureFlags = new CachedFunction("getFeatureFlags", {
  * @see TEST_deleteFeatureFlagsCache
  */
 export async function resetFeatureFlagsCache(): Promise<void> {
+  // XXX: on session startup, we might consider instead calling featureFlags.getFresh() which will update the value,
+  // but flagOn will still return the old value until the promise resolves.
+  // https://github.com/fregante/webext-storage-cache/blob/main/source/cached-function.md#cachedfunctiongetfresharguments
   await featureFlags.delete();
   // Eagerly re-fetch the flags so that the next call to `flagOn` doesn't have to wait for the flags to be fetched.
   await featureFlags.get();
