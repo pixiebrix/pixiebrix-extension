@@ -154,7 +154,9 @@ const ApiTaskOptionsContent: React.FC<{
       />
 
       {/*
-        TODO: Implement user lookup for API Task users
+        TODO: Implement user lookup for API Task users (https://github.com/pixiebrix/pixiebrix-extension/issues/7782)
+            - This may end up being automatically set to the apitaskrunner
+              for the current control room, so the user input here may go away
         <ConnectedFieldTemplate
           label="Run as User"
           name={configName("sharedRunAsUserId")}

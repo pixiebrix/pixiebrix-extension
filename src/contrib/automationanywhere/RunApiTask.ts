@@ -55,7 +55,9 @@ export const RUN_API_TASK_INPUT_SCHEMA: Schema = {
     sharedRunAsUserId: {
       type: "number",
       title: "Run As User ID",
-      description: "The user to run the API Task",
+      // See: https://github.com/pixiebrix/pixiebrix-extension/issues/7782
+      description:
+        "The user to run the API Task. In most cases, this should be the id of the [apitaskrunner user](https://docs.automationanywhere.com/bundle/enterprise-v2019/page/run-as-user-api-task.html)",
     },
     data: {
       type: "object",
