@@ -21,21 +21,39 @@ import { addListener as addAuthStorageListener } from "@/auth/authStorage";
 import { CachedFunction } from "webext-storage-cache";
 import { expectContext } from "@/utils/expectContext";
 import { fetchFeatureFlagsInBackground } from "@/background/messenger/strict/api";
-import { oncePerSession } from "@/mv3/SessionStorage";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
-export async function fetchFeatureFlags(): Promise<string[]> {
-  expectContext("background");
-  const client = await getApiClient();
-  const { data } = await client.get<components["schemas"]["Me"]>("/api/me/");
-  return [...(data?.flags ?? [])];
-}
+/**
+ * DO NOT CALL DIRECTLY. Call via fetchFeatureFlagsInBackground instead to memoize/de-duplicate calls initiated
+ * from multiple contexts.
+ * @see fetchFeatureFlagsInBackground
+ */
+// Safe to memoize in-memory because the background page/worker is reloaded when the authenticated user changes.
+// When the user changes, the background page/worker is reloaded, the memoizeUntilSettled cache is cleared so the
+// next call to fetchFeatureFlagsInBackground will fetch the using the new user's credentials.
+export const fetchFeatureFlags = memoizeUntilSettled(
+  async (): Promise<string[]> => {
+    expectContext(
+      "background",
+      "fetchFeatureFlags should be called via fetchFeatureFlagsInBackground",
+    );
+    const client = await getApiClient();
+    const { data } = await client.get<components["schemas"]["Me"]>("/api/me/");
+    return [...(data?.flags ?? [])];
+  },
+);
 
 const featureFlags = new CachedFunction("getFeatureFlags", {
   updater: fetchFeatureFlagsInBackground,
 });
 
-export async function resetFeatureFlags(): Promise<void> {
+/**
+ * Resets the feature flags cache and eagerly fetches the latest flags from the server.
+ */
+export async function resetFeatureFlagsCache(): Promise<void> {
   await featureFlags.delete();
+  // Eagerly re-fetch the flags so that the next call to `flagOn` doesn't have to wait for the flags to be fetched.
+  await featureFlags.get();
 }
 
 export async function TEST_overrideFeatureFlags(
@@ -45,7 +63,7 @@ export async function TEST_overrideFeatureFlags(
 }
 
 /**
- * Returns true if the specified flag is on for the current user.
+ * Returns true if the specified flag is on for the current user. Fetches the flags if they are not already cached.
  * @param flag the feature flag to check
  */
 export async function flagOn(flag: string): Promise<boolean> {
@@ -54,7 +72,5 @@ export async function flagOn(flag: string): Promise<boolean> {
 }
 
 addAuthStorageListener(async () => {
-  await resetFeatureFlags();
+  await resetFeatureFlagsCache();
 });
-
-oncePerSession("resetFeatureFlags", import.meta.url, resetFeatureFlags);

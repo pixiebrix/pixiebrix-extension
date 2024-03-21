@@ -59,7 +59,7 @@ import { activatableDeploymentFactory } from "@/testUtils/factories/deploymentFa
 import { packageConfigDetailFactory } from "@/testUtils/factories/brickFactories";
 import { type RegistryPackage } from "@/types/contract";
 import { resetMeApiMocks } from "@/testUtils/userMock";
-import { resetFeatureFlags } from "@/auth/featureFlagStorage";
+import { resetFeatureFlagsCache } from "@/auth/featureFlagStorage";
 
 setContext("background");
 
@@ -134,7 +134,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  await resetFeatureFlags();
+  await resetFeatureFlagsCache();
   await resetMeApiMocks();
 });
 

@@ -19,7 +19,7 @@ import contentScriptPlatform from "@/contentScript/contentScriptPlatform";
 import { setPlatform } from "@/platform/platformContext";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { performConfiguredRequestInBackground } from "@/background/messenger/api";
-import { resetFeatureFlags } from "@/auth/featureFlagStorage";
+import { resetFeatureFlagsCache } from "@/auth/featureFlagStorage";
 import { appApiMock } from "@/testUtils/appApiMock";
 import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { waitForEffect } from "@/testUtils/testHelpers";
@@ -42,7 +42,7 @@ beforeEach(() => {
 
 afterEach(async () => {
   jest.clearAllMocks();
-  await resetFeatureFlags();
+  await resetFeatureFlagsCache();
 });
 
 describe("contentScriptPlatform", () => {

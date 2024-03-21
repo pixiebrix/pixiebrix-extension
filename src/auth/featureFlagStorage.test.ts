@@ -18,7 +18,7 @@
 import {
   fetchFeatureFlags,
   flagOn,
-  resetFeatureFlags,
+  resetFeatureFlagsCache,
   TEST_overrideFeatureFlags,
 } from "@/auth/featureFlagStorage";
 import { appApiMock } from "@/testUtils/appApiMock";
@@ -39,7 +39,7 @@ describe("featureFlags", () => {
   });
 
   afterEach(async () => {
-    await resetFeatureFlags();
+    await resetFeatureFlagsCache();
   });
 
   it("returns true if flag is present", async () => {
