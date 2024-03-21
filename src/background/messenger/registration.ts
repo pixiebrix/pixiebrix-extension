@@ -24,7 +24,7 @@ import {
   uninstallContextMenu,
 } from "@/background/contextMenus"; // 300 errors
 import {
-  activateTab,
+  focusTab,
   closeTab,
   openTab,
   requestRunInAllFrames,
@@ -71,7 +71,7 @@ declare global {
     PING: typeof pong;
     COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
 
-    ACTIVATE_TAB: typeof activateTab;
+    FOCUS_TAB: typeof focusTab;
     REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
     CLOSE_TAB: typeof closeTab;
     OPEN_TAB: typeof openTab;
@@ -108,7 +108,7 @@ export default function registerMessenger(): void {
     PING: pong,
     COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
 
-    ACTIVATE_TAB: activateTab,
+    FOCUS_TAB: focusTab,
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
     CLOSE_TAB: closeTab,
     OPEN_TAB: openTab,
