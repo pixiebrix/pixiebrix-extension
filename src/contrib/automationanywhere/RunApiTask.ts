@@ -38,13 +38,11 @@ export const RUN_API_TASK_INPUT_SCHEMA: Schema = {
   properties: {
     integrationConfig: {
       oneOf: [
-        {
-          $ref: `https://app.pixiebrix.com/schemas/services/${CONTROL_ROOM_TOKEN_INTEGRATION_ID}`,
-        },
-        {
-          $ref: `https://app.pixiebrix.com/schemas/services/${CONTROL_ROOM_OAUTH_INTEGRATION_ID}`,
-        },
-      ],
+        CONTROL_ROOM_TOKEN_INTEGRATION_ID,
+        CONTROL_ROOM_OAUTH_INTEGRATION_ID,
+      ].map((id) => ({
+        $ref: `https://app.pixiebrix.com/schemas/services/${id}`,
+      })),
     },
     botId: {
       type: "string",
