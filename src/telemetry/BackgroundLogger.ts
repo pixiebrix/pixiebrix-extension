@@ -17,11 +17,10 @@
 
 import { type Logger, type MessageContext } from "@/types/loggerTypes";
 import { type JsonObject } from "type-fest";
-import { isBackground } from "webext-detect-page";
 import { notifyContextInvalidated } from "@/errors/contextInvalidated";
 import { wasContextInvalidated } from "webext-events";
 import { recordLog } from "@/background/messenger/strict/api";
-import { expectContext, isPageEditor } from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import reportError from "@/telemetry/reportError";
 
 /**
@@ -74,8 +73,9 @@ class BackgroundLogger implements Logger {
   }
 
   async error(error: unknown, data: JsonObject): Promise<void> {
-    if (wasContextInvalidated() && !isBackground() && !isPageEditor()) {
+    if (wasContextInvalidated()) {
       void notifyContextInvalidated();
+      return;
     }
 
     console.error("BackgroundLogger:error", {

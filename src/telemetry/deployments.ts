@@ -1,13 +1,13 @@
 import { type ModComponentBase } from "@/types/modComponentTypes";
-import { type JsonObject } from "type-fest";
 import type { Nullishable } from "@/utils/nullishUtils";
+import { type MessageContext } from "@/types/loggerTypes";
 
 /**
  * Select data to report to the team admins for the deployment
  */
 export function selectEventData(
   modComponent: Nullishable<ModComponentBase>,
-): JsonObject {
+): MessageContext {
   if (modComponent == null) {
     return {};
   }

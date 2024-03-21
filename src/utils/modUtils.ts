@@ -37,7 +37,6 @@ import {
 import { type RegistryId } from "@/types/registryTypes";
 import { type UUID } from "@/types/stringTypes";
 import { InvalidTypeError } from "@/errors/genericErrors";
-import reportError from "@/telemetry/reportError";
 import { assertNotNullish } from "./nullishUtils";
 import {
   minimalSchemaFactory,
@@ -226,8 +225,6 @@ export function getSharingSource({
       "Mod is not a ModDefinition or ResolvedModComponent",
       { mod, organization, scope, installedExtensions },
     );
-
-    reportError(error);
 
     throw error;
   }
