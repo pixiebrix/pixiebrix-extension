@@ -22,11 +22,12 @@ import { getMe } from "@/data/service/backgroundApi";
 import { addListener as addAuthStorageListener } from "@/auth/authStorage";
 
 /**
- * DO NOT CALL DIRECTLY. Call via fetchFeatureFlagsInBackground instead to memoize/de-duplicate calls initiated
- * from multiple contexts.
+ * Fetch the latest feature flags from the server.
  * @see fetchFeatureFlagsInBackground
+ * @deprecated call via fetchFeatureFlagsInBackground instead to memoize/de-duplicate calls initiated
+ * from multiple contexts.
  */
-// getMe is memoized in-memory, so don't need to memoizeUntilSettled this function
+// getMe is memoized in-memory, so don't need to also memoizeUntilSettled this method
 export async function fetchFeatureFlags(): Promise<string[]> {
   expectContext(
     "background",
