@@ -59,7 +59,7 @@ export const platformMock: PlatformProtocol = {
   clipboard: {
     write: jest.fn(),
   },
-  selectionTooltip: {
+  textSelectionMenu: {
     register: jest.fn(),
     unregister: jest.fn(),
   },

@@ -36,7 +36,7 @@ import type { TemplateProtocol } from "@/platform/platformTypes/templateProtocol
 import type { ContextMenuProtocol } from "@/platform/platformTypes/contextMenuProtocol";
 import type { BadgeProtocol } from "@/platform/platformTypes/badgeProtocol";
 import type { ToastProtocol } from "@/platform/platformTypes/toastProtocol";
-import type { SelectionTooltipProtocol } from "@/platform/platformTypes/selectionTooltipProtocol";
+import type { TextSelectionMenuProtocol } from "@/platform/platformTypes/textSelectionMenuProtocol";
 import type { CommandPopoverProtocol } from "@/platform/platformTypes/commandPopoverProtocol";
 import type { ClipboardProtocol } from "@/platform/platformTypes/clipboardProtocol";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
@@ -154,10 +154,10 @@ export class PlatformBase implements PlatformProtocol {
     throw new PlatformCapabilityNotAvailableError(this.platformName, "panel");
   }
 
-  get selectionTooltip(): SelectionTooltipProtocol {
+  get textSelectionMenu(): TextSelectionMenuProtocol {
     throw new PlatformCapabilityNotAvailableError(
       this.platformName,
-      "selectionTooltip",
+      "textSelectionMenu",
     );
   }
 
