@@ -38,7 +38,8 @@ import { isNativeField } from "@/types/inputTypes";
 import { onAbort, ReusableAbortController } from "abort-utils";
 import { prefersReducedMotion } from "@/utils/a11yUtils";
 import { getSelectionRange } from "@/utils/domUtils";
-import { snapWithin } from "@/utils/canvasUtils";
+
+import { snapWithin } from "@/utils/mathUtils";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 

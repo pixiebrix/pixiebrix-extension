@@ -15,11 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  blobToImageData,
-  loadImageData,
-  snapWithin,
-} from "@/utils/canvasUtils";
+import { blobToImageData, loadImageData } from "@/utils/canvasUtils";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 
@@ -69,113 +65,5 @@ describe("loadImageData", () => {
     await expect(loadImageData(url, 32, 32)).rejects.toThrow(
       "Request failed with status code 500",
     );
-  });
-});
-
-describe("snapWithin", () => {
-  const outerBox = { x: 0, y: 0, width: 100, height: 100 };
-
-  it.each([
-    [
-      "fully within",
-      { x: 10, y: 10, width: 20, height: 20 },
-      {
-        x: 10,
-        y: 10,
-        width: 20,
-        height: 20,
-        top: 10,
-        left: 10,
-        bottom: 30,
-        right: 30,
-      },
-    ],
-    [
-      "partially outside from top",
-      { x: 10, y: -10, width: 20, height: 20 },
-      {
-        x: 10,
-        y: 0,
-        width: 20,
-        height: 10,
-        top: 0,
-        left: 10,
-        bottom: 10,
-        right: 30,
-      },
-    ],
-    [
-      "partially outside from bottom",
-      { x: 10, y: 90, width: 20, height: 20 },
-      {
-        x: 10,
-        y: 90,
-        width: 20,
-        height: 10,
-        top: 90,
-        left: 10,
-        bottom: 100,
-        right: 30,
-      },
-    ],
-    [
-      "partially outside from left",
-      { x: -10, y: 10, width: 20, height: 20 },
-      {
-        x: 0,
-        y: 10,
-        width: 10,
-        height: 20,
-        top: 10,
-        left: 0,
-        bottom: 30,
-        right: 10,
-      },
-    ],
-    [
-      "partially outside from right",
-      { x: 90, y: 10, width: 20, height: 20 },
-      {
-        x: 90,
-        y: 10,
-        width: 10,
-        height: 20,
-        top: 10,
-        left: 90,
-        bottom: 30,
-        right: 100,
-      },
-    ],
-    [
-      "fully outside with overlapping edge",
-      { x: 0, y: 120, width: 20, height: 20 },
-      {
-        x: 0,
-        y: 100,
-        width: 20,
-        height: 0,
-        top: 100,
-        left: 0,
-        bottom: 100,
-        right: 20,
-      },
-    ],
-    [
-      "fully outside with no overlapping edge",
-      { x: 120, y: 120, width: 20, height: 20 },
-      {
-        x: 100,
-        y: 100,
-        width: 0,
-        height: 0,
-        top: 100,
-        left: 100,
-        bottom: 100,
-        right: 100,
-      },
-    ],
-  ])("%s", (_, innerBox, expected) => {
-    const result = snapWithin(innerBox, outerBox);
-    expect(result).toEqual(expected);
   });
 });
