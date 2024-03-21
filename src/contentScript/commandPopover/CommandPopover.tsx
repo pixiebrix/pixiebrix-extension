@@ -222,7 +222,8 @@ const CommandPopover: React.FunctionComponent<
   }, [query, commands, dispatch]);
 
   return (
-    <EmotionShadowRoot mode="open">
+    // Prevent page styles from leaking into the menu
+    <EmotionShadowRoot mode="open" style={{ all: "initial" }}>
       <Stylesheets href={[stylesUrl]}>
         <div role="menu" aria-label="Text command menu" className="root">
           <StatusBar {...state} />
