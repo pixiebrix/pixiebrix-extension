@@ -94,7 +94,8 @@ const SelectionToolbar: React.FC<
 
   // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menu_role
   return (
-    <EmotionShadowRoot mode="open">
+    // Prevent page styles from leaking into the menu
+    <EmotionShadowRoot mode="open" style={{ all: "initial" }}>
       <Stylesheets href={[stylesUrl]}>
         <div
           role="menu"
