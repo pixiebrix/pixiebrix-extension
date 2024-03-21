@@ -29,7 +29,6 @@ import {
 import { castArray, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable, testMatchPatterns } from "@/bricks/available";
 import reportError from "@/telemetry/reportError";
-import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/starterBricks/helpers";
 import { type BrickConfig, type BrickPipeline } from "@/bricks/types";
 import { collectAllBricks } from "@/bricks/util";
@@ -223,7 +222,7 @@ export abstract class QuickBarProviderStarterBrickABC extends StarterBrickABC<Qu
       try {
         await this.registerActionProvider(extension);
       } catch (error) {
-        reportError(error, selectEventData(extension));
+        reportError(error);
         throw error;
       }
     });

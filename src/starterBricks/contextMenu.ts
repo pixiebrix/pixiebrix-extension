@@ -33,7 +33,6 @@ import {
 import { castArray, cloneDeep, compact, isEmpty, pick, uniq } from "lodash";
 import { checkAvailable } from "@/bricks/available";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
-import reportError from "@/telemetry/reportError";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
@@ -69,6 +68,7 @@ import { type MessageConfig } from "@/utils/notify";
 import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { initSelectionMenu } from "@/contentScript/textSelectionMenu/selectionMenuController";
+import { ContextError } from "@/errors/genericErrors";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 
@@ -288,14 +288,14 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
       try {
         await this.registerExtension(extension);
       } catch (error) {
-        reportError(error, {
+        throw new ContextError("Error registering the context menu", {
+          cause: error,
           context: {
             deploymentId: extension._deployment?.id,
             extensionPointId: extension.extensionPointId,
             extensionId: extension.id,
           },
         });
-        throw error;
       }
     });
 
