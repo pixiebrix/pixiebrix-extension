@@ -22,7 +22,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type MenuDefinition } from "@/starterBricks/contextMenu";
 import { uninstallRecipe } from "@/store/uninstallUtils";
-import { reactivateEveryTab } from "@/utils/extensionUtils";
+import { reactivateEveryTab } from "@/utils/tabUtils";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
@@ -44,7 +44,7 @@ const reactivateEveryTabMock = jest.mocked(reactivateEveryTab);
 
 const createDatabaseMock = jest.fn();
 
-jest.mock("@/utils/extensionUtils");
+jest.mock("@/utils/tabUtils");
 jest.mock("@/data/service/api", () => {
   const actual = jest.requireActual("@/data/service/api");
   return {

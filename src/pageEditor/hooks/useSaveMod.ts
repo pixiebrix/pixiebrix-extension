@@ -34,7 +34,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
-import { reactivateEveryTab } from "@/utils/extensionUtils";
+import { reactivateEveryTab } from "@/utils/tabUtils";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";

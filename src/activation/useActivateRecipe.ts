@@ -18,7 +18,7 @@
 import { type WizardValues } from "@/activation/wizardTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
-import { reactivateEveryTab } from "@/utils/extensionUtils";
+import { reactivateEveryTab } from "@/utils/tabUtils";
 import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
 import reportEvent from "@/telemetry/reportEvent";
