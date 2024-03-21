@@ -21,6 +21,7 @@ import { addListener as addAuthStorageListener } from "@/auth/authStorage";
 
 let flags: string[] | null = null;
 
+// Helper to check if the test is using a mock or not
 export const isMocked = true;
 
 /**

@@ -99,7 +99,9 @@ describe("useFlags", () => {
 
     await waitForEffect();
     // Should have fetched again since the auth data has changed
-    expect(appApiMock.history.get).toHaveLength(2);
+    // There's 2 fetches - 1 from RTK Query and 1 from the featureFlagStorage. The featureFlagStorage eagerly fetches
+    // on changes to the auth data.
+    expect(appApiMock.history.get).toHaveLength(3);
   });
 
   describe("flagOn", () => {
