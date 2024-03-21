@@ -33,7 +33,7 @@ import {
   requestRunInTarget,
   requestRunInTop,
 } from "@/background/executor"; // ContentScript/messenger import
-import { performConfiguredRequest } from "@/background/requests"; // 30 errors
+import { performConfiguredRequest } from "@/background/requests"; // 24 errors
 import { getAvailableVersion } from "@/background/installer"; // 300 errors
 import { reactivateEveryTab } from "@/background/navigation"; // ContentScript/messenger import
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 300 errors
@@ -48,7 +48,7 @@ import {
 import {
   getPartnerPrincipals,
   launchAuthIntegration,
-} from "@/background/partnerIntegrations"; // 45 errors
+} from "@/background/partnerIntegrations"; // 39 errors
 import { setCopilotProcessData } from "@/background/partnerHandlers";
 import launchInteractiveOAuth2Flow from "@/background/auth/launchInteractiveOAuth2Flow";
 
