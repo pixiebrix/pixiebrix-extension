@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { addListener as addAuthStorageListener } from "@/auth/authStorage";
 import { CachedFunction } from "webext-storage-cache";
 import { expectContext } from "@/utils/expectContext";
 import { fetchFeatureFlagsInBackground } from "@/background/messenger/strict/api";
 import { getMe } from "@/data/service/backgroundApi";
+import { addListener as addAuthStorageListener } from "@/auth/authStorage";
 
 /**
  * DO NOT CALL DIRECTLY. Call via fetchFeatureFlagsInBackground instead to memoize/de-duplicate calls initiated
@@ -42,6 +42,8 @@ const featureFlags = new CachedFunction("getFeatureFlags", {
 
 /**
  * Resets the feature flags cache and eagerly fetches the latest flags from the server.
+ *
+ * The background page resets the cache via addAuthStorageListener.
  *
  * For Jest tests, use TEST_deleteFeatureFlagsCache instead, which doesn't eagerly fetch the flags.
  *
@@ -81,6 +83,9 @@ export async function flagOn(flag: string): Promise<boolean> {
   return flags.includes(flag);
 }
 
-addAuthStorageListener(async () => {
-  await resetFeatureFlagsCache();
-});
+export function initFeatureFlagBackgroundListeners(): void {
+  // Only need to listen in the background because CachedFunction uses browser.storage.local, which
+  // is shared across all contexts
+  expectContext("background");
+  addAuthStorageListener(resetFeatureFlagsCache);
+}

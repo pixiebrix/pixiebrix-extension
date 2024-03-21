@@ -17,7 +17,6 @@
 
 // noinspection ES6PreferShortImport -- Override mock
 import { fetchFeatureFlags } from "../../../auth/featureFlagStorage";
-import { addListener as addAuthStorageListener } from "@/auth/authStorage";
 
 let flags: string[] | null = null;
 
@@ -53,7 +52,3 @@ export async function flagOn(flag: string): Promise<boolean> {
   }
   return flags?.includes(flag) ?? false;
 }
-
-addAuthStorageListener(async () => {
-  await resetFeatureFlagsCache();
-});

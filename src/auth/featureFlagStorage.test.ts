@@ -20,18 +20,25 @@
 import {
   fetchFeatureFlags,
   flagOn,
+  initFeatureFlagBackgroundListeners,
   TEST_deleteFeatureFlagsCache,
   TEST_overrideFeatureFlags,
 } from "./featureFlagStorage";
 import * as featureFlagStorage from "./featureFlagStorage";
 
 import { appApiMock } from "@/testUtils/appApiMock";
-import { TEST_setAuthData, TEST_triggerListeners } from "@/auth/authStorage";
+import {
+  TEST_clearListeners as clearAuthStorageListeners,
+  TEST_setAuthData,
+  TEST_triggerListeners,
+} from "@/auth/authStorage";
 import { tokenAuthDataFactory } from "@/testUtils/factories/authFactories";
 import { fetchFeatureFlagsInBackground } from "@/background/messenger/strict/api";
 
 describe("featureFlags", () => {
   beforeEach(async () => {
+    clearAuthStorageListeners();
+
     // Wire up the real fetch function, so we can mock the api responses
     jest
       .mocked(fetchFeatureFlagsInBackground)
@@ -91,6 +98,9 @@ describe("featureFlags", () => {
   });
 
   it("fetches flags again if auth is reset in between calls", async () => {
+    // Mimic listener added by background.ts
+    initFeatureFlagBackgroundListeners();
+
     appApiMock.onGet("/api/me/").reply(200, {
       flags: ["test-flag", "secret-flag"],
     });
