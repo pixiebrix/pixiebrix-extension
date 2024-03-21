@@ -582,7 +582,7 @@
     "./platform/platformTypes/debuggerProtocol.ts",
     "./platform/platformTypes/panelProtocol.ts",
     "./platform/platformTypes/quickBarProtocol.ts",
-    "./platform/platformTypes/selectionTooltipProtocol.ts",
+    "./platform/platformTypes/textSelectionMenuProtocol.ts",
     "./platform/platformTypes/stateProtocol.ts",
     "./platform/platformTypes/templateProtocol.ts",
     "./platform/platformTypes/toastProtocol.ts",

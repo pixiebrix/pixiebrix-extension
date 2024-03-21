@@ -111,7 +111,7 @@ class ContentScriptPlatform extends PlatformBase {
     "clipboardWrite",
     "audio",
     "quickBar",
-    "selectionTooltip",
+    "textSelectionMenu",
     "commandPopover",
     "contextMenu",
     "badge",
@@ -275,7 +275,7 @@ class ContentScriptPlatform extends PlatformBase {
     };
   }
 
-  override get selectionTooltip(): PlatformProtocol["selectionTooltip"] {
+  override get textSelectionMenu(): PlatformProtocol["textSelectionMenu"] {
     return tooltipActionRegistry;
   }
 
