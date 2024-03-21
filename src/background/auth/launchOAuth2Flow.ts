@@ -86,7 +86,7 @@ async function launchOAuth2Flow(
     return result;
   } catch (error) {
     const errorMessage = getErrorMessage(error);
-    console.log(errorMessage);
+
     reportEvent(Events.OAUTH2_LOGIN_ERROR, {
       ...eventPayload,
       error_message: errorMessage,
