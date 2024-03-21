@@ -26,10 +26,8 @@ import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import useReinstall from "@/extensionConsole/pages/mods/utils/useReinstall";
 import notify from "@/utils/notify";
 import { Events } from "@/telemetry/events";
-import {
-  clearServiceCache,
-  reactivateEveryTab,
-} from "@/background/messenger/api";
+import { clearServiceCache } from "@/background/messenger/api";
+import { reactivateEveryTab } from "@/background/navigation";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import {
   useCreatePackageMutation,

@@ -21,7 +21,7 @@ import { useCallback } from "react";
 import notify from "@/utils/notify";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
-import { reactivateEveryTab } from "@/background/messenger/api";
+import { reactivateEveryTab } from "@/background/navigation";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/data/service/apiClient";

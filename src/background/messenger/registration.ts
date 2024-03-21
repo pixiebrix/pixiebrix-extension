@@ -35,7 +35,6 @@ import {
 } from "@/background/executor"; // ContentScript/messenger import
 import { performConfiguredRequest } from "@/background/requests"; // 30 errors
 import { getAvailableVersion } from "@/background/installer"; // 300 errors
-import { reactivateEveryTab } from "@/background/navigation"; // ContentScript/messenger import
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 300 errors
 import { debouncedInstallStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 300 errors
 import {
@@ -73,7 +72,6 @@ declare global {
     COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
 
     ACTIVATE_TAB: typeof activateTab;
-    REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
     REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
     CLOSE_TAB: typeof closeTab;
     OPEN_TAB: typeof openTab;
@@ -111,7 +109,6 @@ export default function registerMessenger(): void {
     COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
 
     ACTIVATE_TAB: activateTab,
-    REACTIVATE_EVERY_TAB: reactivateEveryTab,
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
     CLOSE_TAB: closeTab,
     OPEN_TAB: openTab,

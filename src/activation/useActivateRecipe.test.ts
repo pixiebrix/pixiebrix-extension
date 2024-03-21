@@ -22,7 +22,7 @@ import { validateRegistryId } from "@/types/helpers";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type MenuDefinition } from "@/starterBricks/contextMenu";
 import { uninstallRecipe } from "@/store/uninstallUtils";
-import { reactivateEveryTab } from "@/background/messenger/api";
+import { reactivateEveryTab } from "@/background/navigation";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";

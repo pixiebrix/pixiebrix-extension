@@ -34,7 +34,6 @@ export const setPartnerCopilotData = getNotifier(
 );
 
 export const activateTab = getMethod("ACTIVATE_TAB", bg);
-export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
 export const removeExtensionForEveryTab = getNotifier(
   "REMOVE_EXTENSION_EVERY_TAB",
   bg,
