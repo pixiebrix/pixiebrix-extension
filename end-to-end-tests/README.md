@@ -1,68 +1,58 @@
 # End-to-End Tests
 
-This document provides information about the end-to-end tests in the `pixiebrix-extension` repository. The tests are
-written using [Playwright](https://playwright.dev/), a powerful library for browser automation.
+This README provides guidelines for running, writing, and debugging end-to-end tests in the `pixiebrix-extension`
+repository using [Playwright](https://playwright.dev/).
 
-## Running the Tests
+## Running Tests
 
-To run the end-to-end tests, follow these steps from the project root:
+Execute these steps from the project root to run tests:
 
-1. Install dependencies and build the extension - `npm install` `npm run build:webpack`
-2. Install browsers (only need to run once) - `npx playwright install`
-3. Run the tests using the command `npm run test:e2e`
+1. Install dependencies and build the extension: Run `npm install` and `npm run build:webpack`.
+2. Install browsers (required only once): Execute `npx playwright install`.
+3. Run the tests: Use the command `npm run test:e2e`.
 
-## Writing New Tests
+## Writing Tests
 
-When writing new tests, it's important to follow the best practices outlined in
-the [Playwright Best Practices](https://playwright.dev/docs/best-practices) guide. Here are some key points to keep in
-mind:
+Adhere to these principles, based on the [Playwright Best Practices](https://playwright.dev/docs/best-practices):
 
-- All of our tests should use the `test` object from the `extensionBase.ts` to define the test environment and interact
-  with the extension.
-- Use the `pageObjects` from the `./end-to-end-tests/pageObjects` directory to interact with the web pages. These
-  objects encapsulate the details of the page structure, making the tests more maintainable and readable.
-- Write tests that are independent of each other. Each test should set up its own state and clean up after itself.
-  Use [Playwright fixtures](https://playwright.dev/docs/test-fixtures) to share setup and teardown code between tests.
-- Use Playwright's auto-waiting mechanism. When performing actions like clicking or typing, Playwright automatically
-  waits for the elements to be ready.
+- Utilize `test` from `extensionBase.ts` for test environment setup and extension interaction.
+- Employ page objects from `./end-to-end-tests/pageObjects` for web page interactions.
+- Ensure tests are self-contained, handling their own setup and cleanup.
+  Leverage [Playwright fixtures](https://playwright.dev/docs/test-fixtures) for shared code.
+- Rely on Playwright's auto-waiting feature for actions like clicking or typing.
 
-In general, write tests that describe the expected user behavior for a given feature flow. Focus on the high-level user
-interactions and integration points and avoid re-testing low-level details that are already covered by unit tests.
+Focus on testing high-level user behavior and integration points, avoiding duplication of unit test coverage.
 
 ## Debugging Tests
 
-If a test fails, Playwright provides several tools to help debug the issue:
+If a test fails, use Playwright's tools:
 
-- Use `page.pause()` to pause the execution and open up Playwright's Inspector.
-- Run the tests with `PWDEBUG=1 npm run test:e2e` to enable Playwright's debug mode.
-- Run the tests with `SLOWMO=1 npm run test:e2e` to add a delay between Playwright test actions.
-- Use `expect(page).toHaveSelector('.selector', { timeout: 5000 })` to wait for an element to appear and throw an error
-  if it doesn't.
-- If a test fails locally, Playwright will automatically open the report in the browser which will include trace details
-  of the test run with screenshots and logs.
+- Insert `page.pause()` to activate Playwright's Inspector.
+- Enable debug mode: Run `PWDEBUG=1 npm run test:e2e`.
+- Slow down test execution: Execute `SLOWMO=1 npm run test:e2e`.
+- Confirm element presence: Use `expect(page).toHaveSelector('.selector', { timeout: 5000 })`.
+- Local failed test runs will automatically display reports with trace details in the browser.
 
-# Fixtures and Test Structure
+## Test Infrastructure
 
-The end-to-end tests in the `pixiebrix-extension` repository are designed to run the extension in both manifest V2 and
-manifest V3 in Chrome and Edge.
+The tests are configured to run the extension on both manifest V2 and V3 in Chrome and Edge.
 
-## Fixtures
+### Fixtures
 
-Fixtures in Playwright are reusable test components that can be used to set up a specific test environment. In this
-project, we use a fixture file `./fixtures/extensionBase.ts` to set up the environment for running the extension.
+Use the fixture file `./fixtures/extensionBase.ts` for test environment setup. It exports a `test` object that enhances
+Playwright's built-in `test` object with extension-specific features.
 
-The `extensionBase.ts` file exports a `test` object that extends Playwright's built-in `test` object with additional
-methods and properties specific to our extension for linking the extension to the admin console and
-getting the background page.
+### Playwright Configuration
 
-## Playwright Configuration
+Configure test execution via `.playwright.config.ts`, including timeout and retry options. The setup
+project `./auth.setup.ts` handles user authentication and saves credentials in `./.auth/user.json`.
 
-The `.playwright.config.ts` file in the root of the repository is used to configure how Playwright runs the tests including
-options such as timout and retries. This configuration specifies the tests should be run in both Chrome and Edge. We also
-use an additional setup project definition (in `./auth.setup.ts`) to authenticate the user before running the tests and
-save these credentials to a shared storage directory (in `./.auth/user.json`).
+### GitHub CI Integration
 
-## Further Reading
+End-to-end tests are integrated into the GitHub CI workflow, triggering on pull requests. The workflow steps are
+detailed in `.github/workflows/ci.yml`.
 
-For more detailed information on writing tests with Playwright, refer to
+## Additional Resources
+
+For comprehensive Playwright testing information, consult
 the [Playwright Documentation](https://playwright.dev/docs/intro).
