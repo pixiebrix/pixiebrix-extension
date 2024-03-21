@@ -116,6 +116,12 @@ module.exports = {
       extendNoRestrictedImports({
         patterns: [
           {
+            group: ["axios"],
+            importNames: ["AxiosRequestConfig"],
+            message:
+              'Use this instead: import { NetworkRequestConfig } from "@/types/networkTypes"',
+          },
+          {
             group: ["react-shadow/emotion"],
             message:
               'Use this instead: import EmotionShadowRoot from "@/components/EmotionShadowRoot"',
