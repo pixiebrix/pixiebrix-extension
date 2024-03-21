@@ -66,8 +66,12 @@ const properties = [
  * Firefox lies about the overflow property for textareas: https://bugzilla.mozilla.org/show_bug.cgi?id=984275
  * Used https://github.com/component/textarea-caret-position/blob/master/index.js as a reference
  * XXX: Due to the complicated nature of doing visual regression testing, this method is not covered by automated testing.
- * @param element
- * @param position
+ * Warning! The coordinate values returned when the caret is not within the boundaries of the input or textarea
+ * may not be accurate. If needed, use the `snapWithin` function with the getBoundingClientRect() of the element to
+ * ensure the coordinates are within the boundaries of the element.
+ * @see snapWithin
+ * @param element -- the textarea or input element
+ * @param position -- the position of the caret in the element
  */
 export function getCaretCoordinates(element: NativeField, position: number) {
   // The mirror div will replicate the textarea's style

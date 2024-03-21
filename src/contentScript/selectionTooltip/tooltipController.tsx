@@ -39,6 +39,8 @@ import { onAbort, ReusableAbortController } from "abort-utils";
 import { prefersReducedMotion } from "@/utils/a11yUtils";
 import { getSelectionRange } from "@/utils/domUtils";
 
+import { snapWithin } from "@/utils/mathUtils";
+
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
 export const tooltipActionRegistry = new ActionRegistry();
@@ -185,16 +187,15 @@ function getPositionReference(range: Range): VirtualElement | Element {
         const x = elementRect.x + topCaret.left - activeElement.scrollLeft;
         const y = elementRect.y + topCaret.top - activeElement.scrollTop;
 
-        return {
-          height,
-          width,
-          x,
-          y,
-          left: x,
-          top: y,
-          right: x + width,
-          bottom: y + height,
-        };
+        return snapWithin(
+          {
+            x,
+            y,
+            width,
+            height,
+          },
+          elementRect,
+        );
       },
     } satisfies VirtualElement;
   }
