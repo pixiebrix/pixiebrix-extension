@@ -64,7 +64,22 @@ const PAGINATION_LIMIT = 100;
 export const DEFAULT_MAX_WAIT_MILLIS = 60_000;
 const POLL_MILLIS = 2000;
 
-const SORT_BY_NAME = {
+type SearchPayload = {
+  sort: Array<{
+    field: string;
+    direction: "asc" | "desc";
+  }>;
+  filter: {
+    operator: "and" | "or";
+    operands: Array<{
+      operator: "substring" | "eq";
+      field: string;
+      value: string;
+    }>;
+  };
+};
+
+const SORT_BY_NAME: Pick<SearchPayload, "sort"> = {
   sort: [
     {
       field: "name",
@@ -182,7 +197,7 @@ async function searchBots(
     throw new TypeError("workspaceType is required");
   }
 
-  let searchPayload = {
+  let searchPayload: SearchPayload = {
     ...SORT_BY_NAME,
     filter: {
       operator: "and",
@@ -213,7 +228,8 @@ async function searchBots(
           {
             operator: "eq",
             field: "id",
-            value: options.value,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above with isNullOrBlank
+            value: options.value!,
           },
           {
             operator: "eq",
@@ -276,7 +292,7 @@ async function searchApiTasks(
     throw new TypeError("workspaceType is required");
   }
 
-  let searchPayload = {
+  let searchPayload: SearchPayload = {
     ...SORT_BY_NAME,
     filter: {
       operator: "and",
@@ -307,7 +323,8 @@ async function searchApiTasks(
           {
             operator: "eq",
             field: "id",
-            value: options.value,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above with isNullOrBlank
+            value: options.value!,
           },
           {
             operator: "eq",
@@ -560,7 +577,9 @@ export async function pollEnterpriseResult({
       },
     });
 
-    if (activityList.list.length === 0) {
+    const activity = activityList.list[0];
+    // Check for empty list, also narrow the type of activity to non-null
+    if (activity == null) {
       // Don't fail immediately. There may be a race-condition where the activity isn't available immediately
       // See https://github.com/pixiebrix/pixiebrix-extension/issues/6900
       return;
@@ -580,8 +599,6 @@ export async function pollEnterpriseResult({
         "Multiple activity instances found for bot deployment",
       );
     }
-
-    const activity = activityList.list[0];
 
     if (activity.status === "COMPLETED") {
       return activity;
