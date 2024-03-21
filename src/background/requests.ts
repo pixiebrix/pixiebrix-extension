@@ -122,10 +122,8 @@ async function serializableAxiosRequest<T>(
     "Network requests must be made from the background page",
   );
 
-  // Axios does not perform validation, so call before the axios call.
-  assertProtocolUrl(config.url, ["https:", "http:"], {
-    baseUrl: config.baseURL,
-  });
+  // Axios does not perform validation, so call before axios
+  assertProtocolUrl(config.url, ["https:", "http:"]);
 
   const response = await axios(config);
 
@@ -417,7 +415,7 @@ export async function performConfiguredRequest<TData>(
 
   if (!integrationConfig) {
     // No integration configuration provided. Perform request directly without authentication
-    if (!isAbsoluteUrl(requestConfig.url) && requestConfig.baseURL == null) {
+    if (!isAbsoluteUrl(requestConfig.url)) {
       throw new BusinessError(
         "expected absolute URL for request without integration",
       );

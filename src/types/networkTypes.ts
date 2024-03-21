@@ -20,7 +20,6 @@ import { type AxiosRequestHeaders, type Method } from "axios";
 export interface NetworkRequestConfig<Data = unknown> {
   url: string;
   method?: Method;
-  baseURL?: string;
   headers?: AxiosRequestHeaders;
   params?: UnknownObject | void;
   data?: Data;

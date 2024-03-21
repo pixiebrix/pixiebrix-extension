@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isEmpty } from "lodash";
 import { BusinessError } from "@/errors/businessErrors";
 
-import { isAbsoluteUrl, safeParseUrl } from "@/utils/urlUtils";
+import { safeParseUrl } from "@/utils/urlUtils";
 
 /**
  * Returns a URL with one of the allow-listed schemas, or throws a BusinessError
@@ -31,24 +30,15 @@ import { isAbsoluteUrl, safeParseUrl } from "@/utils/urlUtils";
 export function assertProtocolUrl(
   url: string,
   allowedProtocols: string[],
-  {
-    baseUrl,
-  }: {
-    // Don't default baseUrl to location.href here. API calls are always routed through a chrome-extension:// page (e.g.,
-    // the background page. So they would always be flagged as having an invalid schema)
-    baseUrl?: string;
-  } = {},
 ): URL {
-  const parsedUrl = safeParseUrl(url, baseUrl);
+  const parsedUrl = safeParseUrl(url);
 
   if (allowedProtocols.includes(parsedUrl.protocol)) {
     return parsedUrl;
   }
 
   if (parsedUrl.protocol === "invalid-url:") {
-    baseUrl =
-      isAbsoluteUrl(url) || isEmpty(baseUrl) ? "" : ` (base URL: ${baseUrl})`;
-    throw new BusinessError(`Invalid URL: ${url}${baseUrl}`);
+    throw new BusinessError(`Invalid URL: ${url}`);
   }
 
   throw new BusinessError(
