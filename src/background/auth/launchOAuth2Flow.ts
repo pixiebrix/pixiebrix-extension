@@ -95,6 +95,11 @@ async function launchOAuth2Flow(
   }
 }
 
+/**
+ * Memoize launchOAuth2Flow to prevent the integration banner from being displayed
+ * while the login flow is in progress.
+ * See: https://github.com/pixiebrix/pixiebrix-extension/issues/8004
+ */
 export default memoizeUntilSettled(launchOAuth2Flow, {
   cacheKey: ([_, integrationConfig]) => integrationConfig.id,
 });
