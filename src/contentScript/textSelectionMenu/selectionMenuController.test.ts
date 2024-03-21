@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { uuidv4 } from "@/types/helpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { rectFactory } from "@/testUtils/factories/domFactories";
-import type * as controllerModule from "@/contentScript/selectionTooltip/tooltipController";
+import type * as controllerModule from "@/contentScript/textSelectionMenu/selectionMenuController";
 
 document.body.innerHTML =
   '<div><span data-testid="span">Here\'s some text</span></div>';
@@ -26,7 +26,9 @@ describe("tooltipController", () => {
   // TODO: figure out how to properly isolate tests - adding multiple tests cause flakiness
   beforeEach(async () => {
     jest.resetModules();
-    module = await import("@/contentScript/selectionTooltip/tooltipController");
+    module = await import(
+      "@/contentScript/textSelectionMenu/selectionMenuController"
+    );
   });
 
   // TODO: re-enable flaky test https://github.com/pixiebrix/pixiebrix-extension/issues/7682

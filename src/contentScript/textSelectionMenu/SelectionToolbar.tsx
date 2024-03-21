@@ -18,17 +18,17 @@
 import React from "react";
 // We're rendering in the shadow DOM, so we need to load styles as a URL. loadAsUrl doesn't work with module mangling
 import stylesUrl from "@/contentScript/selectionTooltip/SelectionToolbar.scss?loadAsUrl";
-import type ActionRegistry from "@/contentScript/selectionTooltip/ActionRegistry";
-import type { RegisteredAction } from "@/contentScript/selectionTooltip/ActionRegistry";
 import Icon from "@/icons/Icon";
 import { splitStartingEmoji } from "@/utils/stringUtils";
 import { truncate } from "lodash";
 import useDocumentSelection from "@/hooks/useDocumentSelection";
 import type { Nullishable } from "@/utils/nullishUtils";
-import useActionRegistry from "@/contentScript/selectionTooltip/useActionRegistry";
 import { Stylesheets } from "@/components/Stylesheets";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { getSelection } from "@/utils/selectionController";
+import { type RegisteredAction } from "@/contentScript/textSelectionMenu/ActionRegistry";
+import type ActionRegistry from "@/contentScript/textSelectionMenu/ActionRegistry";
+import useActionRegistry from "@/contentScript/textSelectionMenu/useActionRegistry";
 
 const ICON_SIZE_PX = 16;
 

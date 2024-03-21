@@ -62,13 +62,13 @@ import batchedFunction from "batched-function";
 import { onContextInvalidated } from "webext-events";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { getPlatform } from "@/platform/platformContext";
-import { initSelectionTooltip } from "@/contentScript/selectionTooltip/tooltipController";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import type { Except } from "type-fest";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { type MessageConfig } from "@/utils/notify";
 import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { initSelectionTooltip } from "@/contentScript/textSelectionMenu/selectionMenuController";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 

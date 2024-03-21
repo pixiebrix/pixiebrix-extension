@@ -17,8 +17,8 @@
 
 import type { ComponentMeta, ComponentStory } from "@storybook/react";
 import React from "react";
-import SelectionToolbar from "@/contentScript/selectionTooltip/SelectionToolbar";
-import ActionRegistry from "@/contentScript/selectionTooltip/ActionRegistry";
+import SelectionToolbar from "@/contentScript/textSelectionMenu/SelectionToolbar";
+import ActionRegistry from "@/contentScript/textSelectionMenu/ActionRegistry";
 import { uuidv4 } from "@/types/helpers";
 import { action } from "@storybook/addon-actions";
 

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ActionRegistry from "@/contentScript/selectionTooltip/ActionRegistry";
 import { debounce, once } from "lodash";
 import type { Nullishable } from "@/utils/nullishUtils";
 import { render, unmountComponentAtNode } from "react-dom";
@@ -31,7 +30,7 @@ import {
   type VirtualElement,
 } from "@floating-ui/dom";
 import { getCaretCoordinates } from "@/utils/textAreaUtils";
-import SelectionToolbar from "@/contentScript/selectionTooltip/SelectionToolbar";
+import SelectionToolbar from "@/contentScript/textSelectionMenu/SelectionToolbar";
 import { expectContext } from "@/utils/expectContext";
 import { onContextInvalidated } from "webext-events";
 import { isNativeField } from "@/types/inputTypes";
@@ -40,6 +39,7 @@ import { prefersReducedMotion } from "@/utils/a11yUtils";
 import { getSelectionRange } from "@/utils/domUtils";
 
 import { snapWithin } from "@/utils/mathUtils";
+import ActionRegistry from "@/contentScript/textSelectionMenu/ActionRegistry";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
