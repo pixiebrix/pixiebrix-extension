@@ -338,6 +338,8 @@
     "./contrib/automationanywhere/aaTypes.ts",
     "./contrib/automationanywhere/aaUtils.ts",
     "./contrib/automationanywhere/contract.ts",
+    "./contrib/automationanywhere/util.ts",
+    "./contrib/automationanywhere/RunApiTask.ts",
     "./contrib/ckeditor/ckeditor.test.ts",
     "./contrib/ckeditor/ckeditorDom.ts",
     "./contrib/ckeditor/ckeditorProtocol.ts",
