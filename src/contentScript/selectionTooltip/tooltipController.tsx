@@ -47,6 +47,15 @@ export const tooltipActionRegistry = new ActionRegistry();
 
 let selectionTooltip: Nullishable<HTMLElement>;
 
+const onMousedownHide = (event: MouseEvent) => {
+  if (
+    event.target instanceof Node &&
+    !selectionTooltip?.contains(event.target)
+  ) {
+    hideTooltip();
+  }
+};
+
 /**
  * AbortController fired when the popover is hidden/destroyed.
  */
@@ -98,7 +107,6 @@ async function showTooltip(): Promise<void> {
 
   for (const documentEventType of [
     "scroll",
-    "selectstart",
     // Avoid sticky tool-tip on SPA navigation
     "navigate",
   ]) {
@@ -108,6 +116,11 @@ async function showTooltip(): Promise<void> {
       signal: hideController.signal,
     });
   }
+
+  document.addEventListener("mousedown", onMousedownHide, {
+    passive: true,
+    signal: hideController.signal,
+  });
 
   return updatePosition();
 }
@@ -306,16 +319,8 @@ export const initSelectionTooltip = once(() => {
           await showTooltip();
         }
 
-        // The tooltip is hidden on "selectionstart" via the showTooltip function, so don't need to hide it in response
-        // to the selection change event.
-        //
-        // "selectionchange" can be fired both in response to the user changing the selection, and the host page
-        // changing the selection, e.g., Gmail's composer deselects the user's selection on mousedown.
-        //
-        // Unfortunately Event.isTrusted is not working to distinguish the user selection vs. Gmail composer mousedown
-        // handler: https://developer.mozilla.org/en-US/docs/Web/API/Event/isTrusted
-        //
-        // See discussion here: https://github.com/pixiebrix/pixiebrix-extension/issues/7729#issuecomment-1975683222
+        // The tooltip is hidden on "mousedown" when not targeted on the tooltip via the
+        // showTooltip function, so don't need to hide it in response to the selection change event.
       },
       60,
       {
