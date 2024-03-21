@@ -49,7 +49,7 @@ let selectionTooltip: Nullishable<HTMLElement>;
 
 const onMousedownHide = (event: MouseEvent) => {
   if (
-    event.target instanceof HTMLElement &&
+    event.target instanceof Node &&
     !selectionTooltip?.contains(event.target)
   ) {
     hideTooltip();
