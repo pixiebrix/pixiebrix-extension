@@ -42,6 +42,10 @@ const featureFlags = new CachedFunction("getFeatureFlags", {
 
 /**
  * Resets the feature flags cache and eagerly fetches the latest flags from the server.
+ *
+ * For Jest tests, use TEST_deleteFeatureFlagsCache instead, which doesn't eagerly fetch the flags.
+ *
+ * @see TEST_deleteFeatureFlagsCache
  */
 export async function resetFeatureFlagsCache(): Promise<void> {
   await featureFlags.delete();
@@ -49,10 +53,19 @@ export async function resetFeatureFlagsCache(): Promise<void> {
   await featureFlags.get();
 }
 
-export async function TEST_clearCache(): Promise<void> {
+/**
+ * Test utility to clear the feature flags cache. Use this in afterEach() in your tests. NOTE: in tests, the
+ * manual mock `__mocks__` implementation is automatically used, not this file.
+ * @see resetFeatureFlagsCache
+ */
+export async function TEST_deleteFeatureFlagsCache(): Promise<void> {
   await featureFlags.delete();
 }
 
+/**
+ * Test utility to directly set the flags cache. NOTE: in tests, the manual mock `__mocks__` implementation is
+ * automatically used, not this file.
+ */
 export async function TEST_overrideFeatureFlags(
   flags: string[],
 ): Promise<void> {

@@ -40,7 +40,9 @@ export async function TEST_overrideFeatureFlags(
   flags = newFlags;
 }
 
-export async function TEST_clearCache(newFlags: string[]): Promise<void> {
+export async function TEST_deleteFeatureFlagsCache(
+  newFlags: string[],
+): Promise<void> {
   flags = null;
 }
 

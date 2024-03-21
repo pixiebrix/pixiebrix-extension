@@ -20,7 +20,7 @@
 import {
   fetchFeatureFlags,
   flagOn,
-  TEST_clearCache,
+  TEST_deleteFeatureFlagsCache,
   TEST_overrideFeatureFlags,
 } from "./featureFlagStorage";
 import * as featureFlagStorage from "./featureFlagStorage";
@@ -43,7 +43,7 @@ describe("featureFlags", () => {
   });
 
   afterEach(async () => {
-    await TEST_clearCache();
+    await TEST_deleteFeatureFlagsCache();
   });
 
   it("not using mock", () => {
