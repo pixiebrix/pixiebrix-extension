@@ -3501,6 +3501,26 @@ exports[`Storyshots Enhancements/CommandPopover Demo 1`] = `
 </div>
 `;
 
+exports[`Storyshots Enhancements/SelectionMenu Emoji Buttons 1`] = `
+<div
+  style={
+    {
+      "all": "initial",
+    }
+  }
+/>
+`;
+
+exports[`Storyshots Enhancements/SelectionMenu Mixed Buttons 1`] = `
+<div
+  style={
+    {
+      "all": "initial",
+    }
+  }
+/>
+`;
+
 exports[`Storyshots Enhancements/SelectionToolbar Emoji Buttons 1`] = `
 <div
   style={
