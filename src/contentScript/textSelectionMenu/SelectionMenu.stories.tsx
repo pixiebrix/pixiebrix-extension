@@ -23,7 +23,7 @@ import { uuidv4 } from "@/types/helpers";
 import { action } from "@storybook/addon-actions";
 
 export default {
-  title: "Enhancements/SelectionToolbar",
+  title: "Enhancements/SelectionMenu",
   component: SelectionMenu,
 } as ComponentMeta<typeof SelectionMenu>;
 

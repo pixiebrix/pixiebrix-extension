@@ -17,7 +17,7 @@
 
 import React from "react";
 // We're rendering in the shadow DOM, so we need to load styles as a URL. loadAsUrl doesn't work with module mangling
-import stylesUrl from "@/contentScript/selectionTooltip/SelectionToolbar.scss?loadAsUrl";
+import stylesUrl from "@/contentScript/textSelectionMenu/SelectionMenu.scss?loadAsUrl";
 import Icon from "@/icons/Icon";
 import { splitStartingEmoji } from "@/utils/stringUtils";
 import { truncate } from "lodash";

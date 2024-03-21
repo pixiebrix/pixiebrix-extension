@@ -33,7 +33,7 @@ describe("selectionMenuController", () => {
 
   // TODO: re-enable flaky test https://github.com/pixiebrix/pixiebrix-extension/issues/7682
   it.skip("attach tooltip when user selects text", async () => {
-    module.initSelectionTooltip();
+    module.initSelectionMenu();
 
     module.tooltipActionRegistry.register(uuidv4(), {
       title: "Copy",

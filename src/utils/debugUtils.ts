@@ -49,7 +49,7 @@ export function getInvalidPath(
 /** @knip debugging util
  * A debug util for drawing a rectangle on the screen. Useful for debugging
  * positioning issues related to dom bounding boxes (such as tooltips and popovers like
- * `src/contentScript/selectionTooltip/tooltipController.tsx`).
+ * `src/contentScript/textSelectionMenu/selectionMenuController.tsx`).
  */
 export function drawRectangle({
   x,

@@ -45,13 +45,10 @@ const MIN_SELECTION_LENGTH_CHARS = 3;
 
 export const tooltipActionRegistry = new ActionRegistry();
 
-let selectionTooltip: Nullishable<HTMLElement>;
+let selectionMenu: Nullishable<HTMLElement>;
 
 const onMousedownHide = (event: MouseEvent) => {
-  if (
-    event.target instanceof Node &&
-    !selectionTooltip?.contains(event.target)
-  ) {
+  if (event.target instanceof Node && !selectionMenu?.contains(event.target)) {
     hideTooltip();
   }
 };
@@ -67,15 +64,15 @@ async function showTooltip(): Promise<void> {
     return;
   }
 
-  selectionTooltip ??= createTooltip();
+  selectionMenu ??= createTooltip();
 
   // Check visibility to avoid re-animating the tooltip fade in as selection changes
-  const isShowing = selectionTooltip.checkVisibility();
+  const isShowing = selectionMenu.checkVisibility();
   if (!isShowing) {
-    selectionTooltip.setAttribute("aria-hidden", "false");
-    selectionTooltip.style.setProperty("display", "block");
+    selectionMenu.setAttribute("aria-hidden", "false");
+    selectionMenu.style.setProperty("display", "block");
     if (!prefersReducedMotion()) {
-      selectionTooltip.animate(
+      selectionMenu.animate(
         [
           { opacity: 0, margin: "4px 0" },
           { opacity: 1, margin: "0" },
@@ -129,8 +126,8 @@ async function showTooltip(): Promise<void> {
  * Hide the tooltip. Safe to call multiple times, even if the tooltip is already hidden.
  */
 function hideTooltip(): void {
-  selectionTooltip?.setAttribute("aria-hidden", "true");
-  selectionTooltip?.style.setProperty("display", "none");
+  selectionMenu?.setAttribute("aria-hidden", "true");
+  selectionMenu?.style.setProperty("display", "none");
   hideController.abortAndReset();
 }
 
@@ -138,31 +135,31 @@ function hideTooltip(): void {
  * Completely remove the tooltip from the DOM.
  */
 function destroyTooltip(): void {
-  if (selectionTooltip) {
+  if (selectionMenu) {
     // Cleanly unmount React component to ensure any listeners are cleaned up.
     // https://react.dev/reference/react-dom/unmountComponentAtNode
-    unmountComponentAtNode(selectionTooltip);
+    unmountComponentAtNode(selectionMenu);
 
-    selectionTooltip.remove();
-    selectionTooltip = null;
+    selectionMenu.remove();
+    selectionMenu = null;
     hideController.abortAndReset();
   }
 }
 
 function createTooltip(): HTMLElement {
-  if (selectionTooltip) {
+  if (selectionMenu) {
     throw new Error("Tooltip already exists");
   }
 
-  selectionTooltip = tooltipFactory();
-  selectionTooltip.dataset.testid = "pixiebrix-selection-tooltip";
+  selectionMenu = tooltipFactory();
+  selectionMenu.dataset.testid = "pixiebrix-selection-tooltip";
 
   render(
     <TextSelectionMenu registry={tooltipActionRegistry} onHide={hideTooltip} />,
-    selectionTooltip,
+    selectionMenu,
   );
 
-  return selectionTooltip;
+  return selectionMenu;
 }
 
 /**
@@ -223,7 +220,7 @@ function getPositionReference(range: Range): VirtualElement | Element {
 async function updatePosition(): Promise<void> {
   const selectionRange = getSelectionRange();
 
-  if (!selectionTooltip || !selectionRange) {
+  if (!selectionMenu || !selectionRange) {
     hideTooltip();
     // Guard against race condition
     return;
@@ -236,34 +233,30 @@ async function updatePosition(): Promise<void> {
   // Keep anchored on scroll/resize: https://floating-ui.com/docs/computeposition#anchoring
   const cleanupAutoPosition = autoUpdate(
     referenceElement,
-    selectionTooltip,
+    selectionMenu,
     async () => {
-      if (!selectionTooltip) {
+      if (!selectionMenu) {
         // Handle race in async handler
         return;
       }
 
-      const { x, y } = await computePosition(
-        referenceElement,
-        selectionTooltip,
-        {
-          placement: "bottom",
-          strategy: "fixed",
-          // `inline` prevents from appearing detached if multiple lines selected: https://floating-ui.com/docs/inline
-          middleware: [
-            ...(supportsInline ? [inline()] : []),
-            offset(10),
-            // Using flip/shift to ensure the tooltip is visible in editors like TinyMCE where the editor is in an
-            // iframe. https://floating-ui.com/docs/middleware. We probably don't want the tooltip to shift/move
-            // on scroll, though. However, it's a bit tricky because we're using `position: fixed`. See createTooltip
-            // for more context. If we do implement recalculating position on scroll, we might be able to use the hide
-            // middleware to hide the tooltip.
-            flip(),
-            shift(),
-          ],
-        },
-      );
-      Object.assign(selectionTooltip.style, {
+      const { x, y } = await computePosition(referenceElement, selectionMenu, {
+        placement: "bottom",
+        strategy: "fixed",
+        // `inline` prevents from appearing detached if multiple lines selected: https://floating-ui.com/docs/inline
+        middleware: [
+          ...(supportsInline ? [inline()] : []),
+          offset(10),
+          // Using flip/shift to ensure the tooltip is visible in editors like TinyMCE where the editor is in an
+          // iframe. https://floating-ui.com/docs/middleware. We probably don't want the tooltip to shift/move
+          // on scroll, though. However, it's a bit tricky because we're using `position: fixed`. See createTooltip
+          // for more context. If we do implement recalculating position on scroll, we might be able to use the hide
+          // middleware to hide the tooltip.
+          flip(),
+          shift(),
+        ],
+      });
+      Object.assign(selectionMenu.style, {
         left: `${x}px`,
         top: `${y}px`,
       });
@@ -299,7 +292,7 @@ function isSelectionValid(selection: Nullishable<Selection>): boolean {
 /**
  * Initialize the selection tooltip once.
  */
-export const initSelectionTooltip = once(() => {
+export const initSelectionMenu = once(() => {
   expectContext("contentScript");
 
   // https://developer.mozilla.org/en-US/docs/Web/API/Document/selectionchange_event
@@ -331,7 +324,7 @@ export const initSelectionTooltip = once(() => {
   );
 
   tooltipActionRegistry.onChange.add(async () => {
-    const isShowing = selectionTooltip?.checkVisibility();
+    const isShowing = selectionMenu?.checkVisibility();
     destroyTooltip();
 
     // Allow live updates from the Page Editor

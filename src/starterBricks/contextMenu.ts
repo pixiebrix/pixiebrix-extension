@@ -68,7 +68,7 @@ import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { type MessageConfig } from "@/utils/notify";
 import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
 import { propertiesToSchema } from "@/utils/schemaUtils";
-import { initSelectionTooltip } from "@/contentScript/textSelectionMenu/selectionMenuController";
+import { initSelectionMenu } from "@/contentScript/textSelectionMenu/selectionMenuController";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 
@@ -226,7 +226,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
         await getSettingsState();
 
       if (isTextSelectionMenuEnabled) {
-        initSelectionTooltip();
+        initSelectionMenu();
       }
     }
 
