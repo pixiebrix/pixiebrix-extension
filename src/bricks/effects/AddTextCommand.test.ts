@@ -136,7 +136,7 @@ describe("AddTextCommand", () => {
         },
       ]),
       shortcut: "command",
-      title: "Example Command",
+      title: "Example Dynamic Snippet",
     });
   });
 });
