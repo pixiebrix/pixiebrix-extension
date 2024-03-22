@@ -5851,6 +5851,9 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
           </small>
         </div>
       </div>
+      <p>
+        Use the Preview Tab on the right to select a field to edit ⟶
+      </p>
       <div
         className="d-flex mb-3 gap-1 gap-column-4 align-items-center flex-wrap"
       >
@@ -6873,6 +6876,9 @@ exports[`Storyshots Forms/Form builder Minimum Initial Schema 1`] = `
           </small>
         </div>
       </div>
+      <p>
+        Use the Preview Tab on the right to select a field to edit ⟶
+      </p>
       <div
         className="d-flex mb-3 gap-1 gap-column-4 align-items-center flex-wrap"
       >

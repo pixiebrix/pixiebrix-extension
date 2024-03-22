@@ -163,7 +163,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
   return (
     <>
-      <p>Use the Preview Tab on the right to select an element to edit ⟶</p>
+      <p>Use the Preview Tab on the right to select a field to edit ⟶</p>
       <div className="d-flex mb-3 gap-1 gap-column-4 align-items-center flex-wrap">
         <Button onClick={addProperty} variant="primary" size="sm">
           <FontAwesomeIcon icon={faPlus} /> Add new field

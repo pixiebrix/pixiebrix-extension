@@ -5,6 +5,9 @@ exports[`FormEditor renders empty schema 1`] = `
   <form
     action="#"
   >
+    <p>
+      Use the Preview Tab on the right to select a field to edit ⟶
+    </p>
     <div
       class="d-flex mb-3 gap-1 gap-column-4 align-items-center flex-wrap"
     >
@@ -44,6 +47,9 @@ exports[`FormEditor renders simple schema 1`] = `
   <form
     action="#"
   >
+    <p>
+      Use the Preview Tab on the right to select a field to edit ⟶
+    </p>
     <div
       class="d-flex mb-3 gap-1 gap-column-4 align-items-center flex-wrap"
     >
@@ -630,6 +636,9 @@ exports[`FormEditor renders unknown field format 1`] = `
   <form
     action="#"
   >
+    <p>
+      Use the Preview Tab on the right to select a field to edit ⟶
+    </p>
     <div
       class="d-flex mb-3 gap-1 gap-column-4 align-items-center flex-wrap"
     >
