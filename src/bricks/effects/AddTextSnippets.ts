@@ -58,8 +58,8 @@ class AddTextSnippets extends EffectABC {
   constructor() {
     super(
       AddTextSnippets.BRICK_ID,
-      "[Experimental] Add Text Snippets",
-      "Add text snippets",
+      "Add Text Snippets",
+      "Add/register text snippets to the Snippet Shortcut Menu",
     );
   }
 

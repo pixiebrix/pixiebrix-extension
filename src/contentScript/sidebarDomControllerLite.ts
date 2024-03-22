@@ -50,6 +50,10 @@ function storeOriginalCSSOnce() {
     "margin-right",
     `calc(var(${ORIGINAL_MARGIN_CSS_PROPERTY}) + var(${SIDEBAR_WIDTH_CSS_PROPERTY}))`,
   );
+
+  // Some websites like https://www.nespresso.com/us/en/ have `width: 100%` on the HTML.
+  // This resets it as it prevents the margin from working (and it's the default already)
+  html.style.setProperty("width", "auto");
 }
 
 function setSidebarWidth(pixels: number): void {
