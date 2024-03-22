@@ -161,10 +161,10 @@ export class PlatformBase implements PlatformProtocol {
     );
   }
 
-  get commandPopover(): ShortcutSnippetMenuProtocol {
+  get shortcutSnippetMenu(): ShortcutSnippetMenuProtocol {
     throw new PlatformCapabilityNotAvailableError(
       this.platformName,
-      "commandPopover",
+      "shortcutSnippetMenu",
     );
   }
 

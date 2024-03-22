@@ -3491,7 +3491,7 @@ exports[`Storyshots Editor/LogToolbar Default 1`] = `
 </div>
 `;
 
-exports[`Storyshots Enhancements/CommandPopover Demo 1`] = `
+exports[`Storyshots Enhancements/ShortcutSnippetMenu Demo 1`] = `
 <div>
   <textarea
     cols={50}

@@ -97,7 +97,7 @@ class AddTextCommand extends EffectABC {
   );
 
   override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
-    return ["commandPopover"];
+    return ["shortcutSnippetMenu"];
   }
 
   async effect(
@@ -121,7 +121,7 @@ class AddTextCommand extends EffectABC {
     // Counter to keep track of the action run number for tracing
     let counter = 0;
 
-    platform.commandPopover.register({
+    platform.shortcutSnippetMenu.register({
       componentId: logger.context.extensionId,
       // Trim leading command key in shortcut to be resilient to user input
       shortcut: normalizeShortcut(shortcut),

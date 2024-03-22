@@ -170,7 +170,7 @@ export interface PlatformProtocol {
    * The registry for the text editor command popover.
    * @since 1.8.10
    */
-  get commandPopover(): ShortcutSnippetMenuProtocol;
+  get shortcutSnippetMenu(): ShortcutSnippetMenuProtocol;
 
   /**
    * Protocol for showing notification toasts to the user

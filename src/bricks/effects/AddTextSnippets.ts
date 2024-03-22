@@ -74,7 +74,7 @@ class AddTextSnippets extends EffectABC {
   }
 
   override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
-    return ["commandPopover"];
+    return ["shortcutSnippetMenu"];
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -120,7 +120,7 @@ class AddTextSnippets extends EffectABC {
     }
 
     for (const { shortcut, title, text } of snippets) {
-      platform.commandPopover.register({
+      platform.shortcutSnippetMenu.register({
         componentId: logger.context.extensionId,
         shortcut: normalizeShortcut(shortcut),
         title,

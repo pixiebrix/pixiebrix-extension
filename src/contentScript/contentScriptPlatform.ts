@@ -112,7 +112,7 @@ class ContentScriptPlatform extends PlatformBase {
     "audio",
     "quickBar",
     "textSelectionMenu",
-    "commandPopover",
+    "shortcutSnippetMenu",
     "contextMenu",
     "badge",
     "state",
@@ -279,7 +279,7 @@ class ContentScriptPlatform extends PlatformBase {
     return selectionMenuActionRegistry;
   }
 
-  override get commandPopover(): PlatformProtocol["commandPopover"] {
+  override get shortcutSnippetMenu(): PlatformProtocol["shortcutSnippetMenu"] {
     return snippetRegistry;
   }
 
