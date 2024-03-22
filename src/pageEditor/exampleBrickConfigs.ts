@@ -201,7 +201,7 @@ export function getExampleBrickConfig(
     case AddTextCommand.BRICK_ID: {
       return {
         shortcut: "command",
-        title: "Example Command",
+        title: "Example Dynamic Snippet",
         generate: toExpression("pipeline", [
           {
             ...createNewConfiguredBrick(IdentityTransformer.BRICK_ID, {
