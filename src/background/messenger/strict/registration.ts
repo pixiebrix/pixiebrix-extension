@@ -18,7 +18,6 @@
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
-
 import { showMySidePanel } from "@/background/sidePanel";
 import { ensureContentScript } from "@/background/contentScript";
 import { getRecord, setRecord } from "@/background/dataStore";

@@ -46,7 +46,6 @@ import type { JsonObject } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { writeToClipboard } from "@/utils/clipboardUtils";
-import { tooltipActionRegistry } from "@/contentScript/selectionTooltip/tooltipController";
 import { commandRegistry } from "@/contentScript/commandPopover/commandController";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import * as sidebarController from "@/contentScript/sidebarController";
@@ -61,6 +60,7 @@ import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { deferLogin } from "@/contentScript/integrations/deferredLoginController";
 import { flagOn } from "@/auth/featureFlagStorage";
+import { selectionMenuActionRegistry } from "@/contentScript/textSelectionMenu/selectionMenuController";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -111,7 +111,7 @@ class ContentScriptPlatform extends PlatformBase {
     "clipboardWrite",
     "audio",
     "quickBar",
-    "selectionTooltip",
+    "textSelectionMenu",
     "commandPopover",
     "contextMenu",
     "badge",
@@ -275,8 +275,8 @@ class ContentScriptPlatform extends PlatformBase {
     };
   }
 
-  override get selectionTooltip(): PlatformProtocol["selectionTooltip"] {
-    return tooltipActionRegistry;
+  override get textSelectionMenu(): PlatformProtocol["textSelectionMenu"] {
+    return selectionMenuActionRegistry;
   }
 
   override get commandPopover(): PlatformProtocol["commandPopover"] {

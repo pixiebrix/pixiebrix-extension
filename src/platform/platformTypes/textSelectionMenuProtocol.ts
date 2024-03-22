@@ -40,7 +40,7 @@ export type TextSelectionAction = {
  * Protocol for a popover displayed when a user selects text
  * @since 1.8.10
  */
-export interface SelectionTooltipProtocol {
+export interface TextSelectionMenuProtocol {
   /**
    * Register a text selection action
    * @param modComponentId the owner mod component

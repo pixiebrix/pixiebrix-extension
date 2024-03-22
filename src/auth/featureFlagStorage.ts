@@ -15,18 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getApiClient } from "@/data/service/apiClient";
-import { type components } from "@/types/swagger";
-import { addListener as addAuthStorageListener } from "@/auth/authStorage";
 import { CachedFunction } from "webext-storage-cache";
 import { expectContext } from "@/utils/expectContext";
 import { fetchFeatureFlagsInBackground } from "@/background/messenger/strict/api";
-import { oncePerSession } from "@/mv3/SessionStorage";
+import { getMe } from "@/data/service/backgroundApi";
+import { addListener as addAuthStorageListener } from "@/auth/authStorage";
 
+/**
+ * Fetch the latest feature flags from the server.
+ * @see fetchFeatureFlagsInBackground
+ * @deprecated call via fetchFeatureFlagsInBackground instead to memoize/de-duplicate calls initiated
+ * from multiple contexts.
+ */
+// getMe is memoized in-memory, so don't need to also memoizeUntilSettled this method
 export async function fetchFeatureFlags(): Promise<string[]> {
-  expectContext("background");
-  const client = await getApiClient();
-  const { data } = await client.get<components["schemas"]["Me"]>("/api/me/");
+  expectContext(
+    "background",
+    "fetchFeatureFlags should be called via fetchFeatureFlagsInBackground",
+  );
+  const data = await getMe();
   return [...(data?.flags ?? [])];
 }
 
@@ -34,10 +41,37 @@ const featureFlags = new CachedFunction("getFeatureFlags", {
   updater: fetchFeatureFlagsInBackground,
 });
 
-export async function resetFeatureFlags(): Promise<void> {
+/**
+ * Resets the feature flags cache and eagerly fetches the latest flags from the server.
+ *
+ * The background page resets the cache via addAuthStorageListener.
+ *
+ * For Jest tests, use TEST_deleteFeatureFlagsCache instead, which doesn't eagerly fetch the flags.
+ *
+ * @see TEST_deleteFeatureFlagsCache
+ */
+export async function resetFeatureFlagsCache(): Promise<void> {
+  // XXX: on session startup, we might consider instead calling featureFlags.getFresh() which will update the value,
+  // but flagOn will still return the old value until the promise resolves.
+  // https://github.com/fregante/webext-storage-cache/blob/main/source/cached-function.md#cachedfunctiongetfresharguments
+  await featureFlags.delete();
+  // Eagerly re-fetch the flags so that the next call to `flagOn` doesn't have to wait for the flags to be fetched.
+  await featureFlags.get();
+}
+
+/**
+ * Test utility to clear the feature flags cache. Use this in afterEach() in your tests. NOTE: in tests, the
+ * manual mock `__mocks__` implementation is automatically used, not this file.
+ * @see resetFeatureFlagsCache
+ */
+export async function TEST_deleteFeatureFlagsCache(): Promise<void> {
   await featureFlags.delete();
 }
 
+/**
+ * Test utility to directly set the flags cache. NOTE: in tests, the manual mock `__mocks__` implementation is
+ * automatically used, not this file.
+ */
 export async function TEST_overrideFeatureFlags(
   flags: string[],
 ): Promise<void> {
@@ -45,7 +79,7 @@ export async function TEST_overrideFeatureFlags(
 }
 
 /**
- * Returns true if the specified flag is on for the current user.
+ * Returns true if the specified flag is on for the current user. Fetches the flags if they are not already cached.
  * @param flag the feature flag to check
  */
 export async function flagOn(flag: string): Promise<boolean> {
@@ -53,8 +87,9 @@ export async function flagOn(flag: string): Promise<boolean> {
   return flags.includes(flag);
 }
 
-addAuthStorageListener(async () => {
-  await resetFeatureFlags();
-});
-
-oncePerSession("resetFeatureFlags", import.meta.url, resetFeatureFlags);
+export function initFeatureFlagBackgroundListeners(): void {
+  // Only need to listen in the background because CachedFunction uses browser.storage.local, which
+  // is shared across all contexts
+  expectContext("background");
+  addAuthStorageListener(resetFeatureFlagsCache);
+}

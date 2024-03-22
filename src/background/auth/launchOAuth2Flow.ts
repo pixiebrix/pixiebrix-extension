@@ -26,6 +26,7 @@ import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import implicitGrantFlow from "@/background/auth/implicitGrantFlow";
 import codeGrantFlow from "@/background/auth/codeGrantFlow";
+import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
 /**
  * Perform the OAuth2 flow for the given integration.
@@ -85,7 +86,7 @@ async function launchOAuth2Flow(
     return result;
   } catch (error) {
     const errorMessage = getErrorMessage(error);
-    console.log(errorMessage);
+
     reportEvent(Events.OAUTH2_LOGIN_ERROR, {
       ...eventPayload,
       error_message: errorMessage,
@@ -94,4 +95,11 @@ async function launchOAuth2Flow(
   }
 }
 
-export default launchOAuth2Flow;
+/**
+ * Memoize launchOAuth2Flow to prevent the integration banner from being displayed
+ * while the login flow is in progress.
+ * See: https://github.com/pixiebrix/pixiebrix-extension/issues/8004
+ */
+export default memoizeUntilSettled(launchOAuth2Flow, {
+  cacheKey: ([_, integrationConfig]) => integrationConfig.id,
+});

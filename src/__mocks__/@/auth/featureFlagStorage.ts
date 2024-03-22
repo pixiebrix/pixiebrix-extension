@@ -17,7 +17,6 @@
 
 // noinspection ES6PreferShortImport -- Override mock
 import { fetchFeatureFlags } from "../../../auth/featureFlagStorage";
-import { addListener as addAuthStorageListener } from "@/auth/authStorage";
 
 let flags: string[] | null = null;
 
@@ -27,8 +26,9 @@ let flags: string[] | null = null;
  *      await resetFeatureFlags();
  *    });
  */
-export async function resetFeatureFlags(): Promise<void> {
+export async function resetFeatureFlagsCache(): Promise<void> {
   flags = null;
+  flags = await fetchFeatureFlags();
 }
 
 export async function TEST_overrideFeatureFlags(
@@ -37,13 +37,16 @@ export async function TEST_overrideFeatureFlags(
   flags = newFlags;
 }
 
-export async function flagOn(flag: string): Promise<boolean> {
+export async function TEST_deleteFeatureFlagsCache(
+  newFlags: string[],
+): Promise<void> {
+  flags = null;
+}
+
+// Wrapped in jest.fn() so test file can check if it's using the mock or not.
+export const flagOn = jest.fn().mockImplementation(async (flag: string) => {
   if (flags === null) {
     flags = await fetchFeatureFlags();
   }
   return flags?.includes(flag) ?? false;
-}
-
-addAuthStorageListener(async () => {
-  await resetFeatureFlags();
 });
