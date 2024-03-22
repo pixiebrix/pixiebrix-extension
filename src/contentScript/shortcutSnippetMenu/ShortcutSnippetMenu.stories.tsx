@@ -19,17 +19,17 @@ import type { ComponentMeta, ComponentStory } from "@storybook/react";
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { uuidv4 } from "@/types/helpers";
 import { action } from "@storybook/addon-actions";
-import CommandPopover from "@/contentScript/shortcutSnippetMenu/CommandPopover";
-import CommandRegistry from "@/contentScript/shortcutSnippetMenu/CommandRegistry";
+import ShortcutSnippetMenu from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetMenu";
+import SnippetRegistry from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetRegistry";
 import { sleep } from "@/utils/timeUtils";
 import type { Nullishable } from "@/utils/nullishUtils";
 
 export default {
-  title: "Enhancements/CommandPopover",
-  component: CommandPopover,
-} as ComponentMeta<typeof CommandPopover>;
+  title: "Enhancements/ShortcutSnippetMenu",
+  component: ShortcutSnippetMenu,
+} as ComponentMeta<typeof ShortcutSnippetMenu>;
 
-const Template: ComponentStory<typeof CommandPopover> = ({
+const Template: ComponentStory<typeof ShortcutSnippetMenu> = ({
   registry,
   commandKey,
 }) => {
@@ -48,7 +48,7 @@ const Template: ComponentStory<typeof CommandPopover> = ({
       </div>
       {element && (
         <div>
-          <CommandPopover
+          <ShortcutSnippetMenu
             commandKey={commandKey}
             registry={registry}
             element={element}
@@ -97,7 +97,7 @@ const slowErrorCommand = {
   },
 };
 
-const commandRegistry = new CommandRegistry();
+const commandRegistry = new SnippetRegistry();
 commandRegistry.register(emailCommand);
 commandRegistry.register(timestampCommand);
 commandRegistry.register(emojiCommand);

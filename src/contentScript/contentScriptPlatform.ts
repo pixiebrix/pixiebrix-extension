@@ -46,7 +46,7 @@ import type { JsonObject } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { writeToClipboard } from "@/utils/clipboardUtils";
-import { commandRegistry } from "@/contentScript/shortcutSnippetMenu/commandController";
+import { commandRegistry } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import * as sidebarController from "@/contentScript/sidebarController";
 import { validateSemVerString } from "@/types/helpers";

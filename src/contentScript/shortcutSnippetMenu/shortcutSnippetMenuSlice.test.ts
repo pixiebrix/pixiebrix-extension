@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { popoverSlice } from "@/contentScript/shortcutSnippetMenu/commandPopoverSlice";
+import { popoverSlice } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuSlice";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
-describe("commandPopoverSlice", () => {
+describe("snippetMenuSlice", () => {
   it.each(["test", "TeSt"])("case matches query: %s", (query) => {
     const command = {
       componentId: autoUUIDSequence(),

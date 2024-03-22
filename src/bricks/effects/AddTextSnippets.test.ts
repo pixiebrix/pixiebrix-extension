@@ -18,7 +18,7 @@
 import AddTextSnippets from "@/bricks/effects/AddTextSnippets";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
-import { commandRegistry } from "@/contentScript/shortcutSnippetMenu/commandController";
+import { commandRegistry } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
 import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
 
 const brick = new AddTextSnippets();

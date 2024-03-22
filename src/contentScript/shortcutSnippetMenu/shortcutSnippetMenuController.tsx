@@ -30,8 +30,8 @@ import {
 } from "@floating-ui/dom";
 import { getCaretCoordinates } from "@/utils/textAreaUtils";
 import React from "react";
-import CommandRegistry from "@/contentScript/shortcutSnippetMenu/CommandRegistry";
-import CommandPopover from "@/contentScript/shortcutSnippetMenu/CommandPopover";
+import SnippetRegistry from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetRegistry";
+import ShortcutSnippetMenu from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetMenu";
 import { onContextInvalidated } from "webext-events";
 import {
   isContentEditableElement,
@@ -48,7 +48,7 @@ import { prefersReducedMotion } from "@/utils/a11yUtils";
 
 const COMMAND_KEY = "\\";
 
-export const commandRegistry = new CommandRegistry();
+export const commandRegistry = new SnippetRegistry();
 
 let targetElement: Nullishable<TextEditorElement>;
 
@@ -153,7 +153,7 @@ function createPopover(element: TextEditorElement): HTMLElement {
   commandPopover.dataset.testid = "pixiebrix-command-tooltip";
 
   render(
-    <CommandPopover
+    <ShortcutSnippetMenu
       registry={commandRegistry}
       element={element}
       onHide={destroyPopover}

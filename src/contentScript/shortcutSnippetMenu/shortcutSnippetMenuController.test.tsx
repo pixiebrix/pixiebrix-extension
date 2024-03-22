@@ -23,7 +23,7 @@ import { rectFactory } from "@/testUtils/factories/domFactories";
 import {
   initCommandController,
   commandRegistry,
-} from "@/contentScript/shortcutSnippetMenu/commandController";
+} from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
 
 // I couldn't get shadow-dom-testing-library working
 jest.mock("react-shadow/emotion", () => ({
@@ -41,7 +41,7 @@ jest.mock("react-shadow/emotion", () => ({
 (Range.prototype.getClientRects as any) = jest.fn(() => [rectFactory()]);
 (Element.prototype.scrollIntoViewIfNeeded as any) = jest.fn();
 
-describe("commandController", () => {
+describe("snippetMenuController", () => {
   async function triggerCommandPopover() {
     const user = userEvent.setup();
     const textbox = screen.getByRole("textbox");

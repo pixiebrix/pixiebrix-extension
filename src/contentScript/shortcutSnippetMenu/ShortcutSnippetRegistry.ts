@@ -24,7 +24,7 @@ import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtoco
  * Registry for slash commands
  * @since 1.8.10
  */
-class CommandRegistry {
+class SnippetRegistry {
   /**
    * Map from component UUID to registered action
    */
@@ -71,4 +71,4 @@ class CommandRegistry {
   }
 }
 
-export default CommandRegistry;
+export default SnippetRegistry;

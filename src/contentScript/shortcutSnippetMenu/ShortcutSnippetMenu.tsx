@@ -22,18 +22,18 @@ import React, {
   useReducer,
   useRef,
 } from "react";
-import type CommandRegistry from "@/contentScript/shortcutSnippetMenu/CommandRegistry";
-import useCommandRegistry from "@/contentScript/shortcutSnippetMenu/useCommandRegistry";
+import type SnippetRegistry from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetRegistry";
+import useCommandRegistry from "@/contentScript/shortcutSnippetMenu/useShortcutSnippetRegistry";
 import { type TextEditorElement } from "@/types/inputTypes";
 import useKeyboardQuery from "@/contentScript/shortcutSnippetMenu/useKeyboardQuery";
 import cx from "classnames";
-import stylesUrl from "./CommandPopover.scss?loadAsUrl";
+import stylesUrl from "./ShortcutSnippetMenu.scss?loadAsUrl";
 import {
   initialState,
   popoverSlice,
   type PopoverState,
   selectSelectedCommand,
-} from "@/contentScript/shortcutSnippetMenu/commandPopoverSlice";
+} from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuSlice";
 import { getElementText } from "@/utils/editorUtils";
 import { isEmpty } from "lodash";
 import reportEvent from "@/telemetry/reportEvent";
@@ -44,7 +44,7 @@ import useIsMounted from "@/hooks/useIsMounted";
 import {
   normalizePreview,
   replaceAtCommand,
-} from "@/contentScript/shortcutSnippetMenu/commandUtils";
+} from "@/contentScript/shortcutSnippetMenu/shortcutSnippetUtils";
 import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -157,10 +157,10 @@ const popoverFooter: React.ReactElement = (
   </div>
 );
 
-const CommandPopover: React.FunctionComponent<
+const ShortcutSnippetMenu: React.FunctionComponent<
   {
     commandKey: string;
-    registry: CommandRegistry;
+    registry: SnippetRegistry;
     element: TextEditorElement;
   } & PopoverActionCallbacks
 > = ({ commandKey, registry, element, onHide }) => {
@@ -254,4 +254,4 @@ const CommandPopover: React.FunctionComponent<
   );
 };
 
-export default CommandPopover;
+export default ShortcutSnippetMenu;

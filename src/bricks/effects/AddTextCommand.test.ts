@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { commandRegistry } from "@/contentScript/shortcutSnippetMenu/commandController";
+import { commandRegistry } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
 import AddTextCommand from "@/bricks/effects/AddTextCommand";
 import blockRegistry from "@/bricks/registry";
 import {

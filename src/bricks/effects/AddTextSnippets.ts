@@ -19,7 +19,7 @@ import { validateRegistryId } from "@/types/helpers";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { initCommandController } from "@/contentScript/shortcutSnippetMenu/commandController";
+import { initCommandController } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { propertiesToSchema } from "@/utils/schemaUtils";
