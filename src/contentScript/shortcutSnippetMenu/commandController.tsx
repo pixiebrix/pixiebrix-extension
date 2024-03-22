@@ -30,8 +30,8 @@ import {
 } from "@floating-ui/dom";
 import { getCaretCoordinates } from "@/utils/textAreaUtils";
 import React from "react";
-import CommandRegistry from "@/contentScript/commandPopover/CommandRegistry";
-import CommandPopover from "@/contentScript/commandPopover/CommandPopover";
+import CommandRegistry from "@/contentScript/shortcutSnippetMenu/CommandRegistry";
+import CommandPopover from "@/contentScript/shortcutSnippetMenu/CommandPopover";
 import { onContextInvalidated } from "webext-events";
 import {
   isContentEditableElement,

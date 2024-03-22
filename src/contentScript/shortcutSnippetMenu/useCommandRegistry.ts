@@ -17,7 +17,7 @@
 
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import { useCallback } from "react";
-import type CommandRegistry from "@/contentScript/commandPopover/CommandRegistry";
+import type CommandRegistry from "@/contentScript/shortcutSnippetMenu/CommandRegistry";
 import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
 
 /**

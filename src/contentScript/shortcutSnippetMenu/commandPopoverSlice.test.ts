@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { popoverSlice } from "@/contentScript/commandPopover/commandPopoverSlice";
+import { popoverSlice } from "@/contentScript/shortcutSnippetMenu/commandPopoverSlice";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 describe("commandPopoverSlice", () => {

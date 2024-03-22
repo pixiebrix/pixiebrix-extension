@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import CommandPopover from "@/contentScript/commandPopover/CommandPopover";
-import CommandRegistry from "@/contentScript/commandPopover/CommandRegistry";
+import CommandPopover from "@/contentScript/shortcutSnippetMenu/CommandPopover";
+import CommandRegistry from "@/contentScript/shortcutSnippetMenu/CommandRegistry";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 // I couldn't get shadow-dom-testing-library working

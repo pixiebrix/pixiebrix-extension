@@ -23,7 +23,7 @@ import type {
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { initCommandController } from "@/contentScript/commandPopover/commandController";
+import { initCommandController } from "@/contentScript/shortcutSnippetMenu/commandController";
 import { BusinessError } from "@/errors/businessErrors";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import { validateOutputKey } from "@/runtime/runtimeTypes";

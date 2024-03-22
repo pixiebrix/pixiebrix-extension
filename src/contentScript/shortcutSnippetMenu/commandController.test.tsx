@@ -23,7 +23,7 @@ import { rectFactory } from "@/testUtils/factories/domFactories";
 import {
   initCommandController,
   commandRegistry,
-} from "@/contentScript/commandPopover/commandController";
+} from "@/contentScript/shortcutSnippetMenu/commandController";
 
 // I couldn't get shadow-dom-testing-library working
 jest.mock("react-shadow/emotion", () => ({

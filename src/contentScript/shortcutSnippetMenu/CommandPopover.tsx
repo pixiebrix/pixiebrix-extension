@@ -22,10 +22,10 @@ import React, {
   useReducer,
   useRef,
 } from "react";
-import type CommandRegistry from "@/contentScript/commandPopover/CommandRegistry";
-import useCommandRegistry from "@/contentScript/commandPopover/useCommandRegistry";
+import type CommandRegistry from "@/contentScript/shortcutSnippetMenu/CommandRegistry";
+import useCommandRegistry from "@/contentScript/shortcutSnippetMenu/useCommandRegistry";
 import { type TextEditorElement } from "@/types/inputTypes";
-import useKeyboardQuery from "@/contentScript/commandPopover/useKeyboardQuery";
+import useKeyboardQuery from "@/contentScript/shortcutSnippetMenu/useKeyboardQuery";
 import cx from "classnames";
 import stylesUrl from "./CommandPopover.scss?loadAsUrl";
 import {
@@ -33,7 +33,7 @@ import {
   popoverSlice,
   type PopoverState,
   selectSelectedCommand,
-} from "@/contentScript/commandPopover/commandPopoverSlice";
+} from "@/contentScript/shortcutSnippetMenu/commandPopoverSlice";
 import { getElementText } from "@/utils/editorUtils";
 import { isEmpty } from "lodash";
 import reportEvent from "@/telemetry/reportEvent";
@@ -44,7 +44,7 @@ import useIsMounted from "@/hooks/useIsMounted";
 import {
   normalizePreview,
   replaceAtCommand,
-} from "@/contentScript/commandPopover/commandUtils";
+} from "@/contentScript/shortcutSnippetMenu/commandUtils";
 import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {

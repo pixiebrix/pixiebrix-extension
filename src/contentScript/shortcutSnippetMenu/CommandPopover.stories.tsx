@@ -19,8 +19,8 @@ import type { ComponentMeta, ComponentStory } from "@storybook/react";
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { uuidv4 } from "@/types/helpers";
 import { action } from "@storybook/addon-actions";
-import CommandPopover from "@/contentScript/commandPopover/CommandPopover";
-import CommandRegistry from "@/contentScript/commandPopover/CommandRegistry";
+import CommandPopover from "@/contentScript/shortcutSnippetMenu/CommandPopover";
+import CommandRegistry from "@/contentScript/shortcutSnippetMenu/CommandRegistry";
 import { sleep } from "@/utils/timeUtils";
 import type { Nullishable } from "@/utils/nullishUtils";
 
