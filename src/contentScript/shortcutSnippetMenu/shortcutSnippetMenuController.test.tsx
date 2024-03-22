@@ -75,7 +75,7 @@ describe("snippetMenuController", () => {
     const user = await triggerCommandPopover();
 
     await expect(screen.findByRole("menu")).resolves.toBeInTheDocument();
-    expect(commandRegistry.commands).toHaveLength(1);
+    expect(commandRegistry.shortcutSnippets).toHaveLength(1);
 
     const textbox = screen.getByRole("textbox");
     await user.type(textbox, " ");

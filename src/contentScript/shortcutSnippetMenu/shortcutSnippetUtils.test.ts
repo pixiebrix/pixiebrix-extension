@@ -17,7 +17,7 @@
 
 import {
   normalizePreview,
-  replaceAtCommand,
+  replaceAtCommandKey,
 } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetUtils";
 
 // `jsdom` doesn't implement execCommand
@@ -29,7 +29,7 @@ describe("replaceAtCommand", () => {
     document.body.innerHTML =
       '<input type="text" value="\\hello world" id="input" />';
 
-    await replaceAtCommand({
+    await replaceAtCommandKey({
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- defined above
       element: document.querySelector("#input")!,
       text: "new text",

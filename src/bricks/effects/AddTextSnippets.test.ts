@@ -46,7 +46,7 @@ describe("AddTextSnippets", () => {
         options,
       );
 
-      expect(commandRegistry.commands).toStrictEqual([
+      expect(commandRegistry.shortcutSnippets).toStrictEqual([
         {
           // Leading command key is dropped
           shortcut: "test",
@@ -57,9 +57,9 @@ describe("AddTextSnippets", () => {
         },
       ]);
 
-      await expect(commandRegistry.commands[0].handler("")).resolves.toBe(
-        "test text",
-      );
+      await expect(
+        commandRegistry.shortcutSnippets[0].handler(""),
+      ).resolves.toBe("test text");
     },
   );
 

@@ -28,7 +28,7 @@ class SnippetRegistry {
   /**
    * Map from component UUID to registered action
    */
-  public readonly commands: ShortcutSnippet[] = [];
+  public readonly shortcutSnippets: ShortcutSnippet[] = [];
 
   /**
    * Event fired when the set of registered commands change
@@ -39,18 +39,18 @@ class SnippetRegistry {
    * Register a new text snippet
    */
   register(newCommand: ShortcutSnippet): void {
-    const index = this.commands.findIndex(
+    const index = this.shortcutSnippets.findIndex(
       (command) => newCommand.shortcut === command.shortcut,
     );
 
     if (index >= 0) {
       // eslint-disable-next-line security/detect-object-injection -- number from findIndex
-      this.commands[index] = newCommand;
+      this.shortcutSnippets[index] = newCommand;
     } else {
-      this.commands.push(newCommand);
+      this.shortcutSnippets.push(newCommand);
     }
 
-    this.onChange.emit(this.commands);
+    this.onChange.emit(this.shortcutSnippets);
   }
 
   /**
@@ -58,16 +58,19 @@ class SnippetRegistry {
    * @param componentId the mod component id
    */
   unregister(componentId: UUID): void {
-    remove(this.commands, (command) => command.componentId === componentId);
-    this.onChange.emit(this.commands);
+    remove(
+      this.shortcutSnippets,
+      (command) => command.componentId === componentId,
+    );
+    this.onChange.emit(this.shortcutSnippets);
   }
 
   /**
    * Clear all commands.
    */
   clear(): void {
-    this.commands.splice(0);
-    this.onChange.emit(this.commands);
+    this.shortcutSnippets.splice(0);
+    this.onChange.emit(this.shortcutSnippets);
   }
 }
 

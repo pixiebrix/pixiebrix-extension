@@ -23,7 +23,7 @@ import React, {
   useRef,
 } from "react";
 import type SnippetRegistry from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetRegistry";
-import useCommandRegistry from "@/contentScript/shortcutSnippetMenu/useShortcutSnippetRegistry";
+import useShortcutSnippetRegistry from "@/contentScript/shortcutSnippetMenu/useShortcutSnippetRegistry";
 import { type TextEditorElement } from "@/types/inputTypes";
 import useKeyboardQuery from "@/contentScript/shortcutSnippetMenu/useKeyboardQuery";
 import cx from "classnames";
@@ -43,7 +43,7 @@ import { Stylesheets } from "@/components/Stylesheets";
 import useIsMounted from "@/hooks/useIsMounted";
 import {
   normalizePreview,
-  replaceAtCommand,
+  replaceAtCommandKey,
 } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetUtils";
 import type { ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -53,7 +53,7 @@ import {
   faExclamationCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
-type PopoverActionCallbacks = {
+type MenuActionCallbacks = {
   onHide: () => void;
 };
 
@@ -111,21 +111,21 @@ const ResultItem: React.FunctionComponent<{
 };
 
 const StatusBar: React.FunctionComponent<{
-  activeCommand?: MenuState["activeShortcutSnippet"];
+  activeShortcutSnippet?: MenuState["activeShortcutSnippet"];
   results: MenuState["results"];
-}> = ({ activeCommand, results }) => {
-  if (activeCommand?.state.isFetching) {
+}> = ({ activeShortcutSnippet, results }) => {
+  if (activeShortcutSnippet?.state.isFetching) {
     return (
       <div role="status" className="status status--fetching">
-        Running command: {activeCommand.shortcutSnippet.title}
+        Running shortcut snippet: {activeShortcutSnippet.shortcutSnippet.title}
       </div>
     );
   }
 
-  if (activeCommand?.state.isError) {
+  if (activeShortcutSnippet?.state.isError) {
     return (
       <div role="status" className="status status--error">
-        Error running last command
+        Error running last shortcut snippet
       </div>
     );
   }
@@ -144,7 +144,7 @@ const noResultsPane: React.ReactElement = (
   </div>
 );
 
-const popoverFooter: React.ReactElement = (
+const menuFooter: React.ReactElement = (
   // TODO: determine a11y: https://github.com/pixiebrix/pixiebrix-extension/issues/7936
   <div className="footer">
     Navigate{" "}
@@ -162,33 +162,39 @@ const ShortcutSnippetMenu: React.FunctionComponent<
     commandKey: string;
     registry: SnippetRegistry;
     element: TextEditorElement;
-  } & PopoverActionCallbacks
+  } & MenuActionCallbacks
 > = ({ commandKey, registry, element, onHide }) => {
   const isMounted = useIsMounted();
   const [state, dispatch] = useReducer(
     shortcutSnippetMenuSlice.reducer,
     initialState,
   );
-  const selectedCommand = selectSelectedShortcutSnippet(state);
-  const selectedCommandRef = useRef(selectedCommand);
-  const commands = useCommandRegistry(registry);
+  const selectedShortcutSnippet = selectSelectedShortcutSnippet(state);
+  const selectedShortcutSnippetRef = useRef(selectedShortcutSnippet);
+  const shortcutSnippets = useShortcutSnippetRegistry(registry);
 
   const fillAtCursor = useCallback(
-    async ({ command, query }: { command: ShortcutSnippet; query: string }) => {
+    async ({
+      shortcutSnippet,
+      query,
+    }: {
+      shortcutSnippet: ShortcutSnippet;
+      query: string;
+    }) => {
       // Async thunks don't work with React useReducer so write async logic as a hook
       // https://github.com/reduxjs/redux-toolkit/issues/754
       dispatch(
         shortcutSnippetMenuSlice.actions.setShortcutSnippetLoading({
-          shortcutSnippet: command,
+          shortcutSnippet,
         }),
       );
       try {
-        reportEvent(Events.TEXT_COMMAND_RUN);
-        const text = await command.handler(getElementText(element));
-        await replaceAtCommand({ commandKey, query, element, text });
+        reportEvent(Events.SHORTCUT_SNIPPET_RUN);
+        const text = await shortcutSnippet.handler(getElementText(element));
+        await replaceAtCommandKey({ commandKey, query, element, text });
         onHide();
         if (isMounted()) {
-          // We're setting success state for Storybook. In practice, the popover will be unmounted via onHide()
+          // We're setting success state for Storybook. In practice, the menu will be unmounted via onHide()
           dispatch(
             shortcutSnippetMenuSlice.actions.setShortcutSnippetSuccess({
               text,
@@ -210,8 +216,11 @@ const ShortcutSnippetMenu: React.FunctionComponent<
     commandKey,
     // OK to pass handlers directly because hook uses useRef
     async onSubmit(query) {
-      if (selectedCommandRef.current != null) {
-        await fillAtCursor({ command: selectedCommandRef.current, query });
+      if (selectedShortcutSnippetRef.current != null) {
+        await fillAtCursor({
+          shortcutSnippet: selectedShortcutSnippetRef.current,
+          query,
+        });
       }
     },
     onOffset(offset: number) {
@@ -223,39 +232,40 @@ const ShortcutSnippetMenu: React.FunctionComponent<
 
   useEffect(() => {
     // Auto-hide if the user deletes the commandKey
-    if (selectedCommandRef.current && query == null) {
+    if (selectedShortcutSnippetRef.current && query == null) {
       onHide();
     }
 
     // Make current value available to onSubmit handler for useKeyboardQuery
-    selectedCommandRef.current = selectedCommand;
-  }, [selectedCommand, query, onHide]);
+    selectedShortcutSnippetRef.current = selectedShortcutSnippet;
+  }, [selectedShortcutSnippet, query, onHide]);
 
   // Search effect
   useEffect(() => {
     dispatch(
       shortcutSnippetMenuSlice.actions.search({
-        shortcutSnippets: commands,
+        shortcutSnippets,
         query,
       }),
     );
-  }, [query, commands, dispatch]);
+  }, [query, shortcutSnippets, dispatch]);
 
   return (
     // Prevent page styles from leaking into the menu
     <EmotionShadowRoot mode="open" style={{ all: "initial" }}>
       <Stylesheets href={[stylesUrl]}>
-        <div role="menu" aria-label="Text command menu" className="root">
+        <div role="menu" aria-label="Shortcut Snippet Menu" className="root">
           <StatusBar {...state} />
           <div className="results">
             {state.results.length === 0 && noResultsPane}
 
-            {state.results.map((command) => {
-              const isSelected = selectedCommand?.shortcut === command.shortcut;
+            {state.results.map((snippet) => {
+              const isSelected =
+                selectedShortcutSnippet?.shortcut === snippet.shortcut;
               return (
                 <ResultItem
-                  key={command.shortcut}
-                  snippet={command}
+                  key={snippet.shortcut}
+                  snippet={snippet}
                   disabled={
                     state.activeShortcutSnippet?.state.isFetching ?? false
                   }
@@ -263,13 +273,16 @@ const ShortcutSnippetMenu: React.FunctionComponent<
                   commandKey={commandKey}
                   query={state.query ?? ""}
                   onClick={async () => {
-                    await fillAtCursor({ command, query: query ?? "" });
+                    await fillAtCursor({
+                      shortcutSnippet: snippet,
+                      query: query ?? "",
+                    });
                   }}
                 />
               );
             })}
           </div>
-          {popoverFooter}
+          {menuFooter}
         </div>
       </Stylesheets>
     </EmotionShadowRoot>

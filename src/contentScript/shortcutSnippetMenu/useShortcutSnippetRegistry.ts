@@ -21,10 +21,12 @@ import type SnippetRegistry from "@/contentScript/shortcutSnippetMenu/ShortcutSn
 import type { ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
 
 /**
- * React hook to sync React with the text command registry.
+ * React hook to sync React with the shortcut snippet registry.
  * @param registry the registry to watch
  */
-function useCommandRegistry(registry: SnippetRegistry): ShortcutSnippet[] {
+function useShortcutSnippetRegistry(
+  registry: SnippetRegistry,
+): ShortcutSnippet[] {
   const subscribe = useCallback(
     (callback: () => void) => {
       registry.onChange.add(callback);
@@ -35,9 +37,9 @@ function useCommandRegistry(registry: SnippetRegistry): ShortcutSnippet[] {
     [registry],
   );
 
-  const getSnapshot = useCallback(() => registry.commands, [registry]);
+  const getSnapshot = useCallback(() => registry.shortcutSnippets, [registry]);
 
   return useSyncExternalStore(subscribe, getSnapshot);
 }
 
-export default useCommandRegistry;
+export default useShortcutSnippetRegistry;

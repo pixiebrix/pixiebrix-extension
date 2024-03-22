@@ -36,7 +36,7 @@ describe("snippetMenuSlice", () => {
         }),
       ),
     ).toStrictEqual({
-      activeCommand: null,
+      activeShortcutSnippet: null,
       query,
       results: [command],
       selectedIndex: 0,

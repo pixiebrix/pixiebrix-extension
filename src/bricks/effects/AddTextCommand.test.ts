@@ -66,7 +66,7 @@ describe("AddTextCommand", () => {
         logger,
       });
 
-      expect(commandRegistry.commands).toStrictEqual([
+      expect(commandRegistry.shortcutSnippets).toStrictEqual([
         {
           // Any leading slash is dropped
           shortcut: "echo",
@@ -79,7 +79,7 @@ describe("AddTextCommand", () => {
       ]);
 
       await expect(
-        commandRegistry.commands[0].handler("current text"),
+        commandRegistry.shortcutSnippets[0].handler("current text"),
       ).resolves.toBe("current text");
     },
   );
@@ -108,7 +108,7 @@ describe("AddTextCommand", () => {
         logger,
       });
 
-      expect(commandRegistry.commands).toStrictEqual([
+      expect(commandRegistry.shortcutSnippets).toStrictEqual([
         {
           shortcut: "echo",
           title: "Echo",
@@ -119,7 +119,7 @@ describe("AddTextCommand", () => {
       ]);
 
       await expect(
-        commandRegistry.commands[0].handler("current text"),
+        commandRegistry.shortcutSnippets[0].handler("current text"),
       ).resolves.toBe("current text");
     },
   );
