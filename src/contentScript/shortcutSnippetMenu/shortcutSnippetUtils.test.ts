@@ -24,7 +24,7 @@ import {
 document.execCommand = jest.fn().mockReturnValue(true);
 
 // Can only do very limited testing due to lack of jsdom support for execCommand and selection/focus
-describe("replaceAtCommand", () => {
+describe("replaceAtCommandKey", () => {
   it("inserts in normal text field", async () => {
     document.body.innerHTML =
       '<input type="text" value="\\hello world" id="input" />';

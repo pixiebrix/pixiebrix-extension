@@ -16,11 +16,12 @@
  */
 
 import { shortcutSnippetMenuSlice } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuSlice";
+import { type ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
-describe("snippetMenuSlice", () => {
+describe("shortcutSnippetMenuSlice", () => {
   it.each(["test", "TeSt"])("case matches query: %s", (query) => {
-    const command = {
+    const shortcutSnippet: ShortcutSnippet = {
       componentId: autoUUIDSequence(),
       shortcut: "test",
       title: "Test",
@@ -32,13 +33,13 @@ describe("snippetMenuSlice", () => {
         undefined,
         shortcutSnippetMenuSlice.actions.search({
           query,
-          shortcutSnippets: [command],
+          shortcutSnippets: [shortcutSnippet],
         }),
       ),
     ).toStrictEqual({
       activeShortcutSnippet: null,
       query,
-      results: [command],
+      results: [shortcutSnippet],
       selectedIndex: 0,
     });
   });

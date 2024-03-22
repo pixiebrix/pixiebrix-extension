@@ -21,7 +21,7 @@ import { remove } from "lodash";
 import type { ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
 
 /**
- * Registry for slash commands
+ * Registry for shortcut snippets
  * @since 1.8.10
  */
 class SnippetRegistry {
@@ -31,42 +31,43 @@ class SnippetRegistry {
   public readonly shortcutSnippets: ShortcutSnippet[] = [];
 
   /**
-   * Event fired when the set of registered commands change
+   * Event fired when the set of registered shortcut snippets change
    */
   public readonly onChange = new SimpleEventTarget<ShortcutSnippet[]>();
 
   /**
    * Register a new text snippet
    */
-  register(newCommand: ShortcutSnippet): void {
+  register(newShortcutSnippet: ShortcutSnippet): void {
     const index = this.shortcutSnippets.findIndex(
-      (command) => newCommand.shortcut === command.shortcut,
+      (shortcutSnippet) =>
+        newShortcutSnippet.shortcut === shortcutSnippet.shortcut,
     );
 
     if (index >= 0) {
       // eslint-disable-next-line security/detect-object-injection -- number from findIndex
-      this.shortcutSnippets[index] = newCommand;
+      this.shortcutSnippets[index] = newShortcutSnippet;
     } else {
-      this.shortcutSnippets.push(newCommand);
+      this.shortcutSnippets.push(newShortcutSnippet);
     }
 
     this.onChange.emit(this.shortcutSnippets);
   }
 
   /**
-   * Unregister all commands for a mod component
+   * Unregister all shortcut snippets for a mod component
    * @param componentId the mod component id
    */
   unregister(componentId: UUID): void {
     remove(
       this.shortcutSnippets,
-      (command) => command.componentId === componentId,
+      (shortcutSnippet) => shortcutSnippet.componentId === componentId,
     );
     this.onChange.emit(this.shortcutSnippets);
   }
 
   /**
-   * Clear all commands.
+   * Clear all shortcut snippets.
    */
   clear(): void {
     this.shortcutSnippets.splice(0);

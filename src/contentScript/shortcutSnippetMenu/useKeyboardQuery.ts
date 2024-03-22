@@ -103,8 +103,8 @@ function selectActiveQuery({
  * Watches keyboard interaction with an element to determine a command search query
  * @param commandKey the character to watch for, defaults to "/"
  * @param element the text element to watch
- * @param onSubmitRef callback to select a command
- * @param onOffset callback to offset the selected command
+ * @param onSubmitRef callback to select a shortcut snippet
+ * @param onOffset callback to offset the selected shortcut snippet
  */
 function useKeyboardQuery({
   commandKey = "\\",
