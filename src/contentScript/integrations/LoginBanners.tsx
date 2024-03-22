@@ -21,6 +21,7 @@ import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { Alert } from "react-bootstrap";
 import bootstrapUrl from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
 import stylesUrl from "./LoginBanners.scss?loadAsUrl";
+import resetUrl from "@/reset.css?loadAsUrl";
 import { Stylesheets } from "@/components/Stylesheets";
 import type { DeferredLogin } from "@/contentScript/integrations/deferredLoginTypes";
 import { launchInteractiveOAuthFlow } from "@/background/messenger/api";
@@ -72,16 +73,18 @@ const LoginBanners: React.FC<{
 
   return (
     <EmotionShadowRoot mode="open" style={{ all: "initial" }}>
-      <Stylesheets href={[bootstrapUrl, stylesUrl]}>
-        {deferredLogins.map((x) => (
-          <LoginBanner
-            key={x.config.id}
-            {...x}
-            dismissLogin={() => {
-              dismissLogin(x.config.id);
-            }}
-          />
-        ))}
+      <Stylesheets href={[resetUrl, bootstrapUrl, stylesUrl]}>
+        <div className="pixiebrix-reset">
+          {deferredLogins.map((x) => (
+            <LoginBanner
+              key={x.config.id}
+              {...x}
+              dismissLogin={() => {
+                dismissLogin(x.config.id);
+              }}
+            />
+          ))}
+        </div>
       </Stylesheets>
     </EmotionShadowRoot>
   );

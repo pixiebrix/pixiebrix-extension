@@ -24,6 +24,7 @@ import {
   SIDEBAR_EASING_FUNCTION,
   SIDEBAR_WIDTH_CSS_PROPERTY,
 } from "@/contentScript/sidebarDomControllerLite";
+import { MAX_Z_INDEX } from "@/domConstants";
 
 let bannerContainer: HTMLDivElement | null = null;
 let dismissLogin: (configId: UUID) => void = null;
@@ -93,9 +94,8 @@ export function showLoginBanner(
     Object.assign(bannerContainer.style, {
       style: "all: initial",
       position: "relative",
-      // See https://getbootstrap.com/docs/4.6/layout/overview/#z-index
-      // We want the z-index to be high as possible, but lower than the modal
-      zIndex: "100300",
+      // Same z-index as the sidebar. Does not interfere with the modal.
+      zIndex: MAX_Z_INDEX - 1,
       width: "100%",
       ...mv2SidebarStyleSupport,
     });
