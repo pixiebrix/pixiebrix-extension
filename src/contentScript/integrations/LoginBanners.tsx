@@ -74,17 +74,15 @@ const LoginBanners: React.FC<{
   return (
     <EmotionShadowRoot mode="open" style={{ all: "initial" }}>
       <Stylesheets href={[resetUrl, bootstrapUrl, stylesUrl]}>
-        <div className="pixiebrix-reset">
-          {deferredLogins.map((x) => (
-            <LoginBanner
-              key={x.config.id}
-              {...x}
-              dismissLogin={() => {
-                dismissLogin(x.config.id);
-              }}
-            />
-          ))}
-        </div>
+        {deferredLogins.map((x) => (
+          <LoginBanner
+            key={x.config.id}
+            {...x}
+            dismissLogin={() => {
+              dismissLogin(x.config.id);
+            }}
+          />
+        ))}
       </Stylesheets>
     </EmotionShadowRoot>
   );
