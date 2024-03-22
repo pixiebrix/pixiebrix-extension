@@ -81,7 +81,8 @@ export function showLoginBanner(
       all: "initial",
       position: "relative",
       width: "100%",
-      zIndex: MAX_Z_INDEX,
+      // `-1` keeps it under the QuickBar
+      zIndex: MAX_Z_INDEX - 1,
     });
 
     // Place before `body` to avoid margins
