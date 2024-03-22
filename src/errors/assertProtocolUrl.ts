@@ -21,7 +21,6 @@ import { BusinessError } from "@/errors/businessErrors";
  * Returns a URL with one of the allow-listed schemas, or throws a BusinessError
  * @param url an absolute or relative URL
  * @param allowedProtocols the protocol allow-list, including the colon (e.g., "https:")
- * @param baseUrl the baseUrl to use if url is relative
  * @return the URL instance
  * @throws BusinessError if the URL is invalid
  */
@@ -29,13 +28,11 @@ export function assertProtocolUrl(
   url: string,
   allowedProtocols: string[],
 ): URL {
-  let parsedUrl: URL | undefined;
-
-  try {
-    parsedUrl = new URL(url);
-  } catch (error) {
-    throw new BusinessError(`Invalid URL: ${url}`, { cause: error });
+  if (!URL.canParse(url)) {
+    throw new BusinessError(`Invalid URL: ${url}`);
   }
+
+  const parsedUrl = new URL(url);
 
   if (!allowedProtocols.includes(parsedUrl.protocol)) {
     throw new BusinessError(

@@ -54,10 +54,7 @@ export async function isAppRequestError(
   error: SerializableAxiosError,
 ): Promise<boolean> {
   const baseURL = await getBaseURL();
-  const requestUrl = selectAbsoluteUrl({
-    url: error.config.url,
-    baseURL: error.config.baseURL,
-  });
+  const requestUrl = selectAbsoluteUrl(error.config);
   const patterns = [baseURL, DEFAULT_SERVICE_URL].map(
     (url) => `${withoutTrailingSlash(url)}/*`,
   );
