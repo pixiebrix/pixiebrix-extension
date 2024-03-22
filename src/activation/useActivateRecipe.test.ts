@@ -38,13 +38,14 @@ import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { databaseFactory } from "@/testUtils/factories/databaseFactories";
 import { reactivateEveryTab } from "@/contentScript/messenger/api";
 
+jest.mock("@/contentScript/messenger/api");
+
 const checkPermissionsMock = jest.mocked(checkModDefinitionPermissions);
 const uninstallRecipeMock = jest.mocked(uninstallRecipe);
 const reactivateEveryTabMock = jest.mocked(reactivateEveryTab);
 
 const createDatabaseMock = jest.fn();
 
-jest.mock("@/utils/tabUtils");
 jest.mock("@/data/service/api", () => {
   const actual = jest.requireActual("@/data/service/api");
   return {

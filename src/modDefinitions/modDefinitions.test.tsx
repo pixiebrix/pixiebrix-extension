@@ -29,7 +29,7 @@ import { appApiMock } from "@/testUtils/appApiMock";
 import { defaultModDefinitionFactory } from "@/testUtils/factories/modDefinitionFactories";
 import extensionsSlice from "@/store/extensionsSlice";
 
-jest.mock("@/utils/tabUtils");
+jest.mock("@/contentScript/messenger/api");
 jest.mock("@/components/ConfirmationModal", () => ({
   ...jest.requireActual("@/components/ConfirmationModal"),
   useModals: () => ({

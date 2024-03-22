@@ -21,11 +21,8 @@ import { forEachTab } from "@/utils/extensionUtils";
 
 export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
 
-/**
- * Reactivate mods in a single tab.
- * @see reactivateEveryTab
- */
-export const reactivateTab = getNotifier("REACTIVATE_TAB");
+// Not exported because currently only used by reactivateEveryTab
+const reactivateTab = getNotifier("REACTIVATE_TAB");
 
 /**
  * Convenience method to reactivate mods in every/all tabs.
