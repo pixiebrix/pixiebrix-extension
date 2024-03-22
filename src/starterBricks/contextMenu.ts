@@ -62,13 +62,13 @@ import batchedFunction from "batched-function";
 import { onContextInvalidated } from "webext-events";
 import type { PlatformCapability } from "@/platform/capabilities";
 import { getPlatform } from "@/platform/platformContext";
-import { initSelectionTooltip } from "@/contentScript/selectionTooltip/tooltipController";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import type { Except } from "type-fest";
 import type { PlatformProtocol } from "@/platform/platformProtocol";
 import { type MessageConfig } from "@/utils/notify";
 import { DEFAULT_ACTION_RESULTS } from "@/starterBricks/starterBrickConstants";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { initSelectionMenu } from "@/contentScript/textSelectionMenu/selectionMenuController";
 
 const DEFAULT_MENU_ITEM_TITLE = "Untitled menu item";
 
@@ -194,7 +194,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
     if (global) {
       for (const extension of extensions) {
         void getPlatform().contextMenus.unregister(extension.id);
-        getPlatform().selectionTooltip.unregister(extension.id);
+        getPlatform().textSelectionMenu.unregister(extension.id);
       }
     }
   }
@@ -213,7 +213,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
     for (const extensionId of extensionIds) {
       void getPlatform().contextMenus.unregister(extensionId);
-      getPlatform().selectionTooltip.unregister(extensionId);
+      getPlatform().textSelectionMenu.unregister(extensionId);
     }
   }
 
@@ -226,7 +226,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
         await getSettingsState();
 
       if (isTextSelectionMenuEnabled) {
-        initSelectionTooltip();
+        initSelectionMenu();
       }
     }
 
@@ -418,7 +418,7 @@ export abstract class ContextMenuStarterBrickABC extends StarterBrickABC<Context
 
     await this.registerMenuItem(extension, handler);
 
-    getPlatform().selectionTooltip.register(extension.id, {
+    getPlatform().textSelectionMenu.register(extension.id, {
       title,
       // Starter Brick current doesn't have an icon affordance because the browser context menu API doesn't support them
       icon: undefined,

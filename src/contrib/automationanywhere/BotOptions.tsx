@@ -52,11 +52,7 @@ import AsyncRemoteSelectWidget from "@/components/form/widgets/AsyncRemoteSelect
 import { joinName } from "@/utils/formUtils";
 import useAsyncState from "@/hooks/useAsyncState";
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
-
-const WORKSPACE_OPTIONS = [
-  { value: "public", label: "Public" },
-  { value: "private", label: "Private/Local" },
-];
+import { WORKSPACE_OPTIONS } from "@/contrib/automationanywhere/util";
 
 const BotLoadingMessage: React.FC = () => <span>Searching bots...</span>;
 const BotNoOptionsMessage: React.FC = () => (
@@ -80,7 +76,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
     );
 
   const [{ value: workspaceType }, , { setValue: setWorkspaceType }] =
-    useField<string>(configName("workspaceType"));
+    useField<WorkspaceType | null>(configName("workspaceType"));
 
   const [{ value: fileId }] = useField<string>(configName("fileId"));
 
@@ -145,7 +141,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
     () => ({
       // Default to "private" because that's compatible with both CE and EE
       // The workspaceType can be temporarily null when switching between CR configurations
-      workspaceType: (workspaceType as WorkspaceType) ?? "private",
+      workspaceType: workspaceType ?? "private",
     }),
     [workspaceType],
   );
