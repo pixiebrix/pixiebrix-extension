@@ -39,14 +39,16 @@ import { getTopLevelFrame } from "webext-messenger";
 const deferredLogins = new Map<UUID, DeferredPromise<void>>();
 
 /**
- * Content script messenger handler to show a login banner. Should only be run in the top-level frame.
+ * Content script messenger handler to show a login banner.
+ *
+ * @warning Should only be run in the top-level frame.
  */
-export async function showBannerInTopFrame(
+export async function showBannerFromConfig(
   config: SanitizedIntegrationConfig,
 ): Promise<void> {
   if (isLoadedInIframe()) {
     console.warn(
-      "showBannerInTopFrame should only be called in the top-level frame",
+      "showBannerFromConfig should only be called in the top-level frame",
     );
   }
 

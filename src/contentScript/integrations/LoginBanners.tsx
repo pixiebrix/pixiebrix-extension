@@ -17,7 +17,7 @@
 
 import React from "react";
 import AsyncButton from "@/components/AsyncButton";
-import EmotionShadowRoot from "@/components/EmotionShadowRoot";
+import EmotionShadowRoot, { styleReset } from "@/components/EmotionShadowRoot";
 import { Alert } from "react-bootstrap";
 import bootstrapUrl from "@/vendors/bootstrapWithoutRem.css?loadAsUrl";
 import stylesUrl from "./LoginBanners.scss?loadAsUrl";
@@ -71,7 +71,7 @@ const LoginBanners: React.FC<{
   }
 
   return (
-    <EmotionShadowRoot mode="open">
+    <EmotionShadowRoot mode="open" style={styleReset}>
       <Stylesheets href={[bootstrapUrl, stylesUrl]}>
         {deferredLogins.map((x) => (
           <LoginBanner
