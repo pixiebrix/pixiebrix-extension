@@ -21,8 +21,8 @@ import userEvent from "@testing-library/user-event";
 import { uuidv4 } from "@/types/helpers";
 import { rectFactory } from "@/testUtils/factories/domFactories";
 import {
-  initCommandController,
-  commandRegistry,
+  initShortcutSnippetMenuController,
+  snippetRegistry,
 } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
 
 // I couldn't get shadow-dom-testing-library working
@@ -41,8 +41,8 @@ jest.mock("react-shadow/emotion", () => ({
 (Range.prototype.getClientRects as any) = jest.fn(() => [rectFactory()]);
 (Element.prototype.scrollIntoViewIfNeeded as any) = jest.fn();
 
-describe("snippetMenuController", () => {
-  async function triggerCommandPopover() {
+describe("shortcutSnippetMenuController", () => {
+  async function triggerShortcutSnippetMenu() {
     const user = userEvent.setup();
     const textbox = screen.getByRole("textbox");
     await user.click(textbox);
@@ -52,18 +52,18 @@ describe("snippetMenuController", () => {
   }
 
   beforeAll(() => {
-    initCommandController();
+    initShortcutSnippetMenuController();
   });
 
   // TODO: figure out how to properly isolate tests - adding multiple tests cause flakiness
   beforeEach(async () => {
     document.body.innerHTML = '<div><input type="text" /></div>';
-    commandRegistry.clear();
+    snippetRegistry.clear();
   });
 
   // TODO: re-enable flaky test https://github.com/pixiebrix/pixiebrix-extension/issues/7682
-  it.skip("attach popover when user types command key", async () => {
-    commandRegistry.register({
+  it.skip("attach menu when user types command key", async () => {
+    snippetRegistry.register({
       componentId: uuidv4(),
       title: "Copy",
       shortcut: "copy",
@@ -72,10 +72,10 @@ describe("snippetMenuController", () => {
 
     expect(screen.queryByRole("menu")).not.toBeInTheDocument();
 
-    const user = await triggerCommandPopover();
+    const user = await triggerShortcutSnippetMenu();
 
     await expect(screen.findByRole("menu")).resolves.toBeInTheDocument();
-    expect(commandRegistry.shortcutSnippets).toHaveLength(1);
+    expect(snippetRegistry.shortcutSnippets).toHaveLength(1);
 
     const textbox = screen.getByRole("textbox");
     await user.type(textbox, " ");

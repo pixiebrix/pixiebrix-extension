@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { commandRegistry } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
+import { snippetRegistry } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
 import AddTextCommand from "@/bricks/effects/AddTextCommand";
 import blockRegistry from "@/bricks/registry";
 import {
@@ -39,7 +39,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  commandRegistry.clear();
+  snippetRegistry.clear();
 });
 
 describe("AddTextCommand", () => {
@@ -66,7 +66,7 @@ describe("AddTextCommand", () => {
         logger,
       });
 
-      expect(commandRegistry.shortcutSnippets).toStrictEqual([
+      expect(snippetRegistry.shortcutSnippets).toStrictEqual([
         {
           // Any leading slash is dropped
           shortcut: "echo",
@@ -79,7 +79,7 @@ describe("AddTextCommand", () => {
       ]);
 
       await expect(
-        commandRegistry.shortcutSnippets[0].handler("current text"),
+        snippetRegistry.shortcutSnippets[0].handler("current text"),
       ).resolves.toBe("current text");
     },
   );
@@ -108,7 +108,7 @@ describe("AddTextCommand", () => {
         logger,
       });
 
-      expect(commandRegistry.shortcutSnippets).toStrictEqual([
+      expect(snippetRegistry.shortcutSnippets).toStrictEqual([
         {
           shortcut: "echo",
           title: "Echo",
@@ -119,7 +119,7 @@ describe("AddTextCommand", () => {
       ]);
 
       await expect(
-        commandRegistry.shortcutSnippets[0].handler("current text"),
+        snippetRegistry.shortcutSnippets[0].handler("current text"),
       ).resolves.toBe("current text");
     },
   );

@@ -23,7 +23,7 @@ import type {
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { initCommandController } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
+import { initShortcutSnippetMenuController } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
 import { BusinessError } from "@/errors/businessErrors";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -156,7 +156,7 @@ class AddTextCommand extends EffectABC {
 
     const { snippetShortcutMenu } = await getSettingsState();
     if (snippetShortcutMenu) {
-      initCommandController();
+      initShortcutSnippetMenuController();
     }
   }
 }

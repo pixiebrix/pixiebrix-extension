@@ -46,7 +46,7 @@ import type { JsonObject } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { writeToClipboard } from "@/utils/clipboardUtils";
-import { commandRegistry } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
+import { snippetRegistry } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import * as sidebarController from "@/contentScript/sidebarController";
 import { validateSemVerString } from "@/types/helpers";
@@ -280,7 +280,7 @@ class ContentScriptPlatform extends PlatformBase {
   }
 
   override get commandPopover(): PlatformProtocol["commandPopover"] {
-    return commandRegistry;
+    return snippetRegistry;
   }
 
   override get clipboard(): PlatformProtocol["clipboard"] {
