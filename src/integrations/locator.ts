@@ -63,6 +63,13 @@ type Option = {
    * The configuration id.
    */
   id: UUID;
+
+  /**
+   * Human-readable label for the configuration to distinguish it from other configurations for the same integration
+   * in the interface.
+   */
+  label: string | undefined;
+
   /**
    * The registry id of the integration definition package.
    */
@@ -178,6 +185,8 @@ class LazyLocatorFactory {
         ),
         ...(this.remote ?? []).map((x) => ({
           ...x,
+          // Server JSON response uses null instead of undefined for `label`
+          label: x.label ?? undefined,
           level: x.organization ? Visibility.Team : Visibility.BuiltIn,
           local: false,
           proxy: !x.pushdown,
@@ -250,6 +259,7 @@ class LazyLocatorFactory {
       .map((match) => ({
         _sanitizedIntegrationConfigBrand: null,
         id: match.id,
+        label: match.label,
         serviceId,
         proxy: match.proxy,
         config: sanitizeIntegrationConfig(service, match.config),
@@ -316,6 +326,7 @@ class LazyLocatorFactory {
     return {
       _sanitizedIntegrationConfigBrand: null,
       id: authId,
+      label: match.label,
       serviceId,
       proxy: match.proxy,
       config: sanitizeIntegrationConfig(service, match.config),

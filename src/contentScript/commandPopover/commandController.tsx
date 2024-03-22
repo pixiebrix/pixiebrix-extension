@@ -43,7 +43,8 @@ import {
 } from "@/types/inputTypes";
 import { expectContext } from "@/utils/expectContext";
 import { ReusableAbortController } from "abort-utils";
-import { waitAnimationFrame } from "@/utils/domUtils";
+import { getSelectionRange, waitAnimationFrame } from "@/utils/domUtils";
+import { prefersReducedMotion } from "@/utils/a11yUtils";
 
 const COMMAND_KEY = "\\";
 
@@ -66,8 +67,27 @@ async function showPopover(element: HTMLElement): Promise<void> {
 
   targetElement = element;
   commandPopover ??= createPopover(targetElement);
-  commandPopover.setAttribute("aria-hidden", "false");
-  commandPopover.style.setProperty("display", "block");
+
+  // Check visibility to avoid re-animating the tooltip fade in as selection changes
+  const isShowing = commandPopover.checkVisibility();
+  if (!isShowing) {
+    commandPopover.setAttribute("aria-hidden", "false");
+    if (prefersReducedMotion()) {
+      commandPopover.style.setProperty("display", "block");
+    } else {
+      commandPopover.animate(
+        [
+          { opacity: 0, margin: "8px 0", display: "block" },
+          { opacity: 1, margin: "0", display: "block" },
+        ],
+        {
+          easing: "ease-in-out",
+          duration: 300,
+          fill: "forwards",
+        },
+      );
+    }
+  }
 
   // For now just destroy the tooltip on document/element scroll to avoid gotchas with floating UI's `position: fixed`
   // strategy. See tooltipController.ts for more details.
@@ -220,7 +240,7 @@ function getCursorPositionReference(): Nullishable<VirtualElement | Element> {
   }
 
   // Allows us to measure where the selection is on the page relative to the viewport
-  const range = window.getSelection()?.getRangeAt(0);
+  const range = getSelectionRange();
 
   if (range == null) {
     return;
@@ -323,7 +343,7 @@ function isTextSelected(target: unknown): boolean {
   }
 
   if (isContentEditableElement(target)) {
-    const range = window.getSelection()?.getRangeAt(0);
+    const range = getSelectionRange();
     return range != null && range.toString().length > 0;
   }
 

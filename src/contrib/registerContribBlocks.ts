@@ -37,6 +37,7 @@ import { PushZap } from "./zapier/push";
 import { RunBot } from "./automationanywhere/RunBot";
 import { GoogleSheetsLookup } from "@/contrib/google/sheets/bricks/lookup";
 import SetCopilotDataEffect from "@/contrib/automationanywhere/SetCopilotDataEffect";
+import { RunApiTask } from "@/contrib/automationanywhere/RunApiTask";
 
 let registered = false;
 
@@ -82,6 +83,7 @@ function registerContribBlocks(): void {
     // Automation Anywhere
     new RunBot(),
     new SetCopilotDataEffect(),
+    new RunApiTask(),
   ]);
 
   registered = true;

@@ -23,7 +23,10 @@ import {
   performConfiguredRequestInBackground,
 } from "@/background/messenger/api";
 import { getCachedAuthData } from "@/background/messenger/strict/api";
-import { type AuthData } from "@/integrations/integrationTypes";
+import {
+  type AuthData,
+  type SanitizedIntegrationConfig,
+} from "@/integrations/integrationTypes";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
@@ -31,6 +34,8 @@ import {
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { setPlatform } from "@/platform/platformContext";
 import { platformMock as platform } from "@/testUtils/platformMock";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { AxiosRequestConfig } from "axios";
 
 jest.mock("@/background/messenger/api", () => ({
   performConfiguredRequestInBackground: jest.fn().mockResolvedValue({
@@ -45,12 +50,6 @@ jest.mock("@/background/messenger/api", () => ({
 const performConfiguredRequestInBackgroundMock = jest.mocked(
   performConfiguredRequestInBackground,
 );
-
-// `The aaApi module uses the platform global
-setPlatform({
-  ...platform,
-  request: performConfiguredRequestInBackgroundMock,
-});
 
 const getCachedAuthDataMock = jest.mocked(getCachedAuthData);
 const getUserDataMock = jest.mocked(getUserData);
@@ -69,11 +68,25 @@ const CONTROL_ROOM_USER_ID = 999;
 const UNATTENDED_RUN_AS_USER_ID = 1000;
 const DEPLOYMENT_ID = "789";
 
+beforeEach(() => {
+  // The aaApi module uses the platform global
+  setPlatform({
+    ...platform,
+    request: async <TData>(
+      integrationConfig: Nullishable<SanitizedIntegrationConfig>,
+      requestConfig: AxiosRequestConfig,
+    ) =>
+      performConfiguredRequestInBackgroundMock<TData>(
+        integrationConfig,
+        requestConfig,
+        { interactiveLogin: false },
+      ),
+  });
+});
+
 describe("Automation Anywhere - RunBot", () => {
   beforeEach(() => {
-    performConfiguredRequestInBackgroundMock.mockReset();
-    getCachedAuthDataMock.mockReset();
-    getUserDataMock.mockReset();
+    jest.clearAllMocks();
   });
 
   it("run Community Edition bot", async () => {
@@ -121,6 +134,7 @@ describe("Automation Anywhere - RunBot", () => {
         method: "post",
         url: "/v2/automations/deploy",
       },
+      { interactiveLogin: false },
     );
 
     // CE returns blank object
@@ -184,6 +198,7 @@ describe("Automation Anywhere - RunBot", () => {
         method: "post",
         url: "/v3/automations/deploy",
       },
+      { interactiveLogin: false },
     );
 
     // CE returns blank object
@@ -248,6 +263,7 @@ describe("Automation Anywhere - RunBot", () => {
         method: "post",
         url: "/v3/automations/deploy",
       },
+      { interactiveLogin: false },
     );
 
     // CE returns blank object
@@ -311,6 +327,7 @@ describe("Automation Anywhere - RunBot", () => {
         method: "post",
         url: "/v3/automations/deploy",
       },
+      { interactiveLogin: false },
     );
 
     expect(values).toStrictEqual({
@@ -376,6 +393,7 @@ describe("Automation Anywhere - RunBot", () => {
         method: "post",
         url: "/v3/automations/deploy",
       },
+      { interactiveLogin: false },
     );
 
     expect(values).toStrictEqual({
@@ -485,6 +503,7 @@ describe("Automation Anywhere - RunBot", () => {
         method: "post",
         url: "/v3/automations/deploy",
       },
+      { interactiveLogin: false },
     );
 
     expect(values).toStrictEqual({

@@ -33,8 +33,7 @@ export const setPartnerCopilotData = getNotifier(
   bg,
 );
 
-export const activateTab = getMethod("ACTIVATE_TAB", bg);
-export const reactivateEveryTab = getNotifier("REACTIVATE_EVERY_TAB", bg);
+export const focusTab = getMethod("FOCUS_TAB", bg);
 export const removeExtensionForEveryTab = getNotifier(
   "REMOVE_EXTENSION_EVERY_TAB",
   bg,
@@ -69,6 +68,7 @@ export const performConfiguredRequestInBackground = getMethod(
 ) as <TData>(
   integrationConfig: SanitizedIntegrationConfig | null,
   requestConfig: AxiosRequestConfig,
+  options: { interactiveLogin: boolean },
 ) => Promise<RemoteResponse<TData>>;
 
 // Use this instead: `import reportError from "@/telemetry/reportError"`
@@ -88,5 +88,10 @@ export const ping = getMethod("PING", bg);
 
 export const collectPerformanceDiagnostics = getMethod(
   "COLLECT_PERFORMANCE_DIAGNOSTICS",
+  bg,
+);
+
+export const launchInteractiveOAuthFlow = getMethod(
+  "LAUNCH_INTERACTIVE_OAUTH_FLOW",
   bg,
 );

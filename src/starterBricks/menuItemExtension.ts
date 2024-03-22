@@ -76,7 +76,7 @@ import {
 import { type StarterBrick } from "@/types/starterBrickTypes";
 import { type UUID } from "@/types/stringTypes";
 import { type Reader } from "@/types/bricks/readerTypes";
-import initialize from "@/vendors/initialize";
+import initialize from "@/vendors/jQueryInitialize";
 import { $safeFind } from "@/utils/domUtils";
 import makeServiceContextFromDependencies from "@/integrations/util/makeServiceContextFromDependencies";
 import { ReusableAbortController, onAbort } from "abort-utils";

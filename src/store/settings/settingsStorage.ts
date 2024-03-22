@@ -59,6 +59,6 @@ export const persistSettingsConfig = {
   // Change the type of localStorage to our overridden version so that it can be exported
   // See: @/store/StorageInterface.ts
   storage: localStorage as StorageInterface,
-  version: 3,
+  version: 4,
   migrate: createMigrate(migrations, { debug: Boolean(process.env.DEBUG) }),
 };

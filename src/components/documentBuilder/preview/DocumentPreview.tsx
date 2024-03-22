@@ -39,6 +39,7 @@ import Alert from "@/components/Alert";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import DisplayTemporaryInfo from "@/bricks/transformers/temporaryInfo/DisplayTemporaryInfo";
 import { selectActiveElementTraceForBlock } from "@/pageEditor/slices/runtimeSelectors";
+import ClickableElement from "@/components/ClickableElement";
 
 type DocumentPreviewProps = {
   documentBodyName: string;
@@ -117,8 +118,7 @@ const DocumentPreview = ({
           <hr />
         </>
       )}
-      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- TODO */}
-      <div
+      <ClickableElement
         onClick={onClick}
         className={cx(
           styles.root,
@@ -129,7 +129,6 @@ const DocumentPreview = ({
             [styles.empty ?? ""]: body.length === 0,
           },
         )}
-        /* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events -- TODO */
         onMouseOver={onMouseOver}
         onMouseLeave={onMouseLeave}
       >
@@ -154,7 +153,7 @@ const DocumentPreview = ({
           className={previewStyles.addElement}
           menuBoundary={menuBoundary}
         />
-      </div>
+      </ClickableElement>
     </>
   );
 };

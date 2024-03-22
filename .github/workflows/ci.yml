@@ -164,17 +164,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: package.json
-          cache: npm
-      - run: npm ci
       # https://knip.dev/overview/getting-started#without-installation
-      - run: npm install -D knip@4
-      # Do a run without an exit code. Knip's "warn" setting is not working for files and devDependencies.
-      - run: npm run dead-code:base -- --no-exit-code
-      # Automatically excludes exports tagged with `@knip` in their JSDoc
+      - run: npm install -D knip@5.1.2
+      # Detect dead code with enforced rules
       - run: npm run dead-code
+      # Also run the remaining "warn" rules
+      - run: npm run dead-code:base -- --no-exit-code
 
   # https://pre-commit.com/#usage-in-continuous-integration
   prettier:

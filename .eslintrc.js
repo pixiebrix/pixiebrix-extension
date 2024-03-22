@@ -135,7 +135,18 @@ module.exports = {
         selector:
           "CallExpression[callee.object.property.name='runtime'][callee.property.name='getURL'][arguments.0.value='options.html']",
       },
-      // NOTE: If you add more rules, add the tests to eslint-local-rules/noRestrictedSyntax.ts
+      {
+        message:
+          'Instead of `<div onClick/>`, use: import { ClickableElement } from "@/components/ClickableElement"',
+        selector:
+          "JSXOpeningElement[name.name='div'][attributes.0.name.name='onClick']",
+      },
+      {
+        message:
+          "Prefer using `getSelectionRange()` helper or check `selection.rangeCount` first: https://github.com/pixiebrix/pixiebrix-extension/pull/7989",
+        selector: "CallExpression[callee.property.name='getRangeAt']",
+      },
+      // NOTE: If you add more rules, add the tests to eslint-local-rules/noRestrictedSyntax.tsx
     ],
   },
   overrides: [

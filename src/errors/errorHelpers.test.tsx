@@ -22,6 +22,7 @@ import {
   hasSpecificErrorCause,
   isCustomAggregateError,
   isErrorObject,
+  isSpecificError,
   selectError,
   selectErrorFromErrorEvent,
   selectErrorFromRejectionEvent,
@@ -43,6 +44,7 @@ import {
   InvalidDefinitionError,
   MultipleElementsFoundError,
   NoElementsFoundError,
+  RequestSupersededError,
 } from "@/errors/businessErrors";
 import { ContextError } from "@/errors/genericErrors";
 import {
@@ -57,6 +59,7 @@ import { waitForEffect } from "@/testUtils/testHelpers";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import React from "react";
 import { appApiMock } from "@/testUtils/appApiMock";
+import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 
 function testStore() {
   return configureStore({
@@ -665,5 +668,21 @@ describe("isCustomAggregateError", () => {
     expect(
       isCustomAggregateError(new InvalidDefinitionError("aggregate error", [])),
     ).toBeTrue();
+  });
+});
+
+describe("InteractiveLoginRequiredError", () => {
+  test("is business error", () => {
+    const error = new InteractiveLoginRequiredError("message");
+    expect(isSpecificError(error, BusinessError)).toBeTrue();
+    expect(isSpecificError(serializeError(error), BusinessError)).toBeTrue();
+  });
+});
+
+describe("RequestSupersededError", () => {
+  test("is business error", () => {
+    const error = new RequestSupersededError("message");
+    expect(isSpecificError(error, BusinessError)).toBeTrue();
+    expect(isSpecificError(serializeError(error), BusinessError)).toBeTrue();
   });
 });

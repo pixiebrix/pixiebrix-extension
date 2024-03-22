@@ -202,3 +202,9 @@ export function runOnDocumentVisible<Args extends unknown[], TReturn = unknown>(
 
   return runOnce;
 }
+
+export function getSelectionRange(): Range | undefined {
+  const selection = window.getSelection();
+  // eslint-disable-next-line no-restricted-syntax -- The rule points to this helper
+  return selection?.rangeCount ? selection.getRangeAt(0) : undefined;
+}

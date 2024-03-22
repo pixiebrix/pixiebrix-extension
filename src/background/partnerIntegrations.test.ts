@@ -45,9 +45,11 @@ const integrationDefinitionMap = new Map([
   [CONTROL_ROOM_OAUTH_INTEGRATION_ID, oauthIntegrationDefinition],
 ]);
 
+jest.mock("@/background/auth/authStorage");
 jest.mock("@/auth/authStorage", () => ({
   readPartnerAuthData: jest.fn().mockResolvedValue({}),
   setPartnerAuth: jest.fn(),
+  addListener: jest.fn(),
 }));
 
 jest.mock("@/integrations/registry", () => {
@@ -59,8 +61,6 @@ jest.mock("@/integrations/registry", () => {
     readRawConfigurations: jest.fn().mockResolvedValue([]),
   };
 });
-
-jest.mock("@/background/auth/authStorage");
 
 // Module mocked via __mocks__/@/background/messenger/api
 jest.mocked(registry.find).mockImplementation(async (id: RegistryId) => {

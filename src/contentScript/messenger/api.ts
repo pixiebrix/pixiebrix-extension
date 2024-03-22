@@ -17,9 +17,22 @@
 
 /* Do not use `registerMethod` in this file */
 import { getMethod, getNotifier } from "webext-messenger";
+import { forEachTab } from "@/utils/extensionUtils";
 
 export const queueReactivateTab = getNotifier("QUEUE_REACTIVATE_TAB");
-export const reactivateTab = getNotifier("REACTIVATE_TAB");
+
+// Not exported because currently only used by reactivateEveryTab
+const reactivateTab = getNotifier("REACTIVATE_TAB");
+
+/**
+ * Convenience method to reactivate mods in every/all tabs.
+ * @see reactivateTab
+ */
+export function reactivateEveryTab(): void {
+  console.debug("Reactivate all tabs");
+  void forEachTab(reactivateTab);
+}
+
 export const ensureExtensionPointsInstalled = getMethod(
   "ENSURE_EXTENSION_POINTS_INSTALLED",
 );
@@ -58,3 +71,5 @@ export const getCopilotHostData = getMethod("GET_COPILOT_HOST_DATA");
 export const reloadMarketplaceEnhancements = getMethod(
   "RELOAD_MARKETPLACE_ENHANCEMENTS",
 );
+
+export const showLoginBanner = getMethod("SHOW_LOGIN_BANNER");

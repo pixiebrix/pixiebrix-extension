@@ -141,7 +141,7 @@ const ControlRoomOAuthForm: React.FunctionComponent<{
 
         await ensurePermissionsFromUserGesture(requiredPermissions);
 
-        await launchAuthIntegration({ serviceId: authIntegrationId });
+        await launchAuthIntegration({ integrationId: authIntegrationId });
 
         // Redirect to blueprints screen. The SetupPage always shows a login screen for the "/start" URL
         history.push("/");

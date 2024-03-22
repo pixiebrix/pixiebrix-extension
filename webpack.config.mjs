@@ -115,6 +115,7 @@ const createConfig = (env, options) =>
         // bundles styles. This will make the CSS available to be loaded by the component tree.
         // Additionally, remember to add the related JavaScript file to the DiscardFilePlugin.mjs file to exclude
         // it from the bundle, as it is not needed for rendering in this context.
+        "bricks/renderers/CustomFormComponent",
         "bricks/renderers/documentView/DocumentView",
         "bricks/transformers/ephemeralForm/EphemeralFormContent",
         "contentScript/contentScript",

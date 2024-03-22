@@ -24,7 +24,7 @@ import {
   uninstallContextMenu,
 } from "@/background/contextMenus"; // 300 errors
 import {
-  activateTab,
+  focusTab,
   closeTab,
   openTab,
   requestRunInAllFrames,
@@ -35,7 +35,6 @@ import {
 } from "@/background/executor"; // ContentScript/messenger import
 import { performConfiguredRequest } from "@/background/requests"; // 30 errors
 import { getAvailableVersion } from "@/background/installer"; // 300 errors
-import { reactivateEveryTab } from "@/background/navigation"; // ContentScript/messenger import
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 300 errors
 import { debouncedInstallStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 300 errors
 import {
@@ -49,7 +48,8 @@ import {
   getPartnerPrincipals,
   launchAuthIntegration,
 } from "@/background/partnerIntegrations"; // 45 errors
-import { setCopilotProcessData } from "@/background/partnerHandlers"; // ContentScript/messenger import
+import { setCopilotProcessData } from "@/background/partnerHandlers";
+import launchInteractiveOAuth2Flow from "@/background/auth/launchInteractiveOAuth2Flow";
 
 expectContext("background");
 
@@ -60,6 +60,8 @@ declare global {
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
 
+    LAUNCH_INTERACTIVE_OAUTH_FLOW: typeof launchInteractiveOAuth2Flow;
+
     GET_PARTNER_PRINCIPALS: typeof getPartnerPrincipals;
     LAUNCH_AUTH_INTEGRATION: typeof launchAuthIntegration;
     SET_PARTNER_COPILOT_DATA: typeof setCopilotProcessData;
@@ -69,8 +71,7 @@ declare global {
     PING: typeof pong;
     COLLECT_PERFORMANCE_DIAGNOSTICS: typeof collectPerformanceDiagnostics;
 
-    ACTIVATE_TAB: typeof activateTab;
-    REACTIVATE_EVERY_TAB: typeof reactivateEveryTab;
+    FOCUS_TAB: typeof focusTab;
     REMOVE_EXTENSION_EVERY_TAB: typeof removeExtensionForEveryTab;
     CLOSE_TAB: typeof closeTab;
     OPEN_TAB: typeof openTab;
@@ -102,11 +103,12 @@ export default function registerMessenger(): void {
     UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
     ENSURE_CONTEXT_MENU: ensureContextMenu,
 
+    LAUNCH_INTERACTIVE_OAUTH_FLOW: launchInteractiveOAuth2Flow,
+
     PING: pong,
     COLLECT_PERFORMANCE_DIAGNOSTICS: collectPerformanceDiagnostics,
 
-    ACTIVATE_TAB: activateTab,
-    REACTIVATE_EVERY_TAB: reactivateEveryTab,
+    FOCUS_TAB: focusTab,
     REMOVE_EXTENSION_EVERY_TAB: removeExtensionForEveryTab,
     CLOSE_TAB: closeTab,
     OPEN_TAB: openTab,

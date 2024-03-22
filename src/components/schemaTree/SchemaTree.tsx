@@ -21,7 +21,12 @@ import React, { useMemo } from "react";
 import { DESCRIPTION_ALLOWED_TAGS, type Schema } from "@/types/schemaTypes";
 import { Table } from "react-bootstrap";
 import { isEmpty, sortBy } from "lodash";
-import { useTable, useExpanded, type Row, type Cell } from "react-table";
+import {
+  useTable,
+  useExpanded,
+  type CellProps,
+  type Column,
+} from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
@@ -40,10 +45,7 @@ type SchemaTreeRow = {
   subRow?: SchemaTreeRow;
 };
 
-const ExpandableCell: React.FunctionComponent<{
-  row: Row & { values: SchemaTreeRow };
-  cell: Cell;
-}> = ({ row, cell }) => (
+const ExpandableCell: React.VFC<CellProps<SchemaTreeRow>> = ({ row, cell }) => (
   <span
     className={cx(styles.codeCell)}
     {...row.getToggleRowExpandedProps({
@@ -63,15 +65,11 @@ const ExpandableCell: React.FunctionComponent<{
   </span>
 );
 
-const TypeCell: React.FunctionComponent<{
-  row: Row & { values: SchemaTreeRow };
-}> = ({ row }) => (
+const TypeCell: React.VFC<CellProps<SchemaTreeRow>> = ({ row }) => (
   <span className={cx(styles.codeCell)}>{row.values.type}</span>
 );
 
-const DescriptionCell: React.FunctionComponent<{
-  row: Row & { values: SchemaTreeRow };
-}> = ({ row }) =>
+const DescriptionCell: React.VFC<CellProps<SchemaTreeRow>> = ({ row }) =>
   row.values.description ? (
     <MarkdownInline
       markdown={row.values.description}
@@ -82,9 +80,7 @@ const DescriptionCell: React.FunctionComponent<{
     <span></span>
   );
 
-const RequiredCell: React.FunctionComponent<{
-  row: Row & { values: SchemaTreeRow };
-}> = ({ row }) => (
+const RequiredCell: React.VFC<CellProps<SchemaTreeRow>> = ({ row }) => (
   <span>
     {row.values.required && (
       <FontAwesomeIcon icon={faCheck} className="text-success" />
@@ -163,7 +159,7 @@ const getFormattedData = (schema: Schema): SchemaTreeRow[] => {
     }) as SchemaTreeRow[];
 };
 
-const columns = [
+const columns: Array<Column<SchemaTreeRow>> = [
   {
     id: "expander",
     Header: "Name",
@@ -185,7 +181,7 @@ const columns = [
     accessor: "description",
     Cell: DescriptionCell,
   },
-];
+] as const;
 
 const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   schema,
@@ -199,7 +195,7 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   }, [schema]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data }, useExpanded);
+    useTable<SchemaTreeRow>({ columns, data }, useExpanded);
 
   if (!schema) {
     return <div className="text-muted">No schema</div>;

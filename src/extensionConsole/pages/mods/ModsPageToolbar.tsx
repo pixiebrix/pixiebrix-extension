@@ -36,9 +36,10 @@ import {
 } from "@/extensionConsole/pages/mods/modsPageSelectors";
 import modsPageSlice from "@/extensionConsole/pages/mods/modsPageSlice";
 import { useSelector } from "react-redux";
+import { type ModViewItem } from "@/types/modTypes";
 
 const ModsPageToolbar: React.FunctionComponent<{
-  tableInstance: TableInstance;
+  tableInstance: TableInstance<ModViewItem>;
 }> = ({ tableInstance }) => {
   const {
     flatHeaders,

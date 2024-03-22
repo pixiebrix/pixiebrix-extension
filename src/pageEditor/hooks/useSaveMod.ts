@@ -34,7 +34,6 @@ import extensionsSlice from "@/store/extensionsSlice";
 import useUpsertModComponentFormState from "@/pageEditor/hooks/useUpsertModComponentFormState";
 import { type RegistryId } from "@/types/registryTypes";
 import { useAllModDefinitions } from "@/modDefinitions/modDefinitionHooks";
-import { reactivateEveryTab } from "@/background/messenger/api";
 import { ensureElementPermissionsFromUserGesture } from "@/pageEditor/editorPermissionsHelpers";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
@@ -42,6 +41,7 @@ import type { EditablePackageMetadata } from "@/types/contract";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
 import { selectGetCleanComponentsAndDirtyFormStatesForMod } from "@/pageEditor/slices/selectors/selectGetCleanComponentsAndDirtyFormStatesForMod";
 import useBuildAndValidateMod from "@/pageEditor/hooks/useBuildAndValidateMod";
+import { reactivateEveryTab } from "@/contentScript/messenger/api";
 
 const { actions: optionsActions } = extensionsSlice;
 

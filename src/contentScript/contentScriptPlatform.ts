@@ -46,13 +46,21 @@ import type { JsonObject } from "type-fest";
 import { BusinessError } from "@/errors/businessErrors";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { writeToClipboard } from "@/utils/clipboardUtils";
-import { tooltipActionRegistry } from "@/contentScript/selectionTooltip/tooltipController";
 import { commandRegistry } from "@/contentScript/commandPopover/commandController";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
 import * as sidebarController from "@/contentScript/sidebarController";
 import { validateSemVerString } from "@/types/helpers";
 import type { UUID } from "@/types/stringTypes";
 import { PlatformBase } from "@/platform/platformBase";
+import type { Nullishable } from "@/utils/nullishUtils";
+import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
+import type { AxiosRequestConfig } from "axios";
+import type { RemoteResponse } from "@/types/contract";
+import { hasSpecificErrorCause } from "@/errors/errorHelpers";
+import { InteractiveLoginRequiredError } from "@/errors/authErrors";
+import { deferLogin } from "@/contentScript/integrations/deferredLoginController";
+import { flagOn } from "@/auth/featureFlagStorage";
+import { selectionMenuActionRegistry } from "@/contentScript/textSelectionMenu/selectionMenuController";
 
 /**
  * @file Platform definition for mods running in a content script
@@ -103,7 +111,7 @@ class ContentScriptPlatform extends PlatformBase {
     "clipboardWrite",
     "audio",
     "quickBar",
-    "selectionTooltip",
+    "textSelectionMenu",
     "commandPopover",
     "contextMenu",
     "badge",
@@ -127,7 +135,35 @@ class ContentScriptPlatform extends PlatformBase {
 
   // Perform requests via the background so 1/ the host pages CSP doesn't conflict, and 2/ credentials aren't
   // passed to the content script
-  override request = performConfiguredRequestInBackground;
+  override request = async <TData>(
+    integrationConfig: Nullishable<SanitizedIntegrationConfig>,
+    requestConfig: AxiosRequestConfig,
+  ): Promise<RemoteResponse<TData>> => {
+    const requestGenerator = async (options: { interactiveLogin: boolean }) =>
+      performConfiguredRequestInBackground<TData>(
+        integrationConfig,
+        requestConfig,
+        options,
+      );
+
+    if (await flagOn("integration-login-banner")) {
+      try {
+        return await requestGenerator({ interactiveLogin: false });
+      } catch (error) {
+        if (!hasSpecificErrorCause(error, InteractiveLoginRequiredError)) {
+          // Error that can't be solved by an interactive login
+          throw error;
+        }
+      }
+
+      // `deferLogin` resolves when the user has logged in, rejects if the request is superseded
+      await deferLogin(integrationConfig);
+      return requestGenerator({ interactiveLogin: false });
+    }
+
+    // Legacy behavior is to always show the interactive login, if possible
+    return requestGenerator({ interactiveLogin: true });
+  };
 
   override form = ephemeralForm;
 
@@ -239,8 +275,8 @@ class ContentScriptPlatform extends PlatformBase {
     };
   }
 
-  override get selectionTooltip(): PlatformProtocol["selectionTooltip"] {
-    return tooltipActionRegistry;
+  override get textSelectionMenu(): PlatformProtocol["textSelectionMenu"] {
+    return selectionMenuActionRegistry;
   }
 
   override get commandPopover(): PlatformProtocol["commandPopover"] {

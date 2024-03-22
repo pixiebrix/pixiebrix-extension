@@ -15,16 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AceEditorSync from "react-ace";
+import { launchWebAuthFlow } from "@/background/auth/authHelpers";
+import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 
-import "ace-builds/src-noconflict/mode-yaml";
-import "ace-builds/src-noconflict/theme-chrome";
-import "ace-builds/src-noconflict/mode-javascript";
-import "ace-builds/src-noconflict/theme-chrome";
-import "ace-builds/src-noconflict/ext-searchbox";
-import "ace-builds/src-noconflict/ext-language_tools";
+browser.identity = {
+  launchWebAuthFlow: jest.fn(),
+  getRedirectURL: jest.fn(),
+};
 
-/**
- * Bundles AceEditor. Use "./AceEditor.tsx" for dynamic import.
- */
-export default AceEditorSync;
+describe("launchWebAuthFlow", () => {
+  it("wraps interaction error in InteractiveLoginRequiredError", async () => {
+    jest
+      .mocked(browser.identity.launchWebAuthFlow)
+      .mockRejectedValue(new Error("User interaction required."));
+
+    await expect(
+      launchWebAuthFlow({
+        url: "https://www.example.com",
+        interactive: false,
+      }),
+    ).rejects.toThrow(InteractiveLoginRequiredError);
+  });
+});

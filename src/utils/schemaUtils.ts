@@ -128,6 +128,15 @@ function isComplexSchema(schema: Schema): boolean {
 }
 
 /**
+ * Returns true if the schema requires the given key.
+ * @param schema the JSON Schema
+ * @param key the property key
+ */
+export function isRequired(schema: Schema, key: string): boolean {
+  return schema.required?.includes(key) ?? false;
+}
+
+/**
  * Returns a schema that is the union of the two input schemas, allowing any properties that are allowed by either.
  *
  * Does not preserve titles/descriptions/etc.
