@@ -18,7 +18,7 @@
 import type { UUID } from "@/types/stringTypes";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { remove } from "lodash";
-import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
+import type { ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
 
 /**
  * Registry for slash commands
@@ -28,17 +28,17 @@ class SnippetRegistry {
   /**
    * Map from component UUID to registered action
    */
-  public readonly commands: TextCommand[] = [];
+  public readonly commands: ShortcutSnippet[] = [];
 
   /**
    * Event fired when the set of registered commands change
    */
-  public readonly onChange = new SimpleEventTarget<TextCommand[]>();
+  public readonly onChange = new SimpleEventTarget<ShortcutSnippet[]>();
 
   /**
    * Register a new text snippet
    */
-  register(newCommand: TextCommand): void {
+  register(newCommand: ShortcutSnippet): void {
     const index = this.commands.findIndex(
       (command) => newCommand.shortcut === command.shortcut,
     );

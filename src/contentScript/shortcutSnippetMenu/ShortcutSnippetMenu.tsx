@@ -45,7 +45,7 @@ import {
   normalizePreview,
   replaceAtCommand,
 } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetUtils";
-import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
+import type { ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
@@ -57,7 +57,7 @@ type PopoverActionCallbacks = {
   onHide: () => void;
 };
 
-const CommandTitle: React.FunctionComponent<{
+const SnippetTitle: React.FunctionComponent<{
   query: string;
   shortcut: string;
   commandKey: string;
@@ -73,13 +73,13 @@ const CommandTitle: React.FunctionComponent<{
 );
 
 const ResultItem: React.FunctionComponent<{
-  command: TextCommand;
+  snippet: ShortcutSnippet;
   isSelected: boolean;
   disabled: boolean;
   onClick: () => void;
   commandKey: string;
   query: string;
-}> = ({ isSelected, disabled, command, onClick, query, commandKey }) => {
+}> = ({ isSelected, disabled, snippet, onClick, query, commandKey }) => {
   const elementRef = useRef<HTMLButtonElement>(null);
 
   // Auto-scroll as the user navigates with the arrow keys
@@ -93,19 +93,19 @@ const ResultItem: React.FunctionComponent<{
     <button
       ref={elementRef}
       disabled={disabled}
-      key={command.shortcut}
-      aria-label={command.title}
-      title={command.title}
+      key={snippet.shortcut}
+      aria-label={snippet.title}
+      title={snippet.title}
       role="menuitem"
       className={cx("result", { "result--selected": isSelected })}
       onClick={onClick}
     >
-      <CommandTitle
+      <SnippetTitle
         query={query}
-        shortcut={command.shortcut}
+        shortcut={snippet.shortcut}
         commandKey={commandKey}
       />
-      <div className="result__preview">{normalizePreview(command.preview)}</div>
+      <div className="result__preview">{normalizePreview(snippet.preview)}</div>
     </button>
   );
 };
@@ -171,7 +171,7 @@ const ShortcutSnippetMenu: React.FunctionComponent<
   const commands = useCommandRegistry(registry);
 
   const fillAtCursor = useCallback(
-    async ({ command, query }: { command: TextCommand; query: string }) => {
+    async ({ command, query }: { command: ShortcutSnippet; query: string }) => {
       // Async thunks don't work with React useReducer so write async logic as a hook
       // https://github.com/reduxjs/redux-toolkit/issues/754
       dispatch(popoverSlice.actions.setCommandLoading({ command }));
@@ -235,7 +235,7 @@ const ShortcutSnippetMenu: React.FunctionComponent<
               return (
                 <ResultItem
                   key={command.shortcut}
-                  command={command}
+                  snippet={command}
                   disabled={state.activeCommand?.state.isFetching ?? false}
                   isSelected={isSelected}
                   commandKey={commandKey}

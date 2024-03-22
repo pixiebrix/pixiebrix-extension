@@ -579,7 +579,7 @@
     "./platform/platformTypes/audioProtocol.ts",
     "./platform/platformTypes/badgeProtocol.ts",
     "./platform/platformTypes/clipboardProtocol.ts",
-    "./platform/platformTypes/commandPopoverProtocol.ts",
+    "./platform/platformTypes/shortcutSnippetMenuProtocol.ts",
     "./platform/platformTypes/contextMenuProtocol.ts",
     "./platform/platformTypes/debuggerProtocol.ts",
     "./platform/platformTypes/panelProtocol.ts",

@@ -18,13 +18,13 @@
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import { useCallback } from "react";
 import type SnippetRegistry from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetRegistry";
-import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
+import type { ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
 
 /**
  * React hook to sync React with the text command registry.
  * @param registry the registry to watch
  */
-function useCommandRegistry(registry: SnippetRegistry): TextCommand[] {
+function useCommandRegistry(registry: SnippetRegistry): ShortcutSnippet[] {
   const subscribe = useCallback(
     (callback: () => void) => {
       registry.onChange.add(callback);

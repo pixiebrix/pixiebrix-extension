@@ -25,7 +25,7 @@ import {
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
 
-import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
+import type { ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
 
 export type PopoverState = {
   /**
@@ -36,7 +36,7 @@ export type PopoverState = {
   /**
    * The sorted list of search results
    */
-  results: TextCommand[];
+  results: ShortcutSnippet[];
   /**
    * The index of the selected result, or nullish if no result is selected/available.
    */
@@ -46,7 +46,7 @@ export type PopoverState = {
    * The latest active command, or null if no command has been run.
    */
   activeCommand: Nullishable<{
-    command: TextCommand;
+    command: ShortcutSnippet;
     state: AsyncState;
   }>;
 };
@@ -60,7 +60,7 @@ export const initialState: PopoverState = {
 
 export function selectSelectedCommand(
   state: PopoverState,
-): Nullishable<TextCommand> {
+): Nullishable<ShortcutSnippet> {
   return state.selectedIndex == null
     ? null
     : state.results[state.selectedIndex];
@@ -93,7 +93,7 @@ export const popoverSlice = createSlice({
     search(
       state,
       action: PayloadAction<{
-        commands: TextCommand[];
+        commands: ShortcutSnippet[];
         query: Nullishable<string>;
       }>,
     ) {
@@ -120,7 +120,7 @@ export const popoverSlice = createSlice({
     setCommandLoading(
       state,
       action: PayloadAction<{
-        command: TextCommand;
+        command: ShortcutSnippet;
       }>,
     ) {
       const { command } = action.payload;
