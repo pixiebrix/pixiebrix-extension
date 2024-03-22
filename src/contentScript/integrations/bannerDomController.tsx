@@ -74,11 +74,10 @@ export function showLoginBanner(
   };
 
   if (!bannerContainer) {
-    // Create a new banner container
     bannerContainer = document.createElement("div");
 
     Object.assign(bannerContainer.style, {
-      style: "all: initial",
+      all: "initial",
       position: "relative",
       width: "100%",
       // See https://getbootstrap.com/docs/4.6/layout/overview/#z-index
@@ -86,8 +85,8 @@ export function showLoginBanner(
       zIndex: "1030",
     });
 
-    // Insert the banner at the top of the body
-    document.body.insertBefore(bannerContainer, document.body.firstChild);
+    // Place before `body` to avoid margins
+    document.body.before(bannerContainer);
   }
 
   const { id: configId } = login.config;

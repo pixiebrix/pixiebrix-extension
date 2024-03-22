@@ -18,7 +18,7 @@
 import React from "react";
 import {
   deferLogin,
-  showBannerInTopFrame,
+  showBannerFromConfig,
   clearDeferredLogins,
   dismissDeferredLogin,
 } from "@/contentScript/integrations/deferredLoginController";
@@ -57,7 +57,7 @@ describe("deferredLoginController", () => {
       .mocked(showLoginBanner)
       .mockImplementation(
         async (_target: Target, config: SanitizedIntegrationConfig) =>
-          showBannerInTopFrame(config),
+          showBannerFromConfig(config),
       );
     jest
       .mocked(integrationRegistry.lookup)
@@ -69,9 +69,10 @@ describe("deferredLoginController", () => {
 
     await waitForEffect();
 
-    expect(
-      screen.getByRole("button", { name: "Log in to Test Config" }),
-    ).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access -- The banner lives outside `body`
+    expect(document.querySelector(".login-button")).toHaveAccessibleName(
+      "Log in to Test Config",
+    );
     clearDeferredLogins();
     // Throws due to test cleanup
     await expect(promise).rejects.toThrow();
@@ -82,7 +83,7 @@ describe("deferredLoginController", () => {
       .mocked(showLoginBanner)
       .mockImplementation(
         async (_target: Target, config: SanitizedIntegrationConfig) =>
-          showBannerInTopFrame(config),
+          showBannerFromConfig(config),
       );
     jest
       .mocked(integrationRegistry.lookup)
@@ -105,7 +106,7 @@ describe("deferredLoginController", () => {
       .mocked(showLoginBanner)
       .mockImplementation(
         async (_target: Target, config: SanitizedIntegrationConfig) =>
-          showBannerInTopFrame(config),
+          showBannerFromConfig(config),
       );
     jest
       .mocked(integrationRegistry.lookup)
