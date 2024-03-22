@@ -21,7 +21,6 @@ import { useCallback } from "react";
 import notify from "@/utils/notify";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { ADAPTERS } from "@/pageEditor/starterBricks/adapter";
-import { reactivateEveryTab } from "@/utils/tabUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { getLinkedApiClient } from "@/data/service/apiClient";
@@ -40,6 +39,7 @@ import { type Timestamp, type UUID } from "@/types/stringTypes";
 
 import { isInnerDefinitionRegistryId } from "@/types/helpers";
 import type { RegistryId } from "@/types/registryTypes";
+import { reactivateEveryTab } from "@/contentScript/messenger/api";
 
 const { saveModComponent } = extensionsSlice.actions;
 const { markClean } = editorSlice.actions;

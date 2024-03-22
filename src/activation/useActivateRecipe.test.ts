@@ -22,7 +22,6 @@ import { validateRegistryId } from "@/types/helpers";
 import { type StarterBrickConfig } from "@/starterBricks/types";
 import { type MenuDefinition } from "@/starterBricks/contextMenu";
 import { uninstallRecipe } from "@/store/uninstallUtils";
-import { reactivateEveryTab } from "@/utils/tabUtils";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import extensionsSlice from "@/store/extensionsSlice";
 import { type InnerDefinitions } from "@/types/registryTypes";
@@ -37,6 +36,7 @@ import {
 } from "@/testUtils/factories/modDefinitionFactories";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
 import { databaseFactory } from "@/testUtils/factories/databaseFactories";
+import { reactivateEveryTab } from "@/contentScript/messenger/api";
 
 const checkPermissionsMock = jest.mocked(checkModDefinitionPermissions);
 const uninstallRecipeMock = jest.mocked(uninstallRecipe);
