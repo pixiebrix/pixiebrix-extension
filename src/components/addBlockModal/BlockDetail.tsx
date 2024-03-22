@@ -15,7 +15,7 @@ const BlockDetail: React.FunctionComponent<{
   onSelect: () => void;
   selectCaption: React.ReactNode;
 }> = ({ block, selectCaption = "Select", listing, onSelect }) => (
-  <div className="d-flex flex-column gap-3">
+  <div className="d-flex flex-column gap-3 flex-grow-1">
     <div className="d-flex justify-content-between">
       <div>
         <h4>
