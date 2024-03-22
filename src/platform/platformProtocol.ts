@@ -35,7 +35,7 @@ import type { DebuggerProtocol } from "@/platform/platformTypes/debuggerProtocol
 import type { StateProtocol } from "@/platform/platformTypes/stateProtocol";
 import type { TemplateProtocol } from "@/platform/platformTypes/templateProtocol";
 import type { CommandPopoverProtocol } from "@/platform/platformTypes/commandPopoverProtocol";
-import type { SelectionTooltipProtocol } from "@/platform/platformTypes/selectionTooltipProtocol";
+import type { TextSelectionMenuProtocol } from "@/platform/platformTypes/textSelectionMenuProtocol";
 import type { PanelProtocol } from "@/platform/platformTypes/panelProtocol";
 import type { QuickBarProtocol } from "@/platform/platformTypes/quickBarProtocol";
 
@@ -161,10 +161,10 @@ export interface PlatformProtocol {
   get quickBar(): QuickBarProtocol;
 
   /**
-   * The registry for the text selection tooltip.
+   * The registry for the text selection menu.
    * @since 1.8.10
    */
-  get selectionTooltip(): SelectionTooltipProtocol;
+  get textSelectionMenu(): TextSelectionMenuProtocol;
 
   /**
    * The registry for the text editor command popover.

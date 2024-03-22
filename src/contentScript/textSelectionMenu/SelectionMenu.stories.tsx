@@ -17,18 +17,18 @@
 
 import type { ComponentMeta, ComponentStory } from "@storybook/react";
 import React from "react";
-import SelectionToolbar from "@/contentScript/selectionTooltip/SelectionToolbar";
-import ActionRegistry from "@/contentScript/selectionTooltip/ActionRegistry";
+import SelectionMenu from "@/contentScript/textSelectionMenu/SelectionMenu";
+import ActionRegistry from "@/contentScript/textSelectionMenu/ActionRegistry";
 import { uuidv4 } from "@/types/helpers";
 import { action } from "@storybook/addon-actions";
 
 export default {
-  title: "Enhancements/SelectionToolbar",
-  component: SelectionToolbar,
-} as ComponentMeta<typeof SelectionToolbar>;
+  title: "Enhancements/SelectionMenu",
+  component: SelectionMenu,
+} as ComponentMeta<typeof SelectionMenu>;
 
-const Template: ComponentStory<typeof SelectionToolbar> = (args) => (
-  <SelectionToolbar {...args} />
+const Template: ComponentStory<typeof SelectionMenu> = (args) => (
+  <SelectionMenu {...args} />
 );
 
 const emojiAction = {

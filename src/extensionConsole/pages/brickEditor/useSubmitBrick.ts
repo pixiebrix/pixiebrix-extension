@@ -26,10 +26,7 @@ import useRefreshRegistries from "@/hooks/useRefreshRegistries";
 import useReinstall from "@/extensionConsole/pages/mods/utils/useReinstall";
 import notify from "@/utils/notify";
 import { Events } from "@/telemetry/events";
-import {
-  clearServiceCache,
-  reactivateEveryTab,
-} from "@/background/messenger/api";
+import { clearServiceCache } from "@/background/messenger/api";
 import { loadBrickYaml } from "@/runtime/brickYaml";
 import {
   useCreatePackageMutation,
@@ -43,6 +40,7 @@ import { type Definition } from "@/types/registryTypes";
 import useUserAction from "@/hooks/useUserAction";
 import { useModals } from "@/components/ConfirmationModal";
 import { CancelError } from "@/errors/businessErrors";
+import { reactivateEveryTab } from "@/contentScript/messenger/api";
 
 type SubmitOptions = {
   create: boolean;

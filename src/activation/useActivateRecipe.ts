@@ -18,7 +18,6 @@
 import { type WizardValues } from "@/activation/wizardTypes";
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useCallback } from "react";
-import { reactivateEveryTab } from "@/background/messenger/api";
 import { useDispatch, useSelector } from "react-redux";
 import extensionsSlice from "@/store/extensionsSlice";
 import reportEvent from "@/telemetry/reportEvent";
@@ -32,6 +31,7 @@ import { useCreateDatabaseMutation } from "@/data/service/api";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { isUUID, validateUUID } from "@/types/helpers";
 import { Events } from "@/telemetry/events";
+import { reactivateEveryTab } from "@/contentScript/messenger/api";
 
 export type ActivateResult = {
   success: boolean;

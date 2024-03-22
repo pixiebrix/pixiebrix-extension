@@ -146,7 +146,7 @@ export function mapBotInput(data: UnknownObject) {
   });
 }
 
-function mapBotOutput(value: OutputValue): Primitive {
+function mapBotOutput(value: OutputValue): Primitive | UnknownObject {
   switch (value.type) {
     case "STRING": {
       return value.string;
@@ -160,6 +160,12 @@ function mapBotOutput(value: OutputValue): Primitive {
       return boolean(value.boolean);
     }
 
+    case "DICTIONARY": {
+      return Object.fromEntries(
+        value.dictionary.map(({ key, value }) => [key, mapBotOutput(value)]),
+      );
+    }
+
     default: {
       const exhaustiveCheck: never = value.type;
       throw new BusinessError(
@@ -171,7 +177,7 @@ function mapBotOutput(value: OutputValue): Primitive {
 
 export function selectBotOutput(
   execution: Pick<Execution, "botOutVariables">,
-): Record<string, Primitive> {
+): Record<string, Primitive | UnknownObject> {
   return mapValues(execution.botOutVariables?.values ?? {}, (value) =>
     mapBotOutput(value),
   );

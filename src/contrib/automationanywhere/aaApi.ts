@@ -19,6 +19,8 @@ import { type Logger } from "@/types/loggerTypes";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import {
   type Activity,
+  API_TASK_TYPE,
+  type ApiTaskResponse,
   type Bot,
   BOT_TYPE,
   type DeployResponse,
@@ -39,6 +41,7 @@ import {
   selectBotOutput,
 } from "@/contrib/automationanywhere/aaUtils";
 import {
+  type ApiTaskArgs,
   type CommunityBotArgs,
   type EnterpriseBotArgs,
 } from "@/contrib/automationanywhere/aaTypes";
@@ -61,7 +64,22 @@ const PAGINATION_LIMIT = 100;
 export const DEFAULT_MAX_WAIT_MILLIS = 60_000;
 const POLL_MILLIS = 2000;
 
-const SORT_BY_NAME = {
+type SearchPayload = {
+  sort: Array<{
+    field: string;
+    direction: "asc" | "desc";
+  }>;
+  filter: {
+    operator: "and" | "or";
+    operands: Array<{
+      operator: "substring" | "eq";
+      field: string;
+      value: string;
+    }>;
+  };
+};
+
+const SORT_BY_NAME: Pick<SearchPayload, "sort"> = {
   sort: [
     {
       field: "name",
@@ -179,7 +197,7 @@ async function searchBots(
     throw new TypeError("workspaceType is required");
   }
 
-  let searchPayload = {
+  let searchPayload: SearchPayload = {
     ...SORT_BY_NAME,
     filter: {
       operator: "and",
@@ -210,7 +228,8 @@ async function searchBots(
           {
             operator: "eq",
             field: "id",
-            value: options.value,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above with isNullOrBlank
+            value: options.value!,
           },
           {
             operator: "eq",
@@ -259,6 +278,101 @@ async function searchBots(
 export const cachedSearchBots = cachePromiseMethod(
   ["aa:fetchBots"],
   searchBots,
+);
+
+async function searchApiTasks(
+  config: SanitizedIntegrationConfig,
+  options: {
+    workspaceType: WorkspaceType;
+    query: string;
+    value: string | null;
+  },
+): Promise<Option[]> {
+  if (isNullOrBlank(options.workspaceType)) {
+    throw new TypeError("workspaceType is required");
+  }
+
+  let searchPayload: SearchPayload = {
+    ...SORT_BY_NAME,
+    filter: {
+      operator: "and",
+      operands: [
+        {
+          operator: "substring",
+          field: "name",
+          value: options.query ?? "",
+        },
+        {
+          operator: "eq",
+          field: "type",
+          value: API_TASK_TYPE,
+        },
+      ],
+    },
+  };
+
+  if (isNullOrBlank(options.query) && !isNullOrBlank(options.value)) {
+    // If the value is set, but not the query just return the result set for the current value to ensure we can show
+    // the label for the value. Ideally we'd show the value + a page of results to allow easily switching the value
+    // but that would require an extra request unless the sort could somehow put the known value first
+    searchPayload = {
+      ...SORT_BY_NAME,
+      filter: {
+        operator: "and",
+        operands: [
+          {
+            operator: "eq",
+            field: "id",
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,@typescript-eslint/no-unnecessary-type-assertion -- checked above with isNullOrBlank
+            value: options.value!,
+          },
+          {
+            operator: "eq",
+            field: "type",
+            value: API_TASK_TYPE,
+          },
+        ],
+      },
+    };
+  }
+
+  let bots: Bot[];
+
+  // The folderId field on the integration is now deprecated. See BotOptions for the alert shown to user if
+  // the Page Editor configuration is only showing bots for the folder id.
+  if (isEmpty(config.config.folderId)) {
+    bots = await fetchPages<Bot>(
+      config,
+      {
+        url: `/v2/repository/workspaces/${options.workspaceType}/files/list`,
+        method: "POST",
+        data: searchPayload,
+      },
+      { maxPages: 1 },
+    );
+  } else {
+    // The /folders/:id/list endpoint works on both community and Enterprise. The /v2/repository/file/list doesn't
+    // include `type` field for filters or in the body or the response
+    bots = await fetchPages<Bot>(
+      config,
+      {
+        url: `/v2/repository/folders/${config.config.folderId}/list`,
+        method: "POST",
+        data: searchPayload,
+      },
+      { maxPages: 1 },
+    );
+  }
+
+  return bots.map((bot) => ({
+    value: bot.id,
+    label: bot.name,
+  }));
+}
+
+export const cachedSearchApiTasks = cachePromiseMethod(
+  ["aa:fetchApiTasks"],
+  searchApiTasks,
 );
 
 async function fetchDevices(
@@ -391,6 +505,42 @@ export async function runEnterpriseBot({
   return deployData;
 }
 
+export async function runApiTask({
+  integrationConfig,
+  botId,
+  sharedRunAsUserId,
+  data,
+  automationName,
+}: Pick<
+  ApiTaskArgs,
+  | "integrationConfig"
+  | "botId"
+  | "sharedRunAsUserId"
+  | "data"
+  | "automationName"
+>): Promise<ApiTaskResponse> {
+  const { data: response } = await getPlatform().request<ApiTaskResponse>(
+    integrationConfig,
+    {
+      url: "/v4/automations/deploy",
+      method: "post",
+      data: {
+        botId,
+        automationName,
+        executionType: "RUN_NOW",
+        headlessRequest: {
+          numberOfExecutions: 1,
+          queueOnSlotsExhaustion: false,
+          sharedRunAsUserId,
+        },
+        botInput: mapBotInput(data),
+      },
+    },
+  );
+
+  return response;
+}
+
 export async function pollEnterpriseResult({
   service,
   deploymentId,
@@ -427,7 +577,9 @@ export async function pollEnterpriseResult({
       },
     });
 
-    if (activityList.list.length === 0) {
+    const activity = activityList.list[0];
+    // Check for empty list, also narrow the type of activity to non-null
+    if (activity == null) {
       // Don't fail immediately. There may be a race-condition where the activity isn't available immediately
       // See https://github.com/pixiebrix/pixiebrix-extension/issues/6900
       return;
@@ -447,8 +599,6 @@ export async function pollEnterpriseResult({
         "Multiple activity instances found for bot deployment",
       );
     }
-
-    const activity = activityList.list[0];
 
     if (activity.status === "COMPLETED") {
       return activity;

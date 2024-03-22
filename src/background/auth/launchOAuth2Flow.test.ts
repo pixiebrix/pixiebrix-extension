@@ -35,7 +35,7 @@ const reportEventMock = jest.mocked(reportEvent);
 
 describe("oauth2 event reporting", () => {
   beforeEach(() => {
-    reportEventMock.mockReset();
+    jest.clearAllMocks();
   });
 
   it("reports start and success", async () => {
@@ -73,6 +73,68 @@ describe("oauth2 event reporting", () => {
       Events.OAUTH2_LOGIN_SUCCESS,
       expectedEventPayload,
     );
+  });
+
+  it("calls the codeGrantFlow only once for the same integration config id", async () => {
+    const oauth2Context: OAuth2Context = {
+      host: "www.fakehost.com",
+      authorizeUrl: "https://www.authorize.url",
+      tokenUrl: "https://www.token.url",
+      client_id: "fake_client_id",
+    };
+    const integration = {
+      id: registryIdFactory(),
+      isOAuth2: true,
+      getOAuth2Context: (secrets: SecretsConfig) => oauth2Context,
+    } as unknown as IntegrationABC;
+    const auth = integrationConfigFactory({
+      label: "test auth label",
+    });
+    await Promise.all([
+      launchOAuth2Flow(integration, auth, { interactive: true }),
+      launchOAuth2Flow(integration, auth, { interactive: true }),
+      launchOAuth2Flow(integration, auth, { interactive: true }),
+      launchOAuth2Flow(integration, auth, { interactive: true }),
+    ]);
+
+    expect(codeGrantFlowMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls the codeGrantFlow once for each integration config id", async () => {
+    const oauth2Context: OAuth2Context = {
+      host: "www.fakehost.com",
+      authorizeUrl: "https://www.authorize.url",
+      tokenUrl: "https://www.token.url",
+      client_id: "fake_client_id",
+    };
+
+    const integration = {
+      id: registryIdFactory(),
+      isOAuth2: true,
+      getOAuth2Context: (secrets: SecretsConfig) => oauth2Context,
+    } as unknown as IntegrationABC;
+
+    const auth1 = integrationConfigFactory({
+      label: "test auth label 1",
+    });
+    const auth2 = integrationConfigFactory({
+      label: "test auth label 2",
+    });
+    const auth3 = integrationConfigFactory({
+      label: "test auth label 3",
+    });
+    const auth4 = integrationConfigFactory({
+      label: "test auth label 4",
+    });
+
+    await Promise.all([
+      launchOAuth2Flow(integration, auth1, { interactive: true }),
+      launchOAuth2Flow(integration, auth2, { interactive: true }),
+      launchOAuth2Flow(integration, auth3, { interactive: true }),
+      launchOAuth2Flow(integration, auth4, { interactive: true }),
+    ]);
+
+    expect(codeGrantFlowMock).toHaveBeenCalledTimes(4);
   });
 
   it("reports start and error", async () => {

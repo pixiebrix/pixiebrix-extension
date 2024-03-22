@@ -22,6 +22,7 @@ import useFlags from "@/hooks/useFlags";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { TEST_setAuthData, TEST_triggerListeners } from "@/auth/authStorage";
 import { tokenAuthDataFactory } from "@/testUtils/factories/authFactories";
+import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
 
 const TestComponent: React.FC<{ name: string }> = ({ name, children }) => {
   const { flagOn } = useFlags();
@@ -38,6 +39,7 @@ const TestComponent: React.FC<{ name: string }> = ({ name, children }) => {
 describe("useFlags", () => {
   beforeEach(async () => {
     appApiMock.reset();
+    await TEST_deleteFeatureFlagsCache();
   });
 
   it("only fetches once for multiple instances of the hook in nested/sibling components", async () => {

@@ -75,6 +75,7 @@ import type { ActivatableDeployment } from "@/types/deploymentTypes";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import type { components } from "@/types/swagger";
 import { transformMeResponse } from "@/data/model/Me";
+import { getMe } from "@/data/service/backgroundApi";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
 const { reducer: optionsReducer, actions: optionsActions } = extensionsSlice;
@@ -468,9 +469,8 @@ export async function syncDeployments(): Promise<void> {
     return;
   }
 
-  // In the case of errors, client.get() will throw here, so we don't need to explicitly check the status
-  const { data: meApiResponse } =
-    await client.get<components["schemas"]["Me"]>("/api/me/");
+  // In the case of errors, getMe() will throw, so we don't need to explicitly check the status
+  const meApiResponse = await getMe();
   const meData = transformMeResponse(meApiResponse);
 
   const { isSnoozed, isUpdateOverdue, updatePromptTimestamp } =
