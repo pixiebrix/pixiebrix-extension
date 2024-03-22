@@ -68,7 +68,6 @@ describe("deferredLoginController", () => {
 
     await waitForEffect();
 
-    // eslint-disable-next-line testing-library/no-node-access -- The banner lives outside `body`
     expect(document.querySelector(".login-button")).toHaveAccessibleName(
       "Log in to Test Config",
     );
