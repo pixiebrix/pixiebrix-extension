@@ -23,7 +23,6 @@ import {
   dismissDeferredLogin,
 } from "@/contentScript/integrations/deferredLoginController";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
-import { screen } from "@testing-library/react";
 import { RequestSupersededError } from "@/errors/businessErrors";
 import { showLoginBanner } from "@/contentScript/messenger/api";
 import type { Target } from "@/types/messengerTypes";
