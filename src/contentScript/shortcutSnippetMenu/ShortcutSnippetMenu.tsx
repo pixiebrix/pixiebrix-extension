@@ -30,9 +30,9 @@ import cx from "classnames";
 import stylesUrl from "./ShortcutSnippetMenu.scss?loadAsUrl";
 import {
   initialState,
-  popoverSlice,
-  type PopoverState,
-  selectSelectedCommand,
+  shortcutSnippetMenuSlice,
+  type MenuState,
+  selectSelectedShortcutSnippet,
 } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuSlice";
 import { getElementText } from "@/utils/editorUtils";
 import { isEmpty } from "lodash";
@@ -111,13 +111,13 @@ const ResultItem: React.FunctionComponent<{
 };
 
 const StatusBar: React.FunctionComponent<{
-  activeCommand?: PopoverState["activeCommand"];
-  results: PopoverState["results"];
+  activeCommand?: MenuState["activeShortcutSnippet"];
+  results: MenuState["results"];
 }> = ({ activeCommand, results }) => {
   if (activeCommand?.state.isFetching) {
     return (
       <div role="status" className="status status--fetching">
-        Running command: {activeCommand.command.title}
+        Running command: {activeCommand.shortcutSnippet.title}
       </div>
     );
   }
@@ -165,8 +165,11 @@ const ShortcutSnippetMenu: React.FunctionComponent<
   } & PopoverActionCallbacks
 > = ({ commandKey, registry, element, onHide }) => {
   const isMounted = useIsMounted();
-  const [state, dispatch] = useReducer(popoverSlice.reducer, initialState);
-  const selectedCommand = selectSelectedCommand(state);
+  const [state, dispatch] = useReducer(
+    shortcutSnippetMenuSlice.reducer,
+    initialState,
+  );
+  const selectedCommand = selectSelectedShortcutSnippet(state);
   const selectedCommandRef = useRef(selectedCommand);
   const commands = useCommandRegistry(registry);
 
@@ -174,7 +177,11 @@ const ShortcutSnippetMenu: React.FunctionComponent<
     async ({ command, query }: { command: ShortcutSnippet; query: string }) => {
       // Async thunks don't work with React useReducer so write async logic as a hook
       // https://github.com/reduxjs/redux-toolkit/issues/754
-      dispatch(popoverSlice.actions.setCommandLoading({ command }));
+      dispatch(
+        shortcutSnippetMenuSlice.actions.setShortcutSnippetLoading({
+          shortcutSnippet: command,
+        }),
+      );
       try {
         reportEvent(Events.TEXT_COMMAND_RUN);
         const text = await command.handler(getElementText(element));
@@ -182,11 +189,17 @@ const ShortcutSnippetMenu: React.FunctionComponent<
         onHide();
         if (isMounted()) {
           // We're setting success state for Storybook. In practice, the popover will be unmounted via onHide()
-          dispatch(popoverSlice.actions.setCommandSuccess({ text }));
+          dispatch(
+            shortcutSnippetMenuSlice.actions.setShortcutSnippetSuccess({
+              text,
+            }),
+          );
         }
       } catch (error) {
         console.warn("Error filling at cursor", error);
-        dispatch(popoverSlice.actions.setCommandError({ error }));
+        dispatch(
+          shortcutSnippetMenuSlice.actions.setShortcutSnippetError({ error }),
+        );
       }
     },
     [element, commandKey, onHide, dispatch, isMounted],
@@ -202,7 +215,9 @@ const ShortcutSnippetMenu: React.FunctionComponent<
       }
     },
     onOffset(offset: number) {
-      dispatch(popoverSlice.actions.offsetSelectedIndex({ offset }));
+      dispatch(
+        shortcutSnippetMenuSlice.actions.offsetSelectedIndex({ offset }),
+      );
     },
   });
 
@@ -218,7 +233,12 @@ const ShortcutSnippetMenu: React.FunctionComponent<
 
   // Search effect
   useEffect(() => {
-    dispatch(popoverSlice.actions.search({ commands, query }));
+    dispatch(
+      shortcutSnippetMenuSlice.actions.search({
+        shortcutSnippets: commands,
+        query,
+      }),
+    );
   }, [query, commands, dispatch]);
 
   return (
@@ -236,7 +256,9 @@ const ShortcutSnippetMenu: React.FunctionComponent<
                 <ResultItem
                   key={command.shortcut}
                   snippet={command}
-                  disabled={state.activeCommand?.state.isFetching ?? false}
+                  disabled={
+                    state.activeShortcutSnippet?.state.isFetching ?? false
+                  }
                   isSelected={isSelected}
                   commandKey={commandKey}
                   query={state.query ?? ""}

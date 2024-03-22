@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { popoverSlice } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuSlice";
+import { shortcutSnippetMenuSlice } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuSlice";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 describe("snippetMenuSlice", () => {
@@ -28,11 +28,11 @@ describe("snippetMenuSlice", () => {
     };
 
     expect(
-      popoverSlice.reducer(
+      shortcutSnippetMenuSlice.reducer(
         undefined,
-        popoverSlice.actions.search({
+        shortcutSnippetMenuSlice.actions.search({
           query,
-          commands: [command],
+          shortcutSnippets: [command],
         }),
       ),
     ).toStrictEqual({
