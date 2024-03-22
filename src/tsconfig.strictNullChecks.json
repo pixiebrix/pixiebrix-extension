@@ -792,6 +792,7 @@
     "./utils/sidePanelUtils.ts",
     "./utils/storageUtils.ts",
     "./utils/stringUtils.ts",
+    "./utils/tabUtils.ts",
     "./utils/textAreaUtils.ts",
     "./utils/timeUtils.ts",
     "./utils/typeUtils.ts",
