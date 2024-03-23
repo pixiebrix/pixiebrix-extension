@@ -33,7 +33,6 @@ describe("Sidebar", () => {
 
   it("shows links for unrestricted users", async () => {
     await mockAuthenticatedMeApiResponse({
-      // https://github.com/pixiebrix/pixiebrix-app/blob/395c5d3672689d0a7158e3d3ef11e821f69e669d/api/tests/users/test_me.py#L68-L79
       flags: [],
     });
 
@@ -56,6 +55,55 @@ describe("Sidebar", () => {
     for (const page of pages) {
       expect(screen.getByRole("link", { name: page })).toBeVisible();
     }
+  });
+
+  it("unrestricted partner user", async () => {
+    await mockAuthenticatedMeApiResponse({
+      flags: [],
+      partner: {
+        name: "automation-anywhere",
+        theme: "automation-anywhere",
+        documentation_url: "https://docs.automationanywhere.com/",
+      },
+    });
+
+    render(
+      <MemoryRouter>
+        <Sidebar />
+      </MemoryRouter>,
+    );
+
+    // Wait for the flags call to resolve
+    await waitForEffect();
+
+    const pages = [
+      "Mods",
+      "Workshop",
+      "Local Integrations",
+      "Settings",
+      "Marketplace",
+      "Documentation",
+    ];
+
+    for (const page of pages) {
+      expect(screen.getByRole("link", { name: page })).toBeVisible();
+    }
+
+    const hidden = ["Community Slack"];
+
+    for (const page of hidden) {
+      expect(
+        screen.queryByRole("link", { name: page }),
+      ).not.toBeInTheDocument();
+    }
+
+    const documentationLink = screen.getByRole("link", {
+      name: "Documentation",
+    });
+    expect(documentationLink).toHaveAttribute(
+      "href",
+      "https://docs.automationanywhere.com/",
+    );
   });
 
   it("hides links for restricted users", async () => {
