@@ -6,13 +6,13 @@ exports[`MatchRulesSection render empty section 1`] = `
     action="#"
   >
     <div
+      aria-expanded="false"
       class="root"
     >
-      <div
+      <button
         aria-expanded="false"
         class="header"
-        role="button"
-        tabindex="0"
+        type="button"
       >
         <svg
           aria-hidden="true"
@@ -30,7 +30,7 @@ exports[`MatchRulesSection render empty section 1`] = `
           />
         </svg>
         Advanced: Match Rules
-      </div>
+      </button>
       <div
         class="body collapse"
       >
@@ -137,13 +137,13 @@ exports[`MatchRulesSection render populated section 1`] = `
     action="#"
   >
     <div
+      aria-expanded="false"
       class="root"
     >
-      <div
+      <button
         aria-expanded="false"
         class="header"
-        role="button"
-        tabindex="0"
+        type="button"
       >
         <svg
           aria-hidden="true"
@@ -161,7 +161,7 @@ exports[`MatchRulesSection render populated section 1`] = `
           />
         </svg>
         Advanced: Match Rules
-      </div>
+      </button>
       <div
         class="body collapse"
       >
