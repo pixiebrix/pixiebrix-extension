@@ -19,6 +19,8 @@ import { test, expect } from "../fixtures/extensionBase";
 import { ModsPage } from "../pageObjects/modsPage";
 import AxeBuilder from "@axe-core/playwright";
 import { checkForCriticalViolations } from "../utils";
+// @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
+import { test as base } from "@playwright/test";
 
 test.describe("extension console mods page smoke test", () => {
   test("can view available mods", async ({ page, extensionId }) => {

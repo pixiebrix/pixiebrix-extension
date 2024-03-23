@@ -16,28 +16,27 @@
  */
 
 import { test, expect } from "../fixtures/extensionBase";
-import { ActivateModPage } from "../pageObjects/modsPage";
+import { WorkshopPage } from "../pageObjects/workshopPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { test as base } from "@playwright/test";
 
-test("can activate and use highlight keywords mod", async ({
-  page,
-  extensionId,
-}) => {
-  const modId = "@pixies/highlight-keywords";
+test.describe("extension console workshop smoke test", () => {
+  test("can navigate to workshop page without a username", async ({
+    page,
+    extensionId,
+  }) => {
+    const workshopPage = new WorkshopPage(page, extensionId);
+    await workshopPage.goto();
 
-  const modActivationPage = new ActivateModPage(page, extensionId, modId);
-  await modActivationPage.goto();
+    page.getByText("W");
 
-  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+    // User has no username set, so will be shown welcome message for username selection
+    const welcomeMessage = page.getByText("Welcome to the PixieBrix Workshop!");
+    await expect(welcomeMessage).toBeVisible();
 
-  await page.goto("/bootstrap-5");
+    const pageTitle = await page.title();
 
-  const highlightedElements = await page.locator("mark").all();
-
-  await Promise.all(
-    highlightedElements.map(async (element) => {
-      await expect(element).toHaveText("PixieBrix");
-    }),
-  );
+    // Still the Extension Console because the page workshop page is gated
+    expect(pageTitle).toBe("Extension Console | PixieBrix");
+  });
 });
