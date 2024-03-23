@@ -18,7 +18,8 @@
 import styles from "./FormBuilder.module.scss";
 
 import React, { useState } from "react";
-import FormEditor from "./edit/FormEditor";
+import FormEditor from "@/components/formBuilder/edit/FormEditor";
+import FormIntroFields from "@/components/formBuilder/edit/FormIntroFields";
 import FormPreview from "./preview/FormPreview";
 import { useField } from "formik";
 import { type RJSFSchema } from "@/components/formBuilder/formBuilderTypes";
@@ -34,6 +35,7 @@ const FormBuilder: React.FC<{
   return (
     <div className={styles.root}>
       <div className={styles.column} data-testid="editor">
+        <FormIntroFields name={name} />
         <FormEditor
           name={name}
           activeField={activeField}

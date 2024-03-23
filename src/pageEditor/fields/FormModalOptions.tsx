@@ -19,9 +19,8 @@ import React from "react";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
-import FormEditor, {
-  FormIntroFields,
-} from "@/components/formBuilder/edit/FormEditor";
+import FormEditor from "@/components/formBuilder/edit/FormEditor";
+import FormIntroFields from "@/components/formBuilder/edit/FormIntroFields";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
@@ -108,7 +107,6 @@ const FormModalOptions: React.FC<{
             activeField={activeElement}
             setActiveField={setActiveElement}
             fieldTypes={FORM_FIELD_TYPE_OPTIONS}
-            showFormIntroFields={false}
           />
         </ConfigErrorBoundary>
       </ConnectedCollapsibleFieldSection>
