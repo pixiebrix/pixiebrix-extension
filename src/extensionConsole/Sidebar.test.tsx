@@ -43,15 +43,19 @@ describe("Sidebar", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole("link", { name: "Mods" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Workshop" })).toBeVisible();
-    expect(
-      screen.getByRole("link", { name: "Local Integrations" }),
-    ).toBeVisible();
-    expect(screen.getByRole("link", { name: "Settings" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Marketplace" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Community Slack" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Documentation" })).toBeVisible();
+    const pages = [
+      "Mods",
+      "Workshop",
+      "Local Integrations",
+      "Settings",
+      "Marketplace",
+      "Community Slack",
+      "Documentation",
+    ];
+
+    for (const page of pages) {
+      expect(screen.getByRole("link", { name: page })).toBeVisible();
+    }
   });
 
   it("hides links for restricted users", async () => {
@@ -82,20 +86,23 @@ describe("Sidebar", () => {
     // Wait for the flags call to resolve
     await waitForEffect();
 
-    expect(screen.getByRole("link", { name: "Mods" })).toBeVisible();
-    expect(
-      screen.queryByRole("link", { name: "Workshop" }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("link", { name: "Local Integrations" }),
-    ).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Settings" })).toBeVisible();
-    expect(
-      screen.queryByRole("link", { name: "Marketplace" }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("link", { name: "Community Slack" }),
-    ).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Documentation" })).toBeVisible();
+    const visible = ["Mods", "Settings", "Documentation"];
+
+    for (const page of visible) {
+      expect(screen.getByRole("link", { name: page })).toBeVisible();
+    }
+
+    const hidden = [
+      "Workshop",
+      "Local Integrations",
+      "Marketplace",
+      "Community Slack",
+    ];
+
+    for (const page of hidden) {
+      expect(
+        screen.queryByRole("link", { name: page }),
+      ).not.toBeInTheDocument();
+    }
   });
 });
