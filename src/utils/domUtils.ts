@@ -208,3 +208,31 @@ export function getSelectionRange(): Range | undefined {
   // eslint-disable-next-line no-restricted-syntax -- The rule points to this helper
   return selection?.rangeCount ? selection.getRangeAt(0) : undefined;
 }
+
+/**
+ * Returns true if the selector is a native CSS selector, or false if it's a jQuery selector or invalid selector
+ */
+export function isNativeCssSelector(selector: string): boolean {
+  try {
+    document.querySelectorAll(selector);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Returns true if the selector is a valid selector (CSS or jQuery)
+ */
+export function isValidSelector(selector: string): boolean {
+  try {
+    $safeFind(selector);
+    return true;
+  } catch (error) {
+    if (error instanceof InvalidSelectorError) {
+      return false;
+    }
+
+    throw error;
+  }
+}
