@@ -28,8 +28,6 @@ test.describe("extension console workshop smoke test", () => {
     const workshopPage = new WorkshopPage(page, extensionId);
     await workshopPage.goto();
 
-    page.getByText("W");
-
     // User has no username set, so will be shown welcome message for username selection
     const welcomeMessage = page.getByText("Welcome to the PixieBrix Workshop!");
     await expect(welcomeMessage).toBeVisible();
