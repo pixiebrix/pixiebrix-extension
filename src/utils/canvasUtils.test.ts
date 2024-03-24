@@ -16,10 +16,9 @@
  */
 
 import { blobToImageData, loadImageData } from "@/utils/canvasUtils";
-import axios from "axios";
-import MockAdapter from "axios-mock-adapter";
+import nock from "nock";
 
-const mock = new MockAdapter(axios);
+const mock = nock("http://test.com");
 const url = "http://test.com/image.svg";
 
 jest
@@ -52,7 +51,7 @@ describe("blobToImageData", () => {
 describe("loadImageData", () => {
   it("should return ImageData when the request is successful", async () => {
     const blob = new Blob(["test"], { type: "image/svg+xml" });
-    mock.onGet(url).reply(200, blob);
+    mock.get(new URL(url).pathname).reply(200, blob);
 
     const result = await loadImageData(url, 32, 32);
 
@@ -60,7 +59,7 @@ describe("loadImageData", () => {
   });
 
   it("should throw when the request fails", async () => {
-    mock.onGet(url).reply(500);
+    mock.get(new URL(url).pathname).reply(500);
 
     await expect(loadImageData(url, 32, 32)).rejects.toThrow(
       "Request failed with status code 500",
