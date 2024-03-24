@@ -52,6 +52,8 @@ export class ModsPage {
     return this.page.getByRole("table").locator(".list-group-item");
   }
 
+  // TODO: Drop?
+  /** @knip */
   searchModsInput() {
     return this.page.getByTestId("blueprints-search-input");
   }

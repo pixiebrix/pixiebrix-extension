@@ -2,37 +2,32 @@ import configFactory from "./webpack.config.mjs";
 
 const config = configFactory(process.env, {});
 
-// https://knip.dev/overview/configuration#customize
+/**
+ * https://knip.dev/overview/configuration#customize
+ * @type {import("knip").KnipConfig}
+ */
 const knipConfig = {
   $schema: "https://unpkg.com/knip@5/schema.json",
-  webpack: {
-    config: [
-      "webpack.config.mjs",
-      // `sharedConfig` not getting picked up automatically: https://github.com/pixiebrix/pixiebrix-extension/pull/7869
-      "webpack.sharedConfig.js",
-      ".storybook/main.js",
-    ],
-  },
   entry: [
     ...Object.values(config.entry).map((x) =>
       `${x}.{ts,tsx,js,jsx}`.replace("./", ""),
     ),
+    // Loaded via .eslintrc
+    "eslint-local-rules/*",
+
+    // Imported via .html files and manifest.json
+    "static/*",
+
     // App messenger and common storage
     "src/contentScript/externalProtocol.ts",
     "src/background/messenger/external/api.ts",
     "src/store/browserExtensionIdStorage.ts",
-    // Jest setup files
+
+    // Scripting/config entry points that are not being picked up
     "src/testUtils/FixJsdomEnvironment.js",
-    // Script helpers
-    "scripts/manifest.mjs",
-    // Content script entry point, init() is dynamically imported in src/contentScript/contentScript.ts
-    "src/contentScript/contentScriptCore.ts",
-    // Type-only strictNullChecks helper
-    "src/types/typeOnlyMessengerRegistration.ts",
-    // Lint rules
-    "eslint-local-rules/noCrossBoundaryImports.js",
+    "end-to-end-tests/auth.setup.ts",
+    "scripts/DiscardFilePlugin.mjs",
   ],
-  project: ["src/**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}"],
   // https://knip.dev/guides/handling-issues#mocks-and-other-implicit-imports
   ignore: [
     "@contrib/**",
@@ -47,9 +42,12 @@ const knipConfig = {
     "src/contrib/uipath/quietLogger.ts",
     // Development/debugging helpers
     "src/development/hooks/**",
+    // Type-only strictNullChecks helper
+    "src/types/typeOnlyMessengerRegistration.ts",
 
+    // https://knip.dev/reference/jsdoc-tsdoc-tags/#tags-cli
     // Instead of adding files to this list, prefer adding a @knip JSDoc comment with explanation, like:
-    //
+
     // /** @knip We want to use this later */
     // export const someValue = 0;
   ],
@@ -74,10 +72,6 @@ const knipConfig = {
     "@types/gapi.client.sheets-v4",
     // Used by Code Editor so format on save matches pre-commit behavior
     "prettier",
-  ],
-  ignoreBinaries: [
-    // Used without installation
-    "knip",
   ],
 };
 
