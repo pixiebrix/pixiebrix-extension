@@ -26,18 +26,18 @@ function useActions(): void {
   const { query } = useKBar();
   const uninstallActionsRef = React.useRef<(() => void) | null>(null);
 
+  const handler = (nextActions: Action[]) => {
+    uninstallActionsRef.current?.();
+    // Potential improvement: to avoid flickering, we could register actions individually and keep track of
+    // their uninstall handlers by id.
+    uninstallActionsRef.current = query.registerActions(nextActions);
+  };
+
   // Listen for changes while the kbar is mounted:
   // - The user is making edits in the Page Editor
   // - Generators are producing new actions in response to the search query changing
   // The query is available on initial mount
   useOnMountOnly(() => {
-    const handler = (nextActions: Action[]) => {
-      uninstallActionsRef.current?.();
-      // Potential improvement: to avoid flickering, we could register actions individually and keep track of
-      // their uninstall handlers by id.
-      uninstallActionsRef.current = query.registerActions(nextActions);
-    };
-
     // Don't use useRegisterActions, because then we aren't able to unregister actions that were around
     // from the initial mount
     handler(quickBarRegistry.currentActions);

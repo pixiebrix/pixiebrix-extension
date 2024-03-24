@@ -27,6 +27,8 @@ https://github.com/typescript-eslint/typescript-eslint/issues/3295#issuecomment-
 // Improve standard type library https://www.totaltypescript.com/ts-reset
 /// <reference types="@total-typescript/ts-reset" />
 
+/// <reference types="jest-extended" />
+
 declare const browser: import("webextension-polyfill").Browser;
 
 /* eslint-disable-next-line no-restricted-syntax --
