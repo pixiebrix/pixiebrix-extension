@@ -131,7 +131,12 @@ const SelectWidget = <TOption extends Option<TOption["value"]>>({
       onInputChange={setTextInputValue}
       value={selectedOption}
       onChange={patchedOnChange}
-      components={components}
+      // This cast is to make strict null checks happy - react-select has funky typing issues for custom components
+      components={
+        components as Partial<
+          SelectComponentsConfig<unknown, boolean, GroupBase<unknown>>
+        >
+      }
       styles={styles}
       isSearchable={isSearchable}
     />

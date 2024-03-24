@@ -18,9 +18,8 @@
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { type Schema } from "@/types/schemaTypes";
 import React, { useCallback, useState } from "react";
-import FormEditor, {
-  FormIntroFields,
-} from "@/components/formBuilder/edit/FormEditor";
+import FormEditor from "@/components/formBuilder/edit/FormEditor";
+import FormIntroFields from "@/components/formBuilder/edit/FormIntroFields";
 import useReduxState from "@/hooks/useReduxState";
 import ConfigErrorBoundary from "@/pageEditor/fields/ConfigErrorBoundary";
 import { selectNodePreviewActiveElement } from "@/pageEditor/slices/editorSelectors";
@@ -261,8 +260,6 @@ const FormRendererOptions: React.FC<{
         <ConfigErrorBoundary>
           <FormEditor
             name={configName}
-            // Showing the section above manually
-            showFormIntroFields={false}
             activeField={activeElement}
             setActiveField={setActiveElement}
             fieldTypes={FORM_FIELD_TYPE_OPTIONS}

@@ -29,9 +29,11 @@
   background: $field-section-header;
   display: flex;
   align-items: center;
-  cursor: pointer;
   margin-bottom: 1em;
   border: none;
+  &.collapsible {
+    cursor: pointer;
+  }
 }
 
 .body {

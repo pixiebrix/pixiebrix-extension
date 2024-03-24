@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import type ActionRegistry from "@/contentScript/selectionTooltip/ActionRegistry";
-import type { RegisteredAction } from "@/contentScript/selectionTooltip/ActionRegistry";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import { useCallback } from "react";
 import type { UUID } from "@/types/stringTypes";
+import { type RegisteredAction } from "@/contentScript/textSelectionMenu/ActionRegistry";
+import type ActionRegistry from "@/contentScript/textSelectionMenu/ActionRegistry";
 
 /**
  * React hook to receive action updates from the toolbar registry.

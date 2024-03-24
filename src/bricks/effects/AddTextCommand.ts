@@ -58,8 +58,8 @@ class AddTextCommand extends EffectABC {
   constructor() {
     super(
       AddTextCommand.BRICK_ID,
-      "[Experimental] Add Text Command",
-      "Add a dynamic text command",
+      "[Experimental] Add Dynamic Text Snippet",
+      "Add/register a dynamic text snippet to the Snippet Shortcut Menu",
     );
   }
 

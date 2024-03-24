@@ -49,6 +49,7 @@ import { initSidePanel } from "./sidePanel";
 import initRestrictUnauthenticatedUrlAccess from "@/background/restrictUnauthenticatedUrlAccess";
 import { setPlatform } from "@/platform/platformContext";
 import backgroundPlatform from "@/background/backgroundPlatform";
+import { initFeatureFlagBackgroundListeners } from "@/auth/featureFlagStorage";
 
 // The background "platform" currently is used to execute API requests from Google Sheets/Automation Anywhere.
 // In the future, it might also run other background tasks from mods (e.g., background intervals)
@@ -65,6 +66,7 @@ void initSidePanel();
 initInstaller();
 void initNavigation();
 initExecutor();
+initFeatureFlagBackgroundListeners();
 initContextMenus();
 initContentScriptReadyListener();
 initBrowserCommands();

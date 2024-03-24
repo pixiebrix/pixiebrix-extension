@@ -15,20 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Use ./featureFlagStorage relative import to avoid testing the manual `__mocks__` implementation. There's no easy
+// way to unmock the module in the test file: https://github.com/jestjs/jest/issues/2649
 import {
   fetchFeatureFlags,
   flagOn,
-  resetFeatureFlags,
+  initFeatureFlagBackgroundListeners,
+  TEST_deleteFeatureFlagsCache,
   TEST_overrideFeatureFlags,
-} from "@/auth/featureFlagStorage";
+} from "./featureFlagStorage";
+
 import { appApiMock } from "@/testUtils/appApiMock";
-import { TEST_setAuthData, TEST_triggerListeners } from "@/auth/authStorage";
+import {
+  TEST_clearListeners as clearAuthStorageListeners,
+  TEST_setAuthData,
+  TEST_triggerListeners,
+} from "@/auth/authStorage";
 import { tokenAuthDataFactory } from "@/testUtils/factories/authFactories";
 import { fetchFeatureFlagsInBackground } from "@/background/messenger/strict/api";
 
 describe("featureFlags", () => {
   beforeEach(async () => {
-    // Wire up the real fetch function so we can mock the api responses
+    clearAuthStorageListeners();
+
+    // Wire up the real fetch function, so we can mock the api responses
     jest
       .mocked(fetchFeatureFlagsInBackground)
       .mockImplementation(fetchFeatureFlags);
@@ -39,7 +49,11 @@ describe("featureFlags", () => {
   });
 
   afterEach(async () => {
-    await resetFeatureFlags();
+    await TEST_deleteFeatureFlagsCache();
+  });
+
+  it("not using mock", () => {
+    expect("mock" in flagOn).toBeFalse();
   });
 
   it("returns true if flag is present", async () => {
@@ -83,6 +97,9 @@ describe("featureFlags", () => {
   });
 
   it("fetches flags again if auth is reset in between calls", async () => {
+    // Mimic listener added by background.ts
+    initFeatureFlagBackgroundListeners();
+
     appApiMock.onGet("/api/me/").reply(200, {
       flags: ["test-flag", "secret-flag"],
     });

@@ -36,7 +36,7 @@ const RemoveElement: React.FC<RemoveElementProps> = ({ documentBodyName }) => {
 
   return (
     <Button onClick={onDelete} variant="danger" size="sm">
-      <FontAwesomeIcon icon={faTrash} /> Remove element
+      <FontAwesomeIcon icon={faTrash} /> Remove current element
     </Button>
   );
 };

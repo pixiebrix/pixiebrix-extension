@@ -6,13 +6,13 @@ exports[`ExtraPermissionsSection render empty section 1`] = `
     action="#"
   >
     <div
+      aria-expanded="false"
       class="root"
     >
-      <div
+      <button
         aria-expanded="false"
         class="header"
-        role="button"
-        tabindex="0"
+        type="button"
       >
         <svg
           aria-hidden="true"
@@ -30,7 +30,7 @@ exports[`ExtraPermissionsSection render empty section 1`] = `
           />
         </svg>
         Advanced: Extra Permissions
-      </div>
+      </button>
       <div
         class="body collapse"
       >
@@ -119,13 +119,13 @@ exports[`ExtraPermissionsSection render populated section 1`] = `
     action="#"
   >
     <div
+      aria-expanded="false"
       class="root"
     >
-      <div
+      <button
         aria-expanded="false"
         class="header"
-        role="button"
-        tabindex="0"
+        type="button"
       >
         <svg
           aria-hidden="true"
@@ -143,7 +143,7 @@ exports[`ExtraPermissionsSection render populated section 1`] = `
           />
         </svg>
         Advanced: Extra Permissions
-      </div>
+      </button>
       <div
         class="body collapse"
       >

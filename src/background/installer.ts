@@ -38,6 +38,7 @@ import { DEFAULT_SERVICE_URL, UNINSTALL_URL } from "@/urlConstants";
 import { CONTROL_ROOM_TOKEN_INTEGRATION_ID } from "@/integrations/constants";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
 import { oncePerSession } from "@/mv3/SessionStorage";
+import { resetFeatureFlagsCache } from "@/auth/featureFlagStorage";
 
 /**
  * The latest version of PixieBrix available in the Chrome Web Store, or null if the version hasn't been fetched.
@@ -349,9 +350,17 @@ const initTelemetryOncePerSession = oncePerSession(
   },
 );
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- using SessionMap via oncePerSession
+const updateFlagsOncePerSession = oncePerSession(
+  "resetFeatureFlags",
+  import.meta.url,
+  resetFeatureFlagsCache,
+);
+
 function initInstaller(): void {
   void initManagedStorageOncePerSession();
   void initTelemetryOncePerSession();
+  void updateFlagsOncePerSession();
 
   browser.runtime.onInstalled.addListener(showInstallPage);
   browser.runtime.onUpdateAvailable.addListener(setAvailableVersion);

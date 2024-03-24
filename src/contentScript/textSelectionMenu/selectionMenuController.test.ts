@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { uuidv4 } from "@/types/helpers";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { rectFactory } from "@/testUtils/factories/domFactories";
-import type * as controllerModule from "@/contentScript/selectionTooltip/tooltipController";
+import type * as controllerModule from "@/contentScript/textSelectionMenu/selectionMenuController";
 
 document.body.innerHTML =
   '<div><span data-testid="span">Here\'s some text</span></div>';
@@ -13,7 +13,7 @@ document.body.innerHTML =
 (Range.prototype.getBoundingClientRect as any) = jest.fn(() => rectFactory());
 (Range.prototype.getClientRects as any) = jest.fn(() => [rectFactory()]);
 
-describe("tooltipController", () => {
+describe("selectionMenuController", () => {
   let module: typeof controllerModule;
 
   async function selectText() {
@@ -26,14 +26,16 @@ describe("tooltipController", () => {
   // TODO: figure out how to properly isolate tests - adding multiple tests cause flakiness
   beforeEach(async () => {
     jest.resetModules();
-    module = await import("@/contentScript/selectionTooltip/tooltipController");
+    module = await import(
+      "@/contentScript/textSelectionMenu/selectionMenuController"
+    );
   });
 
   // TODO: re-enable flaky test https://github.com/pixiebrix/pixiebrix-extension/issues/7682
-  it.skip("attach tooltip when user selects text", async () => {
-    module.initSelectionTooltip();
+  it.skip("attach selection menu when user selects text", async () => {
+    module.initSelectionMenu();
 
-    module.tooltipActionRegistry.register(uuidv4(), {
+    module.selectionMenuActionRegistry.register(uuidv4(), {
       title: "Copy",
       icon: undefined,
       handler() {},
@@ -44,7 +46,7 @@ describe("tooltipController", () => {
     // I couldn't get screen from shadow-dom-testing-library to work, otherwise I would have use getByRole for 'menu'
     // I think it might only work with render().
     await expect(
-      screen.findByTestId("pixiebrix-selection-tooltip"),
+      screen.findByTestId("pixiebrix-selection-menu"),
     ).resolves.toBeInTheDocument();
   });
 });

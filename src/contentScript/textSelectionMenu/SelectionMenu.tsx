@@ -17,18 +17,18 @@
 
 import React from "react";
 // We're rendering in the shadow DOM, so we need to load styles as a URL. loadAsUrl doesn't work with module mangling
-import stylesUrl from "@/contentScript/selectionTooltip/SelectionToolbar.scss?loadAsUrl";
-import type ActionRegistry from "@/contentScript/selectionTooltip/ActionRegistry";
-import type { RegisteredAction } from "@/contentScript/selectionTooltip/ActionRegistry";
+import stylesUrl from "@/contentScript/textSelectionMenu/SelectionMenu.scss?loadAsUrl";
 import Icon from "@/icons/Icon";
 import { splitStartingEmoji } from "@/utils/stringUtils";
 import { truncate } from "lodash";
 import useDocumentSelection from "@/hooks/useDocumentSelection";
 import type { Nullishable } from "@/utils/nullishUtils";
-import useActionRegistry from "@/contentScript/selectionTooltip/useActionRegistry";
 import { Stylesheets } from "@/components/Stylesheets";
 import EmotionShadowRoot from "@/components/EmotionShadowRoot";
 import { getSelection } from "@/utils/selectionController";
+import { type RegisteredAction } from "@/contentScript/textSelectionMenu/ActionRegistry";
+import type ActionRegistry from "@/contentScript/textSelectionMenu/ActionRegistry";
+import useActionRegistry from "@/contentScript/textSelectionMenu/useActionRegistry";
 
 const ICON_SIZE_PX = 16;
 
@@ -86,7 +86,7 @@ const ToolbarItem: React.FC<
   </button>
 );
 
-const SelectionToolbar: React.FC<
+const SelectionMenu: React.FC<
   { registry: ActionRegistry } & ActionCallbacks
 > = ({ registry, onHide }) => {
   const selection = useDocumentSelection();
@@ -94,7 +94,8 @@ const SelectionToolbar: React.FC<
 
   // https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/menu_role
   return (
-    <EmotionShadowRoot mode="open">
+    // Prevent page styles from leaking into the menu
+    <EmotionShadowRoot mode="open" style={{ all: "initial" }}>
       <Stylesheets href={[stylesUrl]}>
         <div
           role="menu"
@@ -116,4 +117,4 @@ const SelectionToolbar: React.FC<
   );
 };
 
-export default SelectionToolbar;
+export default SelectionMenu;

@@ -15,15 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.addRow {
-  margin-bottom: 1.5rem;
-}
+import { type Option } from "@/components/form/widgets/SelectWidget";
+import { type WorkspaceType } from "@/contrib/automationanywhere/contract";
 
-.currentFieldRow {
-  margin-bottom: 1.5rem;
-  align-items: center;
-}
-
-.currentField {
-  margin-top: 0.25rem;
-}
+export const WORKSPACE_OPTIONS: Array<Option<WorkspaceType>> = [
+  { value: "public", label: "Public" },
+  { value: "private", label: "Private/Local" },
+];

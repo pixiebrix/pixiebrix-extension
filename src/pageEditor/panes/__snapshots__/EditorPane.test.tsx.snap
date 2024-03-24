@@ -844,13 +844,13 @@ exports[`renders an extension with sub pipeline 1`] = `
               </div>
             </div>
             <div
+              aria-expanded="false"
               class="root"
             >
-              <div
+              <button
                 aria-expanded="false"
                 class="header"
-                role="button"
-                tabindex="0"
+                type="button"
               >
                 <svg
                   aria-hidden="true"
@@ -868,7 +868,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   />
                 </svg>
                 Advanced
-              </div>
+              </button>
               <div
                 class="body collapse"
               >
@@ -1035,13 +1035,13 @@ exports[`renders an extension with sub pipeline 1`] = `
               </div>
             </div>
             <div
+              aria-expanded="false"
               class="root"
             >
-              <div
+              <button
                 aria-expanded="false"
                 class="header"
-                role="button"
-                tabindex="0"
+                type="button"
               >
                 <svg
                   aria-hidden="true"
@@ -1059,7 +1059,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   />
                 </svg>
                 Advanced: Match Rules
-              </div>
+              </button>
               <div
                 class="body collapse"
               >
@@ -1186,13 +1186,13 @@ exports[`renders an extension with sub pipeline 1`] = `
               </div>
             </div>
             <div
+              aria-expanded="false"
               class="root"
             >
-              <div
+              <button
                 aria-expanded="false"
                 class="header"
-                role="button"
-                tabindex="0"
+                type="button"
               >
                 <svg
                   aria-hidden="true"
@@ -1210,7 +1210,7 @@ exports[`renders an extension with sub pipeline 1`] = `
                   />
                 </svg>
                 Advanced: Extra Permissions
-              </div>
+              </button>
               <div
                 class="body collapse"
               >
@@ -2120,13 +2120,13 @@ exports[`renders the first selected node 1`] = `
               </div>
             </div>
             <div
+              aria-expanded="false"
               class="root"
             >
-              <div
+              <button
                 aria-expanded="false"
                 class="header"
-                role="button"
-                tabindex="0"
+                type="button"
               >
                 <svg
                   aria-hidden="true"
@@ -2144,7 +2144,7 @@ exports[`renders the first selected node 1`] = `
                   />
                 </svg>
                 Advanced Options
-              </div>
+              </button>
               <div
                 class="body collapse"
               >

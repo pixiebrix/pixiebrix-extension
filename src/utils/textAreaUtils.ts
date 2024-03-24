@@ -90,6 +90,17 @@ export function getCaretCoordinates(element: NativeField, position: number) {
   // Position off-screen
   style.position = "absolute"; // Required to return coordinates properly
 
+  let computedLineHeight: number;
+  if (computed.lineHeight === "normal") {
+    // Use a default value of 1.125 multiplied by the fontSize if the line-height is normal. This seems to be the default
+    // line-height in textareas for most browsers from observation during manual testing (not 1.2).
+    // https://developer.mozilla.org/en-US/docs/Web/CSS/line-height#normal
+    const fontSize = Number.parseInt(computed.fontSize, 10);
+    computedLineHeight = fontSize * 1.125;
+  } else {
+    computedLineHeight = Number.parseInt(computed.lineHeight, 10);
+  }
+
   // Transfer the element's properties to the div
   for (const prop of properties) {
     if (isInput && prop === "lineHeight") {
@@ -101,12 +112,11 @@ export function getCaretCoordinates(element: NativeField, position: number) {
           Number.parseInt(computed.paddingBottom, 10) +
           Number.parseInt(computed.borderTopWidth, 10) +
           Number.parseInt(computed.borderBottomWidth, 10);
-        const targetHeight =
-          outerHeight + Number.parseInt(computed.lineHeight, 10);
+        const targetHeight = outerHeight + computedLineHeight;
         if (height > targetHeight) {
           style.lineHeight = height - outerHeight + "px";
         } else if (height === targetHeight) {
-          style.lineHeight = computed.lineHeight;
+          style.lineHeight = computedLineHeight + "px";
         } else {
           style.lineHeight = "0";
         }
@@ -135,21 +145,10 @@ export function getCaretCoordinates(element: NativeField, position: number) {
   span.textContent = element.value.slice(Math.max(0, position)) || "."; // || because a completely empty faux span doesn't render at all
   div.append(span);
 
-  let lineHeight: number;
-  if (computed.lineHeight === "normal") {
-    // Use a default value of 1.125 multiplied by the fontSize if the line-height is normal. This seems to be the default
-    // line-height in textareas for most browsers from observation during manual testing (not 1.2).
-    // https://developer.mozilla.org/en-US/docs/Web/CSS/line-height#normal
-    const fontSize = Number.parseInt(computed.fontSize, 10);
-    lineHeight = fontSize * 1.125;
-  } else {
-    lineHeight = Number.parseInt(computed.lineHeight, 10);
-  }
-
   const coordinates = {
     top: span.offsetTop + Number.parseInt(computed.borderTopWidth, 10),
     left: span.offsetLeft + Number.parseInt(computed.borderLeftWidth, 10),
-    height: lineHeight,
+    height: computedLineHeight,
   };
 
   div.remove();
