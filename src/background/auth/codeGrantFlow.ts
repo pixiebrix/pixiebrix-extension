@@ -26,11 +26,28 @@ import {
   getRandomString,
 } from "@/vendors/pkce";
 import { BusinessError } from "@/errors/businessErrors";
-import axios, { type AxiosResponse } from "axios";
-import { getErrorMessage } from "@/errors/errorHelpers";
+import ky from "ky";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { launchWebAuthFlow } from "@/background/auth/authHelpers";
+import { type JsonObject } from "type-fest";
+import { isObject } from "@/utils/objectUtils";
+
+function tryParsingJsonObject(string: string): JsonObject | undefined {
+  try {
+    const parsed = JSON.parse(string);
+    if (isObject(parsed)) {
+      return parsed;
+    }
+  } catch {}
+}
+
+function throwIfResponseError(parsed: URLSearchParams): void {
+  const error = parsed.get("error");
+  if (error) {
+    throw new Error(parsed.get("error_description") ?? error);
+  }
+}
 
 /**
  * Retrieve the OAuth2 token using the code grant flow.
@@ -93,94 +110,69 @@ async function codeGrantFlow(
     interactive,
   });
 
-  const authResponse = new URL(responseUrl);
+  const authResponse = new URL(responseUrl).searchParams;
+  throwIfResponseError(authResponse);
 
-  // Console.debug("OAuth authorize response", authResponse);
-
-  const error = authResponse.searchParams.get("error");
-  if (error) {
-    throw new Error(
-      authResponse.searchParams.get("error_description") ?? error,
-    );
-  }
-
-  if (authResponse.searchParams.get("state") !== state) {
+  if (authResponse.get("state") !== state) {
     throw new Error("OAuth2 state mismatch");
   }
 
   const tokenURL = new URL(rawTokenUrl);
 
-  const code = authResponse.searchParams.get("code");
+  const code = authResponse.get("code");
   if (!code) {
     throw new Error("OAuth2 code not provided");
   }
 
-  const tokenBody: Record<string, string> = {
-    redirect_uri,
-    grant_type: "authorization_code",
-    code,
-    client_id: params.client_id,
-  };
+  const formData = new FormData();
+  formData.append("redirect_uri", redirect_uri);
+  formData.append("grant_type", "authorization_code");
+  formData.append("code", code);
+  formData.append("client_id", params.client_id);
 
   if (client_secret) {
-    tokenBody.client_secret = client_secret;
+    formData.append("client_secret", client_secret);
   }
 
   if (code_verifier) {
-    tokenBody.code_verifier = code_verifier;
+    formData.append("code_verifier", code_verifier);
   }
 
-  const tokenParams = new URLSearchParams(Object.entries(tokenBody));
-
-  let tokenResponse: AxiosResponse;
+  let data: string | undefined;
 
   try {
-    tokenResponse = await axios.post(tokenURL.href, tokenParams, {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
+    data = await ky
+      .post(tokenURL.href, {
+        body: formData,
+      })
+      .text();
   } catch (error) {
-    console.error(error);
-    throw new Error(`Error getting OAuth2 token: ${getErrorMessage(error)}`);
+    throw new Error("Error getting OAuth2 token", { cause: error });
   }
 
-  const { data, status, statusText } = tokenResponse;
+  const parsedJson = tryParsingJsonObject(data) as AuthData | undefined;
+  if (parsedJson) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Fix IntegrationConfig types
+    await setCachedAuthData(integrationConfig.id!, parsedJson);
+    return parsedJson;
+  }
 
-  if (status >= 400) {
-    throw new Error(
-      `Error getting OAuth2 token: ${statusText ?? "Unknown error"}`,
+  // Continue as form-urlencoded data
+  let parsed;
+  try {
+    parsed = new URLSearchParams(data);
+  } catch {
+    throw new TypeError(
+      "Expected application/x-www-form-urlencoded data for response",
     );
   }
 
-  if (typeof data === "string") {
-    let parsed;
-    try {
-      parsed = new URLSearchParams(data);
-    } catch {
-      throw new Error(
-        "Expected application/x-www-form-urlencoded data for response",
-      );
-    }
+  throwIfResponseError(parsed);
 
-    const error = parsed.get("error");
-    if (error) {
-      throw new Error(parsed.get("error_description") ?? error);
-    }
-
-    const json = Object.fromEntries(parsed.entries());
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Fix IntegrationConfig types
-    await setCachedAuthData(integrationConfig.id!, json);
-    return json as AuthData;
-  }
-
-  if (typeof data === "object") {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Fix IntegrationConfig types
-    await setCachedAuthData(integrationConfig.id!, data);
-    return data as AuthData;
-  }
-
-  throw new TypeError("Error getting OAuth2 token: unexpected response format");
+  const json = Object.fromEntries(parsed.entries()) as AuthData;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Fix IntegrationConfig types
+  await setCachedAuthData(integrationConfig.id!, json);
+  return json;
 }
 
 export default codeGrantFlow;
