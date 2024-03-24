@@ -31,7 +31,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { assertProtocolUrl } from "@/errors/assertProtocolUrl";
 import { selectSettings } from "@/store/settings/settingsSelectors";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import pTimeout from "p-timeout";
 import chromeP from "webext-polyfill-kinda";
 import useUserAction from "@/hooks/useUserAction";
 import { isEmpty } from "lodash";
@@ -117,10 +116,9 @@ const AdvancedSettings: React.FunctionComponent = () => {
       try {
         if (newPixiebrixUrl) {
           // Ensure it's connectable
-          const response = await pTimeout(
-            fetch(new URL("api/me", newPixiebrixUrl).href),
-            { milliseconds: SAVING_URL_TIMEOUT_MS },
-          );
+          const response = await fetch(new URL("api/me", newPixiebrixUrl), {
+            signal: AbortSignal.timeout(SAVING_URL_TIMEOUT_MS),
+          });
 
           // Ensure it returns a JSON response. It's just `{}` when the user is logged out.
           await response.json();
