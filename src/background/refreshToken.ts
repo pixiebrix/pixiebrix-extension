@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios from "axios";
+import ky from "ky";
 import { expectContext } from "@/utils/expectContext";
 import {
   type Integration,
@@ -27,12 +27,13 @@ import {
   setCachedAuthData,
 } from "@/background/auth/authStorage";
 import { CONTROL_ROOM_OAUTH_INTEGRATION_ID } from "@/integrations/constants";
+import { type JsonObject } from "type-fest";
 
 /**
  * Refresh an OAuth2 PKCE token. NOOP if a refresh token is not available.
  * @returns True if the token was successfully refreshed. False if the token refresh was not attempted.
  * @throws Error if the integration is not an OAuth2 PKCE integration.
- * @throws AxiosError if the token refresh failed
+ * @throws HTTPError if the token refresh failed
  */
 export default async function refreshPKCEToken(
   integration: Integration,
@@ -44,11 +45,15 @@ export default async function refreshPKCEToken(
     throw new Error(
       `Integration id and config service id do not match: ${integration.id} !== ${integrationConfig.serviceId}`,
     );
-  } else if (integration.id === CONTROL_ROOM_OAUTH_INTEGRATION_ID) {
+  }
+
+  if (integration.id === CONTROL_ROOM_OAUTH_INTEGRATION_ID) {
     throw new Error(
       `Use _refreshPartnerToken to refresh the ${CONTROL_ROOM_OAUTH_INTEGRATION_ID} token`,
     );
-  } else if (!integration.isOAuth2PKCE) {
+  }
+
+  if (!integration.isOAuth2PKCE) {
     throw new Error(
       `Expected OAuth2 PKCE integration, but got ${integration.id}`,
     );
@@ -66,8 +71,7 @@ export default async function refreshPKCEToken(
       // XXX: pass interactive: true to match the legacy behavior
       integration.getOAuth2Context(config, { interactive: true });
 
-    // https://axios-http.com/docs/urlencoded
-    const params = new URLSearchParams();
+    const params = new FormData();
 
     params.append("grant_type", "refresh_token");
     params.append("refresh_token", cachedAuthData.refresh_token as string);
@@ -78,13 +82,13 @@ export default async function refreshPKCEToken(
       params.append("client_secret", client_secret);
     }
 
-    const { data } = await axios.post(tokenUrl, params);
+    const data = await ky.post(tokenUrl, { body: params }).json<JsonObject>();
 
     // Add the cached refresh token to the response if it's missing, so it doesn't get removed.
     // - The Google refresh token response doesn't include a refresh token.
     // - The Azure refresh token response includes a new refresh token that we should replace the cached one with.
     //   See https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow#refresh-the-access-token
-    data.refresh_token ??= cachedAuthData.refresh_token;
+    data.refresh_token ??= cachedAuthData.refresh_token as string;
 
     await setCachedAuthData(integrationConfig.id, data);
 
