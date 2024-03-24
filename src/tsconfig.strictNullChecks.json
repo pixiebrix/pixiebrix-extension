@@ -454,8 +454,6 @@
     "./hooks/useMilestones.ts",
     "./hooks/useOnMountOnly.ts",
     "./hooks/useOnMountOnly.test.ts",
-    "./hooks/useOnUnmountOnly.ts",
-    "./hooks/useOnUnmountOnly.test.ts",
     "./hooks/usePreviousValue.ts",
     "./hooks/useQuickbarShortcut.ts",
     "./hooks/useReduxState.ts",
