@@ -16,8 +16,7 @@
  */
 
 import setToolbarIconFromTheme from "@/background/setToolbarIconFromTheme";
-import axios from "axios";
-import MockAdapter from "axios-mock-adapter";
+import nock from "nock";
 import { browserAction } from "@/mv3/api";
 
 jest.mock("@/mv3/api", () => ({
@@ -28,8 +27,10 @@ jest.mock("@/mv3/api", () => ({
 }));
 
 describe("setToolbarIconFromTheme", () => {
-  const mock = new MockAdapter(axios);
-  const url = "http://test.com/image.svg";
+  const origin = "http://test.com";
+  const pathname = "/image.svg";
+  const url = `${origin}${pathname}`;
+  const mock = nock("http://test.com");
 
   jest
     .mocked(browser.runtime.getManifest)
@@ -37,29 +38,25 @@ describe("setToolbarIconFromTheme", () => {
     .mockReturnValue({ icons: "path to icons" });
 
   beforeEach(() => {
-    mock.reset();
     jest.clearAllMocks();
   });
 
   it("uses the default manifest icon when no toolbarIcon is defined and the theme is default", async () => {
-    const axiosSpy = jest.spyOn(axios, "get");
     await setToolbarIconFromTheme({
       toolbarIcon: null,
       themeName: "default",
       logo: { small: "smallLogoPath", regular: "regularLogoPath" },
     });
 
-    expect(axiosSpy).not.toHaveBeenCalled();
     expect(browserAction.setIcon).toHaveBeenCalledWith({
       path: "path to icons",
     });
   });
 
   it("fetches the image data and sets the browser action icon, when toolbarIcon is defined", async () => {
-    const url = "http://test.com/image.png";
     const blob = new Blob(["test"], { type: "image/svg+xml" });
 
-    mock.onGet(url).reply(200, blob);
+    mock.get(pathname).reply(200, blob);
 
     await setToolbarIconFromTheme({
       toolbarIcon: url,
@@ -73,7 +70,7 @@ describe("setToolbarIconFromTheme", () => {
   });
 
   it("uses the default icon when the request fails", async () => {
-    mock.onGet(url).reply(500);
+    mock.get(pathname).reply(500);
 
     await setToolbarIconFromTheme({
       toolbarIcon: url,
