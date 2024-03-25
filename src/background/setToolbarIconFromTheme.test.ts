@@ -27,10 +27,8 @@ jest.mock("@/mv3/api", () => ({
 }));
 
 describe("setToolbarIconFromTheme", () => {
-  const origin = "http://test.com";
-  const pathname = "/image.svg";
-  const url = `${origin}${pathname}`;
-  const mock = nock("http://test.com");
+  const { origin, pathname, href: url } = new URL("http://test.com/image.svg");
+  const mock = nock(origin);
 
   jest
     .mocked(browser.runtime.getManifest)
