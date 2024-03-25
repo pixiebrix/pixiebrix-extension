@@ -109,6 +109,13 @@ describe("isValidSelector", () => {
     },
   );
 
+  it.each(['div:contains("foo")', "div:visible"])(
+    "returns true for valid jquery selector: %s",
+    (selector) => {
+      expect(isValidSelector(selector)).toBeTrue();
+    },
+  );
+
   it.each(["!foo"])("returns false for invalid selector: %s", (selector) => {
     expect(isValidSelector(selector)).toBeFalse();
   });
