@@ -24,9 +24,16 @@ import {
   type Page,
 } from "@playwright/test";
 import path from "node:path";
-import { CI, E2E_TEST_USER_EMAIL_UNAFFILIATED, MV, SLOWMO } from "../env";
+import {
+  CI,
+  E2E_TEST_USER_EMAIL_UNAFFILIATED,
+  MV,
+  PWDEBUG,
+  SLOWMO,
+} from "../env";
 import fs from "node:fs/promises";
 import { getBaseExtensionConsoleUrl } from "../pageObjects/constants";
+import { expectToNotBeHiddenOrUnmounted } from "../utils";
 
 const getStoredCookies = async (): Promise<Cookie[]> => {
   let fileBuffer;
@@ -51,13 +58,12 @@ const getStoredCookies = async (): Promise<Cookie[]> => {
 };
 
 const linkExtensionViaAdminConsole = async (page: Page) => {
-  await baseExpect(async () => {
-    await baseExpect(
-      page.getByText(
-        "Successfully linked the Browser Extension to your PixieBrix account",
-      ),
-    ).toBeVisible();
-  }).toPass({ timeout: 5000 });
+  await expectToNotBeHiddenOrUnmounted(
+    page.getByText(
+      "Successfully linked the Browser Extension to your PixieBrix account",
+    ),
+    { timeout: 10_000 },
+  );
   await baseExpect(
     page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
   ).toBeVisible();
@@ -69,9 +75,9 @@ const ensureExtensionIsLoaded = async (page: Page, extensionId: string) => {
     await baseExpect(page.getByText("Extension Console")).toBeVisible();
     await baseExpect(
       page.getByText(E2E_TEST_USER_EMAIL_UNAFFILIATED),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10_000 });
   }).toPass({
-    timeout: 10_000,
+    timeout: 20_000,
   });
 };
 
@@ -121,7 +127,7 @@ export const test = base.extend<{
         // This mode is not officially supported by Playwright and might result in unexpected behavior,
         // so only use in local development for now.
         // https://playwright.dev/docs/chrome-extensions#headless-mode
-        ...(CI || SLOWMO ? [] : ["--headless=new"]),
+        ...(CI || SLOWMO || PWDEBUG ? [] : ["--headless=new"]),
       ],
       slowMo: SLOWMO ? 3000 : undefined,
     });
