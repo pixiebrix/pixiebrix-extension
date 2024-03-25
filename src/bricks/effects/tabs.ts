@@ -17,7 +17,7 @@
 
 import { EffectABC } from "@/types/bricks/effectTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { activateTab, closeTab } from "@/background/messenger/api";
+import { focusTab, closeTab } from "@/background/messenger/api";
 import {
   CONTENT_SCRIPT_CAPABILITIES,
   type PlatformCapability,
@@ -40,7 +40,7 @@ export class ActivateTabEffect extends EffectABC {
   }
 
   async effect(): Promise<void> {
-    await activateTab();
+    await focusTab();
   }
 }
 

@@ -25,9 +25,9 @@ import {
   valueToAsyncState,
 } from "@/utils/asyncStateUtils";
 
-import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
+import type { ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
 
-export type PopoverState = {
+export type MenuState = {
   /**
    * The active query string corresponding to the search results, or null if there's no active query (e.g., because the
    * user pressed the escape key).
@@ -36,38 +36,38 @@ export type PopoverState = {
   /**
    * The sorted list of search results
    */
-  results: TextCommand[];
+  results: ShortcutSnippet[];
   /**
    * The index of the selected result, or nullish if no result is selected/available.
    */
   selectedIndex: Nullishable<number>;
 
   /**
-   * The latest active command, or null if no command has been run.
+   * The latest active shortcut snippet, or null if no shortcut snippet has been run.
    */
-  activeCommand: Nullishable<{
-    command: TextCommand;
+  activeShortcutSnippet: Nullishable<{
+    shortcutSnippet: ShortcutSnippet;
     state: AsyncState;
   }>;
 };
 
-export const initialState: PopoverState = {
+export const initialState: MenuState = {
   query: null,
   results: [],
   selectedIndex: null,
-  activeCommand: null,
+  activeShortcutSnippet: null,
 };
 
-export function selectSelectedCommand(
-  state: PopoverState,
-): Nullishable<TextCommand> {
+export function selectSelectedShortcutSnippet(
+  state: MenuState,
+): Nullishable<ShortcutSnippet> {
   return state.selectedIndex == null
     ? null
     : state.results[state.selectedIndex];
 }
 
-export const popoverSlice = createSlice({
-  name: "popoverSlice",
+export const shortcutSnippetMenuSlice = createSlice({
+  name: "snippetShortcutMenuSlice",
   initialState,
   reducers: {
     offsetSelectedIndex(
@@ -93,23 +93,23 @@ export const popoverSlice = createSlice({
     search(
       state,
       action: PayloadAction<{
-        commands: TextCommand[];
+        shortcutSnippets: ShortcutSnippet[];
         query: Nullishable<string>;
       }>,
     ) {
-      const { commands, query } = action.payload;
+      const { shortcutSnippets, query } = action.payload;
       state.query = query;
 
-      // For performance, could consider adding a setCommands action to avoid sorting on every search
-      const sortedCommands = sortBy(commands, "shortcut");
+      // For performance, could consider adding a setShortcutSnippets action to avoid sorting on every search
+      const sortedSnippets = sortBy(shortcutSnippets, "shortcut");
       if (query == null) {
-        state.results = sortedCommands;
+        state.results = sortedSnippets;
         state.selectedIndex = null;
       } else {
         // Allow case-insensitive search
         const normalizedQuery = query.toLowerCase();
-        state.results = sortedCommands.filter((command) =>
-          command.shortcut.toLowerCase().startsWith(normalizedQuery),
+        state.results = sortedSnippets.filter((snippet) =>
+          snippet.shortcut.toLowerCase().startsWith(normalizedQuery),
         );
         state.selectedIndex = state.results.length > 0 ? 0 : null;
       }
@@ -117,37 +117,40 @@ export const popoverSlice = createSlice({
 
     // Async thunks don't work with React useReducer so write async logic as a hook
     // https://github.com/reduxjs/redux-toolkit/issues/754
-    setCommandLoading(
+    setShortcutSnippetLoading(
       state,
       action: PayloadAction<{
-        command: TextCommand;
+        shortcutSnippet: ShortcutSnippet;
       }>,
     ) {
-      const { command } = action.payload;
-      state.activeCommand = { command, state: loadingAsyncStateFactory() };
+      const { shortcutSnippet } = action.payload;
+      state.activeShortcutSnippet = {
+        shortcutSnippet,
+        state: loadingAsyncStateFactory(),
+      };
     },
-    // In practice, the popover will be hidden on success. This state is for Storybook where the component is persistent
-    setCommandSuccess(
+    // In practice, the menu will be hidden on success. This state is for Storybook where the component is persistent
+    setShortcutSnippetSuccess(
       state,
       action: PayloadAction<{
         text: string;
       }>,
     ) {
       const { text } = action.payload;
-      if (state.activeCommand) {
-        state.activeCommand.state = valueToAsyncState(text);
+      if (state.activeShortcutSnippet) {
+        state.activeShortcutSnippet.state = valueToAsyncState(text);
       }
     },
-    setCommandError(
+    setShortcutSnippetError(
       state,
       action: PayloadAction<{
         error: unknown;
       }>,
     ) {
-      // Assumes only one command at a time
+      // Assumes only one shortcut snippet at a time
       const { error } = action.payload;
-      if (state.activeCommand) {
-        state.activeCommand.state = errorToAsyncState(error);
+      if (state.activeShortcutSnippet) {
+        state.activeShortcutSnippet.state = errorToAsyncState(error);
       }
     },
   },

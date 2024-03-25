@@ -184,7 +184,6 @@ const ModOptionsDefinitionEditor: React.VFC = () => {
 
                       <FormEditor
                         name="optionsDefinition"
-                        showFormIntroFields={false}
                         activeField={activeField}
                         setActiveField={setActiveField}
                         fieldTypes={fieldTypes}

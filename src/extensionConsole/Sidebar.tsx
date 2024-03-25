@@ -92,7 +92,7 @@ const Sidebar: React.FunctionComponent = () => {
               </a>
             </li>
           )}
-          {!hasPartner && (
+          {!hasPartner && permit("marketplace") && (
             // Hide for partner users because we don't support custom community links yet
             <li className="nav-item">
               <a

@@ -33,7 +33,7 @@ import type { Nullishable } from "@/utils/nullishUtils";
  * @param commandKey the command key, e.g., "\"
  * @param query the query after the command key. With commandKey, used to determine how much text to replace
  */
-export async function replaceAtCommand({
+export async function replaceAtCommandKey({
   element,
   text,
   query,
@@ -57,13 +57,16 @@ export async function replaceAtCommand({
       return;
     }
 
-    const commandStart = value.lastIndexOf(commandKey, selectionStart);
-    if (commandStart < 0) {
+    const commandKeyStart = value.lastIndexOf(commandKey, selectionStart);
+    if (commandKeyStart < 0) {
       // Could happen if field's value was programmatically altered
       throw new Error("Command key not found");
     }
 
-    element.setSelectionRange(commandStart, commandStart + query.length + 1);
+    element.setSelectionRange(
+      commandKeyStart,
+      commandKeyStart + query.length + 1,
+    );
 
     // Ensure the selection update has propagated
     await waitAnimationFrame();
@@ -83,20 +86,20 @@ export async function replaceAtCommand({
 
   if (range?.startContainer.nodeType === Node.TEXT_NODE) {
     if (range.startOffset !== range.endOffset) {
-      // Shouldn't happen in practice because commandController hides the popover on selection
+      // Shouldn't happen in practice because shortcutSnippetMenuController hides the menu on selection
       throw new Error("Expected a single cursor position");
     }
 
     const { data } = range.startContainer as Text;
 
-    const commandStart = data.lastIndexOf(commandKey, range.startOffset);
-    if (commandStart < 0) {
+    const commandKeyStart = data.lastIndexOf(commandKey, range.startOffset);
+    if (commandKeyStart < 0) {
       // Could happen if field's value was programmatically altered
       throw new Error("Command key not found");
     }
 
-    range.setStart(range.startContainer, commandStart);
-    range.setEnd(range.startContainer, commandStart + query.length + 1);
+    range.setStart(range.startContainer, commandKeyStart);
+    range.setEnd(range.startContainer, commandKeyStart + query.length + 1);
 
     // Ensure the selection update has propagated
     await waitAnimationFrame();

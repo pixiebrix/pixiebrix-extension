@@ -63,7 +63,7 @@ export const platformMock: PlatformProtocol = {
     register: jest.fn(),
     unregister: jest.fn(),
   },
-  commandPopover: {
+  shortcutSnippetMenu: {
     register: jest.fn(),
     unregister: jest.fn(),
   },

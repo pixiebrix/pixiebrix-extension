@@ -233,7 +233,7 @@ function initExecutor(): void {
   browser.tabs.onRemoved.addListener(unlinkTabListener);
 }
 
-export async function activateTab(this: MessengerMeta): Promise<void> {
+export async function focusTab(this: MessengerMeta): Promise<void> {
   await browser.tabs.update(this.trace[0].tab.id, {
     active: true,
   });

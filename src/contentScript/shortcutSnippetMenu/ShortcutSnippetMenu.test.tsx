@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import CommandPopover from "@/contentScript/commandPopover/CommandPopover";
-import CommandRegistry from "@/contentScript/commandPopover/CommandRegistry";
+import ShortcutSnippetMenu from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetMenu";
+import SnippetRegistry from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetRegistry";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
 // I couldn't get shadow-dom-testing-library working
@@ -14,9 +14,9 @@ jest.mock("react-shadow/emotion", () => ({
   },
 }));
 
-describe("Command Popover", () => {
+describe("Shortcut Snippet Menu", () => {
   it("renders search result", async () => {
-    const registry = new CommandRegistry();
+    const registry = new SnippetRegistry();
 
     registry.register({
       componentId: autoUUIDSequence(),
@@ -31,7 +31,7 @@ describe("Command Popover", () => {
     const element: HTMLInputElement = screen.getByRole("textbox");
 
     render(
-      <CommandPopover
+      <ShortcutSnippetMenu
         commandKey="\\"
         registry={registry}
         element={element}
@@ -46,13 +46,13 @@ describe("Command Popover", () => {
   });
 
   it("renders no matches message for empty state", async () => {
-    const registry = new CommandRegistry();
+    const registry = new SnippetRegistry();
     document.body.innerHTML = '<input type="text" value="\\" id="input" />';
 
     const element: HTMLInputElement = screen.getByRole("textbox");
 
     render(
-      <CommandPopover
+      <ShortcutSnippetMenu
         commandKey="\\"
         registry={registry}
         element={element}
