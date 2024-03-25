@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Col, Row } from "react-bootstrap";
 import React from "react";
 import { useFormikContext } from "formik";
 import UrlPermissionsList from "@/extensionConsole/pages/activateMod/UrlPermissionsList";
@@ -35,14 +34,10 @@ const PermissionsRow: React.FunctionComponent<{
   );
 
   return (
-    <Row>
-      <Col xs={12}>
-        <h4>Permissions & URLs</h4>
-      </Col>
-      <Col>
-        <UrlPermissionsList {...permissionsState} />
-      </Col>
-    </Row>
+    <div>
+      <h4>Permissions & URLs</h4>
+      <UrlPermissionsList {...permissionsState} />
+    </div>
   );
 };
 
