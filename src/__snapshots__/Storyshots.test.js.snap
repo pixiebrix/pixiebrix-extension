@@ -3491,16 +3491,6 @@ exports[`Storyshots Editor/LogToolbar Default 1`] = `
 </div>
 `;
 
-exports[`Storyshots Enhancements/ShortcutSnippetMenu Demo 1`] = `
-<div>
-  <textarea
-    cols={50}
-    id="textArea"
-    rows={4}
-  />
-</div>
-`;
-
 exports[`Storyshots Enhancements/SelectionMenu Emoji Buttons 1`] = `
 <div
   style={
@@ -3519,6 +3509,16 @@ exports[`Storyshots Enhancements/SelectionMenu Mixed Buttons 1`] = `
     }
   }
 />
+`;
+
+exports[`Storyshots Enhancements/ShortcutSnippetMenu Demo 1`] = `
+<div>
+  <textarea
+    cols={50}
+    id="textArea"
+    rows={4}
+  />
+</div>
 `;
 
 exports[`Storyshots ExtensionConsole/IDBErrorDisplay Connection Error 1`] = `

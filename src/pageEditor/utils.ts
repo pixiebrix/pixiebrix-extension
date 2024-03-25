@@ -44,7 +44,7 @@ import { inputProperties } from "@/utils/schemaUtils";
 import { joinPathParts } from "@/utils/formUtils";
 import { CustomFormRenderer } from "@/bricks/renderers/customForm";
 import MapValues from "@/bricks/transformers/controlFlow/MapValues";
-import AddTextCommand from "@/bricks/effects/AddTextCommand";
+import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import { type PackageUpsertResponse } from "@/types/contract";
 import { type UnsavedModDefinition } from "@/types/modDefinitionTypes";
 
@@ -164,10 +164,10 @@ export function getVariableKeyForSubPipeline(
   }
 
   if (
-    brickConfig.id === AddTextCommand.BRICK_ID &&
+    brickConfig.id === AddDynamicTextSnippet.BRICK_ID &&
     pipelinePropName === "generate"
   ) {
-    return AddTextCommand.DEFAULT_PIPELINE_VAR;
+    return AddDynamicTextSnippet.DEFAULT_PIPELINE_VAR;
   }
 
   if (!keyPropName) {

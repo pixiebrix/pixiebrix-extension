@@ -16,7 +16,7 @@
  */
 
 import { snippetRegistry } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
-import AddTextCommand from "@/bricks/effects/AddTextCommand";
+import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import blockRegistry from "@/bricks/registry";
 import {
   simpleInput,
@@ -30,7 +30,7 @@ import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 
-const brick = new AddTextCommand();
+const brick = new AddDynamicTextSnippet();
 const identity = new IdentityTransformer();
 
 beforeEach(() => {
@@ -42,9 +42,9 @@ afterEach(() => {
   snippetRegistry.clear();
 });
 
-describe("AddTextCommand", () => {
+describe("AddDynamicTextSnippet", () => {
   it.each(["/echo", "echo", "\\echo"])(
-    "registers command: %s",
+    "registers snippet: %s",
     async (shortcut) => {
       const extensionId = uuidv4();
       const logger = new ConsoleLogger({ extensionId });
@@ -125,18 +125,20 @@ describe("AddTextCommand", () => {
   );
 
   it("provides an example config", () => {
-    expect(getExampleBrickConfig(AddTextCommand.BRICK_ID)).toStrictEqual({
-      generate: toExpression("pipeline", [
-        {
-          config: toExpression("nunjucks", ""),
-          id: validateRegistryId("@pixiebrix/identity"),
-          instanceId: expect.any(String),
-          outputKey: validateOutputKey("generatedText"),
-          rootMode: "document",
-        },
-      ]),
-      shortcut: "command",
-      title: "Example Dynamic Snippet",
-    });
+    expect(getExampleBrickConfig(AddDynamicTextSnippet.BRICK_ID)).toStrictEqual(
+      {
+        generate: toExpression("pipeline", [
+          {
+            config: toExpression("nunjucks", ""),
+            id: validateRegistryId("@pixiebrix/identity"),
+            instanceId: expect.any(String),
+            outputKey: validateOutputKey("generatedText"),
+            rootMode: "document",
+          },
+        ]),
+        shortcut: "command",
+        title: "Example Dynamic Snippet",
+      },
+    );
   });
 });
