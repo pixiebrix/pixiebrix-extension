@@ -48,6 +48,7 @@ If a test fails, use Playwright's tools:
 - Insert `await page.pause()` inline in tests and run playwright in debug mode using `npm run test:e2e:debug` to
   activate Playwright's Inspector enabling you to inspect the browser and step through execution. You can also record
   steps and selectors in the Inspector for ease of debugging and writing new tests.
+  - Use the UI mode in debug mode for easier test debugging selection `npm run test:e2e:debug -- --ui`.
 - Slow down test execution: Execute `SLOWMO=1 npm run test:e2e`.
 - Confirm element presence: Use `expect(page).toHaveSelector('.selector', { timeout: 5000 })`.
 - Local failed test runs will automatically display reports with trace details in the browser.
