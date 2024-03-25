@@ -55,10 +55,6 @@ const knipConfig = {
     // Browser environment types
     "@types/chrome",
     "@types/dom-navigation",
-    // Webpack environment types, provides require.context, etc.
-    "@types/webpack-env",
-    // Referenced in global.d.ts
-    "@total-typescript/ts-reset",
     // Referenced in scss files
     "bootstrap",
     "compass-mixins",
