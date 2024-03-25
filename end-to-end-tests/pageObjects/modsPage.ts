@@ -52,8 +52,8 @@ export class ModsPage {
     return this.page.getByRole("table").locator(".list-group-item");
   }
 
-  // TODO: Drop?
-  /** @knip */
+  // TODO: remove knip comment once this method is used in a test
+  /** @knip test helper, will be used in future tests */
   searchModsInput() {
     return this.page.getByTestId("blueprints-search-input");
   }
