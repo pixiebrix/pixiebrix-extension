@@ -41,6 +41,7 @@ export function transformUserPartnerResponse(
   }
 
   if (response.documentation_url) {
+    // XXX: the URL ends up in Redux as a non-serializable value
     partner.documentationUrl = new URL(response.documentation_url);
   }
 
