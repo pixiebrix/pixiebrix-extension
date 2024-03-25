@@ -7,9 +7,17 @@ repository using [Playwright](https://playwright.dev/).
 
 Execute these steps from the project root to run tests:
 
-1. Install dependencies and build the extension: Run `npm install` and `npm run build:webpack`.
-2. Install browsers (required only once): Execute `npx playwright install`.
+Only needed once (if not done already):
+
+- Set up your .env file: Copy `.env.example` to `.env.development` and fill in the required values for the test user password (`MV` will determine the manifest version for the both the extension and the tests).
+- Install browsers: Execute `npx playwright install chromium chrome msedge`.
+
+1. Install dependencies: Run `npm install`
+2. Build the extension: Run: `npm run build:webpack` (or `npm run watch`)
 3. Run the tests: Use the command `npm run test:e2e`.
+
+- To run tests in interactive UI mode, use `npm run test:e2e -- --ui`.
+- You can also run the tests in the Intellij IDE by clicking on the play button next to the test definition. (note: )
 
 ## Writing Tests
 
@@ -21,7 +29,9 @@ Adhere to these principles, based on the [Playwright Best Practices](https://pla
   Leverage [Playwright fixtures](https://playwright.dev/docs/test-fixtures) for shared code.
 - Rely on Playwright's auto-waiting feature for actions like clicking or typing.
 
-Focus on testing high-level user behavior and integration points, avoiding duplication of unit test coverage.
+Focus on testing high-level user behavior and integration points, avoiding duplication of unit test coverage. Each
+test should represent one full feature flow, which may include multiple steps and assertions (avoid splitting
+a single feature flow across multiple tests).
 
 ## Debugging Tests
 

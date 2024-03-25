@@ -24,7 +24,7 @@ import {
   type Page,
 } from "@playwright/test";
 import path from "node:path";
-import { E2E_TEST_USER_EMAIL_UNAFFILIATED, MV, SLOWMO } from "../env";
+import { CI, E2E_TEST_USER_EMAIL_UNAFFILIATED, MV, SLOWMO } from "../env";
 import fs from "node:fs/promises";
 import { getBaseExtensionConsoleUrl } from "../pageObjects/constants";
 
@@ -121,7 +121,7 @@ export const test = base.extend<{
         // This mode is not officially supported by Playwright and might result in unexpected behavior,
         // so only use in local development for now.
         // https://playwright.dev/docs/chrome-extensions#headless-mode
-        // "--headless=new", // uncomment to enable headless mode
+        ...(CI || SLOWMO ? [] : ["--headless=new"]),
       ],
       slowMo: SLOWMO ? 3000 : undefined,
     });
