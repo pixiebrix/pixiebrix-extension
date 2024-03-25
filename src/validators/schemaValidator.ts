@@ -254,7 +254,7 @@ export async function validateBrickInputOutput(
   instance: unknown,
 ): Promise<ValidationResult> {
   // Need to make sure that the schema is "unfrozen" and extensible before passing into the validator, which attempts
-  // to add properties to the schema for certain things.
+  // to add properties to the schema to support some internal logic.
   const validatorSchema = cloneDeep(schema);
 
   // We need to `dereference` here, given that our @cfworker/json-schema library supports $ref
