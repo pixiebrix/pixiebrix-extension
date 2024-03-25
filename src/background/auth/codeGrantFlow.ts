@@ -30,22 +30,14 @@ import ky from "ky";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { launchWebAuthFlow } from "@/background/auth/authHelpers";
-import { type JsonObject } from "type-fest";
-import { isObject } from "@/utils/objectUtils";
 
-function tryParsingJsonObject(string: string): JsonObject | undefined {
-  try {
-    const parsed = JSON.parse(string);
-    if (isObject(parsed)) {
-      return parsed;
-    }
-  } catch {}
-}
-
-function throwIfResponseError(parsed: URLSearchParams): void {
-  const error = parsed.get("error");
+function throwIfResponseError(parsed: URLSearchParams | FormData): void {
+  const error = parsed.get("error") as string | undefined;
   if (error) {
-    throw new Error(parsed.get("error_description") ?? error);
+    const parsedDescription = parsed.get("error_description") as
+      | string
+      | undefined;
+    throw new Error(parsedDescription ?? error);
   }
 }
 
@@ -138,41 +130,38 @@ async function codeGrantFlow(
     formData.append("code_verifier", code_verifier);
   }
 
-  let data: string | undefined;
+  const response = await ky
+    .post(tokenURL, {
+      body: formData,
+    })
+    .catch((error) => {
+      throw new Error("Error getting OAuth2 token", { cause: error });
+    });
 
-  try {
-    data = await ky
-      .post(tokenURL.href, {
-        body: formData,
-      })
-      .text();
-  } catch (error) {
-    throw new Error("Error getting OAuth2 token", { cause: error });
+  switch (response.headers.get("Content-Type")) {
+    case "application/json": {
+      const json: AuthData = await response.json();
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Fix IntegrationConfig types
+      await setCachedAuthData(integrationConfig.id!, json);
+      return json;
+    }
+
+    case "application/x-www-form-urlencoded": {
+      const parsed = await response.formData();
+      throwIfResponseError(parsed);
+
+      const json = Object.fromEntries(parsed.entries()) as AuthData;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Fix IntegrationConfig types
+      await setCachedAuthData(integrationConfig.id!, json);
+      return json;
+    }
+
+    default: {
+      throw new TypeError(
+        "Error getting OAuth2 token: unexpected response format",
+      );
+    }
   }
-
-  const parsedJson = tryParsingJsonObject(data) as AuthData | undefined;
-  if (parsedJson) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Fix IntegrationConfig types
-    await setCachedAuthData(integrationConfig.id!, parsedJson);
-    return parsedJson;
-  }
-
-  // Continue as form-urlencoded data
-  let parsed;
-  try {
-    parsed = new URLSearchParams(data);
-  } catch {
-    throw new TypeError(
-      "Expected application/x-www-form-urlencoded data for response",
-    );
-  }
-
-  throwIfResponseError(parsed);
-
-  const json = Object.fromEntries(parsed.entries()) as AuthData;
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- TODO: Fix IntegrationConfig types
-  await setCachedAuthData(integrationConfig.id!, json);
-  return json;
 }
 
 export default codeGrantFlow;
