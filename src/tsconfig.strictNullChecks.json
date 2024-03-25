@@ -73,7 +73,7 @@
     "./background/toolbarBadge.ts",
     "./background/walkthroughModalTrigger.ts",
     "./bricks/available.ts",
-    "./bricks/effects/AddTextCommand.ts",
+    "./bricks/effects/AddDynamicTextSnippet.ts",
     "./bricks/effects/AddTextSnippets.ts",
     "./bricks/effects/InsertAtCursorEffect.test.ts",
     "./bricks/effects/InsertAtCursorEffect.ts",
