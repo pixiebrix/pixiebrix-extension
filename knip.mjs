@@ -33,7 +33,6 @@ const knipConfig = {
     "@contrib/**",
     // Test Mocks
     "**/__mocks__/**",
-    "src/testUtils/detectPageMock.ts",
     // Dummy file to test lint rules
     "eslint-local-rules/noRestrictedSyntax.tsx",
     // Polyfills
