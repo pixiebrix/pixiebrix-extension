@@ -44,7 +44,7 @@ import { INTERNAL_reset as resetManagedStorage } from "@/store/enterprise/manage
 import { type ActivatedModComponent } from "@/types/modComponentTypes";
 import { checkDeploymentPermissions } from "@/permissions/deploymentPermissionsHelpers";
 import { emptyPermissionsFactory } from "@/permissions/permissionsUtils";
-import { setContext } from "@/testUtils/detectPageMock";
+import { TEST_setContext } from "webext-detect-page";
 import {
   modComponentFactory,
   modMetadataFactory,
@@ -61,7 +61,7 @@ import { type RegistryPackage } from "@/types/contract";
 import { resetMeApiMocks } from "@/testUtils/userMock";
 import { TEST_deleteFeatureFlagsCache } from "@/auth/featureFlagStorage";
 
-setContext("background");
+TEST_setContext("background");
 
 jest.mock("@/store/settings/settingsStorage");
 
