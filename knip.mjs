@@ -55,19 +55,22 @@ const knipConfig = {
     // Browser environment types
     "@types/chrome",
     "@types/dom-navigation",
+    // Provides require.context, etc.
+    "@types/webpack-env",
+    // Used by src/contrib/google/sheets/core/types.ts
+    "@types/gapi.client",
+    "@types/gapi.client.drive-v3",
+    "@types/gapi.client.oauth2-v2",
+    "@types/gapi.client.sheets-v4",
+
+    // Used by Code Editor so format on save matches pre-commit behavior
+    "prettier",
     // Referenced in scss files
     "bootstrap",
     "compass-mixins",
     // Not getting detected by webpack plugin for .storybook/main.js
     "style-loader",
     "@storybook/react-webpack5",
-    // Used by src/contrib/google/sheets/core/types.ts
-    "@types/gapi.client",
-    "@types/gapi.client.drive-v3",
-    "@types/gapi.client.oauth2-v2",
-    "@types/gapi.client.sheets-v4",
-    // Used by Code Editor so format on save matches pre-commit behavior
-    "prettier",
   ],
 };
 
