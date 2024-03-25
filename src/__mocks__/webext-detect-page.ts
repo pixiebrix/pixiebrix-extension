@@ -47,6 +47,10 @@ export function isBackground() {
   return _context === "background";
 }
 
+export function isBackgroundPage() {
+  return _context === "background";
+}
+
 export function isWeb() {
   return _context === "web";
 }
