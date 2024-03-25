@@ -20,6 +20,7 @@ import { render, unmountComponentAtNode } from "react-dom";
 import React from "react";
 import LoginBanners from "@/contentScript/integrations/LoginBanners";
 import type { DeferredLogin } from "@/contentScript/integrations/deferredLoginTypes";
+import { MAX_Z_INDEX } from "@/domConstants";
 
 let bannerContainer: HTMLDivElement | null = null;
 let dismissLogin: (configId: UUID) => void = null;
@@ -74,20 +75,18 @@ export function showLoginBanner(
   };
 
   if (!bannerContainer) {
-    // Create a new banner container
     bannerContainer = document.createElement("div");
 
     Object.assign(bannerContainer.style, {
-      style: "all: initial",
+      all: "initial",
       position: "relative",
       width: "100%",
-      // See https://getbootstrap.com/docs/4.6/layout/overview/#z-index
-      // We want the z-index to be high as possible, but lower than the modal
-      zIndex: "1030",
+      // `-1` keeps it under the QuickBar
+      zIndex: MAX_Z_INDEX - 1,
     });
 
-    // Insert the banner at the top of the body
-    document.body.insertBefore(bannerContainer, document.body.firstChild);
+    // Place before `body` to avoid margins
+    document.body.before(bannerContainer);
   }
 
   const { id: configId } = login.config;

@@ -47,8 +47,8 @@ export const platformCapabilities = [
   "quickBar",
   // PixieBrix selection menu or, eventually, the native app's native selection menu
   "textSelectionMenu",
-  // PixieBrix text editor command popover
-  "commandPopover",
+  // PixieBrix text editor shortcut snippet menu
+  "shortcutSnippetMenu",
   // Context menu
   "contextMenu",
   // PixieBrix badge, e.g., toolbar icon or standalone app favicon

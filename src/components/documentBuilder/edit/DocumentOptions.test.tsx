@@ -145,7 +145,7 @@ describe("DocumentOptions", () => {
     });
   });
 
-  describe("remove element", () => {
+  describe("remove current element", () => {
     test("removes integration dependency", async () => {
       // Integration dependencies included in the form state
       const integrationDependencies: IntegrationDependency[] = [
@@ -189,7 +189,7 @@ describe("DocumentOptions", () => {
 
       const { getFormState } = renderDocumentOptions(formState, "0");
 
-      await userEvent.click(screen.getByText("Remove element"));
+      await userEvent.click(screen.getByText("Remove current element"));
 
       expect(getFormState().integrationDependencies).toStrictEqual([]);
     });

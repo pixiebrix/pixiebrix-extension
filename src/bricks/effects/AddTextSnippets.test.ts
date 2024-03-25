@@ -18,13 +18,13 @@
 import AddTextSnippets from "@/bricks/effects/AddTextSnippets";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
-import { commandRegistry } from "@/contentScript/commandPopover/commandController";
+import { snippetRegistry } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
 import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
 
 const brick = new AddTextSnippets();
 
 afterEach(() => {
-  commandRegistry.clear();
+  snippetRegistry.clear();
 });
 
 describe("AddTextSnippets", () => {
@@ -46,7 +46,7 @@ describe("AddTextSnippets", () => {
         options,
       );
 
-      expect(commandRegistry.commands).toStrictEqual([
+      expect(snippetRegistry.shortcutSnippets).toStrictEqual([
         {
           // Leading command key is dropped
           shortcut: "test",
@@ -57,9 +57,9 @@ describe("AddTextSnippets", () => {
         },
       ]);
 
-      await expect(commandRegistry.commands[0].handler("")).resolves.toBe(
-        "test text",
-      );
+      await expect(
+        snippetRegistry.shortcutSnippets[0].handler(""),
+      ).resolves.toBe("test text");
     },
   );
 

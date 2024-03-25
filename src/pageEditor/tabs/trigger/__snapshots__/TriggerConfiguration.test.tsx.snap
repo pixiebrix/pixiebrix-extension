@@ -797,13 +797,13 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       </div>
     </div>
     <div
+      aria-expanded="false"
       class="root"
     >
-      <div
+      <button
         aria-expanded="false"
         class="header"
-        role="button"
-        tabindex="0"
+        type="button"
       >
         <svg
           aria-hidden="true"
@@ -821,7 +821,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
           />
         </svg>
         Advanced: Match Rules
-      </div>
+      </button>
       <div
         class="body collapse"
       >
@@ -914,13 +914,13 @@ exports[`TriggerConfiguration renders custom event field with known event names 
       </div>
     </div>
     <div
+      aria-expanded="false"
       class="root"
     >
-      <div
+      <button
         aria-expanded="false"
         class="header"
-        role="button"
-        tabindex="0"
+        type="button"
       >
         <svg
           aria-hidden="true"
@@ -938,7 +938,7 @@ exports[`TriggerConfiguration renders custom event field with known event names 
           />
         </svg>
         Advanced: Extra Permissions
-      </div>
+      </button>
       <div
         class="body collapse"
       >

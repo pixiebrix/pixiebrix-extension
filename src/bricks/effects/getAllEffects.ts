@@ -55,7 +55,7 @@ import AssignModVariable from "@/bricks/effects/assignModVariable";
 import CommentEffect from "@/bricks/effects/comment";
 import SetToolbarBadge from "@/bricks/effects/setToolbarBadge";
 import InsertAtCursorEffect from "@/bricks/effects/InsertAtCursorEffect";
-import AddTextCommand from "@/bricks/effects/AddTextCommand";
+import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import AddTextSnippets from "@/bricks/effects/AddTextSnippets";
 
 function getAllEffects(): Brick[] {
@@ -99,7 +99,7 @@ function getAllEffects(): Brick[] {
     new HighlightText(),
     new ScrollIntoViewEffect(),
     new AddQuickBarAction(),
-    new AddTextCommand(),
+    new AddDynamicTextSnippet(),
     new AddTextSnippets(),
     new ToggleQuickbarEffect(),
     new SubmitPanelEffect(),

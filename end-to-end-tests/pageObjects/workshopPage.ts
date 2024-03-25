@@ -15,15 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.addRow {
-  margin-bottom: 1.5rem;
-}
+import { type Page } from "@playwright/test";
+import { getBaseExtensionConsoleUrl } from "./constants";
 
-.currentFieldRow {
-  margin-bottom: 1.5rem;
-  align-items: center;
-}
+export class WorkshopPage {
+  private readonly extensionConsoleUrl: string;
 
-.currentField {
-  margin-top: 0.25rem;
+  constructor(
+    private readonly page: Page,
+    extensionId: string,
+  ) {
+    this.extensionConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
+  }
+
+  async goto() {
+    await this.page.goto(this.extensionConsoleUrl);
+    await this.page
+      .getByRole("link", {
+        name: "Workshop",
+      })
+      .click();
+  }
 }

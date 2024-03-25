@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { runOnDocumentVisible } from "@/utils/domUtils";
+import {
+  isNativeCssSelector,
+  isValidSelector,
+  runOnDocumentVisible,
+} from "@/utils/domUtils";
 
 let hidden = false;
 
@@ -78,5 +82,41 @@ describe("runOnDocumentVisible", () => {
     }
 
     expect(mock).toHaveBeenCalledTimes(numCalls);
+  });
+});
+
+describe("isNativeCssSelector", () => {
+  it.each(["div", ".foo:has(.bar)"])(
+    "returns true for native CSS selector: %s",
+    (selector) => {
+      expect(isNativeCssSelector(selector)).toBeTrue();
+    },
+  );
+
+  it.each(['div:contains("foo")', "div:visible"])(
+    "returns false for JQuery selector: %s",
+    (selector) => {
+      expect(isNativeCssSelector(selector)).toBeFalse();
+    },
+  );
+});
+
+describe("isValidSelector", () => {
+  it.each(["div", ".foo:has(.bar)", 'div:contains("foo")'])(
+    "returns true for valid selector: %s",
+    (selector) => {
+      expect(isValidSelector(selector)).toBeTrue();
+    },
+  );
+
+  it.each(['div:contains("foo")', "div:visible"])(
+    "returns true for valid jquery selector: %s",
+    (selector) => {
+      expect(isValidSelector(selector)).toBeTrue();
+    },
+  );
+
+  it.each(["!foo"])("returns false for invalid selector: %s", (selector) => {
+    expect(isValidSelector(selector)).toBeFalse();
   });
 });
