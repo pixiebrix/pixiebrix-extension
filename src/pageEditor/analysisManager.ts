@@ -44,6 +44,7 @@ import { getPageState } from "@/contentScript/messenger/strict/api";
 import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
 import ModVariableNames from "@/analysis/analysisVisitors/pageStateAnalysis/modVariableSchemasVisitor";
 import { inspectedTab } from "@/pageEditor/context/connection";
+import SelectorAnalysis from "@/analysis/analysisVisitors/selectorAnalysis";
 
 const runtimeActions = runtimeSlice.actions;
 
@@ -135,6 +136,11 @@ pageEditorAnalysisManager.registerAnalysisEffect(
     matcher: isAnyOf(...nodeListMutationActions),
   },
 );
+
+pageEditorAnalysisManager.registerAnalysisEffect(() => new SelectorAnalysis(), {
+  // Slow Selector Analysis currently checks the starter brick definition
+  matcher: isAnyOf(editorActions.editElement),
+});
 
 pageEditorAnalysisManager.registerAnalysisEffect(() => new TemplateAnalysis(), {
   matcher: isAnyOf(editorActions.editElement, ...nodeListMutationActions),
