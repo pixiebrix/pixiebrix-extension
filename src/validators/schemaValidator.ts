@@ -253,8 +253,12 @@ export async function validateBrickInputOutput(
   schema: Schema,
   instance: unknown,
 ): Promise<ValidationResult> {
+  // Need to make sure that the schema is "unfrozen" and extensible before passing into the validator, which attempts
+  // to add properties to the schema for certain things.
+  const validatorSchema = cloneDeep(schema);
+
   // We need to `dereference` here, given that our @cfworker/json-schema library supports $ref
-  const refs = await $RefParser.resolve(schema, {
+  const refs = await $RefParser.resolve(validatorSchema, {
     resolve: {
       // Exclude secret properties, because they aren't passed to the runtime
       integrationDefinitionResolver: integrationResolverFactory({
@@ -273,7 +277,7 @@ export async function validateBrickInputOutput(
     // Provide an $id to avoid an error about duplicate schema because validator defaults the schema $id.
     // The exact $id doesn't matter, it just can't be one of BUILT_IN_SCHEMAS.
     $id: "https://app.pixiebrix.com/schemas/value",
-    ...(schema as ValidatorSchema),
+    ...(validatorSchema as ValidatorSchema),
   });
   validator.addSchema(refs.values() as ValidatorSchema);
   return validator.validate(instance ?? null);
