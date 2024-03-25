@@ -223,3 +223,13 @@ jobs:
           name: end-to-end-tests-report${{ matrix.PUBLIC_NAME }}
           path: end-to-end-tests/.report
           retention-days: 5
+  # https://github.com/microsoft/InclusivenessAnalyzer
+  # example line that should be flagged: "This is a test of the inclusiveness analyzer - blacklist"
+  Inclusiveness-Analyser-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Inclusiveness Analyzer
+        uses: microsoft/InclusivenessAnalyzer@v1.0.1
