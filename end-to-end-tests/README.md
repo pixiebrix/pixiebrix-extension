@@ -19,8 +19,8 @@ One-time setup:
 
 - To run tests in interactive UI mode, use `npm run test:e2e -- --ui`. This view shows you the entire test suite and
   allows you to run individual tests in a specific browser.
-- You can also run a specific test file in the CLI by providing the path to the
-  file: `npm run test:e2e -- tests/myTest.spec.ts`.
+- You can also run specific test files in the CLI by providing a path matcher to the
+  command: `npm run test:e2e -- smoke` (runs all tests with "smoke" in the path).
 - You can also run tests within the Intellij IDE by clicking on the play button next to the test definition. (
   until [this Jetbrains issue](https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only)
   is resolved, you must include an unused playwright import as shown
