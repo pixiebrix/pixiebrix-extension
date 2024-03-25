@@ -15,12 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./DocumentOptions.module.scss";
-
 import { useField } from "formik";
 import React from "react";
 import { type DocumentElement } from "@/components/documentBuilder/documentBuilderTypes";
-import { Col, Row } from "react-bootstrap";
 import RemoveElement from "./RemoveElement";
 import MoveElement from "./MoveElement";
 import elementTypeLabels from "@/components/documentBuilder/elementTypeLabels";
@@ -42,29 +39,27 @@ const ElementEditor: React.FC<ElementEditorProps> = ({ documentBodyName }) => {
   const [{ value: documentElement }] = useField<DocumentElement>(elementName);
   const ElementOptions = useElementOptions(documentElement, elementName);
 
+  const currentElementName: string =
+    getProperty(elementTypeLabels, documentElement.type) ?? "Unknown";
+
   return (
     <>
-      <Row className={styles.currentFieldRow}>
-        <Col xl="3" className={styles.currentField}>
-          <h6>
-            {getProperty(elementTypeLabels, documentElement.type) ??
-              "Unknown element"}
-          </h6>
-        </Col>
-        <Col xl>
+      <ConnectedCollapsibleFieldSection
+        title="Document Elements"
+        initialExpanded
+      >
+        <p className="small text-muted">
+          Use the Preview Tab on the right to select an element to edit ⟶
+        </p>
+        <p>
           <RemoveElement documentBodyName={documentBodyName} />
-        </Col>
-        <Col xl>
-          <small className="text-muted">
-            Use the Preview Tab on the right to select an element to edit ⟶
-          </small>
-        </Col>
-      </Row>
+        </p>
 
-      <div>
+        <h6>Current element: {currentElementName}</h6>
+
         <ElementOptions />
-      </div>
-      <MoveElement documentBodyName={documentBodyName} />
+        <MoveElement documentBodyName={documentBodyName} />
+      </ConnectedCollapsibleFieldSection>
       <ConnectedCollapsibleFieldSection title="Advanced: Layout">
         <CssSpacingField
           name={joinName(elementName, "config", "className")}

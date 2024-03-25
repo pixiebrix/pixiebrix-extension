@@ -22,13 +22,22 @@ import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
+export const UncollapsibleFieldSection: React.FC<{
+  title: React.ReactNode;
+}> = ({ title, children }) => (
+  <div className={styles.root}>
+    <div className={styles.header}>{title}</div>
+    <div className={styles.body}>{children}</div>
+  </div>
+);
+
 const CollapsibleFieldSection: React.FC<{
   title: React.ReactNode;
   toggleExpanded: () => void;
   expanded?: boolean;
   bodyRef?: React.MutableRefObject<HTMLDivElement>;
 }> = ({ title, toggleExpanded, expanded, children, bodyRef }) => {
-  const headerRef = useRef<HTMLDivElement | null>(null);
+  const headerRef = useRef<HTMLButtonElement | null>(null);
 
   const onToggle = (event: React.MouseEvent | React.KeyboardEvent) => {
     // Prevent toggle on titles that include other clickable elements, e.g., inputs/buttons when the title is passed
@@ -42,14 +51,12 @@ const CollapsibleFieldSection: React.FC<{
   };
 
   return (
-    <div className={styles.root}>
-      <div
-        role="button"
-        tabIndex={0}
+    <div className={styles.root} aria-expanded={expanded}>
+      <button
+        type="button"
         className={styles.header}
         onClick={onToggle}
         ref={headerRef}
-        onKeyPress={onToggle}
         aria-expanded={expanded}
       >
         <FontAwesomeIcon
@@ -59,7 +66,7 @@ const CollapsibleFieldSection: React.FC<{
           })}
         />
         {title}
-      </div>
+      </button>
       <Collapse in={expanded}>
         <div className={styles.body} ref={bodyRef}>
           {children}
