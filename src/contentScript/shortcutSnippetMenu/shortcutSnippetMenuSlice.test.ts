@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { popoverSlice } from "@/contentScript/commandPopover/commandPopoverSlice";
+import { shortcutSnippetMenuSlice } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuSlice";
+import { type ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 
-describe("commandPopoverSlice", () => {
+describe("shortcutSnippetMenuSlice", () => {
   it.each(["test", "TeSt"])("case matches query: %s", (query) => {
-    const command = {
+    const shortcutSnippet: ShortcutSnippet = {
       componentId: autoUUIDSequence(),
       shortcut: "test",
       title: "Test",
@@ -28,17 +29,17 @@ describe("commandPopoverSlice", () => {
     };
 
     expect(
-      popoverSlice.reducer(
+      shortcutSnippetMenuSlice.reducer(
         undefined,
-        popoverSlice.actions.search({
+        shortcutSnippetMenuSlice.actions.search({
           query,
-          commands: [command],
+          shortcutSnippets: [shortcutSnippet],
         }),
       ),
     ).toStrictEqual({
-      activeCommand: null,
+      activeShortcutSnippet: null,
       query,
-      results: [command],
+      results: [shortcutSnippet],
       selectedIndex: 0,
     });
   });
