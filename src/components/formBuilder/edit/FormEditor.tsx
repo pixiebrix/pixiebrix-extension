@@ -15,21 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import styles from "./FormEditor.module.scss";
-
 import { useField } from "formik";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import {
   type RJSFSchema,
   type SelectStringOption,
   type SetActiveField,
 } from "@/components/formBuilder/formBuilderTypes";
-import { Button, Col, Row } from "react-bootstrap";
-import FieldEditor from "./FieldEditor";
+import { Button } from "react-bootstrap";
 import {
   DEFAULT_FIELD_TYPE,
   generateNewPropertyName,
-  moveStringInArray,
   normalizeSchema,
   getNormalizedUiOrder,
   replaceStringInArray,
@@ -39,77 +35,32 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { type Schema } from "@/types/schemaTypes";
 import { produce } from "immer";
-import FieldTemplate from "@/components/form/FieldTemplate";
-import { type SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import LayoutWidget from "@/components/LayoutWidget";
-import { findLast } from "lodash";
 import { joinName } from "@/utils/formUtils";
+import { ActiveField } from "./ActiveField";
 
 export type FormEditorProps = {
   /**
    * The Formik name of the form field.
    */
   name: string;
-  /**
-   * If true, the form title and description fields will be shown (default: true).
-   */
-  showFormIntroFields?: boolean;
   activeField?: string;
   setActiveField: SetActiveField;
   fieldTypes?: SelectStringOption[];
 };
 
-/**
- * Form introductory fields for the form title and description.
- * @constructor
- */
-export const FormIntroFields: React.FunctionComponent<{ name: string }> = ({
-  name,
-}) => {
-  const { titleFieldProps, descriptionFieldProps } = useMemo(() => {
-    const titleFieldProps: SchemaFieldProps = {
-      name: joinName(name, "schema", "title"),
-      schema: { type: "string" },
-      label: "Form Title",
-      description: "The form title to display",
-    };
-    const descriptionFieldProps: SchemaFieldProps = {
-      name: joinName(name, "schema", "description"),
-      schema: { type: "string" },
-      label: "Form Description",
-      description:
-        "Form description or instructions. Supports [Markdown](https://docs.pixiebrix.com/developing-mods/developer-concepts/working-with-markdown)",
-    };
-
-    return { titleFieldProps, descriptionFieldProps };
-  }, [name]);
-
-  return (
-    <>
-      <SchemaField {...titleFieldProps} />
-      <SchemaField {...descriptionFieldProps} />
-    </>
-  );
-};
-
 const FormEditor: React.FC<FormEditorProps> = ({
   name,
-  showFormIntroFields = true,
   activeField,
   setActiveField,
   fieldTypes,
 }) => {
-  const [
-    { value: rjsfSchema = {} as RJSFSchema },
-    ,
-    { setValue: setRjsfSchema },
-  ] = useField<RJSFSchema>(name);
+  const [{ value: rjsfSchema }, , { setValue: setRjsfSchema }] =
+    useField<RJSFSchema>(name);
   const [{ value: uiOrder }, , { setValue: setUiOrder }] = useField<string[]>(
     joinName(name, "uiSchema", UI_ORDER),
   );
 
-  const { schema, uiSchema } = rjsfSchema;
+  const { schema, uiSchema } = rjsfSchema ?? {};
 
   // Select the active field when FormEditor field changes
   useEffect(
@@ -174,15 +125,6 @@ const FormEditor: React.FC<FormEditorProps> = ({
     setActiveField(propertyName);
   };
 
-  const moveProperty = async (direction: "up" | "down") => {
-    const nextUiOrder = moveStringInArray(
-      getNormalizedUiOrder(propertyKeys, uiOrder),
-      activeField,
-      direction,
-    );
-    await setUiOrder(nextUiOrder);
-  };
-
   const removeProperty = async () => {
     const propertyToRemove = activeField;
     const nextUiOrder = replaceStringInArray(
@@ -219,74 +161,32 @@ const FormEditor: React.FC<FormEditorProps> = ({
     await setRjsfSchema(nextRjsfSchema);
   };
 
-  // The uiOrder field may not be initialized yet
-  const order = uiOrder ?? ["*"];
-  const canMoveUp =
-    Boolean(activeField) &&
-    (order.length > 2
-      ? order[0] !== activeField
-      : propertyKeys[0] !== activeField);
-  const canMoveDown =
-    Boolean(activeField) &&
-    (order.length === propertyKeys.length + 1
-      ? order.at(-2) !== activeField
-      : Array.isArray(order) &&
-        findLast(propertyKeys, (key) => !order.includes(key)) !== activeField);
-
   return (
     <>
-      {showFormIntroFields && (
-        <>
-          <FormIntroFields name={name} />
-          <hr />
-        </>
-      )}
-      <div className={styles.addRow}>
+      <p>Use the Preview Tab on the right to select a field to edit ⟶</p>
+      <div className="d-flex mb-3 gap-1 gap-column-4 align-items-center flex-wrap">
         <Button onClick={addProperty} variant="primary" size="sm">
           <FontAwesomeIcon icon={faPlus} /> Add new field
         </Button>
+
+        {/* If there's no active field, there's no field to select */}
+        {activeField && (
+          <Button onClick={removeProperty} variant="danger" size="sm">
+            <FontAwesomeIcon icon={faTrash} /> Remove current field
+          </Button>
+        )}
       </div>
 
-      <Row className={styles.currentFieldRow}>
-        <Col xl="3" className={styles.currentField}>
-          <h6>Current Field</h6>
-        </Col>
-        {activeField && (
-          <Col xl>
-            <Button onClick={removeProperty} variant="danger" size="sm">
-              <FontAwesomeIcon icon={faTrash} /> Remove field
-            </Button>
-          </Col>
-        )}
-        <Col xl>
-          <small className="text-muted">
-            Use the Preview Tab on the right to select a field to edit ⟶
-          </small>
-        </Col>
-      </Row>
-
-      {activeField && Boolean(schema?.properties?.[activeField]) && (
-        <FieldEditor
+      {activeField && (
+        <ActiveField
           name={name}
-          propertyName={activeField}
+          activeField={activeField}
           setActiveField={setActiveField}
           fieldTypes={fieldTypes}
-        />
-      )}
-
-      {activeField && (canMoveUp || canMoveDown) && (
-        <FieldTemplate
-          name="layoutButtons"
-          label="Field Order"
-          as={LayoutWidget}
-          canMoveUp={canMoveUp}
-          moveUp={async () => {
-            await moveProperty("up");
-          }}
-          canMoveDown={canMoveDown}
-          moveDown={async () => {
-            await moveProperty("down");
-          }}
+          schema={schema}
+          uiOrder={uiOrder}
+          propertyKeys={propertyKeys}
+          setUiOrder={setUiOrder}
         />
       )}
     </>

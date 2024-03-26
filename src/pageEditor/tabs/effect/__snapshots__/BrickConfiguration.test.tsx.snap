@@ -61,13 +61,13 @@ exports[`renders 1`] = `
       </div>
     </div>
     <div
+      aria-expanded="false"
       class="root"
     >
-      <div
+      <button
         aria-expanded="false"
         class="header"
-        role="button"
-        tabindex="0"
+        type="button"
       >
         <svg
           aria-hidden="true"
@@ -85,7 +85,7 @@ exports[`renders 1`] = `
           />
         </svg>
         Advanced Options
-      </div>
+      </button>
       <div
         class="body collapse"
       >

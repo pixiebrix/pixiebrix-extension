@@ -1,7 +1,7 @@
 import React from "react";
 import { type Brick } from "@/types/brickTypes";
 import { type MarketplaceListing } from "@/types/contract";
-import { Button, Col, Row } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
@@ -15,8 +15,8 @@ const BlockDetail: React.FunctionComponent<{
   onSelect: () => void;
   selectCaption: React.ReactNode;
 }> = ({ block, selectCaption = "Select", listing, onSelect }) => (
-  <Row className="w-100">
-    <Col xs={12} className="d-flex justify-content-between mb-3">
+  <div className="d-flex flex-column gap-3 flex-grow-1">
+    <div className="d-flex justify-content-between">
       <div>
         <h4>
           {block.name} <BrickIcon brick={block} />
@@ -40,20 +40,20 @@ const BlockDetail: React.FunctionComponent<{
           {selectCaption}
         </Button>
       </div>
-    </Col>
+    </div>
 
-    <Col xs={12} className="small mb-3">
+    <div className="small">
       <h6 className="my-3">Input Schema</h6>
       <SchemaTree schema={block.inputSchema} />
-    </Col>
+    </div>
 
     {block.outputSchema && (
-      <Col xs={12} className="small mb-3">
+      <div className="small">
         <h6 className="my-3">Output Schema</h6>
         <SchemaTree schema={block.outputSchema} />
-      </Col>
+      </div>
     )}
-  </Row>
+  </div>
 );
 
 export default BlockDetail;

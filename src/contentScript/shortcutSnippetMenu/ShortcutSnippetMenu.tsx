@@ -22,18 +22,18 @@ import React, {
   useReducer,
   useRef,
 } from "react";
-import type CommandRegistry from "@/contentScript/commandPopover/CommandRegistry";
-import useCommandRegistry from "@/contentScript/commandPopover/useCommandRegistry";
+import type SnippetRegistry from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetRegistry";
+import useShortcutSnippetRegistry from "@/contentScript/shortcutSnippetMenu/useShortcutSnippetRegistry";
 import { type TextEditorElement } from "@/types/inputTypes";
-import useKeyboardQuery from "@/contentScript/commandPopover/useKeyboardQuery";
+import useKeyboardQuery from "@/contentScript/shortcutSnippetMenu/useKeyboardQuery";
 import cx from "classnames";
-import stylesUrl from "./CommandPopover.scss?loadAsUrl";
+import stylesUrl from "./ShortcutSnippetMenu.scss?loadAsUrl";
 import {
   initialState,
-  popoverSlice,
-  type PopoverState,
-  selectSelectedCommand,
-} from "@/contentScript/commandPopover/commandPopoverSlice";
+  shortcutSnippetMenuSlice,
+  type MenuState,
+  selectSelectedShortcutSnippet,
+} from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuSlice";
 import { getElementText } from "@/utils/editorUtils";
 import { isEmpty } from "lodash";
 import reportEvent from "@/telemetry/reportEvent";
@@ -43,9 +43,9 @@ import { Stylesheets } from "@/components/Stylesheets";
 import useIsMounted from "@/hooks/useIsMounted";
 import {
   normalizePreview,
-  replaceAtCommand,
-} from "@/contentScript/commandPopover/commandUtils";
-import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
+  replaceAtCommandKey,
+} from "@/contentScript/shortcutSnippetMenu/shortcutSnippetUtils";
+import type { ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
@@ -53,11 +53,11 @@ import {
   faExclamationCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
-type PopoverActionCallbacks = {
+type MenuActionCallbacks = {
   onHide: () => void;
 };
 
-const CommandTitle: React.FunctionComponent<{
+const SnippetTitle: React.FunctionComponent<{
   query: string;
   shortcut: string;
   commandKey: string;
@@ -73,13 +73,13 @@ const CommandTitle: React.FunctionComponent<{
 );
 
 const ResultItem: React.FunctionComponent<{
-  command: TextCommand;
+  snippet: ShortcutSnippet;
   isSelected: boolean;
   disabled: boolean;
   onClick: () => void;
   commandKey: string;
   query: string;
-}> = ({ isSelected, disabled, command, onClick, query, commandKey }) => {
+}> = ({ isSelected, disabled, snippet, onClick, query, commandKey }) => {
   const elementRef = useRef<HTMLButtonElement>(null);
 
   // Auto-scroll as the user navigates with the arrow keys
@@ -93,39 +93,39 @@ const ResultItem: React.FunctionComponent<{
     <button
       ref={elementRef}
       disabled={disabled}
-      key={command.shortcut}
-      aria-label={command.title}
-      title={command.title}
+      key={snippet.shortcut}
+      aria-label={snippet.title}
+      title={snippet.title}
       role="menuitem"
       className={cx("result", { "result--selected": isSelected })}
       onClick={onClick}
     >
-      <CommandTitle
+      <SnippetTitle
         query={query}
-        shortcut={command.shortcut}
+        shortcut={snippet.shortcut}
         commandKey={commandKey}
       />
-      <div className="result__preview">{normalizePreview(command.preview)}</div>
+      <div className="result__preview">{normalizePreview(snippet.preview)}</div>
     </button>
   );
 };
 
 const StatusBar: React.FunctionComponent<{
-  activeCommand?: PopoverState["activeCommand"];
-  results: PopoverState["results"];
-}> = ({ activeCommand, results }) => {
-  if (activeCommand?.state.isFetching) {
+  activeShortcutSnippet?: MenuState["activeShortcutSnippet"];
+  results: MenuState["results"];
+}> = ({ activeShortcutSnippet, results }) => {
+  if (activeShortcutSnippet?.state.isFetching) {
     return (
       <div role="status" className="status status--fetching">
-        Running command: {activeCommand.command.title}
+        Running shortcut snippet: {activeShortcutSnippet.shortcutSnippet.title}
       </div>
     );
   }
 
-  if (activeCommand?.state.isError) {
+  if (activeShortcutSnippet?.state.isError) {
     return (
       <div role="status" className="status status--error">
-        Error running last command
+        Error running last shortcut snippet
       </div>
     );
   }
@@ -144,7 +144,7 @@ const noResultsPane: React.ReactElement = (
   </div>
 );
 
-const popoverFooter: React.ReactElement = (
+const menuFooter: React.ReactElement = (
   // TODO: determine a11y: https://github.com/pixiebrix/pixiebrix-extension/issues/7936
   <div className="footer">
     Navigate{" "}
@@ -157,36 +157,55 @@ const popoverFooter: React.ReactElement = (
   </div>
 );
 
-const CommandPopover: React.FunctionComponent<
+const ShortcutSnippetMenu: React.FunctionComponent<
   {
     commandKey: string;
-    registry: CommandRegistry;
+    registry: SnippetRegistry;
     element: TextEditorElement;
-  } & PopoverActionCallbacks
+  } & MenuActionCallbacks
 > = ({ commandKey, registry, element, onHide }) => {
   const isMounted = useIsMounted();
-  const [state, dispatch] = useReducer(popoverSlice.reducer, initialState);
-  const selectedCommand = selectSelectedCommand(state);
-  const selectedCommandRef = useRef(selectedCommand);
-  const commands = useCommandRegistry(registry);
+  const [state, dispatch] = useReducer(
+    shortcutSnippetMenuSlice.reducer,
+    initialState,
+  );
+  const selectedShortcutSnippet = selectSelectedShortcutSnippet(state);
+  const selectedShortcutSnippetRef = useRef(selectedShortcutSnippet);
+  const shortcutSnippets = useShortcutSnippetRegistry(registry);
 
   const fillAtCursor = useCallback(
-    async ({ command, query }: { command: TextCommand; query: string }) => {
+    async ({
+      shortcutSnippet,
+      query,
+    }: {
+      shortcutSnippet: ShortcutSnippet;
+      query: string;
+    }) => {
       // Async thunks don't work with React useReducer so write async logic as a hook
       // https://github.com/reduxjs/redux-toolkit/issues/754
-      dispatch(popoverSlice.actions.setCommandLoading({ command }));
+      dispatch(
+        shortcutSnippetMenuSlice.actions.setShortcutSnippetLoading({
+          shortcutSnippet,
+        }),
+      );
       try {
-        reportEvent(Events.TEXT_COMMAND_RUN);
-        const text = await command.handler(getElementText(element));
-        await replaceAtCommand({ commandKey, query, element, text });
+        reportEvent(Events.SHORTCUT_SNIPPET_RUN);
+        const text = await shortcutSnippet.handler(getElementText(element));
+        await replaceAtCommandKey({ commandKey, query, element, text });
         onHide();
         if (isMounted()) {
-          // We're setting success state for Storybook. In practice, the popover will be unmounted via onHide()
-          dispatch(popoverSlice.actions.setCommandSuccess({ text }));
+          // We're setting success state for Storybook. In practice, the menu will be unmounted via onHide()
+          dispatch(
+            shortcutSnippetMenuSlice.actions.setShortcutSnippetSuccess({
+              text,
+            }),
+          );
         }
       } catch (error) {
         console.warn("Error filling at cursor", error);
-        dispatch(popoverSlice.actions.setCommandError({ error }));
+        dispatch(
+          shortcutSnippetMenuSlice.actions.setShortcutSnippetError({ error }),
+        );
       }
     },
     [element, commandKey, onHide, dispatch, isMounted],
@@ -197,61 +216,77 @@ const CommandPopover: React.FunctionComponent<
     commandKey,
     // OK to pass handlers directly because hook uses useRef
     async onSubmit(query) {
-      if (selectedCommandRef.current != null) {
-        await fillAtCursor({ command: selectedCommandRef.current, query });
+      if (selectedShortcutSnippetRef.current != null) {
+        await fillAtCursor({
+          shortcutSnippet: selectedShortcutSnippetRef.current,
+          query,
+        });
       }
     },
     onOffset(offset: number) {
-      dispatch(popoverSlice.actions.offsetSelectedIndex({ offset }));
+      dispatch(
+        shortcutSnippetMenuSlice.actions.offsetSelectedIndex({ offset }),
+      );
     },
   });
 
   useEffect(() => {
     // Auto-hide if the user deletes the commandKey
-    if (selectedCommandRef.current && query == null) {
+    if (selectedShortcutSnippetRef.current && query == null) {
       onHide();
     }
 
     // Make current value available to onSubmit handler for useKeyboardQuery
-    selectedCommandRef.current = selectedCommand;
-  }, [selectedCommand, query, onHide]);
+    selectedShortcutSnippetRef.current = selectedShortcutSnippet;
+  }, [selectedShortcutSnippet, query, onHide]);
 
   // Search effect
   useEffect(() => {
-    dispatch(popoverSlice.actions.search({ commands, query }));
-  }, [query, commands, dispatch]);
+    dispatch(
+      shortcutSnippetMenuSlice.actions.search({
+        shortcutSnippets,
+        query,
+      }),
+    );
+  }, [query, shortcutSnippets, dispatch]);
 
   return (
     // Prevent page styles from leaking into the menu
     <EmotionShadowRoot mode="open" style={{ all: "initial" }}>
       <Stylesheets href={[stylesUrl]}>
-        <div role="menu" aria-label="Text command menu" className="root">
+        <div role="menu" aria-label="Shortcut Snippet Menu" className="root">
           <StatusBar {...state} />
           <div className="results">
             {state.results.length === 0 && noResultsPane}
 
-            {state.results.map((command) => {
-              const isSelected = selectedCommand?.shortcut === command.shortcut;
+            {state.results.map((snippet) => {
+              const isSelected =
+                selectedShortcutSnippet?.shortcut === snippet.shortcut;
               return (
                 <ResultItem
-                  key={command.shortcut}
-                  command={command}
-                  disabled={state.activeCommand?.state.isFetching ?? false}
+                  key={snippet.shortcut}
+                  snippet={snippet}
+                  disabled={
+                    state.activeShortcutSnippet?.state.isFetching ?? false
+                  }
                   isSelected={isSelected}
                   commandKey={commandKey}
                   query={state.query ?? ""}
                   onClick={async () => {
-                    await fillAtCursor({ command, query: query ?? "" });
+                    await fillAtCursor({
+                      shortcutSnippet: snippet,
+                      query: query ?? "",
+                    });
                   }}
                 />
               );
             })}
           </div>
-          {popoverFooter}
+          {menuFooter}
         </div>
       </Stylesheets>
     </EmotionShadowRoot>
   );
 };
 
-export default CommandPopover;
+export default ShortcutSnippetMenu;

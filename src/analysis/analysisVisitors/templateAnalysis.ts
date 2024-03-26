@@ -44,7 +44,7 @@ type PushAnnotationArgs = {
 class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
   // XXX: for now we handle asynchronous pipeline traversal by gathering all the promises and awaiting them all
   // see discussion https://github.com/pixiebrix/pixiebrix-extension/pull/4013#discussion_r944690969
-  private readonly nunjuckValidationPromises: Array<Promise<void>> = [];
+  private readonly nunjucksValidationPromises: Array<Promise<void>> = [];
 
   get id() {
     return "template";
@@ -60,7 +60,7 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
       extensionPointType: extension.type,
     });
 
-    await Promise.all(this.nunjuckValidationPromises);
+    await Promise.all(this.nunjucksValidationPromises);
   }
 
   private pushErrorAnnotation({
@@ -100,7 +100,7 @@ class TemplateAnalysis extends PipelineExpressionVisitor implements Analysis {
         expression,
       });
     } else if (isNunjucksExpression(expression)) {
-      this.nunjuckValidationPromises.push(
+      this.nunjucksValidationPromises.push(
         (async () => {
           try {
             await validateNunjucksTemplate(expression.__value__);

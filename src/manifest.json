@@ -18,7 +18,7 @@
     "48": "icons/logo48.png",
     "128": "icons/logo128.png"
   },
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' https:",
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http: https:; object-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https:; frame-src 'self' http: https:",
   "content_scripts": [
     {
       "matches": ["*://*/*"],

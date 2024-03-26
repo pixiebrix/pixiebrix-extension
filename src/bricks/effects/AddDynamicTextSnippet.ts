@@ -23,7 +23,7 @@ import type {
 } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { EffectABC } from "@/types/bricks/effectTypes";
-import { initCommandController } from "@/contentScript/commandPopover/commandController";
+import { initShortcutSnippetMenuController } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
 import { BusinessError } from "@/errors/businessErrors";
 import { getSettingsState } from "@/store/settings/settingsStorage";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
@@ -31,13 +31,13 @@ import type { PlatformCapability } from "@/platform/capabilities";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { normalizeShortcut } from "@/bricks/effects/AddTextSnippets";
 
-type CommandArgs = {
+type SnippetArgs = {
   /**
-   * The shortcut for the text command
+   * The shortcut for the text snippet
    */
   shortcut: string;
   /**
-   * The title for the Text Command
+   * The title for the Text Snippet
    */
   title: string;
   /**
@@ -50,16 +50,16 @@ type CommandArgs = {
   generate: PipelineExpression;
 };
 
-class AddTextCommand extends EffectABC {
+class AddDynamicTextSnippet extends EffectABC {
   static BRICK_ID = validateRegistryId("@pixiebrix/command/text-command");
 
   static DEFAULT_PIPELINE_VAR = validateOutputKey("currentText");
 
   constructor() {
     super(
-      AddTextCommand.BRICK_ID,
-      "[Experimental] Add Text Command",
-      "Add a dynamic text command",
+      AddDynamicTextSnippet.BRICK_ID,
+      "[Experimental] Add Dynamic Text Snippet",
+      "Add/register a dynamic text snippet to the Snippet Shortcut Menu",
     );
   }
 
@@ -77,11 +77,11 @@ class AddTextCommand extends EffectABC {
     {
       shortcut: {
         type: "string",
-        description: "The shortcut for the text command",
+        description: "The shortcut for the text snippet",
       },
       title: {
         type: "string",
-        description: "The title for the Text Command",
+        description: "The title for the Text Snippet",
       },
       preview: {
         type: "string",
@@ -97,7 +97,7 @@ class AddTextCommand extends EffectABC {
   );
 
   override async getRequiredCapabilities(): Promise<PlatformCapability[]> {
-    return ["commandPopover"];
+    return ["shortcutSnippetMenu"];
   }
 
   async effect(
@@ -106,10 +106,10 @@ class AddTextCommand extends EffectABC {
       title,
       preview,
       generate: generatePipeline,
-    }: BrickArgs<CommandArgs>,
+    }: BrickArgs<SnippetArgs>,
     { logger, runPipeline, platform, abortSignal }: BrickOptions,
   ): Promise<void> {
-    // The runtime checks the abortSignal for each brick. But check here too to avoid flickering in the popover
+    // The runtime checks the abortSignal for each brick. But check here too to avoid flickering in the menu
     if (abortSignal?.aborted) {
       return;
     }
@@ -121,7 +121,7 @@ class AddTextCommand extends EffectABC {
     // Counter to keep track of the action run number for tracing
     let counter = 0;
 
-    platform.commandPopover.register({
+    platform.shortcutSnippetMenu.register({
       componentId: logger.context.extensionId,
       // Trim leading command key in shortcut to be resilient to user input
       shortcut: normalizeShortcut(shortcut),
@@ -134,7 +134,7 @@ class AddTextCommand extends EffectABC {
           generatePipeline,
           { key: "generate", counter },
           {
-            [`@${AddTextCommand.DEFAULT_PIPELINE_VAR}`]: currentText,
+            [`@${AddDynamicTextSnippet.DEFAULT_PIPELINE_VAR}`]: currentText,
           },
         );
 
@@ -156,9 +156,9 @@ class AddTextCommand extends EffectABC {
 
     const { snippetShortcutMenu } = await getSettingsState();
     if (snippetShortcutMenu) {
-      initCommandController();
+      initShortcutSnippetMenuController();
     }
   }
 }
 
-export default AddTextCommand;
+export default AddDynamicTextSnippet;
