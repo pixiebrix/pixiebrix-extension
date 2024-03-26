@@ -15,14 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
+/**
+ * @file
+ * Do not use `getMethod` in this file; Keep only registrations here, not implementations
+ *
+ * `strictNullCheck errors` context: https://github.com/pixiebrix/pixiebrix-extension/issues/6526
+ */
+
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import {
   ensureContextMenu,
   preloadContextMenus,
   uninstallContextMenu,
-} from "@/background/contextMenus"; // 300 errors
+} from "@/background/contextMenus"; // 300 strictNullCheck errors
 import {
   focusTab,
   closeTab,
@@ -32,22 +38,22 @@ import {
   requestRunInOpener,
   requestRunInTarget,
   requestRunInTop,
-} from "@/background/executor"; // ContentScript/messenger import
-import { performConfiguredRequest } from "@/background/requests"; // 24 errors
-import { getAvailableVersion } from "@/background/installer"; // 300 errors
-import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 300 errors
-import { debouncedInstallStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 300 errors
+} from "@/background/executor"; // Depends on contentScript/messenger to pass strictNullCheck
+import { performConfiguredRequest } from "@/background/requests"; // 24 strictNullCheck errors
+import { getAvailableVersion } from "@/background/installer"; // 300 strictNullCheck errors
+import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 300 strictNullCheck errors
+import { debouncedInstallStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 300 strictNullCheck errors
 import {
   collectPerformanceDiagnostics,
   initTelemetry,
   pong,
   recordEvent,
   sendDeploymentAlert,
-} from "@/background/telemetry"; // 280 errors
+} from "@/background/telemetry"; // 280 strictNullCheck errors
 import {
   getPartnerPrincipals,
   launchAuthIntegration,
-} from "@/background/partnerIntegrations"; // 39 errors
+} from "@/background/partnerIntegrations"; // 39 strictNullCheck errors
 import { setCopilotProcessData } from "@/background/partnerHandlers";
 import launchInteractiveOAuth2Flow from "@/background/auth/launchInteractiveOAuth2Flow";
 
