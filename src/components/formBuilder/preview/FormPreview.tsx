@@ -43,7 +43,6 @@ import { KEYS_OF_UI_SCHEMA, type Schema } from "@/types/schemaTypes";
 import { templates } from "@/components/formBuilder/RjsfTemplates";
 import FieldTemplate from "@/components/formBuilder/FieldTemplate";
 import { cloneDeep } from "lodash";
-import styles from "./FormPreview.module.scss";
 
 export type FormPreviewProps = {
   rjsfSchema: RJSFSchema;
@@ -189,7 +188,7 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   return (
     <JsonSchemaForm
       tagName="div"
-      className={styles.root}
+      className="mr-2"
       formData={data}
       fields={fields}
       widgets={widgets}
