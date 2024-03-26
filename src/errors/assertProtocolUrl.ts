@@ -16,6 +16,7 @@
  */
 
 import { BusinessError } from "@/errors/businessErrors";
+import { canParseUrl } from "@/utils/urlUtils";
 
 /**
  * Returns a URL with one of the allow-listed schemas, or throws a BusinessError
@@ -28,7 +29,7 @@ export function assertProtocolUrl(
   url: string,
   allowedProtocols: string[],
 ): URL {
-  if (!URL.canParse(url)) {
+  if (!canParseUrl(url)) {
     throw new BusinessError(`Invalid URL: ${url}`);
   }
 

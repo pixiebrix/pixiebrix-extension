@@ -95,3 +95,19 @@ export function urlsMatch(url1: string | URL, url2: string | URL): boolean {
   const href2 = typeof url2 === "string" ? url2 : url2.href;
   return withoutTrailingSlash(href1) === withoutTrailingSlash(href2);
 }
+
+/**
+ * Equivalent to URL.canParse
+ * [MDN Reference](https://developer.mozilla.org/docs/Web/API/URL/canParse_static)
+ *
+ */
+// TODO: Use `URL.canParse` after dropping support for Chrome <120
+export function canParseUrl(url: string): boolean {
+  try {
+    // eslint-disable-next-line no-new -- Equivalent to URL.canParse
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}

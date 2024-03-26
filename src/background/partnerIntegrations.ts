@@ -33,6 +33,7 @@ import {
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
 import { stringToBase64 } from "uint8array-extras";
+import { canParseUrl } from "@/utils/urlUtils";
 
 const TEN_HOURS = 1000 * 60 * 60 * 10;
 
@@ -77,7 +78,7 @@ export async function getPartnerPrincipals(): Promise<PartnerPrincipal[]> {
   );
 
   return auths
-    .filter((auth) => URL.canParse(auth.config.controlRoomUrl))
+    .filter((auth) => canParseUrl(auth.config.controlRoomUrl))
     .map((auth) => ({
       hostname: new URL(auth.config.controlRoomUrl).hostname,
       principalId: auth.config.username,

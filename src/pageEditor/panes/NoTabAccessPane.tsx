@@ -19,9 +19,10 @@ import React from "react";
 import Centered from "@/components/Centered";
 import { parse as parseDomain } from "psl";
 import useCurrentInspectedUrl from "@/pageEditor/hooks/useCurrentInspectedUrl";
+import { canParseUrl } from "@/utils/urlUtils";
 
 function getPageLabel(url: string): string | undefined {
-  if (!URL.canParse(url)) {
+  if (!canParseUrl(url)) {
     return;
   }
 

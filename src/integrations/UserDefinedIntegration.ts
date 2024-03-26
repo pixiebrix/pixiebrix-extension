@@ -39,7 +39,7 @@ import {
   type TokenContext,
 } from "@/integrations/integrationTypes";
 import { type SemVerString } from "@/types/registryTypes";
-import { isAbsoluteUrl } from "@/utils/urlUtils";
+import { canParseUrl, isAbsoluteUrl } from "@/utils/urlUtils";
 import { missingProperties } from "@/utils/schemaUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { stringToBase64 } from "uint8array-extras";
@@ -152,7 +152,7 @@ class UserDefinedIntegration<
     if (baseUrlTemplate) {
       // Convert into a real match pattern: https://developer.chrome.com/docs/extensions/mv3/match_patterns/
       const baseUrl = renderMustache(baseUrlTemplate, integrationConfig);
-      if (URL.canParse(baseUrl)) {
+      if (canParseUrl(baseUrl)) {
         patterns.push(baseUrl + (baseUrl.endsWith("/") ? "*" : "/*"));
       } else {
         // Ignore invalid URLs. When the user makes a request, they'll get an error that it's an invalid URL
@@ -171,7 +171,7 @@ class UserDefinedIntegration<
       // Don't add wildcard because the URL can't change per request.
       const authUrls = [oauth.oauth2.authorizeUrl, oauth.oauth2.tokenUrl]
         .map((template) => renderMustache(template, integrationConfig))
-        .filter((url) => URL.canParse(url));
+        .filter((url) => canParseUrl(url));
       patterns.push(...authUrls);
     }
 

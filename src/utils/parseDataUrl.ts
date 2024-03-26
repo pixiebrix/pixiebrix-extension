@@ -17,6 +17,7 @@
 
 import MIMEType from "whatwg-mimetype";
 import { base64ToString, base64ToUint8Array } from "uint8array-extras";
+import { canParseUrl } from "./urlUtils";
 
 const base64Ending = /; *base64$/; // Step 11, 11.4, 11.5
 
@@ -66,7 +67,7 @@ export default function parseDataUrl(url: string): ParsedDataURL | undefined {
   }
 
   // Step 2, 3, 4
-  if (!URL.canParse(url)) {
+  if (!canParseUrl(url)) {
     return;
   }
 
