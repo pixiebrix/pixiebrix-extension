@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { lazy, type MouseEvent, Suspense, useEffect } from "react";
+import React, { lazy, type MouseEvent, Suspense } from "react";
 import {
   isFormPanelEntry,
   isModActivationPanelEntry,
@@ -62,6 +62,7 @@ import { cancelForm } from "@/contentScript/messenger/strict/api";
 import { useHideEmptySidebar } from "@/sidebar/useHideEmptySidebar";
 import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
 import { type AsyncDispatch } from "@/sidebar/store";
+import useOnMountOnly from "@/hooks/useOnMountOnly";
 
 const ActivateModPanel = lazy(
   async () =>
@@ -180,17 +181,13 @@ const Tabs: React.FC = () => {
     }
   };
 
-  useEffect(
-    () => {
-      reportEvent(Events.VIEW_SIDEBAR_PANEL, {
-        ...selectEventData(getExtensionFromEventKey(activeKey)),
-        initialLoad: true,
-      });
-    },
-    // Only run on initial mount, other views are handled by onSelect
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- see comment above
-    [],
-  );
+  // Other views are handled by onSelect
+  useOnMountOnly(() => {
+    reportEvent(Events.VIEW_SIDEBAR_PANEL, {
+      ...selectEventData(getExtensionFromEventKey(activeKey)),
+      initialLoad: true,
+    });
+  });
 
   useHideEmptySidebar();
 
