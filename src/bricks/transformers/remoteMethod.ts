@@ -86,11 +86,12 @@ export class RemoteMethod extends TransformerABC {
   async transform(
     {
       service: integrationConfig,
-      requestConfig,
-    }: BrickArgs<{
-      service: SanitizedIntegrationConfig;
-      requestConfig: NetworkRequestConfig;
-    }>,
+      ...requestConfig
+    }: BrickArgs<
+      {
+        service: SanitizedIntegrationConfig;
+      } & NetworkRequestConfig
+    >,
     { platform }: BrickOptions,
   ): Promise<unknown> {
     if (integrationConfig && typeof integrationConfig !== "object") {
