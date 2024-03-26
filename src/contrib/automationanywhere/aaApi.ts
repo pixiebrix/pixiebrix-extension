@@ -56,7 +56,7 @@ import { sleep } from "@/utils/timeUtils";
 // XXX: using the ambient platform object for now. In the future, we might want to wrap all these methods in a class
 // and pass the platform and integration config as a constructor argument
 import { getPlatform } from "@/platform/platformContext";
-import { SetRequired } from "type-fest";
+import { type SetRequired } from "type-fest";
 
 // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
 // Same as default for Control Room
