@@ -35,7 +35,6 @@ import { keyAuthIntegrationDefinitionFactory } from "@/testUtils/factories/integ
 import integrationRegistry from "@/integrations/registry";
 import { fromJS } from "@/integrations/UserDefinedIntegration";
 import { metadataFactory } from "@/testUtils/factories/metadataFactory";
-import { HideSidebar } from "@/bricks/effects/sidebar";
 
 beforeEach(() => {
   integrationRegistry.clear();
