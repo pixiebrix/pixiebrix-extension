@@ -37,7 +37,8 @@ import {
 import { setPlatform } from "@/platform/platformContext";
 import backgroundPlatform from "@/background/backgroundPlatform";
 
-const googleApi = nock("http://localhost");
+const appApi = nock("http://localhost:80");
+const googleApi = nock("https://www.googleapis.com");
 const googleIntegration = fromJS(googleDefinition as any);
 
 jest.mock("@/background/auth/authStorage", () => ({
@@ -93,9 +94,10 @@ describe("error handling", () => {
     await locator.refresh();
   });
 
-  it("Returns permissions error for 404 message with google integration", async () => {
+  it.only("Returns permissions error for 404 message with google integration", async () => {
     // Google Request
-    googleApi.get("/*").reply(404);
+    appApi.get("/api/services/shared/").times(40).reply(200);
+    googleApi.get("/*").times(4).reply(404);
 
     const config = await locator.locate(
       googleIntegration.id,

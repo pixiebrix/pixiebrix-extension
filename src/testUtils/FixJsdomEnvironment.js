@@ -18,8 +18,8 @@
 import JSDOMEnvironment from "jest-environment-jsdom";
 import nock from "nock";
 
-// Block HTTP requests from tests
-nock.disableNetConnect();
+// TODO: Block HTTP requests from tests after Axios migration https://github.com/pixiebrix/pixiebrix-extension/issues/4810
+// nock.disableNetConnect();
 
 // https://github.com/facebook/jest/blob/v29.4.3/website/versioned_docs/version-29.4/Configuration.md#testenvironment-string
 export default class FixJSDOMEnvironment extends JSDOMEnvironment {

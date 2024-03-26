@@ -21,8 +21,6 @@ import {
   selectSpecificError,
   selectError,
 } from "@/errors/errorHelpers";
-import { isObject } from "@/utils/objectUtils";
-import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { deleteCachedAuthData } from "@/background/messenger/strict/api";
 import { HTTPError } from "ky";
 
