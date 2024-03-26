@@ -20,7 +20,6 @@ import styles from "./BrickModal.module.scss";
 import React, {
   type CSSProperties,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -49,6 +48,7 @@ import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 import { type Metadata, type RegistryId } from "@/types/registryTypes";
 import { type Brick } from "@/types/brickTypes";
 import { isNullOrBlank } from "@/utils/stringUtils";
+import useOnMountOnly from "@/hooks/useOnMountOnly";
 
 type BrickOption<T extends Metadata = Brick> = {
   data: T;
@@ -213,16 +213,12 @@ function ActualModal<T extends Metadata>({
     );
   }, [recommendations, bricks]);
 
-  useEffect(
-    () => {
-      // If there's no recommendations, default to the first brick so the right side isn't blank
-      if (recommendations.length === 0 && searchResults.length > 0) {
-        setDetailBrick(searchResults[0].data);
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- run on initial mount
-    [],
-  );
+  useOnMountOnly(() => {
+    // If there's no recommendations, default to the first brick so the right side isn't blank
+    if (recommendations.length === 0 && searchResults.length > 0) {
+      setDetailBrick(searchResults[0].data);
+    }
+  });
 
   return (
     <Modal

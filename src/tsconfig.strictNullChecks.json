@@ -453,6 +453,8 @@
     "./hooks/useMemoCompare.ts",
     "./hooks/useMergeAsyncState.ts",
     "./hooks/useMilestones.ts",
+    "./hooks/useOnMountOnly.ts",
+    "./hooks/useOnMountOnly.test.ts",
     "./hooks/usePreviousValue.ts",
     "./hooks/useQuickbarShortcut.ts",
     "./hooks/useReduxState.ts",
