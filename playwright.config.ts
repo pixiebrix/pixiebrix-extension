@@ -16,10 +16,10 @@ export default defineConfig<{ chromiumChannel: string }>({
   /* Opt out of parallel tests on CI. */
   workers: CI ? 1 : undefined,
   /* Timeout for each test */
-  timeout: 60_000,
+  timeout: 120_000,
   expect: {
-    /* Timeout for each assertion. Increased from the default of 5000 due to Extension Console loading times. */
-    timeout: 10_000,
+    /* Timeout for each assertion. If a particular interaction is timing out, adjust its specific timeout value rather than this global setting */
+    timeout: 5000,
   },
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [["html", { outputFolder: "./end-to-end-tests/.report" }]],

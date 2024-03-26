@@ -30,7 +30,7 @@ import {
   type IntegrationConfig,
   type SecretsConfig,
 } from "@/integrations/integrationTypes";
-import { setContext } from "@/testUtils/detectPageMock";
+import { TEST_setContext } from "webext-detect-page";
 import { sanitizedIntegrationConfigFactory } from "@/testUtils/factories/integrationFactories";
 import { getToken } from "@/background/auth/getToken";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
@@ -48,7 +48,7 @@ browser.identity = {
   getRedirectURL: jest.fn(),
 };
 
-setContext("background");
+TEST_setContext("background");
 
 const axiosMock = new MockAdapter(axios);
 const mockGetToken = jest.mocked(getToken);

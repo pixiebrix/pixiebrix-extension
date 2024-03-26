@@ -19,17 +19,17 @@ import type { ComponentMeta, ComponentStory } from "@storybook/react";
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { uuidv4 } from "@/types/helpers";
 import { action } from "@storybook/addon-actions";
-import CommandPopover from "@/contentScript/commandPopover/CommandPopover";
-import CommandRegistry from "@/contentScript/commandPopover/CommandRegistry";
+import ShortcutSnippetMenu from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetMenu";
+import SnippetRegistry from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetRegistry";
 import { sleep } from "@/utils/timeUtils";
 import type { Nullishable } from "@/utils/nullishUtils";
 
 export default {
-  title: "Enhancements/CommandPopover",
-  component: CommandPopover,
-} as ComponentMeta<typeof CommandPopover>;
+  title: "Enhancements/ShortcutSnippetMenu",
+  component: ShortcutSnippetMenu,
+} as ComponentMeta<typeof ShortcutSnippetMenu>;
 
-const Template: ComponentStory<typeof CommandPopover> = ({
+const Template: ComponentStory<typeof ShortcutSnippetMenu> = ({
   registry,
   commandKey,
 }) => {
@@ -48,7 +48,7 @@ const Template: ComponentStory<typeof CommandPopover> = ({
       </div>
       {element && (
         <div>
-          <CommandPopover
+          <ShortcutSnippetMenu
             commandKey={commandKey}
             registry={registry}
             element={element}
@@ -60,7 +60,7 @@ const Template: ComponentStory<typeof CommandPopover> = ({
   );
 };
 
-const emailCommand = {
+const emailSnippet = {
   componentId: uuidv4(),
   shortcut: "email",
   title: "email",
@@ -69,7 +69,7 @@ const emailCommand = {
   },
 };
 
-const timestampCommand = {
+const timestampSnippet = {
   componentId: uuidv4(),
   shortcut: "timestamp",
   title: "timestamp",
@@ -78,7 +78,7 @@ const timestampCommand = {
   },
 };
 
-const emojiCommand = {
+const emojiSnippet = {
   componentId: uuidv4(),
   shortcut: "emoji",
   title: "emoji",
@@ -87,7 +87,7 @@ const emojiCommand = {
   },
 };
 
-const slowErrorCommand = {
+const slowErrorSnippet = {
   componentId: uuidv4(),
   shortcut: "error",
   title: "error",
@@ -97,19 +97,19 @@ const slowErrorCommand = {
   },
 };
 
-const commandRegistry = new CommandRegistry();
-commandRegistry.register(emailCommand);
-commandRegistry.register(timestampCommand);
-commandRegistry.register(emojiCommand);
-commandRegistry.register(slowErrorCommand);
+const snippetRegistry = new SnippetRegistry();
+snippetRegistry.register(emailSnippet);
+snippetRegistry.register(timestampSnippet);
+snippetRegistry.register(emojiSnippet);
+snippetRegistry.register(slowErrorSnippet);
 
 /**
- * Demo of the CommandPopover component to test/verify the query and command handling.
+ * Demo of the ShortcutSnippetMenu component to test/verify the query and command handling.
  */
 export const Demo = Template.bind({});
 Demo.args = {
   commandKey: "\\",
-  registry: commandRegistry,
+  registry: snippetRegistry,
   onHide: action("onHide"),
   // XXX: fix Storybook parameter type instead of passing undefined
   element: undefined!,

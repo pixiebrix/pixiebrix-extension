@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { commandRegistry } from "@/contentScript/commandPopover/commandController";
-import AddTextCommand from "@/bricks/effects/AddTextCommand";
+import { snippetRegistry } from "@/contentScript/shortcutSnippetMenu/shortcutSnippetMenuController";
+import AddDynamicTextSnippet from "@/bricks/effects/AddDynamicTextSnippet";
 import blockRegistry from "@/bricks/registry";
 import {
   simpleInput,
@@ -30,7 +30,7 @@ import IdentityTransformer from "@/bricks/transformers/IdentityTransformer";
 import { getExampleBrickConfig } from "@/pageEditor/exampleBrickConfigs";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 
-const brick = new AddTextCommand();
+const brick = new AddDynamicTextSnippet();
 const identity = new IdentityTransformer();
 
 beforeEach(() => {
@@ -39,12 +39,12 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  commandRegistry.clear();
+  snippetRegistry.clear();
 });
 
-describe("AddTextCommand", () => {
+describe("AddDynamicTextSnippet", () => {
   it.each(["/echo", "echo", "\\echo"])(
-    "registers command: %s",
+    "registers snippet: %s",
     async (shortcut) => {
       const extensionId = uuidv4();
       const logger = new ConsoleLogger({ extensionId });
@@ -66,7 +66,7 @@ describe("AddTextCommand", () => {
         logger,
       });
 
-      expect(commandRegistry.commands).toStrictEqual([
+      expect(snippetRegistry.shortcutSnippets).toStrictEqual([
         {
           // Any leading slash is dropped
           shortcut: "echo",
@@ -79,7 +79,7 @@ describe("AddTextCommand", () => {
       ]);
 
       await expect(
-        commandRegistry.commands[0].handler("current text"),
+        snippetRegistry.shortcutSnippets[0].handler("current text"),
       ).resolves.toBe("current text");
     },
   );
@@ -108,7 +108,7 @@ describe("AddTextCommand", () => {
         logger,
       });
 
-      expect(commandRegistry.commands).toStrictEqual([
+      expect(snippetRegistry.shortcutSnippets).toStrictEqual([
         {
           shortcut: "echo",
           title: "Echo",
@@ -119,24 +119,26 @@ describe("AddTextCommand", () => {
       ]);
 
       await expect(
-        commandRegistry.commands[0].handler("current text"),
+        snippetRegistry.shortcutSnippets[0].handler("current text"),
       ).resolves.toBe("current text");
     },
   );
 
   it("provides an example config", () => {
-    expect(getExampleBrickConfig(AddTextCommand.BRICK_ID)).toStrictEqual({
-      generate: toExpression("pipeline", [
-        {
-          config: toExpression("nunjucks", ""),
-          id: validateRegistryId("@pixiebrix/identity"),
-          instanceId: expect.any(String),
-          outputKey: validateOutputKey("generatedText"),
-          rootMode: "document",
-        },
-      ]),
-      shortcut: "command",
-      title: "Example Dynamic Snippet",
-    });
+    expect(getExampleBrickConfig(AddDynamicTextSnippet.BRICK_ID)).toStrictEqual(
+      {
+        generate: toExpression("pipeline", [
+          {
+            config: toExpression("nunjucks", ""),
+            id: validateRegistryId("@pixiebrix/identity"),
+            instanceId: expect.any(String),
+            outputKey: validateOutputKey("generatedText"),
+            rootMode: "document",
+          },
+        ]),
+        shortcut: "command",
+        title: "Example Dynamic Snippet",
+      },
+    );
   });
 });

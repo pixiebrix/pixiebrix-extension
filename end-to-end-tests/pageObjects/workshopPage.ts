@@ -15,42 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ContextName } from "webext-detect-page";
+import { type Page } from "@playwright/test";
+import { getBaseExtensionConsoleUrl } from "./constants";
 
-let _context: ContextName = "extension";
+export class WorkshopPage {
+  private readonly extensionConsoleUrl: string;
 
-export function setContext(context: ContextName) {
-  _context = context;
-}
+  constructor(
+    private readonly page: Page,
+    extensionId: string,
+  ) {
+    this.extensionConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
+  }
 
-export function isChrome() {
-  return true;
-}
-
-export function isExtensionContext() {
-  return _context !== "web";
-}
-
-export function isOptionsPage() {
-  return _context === "options";
-}
-
-export function isBackground() {
-  return _context === "background";
-}
-
-export function isWeb() {
-  return _context === "web";
-}
-
-export function isContentScript() {
-  return _context === "contentScript";
-}
-
-export function isSidePanel() {
-  return _context === "sidePanel";
-}
-
-export function getContextName(): ContextName {
-  return _context;
+  async goto() {
+    await this.page.goto(this.extensionConsoleUrl);
+    await this.page
+      .getByRole("link", {
+        name: "Workshop",
+      })
+      .click();
+  }
 }

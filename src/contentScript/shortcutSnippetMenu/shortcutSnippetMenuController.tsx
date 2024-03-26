@@ -30,8 +30,8 @@ import {
 } from "@floating-ui/dom";
 import { getCaretCoordinates } from "@/utils/textAreaUtils";
 import React from "react";
-import CommandRegistry from "@/contentScript/commandPopover/CommandRegistry";
-import CommandPopover from "@/contentScript/commandPopover/CommandPopover";
+import SnippetRegistry from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetRegistry";
+import ShortcutSnippetMenu from "@/contentScript/shortcutSnippetMenu/ShortcutSnippetMenu";
 import { onContextInvalidated } from "webext-events";
 import {
   isContentEditableElement,
@@ -48,17 +48,17 @@ import { prefersReducedMotion } from "@/utils/a11yUtils";
 
 const COMMAND_KEY = "\\";
 
-export const commandRegistry = new CommandRegistry();
+export const snippetRegistry = new SnippetRegistry();
 
 let targetElement: Nullishable<TextEditorElement>;
 
-let commandPopover: Nullishable<HTMLElement>;
+let shortcutSnippetMenu: Nullishable<HTMLElement>;
 
 const hideController = new ReusableAbortController();
 
-async function showPopover(element: HTMLElement): Promise<void> {
+async function showMenu(element: HTMLElement): Promise<void> {
   if (targetElement != null) {
-    // Popover already showing, e.g., because the user typed the command key twice
+    // Menu already showing, e.g., because the user typed the command key twice
     return;
   }
 
@@ -66,16 +66,16 @@ async function showPopover(element: HTMLElement): Promise<void> {
   await waitAnimationFrame();
 
   targetElement = element;
-  commandPopover ??= createPopover(targetElement);
+  shortcutSnippetMenu ??= createMenu(targetElement);
 
   // Check visibility to avoid re-animating the tooltip fade in as selection changes
-  const isShowing = commandPopover.checkVisibility();
+  const isShowing = shortcutSnippetMenu.checkVisibility();
   if (!isShowing) {
-    commandPopover.setAttribute("aria-hidden", "false");
+    shortcutSnippetMenu.setAttribute("aria-hidden", "false");
     if (prefersReducedMotion()) {
-      commandPopover.style.setProperty("display", "block");
+      shortcutSnippetMenu.style.setProperty("display", "block");
     } else {
-      commandPopover.animate(
+      shortcutSnippetMenu.animate(
         [
           { opacity: 0, margin: "8px 0", display: "block" },
           { opacity: 1, margin: "0", display: "block" },
@@ -94,7 +94,7 @@ async function showPopover(element: HTMLElement): Promise<void> {
   document.activeElement?.addEventListener(
     "scroll",
     () => {
-      destroyPopover();
+      destroyMenu();
     },
     { passive: true, once: true, signal: hideController.signal },
   );
@@ -102,7 +102,7 @@ async function showPopover(element: HTMLElement): Promise<void> {
   document.addEventListener(
     "scroll",
     () => {
-      destroyPopover();
+      destroyMenu();
     },
     { passive: true, once: true, signal: hideController.signal },
   );
@@ -112,7 +112,7 @@ async function showPopover(element: HTMLElement): Promise<void> {
     "selectionchange",
     () => {
       if (targetElement && isTextSelected(targetElement)) {
-        destroyPopover();
+        destroyMenu();
       }
     },
     { passive: true, signal: hideController.signal },
@@ -123,10 +123,10 @@ async function showPopover(element: HTMLElement): Promise<void> {
     "click",
     (event) => {
       if (
-        event.target !== commandPopover &&
-        !commandPopover?.contains(event.target as Node)
+        event.target !== shortcutSnippetMenu &&
+        !shortcutSnippetMenu?.contains(event.target as Node)
       ) {
-        destroyPopover();
+        destroyMenu();
       }
     },
     { capture: true, passive: true, signal: hideController.signal },
@@ -136,7 +136,7 @@ async function showPopover(element: HTMLElement): Promise<void> {
   document.addEventListener(
     "navigate",
     () => {
-      destroyPopover();
+      destroyMenu();
     },
     { capture: true, passive: true, signal: hideController.signal },
   );
@@ -144,35 +144,35 @@ async function showPopover(element: HTMLElement): Promise<void> {
   return updatePosition();
 }
 
-function createPopover(element: TextEditorElement): HTMLElement {
-  if (commandPopover) {
-    throw new Error("Popover already exists");
+function createMenu(element: TextEditorElement): HTMLElement {
+  if (shortcutSnippetMenu) {
+    throw new Error("Shortcut Snippet Menu already exists");
   }
 
-  commandPopover = tooltipFactory();
-  commandPopover.dataset.testid = "pixiebrix-command-tooltip";
+  shortcutSnippetMenu = tooltipFactory();
+  shortcutSnippetMenu.dataset.testid = "pixiebrix-shortcut-snippet-menu";
 
   render(
-    <CommandPopover
-      registry={commandRegistry}
+    <ShortcutSnippetMenu
+      registry={snippetRegistry}
       element={element}
-      onHide={destroyPopover}
+      onHide={destroyMenu}
       commandKey={COMMAND_KEY}
     />,
-    commandPopover,
+    shortcutSnippetMenu,
   );
 
-  return commandPopover;
+  return shortcutSnippetMenu;
 }
 
-function destroyPopover(): void {
-  if (commandPopover) {
+function destroyMenu(): void {
+  if (shortcutSnippetMenu) {
     // Cleanly unmount React component before removing from the DOM because useKeyboardQuery attaches document event
     // listeners via useEffect: https://react.dev/reference/react-dom/unmountComponentAtNode
-    unmountComponentAtNode(commandPopover);
+    unmountComponentAtNode(shortcutSnippetMenu);
 
-    commandPopover.remove();
-    commandPopover = null;
+    shortcutSnippetMenu.remove();
+    shortcutSnippetMenu = null;
     targetElement = null;
   }
 
@@ -254,7 +254,7 @@ function getCursorPositionReference(): Nullishable<VirtualElement | Element> {
 }
 
 async function updatePosition(): Promise<void> {
-  if (!commandPopover) {
+  if (!shortcutSnippetMenu) {
     // Guard against race condition
     return;
   }
@@ -270,32 +270,36 @@ async function updatePosition(): Promise<void> {
   // Keep anchored on scroll/resize: https://floating-ui.com/docs/computeposition#anchoring
   const cleanupAutoPosition = autoUpdate(
     referenceElement,
-    commandPopover,
+    shortcutSnippetMenu,
     async () => {
-      if (!commandPopover) {
+      if (!shortcutSnippetMenu) {
         // Handle race in async handler
         return;
       }
 
-      const { x, y } = await computePosition(referenceElement, commandPopover, {
-        // `top-start` is a nice placement because we don't have to worry about font-size or line-height. It also
-        // reduces the changes of conflicting with native auto-complete/suggestion dropdowns.
-        placement: "top-start",
-        strategy: "fixed",
-        // Prevent from appearing detached if multiple lines selected: https://floating-ui.com/docs/inline
-        middleware: [
-          ...(supportsInline ? [inline()] : []),
-          offset({
-            // Give a little space between top of the text and the popover
-            mainAxis: 5,
-          }),
-          // Using flip/shift to ensure the tooltip is visible in editors like TinyMCE where the editor is in an
-          // iframe. See tooltipController.ts for more details.
-          shift(),
-          flip(),
-        ],
-      });
-      Object.assign(commandPopover.style, {
+      const { x, y } = await computePosition(
+        referenceElement,
+        shortcutSnippetMenu,
+        {
+          // `top-start` is a nice placement because we don't have to worry about font-size or line-height. It also
+          // reduces the changes of conflicting with native auto-complete/suggestion dropdowns.
+          placement: "top-start",
+          strategy: "fixed",
+          // Prevent from appearing detached if multiple lines selected: https://floating-ui.com/docs/inline
+          middleware: [
+            ...(supportsInline ? [inline()] : []),
+            offset({
+              // Give a little space between top of the text and the menu
+              mainAxis: 5,
+            }),
+            // Using flip/shift to ensure the tooltip is visible in editors like TinyMCE where the editor is in an
+            // iframe. See tooltipController.ts for more details.
+            shift(),
+            flip(),
+          ],
+        },
+      );
+      Object.assign(shortcutSnippetMenu.style, {
         left: `${x}px`,
         top: `${y}px`,
       });
@@ -312,7 +316,7 @@ async function updatePosition(): Promise<void> {
 }
 
 /**
- * Return true if target is a valid target element for showing the command popover.
+ * Return true if target is a valid target element for showing the shortcut snippet menu.
  *
  * Read-only elements are not valid targets.
  *
@@ -350,7 +354,7 @@ function isTextSelected(target: unknown): boolean {
   return false;
 }
 
-export const initCommandController = once(() => {
+export const initShortcutSnippetMenuController = once(() => {
   expectContext("contentScript");
 
   document.addEventListener(
@@ -361,13 +365,13 @@ export const initCommandController = once(() => {
         isValidTarget(event.target) &&
         !isTextSelected(event.target)
       ) {
-        await showPopover(event.target);
+        await showMenu(event.target);
       }
     },
     { capture: true, passive: true },
   );
 
   onContextInvalidated.addListener(() => {
-    destroyPopover();
+    destroyMenu();
   });
 });
