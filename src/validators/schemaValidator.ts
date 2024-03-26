@@ -265,7 +265,8 @@ export async function validateBrickInputOutput(
   // first input argument.
   const validatorSchema = cloneDeep(schema);
 
-  // The @cfworker/json-schema Validator supports $ref, so we don't need to dereference the schema here.
+  // The @cfworker/json-schema Validator supports $ref, so we don't need to
+  // dereference the schema, we can just resolve the integration and built-in refs.
   const refs = await $RefParser.resolve(validatorSchema, {
     resolve: {
       // Exclude secret properties, because they aren't passed to the runtime
