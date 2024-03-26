@@ -84,7 +84,7 @@ class InsertAtCursorEffect extends EffectABC {
     } catch (error) {
       if (error instanceof ExecCommandError) {
         throw new BusinessError(
-          "Unable to insert text at cursor. Is there an active text editor in the target frame?",
+          "Error inserting text at cursor. Ensure there is a focused editor in the target frame",
           { cause: error },
         );
       }
