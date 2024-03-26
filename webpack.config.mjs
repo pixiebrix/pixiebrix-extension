@@ -126,6 +126,7 @@ const createConfig = (env, options) =>
         "extensionConsole/options",
         "sidebar/sidebar",
         "sandbox/sandbox",
+        "isolatedComponents/Window",
 
         "tinyPages/ephemeralForm",
         "tinyPages/walkthroughModal",

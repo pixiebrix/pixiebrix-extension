@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import ReactDOM from "react-dom";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
@@ -49,6 +50,9 @@ import { showMySidePanel } from "@/background/messenger/strict/api";
 import { getSidebarElement } from "@/contentScript/sidebarDomControllerLite";
 import focusController from "@/utils/focusController";
 import selectionController from "@/utils/selectionController";
+
+import Window from "@/isolatedComponents/Window";
+import { IsolatedComponent } from "@/isolatedComponents/IsolatedComponent";
 
 const HIDE_SIDEBAR_EVENT_NAME = "pixiebrix:hideSidebar";
 
@@ -592,3 +596,10 @@ export function initSidebarFocusEvents(): void {
     });
   }
 }
+
+ReactDOM.render(
+  <IsolatedComponent name="Window">
+    <Window />
+  </IsolatedComponent>,
+  document.body,
+);

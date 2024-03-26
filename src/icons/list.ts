@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable unicorn/prefer-module -- There's no module equivalent to require.context */
-
 import { type IconLibrary } from "@/types/iconTypes";
 
 type RequireContext = __WebpackModuleApi.RequireContext;
@@ -36,13 +34,19 @@ function getIconMap(resolve: RequireContext): Map<string, string> {
 export const icons = new Map<IconLibrary, Map<string, string>>();
 icons.set(
   "bootstrap",
-  getIconMap(require.context("bootstrap-icons/icons/", false, /\.svg$/)),
+  getIconMap(
+    import.meta.webpackContext("bootstrap-icons/icons/", { regExp: /\.svg$/ }),
+  ),
 );
 icons.set(
   "simple-icons",
-  getIconMap(require.context("simple-icons/icons/", false, /\.svg$/)),
+  getIconMap(
+    import.meta.webpackContext("simple-icons/icons/", { regExp: /\.svg$/ }),
+  ),
 );
 icons.set(
   "custom",
-  getIconMap(require.context("@/icons/custom-icons/", false, /\.svg$/)),
+  getIconMap(
+    import.meta.webpackContext("@/icons/custom-icons/", { regExp: /\.svg$/ }),
+  ),
 );
