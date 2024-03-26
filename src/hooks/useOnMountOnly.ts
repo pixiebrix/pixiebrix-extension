@@ -15,17 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isBackgroundPage } from "webext-detect-page";
+import { type EffectCallback, useEffect } from "react";
 
-/** @file DO NOT alter this file to add an "init" function because it must be executed as early as possible */
-if (isBackgroundPage()) {
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      console.error(
-        "Detected added node, this won't work in MV3:",
-        ...mutation.addedNodes,
-      );
-    }
-  });
-  observer.observe(document, { childList: true, subtree: true });
+/**
+ * Dependency-free useEffect hook meant to run only once on mount
+ */
+export default function useOnMountOnly(callback: EffectCallback): void {
+  // Do not add dependencies here. If you need dependencies, use useEffect
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Only meant to run once
+  useEffect(callback, []);
 }

@@ -6,6 +6,7 @@
     "test": "TZ=UTC jest",
     "test:watch": "TZ=UTC jest --watchAll",
     "test:e2e": "playwright test",
+    "test:e2e:debug": "PWDEBUG=console playwright test",
     "lint": "npm run lint:full -- --rule '{\"import/no-cycle\": \"off\"}'",
     "lint:fast": "ESLINT_NO_IMPORTS=1 eslint src --ext js,jsx,ts,tsx --quiet",
     "lint:full": "eslint src --ext js,jsx,ts,tsx --quiet --report-unused-disable-directives",
@@ -23,7 +24,7 @@
     "storybook": "storybook dev -p 6006 -s public",
     "build-storybook": "storybook build",
     "dead-code": "npm run dead-code:base -- --include files,duplicates,dependencies,classMembers,binaries,enumMembers,nsTypes,exports,nsExports",
-    "dead-code:base": "knip --config knip.mjs --experimental-tags=-knip"
+    "dead-code:base": "knip --config knip.mjs --tags=-knip"
   },
   "engine-strict": true,
   "engines": {
@@ -273,6 +274,7 @@
     "jest-webextension-mock": "^3.8.9",
     "jsdom": "^24.0.0",
     "jsdom-testing-mocks": "^1.13.0",
+    "knip": "^5.5.0",
     "mini-css-extract-plugin": "^2.6.1",
     "mockdate": "^3.0.5",
     "msw": "^1.3.3",

@@ -27,9 +27,9 @@ import {
 import { injectContentScript } from "webext-content-scripts";
 import { queryAdditionalPermissions } from "webext-permissions";
 import pDefer from "p-defer";
-import { setContext } from "@/testUtils/detectPageMock";
+import { TEST_setContext } from "webext-detect-page";
 
-setContext("background");
+TEST_setContext("background");
 
 jest.mock("@/contentScript/ready", () => {
   const actual = jest.requireActual("@/contentScript/ready");

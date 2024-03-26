@@ -19,7 +19,7 @@ import useCurrentOrigin from "@/contrib/google/sheets/core/useCurrentOrigin";
 import { renderHook } from "@/sidebar/testHelpers";
 import Tab = chrome.tabs.Tab;
 import { waitForEffect } from "@/testUtils/testHelpers";
-import { setContext } from "@/testUtils/detectPageMock";
+import { TEST_setContext } from "webext-detect-page";
 
 const originalRuntime = browser.runtime;
 browser.runtime = {
@@ -50,7 +50,7 @@ describe("useCurrentOrigin", () => {
   });
 
   test("if options page, should return options url", async () => {
-    setContext("options");
+    TEST_setContext("options");
     const { result } = renderHook(() => useCurrentOrigin());
     // Wait for origin to load (async state)
     await waitForEffect();
@@ -58,7 +58,7 @@ describe("useCurrentOrigin", () => {
   });
 
   test("if page editor page, should return devtools origin", async () => {
-    setContext("extension");
+    TEST_setContext("extension");
     location = {
       pathname: PAGE_EDITOR_PATHNAME,
     } as Location;
@@ -71,7 +71,7 @@ describe("useCurrentOrigin", () => {
 
   test("if other page, should return current tab url", async () => {
     const otherUrl = "https://www.pixiebrix.com";
-    setContext("web");
+    TEST_setContext("web");
     queryMock.mockResolvedValue([
       {
         url: otherUrl,
