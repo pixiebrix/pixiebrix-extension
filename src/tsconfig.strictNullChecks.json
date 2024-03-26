@@ -76,7 +76,6 @@
     "./bricks/available.ts",
     "./bricks/effects/AddDynamicTextSnippet.ts",
     "./bricks/effects/AddTextSnippets.ts",
-    "./bricks/effects/InsertAtCursorEffect.test.ts",
     "./bricks/effects/InsertAtCursorEffect.ts",
     "./bricks/effects/ToggleQuickbarEffect.ts",
     "./bricks/effects/alert.ts",
