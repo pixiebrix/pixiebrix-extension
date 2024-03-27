@@ -23,7 +23,7 @@ import AsyncStateGate from "@/components/AsyncStateGate";
 import { getOptionsValidationSchema } from "@/hooks/useAsyncModOptionsValidationSchema";
 import useDatabaseOptions from "@/hooks/useDatabaseOptions";
 import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { type Option } from "@/components/form/widgets/SelectWidget";
 import { wizardStateFactory } from "@/activation/useActivateModWizard";
@@ -75,7 +75,7 @@ const AutoActivatePanel: React.FC<{ mods: RequiredModDefinition[] }> = ({
   // Only activate new mods that the user does not already have activated. If there are updates available, the
   // user will be prompted to update according to marketplace mod updater rules.
   const newMods = useMemo(() => mods.filter((x) => !x.isActive), [mods]);
-  const activatedModComponents = useSelector(selectExtensions);
+  const activatedModComponents = useSelector(selectActivatedModComponents);
   const databaseOptionsState = useDatabaseOptions({ refetchOnMount: true });
 
   // A bit hacky -- using useDeriveAsyncState to automatically activate the mods on mount

@@ -32,7 +32,7 @@ import Effect from "@/components/Effect";
 import permissionsDialogImage from "@img/example-permissions-dialog.png";
 import { type AnyObjectSchema } from "yup";
 import { useSelector } from "react-redux";
-import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
+import { selectModComponentsForMod } from "@/store/extensionsSelectors";
 import { isEmpty } from "lodash";
 import { produce } from "immer";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
@@ -92,7 +92,7 @@ const ActivateModInputs: React.FC<ActivateModInputsProps> = ({
     : mod;
 
   const modComponents = useSelector(
-    selectExtensionsForRecipe(normalizedMod?.metadata?.id),
+    selectModComponentsForMod(normalizedMod?.metadata?.id),
   );
   const isReinstall = !isEmpty(modComponents);
 

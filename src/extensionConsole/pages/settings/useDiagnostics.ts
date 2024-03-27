@@ -16,7 +16,7 @@
  */
 
 import { useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import useExtensionPermissions, {
   type DetailedPermissions,
 } from "@/permissions/useExtensionPermissions";
@@ -61,7 +61,7 @@ async function collectDiagnostics({
 }
 
 function useDiagnostics() {
-  const extensions = useSelector(selectExtensions);
+  const extensions = useSelector(selectActivatedModComponents);
   const permissionsState = useExtensionPermissions();
 
   const exportDiagnostics = useUserAction(
