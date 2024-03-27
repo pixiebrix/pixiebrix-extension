@@ -19,6 +19,8 @@ import setToolbarIconFromTheme from "@/background/setToolbarIconFromTheme";
 import nock from "nock";
 import { browserAction } from "@/mv3/api";
 
+const fetchSpy = jest.spyOn(globalThis, "fetch");
+
 jest.mock("@/mv3/api", () => ({
   isMV3: jest.fn().mockReturnValue(false),
   browserAction: {
@@ -46,6 +48,7 @@ describe("setToolbarIconFromTheme", () => {
       logo: { small: "smallLogoPath", regular: "regularLogoPath" },
     });
 
+    expect(fetchSpy).not.toHaveBeenCalled();
     expect(browserAction.setIcon).toHaveBeenCalledWith({
       path: "path to icons",
     });

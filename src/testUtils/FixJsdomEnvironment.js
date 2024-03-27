@@ -16,7 +16,6 @@
  */
 
 import JSDOMEnvironment from "jest-environment-jsdom";
-import nock from "nock";
 
 // TODO: Block HTTP requests from tests after Axios migration https://github.com/pixiebrix/pixiebrix-extension/issues/4810
 // nock.disableNetConnect();
