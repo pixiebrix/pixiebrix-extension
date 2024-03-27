@@ -331,8 +331,11 @@ export async function recordEvent({
   data: JsonObject | undefined;
 }): Promise<void> {
   if (await allowsTrack()) {
-    const { version, version_name: versionName } =
-      browser.runtime.getManifest();
+    const {
+      version,
+      version_name: versionName,
+      manifest_version: manifestVersion,
+    } = browser.runtime.getManifest();
     const telemetryEvent = {
       uid: await getUUID(),
       event,
@@ -341,6 +344,7 @@ export async function recordEvent({
         ...data,
         version,
         versionName,
+        manifestVersion,
       },
     };
 
