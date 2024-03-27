@@ -39,7 +39,7 @@ import { refreshServices } from "@/background/locator";
 import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { type UUID } from "@/types/stringTypes";
 import { setCachedAuthData } from "@/background/auth/authStorage";
-import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { sleep } from "@/utils/timeUtils";
 
 jest.mock("@/utils/timeUtils", () => ({
@@ -139,8 +139,8 @@ describe("Automation Anywhere - Run API Task", () => {
   });
 
   test("given awaiting response, when called normally, should poll until response is ready", async () => {
-    const deploymentId = uuidSequence(10);
-    const activityId = uuidSequence(11);
+    const deploymentId = autoUUIDSequence();
+    const activityId = autoUUIDSequence();
     const taskResponse = {
       deploymentId,
       automationName: AUTOMATION_NAME,
@@ -219,8 +219,8 @@ describe("Automation Anywhere - Run API Task", () => {
       });
     });
 
-    const deploymentId = uuidSequence(12);
-    const activityId = uuidSequence(13);
+    const deploymentId = autoUUIDSequence();
+    const activityId = autoUUIDSequence();
     const taskResponse = {
       deploymentId,
       automationName: AUTOMATION_NAME,
