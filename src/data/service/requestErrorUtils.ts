@@ -38,12 +38,12 @@ export function selectAbsoluteUrl({
   url?: string;
   baseURL?: string;
 }): string {
-  assertNotNullish(url, "axios: The URL was not provided");
+  assertNotNullish(url, "selectAbsoluteUrl: The URL was not provided");
   if (isAbsoluteUrl(url)) {
     return url;
   }
 
-  assertNotNullish(baseURL, "axios: The base URL was not provided");
+  assertNotNullish(baseURL, "selectAbsoluteUrl: The base URL was not provided");
   return urljoin(baseURL, url);
 }
 
