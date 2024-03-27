@@ -40,12 +40,13 @@ import { clear, find, syncPackages } from "@/registry/packageRegistry";
 import { type UUID } from "@/types/stringTypes";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 import { uuidSequence } from "@/testUtils/factories/stringFactories";
+import { sleep } from "@/utils/timeUtils";
 
 jest.mock("@/utils/timeUtils", () => ({
-  sleep() {
-    // No-op
-  },
+  sleep: jest.fn(() => {}),
 }));
+
+const sleepMock = jest.mocked(sleep);
 
 const runApiTaskBrick = new RunApiTask();
 
@@ -64,6 +65,10 @@ beforeAll(() => {
   jest.mocked(registry.syncRemote).mockImplementation(syncPackages);
   jest.mocked(registry.find).mockImplementation(find);
   jest.mocked(registry.clear).mockImplementation(clear);
+});
+
+afterAll(() => {
+  jest.resetAllMocks();
 });
 
 beforeEach(async () => {
@@ -207,5 +212,60 @@ describe("Automation Anywhere - Run API Task", () => {
     expect(response).toEqual({ output: "output value" });
   });
 
-  test("given awaiting response with timeout, when called and response times out, should return error message", async () => {});
+  test("given awaiting response with timeout, when called and response times out, should return error message", async () => {
+    sleepMock.mockImplementation(async () => {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 100);
+      });
+    });
+
+    const deploymentId = uuidSequence(12);
+    const activityId = uuidSequence(13);
+    const taskResponse = {
+      deploymentId,
+      automationName: AUTOMATION_NAME,
+    };
+    appApiMock.onPost("/v4/automations/deploy").reply(200, taskResponse);
+
+    // Task starts in QUEUED status
+    appApiMock.onPost("/v3/activity/list").replyOnce(200, {
+      list: [
+        {
+          id: activityId,
+          automationName: AUTOMATION_NAME,
+          deploymentId,
+          status: "QUEUED",
+        },
+      ],
+    });
+    // Task transitions to, and remains in, PENDING_EXECUTION status
+    appApiMock.onPost("/v3/activity/list").reply(200, {
+      list: [
+        {
+          id: activityId,
+          automationName: AUTOMATION_NAME,
+          deploymentId,
+          status: "PENDING_EXECUTION",
+        },
+      ],
+    });
+
+    await expect(
+      runApiTaskBrick.run(
+        unsafeAssumeValidArg({
+          integrationConfig: sanitizedIntegrationConfigFactory({
+            id: configId,
+            serviceId: oauth2Integration.id,
+          }),
+          botId: BOT_ID,
+          sharedRunAsUserId: SHARED_RUN_AS_USER_ID,
+          data: DATA,
+          automationName: AUTOMATION_NAME,
+          awaitResult: true,
+          maxWaitMillis: 100,
+        }),
+        brickOptionsFactory({ platform: platformMock }),
+      ),
+    ).rejects.toThrow("Bot did not finish in 0 seconds");
+  });
 });
