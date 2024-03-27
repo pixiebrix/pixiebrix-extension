@@ -16,7 +16,7 @@
  */
 
 import serviceRegistry from "@/integrations/registry";
-import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
+import axios, { type AxiosError } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { performConfiguredRequest } from "./requests";
 import * as token from "@/auth/authStorage";
@@ -37,6 +37,7 @@ import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import { InteractiveLoginRequiredError } from "@/errors/authErrors";
 import { deserializeError, serializeError } from "serialize-error";
+import { type NetworkRequestConfig } from "@/types/networkTypes";
 
 // Disable automatic __mocks__ resolution #6799
 jest.mock("@/data/service/apiClient", () =>
@@ -92,21 +93,21 @@ serviceRegistry.register([
     id: PIXIEBRIX_INTEGRATION_ID,
     authenticateRequest: (
       serviceConfig: SecretsConfig,
-      requestConfig: AxiosRequestConfig,
+      requestConfig: NetworkRequestConfig,
     ) => requestConfig,
   },
   {
     id: EXAMPLE_SERVICE_API,
     authenticateRequest: (
       serviceConfig: SecretsConfig,
-      requestConfig: AxiosRequestConfig,
+      requestConfig: NetworkRequestConfig,
     ) => requestConfig,
   },
   {
     id: EXAMPLE_SERVICE_TOKEN_API,
     authenticateRequest: (
       serviceConfig: SecretsConfig,
-      requestConfig: AxiosRequestConfig,
+      requestConfig: NetworkRequestConfig,
     ) => requestConfig,
     isToken: true,
   },
@@ -114,7 +115,7 @@ serviceRegistry.register([
     id: EXAMPLE_SERVICE_PKCE_API,
     authenticateRequest: (
       serviceConfig: SecretsConfig,
-      requestConfig: AxiosRequestConfig,
+      requestConfig: NetworkRequestConfig,
     ) => requestConfig,
     getOAuth2Context: () => ({
       host: "example.com",
@@ -128,7 +129,7 @@ serviceRegistry.register([
   },
 ] as IntegrationABC[]);
 
-const requestConfig: AxiosRequestConfig = {
+const requestConfig: NetworkRequestConfig = {
   url: "https://www.example.com",
   method: "get",
 };
