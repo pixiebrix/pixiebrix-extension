@@ -23,7 +23,7 @@ import {
 import { appApiMock } from "@/testUtils/appApiMock";
 import { type Event } from "@/telemetry/events";
 
-const RUNTIME_ID = "abc123";
+const EXPECTED_RUNTIME_ID = "abc123";
 const expectedManifestValues = {
   version_name: "1.0.0",
   version: "1.0.0",
@@ -34,7 +34,7 @@ beforeEach(async () => {
   appApiMock.reset();
   appApiMock.onPost("/api/events/").reply(201, {});
 
-  browser.runtime.id = RUNTIME_ID;
+  browser.runtime.id = EXPECTED_RUNTIME_ID;
   browser.runtime.getManifest = jest
     .fn()
     .mockReturnValue(expectedManifestValues);
@@ -59,7 +59,7 @@ describe("recordEvent", () => {
         manifestVersion: expectedManifestValues.manifest_version,
         version: expectedManifestValues.version,
         versionName: expectedManifestValues.version_name,
-        runtimeId: RUNTIME_ID,
+        runtimeId: EXPECTED_RUNTIME_ID,
       },
     });
   });
