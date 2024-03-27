@@ -20,7 +20,6 @@ import { platformMock } from "@/testUtils/platformMock";
 import { RunApiTask } from "@/contrib/automationanywhere/RunApiTask";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type Nullishable } from "@/utils/nullishUtils";
-import { type AxiosRequestConfig } from "axios";
 import { performConfiguredRequest } from "@/background/requests";
 import {
   remoteIntegrationConfigurationFactory,
@@ -41,6 +40,7 @@ import { type UUID } from "@/types/stringTypes";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
 import { sleep } from "@/utils/timeUtils";
+import { type NetworkRequestConfig } from "@/types/networkTypes";
 
 jest.mock("@/utils/timeUtils", () => ({
   sleep: jest.fn(() => {}),
@@ -78,7 +78,7 @@ beforeEach(async () => {
     ...platformMock,
     request: async <TData>(
       integrationConfig: Nullishable<SanitizedIntegrationConfig>,
-      requestConfig: AxiosRequestConfig,
+      requestConfig: NetworkRequestConfig,
     ) =>
       performConfiguredRequest<TData>(integrationConfig, requestConfig, {
         interactiveLogin: false,
