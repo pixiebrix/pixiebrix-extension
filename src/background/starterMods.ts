@@ -38,8 +38,8 @@ import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfi
 const { reducer, actions } = extensionsSlice;
 
 const PLAYGROUND_URL = "https://www.pixiebrix.com/welcome";
-const MOD_INSTALLATION_DEBOUNCE_MS = 10_000;
-const MOD_INSTALLATION_MAX_MS = 60_000;
+const MOD_ACTIVATION_DEBOUNCE_MS = 10_000;
+const MOD_ACTIVATION_MAX_MS = 60_000;
 
 export async function getBuiltInIntegrationConfigs(): Promise<
   RemoteIntegrationConfig[]
@@ -63,7 +63,7 @@ export async function getBuiltInIntegrationConfigs(): Promise<
   }
 }
 
-function installModInOptionsState(
+function activateModInOptionsState(
   state: ModComponentState,
   modDefinition: ModDefinition,
   configuredDependencies: IntegrationDependency[],
@@ -79,10 +79,10 @@ function installModInOptionsState(
   );
 }
 
-async function installMods(modDefinitions: ModDefinition[]): Promise<boolean> {
-  let installed = false;
+async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
+  let activated = false;
   if (modDefinitions.length === 0) {
-    return installed;
+    return activated;
   }
 
   const unconfiguredIntegrationDependencies =
@@ -115,30 +115,30 @@ async function installMods(modDefinitions: ModDefinition[]): Promise<boolean> {
   let optionsState = await getModComponentState();
 
   for (const modDefinition of modDefinitions) {
-    const modAlreadyInstalled = optionsState.extensions.some(
+    const modAlreadyActivated = optionsState.extensions.some(
       (mod) => mod._recipe?.id === modDefinition.metadata.id,
     );
 
-    if (!modAlreadyInstalled) {
-      optionsState = installModInOptionsState(
+    if (!modAlreadyActivated) {
+      optionsState = activateModInOptionsState(
         optionsState,
         modDefinition,
         builtInDependencies,
       );
-      installed = true;
+      activated = true;
     }
   }
 
   await saveModComponentState(optionsState);
   await forEachTab(queueReactivateTab);
-  return installed;
+  return activated;
 }
 
 async function getStarterMods(): Promise<ModDefinition[]> {
   const client = await maybeGetLinkedApiClient();
   if (client == null) {
     console.debug(
-      "Skipping starter mod installation because the mod is not linked to the PixieBrix service",
+      "Skipping starter mod activation because the mod is not linked to the PixieBrix service",
     );
     return [];
   }
@@ -155,41 +155,41 @@ async function getStarterMods(): Promise<ModDefinition[]> {
 }
 
 /**
- * Installs starter mods and refreshes local registries from remote.
- * @returns true if any of the starter mods were installed
+ * Activates starter mods and refreshes local registries from remote.
+ * @returns true if any of the starter mods were activated
  */
-async function _installStarterMods(): Promise<boolean> {
+async function _activateStarterMods(): Promise<boolean> {
   const starterMods = await getStarterMods();
 
   try {
-    // Installing Starter Mods and pulling the updates from remote registries to make sure
+    // Activating Starter Mods and pulling the updates from remote registries to make sure
     // that all the bricks used in starter mods are available
-    const [installed] = await Promise.all([
-      installMods(starterMods),
+    const [activated] = await Promise.all([
+      activateMods(starterMods),
       refreshRegistries(),
     ]);
 
-    return installed;
+    return activated;
   } catch (error) {
     reportError(error);
     return false;
   }
 }
 
-export const debouncedInstallStarterMods = debounce(
-  memoizeUntilSettled(_installStarterMods),
-  MOD_INSTALLATION_DEBOUNCE_MS,
+export const debouncedActivateStarterMods = debounce(
+  memoizeUntilSettled(_activateStarterMods),
+  MOD_ACTIVATION_DEBOUNCE_MS,
   {
     leading: true,
     trailing: false,
-    maxWait: MOD_INSTALLATION_MAX_MS,
+    maxWait: MOD_ACTIVATION_MAX_MS,
   },
 );
 
 function initStarterMods(): void {
   browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (tab?.url?.startsWith(PLAYGROUND_URL)) {
-      void debouncedInstallStarterMods();
+      void debouncedActivateStarterMods();
     }
   });
 }
