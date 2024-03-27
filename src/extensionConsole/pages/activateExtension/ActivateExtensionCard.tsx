@@ -93,7 +93,7 @@ const ActivateExtensionCard: React.FunctionComponent<{
     async (values: FormState, helpers: FormikProps<FormState>) => {
       try {
         dispatch(
-          actions.installCloudExtension({
+          actions.activateStandaloneModDefinition({
             extension: { ...extension, ...values },
           }),
         );

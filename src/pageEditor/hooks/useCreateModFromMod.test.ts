@@ -64,10 +64,10 @@ describe("useCreateModFromMod", () => {
     const { result } = renderHook(() => useCreateModFromMod(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.installMod({
+          extensionsActions.activateMod({
             modDefinition: definition,
             screen: "pageEditor",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
       },
@@ -106,10 +106,10 @@ describe("useCreateModFromMod", () => {
     const { result } = renderHook(() => useCreateModFromMod(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.installMod({
+          extensionsActions.activateMod({
             modDefinition: installedModDefinition,
             screen: "pageEditor",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
       },
@@ -140,10 +140,10 @@ describe("useCreateModFromMod", () => {
     const { result } = renderHook(() => useCreateModFromMod(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.installMod({
+          extensionsActions.activateMod({
             modDefinition: installedModDefinition,
             screen: "pageEditor",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
       },

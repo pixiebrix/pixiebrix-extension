@@ -257,12 +257,12 @@ function updateMod(
 
   newOptionsState = extensionsSlice.reducer(
     newOptionsState,
-    extensionsSlice.actions.installMod({
+    extensionsSlice.actions.activateMod({
       modDefinition,
       configuredDependencies,
       optionsArgs,
       screen: "background",
-      isReinstall: true,
+      isReactivate: true,
     }),
   );
 

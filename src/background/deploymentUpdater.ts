@@ -260,7 +260,7 @@ async function installDeployment({
   // Install the deployment's blueprint with the service definition
   options = optionsReducer(
     options,
-    optionsActions.installMod({
+    optionsActions.activateMod({
       modDefinition,
       deployment,
       configuredDependencies: await mergeDeploymentIntegrationDependencies(
@@ -270,7 +270,7 @@ async function installDeployment({
       // Assume backend properly validates the options
       optionsArgs: deployment.options_config as OptionsArgs,
       screen: "background",
-      isReinstall,
+      isReactivate: isReinstall,
     }),
   );
 
