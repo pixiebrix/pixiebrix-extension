@@ -19,7 +19,7 @@ import { type PlatformProtocol } from "@/platform/platformProtocol";
 import type { PlatformCapability } from "@/platform/capabilities";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import type { AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
 import { performConfiguredRequest } from "@/background/requests";
 import BackgroundLogger from "@/telemetry/BackgroundLogger";
@@ -52,7 +52,7 @@ class BackgroundPlatform extends PlatformBase {
 
   override async request<TData>(
     integrationConfig: Nullishable<SanitizedIntegrationConfig>,
-    requestConfig: AxiosRequestConfig,
+    requestConfig: NetworkRequestConfig,
   ): Promise<RemoteResponse<TData>> {
     // XXX: keep the previous default behavior of interactiveLogin: true. Interactive logins will likely
     // fail though because they must be initiated from a user gesture.

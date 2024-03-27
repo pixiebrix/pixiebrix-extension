@@ -128,16 +128,24 @@ describe("checkAvailableInstalledExtensions", () => {
     });
 
     store.dispatch(
-      optionsActions.installCloudExtension({ extension: availableButton }),
+      optionsActions.activateStandaloneModDefinition({
+        extension: availableButton,
+      }),
     );
     store.dispatch(
-      optionsActions.installCloudExtension({ extension: unavailableButton }),
+      optionsActions.activateStandaloneModDefinition({
+        extension: unavailableButton,
+      }),
     );
     store.dispatch(
-      optionsActions.installCloudExtension({ extension: availableQb }),
+      optionsActions.activateStandaloneModDefinition({
+        extension: availableQb,
+      }),
     );
     store.dispatch(
-      optionsActions.installCloudExtension({ extension: unavailableQb }),
+      optionsActions.activateStandaloneModDefinition({
+        extension: unavailableQb,
+      }),
     );
 
     await store.dispatch(actions.checkAvailableInstalledExtensions());

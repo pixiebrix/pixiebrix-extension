@@ -17,7 +17,7 @@
 
 import { columnToLetter } from "@/contrib/google/sheets/core/sheetsHelpers";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import { type AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { handleGoogleRequestRejection } from "@/contrib/google/sheets/core/handleGoogleRequestRejection";
 import {
   type AppendValuesResponse,
@@ -41,7 +41,7 @@ export type SpreadsheetTarget = {
 };
 
 async function executeRequest<Response, RequestData = never>(
-  requestConfig: AxiosRequestConfig<RequestData>,
+  requestConfig: NetworkRequestConfig<RequestData>,
   googleAccount: Nullishable<SanitizedIntegrationConfig>,
 ): Promise<Response> {
   try {
@@ -60,7 +60,7 @@ async function executeRequest<Response, RequestData = never>(
 export async function getAllSpreadsheets(
   googleAccount: SanitizedIntegrationConfig | null,
 ): Promise<FileList> {
-  const requestConfig: AxiosRequestConfig<never> = {
+  const requestConfig: NetworkRequestConfig<never> = {
     url: DRIVE_BASE_URL,
     method: "get",
     params: {
@@ -82,7 +82,7 @@ export async function getAllSpreadsheets(
 export async function getGoogleUserEmail(
   googleAccount: SanitizedIntegrationConfig,
 ): Promise<string> {
-  const requestConfig: AxiosRequestConfig<never> = {
+  const requestConfig: NetworkRequestConfig<never> = {
     url: "https://www.googleapis.com/oauth2/v1/userinfo",
     method: "get",
   };
@@ -95,7 +95,7 @@ async function batchUpdateSpreadsheet(
   { googleAccount, spreadsheetId }: SpreadsheetTarget,
   request: BatchUpdateSpreadsheetRequest,
 ): Promise<BatchUpdateSpreadsheetResponse> {
-  const requestConfig: AxiosRequestConfig<BatchUpdateSpreadsheetRequest> = {
+  const requestConfig: NetworkRequestConfig<BatchUpdateSpreadsheetRequest> = {
     url: `${SHEETS_BASE_URL}/${spreadsheetId}:batchUpdate`,
     method: "post",
     data: request,
@@ -135,7 +135,7 @@ export async function appendRows(
   // Note: We currently don't support intermediate empty columns, which would
   // require us to use the batchUpdate endpoint instead of append.
   // See: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/batchUpdate
-  const requestConfig: AxiosRequestConfig<ValueRange> = {
+  const requestConfig: NetworkRequestConfig<ValueRange> = {
     url: `${SHEETS_BASE_URL}/${spreadsheetId}/values/${tabName}:append`,
     method: "post",
     params: {

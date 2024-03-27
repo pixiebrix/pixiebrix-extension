@@ -207,10 +207,10 @@ describe("useCheckModStarterBrickInvariants", () => {
         setupRedux(dispatch) {
           if (installedModDefinition) {
             dispatch(
-              extensionsActions.installMod({
+              extensionsActions.activateMod({
                 modDefinition: installedModDefinition,
                 screen: "pageEditor",
-                isReinstall: false,
+                isReactivate: false,
               }),
             );
           }

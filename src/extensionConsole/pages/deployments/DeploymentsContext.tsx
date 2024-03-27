@@ -23,7 +23,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import notify from "@/utils/notify";
 import { services } from "@/background/messenger/strict/api";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
@@ -94,7 +94,7 @@ export type DeploymentsState = {
 function useDeployments(): DeploymentsState {
   const dispatch = useDispatch<Dispatch>();
   const { data: browserIdentifier } = useBrowserIdentifier();
-  const activeExtensions = useSelector(selectExtensions);
+  const activeExtensions = useSelector(selectActivatedModComponents);
   const { state: flagsState } = useFlags();
   const activeDeployments = useMemoCompare<InstalledDeployment[]>(
     selectInstalledDeployments(activeExtensions),

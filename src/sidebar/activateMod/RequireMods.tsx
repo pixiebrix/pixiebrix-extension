@@ -26,7 +26,7 @@ import { type AuthOption } from "@/auth/authTypes";
 import useDeriveAsyncState from "@/hooks/useDeriveAsyncState";
 import { isDatabaseField } from "@/components/fields/schemaFields/fieldTypeCheckers";
 import { useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { includesQuickBarStarterBrick } from "@/starterBricks/starterBrickModUtils";
 import { PIXIEBRIX_INTEGRATION_ID } from "@/integrations/constants";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
@@ -147,7 +147,7 @@ const RequireMods: React.FC<Props> = ({ mods, children }) => {
   const originalState = valueToAsyncState(mods);
   const authOptionsState = useAuthOptions();
 
-  const activatedModComponents = useSelector(selectExtensions);
+  const activatedModComponents = useSelector(selectActivatedModComponents);
 
   const state = useDeriveAsyncState(
     originalState,

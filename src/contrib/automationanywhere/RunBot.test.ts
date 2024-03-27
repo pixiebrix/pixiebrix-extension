@@ -35,7 +35,7 @@ import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { setPlatform } from "@/platform/platformContext";
 import { platformMock as platform } from "@/testUtils/platformMock";
 import type { Nullishable } from "@/utils/nullishUtils";
-import type { AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 
 jest.mock("@/background/messenger/api", () => ({
   performConfiguredRequestInBackground: jest.fn().mockResolvedValue({
@@ -74,7 +74,7 @@ beforeEach(() => {
     ...platform,
     request: async <TData>(
       integrationConfig: Nullishable<SanitizedIntegrationConfig>,
-      requestConfig: AxiosRequestConfig,
+      requestConfig: NetworkRequestConfig,
     ) =>
       performConfiguredRequestInBackgroundMock<TData>(
         integrationConfig,

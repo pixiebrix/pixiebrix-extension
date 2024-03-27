@@ -135,10 +135,10 @@ test("load mod definitions and save one", async () => {
   render(<TestComponent />, {
     setupRedux(dispatch) {
       dispatch(
-        extensionsSlice.actions.installMod({
+        extensionsSlice.actions.activateMod({
           modDefinition: sourceModDefinition,
           screen: "pageEditor",
-          isReinstall: false,
+          isReactivate: false,
         }),
       );
     },

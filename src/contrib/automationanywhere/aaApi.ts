@@ -47,7 +47,7 @@ import {
 } from "@/contrib/automationanywhere/aaTypes";
 import { BusinessError } from "@/errors/businessErrors";
 import { castArray, cloneDeep, isEmpty, sortBy } from "lodash";
-import { type AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { pollUntilTruthy } from "@/utils/promiseUtils";
 import { isNullOrBlank } from "@/utils/stringUtils";
@@ -56,6 +56,7 @@ import { sleep } from "@/utils/timeUtils";
 // XXX: using the ambient platform object for now. In the future, we might want to wrap all these methods in a class
 // and pass the platform and integration config as a constructor argument
 import { getPlatform } from "@/platform/platformContext";
+import { type SetRequired } from "type-fest";
 
 // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html
 // Same as default for Control Room
@@ -88,6 +89,10 @@ const SORT_BY_NAME: Pick<SearchPayload, "sort"> = {
   ],
 };
 
+type PaginationPayload = {
+  page: { offset: number; length: number };
+};
+
 /**
  * Fetch paginated Control Room responses.
  * @param config the control room integration configuration
@@ -96,7 +101,10 @@ const SORT_BY_NAME: Pick<SearchPayload, "sort"> = {
  */
 async function fetchPages<TData>(
   config: SanitizedIntegrationConfig,
-  requestConfig: AxiosRequestConfig,
+  requestConfig: SetRequired<
+    NetworkRequestConfig<Partial<SearchPayload & PaginationPayload>>,
+    "data"
+  >,
   { maxPages = Number.MAX_SAFE_INTEGER }: { maxPages?: number } = {},
 ): Promise<TData[]> {
   // https://docs.automationanywhere.com/bundle/enterprise-v2019/page/enterprise-cloud/topics/control-room/control-room-api/cloud-api-filter-request.html

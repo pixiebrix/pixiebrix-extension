@@ -17,7 +17,7 @@
 
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
@@ -36,7 +36,7 @@ type Config = {
 function useResetExtension(): (useResetConfig: Config) => Promise<void> {
   const dispatch = useDispatch();
   const sessionId = useSelector(selectSessionId);
-  const installed = useSelector(selectExtensions);
+  const installed = useSelector(selectActivatedModComponents);
   const { data: recipes } = useAllModDefinitions();
   const { showConfirmation } = useModals();
 

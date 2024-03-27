@@ -21,7 +21,7 @@ import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import { type ModComponentState } from "@/store/extensionsTypes";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 
 const axiosMock = new MockAdapter(axios);
 const defaultOptions = {
@@ -61,7 +61,7 @@ describe("useUpsertModComponentFormState", () => {
       options: defaultOptions,
     });
 
-    const extensions = selectExtensions(
+    const extensions = selectActivatedModComponents(
       getReduxStore().getState() as { options: ModComponentState },
     );
 
@@ -89,7 +89,7 @@ describe("useUpsertModComponentFormState", () => {
       options: { ...defaultOptions, pushToCloud: true },
     });
 
-    const extensions = selectExtensions(
+    const extensions = selectActivatedModComponents(
       getReduxStore().getState() as { options: ModComponentState },
     );
 
