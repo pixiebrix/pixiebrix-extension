@@ -26,7 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import RequireBrickRegistry from "@/extensionConsole/components/RequireBrickRegistry";
 import { useGetRecipeQuery } from "@/data/service/api";
 import { useSelector } from "react-redux";
-import { selectModHasAnyModComponentsInstalled } from "@/store/extensionsSelectors";
+import { selectModHasAnyActivatedModComponents } from "@/store/extensionsSelectors";
 import useRegistryIdParam from "@/extensionConsole/pages/useRegistryIdParam";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import notify from "@/utils/notify";
@@ -76,7 +76,7 @@ const ActivateModPageContent: React.FC = () => {
 const ActivateModPage: React.FunctionComponent = () => {
   const modId = useRegistryIdParam();
   const history = useHistory();
-  const isReinstall = useSelector(selectModHasAnyModComponentsInstalled(modId));
+  const isReinstall = useSelector(selectModHasAnyActivatedModComponents(modId));
 
   const { isFetching, error } = useGetRecipeQuery(
     { recipeId: modId },

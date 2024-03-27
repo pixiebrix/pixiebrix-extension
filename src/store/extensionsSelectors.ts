@@ -59,6 +59,6 @@ export const selectModComponentsForMod =
   (modId: RegistryId) => (state: ModComponentsRootState) =>
     activatedModComponentsForModSelector(state, modId);
 
-export const selectModHasAnyModComponentsInstalled =
+export const selectModHasAnyActivatedModComponents =
   (modId: RegistryId) => (state: ModComponentsRootState) =>
     !isEmpty(activatedModComponentsForModSelector(state, modId));
