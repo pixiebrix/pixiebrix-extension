@@ -17,7 +17,7 @@
 
 import { type ModDefinition } from "@/types/modDefinitionTypes";
 import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { useCallback } from "react";
 import { actions as extensionActions } from "@/store/extensionsSlice";
 import { collectModOptions } from "@/store/extensionsUtils";
@@ -28,7 +28,7 @@ type Reinstall = (modDefinition: ModDefinition) => Promise<void>;
 
 function useReinstall(): Reinstall {
   const dispatch = useDispatch();
-  const allComponents = useSelector(selectExtensions);
+  const allComponents = useSelector(selectActivatedModComponents);
 
   return useCallback(
     async (modDefinition: ModDefinition) => {

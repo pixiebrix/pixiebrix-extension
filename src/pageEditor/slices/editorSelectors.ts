@@ -22,7 +22,7 @@ import {
   ModalKey,
   type RootState,
 } from "@/pageEditor/pageEditorTypes";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { flatMap, isEmpty, sortBy, uniqBy } from "lodash";
 import { DataPanelTabKey } from "@/pageEditor/tabs/editTab/dataPanel/dataPanelTypes";
 import {
@@ -113,7 +113,7 @@ export const selectNotDeletedElements: ({
 export const selectNotDeletedExtensions: ({
   options,
 }: ModComponentsRootState) => ActivatedModComponent[] = createSelector(
-  selectExtensions,
+  selectActivatedModComponents,
   selectAllDeletedElementIds,
   (extensions, deletedElementIds) =>
     extensions.filter(({ id }) => !deletedElementIds.has(id)),
@@ -230,7 +230,7 @@ export const selectEditorModalVisibilities = ({ editor }: EditorRootState) => ({
 
 export const selectInstalledRecipeMetadatas = createSelector(
   selectElements,
-  selectExtensions,
+  selectActivatedModComponents,
   (elements, extensions) => {
     const elementRecipes: Array<ModComponentBase["_recipe"]> = elements
       .filter((element) => Boolean(element.recipe))
