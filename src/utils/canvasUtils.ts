@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import axios from "axios";
+import ky from "ky";
 import resizeToFit from "intrinsic-scale";
 
 export async function loadImageData(
@@ -23,7 +23,7 @@ export async function loadImageData(
   width: number,
   height: number,
 ): Promise<ImageData> {
-  const { data: blob } = await axios.get<Blob>(url, { responseType: "blob" });
+  const blob = await ky.get(url).blob();
   return blobToImageData(blob, width, height);
 }
 

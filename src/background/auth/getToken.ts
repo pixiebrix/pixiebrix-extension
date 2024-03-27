@@ -21,7 +21,7 @@ import {
   type IntegrationConfig,
 } from "@/integrations/integrationTypes";
 import { expectContext } from "@/utils/expectContext";
-import axios from "axios";
+import ky from "ky";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 
@@ -47,15 +47,11 @@ async function _getToken(
 
   const { url, data: tokenData } = service.getTokenContext(auth.config);
 
-  const {
-    status,
-    statusText,
-    data: responseData,
-  } = await axios.post<AuthData>(url, tokenData);
-
-  if (status >= 400) {
-    throw new Error(statusText);
-  }
+  const responseData = await ky
+    .post(url, {
+      json: tokenData,
+    })
+    .json<AuthData>();
 
   await setCachedAuthData(auth.id, responseData);
 

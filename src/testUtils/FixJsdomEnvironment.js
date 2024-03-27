@@ -17,6 +17,9 @@
 
 import JSDOMEnvironment from "jest-environment-jsdom";
 
+// TODO: Block HTTP requests from tests after Axios migration https://github.com/pixiebrix/pixiebrix-extension/issues/4810
+// nock.disableNetConnect();
+
 // https://github.com/facebook/jest/blob/v29.4.3/website/versioned_docs/version-29.4/Configuration.md#testenvironment-string
 export default class FixJSDOMEnvironment extends JSDOMEnvironment {
   constructor(...args) {
@@ -24,5 +27,12 @@ export default class FixJSDOMEnvironment extends JSDOMEnvironment {
 
     // FIXME https://github.com/jsdom/jsdom/issues/3363
     this.global.structuredClone = structuredClone;
+
+    // Until https://github.com/jsdom/jsdom/issues/1724
+    // https://stackoverflow.com/questions/74945569/cannot-access-built-in-node-js-fetch-function-from-jest-tests/78051351#78051351
+    this.global.fetch = fetch;
+    this.global.Request = Request;
+    this.global.Response = Response;
+    this.global.ReadableStream = ReadableStream;
   }
 }
