@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { navigationEvent } from "@/pageEditor/events";
 import { tabStateActions } from "@/pageEditor/tabState/tabStateSlice";
 import { persistor } from "@/pageEditor/store";
 import { ModalProvider } from "@/components/ConfirmationModal";
@@ -43,6 +42,8 @@ import type { EditorState } from "@/pageEditor/pageEditorTypes";
 import DimensionGate from "@/pageEditor/components/DimensionGate";
 import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 import DatabaseUnresponsiveBanner from "@/components/DatabaseUnresponsiveBanner";
+import useCurrentInspectedUrl from "./hooks/useCurrentInspectedUrl";
+import useGrantedPermissions from "@/hooks/useGrantedPermissions";
 
 const STARTER_BRICKS_TO_EXCLUDE_FROM_CLEANUP: StarterBrickType[] = [
   "actionPanel",
@@ -66,31 +67,28 @@ const cleanUpStarterBrickForElement = (
 
 const PanelContent: React.FC = () => {
   const dispatch = useDispatch();
+  const currentUrl = useCurrentInspectedUrl();
+  const { data: permissions } = useGrantedPermissions();
   const activeElement = useSelector(selectActiveElement);
 
-  const onNavigation = useCallback(() => {
-    dispatch(tabStateActions.connectToContentScript());
-
-    if (activeElement != null && shouldAutoRun(activeElement)) {
-      const dynamicElement = formStateToDynamicElement(activeElement);
-      updateDynamicElement(allFramesInInspectedTab, dynamicElement);
-    }
-  }, [dispatch, activeElement]);
-
   useEffect(() => {
-    navigationEvent.add(onNavigation);
-    return () => {
-      navigationEvent.remove(onNavigation);
-    };
-  }, [navigationEvent, onNavigation]);
-
-  useEffect(() => {
-    // Automatically connect on load
-    dispatch(tabStateActions.connectToContentScript());
-
     // Start polling logs
     dispatch(logActions.pollLogs());
   }, [dispatch]);
+
+  useEffect(() => {
+    // Wait for both to be available
+    if (currentUrl && permissions) {
+      dispatch(tabStateActions.connectToContentScript());
+    }
+  }, [dispatch, currentUrl, permissions]);
+
+  useEffect(() => {
+    if (activeElement && shouldAutoRun(activeElement)) {
+      const dynamicElement = formStateToDynamicElement(activeElement);
+      updateDynamicElement(allFramesInInspectedTab, dynamicElement);
+    }
+  }, [dispatch, currentUrl, permissions, activeElement]);
 
   useEffect(() => {
     if (!activeElement) {

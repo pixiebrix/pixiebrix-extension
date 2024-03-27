@@ -15,13 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type WebNavigation } from "webextension-polyfill";
-import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
+import useAsyncExternalStore from "@/hooks/useAsyncExternalStore";
 
-type NavigationDetails = WebNavigation.OnHistoryStateUpdatedDetailsType;
+function subscribe(update: VoidFunction) {
+  browser.permissions.onAdded.addListener(update);
+  browser.permissions.onRemoved.addListener(update);
+  return () => {
+    browser.permissions.onAdded.removeListener(update);
+    browser.permissions.onRemoved.removeListener(update);
+  };
+}
 
-export const navigationEvent = new SimpleEventTarget<NavigationDetails>();
+async function getSnapshot() {
+  return browser.permissions.getAll();
+}
 
-export function updatePageEditor() {
-  navigationEvent.emit();
+export default function useGrantedPermissions() {
+  return useAsyncExternalStore(subscribe, getSnapshot);
 }

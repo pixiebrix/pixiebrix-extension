@@ -18,14 +18,14 @@
 import React from "react";
 import PanelContent from "./PanelContent";
 import { render } from "./testHelpers";
-import { navigationEvent } from "@/pageEditor/events";
+import useCurrentInspectedUrl from "@/pageEditor/hooks/useCurrentInspectedUrl";
 import { tabStateActions } from "@/pageEditor/tabState/tabStateSlice";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import { updateDynamicElement } from "@/contentScript/messenger/api";
 import { actions as editorActions } from "@/pageEditor/slices/editorSlice";
-
 import { formStateFactory } from "@/testUtils/factories/pageEditorFactories";
 
+jest.mock("@/pageEditor/hooks/useCurrentInspectedUrl");
 jest.mock("@/contentScript/messenger/api");
 
 jest.mock("redux-persist/integration/react", () => ({
@@ -41,11 +41,18 @@ describe("Listen to navigationEvent", () => {
   test("no element selected", async () => {
     jest.spyOn(tabStateActions, "connectToContentScript");
 
-    render(<PanelContent />);
+    jest
+      .mocked(useCurrentInspectedUrl)
+      .mockReturnValue("https://test.url#first-load");
+
+    const { rerender } = render(<PanelContent />);
     await waitForEffect();
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(1);
 
-    navigationEvent.emit();
+    jest
+      .mocked(useCurrentInspectedUrl)
+      .mockReturnValue("https://test.url#updated-url");
+    rerender(<PanelContent />);
 
     // One call on load and one on navigation event
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(2);
@@ -55,8 +62,11 @@ describe("Listen to navigationEvent", () => {
   test("an element is selected", async () => {
     jest.spyOn(tabStateActions, "connectToContentScript");
 
+    jest.mocked(useCurrentInspectedUrl).mockReturnValue("https://test.url#4");
+
     const formState = formStateFactory();
-    render(<PanelContent />, {
+
+    const { rerender } = render(<PanelContent />, {
       setupRedux(dispatch) {
         dispatch(editorActions.addElement(formState));
         dispatch(editorActions.selectElement(formState.uuid));
@@ -66,10 +76,11 @@ describe("Listen to navigationEvent", () => {
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(1);
     expect(updateDynamicElement).not.toHaveBeenCalled();
 
-    navigationEvent.emit();
+    jest.mocked(useCurrentInspectedUrl).mockReturnValue("https://test.url#3");
+    rerender(<PanelContent />);
 
     expect(tabStateActions.connectToContentScript).toHaveBeenCalledTimes(2);
     // Panels are not automatically updated on navigation
-    expect(updateDynamicElement).toHaveBeenCalledTimes(0);
+    expect(updateDynamicElement).not.toHaveBeenCalled();
   });
 });

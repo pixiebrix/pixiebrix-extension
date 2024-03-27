@@ -16,28 +16,13 @@
  */
 
 import { resetTab } from "@/contentScript/messenger/api";
-import { type Target } from "@/types/messengerTypes";
-import { updatePageEditor } from "./events";
-import {
-  allFramesInInspectedTab,
-  isCurrentTopFrame,
-} from "@/pageEditor/context/connection";
-
-// TODO: Migrate to useCurrentUrl()
-async function onNavigation(target: Target): Promise<void> {
-  if (isCurrentTopFrame(target)) {
-    updatePageEditor();
-  }
-}
+import { allFramesInInspectedTab } from "@/pageEditor/context/connection";
 
 function onEditorClose(): void {
   resetTab(allFramesInInspectedTab);
 }
 
 export function watchNavigation(): void {
-  browser.webNavigation.onDOMContentLoaded.addListener(onNavigation);
-  browser.permissions.onAdded.addListener(updatePageEditor);
-  browser.permissions.onRemoved.addListener(updatePageEditor);
   window.addEventListener("beforeunload", onEditorClose);
 
   if (process.env.DEBUG)
