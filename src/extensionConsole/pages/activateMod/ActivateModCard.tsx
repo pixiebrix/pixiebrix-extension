@@ -24,7 +24,7 @@ import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import useActivateModWizard from "@/activation/useActivateModWizard";
 import BlockFormSubmissionViaEnterIfFirstChild from "@/components/BlockFormSubmissionViaEnterIfFirstChild";
 import { useDispatch, useSelector } from "react-redux";
-import { selectRecipeHasAnyExtensionsInstalled } from "@/store/extensionsSelectors";
+import { selectModHasAnyModComponentsInstalled } from "@/store/extensionsSelectors";
 import useRegistryIdParam from "@/extensionConsole/pages/useRegistryIdParam";
 import {
   useCreateMilestoneMutation,
@@ -79,7 +79,7 @@ const ActivateModCard: React.FC = () => {
   const dispatch = useDispatch();
   const modId = useRegistryIdParam();
   const isReactivate = useSelector(
-    selectRecipeHasAnyExtensionsInstalled(modId),
+    selectModHasAnyModComponentsInstalled(modId),
   );
   // Page parent component is gating this content component on isFetching, so
   // recipe will always be resolved here

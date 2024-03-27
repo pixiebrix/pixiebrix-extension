@@ -38,7 +38,7 @@ import PageStateAnalysis from "@/analysis/analysisVisitors/pageStateAnalysis/pag
 import CheckEventNamesAnalysis from "@/analysis/analysisVisitors/eventNameAnalysis/checkEventNamesAnalysis";
 import { selectActiveElement } from "@/pageEditor/slices/editorSelectors";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { modComponentToFormState } from "@/pageEditor/starterBricks/adapter";
 import { getPageState } from "@/contentScript/messenger/strict/api";
 import HttpRequestAnalysis from "@/analysis/analysisVisitors/httpRequestAnalysis";
@@ -66,7 +66,7 @@ async function selectActiveModFormStates(
     );
     const dirtyIds = new Set(dirtyElements.map((x) => x.uuid));
 
-    const extensions = selectExtensions(state);
+    const extensions = selectActivatedModComponents(state);
     const otherExtensions = extensions.filter(
       (x) => x._recipe?.id === element.recipe.id && !dirtyIds.has(x.id),
     );
