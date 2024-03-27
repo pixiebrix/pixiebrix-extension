@@ -147,7 +147,15 @@ async function codeGrantFlow(
     }
 
     case "application/x-www-form-urlencoded": {
-      const parsed = await response.formData();
+      let parsed;
+      try {
+        parsed = await response.formData();
+      } catch {
+        throw new Error(
+          "Expected application/x-www-form-urlencoded data for response",
+        );
+      }
+
       throwIfResponseError(parsed);
 
       const json = Object.fromEntries(parsed.entries()) as AuthData;
