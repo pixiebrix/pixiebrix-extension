@@ -46,7 +46,7 @@ export const selectIsModComponentSavedOnCloud =
   (modComponentId: UUID) => (state: ModComponentsRootState) =>
     isModComponentSavedOnCloudSelector(state, modComponentId);
 
-const modComponentsForModSelector = createSelector(
+const activatedModComponentsForModSelector = createSelector(
   selectActivatedModComponents,
   (state: ModComponentsRootState, modId: RegistryId) => modId,
   (activatedModComponents, modId) =>
@@ -57,8 +57,8 @@ const modComponentsForModSelector = createSelector(
 
 export const selectModComponentsForMod =
   (modId: RegistryId) => (state: ModComponentsRootState) =>
-    modComponentsForModSelector(state, modId);
+    activatedModComponentsForModSelector(state, modId);
 
 export const selectModHasAnyModComponentsInstalled =
   (modId: RegistryId) => (state: ModComponentsRootState) =>
-    !isEmpty(modComponentsForModSelector(state, modId));
+    !isEmpty(activatedModComponentsForModSelector(state, modId));
