@@ -59,6 +59,8 @@ export function validateTimedSequence(string: string): TimedSequence {
  * Return a random v4 UUID.
  */
 export function uuidv4(): UUID {
+  // Use `uuid` package instead of `crypto.randomUUID()` because the latter isn't available on HTTP-non-S pages
+  // https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID
   return v4() as UUID;
 }
 
