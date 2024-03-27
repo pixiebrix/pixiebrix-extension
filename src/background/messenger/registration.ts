@@ -42,7 +42,7 @@ import {
 import { performConfiguredRequest } from "@/background/requests"; // 24 strictNullCheck errors
 import { getAvailableVersion } from "@/background/installer"; // 300 strictNullCheck errors
 import { removeExtensionForEveryTab } from "@/background/removeExtensionForEveryTab"; // 300 strictNullCheck errors
-import { debouncedInstallStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 300 strictNullCheck errors
+import { debouncedActivateStarterMods as installStarterBlueprints } from "@/background/starterMods"; // 300 strictNullCheck errors
 import {
   collectPerformanceDiagnostics,
   initTelemetry,

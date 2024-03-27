@@ -67,7 +67,7 @@ describe("it renders", () => {
       setupRedux(dispatch) {
         dispatch(authSlice.actions.setAuth(authStateFactory()));
         dispatch(
-          extensionsSlice.actions.installCloudExtension({
+          extensionsSlice.actions.activateStandaloneModDefinition({
             extension: standaloneModDefinition,
           }),
         );
@@ -90,7 +90,7 @@ describe("it renders", () => {
       setupRedux(dispatch) {
         dispatch(authSlice.actions.setAuth(anonAuth));
         dispatch(
-          extensionsSlice.actions.installCloudExtension({
+          extensionsSlice.actions.activateStandaloneModDefinition({
             extension: standaloneModDefinition,
           }),
         );
@@ -147,7 +147,7 @@ describe("it renders", () => {
           setupRedux(dispatch) {
             dispatch(authSlice.actions.setAuth(authStateFactory()));
             dispatch(
-              extensionsSlice.actions.installCloudExtension({
+              extensionsSlice.actions.activateStandaloneModDefinition({
                 extension: standaloneModDefinition,
               }),
             );

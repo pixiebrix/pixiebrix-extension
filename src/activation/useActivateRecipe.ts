@@ -169,12 +169,12 @@ function useActivateRecipe(
         await uninstallRecipe(recipe.metadata.id, recipeExtensions, dispatch);
 
         dispatch(
-          extensionsSlice.actions.installMod({
+          extensionsSlice.actions.activateMod({
             modDefinition: recipe,
             configuredDependencies: integrationDependencies,
             optionsArgs,
             screen: source,
-            isReinstall: recipeExtensions.length > 0,
+            isReactivate: recipeExtensions.length > 0,
           }),
         );
 

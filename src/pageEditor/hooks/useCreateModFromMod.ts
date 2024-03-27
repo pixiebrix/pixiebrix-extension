@@ -96,7 +96,7 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
         ];
 
         dispatch(
-          modComponentActions.installMod({
+          modComponentActions.activateMod({
             modDefinition: savedModDefinition,
             configuredDependencies: collectExistingConfiguredDependenciesForMod(
               savedModDefinition,
@@ -104,7 +104,7 @@ function useCreateModFromMod(): UseCreateModFromModReturn {
             ),
             optionsArgs: collectModOptions(modComponents),
             screen: "pageEditor",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
         dispatch(editorActions.selectRecipeId(savedModDefinition.metadata.id));

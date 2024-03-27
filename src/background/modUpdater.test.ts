@@ -324,10 +324,10 @@ describe("updateModsIfUpdatesAvailable", () => {
 
     const optionsState = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installMod({
+      extensionsSlice.actions.activateMod({
         modDefinition: publicMod,
         screen: "marketplace",
-        isReinstall: false,
+        isReactivate: false,
       }),
     );
 

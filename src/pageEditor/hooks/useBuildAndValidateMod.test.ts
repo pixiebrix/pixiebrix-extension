@@ -96,10 +96,10 @@ describe("useBuildAndValidateMod", () => {
       // Install the mod
       const state = extensionsSlice.reducer(
         { extensions: [] },
-        extensionsActions.installMod({
+        extensionsActions.activateMod({
           modDefinition,
           screen: "pageEditor",
-          isReinstall: false,
+          isReactivate: false,
         }),
       );
 
@@ -136,10 +136,10 @@ describe("useBuildAndValidateMod", () => {
       const { result } = renderHook(() => useBuildAndValidateMod(), {
         setupRedux(dispatch) {
           dispatch(
-            extensionsActions.installMod({
+            extensionsActions.activateMod({
               modDefinition,
               screen: "pageEditor",
-              isReinstall: false,
+              isReactivate: false,
             }),
           );
         },
@@ -184,10 +184,10 @@ describe("useBuildAndValidateMod", () => {
       {
         setupRedux(dispatch) {
           dispatch(
-            extensionsActions.installMod({
+            extensionsActions.activateMod({
               modDefinition: installedModDefinition,
               screen: "pageEditor",
-              isReinstall: false,
+              isReactivate: false,
             }),
           );
           dispatch(editorActions.addElement(dirtyFormState1));
