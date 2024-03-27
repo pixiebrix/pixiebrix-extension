@@ -15,17 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isBackgroundPage } from "webext-detect-page";
+import { type Page } from "@playwright/test";
+import { getBaseExtensionConsoleUrl } from "./constants";
 
-/** @file DO NOT alter this file to add an "init" function because it must be executed as early as possible */
-if (isBackgroundPage()) {
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      console.error(
-        "Detected added node, this won't work in MV3:",
-        ...mutation.addedNodes,
-      );
-    }
-  });
-  observer.observe(document, { childList: true, subtree: true });
+export class WorkshopPage {
+  private readonly extensionConsoleUrl: string;
+
+  constructor(
+    private readonly page: Page,
+    extensionId: string,
+  ) {
+    this.extensionConsoleUrl = getBaseExtensionConsoleUrl(extensionId);
+  }
+
+  async goto() {
+    await this.page.goto(this.extensionConsoleUrl);
+    await this.page
+      .getByRole("link", {
+        name: "Workshop",
+      })
+      .click();
+  }
 }

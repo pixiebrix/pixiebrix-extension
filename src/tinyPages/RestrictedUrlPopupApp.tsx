@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React from "react";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import {
@@ -24,6 +24,7 @@ import {
 } from "@/tinyPages/restrictedUrlPopupConstants";
 import { isBrowserSidebar } from "@/utils/expectContext";
 import { getExtensionConsoleUrl } from "@/utils/extensionUtils";
+import useOnMountOnly from "@/hooks/useOnMountOnly";
 
 // TODO: Move to utils folder after the isBrowserSidebar condition is dropped
 async function openInActiveTab(event: React.MouseEvent<HTMLAnchorElement>) {
@@ -79,12 +80,11 @@ const RestrictedUrlContent: React.FC<{ extensionConsoleLink?: boolean }> = ({
 const RestrictedUrlPopupApp: React.FC<{ reason: string | null }> = ({
   reason = DISPLAY_REASON_UNKNOWN,
 }) => {
-  useEffect(() => {
+  useOnMountOnly(() => {
     reportEvent(Events.BROWSER_ACTION_RESTRICTED_URL, {
       reason,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run once on mount
-  }, []);
+  });
 
   return reason === DISPLAY_REASON_EXTENSION_CONSOLE ? (
     <RestrictedUrlContent extensionConsoleLink={false}>

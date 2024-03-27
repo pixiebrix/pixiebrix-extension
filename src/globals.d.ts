@@ -27,6 +27,8 @@ https://github.com/typescript-eslint/typescript-eslint/issues/3295#issuecomment-
 // Improve standard type library https://www.totaltypescript.com/ts-reset
 /// <reference types="@total-typescript/ts-reset" />
 
+/// <reference types="jest-extended" />
+
 declare const browser: import("webextension-polyfill").Browser;
 
 /* eslint-disable-next-line no-restricted-syntax --
@@ -105,10 +107,16 @@ declare module "canvas-confetti" {
   export default confetti;
 }
 
+type Token = {
+  value: string;
+  type: "PSEUDO" | "TAG" | string;
+  matches: string[];
+};
+
 interface JQueryStatic {
   find: (() => JQuery) & {
     /** Partial type for `$.find.tokenize */
-    tokenize: (selector: string) => string[];
+    tokenize: (selector: string) => Token[][];
   };
 }
 

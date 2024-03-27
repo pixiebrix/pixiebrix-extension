@@ -15,31 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { popoverSlice } from "@/contentScript/commandPopover/commandPopoverSlice";
-import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
+import { type EffectCallback, useEffect } from "react";
 
-describe("commandPopoverSlice", () => {
-  it.each(["test", "TeSt"])("case matches query: %s", (query) => {
-    const command = {
-      componentId: autoUUIDSequence(),
-      shortcut: "test",
-      title: "Test",
-      handler: jest.fn(),
-    };
-
-    expect(
-      popoverSlice.reducer(
-        undefined,
-        popoverSlice.actions.search({
-          query,
-          commands: [command],
-        }),
-      ),
-    ).toStrictEqual({
-      activeCommand: null,
-      query,
-      results: [command],
-      selectedIndex: 0,
-    });
-  });
-});
+/**
+ * Dependency-free useEffect hook meant to run only once on mount
+ */
+export default function useOnMountOnly(callback: EffectCallback): void {
+  // Do not add dependencies here. If you need dependencies, use useEffect
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Only meant to run once
+  useEffect(callback, []);
+}

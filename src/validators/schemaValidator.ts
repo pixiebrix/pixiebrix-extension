@@ -253,8 +253,21 @@ export async function validateBrickInputOutput(
   schema: Schema,
   instance: unknown,
 ): Promise<ValidationResult> {
-  // We need to `dereference` here, given that our @cfworker/json-schema library supports $ref
-  const refs = await $RefParser.resolve(schema, {
+  // We need to make sure that the schema is "unfrozen" and extensible before
+  // passing into the Validator. It uses a slightly expanded type (ValidatorSchema)
+  // from the base json-schema type, and some internal logic will set some
+  // properties of the extended type.
+  // We need to clone before passing into $RefParser.resolve(), because the
+  // result of that (refs.values()) will also be passed into the Validator.
+  // Don't cast yet though, because ValidatorSchema doesn't explicitly extend
+  // JSONSchema7, so we'd have to cast it right back when passing into
+  // $RefParser.resolve() below, which accepts (string | JSONSchema7) as the
+  // first input argument.
+  const validatorSchema = cloneDeep(schema);
+
+  // The @cfworker/json-schema Validator supports $ref, so we don't need to
+  // dereference the schema, we can just resolve the integration and built-in refs.
+  const refs = await $RefParser.resolve(validatorSchema, {
     resolve: {
       // Exclude secret properties, because they aren't passed to the runtime
       integrationDefinitionResolver: integrationResolverFactory({
@@ -273,7 +286,11 @@ export async function validateBrickInputOutput(
     // Provide an $id to avoid an error about duplicate schema because validator defaults the schema $id.
     // The exact $id doesn't matter, it just can't be one of BUILT_IN_SCHEMAS.
     $id: "https://app.pixiebrix.com/schemas/value",
-    ...(schema as ValidatorSchema),
+    // We can cast the object here because the extra properties on the expanded
+    // ValidatorSchema type are all optional, and we've already previously
+    // "unfrozen" the schema object, so the optional properties can be set on
+    // the object at run time successfully.
+    ...(validatorSchema as ValidatorSchema),
   });
   validator.addSchema(refs.values() as ValidatorSchema);
   return validator.validate(instance ?? null);

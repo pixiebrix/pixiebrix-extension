@@ -51,6 +51,7 @@ import { onContextInvalidated } from "webext-events";
 import StopPropagation from "@/components/StopPropagation";
 import useScrollLock from "@/hooks/useScrollLock";
 import { flagOn } from "@/auth/featureFlagStorage";
+import useOnMountOnly from "@/hooks/useOnMountOnly";
 
 /**
  * Set to true if the KBar should be displayed on initial mount (i.e., because it was triggered by the
@@ -74,14 +75,12 @@ function useAutoShow(): void {
     query.toggle();
   });
 
-  useEffect(() => {
+  useOnMountOnly(() => {
     if (autoShow) {
       query.toggle();
       autoShow = false;
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount; query will be defined on initial mount
-  }, []);
+  });
 }
 
 const AutoShow: React.FC = () => {

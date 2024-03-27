@@ -17,19 +17,19 @@
 
 import {
   normalizePreview,
-  replaceAtCommand,
-} from "@/contentScript/commandPopover/commandUtils";
+  replaceAtCommandKey,
+} from "@/contentScript/shortcutSnippetMenu/shortcutSnippetUtils";
 
 // `jsdom` doesn't implement execCommand
 document.execCommand = jest.fn().mockReturnValue(true);
 
 // Can only do very limited testing due to lack of jsdom support for execCommand and selection/focus
-describe("replaceAtCommand", () => {
+describe("replaceAtCommandKey", () => {
   it("inserts in normal text field", async () => {
     document.body.innerHTML =
       '<input type="text" value="\\hello world" id="input" />';
 
-    await replaceAtCommand({
+    await replaceAtCommandKey({
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- defined above
       element: document.querySelector("#input")!,
       text: "new text",

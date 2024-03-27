@@ -18,57 +18,61 @@
 import type { UUID } from "@/types/stringTypes";
 import { SimpleEventTarget } from "@/utils/SimpleEventTarget";
 import { remove } from "lodash";
-import type { TextCommand } from "@/platform/platformTypes/commandPopoverProtocol";
+import type { ShortcutSnippet } from "@/platform/platformTypes/shortcutSnippetMenuProtocol";
 
 /**
- * Registry for slash commands
+ * Registry for shortcut snippets
  * @since 1.8.10
  */
-class CommandRegistry {
+class SnippetRegistry {
   /**
    * Map from component UUID to registered action
    */
-  public readonly commands: TextCommand[] = [];
+  public readonly shortcutSnippets: ShortcutSnippet[] = [];
 
   /**
-   * Event fired when the set of registered commands change
+   * Event fired when the set of registered shortcut snippets change
    */
-  public readonly onChange = new SimpleEventTarget<TextCommand[]>();
+  public readonly onChange = new SimpleEventTarget<ShortcutSnippet[]>();
 
   /**
    * Register a new text snippet
    */
-  register(newCommand: TextCommand): void {
-    const index = this.commands.findIndex(
-      (command) => newCommand.shortcut === command.shortcut,
+  register(newShortcutSnippet: ShortcutSnippet): void {
+    const index = this.shortcutSnippets.findIndex(
+      (shortcutSnippet) =>
+        newShortcutSnippet.shortcut === shortcutSnippet.shortcut,
     );
 
     if (index >= 0) {
       // eslint-disable-next-line security/detect-object-injection -- number from findIndex
-      this.commands[index] = newCommand;
+      this.shortcutSnippets[index] = newShortcutSnippet;
     } else {
-      this.commands.push(newCommand);
+      this.shortcutSnippets.push(newShortcutSnippet);
     }
 
-    this.onChange.emit(this.commands);
+    this.onChange.emit(this.shortcutSnippets);
   }
 
   /**
-   * Unregister all commands for a mod component
+   * Unregister all shortcut snippets for a mod component
    * @param componentId the mod component id
    */
   unregister(componentId: UUID): void {
-    remove(this.commands, (command) => command.componentId === componentId);
-    this.onChange.emit(this.commands);
+    remove(
+      this.shortcutSnippets,
+      (shortcutSnippet) => shortcutSnippet.componentId === componentId,
+    );
+    this.onChange.emit(this.shortcutSnippets);
   }
 
   /**
-   * Clear all commands.
+   * Clear all shortcut snippets.
    */
   clear(): void {
-    this.commands.splice(0);
-    this.onChange.emit(this.commands);
+    this.shortcutSnippets.splice(0);
+    this.onChange.emit(this.shortcutSnippets);
   }
 }
 
-export default CommandRegistry;
+export default SnippetRegistry;

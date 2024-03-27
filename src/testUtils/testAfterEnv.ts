@@ -24,7 +24,6 @@ import $ from "jquery";
 // https://github.com/evelynhathaway/jest-location-mock
 import "jest-location-mock";
 import "./permissionsMock";
-import * as detectPageMock from "./detectPageMock";
 
 // @ts-expect-error For testing only
 global.$ = $;
@@ -60,5 +59,3 @@ chrome.storage.onChanged = {
   removeRules: jest.fn(),
   addRules: jest.fn(),
 };
-
-jest.setMock("webext-detect-page", detectPageMock);
