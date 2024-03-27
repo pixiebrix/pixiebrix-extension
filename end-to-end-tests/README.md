@@ -37,6 +37,10 @@ Adhere to these principles, based on the [Playwright Best Practices](https://pla
   Leverage [Playwright fixtures](https://playwright.dev/docs/test-fixtures) for shared code.
 - Rely on Playwright's auto-waiting feature for actions like clicking or typing.
 
+When testing mod functionality, use our testing playground website, https://pbx.vercel.app, for a consistent environment. It is configured
+as the base url for e2e tests. Ex. `await page.goto("/bootstrap-5");` will bring you to the bootstrap-5 page on the playground.
+The source for this website is: https://github.com/pixiebrix/playground
+
 Focus on testing high-level user behavior and integration points, avoiding duplication of unit test coverage. Each
 test should represent one full feature flow, which may include multiple steps and assertions. Avoid splitting
 a single feature flow across multiple tests, preferring longer tests if necessary.

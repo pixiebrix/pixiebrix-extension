@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expect } from "./fixtures/extensionBase";
 import type AxeBuilder from "@axe-core/playwright";
-import { type Locator } from "@playwright/test";
+import { type Locator, expect } from "@playwright/test";
 
 type AxeResults = Awaited<ReturnType<typeof AxeBuilder.prototype.analyze>>;
 
@@ -38,8 +37,7 @@ export function checkForCriticalViolations(
   );
 
   const unallowedViolations = criticalViolations.filter(
-    (violation) =>
-      !allowedViolations.some((allowed) => violation.id === allowed),
+    (violation) => !allowedViolations.includes(violation.id),
   );
 
   const absentAllowedViolations = allowedViolations.filter(

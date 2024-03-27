@@ -35,6 +35,8 @@ import fs from "node:fs/promises";
 import { getBaseExtensionConsoleUrl } from "../pageObjects/constants";
 import { expectToNotBeHiddenOrUnmounted } from "../utils";
 
+process.env.PW_CHROMIUM_ATTACH_TO_OTHER = "1";
+
 const getStoredCookies = async (): Promise<Cookie[]> => {
   let fileBuffer;
   try {
@@ -130,6 +132,11 @@ export const test = base.extend<{
         ...(CI || SLOWMO || PWDEBUG ? [] : ["--headless=new"]),
       ],
       slowMo: SLOWMO ? 3000 : undefined,
+      permissions: [
+        "clipboard-read",
+        "clipboard-write",
+        "accessibility-events",
+      ],
     });
     // The admin console automatically opens a new tab to link the newly installed extension to the user's account.
     const pagePromise = context.waitForEvent("page");
