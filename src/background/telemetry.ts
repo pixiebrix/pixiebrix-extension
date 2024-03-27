@@ -345,6 +345,7 @@ export async function recordEvent({
         version,
         versionName,
         manifestVersion,
+        runtimeId: browser.runtime.id,
       },
     };
 
