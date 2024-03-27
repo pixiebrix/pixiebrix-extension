@@ -15,9 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  margin-right: 10px; /* Make room for the off-set outline */
-}
 .isActive {
   /* Use `outline` instead of `box-shadow` because it supports offsets, without having to mess with padding */
   outline: color-mix(in srgb, var(--info) 50%, transparent) solid 3px;
