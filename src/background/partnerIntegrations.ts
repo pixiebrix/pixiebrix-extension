@@ -22,8 +22,9 @@ import { type RegistryId } from "@/types/registryTypes";
 import launchOAuth2Flow from "@/background/auth/launchOAuth2Flow";
 import { readPartnerAuthData, setPartnerAuth } from "@/auth/authStorage";
 import serviceRegistry from "@/integrations/registry";
-import ky, { HTTPError } from "ky";
+import axios from "axios";
 import { getBaseURL } from "@/data/service/baseService";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
 import chromeP from "webext-polyfill-kinda";
 import { safeParseUrl } from "@/utils/urlUtils";
 import { setCachedAuthData } from "@/background/auth/authStorage";
@@ -33,7 +34,6 @@ import {
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
 import { stringToBase64 } from "uint8array-extras";
-import { type AuthData } from "@/integrations/integrationTypes";
 
 const TEN_HOURS = 1000 * 60 * 60 * 10;
 
@@ -133,17 +133,15 @@ export async function launchAuthIntegration({
     // in just-in-time user initialization.
     const baseURL = await getBaseURL();
     try {
-      await ky(new URL("/api/me/", baseURL), {
+      await axios.get("/api/me/", {
+        baseURL,
         headers: {
           Authorization: `Bearer ${data.access_token as string}`,
           "X-Control-Room": config.config.controlRoomUrl,
         },
-      }).json();
+      });
     } catch (error) {
-      if (
-        error instanceof HTTPError &&
-        [401, 403].includes(error.response.status)
-      ) {
+      if (isAxiosError(error) && [401, 403].includes(error.response?.status)) {
         // Clear the token to allow the user re-login with the SAML/SSO provider
         // https://developer.chrome.com/docs/extensions/reference/identity/#method-clearAllCachedAuthTokens
         await chromeP.identity.clearAllCachedAuthTokens();
@@ -201,7 +199,8 @@ export async function _refreshPartnerToken(): Promise<void> {
       throw new Error("controlRoomUrl is missing on configuration");
     }
 
-    const params = new FormData();
+    // https://axios-http.com/docs/urlencoded
+    const params = new URLSearchParams();
     params.append("grant_type", "refresh_token");
     params.append("client_id", context.client_id);
     params.append("refresh_token", authData.refreshToken);
@@ -209,14 +208,9 @@ export async function _refreshPartnerToken(): Promise<void> {
 
     // On 401, throw the error. In the future, we might consider clearing the partnerAuth. However, currently that
     // would trigger a re-login, which may not be desirable at arbitrary times.
-    const data = await ky
-      .post(context.tokenUrl, {
-        body: params,
-        headers: {
-          Authorization: `Basic ${stringToBase64(context.client_id)} `,
-        },
-      })
-      .json<AuthData>();
+    const { data } = await axios.post(context.tokenUrl, params, {
+      headers: { Authorization: `Basic ${stringToBase64(context.client_id)} ` },
+    });
 
     // Store for use direct calls to the partner API
     await setCachedAuthData(config.id, data);
@@ -224,9 +218,9 @@ export async function _refreshPartnerToken(): Promise<void> {
     // Store for use with the PixieBrix API
     await setPartnerAuth({
       authId: config.id,
-      token: data.access_token as string | undefined,
+      token: data.access_token,
       // `refresh_token` only returned if offline_access scope is requested
-      refreshToken: data.refresh_token as string | undefined,
+      refreshToken: data.refresh_token,
       extraHeaders: {
         "X-Control-Room": config.config.controlRoomUrl,
       },

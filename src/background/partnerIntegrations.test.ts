@@ -32,22 +32,13 @@ import {
   integrationConfigFactory,
   secretsConfigFactory,
 } from "@/testUtils/factories/integrationFactories";
-import nock from "nock";
+import { appApiMock } from "@/testUtils/appApiMock";
 import { registry } from "@/background/messenger/strict/api";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 import {
   CONTROL_ROOM_OAUTH_INTEGRATION_ID,
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
-
-nock.disableNetConnect();
-const appApiMock = nock("http://localhost");
-nock("https://oauthconfigapp.automationanywhere.digital")
-  .persist()
-  .post("/*")
-  .reply(200, {})
-  .get("/*")
-  .reply(200, {});
 
 const integrationDefinitionMap = new Map([
   [CONTROL_ROOM_TOKEN_INTEGRATION_ID, tokenIntegrationDefinition],
@@ -87,11 +78,13 @@ const setCachedAuthDataMock = jest.mocked(setCachedAuthData);
 
 describe("getPartnerPrincipals", () => {
   beforeEach(() => {
+    appApiMock.reset();
+
     appApiMock
-      .get("/api/registry/bricks/")
+      .onGet("/api/registry/bricks/")
       .reply(200, [tokenIntegrationDefinition, oauthIntegrationDefinition]);
 
-    appApiMock.get("/api/services/shared/").reply(200, []);
+    appApiMock.onGet("/api/services/shared/").reply(200, []);
 
     readRawConfigurationsMock.mockReset();
   });
@@ -136,7 +129,8 @@ describe("getPartnerPrincipals", () => {
 
 describe("refresh partner token", () => {
   beforeEach(() => {
-    nock.cleanAll();
+    appApiMock.reset();
+    appApiMock.resetHistory();
   });
 
   it("nop if no token", async () => {
@@ -149,9 +143,9 @@ describe("refresh partner token", () => {
       authId: uuidv4(),
       token: "notatoken",
     });
-    appApiMock.get("/api/services/shared/").reply(200, []);
+
     await _refreshPartnerToken();
-    expect(appApiMock.isDone()).toBeFalse();
+    expect(appApiMock.history.post).toHaveLength(0);
   });
 
   it("refreshes token", async () => {
@@ -172,8 +166,8 @@ describe("refresh partner token", () => {
       } as IntegrationConfig,
     ]);
 
-    appApiMock.get("/api/services/shared/").reply(200, []);
-    appApiMock.post("/").reply(200, {
+    appApiMock.onGet("/api/services/shared/").reply(200, []);
+    appApiMock.onPost().reply(200, {
       access_token: "notatoken2",
       refresh_token: "notarefreshtoken2",
     });
@@ -216,8 +210,8 @@ describe("refresh partner token", () => {
       } as IntegrationConfig,
     ]);
 
-    appApiMock.get("/api/services/shared/").reply(200, []);
-    appApiMock.post("/").reply(401);
+    appApiMock.onGet("/api/services/shared/").reply(200, []);
+    appApiMock.onPost().reply(401);
 
     await serviceLocator.refreshLocal();
 
