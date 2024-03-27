@@ -21,9 +21,13 @@ import { type Schema } from "@/types/schemaTypes";
 import { isEmpty } from "lodash";
 import selectionController from "@/utils/selectionController";
 import type { PlatformCapability } from "@/platform/capabilities";
-import { insertAtCursorWithCustomEditorSupport } from "@/contentScript/textEditorDom";
+import {
+  ExecCommandError,
+  insertAtCursorWithCustomEditorSupport,
+} from "@/contentScript/textEditorDom";
 import { propertiesToSchema } from "@/utils/schemaUtils";
 import { expectContext } from "@/utils/expectContext";
+import { BusinessError } from "@/errors/businessErrors";
 
 /**
  * Insert text at the cursor position. For use with text snippets, etc.
@@ -75,7 +79,18 @@ class InsertAtCursorEffect extends EffectABC {
     // https://github.com/pixiebrix/pixiebrix-extension/pull/7827#issuecomment-1979884573
     selectionController.restoreWithoutClearing();
 
-    await insertAtCursorWithCustomEditorSupport(text);
+    try {
+      await insertAtCursorWithCustomEditorSupport(text);
+    } catch (error) {
+      if (error instanceof ExecCommandError) {
+        throw new BusinessError(
+          "Error inserting text at cursor. Ensure there is a focused editor in the target frame",
+          { cause: error },
+        );
+      }
+
+      throw error;
+    }
   }
 }
 

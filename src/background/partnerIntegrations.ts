@@ -26,7 +26,6 @@ import axios from "axios";
 import { getBaseURL } from "@/data/service/baseService";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import chromeP from "webext-polyfill-kinda";
-import { safeParseUrl } from "@/utils/urlUtils";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import {
@@ -34,6 +33,7 @@ import {
   CONTROL_ROOM_TOKEN_INTEGRATION_ID,
 } from "@/integrations/constants";
 import { stringToBase64 } from "uint8array-extras";
+import { canParseUrl } from "@/utils/urlUtils";
 
 const TEN_HOURS = 1000 * 60 * 60 * 10;
 
@@ -78,9 +78,9 @@ export async function getPartnerPrincipals(): Promise<PartnerPrincipal[]> {
   );
 
   return auths
-    .filter((auth) => !isEmpty(auth.config.controlRoomUrl))
+    .filter((auth) => canParseUrl(auth.config.controlRoomUrl))
     .map((auth) => ({
-      hostname: safeParseUrl(auth.config.controlRoomUrl).hostname,
+      hostname: new URL(auth.config.controlRoomUrl).hostname,
       principalId: auth.config.username,
     }));
 }

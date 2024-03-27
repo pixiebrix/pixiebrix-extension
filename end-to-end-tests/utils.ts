@@ -17,6 +17,7 @@
 
 import { expect } from "./fixtures/extensionBase";
 import type AxeBuilder from "@axe-core/playwright";
+import { type Locator } from "@playwright/test";
 
 type AxeResults = Awaited<ReturnType<typeof AxeBuilder.prototype.analyze>>;
 
@@ -54,4 +55,15 @@ export function checkForCriticalViolations(
 
   // Expectation only fails if there are any criticalViolations that aren't explicitly allowed
   expect(unallowedViolations).toEqual([]);
+}
+
+// This function is a workaround for the fact that `expect(locator).toBeVisible()` will immediately fail if the element is hidden or unmounted.
+// This function will retry the expectation until the element is visible or the timeout is reached.
+export async function expectToNotBeHiddenOrUnmounted(
+  locator: Locator,
+  options?: { timeout: number },
+) {
+  await expect(async () => {
+    await expect(locator).toBeVisible();
+  }).toPass(options);
 }

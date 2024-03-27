@@ -15,17 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isBackgroundPage } from "webext-detect-page";
+import { type AxiosRequestHeaders, type Method } from "axios";
 
-/** @file DO NOT alter this file to add an "init" function because it must be executed as early as possible */
-if (isBackgroundPage()) {
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      console.error(
-        "Detected added node, this won't work in MV3:",
-        ...mutation.addedNodes,
-      );
-    }
-  });
-  observer.observe(document, { childList: true, subtree: true });
+export interface NetworkRequestConfig<Data = unknown> {
+  url: string;
+  method?: Method;
+  headers?: AxiosRequestHeaders;
+  params?: UnknownObject | void;
+  data?: Data;
+  signal?: AbortSignal;
 }

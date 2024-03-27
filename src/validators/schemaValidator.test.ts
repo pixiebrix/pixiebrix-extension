@@ -27,7 +27,7 @@ import emptyJQueryReaderDefinition from "@contrib/readers/empty-jquery-reader.ya
 import emberJsReaderDefinition from "@contrib/readers/linkedin-organization-reader.yaml";
 import windowReader from "@contrib/readers/trello-card-reader.yaml";
 import reactReader from "@contrib/readers/redfin-reader.yaml";
-import { type Schema } from "@/types/schemaTypes";
+import { type Schema, SCHEMA_EMPTY_OBJECT } from "@/types/schemaTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { timestampFactory } from "@/testUtils/factories/stringFactories";
 import { sharingDefinitionFactory } from "@/testUtils/factories/registryFactories";
@@ -113,6 +113,12 @@ describe("validateBrickInputOutput", () => {
     };
 
     const result = await validateBrickInputOutput(inputSchema, inputInstance);
+    expect(result.errors).toHaveLength(0);
+    expect(result.valid).toBe(true);
+  });
+
+  it("can validate empty brick input schema (frozen object)", async () => {
+    const result = await validateBrickInputOutput(SCHEMA_EMPTY_OBJECT, {});
     expect(result.errors).toHaveLength(0);
     expect(result.valid).toBe(true);
   });

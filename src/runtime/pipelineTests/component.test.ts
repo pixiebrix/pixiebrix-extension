@@ -27,10 +27,10 @@ import {
 
 import { fromJS } from "@/bricks/transformers/brickFactory";
 import { validateSemVerString } from "@/types/helpers";
-import { setContext } from "@/testUtils/detectPageMock";
+import { TEST_setContext } from "webext-detect-page";
 import { toExpression } from "@/utils/expressionUtils";
 
-setContext("contentScript");
+TEST_setContext("contentScript");
 
 beforeEach(() => {
   blockRegistry.clear();

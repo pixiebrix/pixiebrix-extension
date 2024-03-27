@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { type AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { type BaseQueryFn } from "@reduxjs/toolkit/query/react";
 import { serializeError } from "serialize-error";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
@@ -29,12 +29,12 @@ type QueryArgs = {
   /**
    * The REST method
    */
-  method: AxiosRequestConfig["method"];
+  method: NetworkRequestConfig["method"];
 
   /**
    * The REST JSON data
    */
-  data?: AxiosRequestConfig["data"];
+  data?: NetworkRequestConfig["data"];
 
   /**
    * True if a Token is required to make the request.
@@ -50,12 +50,12 @@ type QueryArgs = {
   /**
    * Optional URL parameters to be sent with the request
    */
-  params?: AxiosRequestConfig["params"];
+  params?: NetworkRequestConfig["params"];
 
   /**
    * Optional headers to be sent with the request
    */
-  headers?: AxiosRequestConfig["headers"];
+  headers?: NetworkRequestConfig["headers"];
 };
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery

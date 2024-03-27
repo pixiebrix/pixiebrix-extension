@@ -15,42 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { type ContextName } from "webext-detect-page";
+import { renderHook } from "@testing-library/react-hooks";
+import useOnMountOnly from "./useOnMountOnly";
 
-let _context: ContextName = "extension";
+test("useOnMountOnly", async () => {
+  const callback = jest.fn();
+  const { rerender } = renderHook(() => {
+    useOnMountOnly(callback);
+  });
 
-export function setContext(context: ContextName) {
-  _context = context;
-}
+  expect(callback).toHaveBeenCalledOnce();
 
-export function isChrome() {
-  return true;
-}
+  rerender();
 
-export function isExtensionContext() {
-  return _context !== "web";
-}
-
-export function isOptionsPage() {
-  return _context === "options";
-}
-
-export function isBackground() {
-  return _context === "background";
-}
-
-export function isWeb() {
-  return _context === "web";
-}
-
-export function isContentScript() {
-  return _context === "contentScript";
-}
-
-export function isSidePanel() {
-  return _context === "sidePanel";
-}
-
-export function getContextName(): ContextName {
-  return _context;
-}
+  expect(callback).toHaveBeenCalledOnce();
+});

@@ -47,31 +47,6 @@ describe("assertHttpsUrl", () => {
       new BusinessError("Invalid URL: https::/example.com"),
     );
   });
-  test("parses relative URLs with a base", () => {
-    expect(
-      assertProtocolUrl("/cool/path", ["https:"], {
-        baseUrl: "https://example.com/page",
-      }),
-    ).toStrictEqual(new URL("https://example.com/cool/path"));
-  });
-  test("rejects relative HTTP URLs", () => {
-    expect(() =>
-      assertProtocolUrl("/cool/path", ["https:"], {
-        baseUrl: "http://example.com/page",
-      }),
-    ).toThrow(new BusinessError("Unsupported protocol: http:. Use https:"));
-  });
-  test("rejects invalid base URLs", () => {
-    expect(() =>
-      assertProtocolUrl("/cool/path", ["http:"], {
-        baseUrl: "https::/example.com",
-      }),
-    ).toThrow(
-      new BusinessError(
-        "Invalid URL: /cool/path (base URL: https::/example.com)",
-      ),
-    );
-  });
 });
 
 describe("makeURL", () => {

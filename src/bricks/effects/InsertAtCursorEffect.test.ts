@@ -16,6 +16,9 @@
  */
 
 import InsertAtCursorEffect from "@/bricks/effects/InsertAtCursorEffect";
+import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
+import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
+import { BusinessError } from "@/errors/businessErrors";
 
 const brick = new InsertAtCursorEffect();
 
@@ -26,5 +29,19 @@ const brick = new InsertAtCursorEffect();
 describe("InsertAtCursorEffect", () => {
   it("is root-aware", async () => {
     await expect(brick.isRootAware()).resolves.toBe(false);
+  });
+
+  it("throws business error if insert fails", async () => {
+    // `jsdom` doesn't implement execCommand
+    document.execCommand = jest.fn().mockReturnValue(false);
+
+    await expect(
+      brick.run(
+        unsafeAssumeValidArg({
+          text: "test",
+        }),
+        brickOptionsFactory(),
+      ),
+    ).rejects.toThrow(BusinessError);
   });
 });

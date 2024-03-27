@@ -42,7 +42,7 @@ function validateNode({ node, context, boundaries, allowedGlobs }) {
 
   const isAllowedFile = multimatch(importPath, allowedGlobs).length > 0;
   if (isAllowedFile) {
-    // Ignore whitelisted globs like the messenger
+    // Ignore allowlisted globs like the messenger
     return;
   }
 

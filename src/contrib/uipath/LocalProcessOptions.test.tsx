@@ -28,13 +28,13 @@ import * as auth from "@/hooks/auth";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import { type ModComponentFormState } from "@/pageEditor/starterBricks/formStateTypes";
 import { valueToAsyncState } from "@/utils/asyncStateUtils";
-import { setContext } from "@/testUtils/detectPageMock";
+import { TEST_setContext } from "webext-detect-page";
 import { menuItemFormStateFactory } from "@/testUtils/factories/pageEditorFactories";
 import { integrationDependencyFactory } from "@/testUtils/factories/integrationFactories";
 import { validateOutputKey } from "@/runtime/runtimeTypes";
 import useSanitizedIntegrationConfigFormikAdapter from "@/integrations/useSanitizedIntegrationConfigFormikAdapter";
 
-setContext("devToolsPage");
+TEST_setContext("devToolsPage");
 
 jest.mock("@/integrations/useSanitizedIntegrationConfigFormikAdapter");
 

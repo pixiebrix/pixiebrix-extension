@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
+/**
+ * @file
+ * Do not use `getMethod` in this file; Keep only registrations here, not implementations
+ *
+ * `strictNullCheck errors` context: https://github.com/pixiebrix/pixiebrix-extension/issues/6526
+ */
+
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 import {
@@ -24,35 +30,35 @@ import {
   queueReactivateTab,
   reactivateTab,
   removePersistedExtension,
-} from "@/contentScript/lifecycle"; // 275 errors
-import { insertPanel } from "@/contentScript/pageEditor/insertPanel"; // 300 errors
-import { insertButton } from "@/contentScript/pageEditor/insertButton"; // 300 errors
+} from "@/contentScript/lifecycle"; // 275 strictNullCheck errors
+import { insertPanel } from "@/contentScript/pageEditor/insertPanel"; // 300 strictNullCheck errors
+import { insertButton } from "@/contentScript/pageEditor/insertButton"; // 300 strictNullCheck errors
 import {
   clearDynamicElements,
   disableOverlay,
   enableOverlay,
   runExtensionPointReader,
   updateDynamicElement,
-} from "@/contentScript/pageEditor/dynamic"; // 300 errors
+} from "@/contentScript/pageEditor/dynamic"; // 300 strictNullCheck errors
 import {
   runBlockPreview,
   resetTab,
   runRendererBlock,
-} from "@/contentScript/pageEditor"; // 300 errors
-import { runBrick } from "@/contentScript/executor"; // 290 errors
+} from "@/contentScript/pageEditor"; // 300 strictNullCheck errors
+import { runBrick } from "@/contentScript/executor"; // 290 strictNullCheck errors
 import {
   cancelSelect,
   selectElement,
-} from "@/contentScript/pageEditor/elementPicker"; // 290 errors
+} from "@/contentScript/pageEditor/elementPicker"; // 290 strictNullCheck errors
 import {
   runHeadlessPipeline,
   runMapArgs,
   runRendererPipeline,
-} from "@/contentScript/pipelineProtocol"; // Background/messenger import
-import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore"; // 248 errors
-import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation"; // 246 errors
+} from "@/contentScript/pipelineProtocol"; // Depends on background/messenger to pass strictNullCheck
+import { reloadActivationEnhancements } from "@/contentScript/loadActivationEnhancementsCore"; // 248 strictNullCheck errors
+import { getAttributeExamples } from "@/contentScript/pageEditor/elementInformation"; // 246 strictNullCheck errors
 import { getCopilotHostData } from "@/contrib/automationanywhere/SetCopilotDataEffect";
-import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController"; // Background/messenger import
+import { showBannerFromConfig } from "@/contentScript/integrations/deferredLoginController"; // Depends on background/messenger to pass strictNullCheck
 
 expectContext("contentScript");
 

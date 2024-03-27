@@ -24,5 +24,8 @@ export default class FixJSDOMEnvironment extends JSDOMEnvironment {
 
     // FIXME https://github.com/jsdom/jsdom/issues/3363
     this.global.structuredClone = structuredClone;
+
+    // TODO: Set when dropping support for Chrome <120
+    // this.global.URL.canParse = URL.canParse;
   }
 }
