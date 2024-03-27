@@ -70,11 +70,11 @@ function activateModInOptionsState(
 ): ModComponentState {
   return reducer(
     state,
-    actions.installMod({
+    actions.activateMod({
       modDefinition,
       configuredDependencies,
       screen: "starterMod",
-      isReinstall: false,
+      isReactivate: false,
     }),
   );
 }

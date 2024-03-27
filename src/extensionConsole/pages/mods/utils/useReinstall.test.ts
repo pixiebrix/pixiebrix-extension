@@ -44,12 +44,12 @@ test("uninstalls recipe mod components", async () => {
   } = renderHook(() => useReinstall(), {
     setupRedux(dispatch) {
       dispatch(
-        extensionActions.installCloudExtension({
+        extensionActions.activateStandaloneModDefinition({
           extension: standaloneModDefinition,
         }),
       );
       dispatch(
-        extensionActions.installCloudExtension({
+        extensionActions.activateStandaloneModDefinition({
           extension: anotherStandaloneModDefinition,
         }),
       );
@@ -85,7 +85,7 @@ test("dispatches install recipe action", async () => {
   } = renderHook(() => useReinstall(), {
     setupRedux(dispatch) {
       dispatch(
-        extensionActions.installCloudExtension({
+        extensionActions.activateStandaloneModDefinition({
           extension: standaloneModDefinition,
         }),
       );
@@ -94,5 +94,5 @@ test("dispatches install recipe action", async () => {
 
   await act(async () => reinstall(modDefinition));
 
-  expect(extensionActions.installMod).toHaveBeenCalled();
+  expect(extensionActions.activateMod).toHaveBeenCalled();
 });

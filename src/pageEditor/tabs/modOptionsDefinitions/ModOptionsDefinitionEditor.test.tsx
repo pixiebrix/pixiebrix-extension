@@ -43,10 +43,10 @@ describe("ModOptionsDefinitionEditor", () => {
     render(<ModOptionsDefinitionEditor />, {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.installMod({
+          extensionsSlice.actions.activateMod({
             modDefinition,
             screen: "pageEditor",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
       },

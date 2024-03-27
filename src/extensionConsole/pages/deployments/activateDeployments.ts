@@ -54,7 +54,7 @@ async function activateDeployment({
 
   // Install the blueprint with the service definition
   dispatch(
-    actions.installMod({
+    actions.activateMod({
       modDefinition,
       deployment,
       configuredDependencies: await mergeDeploymentIntegrationDependencies(
@@ -64,7 +64,7 @@ async function activateDeployment({
       // Assume validation on the backend for options
       optionsArgs: deployment.options_config,
       screen: "extensionConsole",
-      isReinstall,
+      isReactivate: isReinstall,
     }),
   );
 

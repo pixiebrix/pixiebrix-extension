@@ -52,12 +52,12 @@ function useReinstall(): Reinstall {
       await uninstallRecipe(modId, activatedModComponents, dispatch);
 
       dispatch(
-        extensionActions.installMod({
+        extensionActions.activateMod({
           modDefinition,
           configuredDependencies,
           optionsArgs: currentOptions,
           screen: "extensionConsole",
-          isReinstall: true,
+          isReactivate: true,
         }),
       );
     },
