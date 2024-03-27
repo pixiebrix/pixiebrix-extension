@@ -18,11 +18,12 @@
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
 import {
   getErrorMessage,
-  selectSpecificError,
+  getRootCause,
   selectError,
 } from "@/errors/errorHelpers";
+import { isObject } from "@/utils/objectUtils";
+import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { deleteCachedAuthData } from "@/background/messenger/strict/api";
-import { HTTPError } from "ky";
 
 class PermissionsError extends Error {
   override name = "PermissionsError";
@@ -40,12 +41,19 @@ export async function handleGoogleRequestRejection(
   googleAccount: SanitizedIntegrationConfig | null,
 ): Promise<Error> {
   // Request errors from proxyRequest are wrapped in ContextError which includes metadata about the integration
-  // configuration. Therefore, get root cause for determining if this is a network error
-  const rootCause = selectSpecificError(error, HTTPError);
+  // configuration. Therefore, get root cause for determining if this is an Axios error
+  const rootCause = getRootCause(error);
 
   console.debug("Error making Google request", { error });
 
-  if (!rootCause) {
+  if (!isObject(error)) {
+    // Shouldn't happen in practice, but be defensive
+    return new Error("Unknown error making Google request", {
+      cause: selectError(error),
+    });
+  }
+
+  if (!isAxiosError(rootCause) || rootCause.response == null) {
     // It should always be an error-like object at this point, but be defensive.
     return selectError(error);
   }
@@ -78,5 +86,5 @@ export async function handleGoogleRequestRejection(
     );
   }
 
-  return error as Error;
+  return error as unknown as Error;
 }
