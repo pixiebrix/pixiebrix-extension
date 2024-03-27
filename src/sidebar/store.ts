@@ -27,7 +27,7 @@ import { createLogger } from "redux-logger";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import extensionsSlice from "@/store/extensionsSlice";
 import { persistExtensionOptionsConfig } from "@/store/extensionsStorage";
-import sidebarSlice, { persistSidebarConfig } from "@/sidebar/sidebarSlice";
+import sidebarSlice from "@/sidebar/sidebarSlice";
 import { persistSettingsConfig } from "@/store/settings/settingsStorage";
 import settingsSlice from "@/store/settings/settingsSlice";
 import { appApi } from "@/data/service/api";
@@ -55,6 +55,7 @@ import { type SessionState } from "@/pageEditor/slices/sessionSliceTypes";
 import { type SessionChangesState } from "@/store/sessionChanges/sessionChangesTypes";
 import { type SettingsState } from "@/store/settings/settingsTypes";
 import { type SidebarState } from "@/types/sidebarTypes";
+import { persistSidebarConfig } from "@/sidebar/sidebarStorage";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 

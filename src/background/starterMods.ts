@@ -33,6 +33,7 @@ import { getSharingType } from "@/hooks/auth";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
+import { getClosedTabsState } from "@/sidebar/sidebarStorage";
 
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reduce and actions
 const { reducer, actions } = extensionsSlice;
@@ -112,7 +113,12 @@ async function installMods(modDefinitions: ModDefinition[]): Promise<boolean> {
       };
     },
   );
-  let optionsState = await getModComponentState();
+  let [optionsState, sidebarState] = await Promise.all([
+    getModComponentState(),
+    getClosedTabsState(),
+  ]);
+
+  console.log("Sidebar State: ", sidebarState);
 
   for (const modDefinition of modDefinitions) {
     const modAlreadyInstalled = optionsState.extensions.some(

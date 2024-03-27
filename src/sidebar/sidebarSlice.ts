@@ -34,8 +34,6 @@ import { type UUID } from "@/types/stringTypes";
 import { defaultEventKey, eventKeyForEntry } from "@/sidebar/eventKeyUtils";
 import { remove, sortBy } from "lodash";
 import { castDraft } from "immer";
-import { localStorage } from "redux-persist-webextension-storage";
-import { type StorageInterface } from "@/store/StorageInterface";
 import { getVisiblePanelCount } from "@/sidebar/utils";
 import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
 import { type Nullishable } from "@/utils/nullishUtils";
@@ -44,7 +42,7 @@ import addTemporaryPanel from "@/sidebar/thunks/addTemporaryPanel";
 import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
 import resolveTemporaryPanel from "@/sidebar/thunks/resolveTemporaryPanel";
 
-const emptySidebarState: SidebarState = {
+export const initialSidebarState: SidebarState = {
   panels: [],
   forms: [],
   temporaryPanels: [],
@@ -164,7 +162,7 @@ export function fixActiveTabOnRemove(
 }
 
 const sidebarSlice = createSlice({
-  initialState: emptySidebarState,
+  initialState: initialSidebarState,
   name: "sidebar",
   reducers: {
     setInitialPanels(
@@ -368,14 +366,5 @@ const sidebarSlice = createSlice({
       });
   },
 });
-
-export const persistSidebarConfig = {
-  key: "sidebar",
-  /** We use localStorage instead of redux-persist-webextension-storage because we want to persist the sidebar state
-   * @see StorageInterface */
-  storage: localStorage as StorageInterface,
-  version: 1,
-  whitelist: ["closedTabs"],
-};
 
 export default sidebarSlice;
