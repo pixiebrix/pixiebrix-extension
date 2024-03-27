@@ -22,13 +22,13 @@ import { selectEditorModalVisibilities } from "@/pageEditor/slices/editorSelecto
 import { actions } from "@/pageEditor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { type EditorRootState } from "@/pageEditor/pageEditorTypes";
 import JSZip from "jszip";
 import download from "downloadjs";
 
 const DiagnosticDataButton: React.FC = () => {
-  const activatedModComponents = useSelector(selectExtensions);
+  const activatedModComponents = useSelector(selectActivatedModComponents);
   const currentEditorState = useSelector(
     (state: EditorRootState) => state.editor,
   );

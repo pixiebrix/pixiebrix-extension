@@ -28,7 +28,7 @@ import {
   type UnavailableMod,
 } from "@/types/modTypes";
 import { createSelector } from "@reduxjs/toolkit";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import {
   type ModComponentBase,
   type ResolvedModComponent,
@@ -348,7 +348,7 @@ function getOrganization(
  * Select UnresolvedModComponents currently activated from the mod.
  */
 export const selectComponentsFromMod = createSelector(
-  [selectExtensions, (_state: unknown, mod: Mod) => mod],
+  [selectActivatedModComponents, (_state: unknown, mod: Mod) => mod],
   (activeModComponents, mod) =>
     isModDefinition(mod)
       ? activeModComponents.filter(

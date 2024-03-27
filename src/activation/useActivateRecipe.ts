@@ -23,7 +23,7 @@ import extensionsSlice from "@/store/extensionsSlice";
 import reportEvent from "@/telemetry/reportEvent";
 import { getErrorMessage } from "@/errors/errorHelpers";
 import { uninstallRecipe } from "@/store/uninstallUtils";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { ensurePermissionsFromUserGesture } from "@/permissions/permissionsUtils";
 import { checkModDefinitionPermissions } from "@/modDefinitions/modDefinitionPermissionsHelpers";
 import { isEmpty } from "lodash";
@@ -72,7 +72,7 @@ function useActivateRecipe(
   { checkPermissions = true }: { checkPermissions?: boolean } = {},
 ): ActivateRecipeFormCallback {
   const dispatch = useDispatch();
-  const extensions = useSelector(selectExtensions);
+  const extensions = useSelector(selectActivatedModComponents);
 
   const [createDatabase] = useCreateDatabaseMutation();
 
