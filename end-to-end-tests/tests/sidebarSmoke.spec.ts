@@ -25,7 +25,7 @@ import {
   waitForSelectionMenuReadiness,
 } from "../utils";
 
-test.describe("side bar page smoke test", () => {
+test.describe("sidebar page smoke test", () => {
   test("can open the sidebar from selection menu action and view the related mod's sidebar panel", async ({
     page,
     extensionId,

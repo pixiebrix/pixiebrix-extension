@@ -11,7 +11,7 @@ One-time setup:
 
 - Set up your .env file:
   - Copy `.env.example` to `.env.development`.
-  - Fill in the required values for the test user password and uncomment `REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST=1`
+  - Fill in the required values for the test user password `E2E_TEST_USER_PASSWORD_UNAFFILIATED` and uncomment `REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST=1`
   - `MV` will determine the manifest version for the both the extension and the tests.
 - Install browsers: Execute `npx playwright install chromium chrome msedge`.
 

@@ -35,6 +35,8 @@ import fs from "node:fs/promises";
 import { getBaseExtensionConsoleUrl } from "../pageObjects/constants";
 import { expectToNotBeHiddenOrUnmounted } from "../utils";
 
+// This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
+// see: https://github.com/microsoft/playwright/issues/26693
 process.env.PW_CHROMIUM_ATTACH_TO_OTHER = "1";
 
 const getStoredCookies = async (): Promise<Cookie[]> => {

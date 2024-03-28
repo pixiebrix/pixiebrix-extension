@@ -161,6 +161,7 @@ module.exports = {
       files: ["end-to-end-tests/**"], // Or *.test.js
       rules: {
         "no-restricted-imports": "off",
+        "unicorn/prefer-dom-node-dataset": "off",
       },
     },
     {

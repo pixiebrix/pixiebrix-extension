@@ -16,7 +16,7 @@
  */
 
 import type AxeBuilder from "@axe-core/playwright";
-import { type Locator, expect, type Page } from "@playwright/test";
+import { type Locator, expect, type Page, Frame } from "@playwright/test";
 import { MV } from "./env";
 
 type AxeResults = Awaited<ReturnType<typeof AxeBuilder.prototype.analyze>>;
@@ -67,8 +67,11 @@ export async function expectToNotBeHiddenOrUnmounted(
   }).toPass({ timeout: 5000, ...options });
 }
 
+// Finds the Pixiebrix sidebar page. In MV3, this is a Page contained in the browser sidepanel window.
+// In MV2, this is a Frame as it's contained in an iframe attached to the current page.
 export async function getSidebarPage(page: Page, extensionId: string) {
   if (MV === "3") {
+    let sidebarPage: Page | undefined;
     const findSidebarPage = (page: Page) =>
       page
         .context()
@@ -79,12 +82,14 @@ export async function getSidebarPage(page: Page, extensionId: string) {
             .startsWith(`chrome-extension://${extensionId}/sidebar.html`),
         );
     await expect(() => {
-      const sideBarPage = findSidebarPage(page);
-      expect(sideBarPage).toBeDefined();
+      sidebarPage = findSidebarPage(page);
+      expect(sidebarPage).toBeDefined();
     }).toPass({ timeout: 5000 });
-    return findSidebarPage(page);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion  -- checked above
+    return sidebarPage!;
   }
 
+  let sidebarFrame: Frame | undefined;
   const findSidebarFrame = (page: Page) =>
     page
       .frames()
@@ -94,10 +99,11 @@ export async function getSidebarPage(page: Page, extensionId: string) {
           .startsWith(`chrome-extension://${extensionId}/sidebar.html`),
       );
   await expect(() => {
-    const sideBarPage = findSidebarFrame(page);
-    expect(sideBarPage).toBeDefined();
+    sidebarFrame = findSidebarFrame(page);
+    expect(sidebarFrame).toBeDefined();
   }).toPass({ timeout: 5000 });
-  return findSidebarFrame(page);
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- checked above
+  return sidebarFrame!;
 }
 
 export async function waitForSelectionMenuReadiness(page: Page) {
@@ -112,7 +118,6 @@ export async function waitForSelectionMenuReadiness(page: Page) {
 
 async function waitForContentScriptReadiness(page: Page) {
   await expect(async () => {
-    // eslint-disable-next-line unicorn/prefer-dom-node-dataset -- TODO ignore this rule in e2e tests
     const pbReady = await page.locator("html").getAttribute("data-pb-ready");
     expect(pbReady).toBeTruthy();
   }).toPass({ timeout: 5000 });
