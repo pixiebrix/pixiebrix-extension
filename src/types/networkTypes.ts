@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.isActive {
-  /* Use `outline` instead of `box-shadow` because it supports offsets, without having to mess with padding */
-  outline: color-mix(in srgb, var(--info) 50%, transparent) solid 3px;
-  outline-offset: 6px;
-  border-radius: 2px;
-}
-.description {
-  margin-top: 0.5rem; /* Matches `label`'s default `margin-bottom` */
+import { type AxiosRequestHeaders, type Method } from "axios";
+
+export interface NetworkRequestConfig<Data = unknown> {
+  url: string;
+  method?: Method;
+  headers?: AxiosRequestHeaders;
+  params?: UnknownObject | void;
+  data?: Data;
+  signal?: AbortSignal;
 }

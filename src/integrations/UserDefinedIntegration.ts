@@ -20,7 +20,7 @@ import { renderMustache } from "@/runtime/mapArgs";
 import { testMatchPatterns } from "@/bricks/available";
 import { isEmpty, castArray, uniq, compact } from "lodash";
 import urljoin from "url-join";
-import { type AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { BusinessError, NotConfiguredError } from "@/errors/businessErrors";
 import { IncompatibleServiceError } from "@/errors/genericErrors";
 import { type Schema, type UiSchema } from "@/types/schemaTypes";
@@ -39,13 +39,10 @@ import {
   type TokenContext,
 } from "@/integrations/integrationTypes";
 import { type SemVerString } from "@/types/registryTypes";
-import { isAbsoluteUrl, safeParseUrl } from "@/utils/urlUtils";
+import { canParseUrl, isAbsoluteUrl } from "@/utils/urlUtils";
 import { missingProperties } from "@/utils/schemaUtils";
-import { type SetRequired } from "type-fest";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { stringToBase64 } from "uint8array-extras";
-
-type RequestConfig = SetRequired<AxiosRequestConfig, "url">;
 
 /**
  * An integration hydrated from a user-defined definition. Has the ability to authenticate requests because it has
@@ -154,14 +151,11 @@ class UserDefinedIntegration<
       this._definition.authentication.baseURL;
     if (baseUrlTemplate) {
       // Convert into a real match pattern: https://developer.chrome.com/docs/extensions/mv3/match_patterns/
-      const baseUrl = safeParseUrl(
-        renderMustache(baseUrlTemplate, integrationConfig),
-      );
-
-      if (baseUrl.hostname) {
-        // Ignore invalid URLs. When the user makes a request, they'll get an error that it's an invalid URL
-        patterns.push(baseUrl.href + (baseUrl.href.endsWith("/") ? "*" : "/*"));
+      const baseUrl = renderMustache(baseUrlTemplate, integrationConfig);
+      if (canParseUrl(baseUrl)) {
+        patterns.push(baseUrl + (baseUrl.endsWith("/") ? "*" : "/*"));
       } else {
+        // Ignore invalid URLs. When the user makes a request, they'll get an error that it's an invalid URL
         console.warn("Invalid baseURL provided by configuration", {
           baseUrlTemplate,
           baseUrl,
@@ -177,7 +171,7 @@ class UserDefinedIntegration<
       // Don't add wildcard because the URL can't change per request.
       const authUrls = [oauth.oauth2.authorizeUrl, oauth.oauth2.tokenUrl]
         .map((template) => renderMustache(template, integrationConfig))
-        .filter((url) => Boolean(safeParseUrl(url).hostname));
+        .filter((url) => canParseUrl(url));
       patterns.push(...authUrls);
     }
 
@@ -224,7 +218,7 @@ class UserDefinedIntegration<
    * @throws IncompatibleServiceError if the resulting URL cannot by called by this integration
    */
   private checkRequestUrl(
-    requestConfig: RequestConfig,
+    requestConfig: NetworkRequestConfig,
     baseURL?: string,
   ): void {
     const absoluteURL =
@@ -241,8 +235,8 @@ class UserDefinedIntegration<
 
   private authenticateRequestKey(
     integrationConfig: SecretsConfig,
-    requestConfig: RequestConfig,
-  ): RequestConfig {
+    requestConfig: NetworkRequestConfig,
+  ): NetworkRequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
       throw new IncompatibleServiceError(
         `Integration ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`,
@@ -265,7 +259,6 @@ class UserDefinedIntegration<
     }
 
     const result = produce(requestConfig, (draft) => {
-      requestConfig.baseURL = baseURL;
       draft.headers = { ...draft.headers, ...headers };
       draft.params = { ...draft.params, ...params };
     });
@@ -277,8 +270,8 @@ class UserDefinedIntegration<
 
   private authenticateBasicRequest(
     integrationConfig: SecretsConfig,
-    requestConfig: RequestConfig,
-  ): RequestConfig {
+    requestConfig: NetworkRequestConfig,
+  ): NetworkRequestConfig {
     if (!this.isAvailable(requestConfig.url)) {
       throw new IncompatibleServiceError(
         `Integration ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`,
@@ -307,7 +300,6 @@ class UserDefinedIntegration<
     }
 
     const result = produce(requestConfig, (draft) => {
-      requestConfig.baseURL = baseURL;
       draft.headers = {
         ...draft.headers,
         Authorization: `Basic ${stringToBase64(
@@ -324,9 +316,9 @@ class UserDefinedIntegration<
 
   private authenticateRequestToken(
     integrationConfig: SecretsConfig,
-    requestConfig: RequestConfig,
+    requestConfig: NetworkRequestConfig,
     tokenData: AuthData,
-  ): RequestConfig {
+  ): NetworkRequestConfig {
     if (isEmpty(tokenData)) {
       throw new Error("Empty token data provided");
     }
@@ -345,7 +337,6 @@ class UserDefinedIntegration<
     }
 
     const result = produce(requestConfig, (draft) => {
-      requestConfig.baseURL = baseURL;
       draft.headers = { ...draft.headers, ...headers };
     });
 
@@ -356,9 +347,9 @@ class UserDefinedIntegration<
 
   authenticateRequest(
     integrationConfig: SecretsConfig,
-    requestConfig: RequestConfig,
+    requestConfig: NetworkRequestConfig,
     authData?: AuthData,
-  ): RequestConfig {
+  ): NetworkRequestConfig {
     const missing = missingProperties(this.schema, integrationConfig);
     if (missing.length > 0) {
       throw new NotConfiguredError(

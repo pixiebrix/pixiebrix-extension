@@ -16,7 +16,7 @@
  */
 
 import {
-  debouncedInstallStarterMods,
+  debouncedActivateStarterMods,
   getBuiltInIntegrationConfigs,
 } from "@/background/starterMods";
 import {
@@ -80,7 +80,7 @@ describe("debouncedInstallStarterMods", () => {
 
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [mod]);
 
-    await debouncedInstallStarterMods();
+    await debouncedActivateStarterMods();
     const { extensions } = await getModComponentState();
 
     expect(extensions).toHaveLength(1);
@@ -116,7 +116,7 @@ describe("debouncedInstallStarterMods", () => {
 
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(500);
 
-    await debouncedInstallStarterMods();
+    await debouncedActivateStarterMods();
     const { extensions } = await getModComponentState();
 
     expect(extensions).toHaveLength(0);
@@ -136,7 +136,7 @@ describe("debouncedInstallStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedInstallStarterMods();
+    await debouncedActivateStarterMods();
     const { extensions: modComponents } = await getModComponentState();
 
     expect(modComponents).toBeArrayOfSize(1);
@@ -177,7 +177,7 @@ describe("debouncedInstallStarterMods", () => {
       },
     ]);
 
-    await debouncedInstallStarterMods();
+    await debouncedActivateStarterMods();
     const { extensions } = await getModComponentState();
 
     expect(extensions).toHaveLength(1);
@@ -198,7 +198,7 @@ describe("debouncedInstallStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [defaultModDefinitionFactory()]);
 
-    await debouncedInstallStarterMods();
+    await debouncedActivateStarterMods();
     const { extensions } = await getModComponentState();
 
     expect(extensions).toHaveLength(2);
@@ -221,7 +221,7 @@ describe("debouncedInstallStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedInstallStarterMods();
+    await debouncedActivateStarterMods();
     const { extensions } = await getModComponentState();
 
     expect(extensions).toHaveLength(1);
@@ -259,7 +259,7 @@ describe("debouncedInstallStarterMods", () => {
       .onGet("/api/onboarding/starter-blueprints/")
       .reply(200, [modDefinition]);
 
-    await debouncedInstallStarterMods();
+    await debouncedActivateStarterMods();
     const { extensions: modComponents } = await getModComponentState();
 
     expect(modComponents).toBeArrayOfSize(1);

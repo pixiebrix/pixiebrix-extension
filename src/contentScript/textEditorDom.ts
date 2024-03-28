@@ -23,6 +23,23 @@ import { dispatchPasteForDraftJs } from "@/utils/domFieldUtils";
 import focusController from "@/utils/focusController";
 
 /**
+ * Error to be thrown when document.execCommand fails.
+ *
+ * Treated as application error, callers should convert into a BusinessError subclass where appropriate.
+ *
+ * @see document.execCommand
+ */
+export class ExecCommandError extends Error {
+  override name = "ExecCommandError";
+  readonly commandId: string;
+
+  constructor(message: string, { commandId }: { commandId: string }) {
+    super(message);
+    this.commandId = commandId;
+  }
+}
+
+/**
  * @file Text Editor DOM utilities that might call the pageScript.
  *
  * Historically, we've preferred to use `contentScript` except for calls that must be made from the `pageScript`. The
@@ -39,6 +56,7 @@ import focusController from "@/utils/focusController";
  * - Plain content editable (Gmail, etc.)
  * - CKEditor 4/5
  *
+ * @throws {ExecCommandError} if the text could not be inserted with InsertTextError
  */
 export async function insertAtCursorWithCustomEditorSupport(text: string) {
   expectContext(
@@ -69,6 +87,8 @@ export async function insertAtCursorWithCustomEditorSupport(text: string) {
   focusController.restoreWithoutClearing();
 
   if (!document.execCommand("insertText", false, text)) {
-    throw new Error("Failed to insert text using execCommand");
+    throw new ExecCommandError("Failed to insert text using execCommand", {
+      commandId: "insertText",
+    });
   }
 }

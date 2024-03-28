@@ -28,7 +28,7 @@ import {
 import { PlatformBase } from "@/platform/platformBase";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import type { AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
 import { performConfiguredRequestInBackground } from "@/background/messenger/api";
 import integrationRegistry from "@/integrations/registry";
@@ -94,7 +94,7 @@ class ExtensionPagePlatform extends PlatformBase {
 
   override async request<TData>(
     integrationConfig: Nullishable<SanitizedIntegrationConfig>,
-    requestConfig: AxiosRequestConfig,
+    requestConfig: NetworkRequestConfig,
   ): Promise<RemoteResponse<TData>> {
     const integration = await integrationRegistry.lookup(
       integrationConfig.serviceId,

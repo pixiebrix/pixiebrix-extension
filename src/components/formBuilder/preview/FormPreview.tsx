@@ -188,6 +188,8 @@ const FormPreview: React.FC<FormPreviewProps> = ({
   return (
     <JsonSchemaForm
       tagName="div"
+      // Add margin to make room for the active element outline. Style is not added to FieldTemplate due to re-use when rendering the form
+      className="mr-2"
       formData={data}
       fields={fields}
       widgets={widgets}

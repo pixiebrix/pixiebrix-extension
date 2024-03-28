@@ -16,7 +16,6 @@
  */
 
 import { isErrorObject } from "@/errors/errorHelpers";
-import { type AxiosRequestConfig } from "axios";
 import { testMatchPatterns } from "@/bricks/available";
 import { getBaseURL } from "@/data/service/baseService";
 import urljoin from "url-join";
@@ -35,15 +34,16 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 export function selectAbsoluteUrl({
   url,
   baseURL,
-}: // Using AxiosRequestConfig since the actual request object doesn't seem
-// to be available in all the places we use this method
-AxiosRequestConfig): string {
-  assertNotNullish(url, "axios: The URL was not provided");
+}: {
+  url?: string;
+  baseURL?: string;
+}): string {
+  assertNotNullish(url, "selectAbsoluteUrl: The URL was not provided");
   if (isAbsoluteUrl(url)) {
     return url;
   }
 
-  assertNotNullish(baseURL, "axios: The base URL was not provided");
+  assertNotNullish(baseURL, "selectAbsoluteUrl: The base URL was not provided");
   return urljoin(baseURL, url);
 }
 

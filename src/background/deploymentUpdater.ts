@@ -23,8 +23,8 @@ import { isLinked, readAuthData, updateUserData } from "@/auth/authStorage";
 import reportEvent from "@/telemetry/reportEvent";
 import { refreshRegistries } from "@/hooks/useRefreshRegistries";
 import {
-  selectExtensions,
-  selectExtensionsForRecipe,
+  selectActivatedModComponents,
+  selectModComponentsForMod,
 } from "@/store/extensionsSelectors";
 import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
@@ -146,7 +146,7 @@ export async function uninstallAllDeployments(): Promise<void> {
     getModComponentState(),
     getEditorState(),
   ]);
-  const installed = selectExtensions({ options: optionsState });
+  const installed = selectActivatedModComponents({ options: optionsState });
 
   const toUninstall = installed.filter(
     (extension) => !isEmpty(extension._deployment),
@@ -175,7 +175,7 @@ async function uninstallUnmatchedDeployments(
     getModComponentState(),
     getEditorState(),
   ]);
-  const installed = selectExtensions({ options: optionsState });
+  const installed = selectActivatedModComponents({ options: optionsState });
 
   const deploymentRecipeIds = new Set(
     deployments.map((deployment) => deployment.package.package_id),
@@ -214,7 +214,7 @@ async function uninstallRecipe(
   let options = optionsState;
   let editor = editorState;
 
-  const recipeOptionsSelector = selectExtensionsForRecipe(recipeId);
+  const recipeOptionsSelector = selectModComponentsForMod(recipeId);
   const recipeExtensions = recipeOptionsSelector({ options: optionsState });
 
   // Uninstall existing versions of the extensions
@@ -260,7 +260,7 @@ async function installDeployment({
   // Install the deployment's blueprint with the service definition
   options = optionsReducer(
     options,
-    optionsActions.installMod({
+    optionsActions.activateMod({
       modDefinition,
       deployment,
       configuredDependencies: await mergeDeploymentIntegrationDependencies(
@@ -270,7 +270,7 @@ async function installDeployment({
       // Assume backend properly validates the options
       optionsArgs: deployment.options_config as OptionsArgs,
       screen: "background",
-      isReinstall,
+      isReactivate: isReinstall,
     }),
   );
 

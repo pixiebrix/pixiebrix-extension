@@ -98,10 +98,10 @@ describe("replaceModComponent round trip", () => {
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installMod({
+      extensionsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
-        isReinstall: false,
+        isReactivate: false,
       }),
     );
 
@@ -142,10 +142,10 @@ describe("replaceModComponent round trip", () => {
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installMod({
+      extensionsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
-        isReinstall: false,
+        isReactivate: false,
       }),
     );
 
@@ -177,10 +177,10 @@ describe("replaceModComponent round trip", () => {
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installMod({
+      extensionsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
-        isReinstall: false,
+        isReactivate: false,
       }),
     );
 
@@ -227,10 +227,10 @@ describe("replaceModComponent round trip", () => {
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installMod({
+      extensionsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
-        isReinstall: false,
+        isReactivate: false,
       }),
     );
 
@@ -287,10 +287,10 @@ describe("replaceModComponent round trip", () => {
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installMod({
+      extensionsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
-        isReinstall: false,
+        isReactivate: false,
       }),
     );
 
@@ -344,10 +344,10 @@ describe("replaceModComponent round trip", () => {
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installMod({
+      extensionsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
-        isReinstall: false,
+        isReactivate: false,
       }),
     );
 
@@ -393,10 +393,10 @@ describe("replaceModComponent round trip", () => {
 
     const state = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installMod({
+      extensionsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
-        isReinstall: false,
+        isReactivate: false,
       }),
     );
 
@@ -431,10 +431,10 @@ describe("mod options", () => {
 
     const modComponentState = extensionsSlice.reducer(
       { extensions: [] },
-      extensionsSlice.actions.installMod({
+      extensionsSlice.actions.activateMod({
         modDefinition,
         screen: "pageEditor",
-        isReinstall: false,
+        isReactivate: false,
       }),
     );
 
@@ -723,10 +723,10 @@ describe("buildNewMod", () => {
       // Install the mod
       const state = extensionsSlice.reducer(
         { extensions: [] },
-        extensionsSlice.actions.installMod({
+        extensionsSlice.actions.activateMod({
           modDefinition,
           screen: "pageEditor",
-          isReinstall: false,
+          isReactivate: false,
         }),
       );
 

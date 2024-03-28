@@ -23,9 +23,21 @@ import {
 import { appApiMock } from "@/testUtils/appApiMock";
 import { type Event } from "@/telemetry/events";
 
+const EXPECTED_RUNTIME_ID = "abc123";
+const expectedManifestValues = {
+  version_name: "1.0.0",
+  version: "1.0.0",
+  manifest_version: "3",
+};
+
 beforeEach(async () => {
   appApiMock.reset();
   appApiMock.onPost("/api/events/").reply(201, {});
+
+  browser.runtime.id = EXPECTED_RUNTIME_ID;
+  browser.runtime.getManifest = jest
+    .fn()
+    .mockReturnValue(expectedManifestValues);
 
   await TEST_flushAll();
 });
@@ -35,6 +47,21 @@ describe("recordEvent", () => {
     await recordEvent({ event: "TestEvent" as Event, data: {} });
     const events = await flushEvents();
     expect(events).toHaveLength(1);
+  });
+
+  test("includes expected default properties", async () => {
+    const testEvent = { event: "TestEvent" as Event, data: {} };
+    await recordEvent(testEvent);
+    const events = await flushEvents();
+    expect(events[0]).toMatchObject({
+      event: "TestEvent",
+      data: {
+        manifestVersion: expectedManifestValues.manifest_version,
+        version: expectedManifestValues.version,
+        versionName: expectedManifestValues.version_name,
+        runtimeId: EXPECTED_RUNTIME_ID,
+      },
+    });
   });
 
   test("successfully persists concurrent telemetry events to local storage", async () => {

@@ -437,12 +437,12 @@ describe("actions", () => {
       } = renderHook(() => useModsPageActions(modViewItem), {
         setupRedux(dispatch) {
           dispatch(
-            extensionActions.installCloudExtension({
+            extensionActions.activateStandaloneModDefinition({
               extension: standaloneModDefinition,
             }),
           );
           dispatch(
-            extensionActions.installCloudExtension({
+            extensionActions.activateStandaloneModDefinition({
               extension: standaloneModDefinitionFactory(),
             }),
           );

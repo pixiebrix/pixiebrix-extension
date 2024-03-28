@@ -18,7 +18,7 @@
 import { type Mod, type ModStatus, type ModViewItem } from "@/types/modTypes";
 import { useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { type UUID } from "@/types/stringTypes";
 
 import {
@@ -43,7 +43,7 @@ function useModViewItems(mods: Mod[]): {
   isLoading: boolean;
 } {
   const scope = useSelector(selectScope);
-  const installedExtensions = useSelector(selectExtensions);
+  const installedExtensions = useSelector(selectActivatedModComponents);
   const organizations = useSelector(selectOrganizations);
 
   // Don't merge async states. Allow hook to render without listings
