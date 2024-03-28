@@ -30,7 +30,7 @@ import {
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
 import Tabs from "@/sidebar/Tabs";
-import sidebarSlice from "../store/sidebar/sidebarSlice";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./SidebarErrorBoundary";
