@@ -26,7 +26,6 @@ import {
 } from "@/data/service/errorService";
 import { serializeError } from "serialize-error";
 import { InteractiveLoginRequiredError } from "@/errors/authErrors";
-import { TEST_flushAll } from "@/background/telemetry";
 
 const EXPECTED_RUNTIME_ID = "abc123";
 const expectedManifestValues = {
@@ -65,8 +64,6 @@ describe("selectExtraContext", () => {
     browser.runtime.getManifest = jest
       .fn()
       .mockReturnValue(expectedManifestValues);
-
-    await TEST_flushAll();
   });
 
   it("should return the expected extension context", async () => {
