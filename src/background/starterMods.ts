@@ -16,6 +16,7 @@
  */
 
 import extensionsSlice from "@/store/extensionsSlice";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import { maybeGetLinkedApiClient } from "@/data/service/apiClient";
 import {
   getModComponentState,
@@ -33,10 +34,24 @@ import { getSharingType } from "@/hooks/auth";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import getUnconfiguredComponentIntegrations from "@/integrations/util/getUnconfiguredComponentIntegrations";
-import { getClosedTabsState } from "@/sidebar/sidebarStorage";
+import {
+  getSidebarState,
+  saveSidebarState,
+} from "@/store/sidebar/sidebarStorage";
+import {
+  getAllModComponenetDefinitionsWithType,
+  getModComponentIdsForModComponentDefinitions,
+} from "@/starterBricks/starterBrickModUtils";
+import { selectModComponentsForMod } from "@/store/extensionsSelectors";
+import { type SidebarState } from "@/types/sidebarTypes";
+import { getEventKeyForPanel } from "@/store/sidebar/eventKeyUtils";
+import { type UUID } from "@/types/stringTypes";
 
+// eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reducer and actions
+const { reducer: extensionsReducer, actions: extensionsActions } =
+  extensionsSlice;
 // eslint-disable-next-line local-rules/persistBackgroundData -- no state; destructuring reduce and actions
-const { reducer, actions } = extensionsSlice;
+const { reducer: sidebarReducer, actions: sidebarActions } = sidebarSlice;
 
 const PLAYGROUND_URL = "https://www.pixiebrix.com/welcome";
 const MOD_ACTIVATION_DEBOUNCE_MS = 10_000;
@@ -69,15 +84,52 @@ function activateModInOptionsState(
   modDefinition: ModDefinition,
   configuredDependencies: IntegrationDependency[],
 ): ModComponentState {
-  return reducer(
+  return extensionsReducer(
     state,
-    actions.activateMod({
+    extensionsActions.activateMod({
       modDefinition,
       configuredDependencies,
       screen: "starterMod",
       isReactivate: false,
     }),
   );
+}
+
+function closeSidebarTab(state: SidebarState, id: UUID): SidebarState {
+  return sidebarReducer(
+    state,
+    sidebarActions.closeTab(getEventKeyForPanel(id)),
+  );
+}
+
+function closeStarterModTabs({
+  modDefinition,
+  optionsState,
+  sidebarState,
+}: {
+  modDefinition: ModDefinition;
+  optionsState: ModComponentState;
+  sidebarState: SidebarState;
+}): SidebarState {
+  const actionPanelDefinitions = getAllModComponenetDefinitionsWithType(
+    modDefinition,
+    "actionPanel",
+  );
+  const activatedModComponents = selectModComponentsForMod(
+    modDefinition.metadata.id,
+  )({
+    options: optionsState,
+  });
+  const actionPanelIds = getModComponentIdsForModComponentDefinitions(
+    activatedModComponents,
+    actionPanelDefinitions,
+  );
+
+  for (const actionPanelId of actionPanelIds) {
+    sidebarState = closeSidebarTab(sidebarState, actionPanelId);
+  }
+
+  return sidebarState;
 }
 
 async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
@@ -115,10 +167,8 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
   );
   let [optionsState, sidebarState] = await Promise.all([
     getModComponentState(),
-    getClosedTabsState(),
+    getSidebarState(),
   ]);
-
-  console.log("Sidebar State: ", sidebarState);
 
   for (const modDefinition of modDefinitions) {
     const modAlreadyActivated = optionsState.extensions.some(
@@ -132,10 +182,19 @@ async function activateMods(modDefinitions: ModDefinition[]): Promise<boolean> {
         builtInDependencies,
       );
       activated = true;
+
+      sidebarState = closeStarterModTabs({
+        modDefinition,
+        optionsState,
+        sidebarState,
+      });
     }
   }
 
-  await saveModComponentState(optionsState);
+  await Promise.all([
+    saveModComponentState(optionsState),
+    saveSidebarState(sidebarState),
+  ]);
   await forEachTab(queueReactivateTab);
   return activated;
 }

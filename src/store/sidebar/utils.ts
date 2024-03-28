@@ -16,7 +16,7 @@
  */
 
 import { type SidebarState } from "@/types/sidebarTypes";
-import { getOpenPanelEntries } from "@/sidebar/eventKeyUtils";
+import { getOpenPanelEntries } from "@/store/sidebar/eventKeyUtils";
 
 export const getVisiblePanelCount = ({
   panels,

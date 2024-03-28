@@ -20,14 +20,32 @@ import { type StorageInterface } from "@/store/StorageInterface";
 import { type SidebarState } from "@/types/sidebarTypes";
 import {
   readReduxStorage,
+  setReduxStorage,
   validateReduxStorageKey,
 } from "@/utils/storageUtils";
-import { initialSidebarState } from "@/sidebar/sidebarSlice";
+import { initialSidebarState } from "@/store/sidebar/initialState";
 
 const STORAGE_KEY = validateReduxStorageKey("persist:sidebar");
 
-export async function getClosedTabsState(): Promise<SidebarState> {
-  return readReduxStorage<SidebarState>(STORAGE_KEY, {}, initialSidebarState);
+// The subset of the sidebar state that we persist
+// See persistSidebarConfig.whitelist
+type SidebarPeristedState = Pick<SidebarState, "closedTabs">;
+
+/**
+ * Reads the current state of the sidebar from storage (without going through redux-persist)
+ */
+export async function getSidebarState(): Promise<SidebarState> {
+  const persistedSidebarState = await readReduxStorage<SidebarPeristedState>(
+    STORAGE_KEY,
+    {},
+    initialSidebarState,
+  );
+
+  return { ...initialSidebarState, ...persistedSidebarState };
+}
+
+export async function saveSidebarState(state: SidebarState): Promise<void> {
+  await setReduxStorage(STORAGE_KEY, state, 0);
 }
 
 export const persistSidebarConfig = {

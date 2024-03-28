@@ -19,7 +19,7 @@ import React from "react";
 import { render } from "@/sidebar/testHelpers";
 import ModLauncher from "@/sidebar/modLauncher/ModLauncher";
 import { screen } from "@testing-library/react";
-import sidebarSlice from "@/sidebar/sidebarSlice";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 
 import { mockAllApiEndpoints } from "@/testUtils/appApiMock";

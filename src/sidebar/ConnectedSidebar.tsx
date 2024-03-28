@@ -30,22 +30,22 @@ import {
   type TemporaryPanelEntry,
 } from "@/types/sidebarTypes";
 import Tabs from "@/sidebar/Tabs";
-import sidebarSlice from "./sidebarSlice";
+import sidebarSlice from "../store/sidebar/sidebarSlice";
 import RequireAuth from "@/auth/RequireAuth";
 import LoginPanel from "@/sidebar/LoginPanel";
 import ErrorBoundary from "./SidebarErrorBoundary";
 import { selectIsSidebarEmpty } from "@/sidebar/sidebarSelectors";
 import DelayedRender from "@/components/DelayedRender";
 import DefaultPanel from "@/sidebar/DefaultPanel";
-import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
+import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import { ensureExtensionPointsInstalled } from "@/contentScript/messenger/api";
 import { getReservedSidebarEntries } from "@/contentScript/messenger/strict/api";
 import { getConnectedTarget } from "@/sidebar/connectedTarget";
 import useAsyncEffect from "use-async-effect";
 import activateLinkClickHandler from "@/activation/activateLinkClickHandler";
-import addFormPanel from "@/sidebar/thunks/addFormPanel";
-import addTemporaryPanel from "@/sidebar/thunks/addTemporaryPanel";
-import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
+import addFormPanel from "@/store/sidebar/thunks/addFormPanel";
+import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
+import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 import { type AsyncDispatch } from "@/sidebar/store";
 import useEventListener from "@/hooks/useEventListener";
 

@@ -31,27 +31,20 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { type UUID } from "@/types/stringTypes";
-import { defaultEventKey, eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import {
+  defaultEventKey,
+  eventKeyForEntry,
+} from "@/store/sidebar/eventKeyUtils";
 import { remove, sortBy } from "lodash";
 import { castDraft } from "immer";
-import { getVisiblePanelCount } from "@/sidebar/utils";
-import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
+import { getVisiblePanelCount } from "@/store/sidebar/utils";
+import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import { type Nullishable } from "@/utils/nullishUtils";
-import addFormPanel from "@/sidebar/thunks/addFormPanel";
-import addTemporaryPanel from "@/sidebar/thunks/addTemporaryPanel";
-import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
-import resolveTemporaryPanel from "@/sidebar/thunks/resolveTemporaryPanel";
-
-export const initialSidebarState: SidebarState = {
-  panels: [],
-  forms: [],
-  temporaryPanels: [],
-  staticPanels: [],
-  modActivationPanel: null,
-  activeKey: null,
-  pendingActivePanel: null,
-  closedTabs: {},
-} as const;
+import addFormPanel from "@/store/sidebar/thunks/addFormPanel";
+import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
+import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
+import resolveTemporaryPanel from "@/store/sidebar/thunks/resolveTemporaryPanel";
+import { initialSidebarState } from "@/store/sidebar/initialState";
 
 function eventKeyExists(
   state: SidebarState,
@@ -266,6 +259,7 @@ const sidebarSlice = createSlice({
       if (next) {
         state.activeKey = next;
         // Make sure the tab isn't closed
+        // eslint-disable-next-line security/detect-object-injection -- next is not user-controlled
         state.closedTabs[next] = false;
       } else {
         state.pendingActivePanel = payload;
