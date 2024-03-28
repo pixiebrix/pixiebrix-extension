@@ -41,7 +41,7 @@ import { type IntegrationDependency } from "@/integrations/integrationTypes";
 import { initialState } from "@/store/extensionsSliceInitialState";
 import { getActivatedModComponentFromDefinition } from "@/activation/getActivatedModComponentFromDefinition";
 
-type InstallModPayload = {
+type ActivateModPayload = {
   modDefinition: ModDefinition;
   /**
    * Mod integration dependencies with configs filled in
@@ -50,7 +50,7 @@ type InstallModPayload = {
   optionsArgs?: OptionsArgs;
   deployment?: Deployment;
   /**
-   * The screen or source of the installation. Used for telemetry.
+   * The screen or source of the activation. Used for telemetry.
    * @since 1.7.33
    */
   screen:
@@ -60,17 +60,17 @@ type InstallModPayload = {
     | "background"
     | "starterMod";
   /**
-   * True if this is reinstalling an already active mod. Used for telemetry.
+   * True if this is reactivating an already active mod. Used for telemetry.
    * @since 1.7.33
    */
-  isReinstall: boolean;
+  isReactivate: boolean;
 };
 
 const extensionsSlice = createSlice({
   name: "extensions",
   initialState,
   reducers: {
-    // Helper method to directly update extensions in tests. Can't use installCloudExtension because
+    // Helper method to directly update extensions in tests. Can't use activateStandaloneModDefinition because
     // StandaloneModDefinition doesn't have the _recipe field
     UNSAFE_setExtensions(
       state,
@@ -79,7 +79,7 @@ const extensionsSlice = createSlice({
       state.extensions = cloneDeep(payload);
     },
 
-    installCloudExtension(
+    activateStandaloneModDefinition(
       state,
       { payload }: PayloadAction<{ extension: StandaloneModDefinition }>,
     ) {
@@ -90,7 +90,7 @@ const extensionsSlice = createSlice({
         selectEventData(extension),
       );
 
-      // NOTE: do not save the extensions in the cloud (because the user can just install from the marketplace /
+      // NOTE: do not save the extensions in the cloud (because the user can just activate from the marketplace /
       // or activate the deployment again
 
       state.extensions.push({ ...extension, active: true });
@@ -112,7 +112,7 @@ const extensionsSlice = createSlice({
       extension._recipe = recipeMetadata;
     },
 
-    installMod(
+    activateMod(
       state,
       {
         payload: {
@@ -121,9 +121,9 @@ const extensionsSlice = createSlice({
           optionsArgs,
           deployment,
           screen,
-          isReinstall,
+          isReactivate,
         },
-      }: PayloadAction<InstallModPayload>,
+      }: PayloadAction<ActivateModPayload>,
     ) {
       for (const modComponentDefinition of modDefinition.extensionPoints) {
         // May be null from bad Workshop edit?
@@ -157,7 +157,7 @@ const extensionsSlice = createSlice({
           selectEventData(activatedModComponent),
         );
 
-        // NOTE: do not save the extensions in the cloud (because the user can just install from the marketplace /
+        // NOTE: do not save the extensions in the cloud (because the user can just activate from the marketplace /
         // or activate the deployment again
         state.extensions.push(activatedModComponent);
 
@@ -170,7 +170,7 @@ const extensionsSlice = createSlice({
         blueprintVersion: modDefinition.metadata.version,
         deploymentId: deployment?.id,
         screen,
-        reinstall: isReinstall,
+        reinstall: isReactivate,
       });
     },
     /**

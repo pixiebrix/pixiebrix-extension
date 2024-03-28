@@ -29,11 +29,16 @@ import {
   E2E_TEST_USER_EMAIL_UNAFFILIATED,
   MV,
   PWDEBUG,
+  REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST,
   SLOWMO,
 } from "../env";
 import fs from "node:fs/promises";
 import { getBaseExtensionConsoleUrl } from "../pageObjects/constants";
 import { expectToNotBeHiddenOrUnmounted } from "../utils";
+
+// This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
+// see: https://github.com/microsoft/playwright/issues/26693
+process.env.PW_CHROMIUM_ATTACH_TO_OTHER = "1";
 
 const getStoredCookies = async (): Promise<Cookie[]> => {
   let fileBuffer;
@@ -111,6 +116,12 @@ export const test = base.extend<{
 }>({
   chromiumChannel: ["chrome", { option: true }],
   async context({ chromiumChannel }, use) {
+    if (!REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST) {
+      throw new Error(
+        "This test requires optional permissions to be required in the manifest. Please set REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST=1 in your `.env.development` and rerun the extension build.",
+      );
+    }
+
     // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname throws "cannot use 'import meta' outside a module"
     const pathToExtension = path.join(__dirname, "../../dist");
 
@@ -130,6 +141,14 @@ export const test = base.extend<{
         ...(CI || SLOWMO || PWDEBUG ? [] : ["--headless=new"]),
       ],
       slowMo: SLOWMO ? 3000 : undefined,
+      permissions: [
+        "clipboard-read",
+        "clipboard-write",
+        "accessibility-events",
+      ],
+      // Set the viewport to null because we rely on the real inner window width to detect when the sidepanel is open
+      // See: https://github.com/microsoft/playwright/issues/11465 and https://github.com/pixiebrix/pixiebrix-extension/blob/b4b0a2efde2c3ac5e634220b555532a2875fe5da/src/contentScript/sidebarController.tsx#L78
+      viewport: null,
     });
     // The admin console automatically opens a new tab to link the newly installed extension to the user's account.
     const pagePromise = context.waitForEvent("page");
