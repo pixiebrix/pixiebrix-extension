@@ -72,19 +72,23 @@ beforeEach(async () => {
   axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
 });
 
-describe("debouncedInstallStarterMods", () => {
-  test("user has starter mods available to install", async () => {
+describe("debouncedActivateStarterMods", () => {
+  test("user has starter mods available to activate", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const mod = defaultModDefinitionFactory();
+    const modDefinition = defaultModDefinitionFactory();
 
-    axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [mod]);
+    axiosMock
+      .onGet("/api/onboarding/starter-blueprints/")
+      .reply(200, [modDefinition]);
 
     await debouncedActivateStarterMods();
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(extensions).toHaveLength(1);
-    expect(extensions[0]._recipe.id).toEqual(mod.metadata.id);
+    expect(activatedModComponents).toHaveLength(1);
+    expect(activatedModComponents[0]._recipe.id).toEqual(
+      modDefinition.metadata.id,
+    );
     expect(refreshRegistriesMock).toHaveBeenCalledOnce();
   });
 
@@ -117,12 +121,12 @@ describe("debouncedInstallStarterMods", () => {
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(500);
 
     await debouncedActivateStarterMods();
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(extensions).toHaveLength(0);
+    expect(activatedModComponents).toHaveLength(0);
   });
 
-  test("install starter mod with built-in auths", async () => {
+  test("activate starter mod with built-in auths", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const { modDefinition, builtInIntegrationConfigs } =
@@ -137,20 +141,20 @@ describe("debouncedInstallStarterMods", () => {
       .reply(200, [modDefinition]);
 
     await debouncedActivateStarterMods();
-    const { extensions: modComponents } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(modComponents).toBeArrayOfSize(1);
-    const installedComponent = modComponents[0];
+    expect(activatedModComponents).toBeArrayOfSize(1);
+    const activatedModComponent = activatedModComponents[0];
 
-    expect(installedComponent.extensionPointId).toBe(
+    expect(activatedModComponent.extensionPointId).toBe(
       modDefinition.extensionPoints[0].id,
     );
-    expect(installedComponent.integrationDependencies).toBeArrayOfSize(2);
+    expect(activatedModComponent.integrationDependencies).toBeArrayOfSize(2);
 
-    const dependency1 = installedComponent.integrationDependencies.find(
+    const dependency1 = activatedModComponent.integrationDependencies.find(
       ({ integrationId }) => integrationId === "@pixiebrix/service1",
     );
-    const dependency2 = installedComponent.integrationDependencies.find(
+    const dependency2 = activatedModComponent.integrationDependencies.find(
       ({ integrationId }) => integrationId === "@pixiebrix/service2",
     );
 
@@ -158,40 +162,42 @@ describe("debouncedInstallStarterMods", () => {
     expect(dependency2.configId).toBe(builtInIntegrationConfigs[1].id);
   });
 
-  test("starter mod already installed", async () => {
+  test("starter mod already activated", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const modDefinition = defaultModDefinitionFactory();
 
-    const modComponent = modComponentFactory({
+    const activatedModComponent = modComponentFactory({
       _recipe: { id: modDefinition.metadata.id } as ModComponentBase["_recipe"],
     }) as ActivatedModComponent;
     await saveModComponentState({
-      extensions: [modComponent],
+      extensions: [activatedModComponent],
     });
 
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [
       {
-        extensionPoints: [modComponent],
+        extensionPoints: [activatedModComponent],
         ...modDefinition,
       },
     ]);
 
     await debouncedActivateStarterMods();
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(extensions).toHaveLength(1);
-    expect(extensions[0]._recipe.id).toEqual(modDefinition.metadata.id);
+    expect(activatedModComponents).toHaveLength(1);
+    expect(activatedModComponents[0]._recipe.id).toEqual(
+      modDefinition.metadata.id,
+    );
   });
 
-  test("extension with no _recipe doesn't throw undefined error", async () => {
+  test("activated mod component with no _recipe doesn't throw undefined error", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const modComponent = modComponentFactory({
+    const activatedModComponent = modComponentFactory({
       _recipe: undefined,
     }) as ActivatedModComponent;
     await saveModComponentState({
-      extensions: [modComponent],
+      extensions: [activatedModComponent],
     });
 
     axiosMock
@@ -199,12 +205,12 @@ describe("debouncedInstallStarterMods", () => {
       .reply(200, [defaultModDefinitionFactory()]);
 
     await debouncedActivateStarterMods();
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(extensions).toHaveLength(2);
+    expect(activatedModComponents).toHaveLength(2);
   });
 
-  test("install starter mod with optional integrations", async () => {
+  test("activate starter mod with optional integrations", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const modDefinition = defaultModDefinitionFactory();
@@ -222,19 +228,19 @@ describe("debouncedInstallStarterMods", () => {
       .reply(200, [modDefinition]);
 
     await debouncedActivateStarterMods();
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(extensions).toHaveLength(1);
-    const installedComponent = extensions[0];
-    expect(installedComponent._recipe.id).toEqual(modDefinition.metadata.id);
-    expect(installedComponent.integrationDependencies).toBeArrayOfSize(1);
+    expect(activatedModComponents).toHaveLength(1);
+    const activatedModComponent = activatedModComponents[0];
+    expect(activatedModComponent._recipe.id).toEqual(modDefinition.metadata.id);
+    expect(activatedModComponent.integrationDependencies).toBeArrayOfSize(1);
     // Expect the optional dependency NOT to be configured
     expect(
-      installedComponent.integrationDependencies[0].configId,
+      activatedModComponent.integrationDependencies[0].configId,
     ).toBeUndefined();
   });
 
-  test("install starter mods with optional integrations, 1 with built-in auth", async () => {
+  test("activate starter mods with optional integrations, 1 with built-in auth", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const { modDefinition, builtInIntegrationConfigs } =
@@ -260,20 +266,20 @@ describe("debouncedInstallStarterMods", () => {
       .reply(200, [modDefinition]);
 
     await debouncedActivateStarterMods();
-    const { extensions: modComponents } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(modComponents).toBeArrayOfSize(1);
+    expect(activatedModComponents).toBeArrayOfSize(1);
 
-    const installedComponent1 = modComponents[0];
-    expect(installedComponent1.extensionPointId).toBe(
+    const activatedModComponent1 = activatedModComponents[0];
+    expect(activatedModComponent1.extensionPointId).toBe(
       modDefinition.extensionPoints[0].id,
     );
-    expect(installedComponent1.integrationDependencies).toBeArrayOfSize(2);
+    expect(activatedModComponent1.integrationDependencies).toBeArrayOfSize(2);
 
-    const dependency1 = installedComponent1.integrationDependencies.find(
+    const dependency1 = activatedModComponent1.integrationDependencies.find(
       ({ integrationId }) => integrationId === "@pixiebrix/service1",
     );
-    const dependency2 = installedComponent1.integrationDependencies.find(
+    const dependency2 = activatedModComponent1.integrationDependencies.find(
       ({ integrationId }) => integrationId === "@pixiebrix/service2",
     );
 
