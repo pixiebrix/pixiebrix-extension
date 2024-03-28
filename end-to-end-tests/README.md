@@ -9,8 +9,10 @@ Execute these steps from the project root to run tests:
 
 One-time setup:
 
-- Set up your .env file: Copy `.env.example` to `.env.development` and fill in the required value for the test user
-  password (`MV` will determine the manifest version for the both the extension and the tests).
+- Set up your .env file:
+  - Copy `.env.example` to `.env.development`.
+  - Fill in the required values for the test user password `E2E_TEST_USER_PASSWORD_UNAFFILIATED` and uncomment `REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST=1`
+  - `MV` will determine the manifest version for the both the extension and the tests.
 - Install browsers: Execute `npx playwright install chromium chrome msedge`.
 
 1. Install dependencies: Run `npm install`
@@ -36,6 +38,10 @@ Adhere to these principles, based on the [Playwright Best Practices](https://pla
 - Ensure tests are self-contained, handling their own setup and cleanup.
   Leverage [Playwright fixtures](https://playwright.dev/docs/test-fixtures) for shared code.
 - Rely on Playwright's auto-waiting feature for actions like clicking or typing.
+
+When testing mod functionality, use our testing playground website, https://pbx.vercel.app, for a consistent environment. It is configured
+as the base url for e2e tests. Ex. `await page.goto("/bootstrap-5");` will bring you to the bootstrap-5 page on the playground.
+The source for this website is: https://github.com/pixiebrix/playground
 
 Focus on testing high-level user behavior and integration points, avoiding duplication of unit test coverage. Each
 test should represent one full feature flow, which may include multiple steps and assertions. Avoid splitting

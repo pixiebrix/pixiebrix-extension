@@ -40,6 +40,7 @@ import { getSelectionRange } from "@/utils/domUtils";
 
 import { snapWithin } from "@/utils/mathUtils";
 import ActionRegistry from "@/contentScript/textSelectionMenu/ActionRegistry";
+import { SELECTION_MENU_READY_ATTRIBUTE } from "@/domConstants";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
@@ -296,6 +297,11 @@ function isSelectionValid(selection: Nullishable<Selection>): boolean {
   return selectionText.length >= MIN_SELECTION_LENGTH_CHARS;
 }
 
+function markSelectionMenuReady() {
+  const html = globalThis.document?.documentElement;
+  html.setAttribute(SELECTION_MENU_READY_ATTRIBUTE, "true");
+}
+
 /**
  * Initialize the selection selection menu once.
  */
@@ -331,6 +337,9 @@ export const initSelectionMenu = once(() => {
   );
 
   selectionMenuActionRegistry.onChange.add(async () => {
+    // Mark that the  text selection menu is ready to be used with at least one action registered.
+    markSelectionMenuReady();
+
     const isShowing = selectionMenu?.checkVisibility();
     destroySelectionMenu();
 
