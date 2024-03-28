@@ -22,12 +22,19 @@ loadEnv();
 
 const requiredEnvVariables = [
   "SERVICE_URL",
-  "REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST",
   "E2E_TEST_USER_EMAIL_UNAFFILIATED",
   "E2E_TEST_USER_PASSWORD_UNAFFILIATED",
 ] as const;
 
-const optionalEnvVariables = ["CI", "MV", "SLOWMO", "PWDEBUG"] as const;
+// It's not strictly required for the test run itself, but the extension manifest.json must have been built with
+// "REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST" defined to avoid test failures due to missing permissions when activating certain mods.
+const optionalEnvVariables = [
+  "CI",
+  "MV",
+  "SLOWMO",
+  "PWDEBUG",
+  "REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST",
+] as const;
 
 type RequiredEnvVariables = Record<
   (typeof requiredEnvVariables)[number],
@@ -59,4 +66,10 @@ export const {
   E2E_TEST_USER_PASSWORD_UNAFFILIATED,
 } = process.env as RequiredEnvVariables;
 
-export const { CI, MV, SLOWMO, PWDEBUG } = process.env as OptionalEnvVariables;
+export const {
+  CI,
+  MV,
+  SLOWMO,
+  PWDEBUG,
+  REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST,
+} = process.env as OptionalEnvVariables;

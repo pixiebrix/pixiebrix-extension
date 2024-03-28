@@ -29,6 +29,7 @@ import {
   E2E_TEST_USER_EMAIL_UNAFFILIATED,
   MV,
   PWDEBUG,
+  REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST,
   SLOWMO,
 } from "../env";
 import fs from "node:fs/promises";
@@ -115,6 +116,12 @@ export const test = base.extend<{
 }>({
   chromiumChannel: ["chrome", { option: true }],
   async context({ chromiumChannel }, use) {
+    if (!REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST) {
+      throw new Error(
+        "This test requires optional permissions to be required in the manifest. Please set REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST=1 in your `.env.development` and rerun the extension build.",
+      );
+    }
+
     // eslint-disable-next-line unicorn/prefer-module -- TODO: import.meta.dirname throws "cannot use 'import meta' outside a module"
     const pathToExtension = path.join(__dirname, "../../dist");
 
