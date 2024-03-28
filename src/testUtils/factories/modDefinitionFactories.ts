@@ -155,7 +155,6 @@ export const versionedModDefinitionWithResolvedModComponents = (
 
 type InnerStarterBrickParams = {
   extensionPointRef?: InnerDefinitionRef;
-  starterBrickType?: StarterBrickType;
 };
 
 /**
@@ -163,14 +162,13 @@ type InnerStarterBrickParams = {
  */
 export const innerStarterBrickModDefinitionFactory = ({
   extensionPointRef = "extensionPoint" as InnerDefinitionRef,
-  starterBrickType = "menuItem",
 }: InnerStarterBrickParams = {}) =>
   extend<ModDefinition, ModDefinition>(modDefinitionFactory, {
     definitions: (): InnerDefinitions => ({
       [extensionPointRef]: {
         kind: "extensionPoint",
         definition: {
-          type: starterBrickType,
+          type: "menuItem",
           isAvailable: {
             matchPatterns: ["https://*/*"],
             urlPatterns: [],

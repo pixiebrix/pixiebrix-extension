@@ -41,10 +41,13 @@ export async function getSidebarState(): Promise<SidebarState> {
     initialSidebarState,
   );
 
+  // Merge the persisted state with the initial state to ensure that all fields are present
   return { ...initialSidebarState, ...persistedSidebarState };
 }
 
-export async function saveSidebarState(state: SidebarState): Promise<void> {
+export async function saveSidebarState(
+  state: SidebarPeristedState,
+): Promise<void> {
   await setReduxStorage(STORAGE_KEY, state, 0);
 }
 
