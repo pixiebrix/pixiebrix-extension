@@ -72,13 +72,12 @@ async function showMenu(element: HTMLElement): Promise<void> {
   const isShowing = shortcutSnippetMenu.checkVisibility();
   if (!isShowing) {
     shortcutSnippetMenu.setAttribute("aria-hidden", "false");
-    if (prefersReducedMotion()) {
-      shortcutSnippetMenu.style.setProperty("display", "block");
-    } else {
+    shortcutSnippetMenu.style.setProperty("display", "block");
+    if (!prefersReducedMotion()) {
       shortcutSnippetMenu.animate(
         [
-          { opacity: 0, margin: "8px 0", display: "block" },
-          { opacity: 1, margin: "0", display: "block" },
+          { opacity: 0, margin: "8px 0" },
+          { opacity: 1, margin: "0" },
         ],
         {
           easing: "ease-in-out",
