@@ -75,10 +75,12 @@ async function flush(): Promise<void> {
 export async function selectExtraContext(
   error: Error | SerializedError,
 ): Promise<UnknownObject & { extensionVersion: SemVerString }> {
-  const { version } = browser.runtime.getManifest();
+  const { version, manifest_version: manifestVersion } =
+    browser.runtime.getManifest();
   const extensionVersion = validateSemVerString(version);
   const extraContext: UnknownObject & { extensionVersion: SemVerString } = {
     extensionVersion,
+    manifestVersion,
   };
 
   if (!isObject(error)) {
