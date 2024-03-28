@@ -28,13 +28,12 @@ test.describe("extension console workshop smoke test", () => {
     const workshopPage = new WorkshopPage(page, extensionId);
     await workshopPage.goto();
 
-    // User has no username set, so will be shown welcome message for username selection
-    const welcomeMessage = page.getByText("Welcome to the PixieBrix Workshop!");
-    await expect(welcomeMessage).toBeVisible();
+    // TODO: Add test assertions after adding scope to test user in
+    //  fix for https://github.com/pixiebrix/pixiebrix-extension/issues/8057
 
     const pageTitle = await page.title();
 
-    // Still the Extension Console because the page workshop page is gated
+    // Still the Extension Console because the workshop page is gated
     expect(pageTitle).toBe("Extension Console | PixieBrix");
   });
 });
