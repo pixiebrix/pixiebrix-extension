@@ -655,6 +655,7 @@
     "./store/settings/settingsTypes.ts",
     "./store/sidebar/eventKeyUtils.tsx",
     "./store/sidebar/sidebarSlice.ts",
+    "./store/sidebar/sidebarStorage.ts",
     "./store/sidebar/thunks/addFormPanel.ts",
     "./store/sidebar/thunks/addTemporaryPanel.ts",
     "./store/sidebar/thunks/removeTemporaryPanel.ts",
