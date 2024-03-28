@@ -616,6 +616,7 @@
     "./sidebar/messenger/api.ts",
     "./sidebar/messenger/registration.ts",
     "./store/sidebar/constants.ts",
+    "./store/sidebar/initialState.ts",
     "./sidebar/protocol.tsx",
     "./sidebar/sidePanel.tsx",
     "./sidebar/sidebarSelectors.ts",

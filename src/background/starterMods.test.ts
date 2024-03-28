@@ -49,9 +49,9 @@ import {
   getEventKeyForPanel,
 } from "@/store/sidebar/eventKeyUtils";
 import produce from "immer";
-import { StarterBrickDefinition } from "@/starterBricks/types";
-import { ModDefinition } from "@/types/modDefinitionTypes";
-import { StarterBrickType } from "@/types/starterBrickTypes";
+import { type StarterBrickDefinition } from "@/starterBricks/types";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 
 const axiosMock = new MockAdapter(axios);
 
