@@ -111,7 +111,8 @@
   color: $S800;
   background-color: $N0;
 
-  &--selected {
+  &--selected,
+  &:hover {
     background-color: $S200;
   }
 
