@@ -178,6 +178,12 @@ function customizeManifest(manifestV2, options = {}) {
     manifest.web_accessible_resources.push("*.json");
   }
 
+  // Playwright does not support dynamically accepting permissions for extensions, so we need to add all permissions
+  // to the manifest. This is only necessary for Playwright tests.
+  if (env.REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST) {
+    manifest.permissions.push(...manifest.optional_permissions);
+  }
+
   if (manifestVersion === 3) {
     return updateManifestToV3(manifest);
   }

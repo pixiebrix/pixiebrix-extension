@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expect } from "./fixtures/extensionBase";
 import type AxeBuilder from "@axe-core/playwright";
-import { type Locator } from "@playwright/test";
+import { type Locator, expect, type Page } from "@playwright/test";
+import { MV } from "./env";
 
 type AxeResults = Awaited<ReturnType<typeof AxeBuilder.prototype.analyze>>;
 
@@ -38,8 +38,7 @@ export function checkForCriticalViolations(
   );
 
   const unallowedViolations = criticalViolations.filter(
-    (violation) =>
-      !allowedViolations.some((allowed) => violation.id === allowed),
+    (violation) => !allowedViolations.includes(violation.id),
   );
 
   const absentAllowedViolations = allowedViolations.filter(
@@ -65,5 +64,56 @@ export async function expectToNotBeHiddenOrUnmounted(
 ) {
   await expect(async () => {
     await expect(locator).toBeVisible();
-  }).toPass(options);
+  }).toPass({ timeout: 5000, ...options });
+}
+
+export async function getSidebarPage(page: Page, extensionId: string) {
+  if (MV === "3") {
+    const findSidebarPage = (page: Page) =>
+      page
+        .context()
+        .pages()
+        .find((value) =>
+          value
+            .url()
+            .startsWith(`chrome-extension://${extensionId}/sidebar.html`),
+        );
+    await expect(() => {
+      const sideBarPage = findSidebarPage(page);
+      expect(sideBarPage).toBeDefined();
+    }).toPass({ timeout: 5000 });
+    return findSidebarPage(page);
+  }
+
+  const findSidebarFrame = (page: Page) =>
+    page
+      .frames()
+      .find((frame) =>
+        frame
+          .url()
+          .startsWith(`chrome-extension://${extensionId}/sidebar.html`),
+      );
+  await expect(() => {
+    const sideBarPage = findSidebarFrame(page);
+    expect(sideBarPage).toBeDefined();
+  }).toPass({ timeout: 5000 });
+  return findSidebarFrame(page);
+}
+
+export async function waitForSelectionMenuReadiness(page: Page) {
+  await waitForContentScriptReadiness(page);
+  await expect(async () => {
+    const toolTipsContainer = page.locator(".pixiebrix-tooltips-container");
+    await expect(toolTipsContainer).toBeAttached();
+  }).toPass({ timeout: 5000 });
+  // For some reason, the selection menu sometimes isn't actually ready at this point, so we wait a bit longer
+  await page.waitForTimeout(1000);
+}
+
+async function waitForContentScriptReadiness(page: Page) {
+  await expect(async () => {
+    // eslint-disable-next-line unicorn/prefer-dom-node-dataset -- TODO ignore this rule in e2e tests
+    const pbReady = await page.locator("html").getAttribute("data-pb-ready");
+    expect(pbReady).toBeTruthy();
+  }).toPass({ timeout: 5000 });
 }

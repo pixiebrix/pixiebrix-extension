@@ -19,7 +19,10 @@ import { debounce, once } from "lodash";
 import type { Nullishable } from "@/utils/nullishUtils";
 import { render, unmountComponentAtNode } from "react-dom";
 import React from "react";
-import { tooltipFactory } from "@/contentScript/tooltipDom";
+import {
+  ensureTooltipsContainer,
+  tooltipFactory,
+} from "@/contentScript/tooltipDom";
 import {
   autoUpdate,
   computePosition,
@@ -343,4 +346,7 @@ export const initSelectionMenu = once(() => {
   onContextInvalidated.addListener(() => {
     destroySelectionMenu();
   });
+
+  // Ensure the tooltip container is created in dom as indication that the text selection menu is ready
+  ensureTooltipsContainer();
 });

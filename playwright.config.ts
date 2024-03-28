@@ -14,7 +14,7 @@ export default defineConfig<{ chromiumChannel: string }>({
   /* Retry on CI only to catch flakiness */
   retries: CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: CI ? 1 : undefined,
+  workers: CI ? 1 : 2,
   /* Timeout for each test */
   timeout: 120_000,
   expect: {
