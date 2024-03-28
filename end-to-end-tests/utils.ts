@@ -106,19 +106,13 @@ export async function getSidebarPage(page: Page, extensionId: string) {
   return sidebarFrame!;
 }
 
+// Waits for the selection menu to be ready to use (listeners are created and at least one action is registered).
+// see: https://github.com/pixiebrix/pixiebrix-extension/blob/5693a4db1c4f3411910ef9cf6a60f5a20c132761/src/contentScript/textSelectionMenu/selectionMenuController.tsx#L336
 export async function waitForSelectionMenuReadiness(page: Page) {
-  await waitForContentScriptReadiness(page);
   await expect(async () => {
-    const toolTipsContainer = page.locator(".pixiebrix-tooltips-container");
-    await expect(toolTipsContainer).toBeAttached();
-  }).toPass({ timeout: 5000 });
-  // For some reason, the selection menu sometimes isn't actually ready at this point, so we wait a bit longer
-  await page.waitForTimeout(1000);
-}
-
-async function waitForContentScriptReadiness(page: Page) {
-  await expect(async () => {
-    const pbReady = await page.locator("html").getAttribute("data-pb-ready");
+    const pbReady = await page
+      .locator("html")
+      .getAttribute("data-pb-selection-menu-ready");
     expect(pbReady).toBeTruthy();
   }).toPass({ timeout: 5000 });
 }
