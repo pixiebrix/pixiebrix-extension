@@ -23,7 +23,6 @@ import {
   isCurrentTopFrame,
 } from "@/pageEditor/context/connection";
 
-// TODO: Migrate to useCurrentUrl()
 async function onNavigation(target: Target): Promise<void> {
   if (isCurrentTopFrame(target)) {
     updatePageEditor();

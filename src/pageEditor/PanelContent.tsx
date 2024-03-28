@@ -82,7 +82,7 @@ const PanelContent: React.FC = () => {
     return () => {
       navigationEvent.remove(onNavigation);
     };
-  }, [navigationEvent, onNavigation]);
+  }, [onNavigation]);
 
   useEffect(() => {
     // Automatically connect on load

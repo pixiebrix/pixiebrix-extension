@@ -18,8 +18,6 @@
 import React, { Suspense } from "react";
 import { type DocumentViewProps } from "./DocumentViewProps";
 
-// Dynamic import because documentView has a transitive dependency of react-shadow-root which assumed a proper
-// `window` variable is present on module load. This isn't available on header generation
 const DocumentView = React.lazy(
   async () =>
     import(

@@ -273,15 +273,14 @@ export async function registerTour({
       markTourStart(nonce, extension, { promise, abortController, context });
 
       // Decorate the extension promise with tour tracking
-      const runPromise = promise
-        // eslint-disable-next-line promise/prefer-await-to-then -- avoid separate method
-        .then(() => {
+      const runPromise = (async () => {
+        try {
+          await promise;
           markTourEnd(nonce, { context });
-        })
-        // eslint-disable-next-line promise/prefer-await-to-then -- avoid separate method
-        .catch((error) => {
+        } catch (error) {
           markTourEnd(nonce, { error, context });
-        });
+        }
+      })();
 
       return {
         nonce,

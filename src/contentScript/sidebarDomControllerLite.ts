@@ -29,9 +29,8 @@ import { uuidv4 } from "@/types/helpers";
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
 
-// Use ? because it's not defined during header generation. But otherwise it will always be defined.
 // eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const html: HTMLElement = globalThis.document?.documentElement;
+const html: HTMLElement = globalThis.document.documentElement;
 const SIDEBAR_WIDTH_PX = 400;
 
 function storeOriginalCSSOnce() {
@@ -79,11 +78,6 @@ export function isSidebarFrameVisible(): boolean {
 /** Removes the element; Returns false if no element was found */
 export function removeSidebarFrame(): boolean {
   const sidebar = getSidebarElement();
-
-  console.debug("sidebarDomControllerLite:removeSidebarFrame", {
-    isSidebarFrameVisible: Boolean(sidebar),
-  });
-
   if (sidebar) {
     sidebar.remove();
     setSidebarWidth(0);
@@ -94,12 +88,7 @@ export function removeSidebarFrame(): boolean {
 
 /** Inserts the element; Returns false if it already existed */
 export function insertSidebarFrame(): boolean {
-  console.debug("sidebarDomControllerLite:insertSidebarFrame", {
-    isSidebarFrameVisible: isSidebarFrameVisible(),
-  });
-
   if (isSidebarFrameVisible()) {
-    console.debug("insertSidebarFrame: sidebar frame already exists");
     return false;
   }
 
