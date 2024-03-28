@@ -114,11 +114,13 @@ export function getModComponentIdsForModComponentDefinitions(
   activatedModComponents: ActivatedModComponent[],
   modComponentDefinitions: ModComponentDefinition[],
 ): UUID[] {
-  return modComponentDefinitions.map((modComponentDefinition) => {
-    const activatedModComponent = activatedModComponents.find(
-      (activatedModComponent) =>
-        activatedModComponent.extensionPointId === modComponentDefinition.id,
-    );
-    return activatedModComponent?.id;
-  });
+  return modComponentDefinitions
+    .map((modComponentDefinition) => {
+      const activatedModComponent = activatedModComponents.find(
+        (activatedModComponent) =>
+          activatedModComponent.extensionPointId === modComponentDefinition.id,
+      );
+      return activatedModComponent?.id;
+    })
+    .filter(Boolean);
 }

@@ -18,6 +18,7 @@
 import {
   getAllModComponenetDefinitionsWithType,
   getContainedStarterBrickTypes,
+  getModComponentIdsForModComponentDefinitions,
 } from "@/starterBricks/starterBrickModUtils";
 import {
   defaultModDefinitionFactory,
@@ -25,6 +26,7 @@ import {
 } from "@/testUtils/factories/modDefinitionFactories";
 import extensionPointRegistry from "@/starterBricks/registry";
 import { type StarterBrick } from "@/types/starterBrickTypes";
+import { activatedModComponentFactory } from "@/testUtils/factories/modComponentFactories";
 
 extensionPointRegistry.lookup = jest.fn();
 
@@ -130,5 +132,75 @@ describe("starterBrickModUtils", () => {
     });
   });
 
-  describe("getModComponentIdsForModComponentDefinitions", () => {});
+  describe("getModComponentIdsForModComponentDefinitions", () => {
+    test("returns activated mod component ids for mod component definitions", () => {
+      const activatedModComponent = activatedModComponentFactory();
+      const modComponentDefinition = modComponentDefinitionFactory({
+        id: activatedModComponent.extensionPointId,
+      });
+
+      const result = getModComponentIdsForModComponentDefinitions(
+        [activatedModComponent],
+        [modComponentDefinition],
+      );
+
+      expect(result).toStrictEqual([activatedModComponent.id]);
+    });
+
+    test("ignores activatedModComponents that don't match modComponentDefinitions", () => {
+      const activatedModComponent = activatedModComponentFactory();
+      const modComponentDefinition = modComponentDefinitionFactory();
+
+      const result = getModComponentIdsForModComponentDefinitions(
+        [activatedModComponent],
+        [modComponentDefinition],
+      );
+
+      expect(result).toStrictEqual([]);
+    });
+
+    test("handles multiple mod component definitions", () => {
+      const activatedModComponent = activatedModComponentFactory();
+      const modComponentDefinition = modComponentDefinitionFactory({
+        id: activatedModComponent.extensionPointId,
+      });
+
+      const result = getModComponentIdsForModComponentDefinitions(
+        [activatedModComponent],
+        [modComponentDefinition, modComponentDefinitionFactory()],
+      );
+
+      expect(result).toStrictEqual([activatedModComponent.id]);
+    });
+
+    test("handles multiple mod component definitions and multiple activated mod components", () => {
+      const activatedModComponent1 = activatedModComponentFactory();
+      const modComponentDefinition1 = modComponentDefinitionFactory({
+        id: activatedModComponent1.extensionPointId,
+      });
+
+      const activatedModComponent2 = activatedModComponentFactory();
+      const modComponentDefinition2 = modComponentDefinitionFactory({
+        id: activatedModComponent2.extensionPointId,
+      });
+
+      const result = getModComponentIdsForModComponentDefinitions(
+        [
+          activatedModComponent1,
+          activatedModComponent2,
+          activatedModComponentFactory(),
+        ],
+        [
+          modComponentDefinition1,
+          modComponentDefinitionFactory(),
+          modComponentDefinition2,
+        ],
+      );
+
+      expect(result).toStrictEqual([
+        activatedModComponent1.id,
+        activatedModComponent2.id,
+      ]);
+    });
+  });
 });
