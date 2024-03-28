@@ -81,6 +81,7 @@ export async function selectExtraContext(
   const extraContext: UnknownObject & { extensionVersion: SemVerString } = {
     extensionVersion,
     manifestVersion,
+    runtimeId: browser.runtime.id,
   };
 
   if (!isObject(error)) {

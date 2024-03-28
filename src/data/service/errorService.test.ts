@@ -76,6 +76,7 @@ describe("selectExtraContext", () => {
       expect.objectContaining({
         extensionVersion: expectedManifestValues.version,
         manifestVersion: expectedManifestValues.manifest_version,
+        runtimeId: EXPECTED_RUNTIME_ID,
       }),
     );
   });
