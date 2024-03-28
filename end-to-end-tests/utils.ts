@@ -110,7 +110,7 @@ export async function waitForSelectionMenuReadiness(page: Page) {
   await page.waitForTimeout(1000);
 }
 
-export async function waitForContentScriptReadiness(page: Page) {
+async function waitForContentScriptReadiness(page: Page) {
   await expect(async () => {
     // eslint-disable-next-line unicorn/prefer-dom-node-dataset -- TODO ignore this rule in e2e tests
     const pbReady = await page.locator("html").getAttribute("data-pb-ready");
