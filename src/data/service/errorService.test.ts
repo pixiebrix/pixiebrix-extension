@@ -26,9 +26,7 @@ import {
 } from "@/data/service/errorService";
 import { serializeError } from "serialize-error";
 import { InteractiveLoginRequiredError } from "@/errors/authErrors";
-import { appApiMock } from "@/testUtils/appApiMock";
 import { TEST_flushAll } from "@/background/telemetry";
-import { AnnotationType } from "@/types/annotationTypes";
 
 const EXPECTED_RUNTIME_ID = "abc123";
 const expectedManifestValues = {
