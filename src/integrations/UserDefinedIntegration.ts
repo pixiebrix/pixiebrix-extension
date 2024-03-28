@@ -43,6 +43,7 @@ import { canParseUrl, isAbsoluteUrl } from "@/utils/urlUtils";
 import { missingProperties } from "@/utils/schemaUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { stringToBase64 } from "uint8array-extras";
+import { selectAbsoluteUrl } from "@/data/service/requestErrorUtils";
 
 /**
  * An integration hydrated from a user-defined definition. Has the ability to authenticate requests because it has
@@ -252,13 +253,17 @@ class UserDefinedIntegration<
       integrationConfig,
     );
 
+    let absoluteURL: string;
     if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
       throw new Error(
         "Must use absolute URLs for integrations that don't define a baseURL",
       );
+    } else {
+      absoluteURL = selectAbsoluteUrl({ url: requestConfig.url, baseURL });
     }
 
     const result = produce(requestConfig, (draft) => {
+      draft.url = absoluteURL;
       draft.headers = { ...draft.headers, ...headers };
       draft.params = { ...draft.params, ...params };
     });
@@ -293,13 +298,17 @@ class UserDefinedIntegration<
       );
     }
 
+    let absoluteURL: string;
     if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
       throw new Error(
         "Must use absolute URLs for integrations that don't define a baseURL",
       );
+    } else {
+      absoluteURL = selectAbsoluteUrl({ url: requestConfig.url, baseURL });
     }
 
     const result = produce(requestConfig, (draft) => {
+      draft.url = absoluteURL;
       draft.headers = {
         ...draft.headers,
         Authorization: `Basic ${stringToBase64(
@@ -330,13 +339,17 @@ class UserDefinedIntegration<
       { ...integrationConfig, ...tokenData },
     );
 
+    let absoluteURL: string;
     if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
       throw new Error(
         "Must use absolute URLs for integrations that don't define a baseURL",
       );
+    } else {
+      absoluteURL = selectAbsoluteUrl({ url: requestConfig.url, baseURL });
     }
 
     const result = produce(requestConfig, (draft) => {
+      draft.url = absoluteURL;
       draft.headers = { ...draft.headers, ...headers };
     });
 

@@ -28,14 +28,12 @@ import {
 } from "@/testUtils/factories/integrationFactories";
 import { brickOptionsFactory } from "@/testUtils/factories/runtimeFactories";
 import { unsafeAssumeValidArg } from "@/runtime/runtimeTypes";
-import { appApiMock } from "@/testUtils/appApiMock";
+import { appApiMock, onApiGet, onApiPost } from "@/testUtils/appApiMock";
 import { TEST_overrideFeatureFlags } from "@/auth/featureFlagStorage";
 import { fromJS } from "@/integrations/UserDefinedIntegration";
 import controlRoomOAuth2Service from "@contrib/integrations/automation-anywhere-oauth2.yaml";
 import serviceRegistry from "@/integrations/registry";
-import { registry, services } from "@/background/messenger/strict/api";
-import { refreshServices } from "@/background/locator";
-import { clear, find, syncPackages } from "@/registry/packageRegistry";
+import { locator } from "@/background/locator";
 import { type UUID } from "@/types/stringTypes";
 import { setCachedAuthData } from "@/background/auth/authStorage";
 import { autoUUIDSequence } from "@/testUtils/factories/stringFactories";
@@ -58,18 +56,6 @@ const AUTOMATION_NAME = "My Test Automation";
 
 const oauth2Integration = fromJS(controlRoomOAuth2Service as any);
 let configId: UUID | null = null;
-
-beforeAll(() => {
-  // Wire up registry for integrated testing
-  jest.mocked(services.refresh).mockImplementation(refreshServices);
-  jest.mocked(registry.syncRemote).mockImplementation(syncPackages);
-  jest.mocked(registry.find).mockImplementation(find);
-  jest.mocked(registry.clear).mockImplementation(clear);
-});
-
-afterAll(() => {
-  jest.resetAllMocks();
-});
 
 beforeEach(async () => {
   await TEST_overrideFeatureFlags([]);
@@ -106,6 +92,7 @@ beforeEach(async () => {
   configId = config.id;
   appApiMock.reset();
   appApiMock.onGet("/api/services/shared/").reply(200, [config]);
+  await locator.refresh();
 
   await setCachedAuthData(configId, {
     access_token: "testtoken1234",
@@ -118,7 +105,7 @@ describe("Automation Anywhere - Run API Task", () => {
       deploymentId: "1234",
       automationName: AUTOMATION_NAME,
     };
-    appApiMock.onPost().reply(200, taskResponse);
+    onApiPost("/v4/automations/deploy").reply(200, taskResponse);
 
     const response = await runApiTaskBrick.run(
       unsafeAssumeValidArg({
@@ -145,10 +132,10 @@ describe("Automation Anywhere - Run API Task", () => {
       deploymentId,
       automationName: AUTOMATION_NAME,
     };
-    appApiMock.onPost("/v4/automations/deploy").reply(200, taskResponse);
+    onApiPost("/v4/automations/deploy").reply(200, taskResponse);
 
     // Task starts in QUEUED status
-    appApiMock.onPost("/v3/activity/list").replyOnce(200, {
+    onApiPost("/v3/activity/list").replyOnce(200, {
       list: [
         {
           id: activityId,
@@ -159,7 +146,7 @@ describe("Automation Anywhere - Run API Task", () => {
       ],
     });
     // Task transitions to PENDING_EXECUTION status
-    appApiMock.onPost("/v3/activity/list").replyOnce(200, {
+    onApiPost("/v3/activity/list").replyOnce(200, {
       list: [
         {
           id: activityId,
@@ -170,7 +157,7 @@ describe("Automation Anywhere - Run API Task", () => {
       ],
     });
     // Task completes
-    appApiMock.onPost("/v3/activity/list").replyOnce(200, {
+    onApiPost("/v3/activity/list").replyOnce(200, {
       list: [
         {
           id: activityId,
@@ -181,7 +168,7 @@ describe("Automation Anywhere - Run API Task", () => {
       ],
     });
 
-    appApiMock.onGet(`/v3/activity/execution/${activityId}`).reply(200, {
+    onApiGet(`/v3/activity/execution/${activityId}`).reply(200, {
       id: activityId,
       botOutVariables: {
         values: {
@@ -204,7 +191,7 @@ describe("Automation Anywhere - Run API Task", () => {
         data: DATA,
         automationName: AUTOMATION_NAME,
         awaitResult: true,
-        maxWaitTime: 10_000,
+        maxWaitMillis: 10_000,
       }),
       brickOptionsFactory({ platform: platformMock }),
     );
@@ -225,10 +212,10 @@ describe("Automation Anywhere - Run API Task", () => {
       deploymentId,
       automationName: AUTOMATION_NAME,
     };
-    appApiMock.onPost("/v4/automations/deploy").reply(200, taskResponse);
+    onApiPost("/v4/automations/deploy").reply(200, taskResponse);
 
     // Task starts in QUEUED status
-    appApiMock.onPost("/v3/activity/list").replyOnce(200, {
+    onApiPost("/v3/activity/list").replyOnce(200, {
       list: [
         {
           id: activityId,
@@ -239,7 +226,7 @@ describe("Automation Anywhere - Run API Task", () => {
       ],
     });
     // Task transitions to, and remains in, PENDING_EXECUTION status
-    appApiMock.onPost("/v3/activity/list").reply(200, {
+    onApiPost("/v3/activity/list").reply(200, {
       list: [
         {
           id: activityId,
