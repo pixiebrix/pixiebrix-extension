@@ -72,10 +72,10 @@ describe("useSaveMod", () => {
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.installMod({
+          extensionsSlice.actions.activateMod({
             modDefinition: definition,
             screen: "pageEditor",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
       },
@@ -135,10 +135,10 @@ describe("useSaveMod", () => {
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.installMod({
+          extensionsSlice.actions.activateMod({
             modDefinition: definition,
             screen: "pageEditor",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
       },
@@ -204,10 +204,10 @@ describe("useSaveMod", () => {
     const { result, waitForEffect } = renderHook(() => useSaveMod(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsSlice.actions.installMod({
+          extensionsSlice.actions.activateMod({
             modDefinition: definition,
             screen: "pageEditor",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
         dispatch(editorSlice.actions.selectRecipeId(modId));

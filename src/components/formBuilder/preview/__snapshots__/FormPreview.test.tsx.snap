@@ -3,7 +3,7 @@
 exports[`FormPreview it renders empty schema 1`] = `
 <DocumentFragment>
   <div
-    class="rjsf"
+    class="mr-2"
   />
 </DocumentFragment>
 `;
@@ -11,7 +11,7 @@ exports[`FormPreview it renders empty schema 1`] = `
 exports[`FormPreview it renders markdown in description 1`] = `
 <DocumentFragment>
   <div
-    class="rjsf"
+    class="mr-2"
   >
     <div
       class="root form-group"
@@ -102,7 +102,7 @@ exports[`FormPreview it renders markdown in description 1`] = `
 exports[`FormPreview it renders simple schema 1`] = `
 <DocumentFragment>
   <div
-    class="rjsf"
+    class="mr-2"
   >
     <div
       class="root form-group"

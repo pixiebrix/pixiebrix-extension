@@ -28,7 +28,7 @@ import { truncate } from "lodash";
 import Loader from "@/components/Loader";
 import useSubmitBrick from "./useSubmitBrick";
 import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import useSetDocumentTitle from "@/hooks/useSetDocumentTitle";
 import { HotKeys } from "react-hotkeys";
 import workshopSlice from "@/store/workshopSlice";
@@ -50,7 +50,7 @@ type ParsedBrickInfo = {
 };
 
 function useParseBrick(config: string | null): ParsedBrickInfo {
-  const extensions = useSelector(selectExtensions);
+  const extensions = useSelector(selectActivatedModComponents);
 
   return useMemo(() => {
     if (config == null) {

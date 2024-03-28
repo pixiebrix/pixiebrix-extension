@@ -18,7 +18,7 @@
 import { TransformerABC } from "@/types/bricks/transformerTypes";
 import type { BrickArgs, BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
-import { type AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { PropError } from "@/errors/businessErrors";
 import { validateRegistryId } from "@/types/helpers";
 import { type SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
@@ -87,10 +87,11 @@ export class RemoteMethod extends TransformerABC {
     {
       service: integrationConfig,
       ...requestConfig
-    }: BrickArgs<{
-      service: SanitizedIntegrationConfig;
-      requestConfig: AxiosRequestConfig;
-    }>,
+    }: BrickArgs<
+      {
+        service: SanitizedIntegrationConfig;
+      } & NetworkRequestConfig
+    >,
     { platform }: BrickOptions,
   ): Promise<unknown> {
     if (integrationConfig && typeof integrationConfig !== "object") {
@@ -102,10 +103,7 @@ export class RemoteMethod extends TransformerABC {
       );
     }
 
-    const { data } = await platform.request(
-      integrationConfig,
-      requestConfig as AxiosRequestConfig,
-    );
+    const { data } = await platform.request(integrationConfig, requestConfig);
     return data;
   }
 }

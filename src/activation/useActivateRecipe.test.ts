@@ -200,12 +200,12 @@ describe("useActivateRecipe", () => {
     );
 
     expect(dispatch).toHaveBeenCalledWith(
-      extensionsSlice.actions.installMod({
+      extensionsSlice.actions.activateMod({
         modDefinition,
         configuredDependencies: [],
         optionsArgs: {},
         screen: "extensionConsole",
-        isReinstall: false,
+        isReactivate: false,
       }),
     );
 
@@ -270,14 +270,14 @@ describe("useActivateRecipe", () => {
     const { dispatch } = getReduxStore();
 
     expect(dispatch).toHaveBeenCalledWith(
-      extensionsSlice.actions.installMod({
+      extensionsSlice.actions.activateMod({
         modDefinition,
         configuredDependencies: [],
         optionsArgs: {
           myDatabase: createdDatabase.id,
         },
         screen: "marketplace",
-        isReinstall: false,
+        isReactivate: false,
       }),
     );
   });

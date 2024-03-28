@@ -33,10 +33,10 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.installMod({
+          extensionsActions.activateMod({
             modDefinition,
             screen: "extensionConsole",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
       },
@@ -72,10 +72,10 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.installMod({
+          extensionsActions.activateMod({
             modDefinition,
             screen: "extensionConsole",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
       },
@@ -101,10 +101,10 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.installMod({
+          extensionsActions.activateMod({
             modDefinition: installedModDefinition,
             screen: "extensionConsole",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
         dispatch(editorActions.addElement(dirtyFormState));
@@ -139,10 +139,10 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.installMod({
+          extensionsActions.activateMod({
             modDefinition: installedModDefinition,
             screen: "extensionConsole",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
         dispatch(editorActions.addElement(dirtyFormState1));
@@ -169,10 +169,10 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.installMod({
+          extensionsActions.activateMod({
             modDefinition,
             screen: "extensionConsole",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
         dispatch(editorActions.addElement(formState));
@@ -199,10 +199,10 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.installMod({
+          extensionsActions.activateMod({
             modDefinition: installedModDefinition,
             screen: "extensionConsole",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
         dispatch(editorActions.addElement(formState));
@@ -229,10 +229,10 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.installMod({
+          extensionsActions.activateMod({
             modDefinition: installedModDefinition,
             screen: "extensionConsole",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
       },
@@ -258,10 +258,10 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.installMod({
+          extensionsActions.activateMod({
             modDefinition: installedModDefinition,
             screen: "extensionConsole",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
       },
@@ -288,10 +288,10 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.installMod({
+          extensionsActions.activateMod({
             modDefinition,
             screen: "extensionConsole",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
         dispatch(editorActions.addElement(formState));
@@ -319,10 +319,10 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.installMod({
+          extensionsActions.activateMod({
             modDefinition: installedModDefinition,
             screen: "extensionConsole",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
         dispatch(editorActions.addElement(formState));
@@ -350,10 +350,10 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.installMod({
+          extensionsActions.activateMod({
             modDefinition,
             screen: "extensionConsole",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
         dispatch(editorActions.addElement(formState));
@@ -381,10 +381,10 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.installMod({
+          extensionsActions.activateMod({
             modDefinition: installedModDefinition,
             screen: "extensionConsole",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
         dispatch(editorActions.addElement(formState));
@@ -456,10 +456,10 @@ describe("useCompareModComponentCounts", () => {
     const { result } = renderHook(() => useCompareModComponentCounts(), {
       setupRedux(dispatch) {
         dispatch(
-          extensionsActions.installMod({
+          extensionsActions.activateMod({
             modDefinition,
             screen: "extensionConsole",
-            isReinstall: false,
+            isReactivate: false,
           }),
         );
       },

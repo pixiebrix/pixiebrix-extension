@@ -22,7 +22,7 @@ import { type RegistryId } from "@/types/registryTypes";
 import { isEmpty } from "lodash";
 import { type UUID } from "@/types/stringTypes";
 
-export function selectExtensions({
+export function selectActivatedModComponents({
   options,
 }: ModComponentsRootState): ActivatedModComponent[] {
   if (!Array.isArray(options.extensions)) {
@@ -36,27 +36,29 @@ export function selectExtensions({
 }
 
 const isModComponentSavedOnCloudSelector = createSelector(
-  selectExtensions,
+  selectActivatedModComponents,
   (state: ModComponentsRootState, modComponentId: UUID) => modComponentId,
-  (extensions, modComponentId) =>
-    extensions.some((extension) => extension.id === modComponentId),
+  (modComponents, modComponentId) =>
+    modComponents.some((modComponent) => modComponent.id === modComponentId),
 );
 
 export const selectIsModComponentSavedOnCloud =
   (modComponentId: UUID) => (state: ModComponentsRootState) =>
     isModComponentSavedOnCloudSelector(state, modComponentId);
 
-const extensionsForRecipeSelector = createSelector(
-  selectExtensions,
-  (state: ModComponentsRootState, recipeId: RegistryId) => recipeId,
-  (extensions, recipeId) =>
-    extensions.filter((extension) => extension._recipe?.id === recipeId),
+const activatedModComponentsForModSelector = createSelector(
+  selectActivatedModComponents,
+  (state: ModComponentsRootState, modId: RegistryId) => modId,
+  (activatedModComponents, modId) =>
+    activatedModComponents.filter(
+      (activatedModComponent) => activatedModComponent._recipe?.id === modId,
+    ),
 );
 
-export const selectExtensionsForRecipe =
-  (recipeId: RegistryId) => (state: ModComponentsRootState) =>
-    extensionsForRecipeSelector(state, recipeId);
+export const selectModComponentsForMod =
+  (modId: RegistryId) => (state: ModComponentsRootState) =>
+    activatedModComponentsForModSelector(state, modId);
 
-export const selectRecipeHasAnyExtensionsInstalled =
-  (recipeId: RegistryId) => (state: ModComponentsRootState) =>
-    !isEmpty(extensionsForRecipeSelector(state, recipeId));
+export const selectModHasAnyActivatedModComponents =
+  (modId: RegistryId) => (state: ModComponentsRootState) =>
+    !isEmpty(activatedModComponentsForModSelector(state, modId));

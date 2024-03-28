@@ -38,11 +38,11 @@ sessionChangesListenerMiddleware.startListening({
     actions.removeElementFromRecipe,
     actions.removeRecipeData,
 
-    extensionsSlice.actions.installCloudExtension,
+    extensionsSlice.actions.activateStandaloneModDefinition,
     extensionsSlice.actions.removeExtension,
     extensionsSlice.actions.removeExtensions,
     extensionsSlice.actions.attachExtension,
-    extensionsSlice.actions.installMod,
+    extensionsSlice.actions.activateMod,
     extensionsSlice.actions.removeRecipeById,
   ),
   effect(action, { dispatch, getState }) {

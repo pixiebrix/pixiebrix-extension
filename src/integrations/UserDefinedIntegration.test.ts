@@ -113,10 +113,8 @@ describe("UserDefinedIntegration.authenticateBasicRequest", () => {
 
     const config = integration.authenticateRequest(
       { apiToken: "topsecret" } as unknown as SecretsConfig,
-      { url: "/v1/candidates/", method: "get" },
+      { url: "https://harvest.greenhouse.io/v1/candidates/", method: "get" },
     );
-
-    expect(config.baseURL).toBe("https://harvest.greenhouse.io");
 
     expect(config.headers).toStrictEqual({
       Authorization: `Basic ${stringToBase64("topsecret:")}`,

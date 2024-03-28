@@ -6515,7 +6515,7 @@ exports[`Storyshots Forms/Form builder Default 1`] = `
       data-testid="preview"
     >
       <div
-        className="rjsf"
+        className="mr-2"
         noValidate={false}
         onSubmit={[Function]}
       >
