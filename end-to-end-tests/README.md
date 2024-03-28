@@ -9,8 +9,10 @@ Execute these steps from the project root to run tests:
 
 One-time setup:
 
-- Set up your .env file: Copy `.env.example` to `.env.development` and fill in the required value for the test user
-  password (`MV` will determine the manifest version for the both the extension and the tests).
+- Set up your .env file:
+  - Copy `.env.example` to `.env.development`.
+  - Fill in the required values for the test user password and uncomment `REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST=1`
+  - `MV` will determine the manifest version for the both the extension and the tests.
 - Install browsers: Execute `npx playwright install chromium chrome msedge`.
 
 1. Install dependencies: Run `npm install`

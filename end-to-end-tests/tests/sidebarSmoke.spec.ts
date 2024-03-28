@@ -19,42 +19,39 @@ import { test, expect } from "../fixtures/extensionBase";
 import { ActivateModPage } from "../pageObjects/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
-import { expectToNotBeHiddenOrUnmounted } from "../utils";
+import {
+  expectToNotBeHiddenOrUnmounted,
+  getSidebarPage,
+  waitForSelectionMenuReadiness,
+} from "../utils";
 
-test("can open the sidebar and view installed mod sidebar panel", async ({
-  page,
-  extensionId,
-}) => {
-  const modId = "@pixies/ai/writer-assist";
+test.describe("side bar page smoke test", () => {
+  test("can open the sidebar from selection menu action and view the related mod's sidebar panel", async ({
+    page,
+    extensionId,
+  }) => {
+    const modId = "@pixies/ai/writer-assist";
 
-  const modActivationPage = new ActivateModPage(page, extensionId, modId);
-  await modActivationPage.goto();
+    const modActivationPage = new ActivateModPage(page, extensionId, modId);
+    await modActivationPage.goto();
+    // The default integration values are not immediately loaded and are temporarily empty.
+    // If we try activating too fast, the activation will fail due to missing configuration, so we wait for the values to load.
+    await expect(
+      page.getByText("OpenAI — ✨ Built-in", { exact: true }),
+    ).toBeVisible();
+    await modActivationPage.clickActivateAndWaitForModsPageRedirect();
 
-  await modActivationPage.clickActivateAndWaitForModsPageRedirect();
+    await page.goto("/bootstrap-5");
+    await waitForSelectionMenuReadiness(page);
 
-  await page.goto("/bootstrap-5");
-  await page.getByRole("heading", { name: "PixieBrix" }).selectText();
-  await page.pause();
-  await page.getByRole("menuitem", { name: "✍️" }).click();
-  await expect(() => {
-    const sideBarPage: Page = page
-      .context()
-      .pages()
-      .find((value) =>
-        value
-          .url()
-          .startsWith(`chrome-extension://${extensionId}/sidebar.html`),
-      );
-    expect(sideBarPage).toBeDefined();
-  }).toPass();
-  const sideBarPage: Page = page
-    .context()
-    .pages()
-    .find((value) =>
-      value.url().startsWith(`chrome-extension://${extensionId}/sidebar.html`),
-    );
-  await sideBarPage.pause();
-  await expectToNotBeHiddenOrUnmounted(
-    sideBarPage.getByRole("heading", { name: "✍️ Write Assist" }),
-  );
+    await page.getByRole("heading", { name: "PixieBrix" }).selectText();
+    const writerAssistMenuItem = page.getByRole("menuitem", { name: "✍️" });
+    // The menu item may be initially hidden, so toBeVisible() would immediately fail
+    await expectToNotBeHiddenOrUnmounted(writerAssistMenuItem);
+    await writerAssistMenuItem.click();
+    const sideBarPage = await getSidebarPage(page, extensionId);
+    await expect(
+      sideBarPage.getByRole("heading", { name: "✍️ Write Assist" }),
+    ).toBeVisible();
+  });
 });

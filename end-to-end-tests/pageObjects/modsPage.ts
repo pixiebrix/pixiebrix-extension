@@ -77,16 +77,10 @@ export class ActivateModPage {
     await this.page.goto(this.activateModUrl);
 
     await expect(this.page.getByText("Activate Mod")).toBeVisible();
-    await expect(this.page.getByText(this.modId)).toBeVisible();
-
-    // A small wait is required since the default integration values are not immediately loaded, temporarily empty,
-    // while the integration request is loading. If we try activating too fast, the activation will fail due to missing
-    // configuration.
-    // Ideally we would use a UI selector to know that the integration request completed, but for now we wait for the network to be idle.
-    // see:
-    // https://github.com/pixiebrix/pixiebrix-extension/blob/13cdc866b3348df92f515c77913ca5ea3b4204bf/src/extensionConsole/pages/activateMod/ActivateModCard.tsx#L78
-    // https://github.com/pixiebrix/pixiebrix-extension/blob/048255a97110e7c6292b43fbe8cd5c984a6d115a/src/extensionConsole/pages/activateMod/IntegrationsBody.tsx#L55
-    await this.page.waitForLoadState("networkidle");
+    // Loading the mod details may take more than 5 seconds
+    await expect(this.page.getByText(this.modId)).toBeVisible({
+      timeout: 10_000,
+    });
   }
 
   activateButton() {
@@ -99,7 +93,10 @@ export class ActivateModPage {
     await this.page.waitForURL(`${this.baseConsoleUrl}#/mods`);
     const modsPage = new ModsPage(this.page, this.extensionId);
     await modsPage.viewActiveMods();
-    await expect(modsPage.modTableItems().getByText(this.modId)).toBeVisible();
+    // Loading mods sometimes takes upwards of 5s
+    await expect(modsPage.modTableItems().getByText(this.modId)).toBeVisible({
+      timeout: 10_000,
+    });
     return modsPage;
   }
 }
