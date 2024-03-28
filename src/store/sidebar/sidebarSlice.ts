@@ -31,29 +31,20 @@ import {
   type PayloadAction,
 } from "@reduxjs/toolkit";
 import { type UUID } from "@/types/stringTypes";
-import { defaultEventKey, eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import {
+  defaultEventKey,
+  eventKeyForEntry,
+} from "@/store/sidebar/eventKeyUtils";
 import { remove, sortBy } from "lodash";
 import { castDraft } from "immer";
-import { localStorage } from "redux-persist-webextension-storage";
-import { type StorageInterface } from "@/store/StorageInterface";
-import { getVisiblePanelCount } from "@/sidebar/utils";
-import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
+import { getVisiblePanelCount } from "@/store/sidebar/utils";
+import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import { type Nullishable } from "@/utils/nullishUtils";
-import addFormPanel from "@/sidebar/thunks/addFormPanel";
-import addTemporaryPanel from "@/sidebar/thunks/addTemporaryPanel";
-import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
-import resolveTemporaryPanel from "@/sidebar/thunks/resolveTemporaryPanel";
-
-const emptySidebarState: SidebarState = {
-  panels: [],
-  forms: [],
-  temporaryPanels: [],
-  staticPanels: [],
-  modActivationPanel: null,
-  activeKey: null,
-  pendingActivePanel: null,
-  closedTabs: {},
-} as const;
+import addFormPanel from "@/store/sidebar/thunks/addFormPanel";
+import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
+import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
+import resolveTemporaryPanel from "@/store/sidebar/thunks/resolveTemporaryPanel";
+import { initialSidebarState } from "@/store/sidebar/initialState";
 
 function eventKeyExists(
   state: SidebarState,
@@ -164,7 +155,7 @@ export function fixActiveTabOnRemove(
 }
 
 const sidebarSlice = createSlice({
-  initialState: emptySidebarState,
+  initialState: initialSidebarState,
   name: "sidebar",
   reducers: {
     setInitialPanels(
@@ -268,6 +259,7 @@ const sidebarSlice = createSlice({
       if (next) {
         state.activeKey = next;
         // Make sure the tab isn't closed
+        // eslint-disable-next-line security/detect-object-injection -- next is not user-controlled
         state.closedTabs[next] = false;
       } else {
         state.pendingActivePanel = payload;
@@ -368,14 +360,5 @@ const sidebarSlice = createSlice({
       });
   },
 });
-
-export const persistSidebarConfig = {
-  key: "sidebar",
-  /** We use localStorage instead of redux-persist-webextension-storage because we want to persist the sidebar state
-   * @see StorageInterface */
-  storage: localStorage as StorageInterface,
-  version: 1,
-  whitelist: ["closedTabs"],
-};
 
 export default sidebarSlice;

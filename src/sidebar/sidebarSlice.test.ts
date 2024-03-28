@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import sidebarSlice, { fixActiveTabOnRemove } from "@/sidebar/sidebarSlice";
-import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import sidebarSlice, {
+  fixActiveTabOnRemove,
+} from "@/store/sidebar/sidebarSlice";
+import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 import {
   cancelForm,
   cancelTemporaryPanel,
@@ -25,13 +27,13 @@ import {
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
 import type { SidebarState } from "@/types/sidebarTypes";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
+import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import { type Draft } from "immer";
 
 import { configureStore } from "@reduxjs/toolkit";
-import addFormPanel from "@/sidebar/thunks/addFormPanel";
-import addTemporaryPanel from "@/sidebar/thunks/addTemporaryPanel";
-import removeTemporaryPanel from "@/sidebar/thunks/removeTemporaryPanel";
+import addFormPanel from "@/store/sidebar/thunks/addFormPanel";
+import addTemporaryPanel from "@/store/sidebar/thunks/addTemporaryPanel";
+import removeTemporaryPanel from "@/store/sidebar/thunks/removeTemporaryPanel";
 
 jest.mock("@/sidebar/messenger/api");
 jest.mock("@/contentScript/messenger/strict/api");

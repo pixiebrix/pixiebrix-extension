@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getContainedStarterBrickTypes } from "@/starterBricks/starterBrickModUtils";
+import {
+  getAllModComponenetDefinitionsWithType,
+  getContainedStarterBrickTypes,
+} from "@/starterBricks/starterBrickModUtils";
 import {
   defaultModDefinitionFactory,
   modComponentDefinitionFactory,
@@ -29,64 +32,103 @@ const extensionPointRegistryLookupMock = jest.mocked(
   extensionPointRegistry.lookup,
 );
 
-describe("getContainedStarterBrickTypes", () => {
-  test("gets types with inner definitions", async () => {
-    const result = await getContainedStarterBrickTypes(
-      defaultModDefinitionFactory(),
-    );
-    expect(result).toStrictEqual(["menuItem"]);
+describe("starterBrickModUtils", () => {
+  describe("getContainedStarterBrickTypes", () => {
+    test("gets types with inner definitions", async () => {
+      const result = await getContainedStarterBrickTypes(
+        defaultModDefinitionFactory(),
+      );
+      expect(result).toStrictEqual(["menuItem"]);
+    });
+
+    test("returns only unique types", async () => {
+      const result = await getContainedStarterBrickTypes(
+        defaultModDefinitionFactory({
+          extensionPoints: [
+            modComponentDefinitionFactory(),
+            modComponentDefinitionFactory(),
+          ],
+        }),
+      );
+      expect(result).toStrictEqual(["menuItem"]);
+    });
+
+    test("gets types without inner definitions", async () => {
+      extensionPointRegistryLookupMock.mockResolvedValue({
+        kind: "menuItem",
+      } as StarterBrick);
+
+      const result = await getContainedStarterBrickTypes(
+        defaultModDefinitionFactory({
+          extensionPoints: [modComponentDefinitionFactory()],
+          definitions: undefined,
+        }),
+      );
+
+      expect(result).toStrictEqual(["menuItem"]);
+    });
+
+    test("returns non-null values", async () => {
+      extensionPointRegistryLookupMock.mockResolvedValue(null);
+
+      const result = await getContainedStarterBrickTypes(
+        defaultModDefinitionFactory({
+          extensionPoints: [modComponentDefinitionFactory()],
+          definitions: undefined,
+        }),
+      );
+
+      expect(result).toStrictEqual([]);
+    });
+
+    test("inner definition not found", async () => {
+      extensionPointRegistryLookupMock.mockResolvedValue(null);
+
+      const result = await getContainedStarterBrickTypes(
+        defaultModDefinitionFactory({
+          extensionPoints: [modComponentDefinitionFactory()],
+          definitions: {},
+        }),
+      );
+
+      expect(result).toStrictEqual([]);
+    });
   });
 
-  test("returns only unique types", async () => {
-    const result = await getContainedStarterBrickTypes(
-      defaultModDefinitionFactory({
-        extensionPoints: [
-          modComponentDefinitionFactory(),
-          modComponentDefinitionFactory(),
-        ],
-      }),
-    );
-    expect(result).toStrictEqual(["menuItem"]);
+  describe("getAllModComponenetDefinitionsWithType", () => {
+    test("returns definitions with type", () => {
+      const menuItem = modComponentDefinitionFactory();
+
+      const modDefinition = defaultModDefinitionFactory({
+        extensionPoints: [menuItem],
+      });
+
+      console.log(modDefinition);
+      console.log(menuItem);
+
+      const result = getAllModComponenetDefinitionsWithType(
+        modDefinition,
+        "menuItem",
+      );
+
+      expect(result).toStrictEqual([menuItem]);
+    });
+
+    test("returns empty array if no definitions with type", () => {
+      const menuItem = modComponentDefinitionFactory();
+
+      const modDefinition = defaultModDefinitionFactory({
+        extensionPoints: [menuItem],
+      });
+
+      const result = getAllModComponenetDefinitionsWithType(
+        modDefinition,
+        "actionPanel",
+      );
+
+      expect(result).toStrictEqual([]);
+    });
   });
 
-  test("gets types without inner definitions", async () => {
-    extensionPointRegistryLookupMock.mockResolvedValue({
-      kind: "menuItem",
-    } as StarterBrick);
-
-    const result = await getContainedStarterBrickTypes(
-      defaultModDefinitionFactory({
-        extensionPoints: [modComponentDefinitionFactory()],
-        definitions: undefined,
-      }),
-    );
-
-    expect(result).toStrictEqual(["menuItem"]);
-  });
-
-  test("returns non-null values", async () => {
-    extensionPointRegistryLookupMock.mockResolvedValue(null);
-
-    const result = await getContainedStarterBrickTypes(
-      defaultModDefinitionFactory({
-        extensionPoints: [modComponentDefinitionFactory()],
-        definitions: undefined,
-      }),
-    );
-
-    expect(result).toStrictEqual([]);
-  });
-
-  test("inner definition not found", async () => {
-    extensionPointRegistryLookupMock.mockResolvedValue(null);
-
-    const result = await getContainedStarterBrickTypes(
-      defaultModDefinitionFactory({
-        extensionPoints: [modComponentDefinitionFactory()],
-        definitions: {},
-      }),
-    );
-
-    expect(result).toStrictEqual([]);
-  });
+  describe("getModComponentIdsForModComponentDefinitions", () => {});
 });

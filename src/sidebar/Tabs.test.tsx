@@ -19,14 +19,14 @@ import React from "react";
 import Tabs from "@/sidebar/Tabs";
 import { render, screen, waitFor, within } from "@/sidebar/testHelpers";
 import { type SidebarEntries } from "@/types/sidebarTypes";
-import sidebarSlice from "@/sidebar/sidebarSlice";
+import sidebarSlice from "@/store/sidebar/sidebarSlice";
 import { sidebarEntryFactory } from "@/testUtils/factories/sidebarEntryFactories";
-import { MOD_LAUNCHER } from "@/sidebar/modLauncher/constants";
+import { MOD_LAUNCHER } from "@/store/sidebar/constants";
 import { waitForEffect } from "@/testUtils/testHelpers";
 import userEvent from "@testing-library/user-event";
 import * as messengerApi from "@/contentScript/messenger/strict/api";
 import * as sidebarController from "@/sidebar/protocol";
-import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 import { mockAllApiEndpoints } from "@/testUtils/appApiMock";
 
 mockAllApiEndpoints();

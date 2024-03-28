@@ -24,7 +24,7 @@ import {
   selectClosedTabs,
   selectVisiblePanelCount,
 } from "@/sidebar/sidebarSelectors";
-import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 
 /**
  * Hide the sidebar if there are no visible panels. We use this to close the sidebar if the user closes all panels.

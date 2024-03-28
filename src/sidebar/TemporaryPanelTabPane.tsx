@@ -17,7 +17,7 @@
 
 import React, { useCallback } from "react";
 import { type TemporaryPanelEntry } from "@/types/sidebarTypes";
-import { eventKeyForEntry } from "@/sidebar/eventKeyUtils";
+import { eventKeyForEntry } from "@/store/sidebar/eventKeyUtils";
 import reportEvent from "@/telemetry/reportEvent";
 import { Events } from "@/telemetry/events";
 import { Tab } from "react-bootstrap";
@@ -27,7 +27,7 @@ import cx from "classnames";
 import { type SubmitPanelAction } from "@/bricks/errors";
 import { useDispatch } from "react-redux";
 import ErrorBoundary from "@/sidebar/SidebarErrorBoundary";
-import resolveTemporaryPanel from "@/sidebar/thunks/resolveTemporaryPanel";
+import resolveTemporaryPanel from "@/store/sidebar/thunks/resolveTemporaryPanel";
 import { type AsyncDispatch } from "@/sidebar/store";
 
 // Need to memoize this to make sure it doesn't rerender unless its entry actually changes
