@@ -35,7 +35,7 @@ import { deserializeError, serializeError } from "serialize-error";
 import { type SerializedError } from "@/types/messengerTypes";
 import { assertNotNullish } from "./nullishUtils";
 import { type JsonValue } from "type-fest";
-import { AbortSignalAsOptions } from "./promiseUtils";
+import { type AbortSignalAsOptions } from "./promiseUtils";
 
 const TIMEOUT_MS = 3000;
 
