@@ -500,6 +500,7 @@
     "./integrations/util/getModDefinitionIntegrationIds.ts",
     "./integrations/util/getUnconfiguredComponentIntegrations.ts",
     "./integrations/util/locateSanitizedIntegrationConfigWithRetry.ts",
+    "./integrations/util/permissionsHelpers.ts",
     "./layout/ErrorDisplay.tsx",
     "./layout/Footer.tsx",
     "./layout/Page.tsx",
