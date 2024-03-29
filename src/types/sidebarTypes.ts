@@ -133,7 +133,7 @@ export type BaseModComponentPanelEntry = BasePanelEntry & {
    *
    * @since 1.6.5
    */
-  blueprintId: RegistryId | null;
+  blueprintId: Nullishable<RegistryId>;
   /**
    * Heading for tab name in the sidebar
    */

@@ -48,6 +48,8 @@ import {
 } from "@/platform/capabilities";
 import { expectContext } from "@/utils/expectContext";
 import { propertiesToSchema } from "@/utils/schemaUtils";
+import { type SetRequired } from "type-fest";
+import { assertNotNullish } from "@/utils/nullishUtils";
 
 export type StepInputs = {
   title: string;
@@ -352,6 +354,8 @@ class TourStepTransformer extends TransformerABC {
       },
     ];
 
+    assertNotNullish(extensionId, "Extension ID is required");
+
     const panelEntryMetadata: TemporaryPanelEntryMetadata = {
       extensionId,
       blueprintId,
@@ -392,7 +396,7 @@ class TourStepTransformer extends TransformerABC {
     }
 
     // Close button handler
-    let onCloseClick: TemporaryPanelDefinition["onCloseClick"] = null;
+    let onCloseClick: TemporaryPanelDefinition["onCloseClick"] = noop;
     if (appearance.controls?.closeButton === "cancel") {
       onCloseClick = () => {
         throw new AbortPanelAction("User closed the panel");
@@ -422,7 +426,7 @@ class TourStepTransformer extends TransformerABC {
   /**
    * The original style of the target element before it was highlighted as part of the tour step.
    */
-  originalStyle: Record<string, string> = undefined;
+  originalStyle: Record<string, string> = {};
 
   /**
    * Wait for the target element to appear on the page according to the `wait` configuration.
@@ -441,7 +445,7 @@ class TourStepTransformer extends TransformerABC {
         $elements = await awaitElement({
           selector: args.selector,
           $root: $(options.root),
-          maxWaitMillis: args.appearance.wait.maxWaitMillis,
+          maxWaitMillis: args.appearance.wait.maxWaitMillis ?? 0,
           abortSignal: options.abortSignal,
         });
       } catch {
@@ -458,7 +462,7 @@ class TourStepTransformer extends TransformerABC {
 
   highlightTarget(
     element: HTMLElement,
-    config: StepInputs["appearance"]["highlight"],
+    config: SetRequired<StepInputs, "appearance">["appearance"]["highlight"],
   ): void {
     if (isEmpty(config)) {
       return;
@@ -468,11 +472,12 @@ class TourStepTransformer extends TransformerABC {
       backgroundColor: element.style.backgroundColor,
     };
 
-    element.style.backgroundColor = config.backgroundColor;
+    if (config.backgroundColor)
+      element.style.backgroundColor = config.backgroundColor;
   }
 
   unhighlightTarget(element: HTMLElement): void {
-    if (this.originalStyle) {
+    if (this.originalStyle.backgroundColor != null) {
       element.style.backgroundColor = this.originalStyle.backgroundColor;
     }
   }
@@ -535,7 +540,8 @@ class TourStepTransformer extends TransformerABC {
     try {
       if (!isEmpty(onBeforeShow?.__value__)) {
         await options.runPipeline(
-          onBeforeShow,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- We've already checked for emptiness
+          onBeforeShow!,
           {
             key: "onBeforeShow",
             counter: 0,
@@ -560,7 +566,8 @@ class TourStepTransformer extends TransformerABC {
 
       if (!isEmpty(onAfterShow?.__value__)) {
         await options.runPipeline(
-          onAfterShow,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- We've already checked for emptiness
+          onAfterShow!,
           {
             key: "onAfterShow",
             counter: 0,
