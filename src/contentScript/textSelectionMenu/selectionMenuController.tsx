@@ -48,12 +48,6 @@ export const selectionMenuActionRegistry = new ActionRegistry();
 
 let selectionMenu: Nullishable<HTMLElement>;
 
-const onMousedownHide = (event: MouseEvent) => {
-  if (event.target instanceof Node && !selectionMenu?.contains(event.target)) {
-    hideSelectionMenu();
-  }
-};
-
 /**
  * AbortController fired when the popover is hidden/destroyed.
  */
@@ -103,6 +97,7 @@ async function showSelectionMenu(): Promise<void> {
         passive: true,
         once: true,
         signal: hideController.signal,
+        capture: true,
       },
     );
   }
@@ -116,12 +111,23 @@ async function showSelectionMenu(): Promise<void> {
       passive: true,
       once: true,
       signal: hideController.signal,
+      capture: true,
     });
   }
+
+  const onMousedownHide = (event: MouseEvent) => {
+    if (
+      event.target instanceof Node &&
+      !selectionMenu?.contains(event.target)
+    ) {
+      hideSelectionMenu();
+    }
+  };
 
   document.addEventListener("mousedown", onMousedownHide, {
     passive: true,
     signal: hideController.signal,
+    capture: true,
   });
 
   return updatePosition();
