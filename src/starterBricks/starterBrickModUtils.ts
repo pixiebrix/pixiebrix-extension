@@ -54,7 +54,7 @@ async function getStarterBrickType(
   return extensionPointFromRegistry?.kind ?? null;
 }
 
-export function getAllModComponenetDefinitionsWithType(
+export function getAllModComponentDefinitionsWithType(
   modDefinition: ModDefinition,
   type: StarterBrickType,
 ): ModComponentDefinition[] {
@@ -105,7 +105,7 @@ export async function includesQuickBarStarterBrick(
 }
 
 /**
- * Find the activated mod components for a subset of Mod Componenet Definitions
+ * Find the activated mod components for a subset of Mod Component Definitions
  * and return their ids.
  * @param activatedModComponents the activated mod components
  * @param modComponentDefinitions the mod component definitions

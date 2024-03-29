@@ -39,7 +39,7 @@ import {
   saveSidebarState,
 } from "@/store/sidebar/sidebarStorage";
 import {
-  getAllModComponenetDefinitionsWithType,
+  getAllModComponentDefinitionsWithType,
   getModComponentIdsForModComponentDefinitions,
 } from "@/starterBricks/starterBrickModUtils";
 import { selectModComponentsForMod } from "@/store/extensionsSelectors";
@@ -111,7 +111,7 @@ function closeStarterModTabs({
   optionsState: ModComponentState;
   sidebarState: SidebarState;
 }): SidebarState {
-  const actionPanelDefinitions = getAllModComponenetDefinitionsWithType(
+  const actionPanelDefinitions = getAllModComponentDefinitionsWithType(
     modDefinition,
     "actionPanel",
   );

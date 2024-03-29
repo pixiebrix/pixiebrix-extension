@@ -16,7 +16,7 @@
  */
 
 import {
-  getAllModComponenetDefinitionsWithType,
+  getAllModComponentDefinitionsWithType,
   getContainedStarterBrickTypes,
   getModComponentIdsForModComponentDefinitions,
 } from "@/starterBricks/starterBrickModUtils";
@@ -105,10 +105,7 @@ describe("starterBrickModUtils", () => {
         extensionPoints: [menuItem],
       });
 
-      console.log(modDefinition);
-      console.log(menuItem);
-
-      const result = getAllModComponenetDefinitionsWithType(
+      const result = getAllModComponentDefinitionsWithType(
         modDefinition,
         "menuItem",
       );
@@ -123,7 +120,7 @@ describe("starterBrickModUtils", () => {
         extensionPoints: [menuItem],
       });
 
-      const result = getAllModComponenetDefinitionsWithType(
+      const result = getAllModComponentDefinitionsWithType(
         modDefinition,
         "actionPanel",
       );
