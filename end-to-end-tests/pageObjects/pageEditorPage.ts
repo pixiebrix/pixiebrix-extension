@@ -33,10 +33,9 @@ export class PageEditorPage {
   async goto() {
     const pageEditorPage = await this.context.newPage();
     await pageEditorPage.goto(this.pageEditorUrl);
+    // Set the viewport size to the expected in horizontal layout size of the devconsole when docked on the bottom.
+    await pageEditorPage.setViewportSize({ width: 1280, height: 300 });
     await pageEditorPage.getByTestId(`tab-${this.urlToConnectTo}`).click();
-    await pageEditorPage
-      .getByRole("button", { name: "Dismiss Warning" })
-      .click();
     const heading = pageEditorPage.getByRole("heading", {
       name: "Welcome to the Page Editor!",
     });
