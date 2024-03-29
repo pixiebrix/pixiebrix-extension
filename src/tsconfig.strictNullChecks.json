@@ -440,6 +440,7 @@
     "./extensionConsole/toggleSidebar.tsx",
     "./extensionContext.ts",
     "./globals.d.ts",
+    "./hooks/auth.ts",
     "./hooks/logging.ts",
     "./hooks/useAsyncExternalStore.ts",
     "./hooks/useAsyncState.ts",

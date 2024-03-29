@@ -30,7 +30,7 @@ export type AuthSharing = "private" | "shared" | "built-in";
 export interface AuthOption {
   label: string;
   /** The UUID of the auth credential **/
-  value: UUID;
+  value: Nullishable<UUID>;
   serviceId: RegistryId;
   local: boolean;
   sharingType: AuthSharing;

@@ -111,7 +111,9 @@ export type UseCachedQueryResult<TData> = FetchableAsyncState<TData> & {
 
 export type AsyncStateArray = readonly AsyncState[];
 
-export type FetchableAsyncStateArray = readonly FetchableAsyncState[];
+export type FetchableAsyncStateArray<T = unknown> = ReadonlyArray<
+  FetchableAsyncState<T>
+>;
 
 export type ExtractValueType<T extends readonly AsyncState[]> = {
   [index in keyof T]: T[index] extends T[number] ? T[index]["data"] : never;

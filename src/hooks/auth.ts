@@ -112,7 +112,13 @@ export function useAuthOptions(): FetchableAsyncState<AuthOption[]> {
 
   const remoteIntegrationAuthsState = useGetIntegrationAuthsQuery();
 
-  return useMergeAsyncState(
+  return useMergeAsyncState<
+    [
+      FetchableAsyncState<IntegrationConfig[]>,
+      FetchableAsyncState<RemoteIntegrationConfig[]>,
+    ],
+    AuthOption[]
+  >(
     locationIntegrationConfigsState,
     remoteIntegrationAuthsState,
     mapConfigurationsToOptions,
