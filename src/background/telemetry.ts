@@ -25,13 +25,14 @@ import {
 import { allowsTrack } from "@/telemetry/dnt";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { deleteDatabase } from "@/utils/idbUtils";
-import { detectBrowser } from "@/vendors/mixpanelDetectBrowser";
+import { detectBrowser } from "@/vendors/mixpanelBrowser";
 import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
 import { count as traceSize } from "@/telemetry/trace";
 import { getUUID } from "@/telemetry/telemetryHelpers";
 import { getTabsWithAccess } from "@/utils/extensionUtils";
 import { type Event } from "@/telemetry/events";
+import { utils } from "mixpanel-browser";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
