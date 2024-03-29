@@ -29,12 +29,11 @@ import { uuidv4 } from "@/types/helpers";
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
 
-// Use ? because it's somehow not defined in e2e tests. But otherwise it will always be defined.
-// eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const html: HTMLElement = globalThis.document?.documentElement;
 const SIDEBAR_WIDTH_PX = 400;
 
 function storeOriginalCSSOnce() {
+  const html = document.documentElement;
+
   if (html.style.getPropertyValue(ORIGINAL_MARGIN_CSS_PROPERTY)) {
     return;
   }
@@ -57,6 +56,7 @@ function storeOriginalCSSOnce() {
 }
 
 function setSidebarWidth(pixels: number): void {
+  const html = document.documentElement;
   html.style.setProperty(SIDEBAR_WIDTH_CSS_PROPERTY, `${pixels}px`);
 }
 
@@ -66,7 +66,7 @@ function setSidebarWidth(pixels: number): void {
 export function getSidebarElement(): Element | null {
   expectContext("contentScript");
 
-  return html.querySelector(`#${PANEL_FRAME_ID}`);
+  return document.documentElement.querySelector(`#${PANEL_FRAME_ID}`);
 }
 
 /**
@@ -122,7 +122,7 @@ export function insertSidebarFrame(): boolean {
 
   const wrapper = shadowWrap(iframe);
   wrapper.id = PANEL_FRAME_ID;
-  html.append(wrapper);
+  document.documentElement.append(wrapper);
 
   iframe.animate([{ translate: "50%" }, { translate: 0 }], {
     duration: 500,
