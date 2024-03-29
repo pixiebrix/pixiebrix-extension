@@ -43,7 +43,6 @@ import { canParseUrl, isAbsoluteUrl } from "@/utils/urlUtils";
 import { missingProperties } from "@/utils/schemaUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { stringToBase64 } from "uint8array-extras";
-import { selectAbsoluteUrl } from "@/data/service/requestErrorUtils";
 
 /**
  * An integration hydrated from a user-defined definition. Has the ability to authenticate requests because it has
@@ -259,7 +258,9 @@ class UserDefinedIntegration<
         "Must use absolute URLs for integrations that don't define a baseURL",
       );
     } else {
-      absoluteURL = selectAbsoluteUrl({ url: requestConfig.url, baseURL });
+      absoluteURL = isAbsoluteUrl(requestConfig.url)
+        ? requestConfig.url
+        : urljoin(baseURL, requestConfig.url);
     }
 
     const result = produce(requestConfig, (draft) => {
@@ -304,7 +305,9 @@ class UserDefinedIntegration<
         "Must use absolute URLs for integrations that don't define a baseURL",
       );
     } else {
-      absoluteURL = selectAbsoluteUrl({ url: requestConfig.url, baseURL });
+      absoluteURL = isAbsoluteUrl(requestConfig.url)
+        ? requestConfig.url
+        : urljoin(baseURL, requestConfig.url);
     }
 
     const result = produce(requestConfig, (draft) => {
@@ -345,7 +348,9 @@ class UserDefinedIntegration<
         "Must use absolute URLs for integrations that don't define a baseURL",
       );
     } else {
-      absoluteURL = selectAbsoluteUrl({ url: requestConfig.url, baseURL });
+      absoluteURL = isAbsoluteUrl(requestConfig.url)
+        ? requestConfig.url
+        : urljoin(baseURL, requestConfig.url);
     }
 
     const result = produce(requestConfig, (draft) => {
