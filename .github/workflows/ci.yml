@@ -185,6 +185,7 @@ jobs:
   end-to-end-tests:
     name: end-to-end-tests${{ matrix.PUBLIC_NAME }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - MV: 2
@@ -201,6 +202,7 @@ jobs:
       CHROME_MANIFEST_KEY: ${{ matrix.CHROME_MANIFEST_KEY }}
       DATADOG_APPLICATION_ID: ${{ secrets.DATADOG_APPLICATION_ID }}
       DATADOG_CLIENT_TOKEN: ${{ secrets.DATADOG_CLIENT_TOKEN }}
+      REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST: 1
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

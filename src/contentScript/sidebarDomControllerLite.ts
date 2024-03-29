@@ -29,12 +29,11 @@ import { uuidv4 } from "@/types/helpers";
 export const SIDEBAR_WIDTH_CSS_PROPERTY = "--pb-sidebar-width";
 const ORIGINAL_MARGIN_CSS_PROPERTY = "--pb-original-margin-right";
 
-// Use ? because it's not defined during header generation. But otherwise it will always be defined.
-// eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const html: HTMLElement = globalThis.document?.documentElement;
 const SIDEBAR_WIDTH_PX = 400;
 
 function storeOriginalCSSOnce() {
+  const html = document.documentElement;
+
   if (html.style.getPropertyValue(ORIGINAL_MARGIN_CSS_PROPERTY)) {
     return;
   }
@@ -57,6 +56,7 @@ function storeOriginalCSSOnce() {
 }
 
 function setSidebarWidth(pixels: number): void {
+  const html = document.documentElement;
   html.style.setProperty(SIDEBAR_WIDTH_CSS_PROPERTY, `${pixels}px`);
 }
 
@@ -66,7 +66,7 @@ function setSidebarWidth(pixels: number): void {
 export function getSidebarElement(): Element | null {
   expectContext("contentScript");
 
-  return html.querySelector(`#${PANEL_FRAME_ID}`);
+  return document.documentElement.querySelector(`#${PANEL_FRAME_ID}`);
 }
 
 /**
@@ -79,11 +79,6 @@ export function isSidebarFrameVisible(): boolean {
 /** Removes the element; Returns false if no element was found */
 export function removeSidebarFrame(): boolean {
   const sidebar = getSidebarElement();
-
-  console.debug("sidebarDomControllerLite:removeSidebarFrame", {
-    isSidebarFrameVisible: Boolean(sidebar),
-  });
-
   if (sidebar) {
     sidebar.remove();
     setSidebarWidth(0);
@@ -94,12 +89,7 @@ export function removeSidebarFrame(): boolean {
 
 /** Inserts the element; Returns false if it already existed */
 export function insertSidebarFrame(): boolean {
-  console.debug("sidebarDomControllerLite:insertSidebarFrame", {
-    isSidebarFrameVisible: isSidebarFrameVisible(),
-  });
-
   if (isSidebarFrameVisible()) {
-    console.debug("insertSidebarFrame: sidebar frame already exists");
     return false;
   }
 
@@ -132,7 +122,7 @@ export function insertSidebarFrame(): boolean {
 
   const wrapper = shadowWrap(iframe);
   wrapper.id = PANEL_FRAME_ID;
-  html.append(wrapper);
+  document.documentElement.append(wrapper);
 
   iframe.animate([{ translate: "50%" }, { translate: 0 }], {
     duration: 500,
