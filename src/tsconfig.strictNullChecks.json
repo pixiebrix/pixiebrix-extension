@@ -287,6 +287,7 @@
     "./components/logViewer/logSlice.ts",
     "./components/logViewer/logViewerTypes.ts",
     "./components/logViewer/useLogEntriesView.ts",
+    "./components/MarketplaceListingIcon.tsx",
     "./components/onboarding/OnboardingChecklistCard.tsx",
     "./components/paginatedTable/PaginatedTable.tsx",
     "./components/pagination/Pagination.tsx",
