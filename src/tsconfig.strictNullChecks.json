@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./hooks/useAsyncModOptionsValidationSchema.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/extensionBase.ts",
