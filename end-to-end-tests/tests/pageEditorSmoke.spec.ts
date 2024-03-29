@@ -15,8 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const getBaseExtensionConsoleUrl = (extensionId: string) =>
-  `chrome-extension://${extensionId}/options.html`;
+import { test } from "../fixtures/extensionBase";
+// @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
+import { test as base } from "@playwright/test";
+import { PageEditorPage } from "../pageObjects/pageEditorPage";
 
-export const getBasePageEditorUrl = (extensionId: string) =>
-  `chrome-extension://${extensionId}/pageEditor.html`;
+test.describe("page editor smoke test", () => {
+  test("can open the page editor and connect to an open tab", async ({
+    context,
+    page,
+    extensionId,
+  }) => {
+    await page.goto("/bootstrap-5");
+
+    const pageEditorPage = new PageEditorPage(context, page.url(), extensionId);
+    await pageEditorPage.goto();
+  });
+});
