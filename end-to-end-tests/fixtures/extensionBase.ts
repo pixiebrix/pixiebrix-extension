@@ -34,7 +34,7 @@ import {
 } from "../env";
 import fs from "node:fs/promises";
 import { getBaseExtensionConsoleUrl } from "../pageObjects/constants";
-import { expectToNotBeHiddenOrUnmounted } from "../utils";
+import { ensureVisibility } from "../utils";
 
 // This environment variable is used to attach the browser sidepanel window that opens automatically to Playwright.
 // see: https://github.com/microsoft/playwright/issues/26693
@@ -63,7 +63,7 @@ const getStoredCookies = async (): Promise<Cookie[]> => {
 };
 
 const linkExtensionViaAdminConsole = async (page: Page) => {
-  await expectToNotBeHiddenOrUnmounted(
+  await ensureVisibility(
     page.getByText(
       "Successfully linked the Browser Extension to your PixieBrix account",
     ),

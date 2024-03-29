@@ -17,7 +17,7 @@
 
 import { expect, type Page } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "./constants";
-import { expectToNotBeHiddenOrUnmounted } from "../utils";
+import { ensureVisibility } from "../utils";
 
 export class ModsPage {
   private readonly extensionConsoleUrl: string;
@@ -36,7 +36,7 @@ export class ModsPage {
       name: "Active Mods",
     });
     // `activeModsHeading` may be initially be detached and hidden, so toBeVisible() would immediately fail
-    await expectToNotBeHiddenOrUnmounted(activeModsHeading);
+    await ensureVisibility(activeModsHeading);
   }
 
   async viewAllMods() {

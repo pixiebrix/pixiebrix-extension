@@ -58,7 +58,7 @@ export function checkForCriticalViolations(
 
 // This function is a workaround for the fact that `expect(locator).toBeVisible()` will immediately fail if the element is hidden or unmounted.
 // This function will retry the expectation until the element is visible or the timeout is reached.
-export async function expectToNotBeHiddenOrUnmounted(
+export async function ensureVisibility(
   locator: Locator,
   options?: { timeout: number },
 ) {
