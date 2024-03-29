@@ -17,9 +17,15 @@
 
 import oneEvent from "one-event";
 import { onContextInvalidated } from "webext-events";
-import { memoizeUntilSettled } from "@/utils/promiseUtils";
+import {
+  type AbortSignalAsOptions,
+  memoizeUntilSettled,
+} from "@/utils/promiseUtils";
 
-async function rawFocusCaptureDialog(message: string): Promise<void> {
+async function rawFocusCaptureDialog(
+  message: string,
+  { signal }: AbortSignalAsOptions = {},
+): Promise<void> {
   const dialog = document.createElement("dialog");
   dialog.className = "pixiebrix-dialog";
   dialog.textContent = message;
@@ -36,6 +42,7 @@ async function rawFocusCaptureDialog(message: string): Promise<void> {
   await Promise.race([
     oneEvent(button, "click"),
     oneEvent(dialog, "cancel"),
+    oneEvent(signal, "abort"),
     onContextInvalidated.promise,
   ]);
   dialog.remove();
