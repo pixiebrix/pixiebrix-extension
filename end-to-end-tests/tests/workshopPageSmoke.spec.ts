@@ -33,7 +33,6 @@ test.describe("extension console workshop smoke test", () => {
 
     const pageTitle = await page.title();
 
-    // Still the Extension Console because the workshop page is gated
-    expect(pageTitle).toBe("Extension Console | PixieBrix");
+    expect(pageTitle).toBe("Workshop | PixieBrix");
   });
 });

@@ -151,7 +151,7 @@ export const test = base.extend<{
       viewport: null,
     });
     // The admin console automatically opens a new tab to link the newly installed extension to the user's account.
-    const pagePromise = context.waitForEvent("page");
+    const pagePromise = context.waitForEvent("page", { timeout: 10_000 });
 
     // Manually add session cookies instead of relying on storageState in playwright.config.ts because
     // launchPersistentContext does not support a storageState option
@@ -159,6 +159,7 @@ export const test = base.extend<{
     await context.addCookies(await getStoredCookies());
     const extensionId = await getExtensionId(context);
 
+    // Wait for the admin console to open automatically
     const page = await pagePromise;
 
     // Link the Browser Extension to the user's account via the admin console.
