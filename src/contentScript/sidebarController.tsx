@@ -205,6 +205,10 @@ export async function renderPanelsIfVisible(): Promise<void> {
 
   if (await isSidePanelOpen()) {
     void sidebarInThisTab.renderPanels(getTimedSequence(), panels);
+  } else {
+    console.debug(
+      "sidebarController:renderPanelsIfVisible: skipping renderPanels because the sidebar is not visible",
+    );
   }
 }
 
