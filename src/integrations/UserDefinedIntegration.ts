@@ -253,14 +253,16 @@ class UserDefinedIntegration<
     );
 
     let absoluteURL: string;
-    if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
-      throw new Error(
-        "Must use absolute URLs for integrations that don't define a baseURL",
-      );
+    if (isAbsoluteUrl(requestConfig.url)) {
+      absoluteURL = requestConfig.url;
     } else {
-      absoluteURL = isAbsoluteUrl(requestConfig.url)
-        ? requestConfig.url
-        : urljoin(baseURL, requestConfig.url);
+      if (!baseURL) {
+        throw new Error(
+          "Must use absolute URLs for integrations that don't define a baseURL",
+        );
+      }
+
+      absoluteURL = urljoin(baseURL, requestConfig.url);
     }
 
     const result = produce(requestConfig, (draft) => {
@@ -300,14 +302,16 @@ class UserDefinedIntegration<
     }
 
     let absoluteURL: string;
-    if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
-      throw new Error(
-        "Must use absolute URLs for integrations that don't define a baseURL",
-      );
+    if (isAbsoluteUrl(requestConfig.url)) {
+      absoluteURL = requestConfig.url;
     } else {
-      absoluteURL = isAbsoluteUrl(requestConfig.url)
-        ? requestConfig.url
-        : urljoin(baseURL, requestConfig.url);
+      if (!baseURL) {
+        throw new Error(
+          "Must use absolute URLs for integrations that don't define a baseURL",
+        );
+      }
+
+      absoluteURL = urljoin(baseURL, requestConfig.url);
     }
 
     const result = produce(requestConfig, (draft) => {
@@ -343,14 +347,16 @@ class UserDefinedIntegration<
     );
 
     let absoluteURL: string;
-    if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
-      throw new Error(
-        "Must use absolute URLs for integrations that don't define a baseURL",
-      );
+    if (isAbsoluteUrl(requestConfig.url)) {
+      absoluteURL = requestConfig.url;
     } else {
-      absoluteURL = isAbsoluteUrl(requestConfig.url)
-        ? requestConfig.url
-        : urljoin(baseURL, requestConfig.url);
+      if (!baseURL) {
+        throw new Error(
+          "Must use absolute URLs for integrations that don't define a baseURL",
+        );
+      }
+
+      absoluteURL = urljoin(baseURL, requestConfig.url);
     }
 
     const result = produce(requestConfig, (draft) => {
