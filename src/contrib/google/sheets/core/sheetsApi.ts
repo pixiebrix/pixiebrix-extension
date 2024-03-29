@@ -88,7 +88,7 @@ export async function getGoogleUserEmail(
   };
 
   const userInfo = await executeRequest<UserInfo>(requestConfig, googleAccount);
-  return userInfo.email;
+  return userInfo.email ?? "";
 }
 
 async function batchUpdateSpreadsheet(

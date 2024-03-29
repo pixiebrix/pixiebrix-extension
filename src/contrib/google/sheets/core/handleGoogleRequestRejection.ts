@@ -24,6 +24,7 @@ import {
 import { isObject } from "@/utils/objectUtils";
 import { isAxiosError } from "@/errors/networkErrorHelpers";
 import { deleteCachedAuthData } from "@/background/messenger/strict/api";
+import { type Nullishable } from "@/utils/nullishUtils";
 
 class PermissionsError extends Error {
   override name = "PermissionsError";
@@ -38,7 +39,7 @@ class PermissionsError extends Error {
 
 export async function handleGoogleRequestRejection(
   error: unknown,
-  googleAccount: SanitizedIntegrationConfig | null,
+  googleAccount: Nullishable<SanitizedIntegrationConfig>,
 ): Promise<Error> {
   // Request errors from proxyRequest are wrapped in ContextError which includes metadata about the integration
   // configuration. Therefore, get root cause for determining if this is an Axios error

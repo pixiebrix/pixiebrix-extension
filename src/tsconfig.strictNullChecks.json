@@ -356,6 +356,7 @@
     "./contrib/google/sheets/core/getSheetIdIntegrationOutputKey.ts",
     "./contrib/google/sheets/core/handleGoogleRequestRejection.ts",
     "./contrib/google/sheets/core/schemas.ts",
+    "./contrib/google/sheets/core/sheetsApi.ts",
     "./contrib/google/sheets/core/sheetsHelpers.ts",
     "./contrib/google/sheets/core/types.ts",
     "./contrib/google/sheets/core/useGoogleAccount.ts",
