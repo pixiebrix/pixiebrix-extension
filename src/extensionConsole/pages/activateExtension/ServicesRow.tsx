@@ -65,7 +65,7 @@ const ServicesRow: React.FunctionComponent<{
         // eslint-disable-next-line react/no-array-index-key -- They have no other unique identifier
         <div key={valueIndex} className="max-750">
           <ServiceFieldError servicesError={error} fieldIndex={valueIndex} />
-          <Card className={styles.serviceCard}>
+          <Card className={styles.integrationCard}>
             <IntegrationDescriptor
               integrationId={integrationId}
               integrationConfigs={serviceConfigs}
@@ -73,7 +73,7 @@ const ServicesRow: React.FunctionComponent<{
             <AuthWidget
               authOptions={authOptions}
               integrationId={integrationId}
-              name={joinName(field.name, String(valueIndex), "config")}
+              name={joinName(field.name, String(valueIndex), "configId")}
               onRefresh={refreshAuthOptions}
             />
           </Card>
