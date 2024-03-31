@@ -242,14 +242,13 @@ export class WithAsyncModVariable extends TransformerABC {
       );
     }
 
-    const bodyPromise = runPipeline(body, {
-      key: "body",
-      counter: 0,
-    });
-
-    void bodyPromise
-      // eslint-disable-next-line promise/prefer-await-to-then -- not blocking
-      .then((data: JsonObject) => {
+    // Non-blocking async call
+    (async () => {
+      try {
+        const data = (await runPipeline(body, {
+          key: "body",
+          counter: 0,
+        })) as JsonObject;
         if (!isCurrentNonce()) {
           return;
         }
@@ -267,9 +266,7 @@ export class WithAsyncModVariable extends TransformerABC {
           },
           "put",
         );
-      })
-      // eslint-disable-next-line promise/prefer-await-to-then -- not blocking
-      .catch((error) => {
+      } catch (error) {
         if (!isCurrentNonce()) {
           return;
         }
@@ -287,7 +284,8 @@ export class WithAsyncModVariable extends TransformerABC {
           },
           "put",
         );
-      });
+      }
+    })();
 
     return {
       requestId,

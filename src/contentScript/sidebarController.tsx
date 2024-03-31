@@ -130,7 +130,6 @@ let modActivationPanelEntry: ModActivationPanelEntry | null = null;
  * Attach the sidebar to the page if it's not already attached. Then re-renders all panels.
  */
 export async function showSidebar(): Promise<void> {
-  console.debug("sidebarController:showSidebar");
   reportEvent(Events.SIDEBAR_SHOW);
   if (isMV3() || isLoadedInIframe()) {
     try {
@@ -178,10 +177,6 @@ export async function activateExtensionPanel(extensionId: UUID): Promise<void> {
  * @see HIDE_SIDEBAR_EVENT_NAME
  */
 export function hideSidebar(): void {
-  console.debug("sidebarController:hideSidebar", {
-    isSidebarFrameVisible: sidebarMv2.isSidebarFrameVisible(),
-  });
-
   reportEvent(Events.SIDEBAR_HIDE);
   sidebarMv2.removeSidebarFrame();
   window.dispatchEvent(new CustomEvent(HIDE_SIDEBAR_EVENT_NAME));
@@ -207,8 +202,6 @@ export async function updateSidebar(
 
 export async function renderPanelsIfVisible(): Promise<void> {
   expectContext("contentScript");
-
-  console.debug("sidebarController:renderPanelsIfVisible");
 
   if (await isSidePanelOpen()) {
     void sidebarInThisTab.renderPanels(getTimedSequence(), panels);
@@ -371,11 +364,6 @@ export function reservePanels(refs: ModComponentRef[]): void {
 
 export function updateHeading(extensionId: UUID, heading: string): void {
   const entry = panels.find((x) => x.extensionId === extensionId);
-
-  console.debug("sidebarController:updateHeading %s", extensionId, {
-    heading,
-    panel: entry,
-  });
 
   if (entry) {
     entry.heading = heading;

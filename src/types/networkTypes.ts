@@ -15,21 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { Suspense } from "react";
-import { type DocumentViewProps } from "./DocumentViewProps";
+import { type AxiosRequestHeaders, type Method } from "axios";
 
-const DocumentView = React.lazy(
-  async () =>
-    import(
-      /* webpackChunkName: "components-lazy" */
-      "./DocumentView"
-    ),
-);
-
-const DocumentViewLazy: React.FC<DocumentViewProps> = (props) => (
-  <Suspense fallback={null}>
-    <DocumentView {...props} />
-  </Suspense>
-);
-
-export default DocumentViewLazy;
+export interface NetworkRequestConfig<Data = unknown> {
+  url: string;
+  method?: Method;
+  headers?: AxiosRequestHeaders;
+  params?: UnknownObject | void;
+  data?: Data;
+  signal?: AbortSignal;
+}

@@ -9,8 +9,11 @@ Execute these steps from the project root to run tests:
 
 One-time setup:
 
-- Set up your .env file: Copy `.env.example` to `.env.development` and fill in the required value for the test user
-  password (`MV` will determine the manifest version for the both the extension and the tests).
+- Set up your .env file:
+  - Copy `.env.example` to `.env.development`.
+  - Fill in the required values for the test user password `E2E_TEST_USER_PASSWORD_UNAFFILIATED` and
+    uncomment `REQUIRE_OPTIONAL_PERMISSIONS_IN_MANIFEST=1`
+  - `MV` will determine the manifest version for the both the extension and the tests.
 - Install browsers: Execute `npx playwright install chromium chrome msedge`.
 
 1. Install dependencies: Run `npm install`
@@ -37,6 +40,12 @@ Adhere to these principles, based on the [Playwright Best Practices](https://pla
   Leverage [Playwright fixtures](https://playwright.dev/docs/test-fixtures) for shared code.
 - Rely on Playwright's auto-waiting feature for actions like clicking or typing.
 
+When testing mod functionality, use our testing playground website, https://pbx.vercel.app, for a consistent
+environment. It is configured
+as the base url for e2e tests. Ex. `await page.goto("/bootstrap-5");` will bring you to the bootstrap-5 page on the
+playground.
+The source for this website is: https://github.com/pixiebrix/playground
+
 Focus on testing high-level user behavior and integration points, avoiding duplication of unit test coverage. Each
 test should represent one full feature flow, which may include multiple steps and assertions. Avoid splitting
 a single feature flow across multiple tests, preferring longer tests if necessary.
@@ -52,6 +61,24 @@ If a test fails, use Playwright's tools:
 - Slow down test execution: Execute `SLOWMO=1 npm run test:e2e`.
 - Confirm element presence: Use `expect(page).toHaveSelector('.selector', { timeout: 5000 })`.
 - Local failed test runs will automatically display reports with trace details in the browser.
+
+### Troubleshooting
+
+#### Test failed with `Timed out 5000ms waiting for expect(locator).toBeVisible()` when locator is hidden
+
+Example error details:
+
+```
+Locator: getByRole('table').locator('.list-group-item').first()
+    Expected: visible
+    Received: hidden
+```
+
+This error arises when Playwright anticipates an element to be visible, but it's hidden. Playwright doesn't retry the
+assertion if the element is hidden, leading to an immediate failure.
+
+To resolve this, utilize the `ensureVisibility` helper function from `./utils.ts`. This function waits for the element
+to become visible, even if it's initially hidden or unmounted.
 
 ## Test Infrastructure
 

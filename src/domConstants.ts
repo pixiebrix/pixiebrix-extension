@@ -23,6 +23,8 @@ export const MAX_Z_INDEX = NOTIFICATIONS_Z_INDEX - 1; // Let notifications alway
 
 export const CONTENT_SCRIPT_READY_ATTRIBUTE = "data-pb-ready";
 
+export const SELECTION_MENU_READY_ATTRIBUTE = "data-pb-selection-menu-ready";
+
 export const PANEL_FRAME_ID = "pixiebrix-extension";
 
 export const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";

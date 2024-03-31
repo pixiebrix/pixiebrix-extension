@@ -24,7 +24,7 @@ import {
 } from "@/store/extensionsStorage";
 import type { RegistryId, SemVerString } from "@/types/registryTypes";
 import type { ModDefinition } from "@/types/modDefinitionTypes";
-import { selectExtensionsForRecipe } from "@/store/extensionsSelectors";
+import { selectModComponentsForMod } from "@/store/extensionsSelectors";
 import extensionsSlice from "@/store/extensionsSlice";
 import { groupBy, isEmpty, uniq } from "lodash";
 import { forEachTab } from "@/utils/extensionUtils";
@@ -184,7 +184,7 @@ export function deactivateMod(
 } {
   let { options: newOptionsState, editor: newEditorState } = reduxState;
 
-  const activatedModComponentSelector = selectExtensionsForRecipe(modId);
+  const activatedModComponentSelector = selectModComponentsForMod(modId);
   const activatedModComponents = activatedModComponentSelector({
     options: newOptionsState,
   });
@@ -257,12 +257,12 @@ function updateMod(
 
   newOptionsState = extensionsSlice.reducer(
     newOptionsState,
-    extensionsSlice.actions.installMod({
+    extensionsSlice.actions.activateMod({
       modDefinition,
       configuredDependencies,
       optionsArgs,
       screen: "background",
-      isReinstall: true,
+      isReactivate: true,
     }),
   );
 

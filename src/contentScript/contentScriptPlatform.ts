@@ -54,7 +54,7 @@ import type { UUID } from "@/types/stringTypes";
 import { PlatformBase } from "@/platform/platformBase";
 import type { Nullishable } from "@/utils/nullishUtils";
 import type { SanitizedIntegrationConfig } from "@/integrations/integrationTypes";
-import type { AxiosRequestConfig } from "axios";
+import type { NetworkRequestConfig } from "@/types/networkTypes";
 import type { RemoteResponse } from "@/types/contract";
 import { hasSpecificErrorCause } from "@/errors/errorHelpers";
 import { InteractiveLoginRequiredError } from "@/errors/authErrors";
@@ -137,7 +137,7 @@ class ContentScriptPlatform extends PlatformBase {
   // passed to the content script
   override request = async <TData>(
     integrationConfig: Nullishable<SanitizedIntegrationConfig>,
-    requestConfig: AxiosRequestConfig,
+    requestConfig: NetworkRequestConfig,
   ): Promise<RemoteResponse<TData>> => {
     const requestGenerator = async (options: { interactiveLogin: boolean }) =>
       performConfiguredRequestInBackground<TData>(

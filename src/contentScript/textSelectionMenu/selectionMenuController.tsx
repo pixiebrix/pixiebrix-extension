@@ -40,18 +40,13 @@ import { getSelectionRange } from "@/utils/domUtils";
 
 import { snapWithin } from "@/utils/mathUtils";
 import ActionRegistry from "@/contentScript/textSelectionMenu/ActionRegistry";
+import { SELECTION_MENU_READY_ATTRIBUTE } from "@/domConstants";
 
 const MIN_SELECTION_LENGTH_CHARS = 3;
 
 export const selectionMenuActionRegistry = new ActionRegistry();
 
 let selectionMenu: Nullishable<HTMLElement>;
-
-const onMousedownHide = (event: MouseEvent) => {
-  if (event.target instanceof Node && !selectionMenu?.contains(event.target)) {
-    hideSelectionMenu();
-  }
-};
 
 /**
  * AbortController fired when the popover is hidden/destroyed.
@@ -102,6 +97,7 @@ async function showSelectionMenu(): Promise<void> {
         passive: true,
         once: true,
         signal: hideController.signal,
+        capture: true,
       },
     );
   }
@@ -115,12 +111,23 @@ async function showSelectionMenu(): Promise<void> {
       passive: true,
       once: true,
       signal: hideController.signal,
+      capture: true,
     });
   }
+
+  const onMousedownHide = (event: MouseEvent) => {
+    if (
+      event.target instanceof Node &&
+      !selectionMenu?.contains(event.target)
+    ) {
+      hideSelectionMenu();
+    }
+  };
 
   document.addEventListener("mousedown", onMousedownHide, {
     passive: true,
     signal: hideController.signal,
+    capture: true,
   });
 
   return updatePosition();
@@ -296,6 +303,11 @@ function isSelectionValid(selection: Nullishable<Selection>): boolean {
   return selectionText.length >= MIN_SELECTION_LENGTH_CHARS;
 }
 
+function markSelectionMenuReady() {
+  const html = globalThis.document?.documentElement;
+  html.setAttribute(SELECTION_MENU_READY_ATTRIBUTE, "true");
+}
+
 /**
  * Initialize the selection selection menu once.
  */
@@ -331,6 +343,9 @@ export const initSelectionMenu = once(() => {
   );
 
   selectionMenuActionRegistry.onChange.add(async () => {
+    // Mark that the  text selection menu is ready to be used with at least one action registered.
+    markSelectionMenuReady();
+
     const isShowing = selectionMenu?.checkVisibility();
     destroySelectionMenu();
 

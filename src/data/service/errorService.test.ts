@@ -20,9 +20,19 @@ import {
   CancelError,
   RequestSupersededError,
 } from "@/errors/businessErrors";
-import { shouldIgnoreError } from "@/data/service/errorService";
+import {
+  selectExtraContext,
+  shouldIgnoreError,
+} from "@/data/service/errorService";
 import { serializeError } from "serialize-error";
 import { InteractiveLoginRequiredError } from "@/errors/authErrors";
+
+const EXPECTED_RUNTIME_ID = "abc123";
+const expectedManifestValues = {
+  version_name: "1.0.0",
+  version: "1.0.0",
+  manifest_version: "3",
+};
 
 describe("shouldIgnoreError", () => {
   it.each([CancelError, RequestSupersededError])(
@@ -46,4 +56,23 @@ describe("shouldIgnoreError", () => {
       ).toBeFalse();
     },
   );
+});
+
+describe("selectExtraContext", () => {
+  beforeEach(async () => {
+    browser.runtime.id = EXPECTED_RUNTIME_ID;
+    browser.runtime.getManifest = jest
+      .fn()
+      .mockReturnValue(expectedManifestValues);
+  });
+
+  it("should return the expected extension context", async () => {
+    await expect(selectExtraContext(new Error("foo"))).resolves.toStrictEqual(
+      expect.objectContaining({
+        extensionVersion: expectedManifestValues.version,
+        manifestVersion: expectedManifestValues.manifest_version,
+        runtimeId: EXPECTED_RUNTIME_ID,
+      }),
+    );
+  });
 });

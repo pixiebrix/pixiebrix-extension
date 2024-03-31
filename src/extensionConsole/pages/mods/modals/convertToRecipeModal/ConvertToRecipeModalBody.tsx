@@ -17,7 +17,7 @@
 
 import React, { useMemo } from "react";
 import { selectScope } from "@/auth/authSelectors";
-import { selectExtensions } from "@/store/extensionsSelectors";
+import { selectActivatedModComponents } from "@/store/extensionsSelectors";
 import { Button, Modal } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { selectModalsContext } from "@/extensionConsole/pages/mods/modals/modModalsSelectors";
@@ -109,7 +109,7 @@ const ConvertToRecipeModalBody: React.FunctionComponent = () => {
     useSelector(selectModalsContext);
   const extensionId =
     showShareContext?.extensionId ?? showPublishContext?.extensionId;
-  const extensions = useSelector(selectExtensions);
+  const extensions = useSelector(selectActivatedModComponents);
   const { data: standaloneModDefinitions } =
     useGetAllStandaloneModDefinitionsQuery();
   const [deleteStandaloneModDefinition] =

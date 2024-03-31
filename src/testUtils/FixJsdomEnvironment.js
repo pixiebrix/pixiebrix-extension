@@ -34,5 +34,8 @@ export default class FixJSDOMEnvironment extends JSDOMEnvironment {
     this.global.Request = Request;
     this.global.Response = Response;
     this.global.ReadableStream = ReadableStream;
+
+    // TODO: Set when dropping support for Chrome <120
+    // this.global.URL.canParse = URL.canParse;
   }
 }

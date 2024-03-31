@@ -116,6 +116,12 @@ module.exports = {
       extendNoRestrictedImports({
         patterns: [
           {
+            group: ["axios"],
+            importNames: ["AxiosRequestConfig"],
+            message:
+              'Use this instead: import { NetworkRequestConfig } from "@/types/networkTypes"',
+          },
+          {
             group: ["react-shadow/emotion"],
             message:
               'Use this instead: import EmotionShadowRoot from "@/components/EmotionShadowRoot"',
@@ -151,10 +157,20 @@ module.exports = {
   },
   overrides: [
     {
-      // (TODO: consider packaging e2e tests in a mono-repo structure)
+      // (TODO: consider packaging e2e tests in a mono-repo structure for specific linting rules)
       files: ["end-to-end-tests/**"], // Or *.test.js
       rules: {
         "no-restricted-imports": "off",
+        "unicorn/prefer-dom-node-dataset": "off",
+        "no-restricted-syntax": [
+          "error",
+          {
+            message:
+              "Define a value for the timeout options parameter to avoid waiting forever (`.toPass` by default will retry forever)",
+            selector:
+              "CallExpression[callee.property.name='toPass'][arguments.length=0]",
+          },
+        ],
       },
     },
     {

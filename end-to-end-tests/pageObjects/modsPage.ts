@@ -17,7 +17,7 @@
 
 import { expect, type Page } from "@playwright/test";
 import { getBaseExtensionConsoleUrl } from "./constants";
-import { expectToNotBeHiddenOrUnmounted } from "../utils";
+import { ensureVisibility } from "../utils";
 
 export class ModsPage {
   private readonly extensionConsoleUrl: string;
@@ -36,7 +36,7 @@ export class ModsPage {
       name: "Active Mods",
     });
     // `activeModsHeading` may be initially be detached and hidden, so toBeVisible() would immediately fail
-    await expectToNotBeHiddenOrUnmounted(activeModsHeading);
+    await ensureVisibility(activeModsHeading);
   }
 
   async viewAllMods() {
@@ -77,7 +77,10 @@ export class ActivateModPage {
     await this.page.goto(this.activateModUrl);
 
     await expect(this.page.getByText("Activate Mod")).toBeVisible();
-    await expect(this.page.getByText(this.modId)).toBeVisible();
+    // Loading the mod details may take more than 5 seconds
+    await expect(this.page.getByText(this.modId)).toBeVisible({
+      timeout: 10_000,
+    });
   }
 
   activateButton() {
@@ -90,7 +93,10 @@ export class ActivateModPage {
     await this.page.waitForURL(`${this.baseConsoleUrl}#/mods`);
     const modsPage = new ModsPage(this.page, this.extensionId);
     await modsPage.viewActiveMods();
-    await expect(modsPage.modTableItems().getByText(this.modId)).toBeVisible();
+    // Loading mods sometimes takes upwards of 5s
+    await expect(modsPage.modTableItems().getByText(this.modId)).toBeVisible({
+      timeout: 10_000,
+    });
     return modsPage;
   }
 }
