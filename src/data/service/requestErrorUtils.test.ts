@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { selectAbsoluteUrl } from "@/data/service/requestErrorUtils";
+import { selectAbsoluteUrl } from "@/utils/urlUtils";
 import { safeGuessStatusText } from "@/errors/networkErrorHelpers";
 
 describe("safeGuessStatusText", () => {

@@ -16,7 +16,7 @@
  */
 
 import { isNullOrBlank } from "@/utils/stringUtils";
-import { type Nullishable } from "@/utils/nullishUtils";
+import { assertNotNullish } from "./nullishUtils";
 
 const SPACE_ENCODED_VALUE = "%20";
 
@@ -27,10 +27,30 @@ export const LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT = "plus";
 export const URL_INPUT_SPACE_ENCODING_DEFAULT = "percent";
 
 /**
- * Returns true if `url` is an absolute URL, based on whether the URL contains a schema
+ * Returns true if `url` is an absolute URL, based on whether the URL contains a protocol
  */
 export function isAbsoluteUrl(url: string): boolean {
   return /(^|:)\/\//.test(url);
+}
+
+/**
+ * Get the absolute URL from a request configuration. Does NOT include the query params from the request unless
+ * they were passed in with the URL instead of as params.
+ */
+export function selectAbsoluteUrl({
+  url,
+  baseURL,
+}: {
+  url?: string;
+  baseURL?: string;
+}): string {
+  assertNotNullish(url, "selectAbsoluteUrl: The URL was not provided");
+  if (isAbsoluteUrl(url)) {
+    return url;
+  }
+
+  assertNotNullish(baseURL, "selectAbsoluteUrl: The base URL was not provided");
+  return new URL(baseURL, url).href;
 }
 
 export function makeURL(
@@ -58,23 +78,17 @@ export function makeURL(
 /**
  * Returns true if `value` is a valid absolute URL with a protocol in `protocols`
  * @param value the value to check
- * @param protocols valid protocols including colon, defaults to http: and https:
+ * @param protocols valid protocols including colon
  */
-export function isValidUrl(
-  value: Nullishable<string>,
-  { protocols = ["http:", "https:"] }: { protocols?: string[] } = {},
+export function urlMatchesProtocol(
+  value: unknown,
+  protocols: Array<"http:" | "https:">,
 ): value is string {
-  if (isNullOrBlank(value)) {
-    return false;
-  }
-
-  try {
-    // eslint-disable-next-line -- string null checks thinks this is still nullishable
-    const url = new URL(value as string);
-    return protocols.includes(url.protocol);
-  } catch {
-    return false;
-  }
+  return (
+    typeof value === "string" &&
+    canParseUrl(value) &&
+    protocols.includes(new URL(value).protocol)
+  );
 }
 
 /**
@@ -102,10 +116,10 @@ export function urlsMatch(url1: string | URL, url2: string | URL): boolean {
  *
  */
 // TODO: Use `URL.canParse` after dropping support for Chrome <120
-export function canParseUrl(url: string): boolean {
+export function canParseUrl(url: unknown): url is string {
   try {
     // eslint-disable-next-line no-new -- Equivalent to URL.canParse
-    new URL(url);
+    new URL(url as string);
     return true;
   } catch {
     return false;
