@@ -28,9 +28,10 @@ export const URL_INPUT_SPACE_ENCODING_DEFAULT = "percent";
 
 /**
  * Returns true if `url` is an absolute URL, based on whether the URL contains a protocol
+ * This is just a readable shortcut to `canParseUrl`
  */
 export function isAbsoluteUrl(url: string): boolean {
-  return /(^|:)\/\//.test(url);
+  return canParseUrl(url);
 }
 
 /**

@@ -19,7 +19,6 @@ import { produce } from "immer";
 import { renderMustache } from "@/runtime/mapArgs";
 import { testMatchPatterns } from "@/bricks/available";
 import { isEmpty, castArray, uniq, compact } from "lodash";
-import urljoin from "url-join";
 import type { NetworkRequestConfig } from "@/types/networkTypes";
 import { BusinessError, NotConfiguredError } from "@/errors/businessErrors";
 import { IncompatibleServiceError } from "@/errors/genericErrors";
@@ -39,7 +38,11 @@ import {
   type TokenContext,
 } from "@/integrations/integrationTypes";
 import { type SemVerString } from "@/types/registryTypes";
-import { canParseUrl, isAbsoluteUrl } from "@/utils/urlUtils";
+import {
+  canParseUrl,
+  isAbsoluteUrl,
+  selectAbsoluteUrl,
+} from "@/utils/urlUtils";
 import { missingProperties } from "@/utils/schemaUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { stringToBase64 } from "uint8array-extras";
@@ -221,14 +224,22 @@ class UserDefinedIntegration<
     requestConfig: NetworkRequestConfig,
     baseURL?: string,
   ): void {
-    const absoluteURL =
-      baseURL && !isAbsoluteUrl(requestConfig.url)
-        ? urljoin(baseURL, requestConfig.url)
-        : requestConfig.url;
+    let absoluteURL: string | undefined;
 
-    if (!this.isAvailable(absoluteURL)) {
+    try {
+      absoluteURL = selectAbsoluteUrl({
+        url: requestConfig.url,
+        baseURL,
+      });
+    } catch {
+      // Handled later
+    }
+
+    if (!absoluteURL || !this.isAvailable(absoluteURL)) {
       throw new IncompatibleServiceError(
-        `Integration ${this.id} cannot be used to authenticate requests to ${absoluteURL}`,
+        `Integration ${this.id} cannot be used to authenticate requests to ${
+          absoluteURL ?? requestConfig.url
+        }`,
       );
     }
   }
