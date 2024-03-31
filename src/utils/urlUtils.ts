@@ -50,7 +50,6 @@ export function selectAbsoluteUrl({
 }): string {
   assertNotNullish(url, "selectAbsoluteUrl: The URL was not provided");
   if (isAbsoluteUrl(url)) {
-    assertValidUrl(url);
     return url;
   }
 

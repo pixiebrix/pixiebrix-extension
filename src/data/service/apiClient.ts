@@ -32,19 +32,20 @@ export async function absoluteApiUrl(
   relativeOrAbsoluteURL: string,
 ): Promise<string> {
   const absolute = isAbsoluteUrl(relativeOrAbsoluteURL);
+
+  if (!absolute) {
+    const base = await getBaseURL();
+    return new URL(relativeOrAbsoluteURL, base).href;
+  }
+
   const base = await getBaseURL();
-
-  if (absolute) {
-    if (!relativeOrAbsoluteURL.startsWith(base)) {
-      throw new SuspiciousOperationError(
-        `URL is not a PixieBrix service URL: ${relativeOrAbsoluteURL}`,
-      );
-    }
-
+  if (relativeOrAbsoluteURL.startsWith(base)) {
     return relativeOrAbsoluteURL;
   }
 
-  return new URL(relativeOrAbsoluteURL, base).href;
+  throw new SuspiciousOperationError(
+    `URL is not a PixieBrix service URL: ${relativeOrAbsoluteURL}`,
+  );
 }
 
 /**
