@@ -38,14 +38,18 @@ import {
   type TokenContext,
 } from "@/integrations/integrationTypes";
 import { type SemVerString } from "@/types/registryTypes";
-import {
-  canParseUrl,
-  isAbsoluteUrl,
-  selectAbsoluteUrl,
-} from "@/utils/urlUtils";
+import { canParseUrl, selectAbsoluteUrl } from "@/utils/urlUtils";
 import { missingProperties } from "@/utils/schemaUtils";
 import { assertNotNullish } from "@/utils/nullishUtils";
 import { stringToBase64 } from "uint8array-extras";
+
+/**
+ * Returns true if `url` is an absolute URL, based on whether the URL contains a protocol
+ * @deprecated Use `isUrlRelative` instead
+ */
+function isAbsoluteUrl(url: string): boolean {
+  return canParseUrl(url);
+}
 
 /**
  * An integration hydrated from a user-defined definition. Has the ability to authenticate requests because it has

@@ -28,18 +28,10 @@ export const LEGACY_URL_INPUT_SPACE_ENCODING_DEFAULT = "plus";
 export const URL_INPUT_SPACE_ENCODING_DEFAULT = "percent";
 
 /**
- * Returns true if `url` is an absolute URL, based on whether the URL contains a protocol
- * This is just a readable shortcut to `canParseUrl`
- */
-export function isAbsoluteUrl(url: string): boolean {
-  return canParseUrl(url);
-}
-
-/**
  * Returns true if `url` lacks a protocol and hostname, indicating it's a relative URL
  */
 export function isUrlRelative(url: string): boolean {
-  return /^\.{0,2}\/[^/]/.test(url);
+  return !url.startsWith("//") && !url.includes("://");
 }
 
 /**

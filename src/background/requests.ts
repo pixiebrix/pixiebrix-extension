@@ -52,7 +52,7 @@ import {
 import { type MessageContext } from "@/types/loggerTypes";
 import refreshPKCEToken from "@/background/refreshToken";
 import reportError from "@/telemetry/reportError";
-import { assertProtocolUrl, isAbsoluteUrl } from "@/utils/urlUtils";
+import { assertProtocolUrl, isUrlRelative } from "@/utils/urlUtils";
 import { ensureJsonObject, isObject } from "@/utils/objectUtils";
 import {
   deleteCachedAuthData,
@@ -414,7 +414,7 @@ export async function performConfiguredRequest<TData>(
 
   if (!integrationConfig) {
     // No integration configuration provided. Perform request directly without authentication
-    if (!isAbsoluteUrl(requestConfig.url)) {
+    if (isUrlRelative(requestConfig.url)) {
       throw new BusinessError(
         "expected absolute URL for request without integration",
       );
