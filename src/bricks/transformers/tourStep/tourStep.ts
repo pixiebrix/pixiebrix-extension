@@ -538,7 +538,10 @@ class TourStepTransformer extends TransformerABC {
     let result;
 
     try {
-      if (isPipelineExpression(onBeforeShow)) {
+      if (
+        isPipelineExpression(onBeforeShow) &&
+        !isEmpty(onBeforeShow.__value__)
+      ) {
         await options.runPipeline(
           onBeforeShow,
           {
@@ -563,7 +566,10 @@ class TourStepTransformer extends TransformerABC {
 
       result = await this.displayStep(target, modifiedArgs, options);
 
-      if (isPipelineExpression(onAfterShow)) {
+      if (
+        isPipelineExpression(onAfterShow) &&
+        !isEmpty(onAfterShow.__value__)
+      ) {
         await options.runPipeline(
           onAfterShow,
           {
