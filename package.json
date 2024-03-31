@@ -58,7 +58,7 @@
     "abort-utils": "^1.0.0",
     "ace-builds": "^1.32.8",
     "autocompleter": "^9.1.2",
-    "axios": "^0.27.2",
+    "axios": "^0.28.1",
     "batched-function": "^2.0.1",
     "bootstrap": "^4.6.0",
     "bootstrap-icons": "^1.11.3",
