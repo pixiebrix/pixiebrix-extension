@@ -47,7 +47,7 @@ const Image: React.FunctionComponent<ImageProps> = ({
 }) => {
   // If it's not a valid URL, show a placeholder
   const renderPlaceholder =
-    canParseUrl(props.src) && props.src.startsWith("https://");
+    !canParseUrl(props.src) || !props.src.startsWith("https://");
 
   return (
     <div

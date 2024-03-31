@@ -151,13 +151,16 @@ describe("selectAbsoluteUrl", () => {
 
 describe("isUrlRelative", () => {
   it("returns true for relative URLs", () => {
-    expect(isUrlRelative("/foo")).toBe(true);
     expect(isUrlRelative("foo")).toBe(true);
+    expect(isUrlRelative("/foo")).toBe(true);
+    expect(isUrlRelative("./foo")).toBe(true);
+    expect(isUrlRelative("../foo")).toBe(true);
   });
 
   it("returns false for absolute URLs", () => {
     expect(isUrlRelative("https://example.com/foo")).toBe(false);
     expect(isUrlRelative("http://example.com/foo")).toBe(false);
     expect(isUrlRelative("file://example.com/foo")).toBe(false);
+    expect(isUrlRelative("//example.com/foo")).toBe(false);
   });
 });

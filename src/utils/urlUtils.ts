@@ -39,7 +39,7 @@ export function isAbsoluteUrl(url: string): boolean {
  * Returns true if `url` lacks a protocol and hostname, indicating it's a relative URL
  */
 export function isUrlRelative(url: string): boolean {
-  return url.startsWith("/") || url.startsWith("./") || url.startsWith("../");
+  return /^\.{0,2}\/[^/]/.test(url);
 }
 
 /**
