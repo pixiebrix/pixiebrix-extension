@@ -143,7 +143,6 @@ function assertValidUrl(url: unknown, baseURL?: unknown): void {
  * Returns a URL with one of the allow-listed schemas, or throws a BusinessError
  * @param url an absolute or relative URL
  * @param allowedProtocols the protocol allow-list, including the colon (e.g., "https:")
- * @return the URL instance
  * @throws BusinessError if the URL is invalid
  */
 export function assertProtocolUrl(
@@ -155,7 +154,6 @@ export function assertProtocolUrl(
   }
 
   const { protocol } = new URL(url);
-
   if (!allowedProtocols.includes(protocol)) {
     throw new BusinessError(
       `Unsupported protocol: ${protocol}. Use ${allowedProtocols.join(", ")}`,
