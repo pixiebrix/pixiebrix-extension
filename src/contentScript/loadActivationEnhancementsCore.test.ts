@@ -31,7 +31,7 @@ import {
   loadActivationEnhancements,
   TEST_unloadActivationEnhancements,
 } from "@/contentScript/loadActivationEnhancementsCore";
-import { isReadyInThisDocument } from "@/contentScript/ready";
+import { isContentScriptReady } from "@/contentScript/ready";
 import { isLinked } from "@/auth/authStorage";
 import { array } from "cooky-cutter";
 import { MARKETPLACE_URL } from "@/urlConstants";
@@ -79,7 +79,7 @@ describe("marketplace enhancements", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
     document.body.innerHTML = getDocument(activateButtonsHtml).body.innerHTML;
-    jest.mocked(isReadyInThisDocument).mockImplementation(() => true);
+    jest.mocked(isContentScriptReady).mockImplementation(() => true);
     getActivatedModIdsMock.mockResolvedValue(new Set());
     getActivatingModsMock.mockResolvedValue([]);
   });

@@ -34,17 +34,13 @@
  * - Context invalidated: CS must be injected again
  */
 
-import { type UUID } from "@/types/stringTypes";
 import { type Target } from "@/types/messengerTypes";
 import { forbidContext } from "@/utils/expectContext";
 import { executeFunction } from "webext-content-scripts";
-import { CONTENT_SCRIPT_READY_ATTRIBUTE } from "@/domConstants";
-
-// eslint-disable-next-line local-rules/persistBackgroundData -- Static
-const html = globalThis.document?.documentElement;
 
 // These two must be synched in `getTargetState`
 const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for("content-script-injected");
+const CONTENT_SCRIPT_READY_SYMBOL = Symbol.for("content-script-ready");
 
 /** Communicates readiness to `ensureContentScript` */
 export const ENSURE_CONTENT_SCRIPT_READY =
@@ -53,6 +49,7 @@ export const ENSURE_CONTENT_SCRIPT_READY =
 declare global {
   interface Window {
     [CONTENT_SCRIPT_INJECTED_SYMBOL]?: true;
+    [CONTENT_SCRIPT_READY_SYMBOL]?: true;
   }
 }
 
@@ -65,31 +62,25 @@ interface TargetState {
 /**
  * Returns true iff the content script has been injected in the content script Javascript VM for the window.
  */
-export function isInstalledInThisSession(): boolean {
-  return CONTENT_SCRIPT_INJECTED_SYMBOL in globalThis;
+export function isContentScriptInstalled(): boolean {
+  return CONTENT_SCRIPT_INJECTED_SYMBOL in window;
 }
 
 /**
  * Mark that the content script has been injected in content script Javascript VM for the window.
  */
-export function setInstalledInThisSession(): void {
+export function setContentScriptInstalled(): void {
   // eslint-disable-next-line security/detect-object-injection -- symbol
   window[CONTENT_SCRIPT_INJECTED_SYMBOL] = true;
 }
 
-export function isReadyInThisDocument(): boolean {
-  return html.hasAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE);
+export function isContentScriptReady(): boolean {
+  return CONTENT_SCRIPT_READY_SYMBOL in window;
 }
 
-export function setReadyInThisDocument(uuid: UUID): void {
-  html.setAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE, uuid);
-}
-
-/** Only removes the attribute if the `uuid` matches. This avoids race conditions with the new content script */
-export function unsetReadyInThisDocument(uuid: UUID): void {
-  if (uuid === html.getAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE)) {
-    html.removeAttribute(CONTENT_SCRIPT_READY_ATTRIBUTE);
-  }
+export function setContentScriptReady(): void {
+  // eslint-disable-next-line security/detect-object-injection -- symbol
+  window[CONTENT_SCRIPT_READY_SYMBOL] = true;
 }
 
 /**
@@ -108,13 +99,12 @@ export async function getTargetState(target: Target): Promise<TargetState> {
     const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for(
       "content-script-injected",
     );
-    const CONTENT_SCRIPT_READY_ATTRIBUTE = "data-pb-ready";
+
+    const CONTENT_SCRIPT_READY_SYMBOL = Symbol.for("content-script-ready");
     return {
       url: location.href,
       installed: CONTENT_SCRIPT_INJECTED_SYMBOL in globalThis,
-      ready: document.documentElement.hasAttribute(
-        CONTENT_SCRIPT_READY_ATTRIBUTE,
-      ),
+      ready: CONTENT_SCRIPT_READY_SYMBOL in globalThis,
     };
   });
 }
