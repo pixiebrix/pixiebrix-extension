@@ -54,8 +54,8 @@ import {
   getPartnerPrincipals,
   launchAuthIntegration,
 } from "@/background/partnerIntegrations"; // 39 strictNullCheck errors
-import { setCopilotProcessData } from "@/background/partnerHandlers";
-import launchInteractiveOAuth2Flow from "@/background/auth/launchInteractiveOAuth2Flow";
+import { setCopilotProcessData } from "@/background/partnerHandlers"; // 29 strictNullCheck errors
+import launchInteractiveOAuth2Flow from "@/background/auth/launchInteractiveOAuth2Flow"; // 9 strictNullCheck errors
 
 expectContext("background");
 
