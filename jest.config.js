@@ -46,7 +46,6 @@ const esmPackages = [
   "text-field-edit",
   "trim-repeated",
   "uint8array-extras",
-  "url-join",
   "urlpattern-polyfill",
   "use-debounce",
   "uuid",

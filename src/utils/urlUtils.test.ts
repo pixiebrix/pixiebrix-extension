@@ -21,31 +21,31 @@ import { makeURL, selectAbsoluteUrl } from "@/utils/urlUtils";
 
 describe("assertHttpsUrl", () => {
   test("parses HTTPS URLs", () => {
-    expect(assertProtocolUrl("https://example.com", ["https:"])).toStrictEqual(
-      new URL("https://example.com"),
-    );
+    expect(() => {
+      assertProtocolUrl("https://example.com", ["https:"]);
+    }).not.toThrow();
   });
   test("rejects HTTP URLs if not specified", () => {
-    expect(() => assertProtocolUrl("http://example.com", ["https:"])).toThrow(
-      new BusinessError("Unsupported protocol: http:. Use https:"),
-    );
+    expect(() => {
+      assertProtocolUrl("http://example.com", ["https:"]);
+    }).toThrow(new BusinessError("Unsupported protocol: http:. Use https:"));
   });
   test("allows HTTP URLs if specified", () => {
-    expect(assertProtocolUrl("https://example.com", ["https:"])).toStrictEqual(
-      new URL("http://example.com"),
-    );
+    expect(() => {
+      assertProtocolUrl("https://example.com", ["https:"]);
+    }).not.toThrow();
   });
   test("rejects unsupported protocol", () => {
-    expect(() =>
-      assertProtocolUrl("file://foo.txt", ["http:", "https:"]),
-    ).toThrow(
+    expect(() => {
+      assertProtocolUrl("file://foo.txt", ["http:", "https:"]);
+    }).toThrow(
       new BusinessError("Unsupported protocol: file:. Use http:, https:"),
     );
   });
   test("rejects invalid URLs", () => {
-    expect(() => assertProtocolUrl("https::/example.com", ["https:"])).toThrow(
-      new BusinessError("Invalid URL: https::/example.com"),
-    );
+    expect(() => {
+      assertProtocolUrl("https::/example.com", ["https:"]);
+    }).toThrow(new BusinessError("Invalid URL: https::/example.com"));
   });
 });
 

@@ -28,20 +28,16 @@ import { canParseUrl } from "@/utils/urlUtils";
 export function assertProtocolUrl(
   url: string,
   allowedProtocols: string[],
-): URL {
+): void {
   if (!canParseUrl(url)) {
     throw new BusinessError(`Invalid URL: ${url}`);
   }
 
-  const parsedUrl = new URL(url);
+  const { protocol } = new URL(url);
 
-  if (!allowedProtocols.includes(parsedUrl.protocol)) {
+  if (!allowedProtocols.includes(protocol)) {
     throw new BusinessError(
-      `Unsupported protocol: ${parsedUrl.protocol}. Use ${allowedProtocols.join(
-        ", ",
-      )}`,
+      `Unsupported protocol: ${protocol}. Use ${allowedProtocols.join(", ")}`,
     );
   }
-
-  return parsedUrl;
 }
