@@ -4,7 +4,6 @@
     "strictNullChecks": true
   },
   "files": [
-    "./hooks/useAsyncModOptionsValidationSchema.ts",
     "../end-to-end-tests/auth.setup.ts",
     "../end-to-end-tests/env.ts",
     "../end-to-end-tests/fixtures/extensionBase.ts",
@@ -261,6 +260,8 @@
     "./components/form/lockedLabel/LockedExtensionPointLabel.tsx",
     "./components/form/popoverInfoLabel/PopoverInfoLabel.tsx",
     "./components/form/widgets/KeyNameWidget.tsx",
+    "./components/form/widgets/RemoteMultiSelectWidget.tsx",
+    "./components/form/widgets/RemoteSelectWidget.tsx",
     "./components/form/widgets/SelectWidget.tsx",
     "./components/form/widgets/createMenuListWithAddButton.tsx",
     "./components/form/widgets/radioItemList/RadioItemListWidget.tsx",
@@ -366,6 +367,7 @@
     "./contrib/navigationRules.ts",
     "./contrib/pipedrive/create.ts",
     "./contrib/pipedrive/readers.ts",
+    "./contrib/remoteOptionUtils.ts",
     "./contrib/salesforce/lead.ts",
     "./contrib/salesforce/navigation.ts",
     "./contrib/slack/message.ts",
@@ -448,6 +450,7 @@
     "./hooks/auth.ts",
     "./hooks/logging.ts",
     "./hooks/useAsyncExternalStore.ts",
+    "./hooks/useAsyncModOptionsValidationSchema.ts",
     "./hooks/useAsyncState.ts",
     "./hooks/useAuthorizationGrantFlow.ts",
     "./hooks/useAutoFocusConfiguration.ts",

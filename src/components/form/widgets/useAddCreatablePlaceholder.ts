@@ -24,6 +24,8 @@ const CREATABLE_PLACEHOLDER = {
   isDisabled: true,
 } as const;
 
+const DEFAULT_OPTIONS = [] as const;
+
 /**
  * Adds a disabled placeholder options if creatable === true and the text-input is empty
  * @param creatable
@@ -32,11 +34,11 @@ const CREATABLE_PLACEHOLDER = {
  */
 export default function useAddCreatablePlaceholder<OptionType>({
   creatable,
-  options,
+  options = DEFAULT_OPTIONS,
   textInputValue,
 }: {
   creatable?: boolean;
-  options: readonly OptionType[];
+  options?: readonly OptionType[];
   textInputValue: string;
 }) {
   return useMemo(
