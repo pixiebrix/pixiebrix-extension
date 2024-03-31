@@ -20,7 +20,7 @@ import { ActivateModPage } from "../pageObjects/modsPage";
 // @ts-expect-error -- https://youtrack.jetbrains.com/issue/AQUA-711/Provide-a-run-configuration-for-Playwright-tests-in-specs-with-fixture-imports-only
 import { type Page, test as base } from "@playwright/test";
 import {
-  expectToNotBeHiddenOrUnmounted,
+  ensureVisibility,
   getSidebarPage,
   waitForSelectionMenuReadiness,
 } from "../utils";
@@ -47,7 +47,7 @@ test.describe("sidebar page smoke test", () => {
     await page.getByRole("heading", { name: "PixieBrix" }).selectText();
     const writerAssistMenuItem = page.getByRole("menuitem", { name: "✍️" });
     // The menu item may be initially hidden, so toBeVisible() would immediately fail
-    await expectToNotBeHiddenOrUnmounted(writerAssistMenuItem);
+    await ensureVisibility(writerAssistMenuItem);
     await writerAssistMenuItem.click();
     const sideBarPage = await getSidebarPage(page, extensionId);
     await expect(
