@@ -49,10 +49,7 @@ jest.mock("@/auth/authStorage", () => ({
 
 const isLinkedMock = jest.mocked(isLinked);
 
-jest.mock("@/contentScript/ready", () => ({
-  isReadyInThisDocument: jest.fn(() => true),
-}));
-
+jest.mock("@/contentScript/ready");
 jest.mock("@/store/extensionsStorage");
 jest.mock("@/background/messenger/external/_implementation");
 jest.mock("@/sidebar/store");
