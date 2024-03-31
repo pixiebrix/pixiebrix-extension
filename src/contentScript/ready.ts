@@ -19,19 +19,16 @@
 /**
  * @file Handles the definition and state of "readiness" of the content script (CS) context.
  *
- * `Symbol.for(x)` maintains the same symbol until the context is invalidated, even if
- * the CS is injected multiple times. This should not happen but it's something we
- * need to account for: https://github.com/pixiebrix/pixiebrix-extension/issues/3510
+ * There's one "content script" context per extension load. All the content scripts injected
+ * by the extension share this context and its symbols, even if injected repeatedly.
  *
- * When a context is invalidated, the CS and the changes it made may remain on the page,
- * but the new background is not able to message the old CS, so the CS must be injected
- * again. This might cause issues if the previous CS keeps "touching" the page after
- * being deactivated: https://github.com/pixiebrix/pixiebrix-extension/issues/3132
+ * When the extension is deactivated or reloaded, the content script is still kept active but it's
+ * unable to communicate to the background page/worker (because that context has been invalidated).
+ * In the console you can see multiple content scripts running at the same time, until you reload the tab.
  *
- * Using both a symbol and an attribute accounts for these 2 situations, to detect
- * and handle duplicate injections in the same session and across sessions:
- * - Same session (mistake in injection): ignore
- * - Context invalidated: CS must be injected again
+ * When the (background) context is invalidated, we must manually remove all of its listeners and
+ * attached widgets to avoid conflicts with future content script injections:
+ * https://github.com/pixiebrix/pixiebrix-extension/issues/4258
  */
 
 import { type Target } from "@/types/messengerTypes";
