@@ -139,7 +139,7 @@ export class WaitElementEffect extends EffectABC {
       isRootAware,
     }: BrickArgs<{
       selector: string | string[];
-      maxWaitMillis: number | undefined;
+      maxWaitMillis: number;
       isRootAware: boolean;
     }>,
     { logger, root, abortSignal }: BrickOptions,
