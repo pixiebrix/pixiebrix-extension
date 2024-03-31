@@ -129,7 +129,7 @@ describe("UserDefinedIntegration.authenticateBasicRequest", () => {
     expect(() =>
       integration.authenticateRequest(
         { notTheKey: "topsecret" } as unknown as SecretsConfig,
-        { url: "/v1/candidates/", method: "get" },
+        { url: "https://harvest.greenhouse.io/v1/candidates/", method: "get" },
       ),
     ).toThrow(BusinessError);
   });

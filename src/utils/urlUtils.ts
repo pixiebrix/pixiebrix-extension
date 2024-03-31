@@ -34,7 +34,9 @@ export function isAbsoluteUrl(url: string): boolean {
 }
 
 /**
- * Get the absolute URL from a request configuration. Does NOT include the query params from the request unless
+ * Get the absolute URL from a request configuration, ensuring it's fully parseable
+ *
+ * @warning Does NOT include the query params from the request unless
  * they were passed in with the URL instead of as params.
  */
 export function selectAbsoluteUrl({
@@ -46,11 +48,13 @@ export function selectAbsoluteUrl({
 }): string {
   assertNotNullish(url, "selectAbsoluteUrl: The URL was not provided");
   if (isAbsoluteUrl(url)) {
+    assertValidUrl(url);
     return url;
   }
 
   assertNotNullish(baseURL, "selectAbsoluteUrl: The base URL was not provided");
-  return new URL(baseURL, url).href;
+  assertValidUrl(url, baseURL);
+  return new URL(url, baseURL).href;
 }
 
 export function makeURL(
@@ -116,12 +120,19 @@ export function urlsMatch(url1: string | URL, url2: string | URL): boolean {
  *
  */
 // TODO: Use `URL.canParse` after dropping support for Chrome <120
-export function canParseUrl(url: unknown): url is string {
+export function canParseUrl(url: unknown, baseURL?: unknown): url is string {
   try {
     // eslint-disable-next-line no-new -- Equivalent to URL.canParse
-    new URL(url as string);
+    new URL(url as string, baseURL as string);
     return true;
   } catch {
     return false;
+  }
+}
+
+export function assertValidUrl(url: unknown, baseURL?: unknown): void {
+  if (!canParseUrl(url, baseURL)) {
+    const baseUrlInfo = baseURL ? ` (base URL: ${String(baseURL)})` : "";
+    throw new Error(`Invalid URL: ${String(url)}${baseUrlInfo}`);
   }
 }

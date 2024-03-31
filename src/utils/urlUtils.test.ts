@@ -125,4 +125,22 @@ describe("selectAbsoluteUrl", () => {
       }),
     ).toBe("https://example.com/foo");
   });
+
+  it("throws if URL is not provided", () => {
+    expect(() => selectAbsoluteUrl({ baseURL: "https://example.com" })).toThrow(
+      new Error("selectAbsoluteUrl: The URL was not provided"),
+    );
+  });
+
+  it("throws if baseURL is not provided on a relative URL", () => {
+    expect(() => selectAbsoluteUrl({ url: "/foo" })).toThrow(
+      new Error("selectAbsoluteUrl: The base URL was not provided"),
+    );
+  });
+
+  it("throws if URL is invalid", () => {
+    expect(() =>
+      selectAbsoluteUrl({ url: "/path", baseURL: "invalid" }),
+    ).toThrow(new Error("Invalid URL: /path (base URL: invalid)"));
+  });
 });
