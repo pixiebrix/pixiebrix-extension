@@ -392,7 +392,7 @@
     "./development/visualInjection.ts",
     "./domConstants.ts",
     "./errors/authErrors.ts",
-    "./errors/assertProtocolUrl.ts",
+    "./utils/urlUtils.ts",
     "./errors/businessErrors.ts",
     "./errors/clientRequestErrors.ts",
     "./errors/contextInvalidated.ts",

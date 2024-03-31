@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { BusinessError } from "@/errors/businessErrors";
 import { isNullOrBlank } from "@/utils/stringUtils";
 import { assertNotNullish } from "./nullishUtils";
 
@@ -135,5 +136,29 @@ function assertValidUrl(url: unknown, baseURL?: unknown): void {
   if (!canParseUrl(url, baseURL)) {
     const baseUrlInfo = baseURL ? ` (base URL: ${String(baseURL)})` : "";
     throw new Error(`Invalid URL: ${String(url)}${baseUrlInfo}`);
+  }
+}
+
+/**
+ * Returns a URL with one of the allow-listed schemas, or throws a BusinessError
+ * @param url an absolute or relative URL
+ * @param allowedProtocols the protocol allow-list, including the colon (e.g., "https:")
+ * @return the URL instance
+ * @throws BusinessError if the URL is invalid
+ */
+export function assertProtocolUrl(
+  url: string,
+  allowedProtocols: string[],
+): void {
+  if (!canParseUrl(url)) {
+    throw new BusinessError(`Invalid URL: ${url}`);
+  }
+
+  const { protocol } = new URL(url);
+
+  if (!allowedProtocols.includes(protocol)) {
+    throw new BusinessError(
+      `Unsupported protocol: ${protocol}. Use ${allowedProtocols.join(", ")}`,
+    );
   }
 }

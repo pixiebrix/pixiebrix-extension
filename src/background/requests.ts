@@ -37,7 +37,6 @@ import {
   ProxiedRemoteServiceError,
 } from "@/errors/businessErrors";
 import { ContextError, ExtensionNotLinkedError } from "@/errors/genericErrors";
-import { assertProtocolUrl } from "@/errors/assertProtocolUrl";
 import {
   isAxiosError,
   safeGuessStatusText,
@@ -53,7 +52,7 @@ import {
 import { type MessageContext } from "@/types/loggerTypes";
 import refreshPKCEToken from "@/background/refreshToken";
 import reportError from "@/telemetry/reportError";
-import { isAbsoluteUrl } from "@/utils/urlUtils";
+import { isAbsoluteUrl, assertProtocolUrl } from "@/utils/urlUtils";
 import { ensureJsonObject, isObject } from "@/utils/objectUtils";
 import {
   deleteCachedAuthData,

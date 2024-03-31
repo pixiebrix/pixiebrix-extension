@@ -28,7 +28,7 @@ import settingsSlice, {
   updateLocalPartnerTheme,
 } from "@/store/settings/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { assertProtocolUrl } from "@/errors/assertProtocolUrl";
+import { assertProtocolUrl } from "@/utils/urlUtils";
 import { selectSettings } from "@/store/settings/settingsSelectors";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import pTimeout from "p-timeout";

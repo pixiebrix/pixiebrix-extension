@@ -23,7 +23,7 @@ import {
   ClientNetworkPermissionError,
   RemoteServiceError,
 } from "@/errors/clientRequestErrors";
-import { assertProtocolUrl } from "@/errors/assertProtocolUrl";
+import { assertProtocolUrl } from "@/utils/urlUtils";
 import {
   isAxiosError,
   NO_INTERNET_MESSAGE,
