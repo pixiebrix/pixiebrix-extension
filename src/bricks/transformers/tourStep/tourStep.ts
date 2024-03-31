@@ -36,7 +36,7 @@ import { addOverlay } from "@/bricks/transformers/tourStep/overlay";
 import * as UNSAFE_panelController from "@/platform/panels/panelController";
 import { AbortPanelAction } from "@/bricks/errors";
 import { $safeFind } from "@/utils/domUtils";
-import { toExpression } from "@/utils/expressionUtils";
+import { isPipelineExpression, toExpression } from "@/utils/expressionUtils";
 import type {
   RefreshTrigger,
   TemporaryPanelDefinition,
@@ -538,10 +538,9 @@ class TourStepTransformer extends TransformerABC {
     let result;
 
     try {
-      if (!isEmpty(onBeforeShow?.__value__)) {
+      if (isPipelineExpression(onBeforeShow)) {
         await options.runPipeline(
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- We've already checked for emptiness
-          onBeforeShow!,
+          onBeforeShow,
           {
             key: "onBeforeShow",
             counter: 0,
@@ -564,10 +563,9 @@ class TourStepTransformer extends TransformerABC {
 
       result = await this.displayStep(target, modifiedArgs, options);
 
-      if (!isEmpty(onAfterShow?.__value__)) {
+      if (isPipelineExpression(onAfterShow)) {
         await options.runPipeline(
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-unnecessary-type-assertion -- We've already checked for emptiness
-          onAfterShow!,
+          onAfterShow,
           {
             key: "onAfterShow",
             counter: 0,
