@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./bricks/effects/assignModVariable.ts",
     "./contrib/uipath/process.ts",
     "./hooks/useDatabaseOptions.ts",
     "../end-to-end-tests/auth.setup.ts",
