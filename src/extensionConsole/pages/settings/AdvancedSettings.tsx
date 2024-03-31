@@ -21,6 +21,7 @@ import styles from "./SettingsCard.module.scss";
 import { Button, Card, Form } from "react-bootstrap";
 import { useConfiguredHost } from "@/data/service/baseService";
 import React, { useCallback } from "react";
+import ky from "ky";
 import { clearCachedAuthSecrets, clearPartnerAuth } from "@/auth/authStorage";
 import notify from "@/utils/notify";
 import useFlags from "@/hooks/useFlags";
@@ -116,12 +117,12 @@ const AdvancedSettings: React.FunctionComponent = () => {
       try {
         if (newPixiebrixUrl) {
           // Ensure it's connectable
-          const response = await fetch(new URL("api/me", newPixiebrixUrl), {
-            signal: AbortSignal.timeout(SAVING_URL_TIMEOUT_MS),
-          });
-
-          // Ensure it returns a JSON response. It's just `{}` when the user is logged out.
-          await response.json();
+          await ky
+            .get(new URL("api/me", newPixiebrixUrl), {
+              signal: AbortSignal.timeout(SAVING_URL_TIMEOUT_MS),
+              // Ensure it returns a JSON response. It's just `{}` when the user is logged out.
+            })
+            .json();
         }
       } catch {
         notify.error({
