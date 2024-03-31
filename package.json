@@ -119,7 +119,7 @@
     "p-timeout": "^6.1.2",
     "papaparse": "^5.4.1",
     "path-browserify": "^1.0.1",
-    "primeicons": "^6.0.1",
+    "primeicons": "^7.0.0",
     "primereact": "^7.1.0",
     "prop-types": "^15.7.2",
     "psl": "^1.8.0",
