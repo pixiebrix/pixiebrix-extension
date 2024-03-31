@@ -17,7 +17,7 @@
 
 import { assertProtocolUrl } from "@/errors/assertProtocolUrl";
 import { BusinessError } from "@/errors/businessErrors";
-import { makeURL } from "@/utils/urlUtils";
+import { makeURL, selectAbsoluteUrl } from "@/utils/urlUtils";
 
 describe("assertHttpsUrl", () => {
   test("parses HTTPS URLs", () => {
@@ -101,5 +101,28 @@ describe("makeURL", () => {
   test("preserve hash and query string", () => {
     const origin = "https://pixiebrix.com?foo=bar#example";
     expect(makeURL(origin)).toBe("https://pixiebrix.com/?foo=bar#example");
+  });
+});
+
+describe("selectAbsoluteUrl", () => {
+  it("combines URL", () => {
+    expect(
+      selectAbsoluteUrl({ url: "/foo", baseURL: "https://example.com" }),
+    ).toBe("https://example.com/foo");
+  });
+
+  it("handles trailing baseURL slash", () => {
+    expect(
+      selectAbsoluteUrl({ url: "/foo", baseURL: "https://example.com/" }),
+    ).toBe("https://example.com/foo");
+  });
+
+  it("handles absolute URL", () => {
+    expect(
+      selectAbsoluteUrl({
+        url: "https://example.com/foo",
+        baseURL: "https://example.com/",
+      }),
+    ).toBe("https://example.com/foo");
   });
 });
