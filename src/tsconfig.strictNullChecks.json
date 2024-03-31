@@ -4,6 +4,7 @@
     "strictNullChecks": true
   },
   "files": [
+    "./contrib/uipath/uipathHooks.ts",
     "./components/form/widgets/AsyncRemoteSelectWidget.tsx",
     "./bricks/effects/assignModVariable.ts",
     "./contrib/uipath/process.ts",
