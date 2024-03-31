@@ -17,19 +17,23 @@
 
 import axios from "axios";
 import { expectContext } from "@/utils/expectContext";
-import { getErrorMessage } from "@/errors/errorHelpers";
+import {
+  getErrorMessage,
+  rewrapErrorsIfThrownSync,
+} from "@/errors/errorHelpers";
 import {
   ClientNetworkError,
   ClientNetworkPermissionError,
   RemoteServiceError,
 } from "@/errors/clientRequestErrors";
-import { assertProtocolUrl } from "@/utils/urlUtils";
+import { assertProtocolUrl, selectAbsoluteUrl } from "@/utils/urlUtils";
 import {
   isAxiosError,
   NO_INTERNET_MESSAGE,
   NO_RESPONSE_MESSAGE,
 } from "@/errors/networkErrorHelpers";
 import { DEFAULT_SERVICE_URL } from "@/urlConstants";
+import { BusinessError } from "@/errors/businessErrors";
 
 export default function enrichAxiosErrors(): void {
   expectContext("extension");
@@ -50,9 +54,12 @@ async function enrichBusinessRequestError(error: unknown): Promise<never> {
   console.trace("enrichBusinessRequestError", { error });
 
   // This should have already been called before attempting the request because Axios does not actually catch invalid URLs
-  assertProtocolUrl(error.config.url ?? "", ["https:", "http:"]);
+  const url = rewrapErrorsIfThrownSync(
+    BusinessError,
+    () => new URL(selectAbsoluteUrl(error.config)),
+  );
 
-  const url = new URL(error.config.url ?? "");
+  assertProtocolUrl(url.href, ["https:", "http:"]);
 
   // In case of a CORS permission error, response.status can be 0. This case is handled below
   if (error.response != null && error.response.status !== 0) {

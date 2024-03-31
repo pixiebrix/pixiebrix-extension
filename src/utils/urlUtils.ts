@@ -36,6 +36,13 @@ export function isAbsoluteUrl(url: string): boolean {
 }
 
 /**
+ * Returns true if `url` lacks a protocol and hostname, indicating it's a relative URL
+ */
+export function isUrlRelative(url: string): boolean {
+  return url.startsWith("/") || url.startsWith("./") || url.startsWith("../");
+}
+
+/**
  * Get the absolute URL from a request configuration, ensuring it's fully parseable
  *
  * @warning Does NOT include the query params from the request unless
@@ -49,7 +56,7 @@ export function selectAbsoluteUrl({
   baseURL?: string;
 }): string {
   assertNotNullish(url, "selectAbsoluteUrl: The URL was not provided");
-  if (isAbsoluteUrl(url)) {
+  if (canParseUrl(url)) {
     return url;
   }
 
@@ -78,22 +85,6 @@ export function makeURL(
   }
 
   return result.href;
-}
-
-/**
- * Returns true if `value` is a valid absolute URL with a protocol in `protocols`
- * @param value the value to check
- * @param protocols valid protocols including colon
- */
-export function urlMatchesProtocol(
-  value: unknown,
-  protocols: Array<"http:" | "https:">,
-): value is string {
-  return (
-    typeof value === "string" &&
-    canParseUrl(value) &&
-    protocols.includes(new URL(value).protocol)
-  );
 }
 
 /**

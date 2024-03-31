@@ -63,7 +63,7 @@ describe("requestPermissionAnalysis", () => {
     ]);
   });
 
-  test.only("it annotates invalid url", async () => {
+  test("it annotates invalid url", async () => {
     const visitor = new RequestPermissionAnalysis();
     const extension = blockExtensionFactory("https://there is a space in here");
 

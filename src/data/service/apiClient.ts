@@ -22,7 +22,7 @@ import {
   ExtensionNotLinkedError,
   SuspiciousOperationError,
 } from "@/errors/genericErrors";
-import { isAbsoluteUrl } from "@/utils/urlUtils";
+import { isUrlRelative } from "@/utils/urlUtils";
 
 /**
  * Converts `relativeOrAbsoluteURL` to an absolute PixieBrix service URL
@@ -31,9 +31,10 @@ import { isAbsoluteUrl } from "@/utils/urlUtils";
 export async function absoluteApiUrl(
   relativeOrAbsoluteURL: string,
 ): Promise<string> {
-  const absolute = isAbsoluteUrl(relativeOrAbsoluteURL);
+  const isRelative = isUrlRelative(relativeOrAbsoluteURL);
+  // Avoid calling getBaseURL if the URL is already absolute; it's slow due to managed storage checked
 
-  if (!absolute) {
+  if (isRelative) {
     const base = await getBaseURL();
     return new URL(relativeOrAbsoluteURL, base).href;
   }

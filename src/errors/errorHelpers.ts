@@ -422,3 +422,37 @@ export type SimpleErrorObject = {
   message?: string;
   stack?: string;
 };
+
+/**
+ * Change the type of error while preserving existing properties like messag, stack and cause
+ * @param error the error to rewrap
+ * @param ErrorConstructor the new error constructor, it only works if it doesn't
+ *   have additional required properties and logic in the constructor
+ */
+export function rewrapError(
+  error: unknown,
+  ErrorConstructor: new (message: string) => Error,
+): Error {
+  const newError = new ErrorConstructor(getErrorMessage(error));
+  if (error instanceof Error) {
+    // Preserve the original error's enumerable properties
+    Object.assign(newError, error);
+
+    // Attach known props (they're non-enumerable)
+    newError.stack = error.stack;
+    newError.cause = error.cause;
+  }
+
+  return newError;
+}
+
+export function rewrapErrorsIfThrownSync<T>(
+  ErrorConstructor: new (message: string) => Error,
+  fn: () => T,
+): T {
+  try {
+    return fn();
+  } catch (error) {
+    throw rewrapError(error, ErrorConstructor);
+  }
+}

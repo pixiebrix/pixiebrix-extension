@@ -20,6 +20,7 @@ import {
   assertProtocolUrl,
   makeURL,
   selectAbsoluteUrl,
+  isUrlRelative,
 } from "@/utils/urlUtils";
 
 describe("assertHttpsUrl", () => {
@@ -145,5 +146,18 @@ describe("selectAbsoluteUrl", () => {
     expect(() =>
       selectAbsoluteUrl({ url: "/path", baseURL: "invalid" }),
     ).toThrow(new Error("Invalid URL: /path (base URL: invalid)"));
+  });
+});
+
+describe("isUrlRelative", () => {
+  it("returns true for relative URLs", () => {
+    expect(isUrlRelative("/foo")).toBe(true);
+    expect(isUrlRelative("foo")).toBe(true);
+  });
+
+  it("returns false for absolute URLs", () => {
+    expect(isUrlRelative("https://example.com/foo")).toBe(false);
+    expect(isUrlRelative("http://example.com/foo")).toBe(false);
+    expect(isUrlRelative("file://example.com/foo")).toBe(false);
   });
 });

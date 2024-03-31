@@ -31,6 +31,7 @@ import {
   isVarExpression,
 } from "@/utils/expressionUtils";
 import { allSettled } from "@/utils/promiseUtils";
+import { isUrlRelative } from "@/utils/urlUtils";
 
 /**
  * Checks permission for RemoteMethod and GetAPITransformer bricks to make a remote call
@@ -71,6 +72,11 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
     ) {
       const url = requestUrl.__value__;
 
+      if (isUrlRelative(url)) {
+        // Don't attempt to validate relative URLs
+        return;
+      }
+
       let parsedURL: URL;
 
       try {
@@ -87,7 +93,7 @@ class RequestPermissionAnalysis extends AnalysisVisitorABC {
         return;
       }
 
-      if (parsedURL.protocol !== "http://") {
+      if (parsedURL.protocol !== "https:") {
         this.annotations.push({
           position: nestedPosition(position, "config.url"),
           message:

@@ -26,7 +26,7 @@ import documentTreeStyles from "@/components/documentBuilder/preview/documentTre
 import ImagePlaceholder from "@/components/imagePlaceholder/ImagePlaceholder";
 import { isEmpty } from "lodash";
 import Flaps from "@/components/documentBuilder/preview/flaps/Flaps";
-import { urlMatchesProtocol } from "@/utils/urlUtils";
+import { canParseUrl } from "@/utils/urlUtils";
 
 type ImageProps = PreviewComponentProps & {
   elementType: DocumentElementType;
@@ -46,7 +46,8 @@ const Image: React.FunctionComponent<ImageProps> = ({
   ...restPreviewProps
 }) => {
   // If it's not a valid URL, show a placeholder
-  const renderPlaceholder = !urlMatchesProtocol(props.src, ["https:"]);
+  const renderPlaceholder =
+    canParseUrl(props.src) && props.src.startsWith("https://");
 
   return (
     <div
