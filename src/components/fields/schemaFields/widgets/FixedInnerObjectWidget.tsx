@@ -23,8 +23,6 @@ import WorkshopMessageWidget from "@/components/fields/schemaFields/widgets/Work
 
 /**
  * A widget for rendering a nested object with fixed properties.
- * @param props
- * @constructor
  * @see isCustomizableObjectSchema
  */
 const FixedInnerObjectWidget: React.FC<SchemaFieldProps> = (props) => {

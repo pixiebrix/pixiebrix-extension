@@ -130,7 +130,6 @@ export abstract class StarterBrickABC<TConfig extends UnknownObject>
 
   /**
    * The current registered mod components.
-   * @protected
    */
   protected readonly modComponents: Array<ResolvedModComponent<TConfig>> = [];
 

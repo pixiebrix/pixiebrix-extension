@@ -25,7 +25,6 @@ import { assertNotNullish } from "@/utils/nullishUtils";
 
 /**
  *  A standard error display for use with AsyncStateGate
- * @constructor
  */
 export const StandardError = ({
   error,
@@ -56,7 +55,6 @@ type AsyncStateGateProps<Data> = PropsWithoutRef<{
   state: AsyncState<Data> | FetchableAsyncState<Data>;
   /**
    * Children to render once the state is loaded
-   * @param args
    */
   children: (args: { data: Data }) => React.ReactElement | null;
   /**

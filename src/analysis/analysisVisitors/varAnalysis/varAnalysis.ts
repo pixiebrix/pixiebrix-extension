@@ -363,7 +363,6 @@ async function setModVariables(
 class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   /**
    * The current trace, or empty if there is no trace.
-   * @private
    */
   private readonly trace: TraceRecord[];
 
@@ -381,7 +380,6 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
   /**
    * Accumulator for known variables at each block visited. Mapping from block path to VarMap.
    * @see VarMap
-   * @private
    */
   private readonly knownVars = new Map<string, VarMap>();
 
@@ -393,19 +391,16 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
    * - A brick configuration
    * - List Element in Document Builder (because it uses deferred expression and introduces a variable)
    *
-   * @private
    */
   private readonly contextStack: VariableContext[] = [];
 
   /**
    * Annotation accumulator for warnings and errors
-   * @protected
    */
   protected readonly annotations: AnalysisAnnotation[] = [];
 
   /**
    * Cache of block definitions to fetch definitions synchronously.
-   * @private
    */
   private allBlocks: TypedBrickMap;
 
@@ -430,7 +425,6 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
    * - An empty schema
    *
    * @param blockConfig the block configuration
-   * @private
    */
   private safeGetOutputSchema(blockConfig: BrickConfig): Schema {
     const block = this.allBlocks.get(blockConfig.id)?.block;
@@ -472,7 +466,6 @@ class VarAnalysis extends PipelineExpressionVisitor implements Analysis {
 
   /**
    * Returns the current context variables. Do not modify the returned object directly, call `clone` first.
-   * @private
    */
   private get currentContextVars(): VarMap {
     return this.contextStack.at(-1).vars ?? new VarMap();

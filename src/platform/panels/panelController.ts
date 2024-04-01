@@ -198,7 +198,6 @@ export async function waitForTemporaryPanel({
 
 /**
  * Private helper method to remove panel from panels and extensionNonces.
- * @param panelNonce
  */
 function removePanelEntry(panelNonce: UUID): void {
   const panel = panels.get(panelNonce);

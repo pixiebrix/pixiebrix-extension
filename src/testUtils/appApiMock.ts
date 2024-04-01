@@ -19,8 +19,10 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import pDefer, { type DeferredPromise } from "p-defer";
 
-/** AxiosMock used for all app data factories. NOTE: must be reset in a beforeEach in each test file.
- * Ideally we would reset in a beforeEach in this file, but unfortunately some tests rely on this mocking behavior */
+/**
+ * AxiosMock used for all app data factories. NOTE: must be reset in a beforeEach in each test file.
+ * Ideally we would reset in a beforeEach in this file, but unfortunately some tests rely on this mocking behavior
+ */
 export const appApiMock = new MockAdapter(axios);
 
 /**

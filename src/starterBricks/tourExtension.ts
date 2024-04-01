@@ -180,7 +180,6 @@ export abstract class TourStarterBrickABC extends StarterBrickABC<TourConfig> {
   /**
    * Register a tour with the tour controller.
    * @param extension the tour extension
-   * @private
    */
   private async registerTour(
     extension: ResolvedModComponent<TourConfig>,

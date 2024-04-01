@@ -300,7 +300,7 @@ function selectorsOverlap(
  * The generated selector will match at least all the user-selected `elements`.
  *
  * Used by the "expand selection" feature in the Selection Tool.
- **
+ *
  * @param elements user-selected elements
  * @param selectors list of selector types to use, in order of preference
  * @param excludeRandomClasses true to heuristically excluded random classnames
@@ -671,7 +671,7 @@ export function findContainer(elements: HTMLElement[]): {
 /**
  * @param name   Like "id", "data-test"
  * @param value  Like "main-nav", "user-sidebar"
- * @return  Like "#main-nav", "[data-test='user-sidebar']"
+ * @returns  Like "#main-nav", "[data-test='user-sidebar']"
  */
 export function getAttributeSelector(
   name: string,

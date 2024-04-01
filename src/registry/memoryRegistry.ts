@@ -72,26 +72,22 @@ class MemoryRegistry<
 {
   /**
    * Registered built-in items. Used to keep track of built-ins across cache clears.
-   * @private
    */
   private readonly _builtins = new Map<RegistryId, Item>();
 
   /**
    * Registered internal definitions. Used to keep track across cache clears. They don't need to be cleared because
    * they are stored by content hash.
-   * @private
    */
   private readonly _internal = new Map<RegistryId, Item>();
 
   /**
    * Cache of items in the registry. Contains both built-ins and remote items.
-   * @private
    */
   private readonly _cache = new Map<RegistryId, Item>();
 
   /**
    * Track the state of the cache
-   * @private
    */
   private _cacheInitialized = false;
 

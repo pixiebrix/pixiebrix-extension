@@ -61,10 +61,8 @@ function selectActivateEventData(recipe: ModDefinition) {
  * React hook to install a recipe.
  *
  * Prompts the user to grant permissions if PixieBrix does not already have the required permissions.
- *
- * @param {ActivationSource} source - The source of the activation, only used for reporting purposes
- * @param {boolean} checkPermissions - Whether to check for permissions before activating the recipe
- * @returns {ActivateRecipeFormCallback} - A callback that can be used to activate a recipe
+ * source - The source of the activation, only used for reporting purposes checkPermissions - Whether to check for permissions before activating the recipe
+ * @returns - A callback that can be used to activate a recipe
  * @see useActivateRecipeWizard
  */
 function useActivateRecipe(

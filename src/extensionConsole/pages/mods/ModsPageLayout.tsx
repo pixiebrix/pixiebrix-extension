@@ -164,7 +164,8 @@ const ModsPageLayout: React.FunctionComponent<{
         <ModsPageToolbar tableInstance={tableInstance} />
         {/* This wrapper prevents AutoSizer overflow in a flex box container */}
         <div style={{ flex: "1 1 auto" }}>
-          {/**  Do not show the Mod cards while they are being fetched or while any deployments may be automatially activated
+          {/**
+           *  Do not show the Mod cards while they are being fetched or while any deployments may be automatially activated
            * If we show the cards while deployments are auto-activated, the user will see an unnecessary Update button
            */}
           {isLoading || isAutoDeploying ? (

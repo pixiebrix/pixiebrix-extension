@@ -31,7 +31,6 @@ type FormBodyProps = {
 /**
  * JSON Schema form for embedding in a sidebar tab
  * @param form the form definition and extension metadata
- * @constructor
  */
 const FormBody: React.FunctionComponent<FormBodyProps> = ({ form }) => {
   const {

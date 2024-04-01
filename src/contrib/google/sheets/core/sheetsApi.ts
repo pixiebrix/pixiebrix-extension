@@ -157,7 +157,7 @@ async function getRows(
   { googleAccount, spreadsheetId, tabName }: SpreadsheetTarget,
   /**
    * A1 notation of the values to retrieve.
-   * @see: https://developers.google.com/sheets/api/guides/concepts#cell
+   * @see https://developers.google.com/sheets/api/guides/concepts#cell
    */
   range = "",
 ): Promise<ValueRange> {

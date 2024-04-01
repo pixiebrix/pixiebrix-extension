@@ -96,7 +96,6 @@ function newElement(tagName: string): Element {
 
 /**
  * Returns true iff any of the immediate children are text nodes.
- * @param $element
  */
 function hasTextNodeChild(element: Element): boolean {
   return [...element.childNodes].some((x) => x.nodeType === Node.TEXT_NODE);

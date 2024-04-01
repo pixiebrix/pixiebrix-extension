@@ -43,9 +43,32 @@ module.exports = {
   extends: [
     // Full config: https://github.com/pixiebrix/eslint-config-pixiebrix/blob/main/index.js
     "pixiebrix",
+    "plugin:jsdoc/recommended-typescript-error",
   ],
-  plugins: ["local-rules", "@shopify"],
+  plugins: ["local-rules", "@shopify", "jsdoc"],
   rules: {
+    // No need to add or remove spacing
+    "jsdoc/tag-lines": "off",
+
+    // Conflicts with our usage of @since
+    "jsdoc/check-values": "off",
+
+    // Function/parameter names should be self-explanatory, descriptions are useful but not required
+    "jsdoc/require-jsdoc": "off",
+    "jsdoc/require-returns": "off",
+    "jsdoc/require-param": "off",
+
+    // Enable later, most objects don't follow the correct format
+    "jsdoc/check-param-names": "off",
+
+    // Add our own tags
+    "jsdoc/check-tag-names": [
+      "error",
+      {
+        definedTags: ["warning", "note", "knip", "context"],
+      },
+    ],
+
     "@shopify/react-hooks-strict-return": "error",
     "@shopify/prefer-module-scope-constants": "error",
     "@shopify/jest/no-snapshots": "warn",

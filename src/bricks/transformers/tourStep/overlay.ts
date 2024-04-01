@@ -27,9 +27,9 @@
  * @param dimension - Dimensions of rectangle.
  * @param width - Width.
  * @param height - Height.
- * @param [x=0] - Offset from top left corner in x axis. default 0.
- * @param [y=0] - Offset from top left corner in y axis. default 0.
- * @param [r=0] - Corner Radius. Keep this smaller than half of width or height.
+ * @param [x] - Offset from top left corner in x axis. default 0.
+ * @param [y] - Offset from top left corner in y axis. default 0.
+ * @param [r] - Corner Radius. Keep this smaller than half of width or height.
  * @returns - Rounded rectangle overlay path data.
  */
 function makeOverlayPath({
@@ -83,10 +83,8 @@ Z`;
  * Get the visible height of the target element relative to its scrollParent.
  * If there is no scroll parent, the height of the element is returned.
  *
- * @param {HTMLElement} element The target element
- * @param {HTMLElement} [scrollParent] The scrollable parent element
- * @returns {{y: number, height: number}}
- * @private
+ * @param element The target element
+ * @param [scrollParent] The scrollable parent element
  */
 function _getVisibleHeight(
   element: HTMLElement,
@@ -109,9 +107,7 @@ function _getVisibleHeight(
 
 /**
  * Find the closest scrollable parent element
- * @param {HTMLElement} element The target element
- * @returns {HTMLElement}
- * @private
+ * @param element The target element
  */
 function _getScrollParent(element: HTMLElement | null): HTMLElement | null {
   if (!element) {
@@ -130,10 +126,10 @@ function _getScrollParent(element: HTMLElement | null): HTMLElement | null {
 
 /**
  * Uses the bounds of the element we want the opening overtop of to set the dimensions of the opening and position it
- * @param {Number} modalOverlayOpeningPadding An amount of padding to add around the modal overlay opening
- * @param {Number | { topLeft: Number, bottomLeft: Number, bottomRight: Number, topRight: Number }} modalOverlayOpeningRadius An amount of border radius to add around the modal overlay opening
- * @param {HTMLElement} scrollParent The scrollable parent of the target element
- * @param {HTMLElement} targetElement The element the opening will expose
+ * @param modalOverlayOpeningPadding An amount of padding to add around the modal overlay opening
+ * @param modalOverlayOpeningRadius An amount of border radius to add around the modal overlay opening
+ * @param scrollParent The scrollable parent of the target element
+ * @param targetElement The element the opening will expose
  */
 function positionModal(
   modalOverlayOpeningPadding: number,

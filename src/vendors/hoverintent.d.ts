@@ -1,7 +1,6 @@
 interface JQuery {
   /**
    * From @/vendors/hoverintent
-   * @param options
    */
   hoverIntent: (options: {
     /**

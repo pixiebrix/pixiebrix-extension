@@ -177,7 +177,8 @@ const sidebarSlice = createSlice({
         modActivationPanel: ModActivationPanelEntry | null;
       }>,
     ) {
-      /** We need a visible count > 1 to prevent useHideEmptySidebar from closing it on first load. If there are no visible panels,
+      /**
+       * We need a visible count > 1 to prevent useHideEmptySidebar from closing it on first load. If there are no visible panels,
        * we'll show mod launcher. activatePanel then hides the modLauncher if there is another visible panel.
        * @see useHideEmptySidebar
        * @see activatePanel
@@ -371,8 +372,9 @@ const sidebarSlice = createSlice({
 
 export const persistSidebarConfig = {
   key: "sidebar",
-  /** We use localStorage instead of redux-persist-webextension-storage because we want to persist the sidebar state
-   * @see StorageInterface */
+  /**
+   * We use localStorage instead of redux-persist-webextension-storage because we want to persist the sidebar state
+    @see StorageInterface */
   storage: localStorage as StorageInterface,
   version: 1,
   whitelist: ["closedTabs"],

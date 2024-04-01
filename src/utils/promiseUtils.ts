@@ -199,7 +199,6 @@ export async function resolveObj<T>(
 
 /**
  * Partition an array of promise results into fulfilled values and rejected errors.
- * @param results
  */
 export function groupPromisesByStatus<T>(
   results: Array<PromiseSettledResult<T>>,

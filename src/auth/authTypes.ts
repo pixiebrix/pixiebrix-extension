@@ -29,7 +29,7 @@ import { type UserMilestone } from "@/data/model/UserMilestone";
 export type AuthSharing = "private" | "shared" | "built-in";
 export interface AuthOption {
   label: string;
-  /** The UUID of the auth credential **/
+  /** The UUID of the auth credential */
   value: UUID;
   serviceId: RegistryId;
   local: boolean;

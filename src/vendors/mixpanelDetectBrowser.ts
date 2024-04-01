@@ -2,8 +2,6 @@
  * This function detects which browser is running this script.
  * The order of the checks are important since many user agents
  * include key words used in later checks.
- * @param userAgent
- * @param vendor
  */
 // https://github.com/mixpanel/mixpanel-js/blob/master/src/utils.js#L1489
 export function detectBrowser(

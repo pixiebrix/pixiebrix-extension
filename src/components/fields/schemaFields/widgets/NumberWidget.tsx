@@ -31,7 +31,7 @@ import useAutoFocusConfiguration from "@/hooks/useAutoFocusConfiguration";
 /**
  * A basic input widget for numbers
  *
- * @see: IntegerWidget
+ * @see IntegerWidget
  */
 const NumberWidget: React.VFC<
   SchemaFieldProps &
