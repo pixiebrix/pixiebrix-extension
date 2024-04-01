@@ -28,6 +28,7 @@ import {
 import hash from "object-hash";
 import { sortBy } from "lodash";
 import { type Nullish, type Nullishable } from "@/utils/nullishUtils";
+import { type UUID } from "@/types/stringTypes";
 
 function eventKeyForEntry(entry: SidebarEntry): string;
 function eventKeyForEntry(entry: Nullish): null;
@@ -43,7 +44,7 @@ function eventKeyForEntry(entry: Nullishable<SidebarEntry>): string | null {
   }
 
   if (isPanelEntry(entry)) {
-    return `panel-${entry.extensionId}`;
+    return getEventKeyForPanel(entry.extensionId);
   }
 
   if (isStaticPanelEntry(entry)) {
@@ -55,6 +56,10 @@ function eventKeyForEntry(entry: Nullishable<SidebarEntry>): string | null {
 }
 
 export { eventKeyForEntry };
+
+export function getEventKeyForPanel(modComponentId: UUID): string {
+  return `panel-${modComponentId}`;
+}
 
 /**
  * Return the default tab to show.

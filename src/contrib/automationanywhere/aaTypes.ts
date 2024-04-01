@@ -52,5 +52,5 @@ export type ApiTaskArgs = {
   data: UnknownObject;
   automationName: string;
   awaitResult: boolean;
-  maxWaitMillis: number;
+  maxWaitMillis?: number;
 };

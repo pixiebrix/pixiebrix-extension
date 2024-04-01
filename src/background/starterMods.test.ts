@@ -39,6 +39,19 @@ import {
 } from "@/testUtils/factories/modDefinitionFactories";
 import { meOrganizationApiResponseFactory } from "@/testUtils/factories/authFactories";
 import { remoteIntegrationConfigurationFactory } from "@/testUtils/factories/integrationFactories";
+import {
+  getSidebarState,
+  saveSidebarState,
+} from "@/store/sidebar/sidebarStorage";
+import { MOD_LAUNCHER } from "@/store/sidebar/constants";
+import {
+  eventKeyForEntry,
+  getEventKeyForPanel,
+} from "@/store/sidebar/eventKeyUtils";
+import produce from "immer";
+import { type StarterBrickDefinition } from "@/starterBricks/types";
+import { type ModDefinition } from "@/types/modDefinitionTypes";
+import { type StarterBrickType } from "@/types/starterBrickTypes";
 
 const axiosMock = new MockAdapter(axios);
 
@@ -66,25 +79,74 @@ beforeEach(async () => {
   await saveModComponentState({
     extensions: [],
   });
+  await saveSidebarState({ closedTabs: {} });
 
   jest.clearAllMocks();
 
   axiosMock.onGet("/api/services/shared/?meta=1").reply(200, []);
 });
 
-describe("debouncedInstallStarterMods", () => {
-  test("user has starter mods available to install", async () => {
+describe("debouncedActivateStarterMods", () => {
+  function overrideStarterBrickType(
+    modDefinition: ModDefinition,
+    type: StarterBrickType,
+  ) {
+    return produce(modDefinition, (draft) => {
+      (
+        draft.definitions.extensionPoint.definition as StarterBrickDefinition
+      ).type = type;
+    });
+  }
+
+  test("user has starter mods available to activate, with sidebar starter bricks", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const mod = defaultModDefinitionFactory();
+    const modDefinition = overrideStarterBrickType(
+      defaultModDefinitionFactory(),
+      "actionPanel",
+    );
 
-    axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [mod]);
+    axiosMock
+      .onGet("/api/onboarding/starter-blueprints/")
+      .reply(200, [modDefinition]);
 
     await debouncedActivateStarterMods();
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
+    const { closedTabs } = await getSidebarState();
 
-    expect(extensions).toHaveLength(1);
-    expect(extensions[0]._recipe.id).toEqual(mod.metadata.id);
+    expect(activatedModComponents).toHaveLength(1);
+    expect(activatedModComponents[0]._recipe.id).toEqual(
+      modDefinition.metadata.id,
+    );
+
+    expect(closedTabs).toStrictEqual({
+      [getEventKeyForPanel(activatedModComponents[0].id)]: true,
+      [eventKeyForEntry(MOD_LAUNCHER)]: false,
+    });
+
+    expect(refreshRegistriesMock).toHaveBeenCalledOnce();
+  });
+
+  test("user has starter mods available to activate, no sidebar starter bricks", async () => {
+    isLinkedMock.mockResolvedValue(true);
+
+    const modDefinition = defaultModDefinitionFactory();
+
+    axiosMock
+      .onGet("/api/onboarding/starter-blueprints/")
+      .reply(200, [modDefinition]);
+
+    await debouncedActivateStarterMods();
+    const { extensions: activatedModComponents } = await getModComponentState();
+    const { closedTabs } = await getSidebarState();
+
+    expect(activatedModComponents).toHaveLength(1);
+    expect(activatedModComponents[0]._recipe.id).toEqual(
+      modDefinition.metadata.id,
+    );
+
+    expect(closedTabs).toStrictEqual({});
+
     expect(refreshRegistriesMock).toHaveBeenCalledOnce();
   });
 
@@ -117,16 +179,21 @@ describe("debouncedInstallStarterMods", () => {
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(500);
 
     await debouncedActivateStarterMods();
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(extensions).toHaveLength(0);
+    expect(activatedModComponents).toHaveLength(0);
   });
 
-  test("install starter mod with built-in auths", async () => {
+  test("activate starter mod with built-in auths", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const { modDefinition, builtInIntegrationConfigs } =
+    const { modDefinition: _modDefinition, builtInIntegrationConfigs } =
       getModDefinitionWithBuiltInIntegrationConfigs();
+
+    const modDefinition = overrideStarterBrickType(
+      _modDefinition,
+      "actionPanel",
+    );
 
     axiosMock
       .onGet("/api/services/shared/?meta=1")
@@ -137,20 +204,26 @@ describe("debouncedInstallStarterMods", () => {
       .reply(200, [modDefinition]);
 
     await debouncedActivateStarterMods();
-    const { extensions: modComponents } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
+    const { closedTabs } = await getSidebarState();
 
-    expect(modComponents).toBeArrayOfSize(1);
-    const installedComponent = modComponents[0];
+    expect(activatedModComponents).toBeArrayOfSize(1);
+    const activatedModComponent = activatedModComponents[0];
 
-    expect(installedComponent.extensionPointId).toBe(
+    expect(closedTabs).toStrictEqual({
+      [getEventKeyForPanel(activatedModComponent.id)]: true,
+      [eventKeyForEntry(MOD_LAUNCHER)]: false,
+    });
+
+    expect(activatedModComponent.extensionPointId).toBe(
       modDefinition.extensionPoints[0].id,
     );
-    expect(installedComponent.integrationDependencies).toBeArrayOfSize(2);
+    expect(activatedModComponent.integrationDependencies).toBeArrayOfSize(2);
 
-    const dependency1 = installedComponent.integrationDependencies.find(
+    const dependency1 = activatedModComponent.integrationDependencies.find(
       ({ integrationId }) => integrationId === "@pixiebrix/service1",
     );
-    const dependency2 = installedComponent.integrationDependencies.find(
+    const dependency2 = activatedModComponent.integrationDependencies.find(
       ({ integrationId }) => integrationId === "@pixiebrix/service2",
     );
 
@@ -158,40 +231,45 @@ describe("debouncedInstallStarterMods", () => {
     expect(dependency2.configId).toBe(builtInIntegrationConfigs[1].id);
   });
 
-  test("starter mod already installed", async () => {
+  test("starter mod already activated", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const modDefinition = defaultModDefinitionFactory();
 
-    const modComponent = modComponentFactory({
+    const activatedModComponent = modComponentFactory({
       _recipe: { id: modDefinition.metadata.id } as ModComponentBase["_recipe"],
     }) as ActivatedModComponent;
     await saveModComponentState({
-      extensions: [modComponent],
+      extensions: [activatedModComponent],
     });
 
     axiosMock.onGet("/api/onboarding/starter-blueprints/").reply(200, [
       {
-        extensionPoints: [modComponent],
+        extensionPoints: [activatedModComponent],
         ...modDefinition,
       },
     ]);
 
     await debouncedActivateStarterMods();
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
+    const { closedTabs } = await getSidebarState();
 
-    expect(extensions).toHaveLength(1);
-    expect(extensions[0]._recipe.id).toEqual(modDefinition.metadata.id);
+    expect(activatedModComponents).toHaveLength(1);
+    expect(activatedModComponents[0]._recipe.id).toEqual(
+      modDefinition.metadata.id,
+    );
+
+    expect(closedTabs).toStrictEqual({});
   });
 
-  test("extension with no _recipe doesn't throw undefined error", async () => {
+  test("activated mod component with no _recipe doesn't throw undefined error", async () => {
     isLinkedMock.mockResolvedValue(true);
 
-    const modComponent = modComponentFactory({
+    const activatedModComponent = modComponentFactory({
       _recipe: undefined,
     }) as ActivatedModComponent;
     await saveModComponentState({
-      extensions: [modComponent],
+      extensions: [activatedModComponent],
     });
 
     axiosMock
@@ -199,12 +277,12 @@ describe("debouncedInstallStarterMods", () => {
       .reply(200, [defaultModDefinitionFactory()]);
 
     await debouncedActivateStarterMods();
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(extensions).toHaveLength(2);
+    expect(activatedModComponents).toHaveLength(2);
   });
 
-  test("install starter mod with optional integrations", async () => {
+  test("activate starter mod with optional integrations", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const modDefinition = defaultModDefinitionFactory();
@@ -222,19 +300,19 @@ describe("debouncedInstallStarterMods", () => {
       .reply(200, [modDefinition]);
 
     await debouncedActivateStarterMods();
-    const { extensions } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(extensions).toHaveLength(1);
-    const installedComponent = extensions[0];
-    expect(installedComponent._recipe.id).toEqual(modDefinition.metadata.id);
-    expect(installedComponent.integrationDependencies).toBeArrayOfSize(1);
+    expect(activatedModComponents).toHaveLength(1);
+    const activatedModComponent = activatedModComponents[0];
+    expect(activatedModComponent._recipe.id).toEqual(modDefinition.metadata.id);
+    expect(activatedModComponent.integrationDependencies).toBeArrayOfSize(1);
     // Expect the optional dependency NOT to be configured
     expect(
-      installedComponent.integrationDependencies[0].configId,
+      activatedModComponent.integrationDependencies[0].configId,
     ).toBeUndefined();
   });
 
-  test("install starter mods with optional integrations, 1 with built-in auth", async () => {
+  test("activate starter mods with optional integrations, 1 with built-in auth", async () => {
     isLinkedMock.mockResolvedValue(true);
 
     const { modDefinition, builtInIntegrationConfigs } =
@@ -260,20 +338,20 @@ describe("debouncedInstallStarterMods", () => {
       .reply(200, [modDefinition]);
 
     await debouncedActivateStarterMods();
-    const { extensions: modComponents } = await getModComponentState();
+    const { extensions: activatedModComponents } = await getModComponentState();
 
-    expect(modComponents).toBeArrayOfSize(1);
+    expect(activatedModComponents).toBeArrayOfSize(1);
 
-    const installedComponent1 = modComponents[0];
-    expect(installedComponent1.extensionPointId).toBe(
+    const activatedModComponent1 = activatedModComponents[0];
+    expect(activatedModComponent1.extensionPointId).toBe(
       modDefinition.extensionPoints[0].id,
     );
-    expect(installedComponent1.integrationDependencies).toBeArrayOfSize(2);
+    expect(activatedModComponent1.integrationDependencies).toBeArrayOfSize(2);
 
-    const dependency1 = installedComponent1.integrationDependencies.find(
+    const dependency1 = activatedModComponent1.integrationDependencies.find(
       ({ integrationId }) => integrationId === "@pixiebrix/service1",
     );
-    const dependency2 = installedComponent1.integrationDependencies.find(
+    const dependency2 = activatedModComponent1.integrationDependencies.find(
       ({ integrationId }) => integrationId === "@pixiebrix/service2",
     );
 

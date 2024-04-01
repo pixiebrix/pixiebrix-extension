@@ -23,10 +23,9 @@ import "./contentScript.scss";
 import { addContentScriptIndicator } from "@/development/visualInjection";
 import { uuidv4 } from "@/types/helpers";
 import {
-  isInstalledInThisSession,
-  setInstalledInThisSession,
-  setReadyInThisDocument,
-  unsetReadyInThisDocument,
+  isContentScriptInstalled,
+  setContentScriptInstalled,
+  setContentScriptReady,
 } from "@/contentScript/ready";
 import { onContextInvalidated } from "webext-events";
 import { logPromiseDuration } from "@/utils/promiseUtils";
@@ -57,7 +56,7 @@ async function initContentScript() {
   const urlInfo = top === self ? "" : `in frame ${location.href}`;
   const uuid = uuidv4();
 
-  if (isInstalledInThisSession()) {
+  if (isContentScriptInstalled()) {
     // Must prevent multiple injection because repeat messenger registration causes message handling errors:
     // https://github.com/pixiebrix/webext-messenger/issues/88
     // Prior to 1.7.31 we had been using `webext-dynamic-content-scripts` which can inject the same content script
@@ -84,7 +83,7 @@ async function initContentScript() {
 
   console.debug(`contentScript: importing ${uuid} ${urlInfo}`);
 
-  setInstalledInThisSession();
+  setContentScriptInstalled();
 
   // Keeping the import separate ensures that no side effects are run until this point
   const contentScriptPromise = import(
@@ -96,10 +95,9 @@ async function initContentScript() {
 
   const { init } = await contentScriptPromise;
   await logPromiseDuration("contentScript: ready", init());
-  setReadyInThisDocument(uuid);
+  setContentScriptReady();
 
   onContextInvalidated.addListener(() => {
-    unsetReadyInThisDocument(uuid);
     console.debug("contentScript: invalidated", uuid);
   });
 
