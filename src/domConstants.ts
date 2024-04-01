@@ -21,8 +21,6 @@ export const NOTIFICATIONS_Z_INDEX = 2_147_483_647;
 
 export const MAX_Z_INDEX = NOTIFICATIONS_Z_INDEX - 1; // Let notifications always be higher
 
-export const CONTENT_SCRIPT_READY_ATTRIBUTE = "data-pb-ready";
-
 export const SELECTION_MENU_READY_ATTRIBUTE = "data-pb-selection-menu-ready";
 
 export const PANEL_FRAME_ID = "pixiebrix-extension";
@@ -51,6 +49,5 @@ export const PRIVATE_ATTRIBUTES_SELECTOR = `
   .${PIXIEBRIX_QUICK_BAR_CONTAINER_CLASS},
   .${PIXIEBRIX_NOTIFICATION_CLASS},
   [${PIXIEBRIX_DATA_ATTR}],
-  [${CONTENT_SCRIPT_READY_ATTRIBUTE}],
   [${EXTENSION_POINT_DATA_ATTR}]
 `;

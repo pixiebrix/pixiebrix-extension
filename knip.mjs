@@ -19,7 +19,6 @@ const knipConfig = {
     "static/*",
 
     // App messenger and common storage
-    "src/contentScript/externalProtocol.ts",
     "src/background/messenger/external/api.ts",
     "src/store/browserExtensionIdStorage.ts",
 
