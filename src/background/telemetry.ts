@@ -25,14 +25,13 @@ import {
 import { allowsTrack } from "@/telemetry/dnt";
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { deleteDatabase } from "@/utils/idbUtils";
-import { detectBrowser } from "@/vendors/mixpanelBrowser";
+import { browserVersion, detectBrowser } from "@/vendors/mixpanelBrowser";
 import { count as registrySize } from "@/registry/packageRegistry";
 import { count as logSize } from "@/telemetry/logging";
 import { count as traceSize } from "@/telemetry/trace";
 import { getUUID } from "@/telemetry/telemetryHelpers";
 import { getTabsWithAccess } from "@/utils/extensionUtils";
 import { type Event } from "@/telemetry/events";
-import { utils } from "mixpanel-browser";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -103,6 +102,11 @@ interface UserSummary {
    * The detected browser.
    */
   $browser: string;
+
+  /**
+   * The detected browser version.
+   */
+  $browser_version: number;
 }
 
 /**
@@ -301,6 +305,7 @@ async function collectUserSummary(): Promise<UserSummary> {
     // https://docs.mixpanel.com/docs/tracking/reference/default-properties#web
     $os: os,
     $browser: detectBrowser(navigator.userAgent, navigator.vendor),
+    $browser_version: browserVersion(navigator.userAgent, navigator.vendor),
   };
 }
 
