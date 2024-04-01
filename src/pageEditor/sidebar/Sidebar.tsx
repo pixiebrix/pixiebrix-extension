@@ -111,15 +111,14 @@ const Sidebar: React.VFC = () => {
         mountOnEnter={true}
       >
         {/*
-        Double wrapper needed so that the list does not wrap during the shrinking animation, but instead it's clipped.
+        Double wrapper needed so that the list does not wrap during the
+        shrinking animation, but instead it's clipped.
         */}
-        <div style={{ width: "270px", display: "flex", flexGrow: 1 }}>
+        <div className="d-flex flex-column flex-grow-1">
           <div
+            className="d-flex flex-column flex-grow-1"
             style={{
               width: "270px",
-              display: "flex",
-              flexGrow: 1,
-              flexDirection: "column",
             }}
           >
             <Extensions />
