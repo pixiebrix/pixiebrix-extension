@@ -1,7 +1,7 @@
 /**
  * This function detects which browser is running this script.
  * The order of the checks are important since many user agents
- * include key words used in later checks.
+ * include keywords used in later checks.
  * @param userAgent
  * @param vendor
  *
@@ -67,8 +67,10 @@ export function detectBrowser(
  * @see https://github.com/mixpanel/mixpanel-js/blob/master/src/utils.js#L1542C21-L1571C7
  */
 export function browserVersion(userAgent: string, vendor: string | null) {
-  var browser = detectBrowser(userAgent, vendor);
-  var versionRegexs = {
+  const browser = detectBrowser(userAgent, vendor);
+  const versionRegexes: {
+    [key: string]: RegExp;
+  } = {
     "Internet Explorer Mobile": /rv:(\d+(\.\d+)?)/,
     "Microsoft Edge": /Edge?\/(\d+(\.\d+)?)/,
     Chrome: /Chrome\/(\d+(\.\d+)?)/,
@@ -86,11 +88,11 @@ export function browserVersion(userAgent: string, vendor: string | null) {
     "Internet Explorer": /(rv:|MSIE )(\d+(\.\d+)?)/,
     Mozilla: /rv:(\d+(\.\d+)?)/,
   };
-  var regex = versionRegexs[browser];
+  const regex = versionRegexes[browser];
   if (regex === undefined) {
     return null;
   }
-  var matches = userAgent.match(regex);
+  const matches = userAgent.match(regex);
   if (!matches) {
     return null;
   }
