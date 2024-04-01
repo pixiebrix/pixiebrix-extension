@@ -7,6 +7,15 @@
 
   box-shadow: 1px 2px 8px #00000030;
   z-index: 999; // Always on top of the content, so that the shadow is applied correctly
+
+  :global(.collapsing) {
+    // Match the speed of the animation with the righthand sidebar
+    // https://github.com/pixiebrix/pixiebrix-extension/pull/8125#pullrequestreview-1971309628
+    // Math:
+    // Righthand: 360px (collapsable width) -> 0.35s (Bootstrap default)
+    // Lefthand: 240px (collapsable width) -> 0.23s
+    transition-duration: 0.23s;
+  }
 }
 
 .header {
