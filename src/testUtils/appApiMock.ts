@@ -18,6 +18,8 @@
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import pDefer, { type DeferredPromise } from "p-defer";
+import { isAbsoluteUrl } from "@/utils/urlUtils";
+import { escapeRegExp } from "lodash";
 
 /** AxiosMock used for all app data factories. NOTE: must be reset in a beforeEach in each test file.
  * Ideally we would reset in a beforeEach in this file, but unfortunately some tests rely on this mocking behavior */
@@ -49,4 +51,28 @@ export function onDeferredGet(
   appApiMock.onGet(matcher).reply(async () => responsePromise);
 
   return valuePromise;
+}
+
+export function onApiPost(
+  absoluteOrRelativeUrl: string,
+): MockAdapter.RequestHandler {
+  if (isAbsoluteUrl(absoluteOrRelativeUrl)) {
+    return appApiMock.onPost(absoluteOrRelativeUrl);
+  }
+
+  const regExpUrlString = escapeRegExp(absoluteOrRelativeUrl);
+  // eslint-disable-next-line security/detect-non-literal-regexp -- Escaped using lodash above
+  return appApiMock.onPost(new RegExp(regExpUrlString));
+}
+
+export function onApiGet(
+  absoluteOrRelativeUrl: string,
+): MockAdapter.RequestHandler {
+  if (isAbsoluteUrl(absoluteOrRelativeUrl)) {
+    return appApiMock.onGet(absoluteOrRelativeUrl);
+  }
+
+  const regExpUrlString = escapeRegExp(absoluteOrRelativeUrl);
+  // eslint-disable-next-line security/detect-non-literal-regexp -- Escaped using lodash above
+  return appApiMock.onGet(new RegExp(regExpUrlString));
 }
