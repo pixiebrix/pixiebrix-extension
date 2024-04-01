@@ -4,8 +4,6 @@
   justify-content: flex-start;
   height: 100%;
   background: white;
-  overflow-x: hidden;
-  overflow-y: scroll;
 
   box-shadow: 1px 2px 8px #00000030;
   z-index: 999; // Always on top of the content, so that the shadow is applied correctly

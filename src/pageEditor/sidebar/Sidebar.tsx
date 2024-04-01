@@ -19,7 +19,7 @@ import styles from "./Sidebar.module.scss";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "@/pageEditor/slices/editorSlice";
-import { Button, Collapse } from "react-bootstrap";
+import { Button, Collapse as BootstrapCollapse } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleDoubleLeft,
@@ -32,6 +32,21 @@ import HomeButton from "./HomeButton";
 import ReloadButton from "./ReloadButton";
 import AddStarterBrickButton from "./AddStarterBrickButton";
 import Extensions from "./Extensions";
+
+/**
+ * React Bootstrap Collapsed component that includes a div wrapper.
+ * The native component only accepts one child and it alters it, so it frustratingly
+ * conflicts with our own layout.
+ */
+const CollapsedElement: React.FC<
+  Omit<React.ComponentProps<typeof BootstrapCollapse>, "children"> & {
+    className?: string;
+  }
+> = ({ children, className, ...props }) => (
+  <BootstrapCollapse unmountOnExit={true} {...props}>
+    <div className={className}>{children}</div>
+  </BootstrapCollapse>
+);
 
 const Sidebar: React.VFC = () => {
   const dispatch = useDispatch();
@@ -57,74 +72,64 @@ const Sidebar: React.VFC = () => {
 
       <div className={styles.header}>
         <HomeButton />
-        <Collapse
+        <CollapsedElement
           dimension="width"
           in={expanded}
-          unmountOnExit={true}
-          mountOnEnter={true}
+          className={styles.horizontalActions}
         >
-          <div className={styles.horizontalActions}>
-            <AddStarterBrickButton />
-            {showDeveloperUI && <ReloadButton />}
-          </div>
-        </Collapse>
-        <Collapse
+          <AddStarterBrickButton />
+          {showDeveloperUI && <ReloadButton />}
+        </CollapsedElement>
+        <CollapsedElement
           dimension="width"
           in={expanded}
-          unmountOnExit={true}
-          mountOnEnter={true}
+          className="d-flex flex-grow-1"
         >
           <Button
             size="sm"
             type="button"
             variant="light"
-            className={styles.toggle}
+            className={cx(styles.toggle, "ml-auto")}
             onClick={collapseSidebar}
           >
             <FontAwesomeIcon icon={faAngleDoubleLeft} fixedWidth />
           </Button>
-        </Collapse>
+        </CollapsedElement>
       </div>
 
       {/* Collapsed sidebar: Actions list */}
-      <Collapse in={!expanded} unmountOnExit={true} mountOnEnter={true}>
-        <div className={styles.verticalActions}>
-          <Button
-            size="sm"
-            type="button"
-            variant="light"
-            className={styles.toggle}
-            onClick={collapseSidebar}
-          >
-            <FontAwesomeIcon icon={faAngleDoubleRight} fixedWidth />
-          </Button>
-          {showDeveloperUI && <ReloadButton />}
-        </div>
-      </Collapse>
+      <CollapsedElement in={!expanded} className={styles.verticalActions}>
+        <Button
+          size="sm"
+          type="button"
+          variant="light"
+          className={styles.toggle}
+          onClick={collapseSidebar}
+        >
+          <FontAwesomeIcon icon={faAngleDoubleRight} fixedWidth />
+        </Button>
+        {showDeveloperUI && <ReloadButton />}
+      </CollapsedElement>
 
       {/* Expanded sidebar: Extensions list */}
-      <Collapse
+      <CollapsedElement
         dimension="width"
-        timeout={5000}
         in={expanded}
-        unmountOnExit={true}
-        mountOnEnter={true}
+        className="d-flex flex-column flex-grow-1"
       >
         {/*
         Double wrapper needed so that the list does not wrap during the
         shrinking animation, but instead it's clipped.
         */}
-        <div className="d-flex flex-column flex-grow-1">
-          <div
-            className="d-flex flex-column flex-grow-1"
-            style={{
-              width: "270px",
-            }}
-          >
-            <Extensions />
-          </div>
+        <div
+          className="d-flex flex-column flex-grow-1"
+          style={{
+            width: "270px",
+          }}
+        >
+          <Extensions />
         </div>
-      </Collapse>
+      </CollapsedElement>
     </div>
   );
 };
