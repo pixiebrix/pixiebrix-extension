@@ -74,11 +74,9 @@ export function useSelectedRelease(releaseKeyFieldName: string) {
   );
 
   const { data: selectedRelease } = useAsyncState(async () => {
-    const options = await releasesPromise;
+    const options = (await releasesPromise) as ReleaseOption[];
     const { data: release } =
-      (options as ReleaseOption[]).find(
-        (option) => option.data.Key === releaseKey,
-      ) ?? {};
+      options.find((option) => option.data.Key === releaseKey) ?? {};
     const schema = release ? releaseSchema(release) : null;
     return {
       release,
