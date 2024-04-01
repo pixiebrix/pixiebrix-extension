@@ -20,7 +20,7 @@ import { type BrickArgs, type BrickOptions } from "@/types/runtimeTypes";
 import { type Schema } from "@/types/schemaTypes";
 import { validateRegistryId } from "@/types/helpers";
 import { $safeFind } from "@/utils/domUtils";
-import escapeStringRegexp from "escape-string-regexp";
+import { escapeRegExp } from "lodash";
 
 /**
  * Recursively wrap text in an element and its children. Operates on text nodes. Does not work on text with inline HTML tags.
@@ -156,7 +156,7 @@ class HighlightText extends EffectABC {
 
     // eslint-disable-next-line security/detect-non-literal-regexp -- mod argument
     const convertedPattern = new RegExp(
-      isRegex ? pattern : escapeStringRegexp(pattern),
+      isRegex ? pattern : escapeRegExp(pattern),
       flags,
     );
 

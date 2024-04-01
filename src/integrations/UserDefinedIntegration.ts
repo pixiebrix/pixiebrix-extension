@@ -252,13 +252,21 @@ class UserDefinedIntegration<
       integrationConfig,
     );
 
-    if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
-      throw new Error(
-        "Must use absolute URLs for integrations that don't define a baseURL",
-      );
+    let absoluteURL: string;
+    if (isAbsoluteUrl(requestConfig.url)) {
+      absoluteURL = requestConfig.url;
+    } else {
+      if (!baseURL) {
+        throw new Error(
+          "Must use absolute URLs for integrations that don't define a baseURL",
+        );
+      }
+
+      absoluteURL = urljoin(baseURL, requestConfig.url);
     }
 
     const result = produce(requestConfig, (draft) => {
+      draft.url = absoluteURL;
       draft.headers = { ...draft.headers, ...headers };
       draft.params = { ...draft.params, ...params };
     });
@@ -293,13 +301,21 @@ class UserDefinedIntegration<
       );
     }
 
-    if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
-      throw new Error(
-        "Must use absolute URLs for integrations that don't define a baseURL",
-      );
+    let absoluteURL: string;
+    if (isAbsoluteUrl(requestConfig.url)) {
+      absoluteURL = requestConfig.url;
+    } else {
+      if (!baseURL) {
+        throw new Error(
+          "Must use absolute URLs for integrations that don't define a baseURL",
+        );
+      }
+
+      absoluteURL = urljoin(baseURL, requestConfig.url);
     }
 
     const result = produce(requestConfig, (draft) => {
+      draft.url = absoluteURL;
       draft.headers = {
         ...draft.headers,
         Authorization: `Basic ${stringToBase64(
@@ -330,13 +346,21 @@ class UserDefinedIntegration<
       { ...integrationConfig, ...tokenData },
     );
 
-    if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
-      throw new Error(
-        "Must use absolute URLs for integrations that don't define a baseURL",
-      );
+    let absoluteURL: string;
+    if (isAbsoluteUrl(requestConfig.url)) {
+      absoluteURL = requestConfig.url;
+    } else {
+      if (!baseURL) {
+        throw new Error(
+          "Must use absolute URLs for integrations that don't define a baseURL",
+        );
+      }
+
+      absoluteURL = urljoin(baseURL, requestConfig.url);
     }
 
     const result = produce(requestConfig, (draft) => {
+      draft.url = absoluteURL;
       draft.headers = { ...draft.headers, ...headers };
     });
 
