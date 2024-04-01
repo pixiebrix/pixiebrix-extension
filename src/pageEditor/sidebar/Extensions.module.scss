@@ -21,6 +21,7 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
   padding: 8px;
   position: relative;
+
   button {
     z-index: 3;
     color: black;
@@ -38,4 +39,17 @@
   overflow-y: auto;
   flex-basis: 0;
   flex-grow: 1;
+
+  :global {
+    .list-group {
+      border-radius: 0;
+
+      .list-group-item {
+        padding-left: 12px;
+        padding-right: 12px;
+        border-right: none;
+        font-size: 0.875rem;
+      }
+    }
+  }
 }

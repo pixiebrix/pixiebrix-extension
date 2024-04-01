@@ -7,23 +7,6 @@
 
   box-shadow: 1px 2px 8px #00000030;
   z-index: 999; // Always on top of the content, so that the shadow is applied correctly
-
-  label {
-    font-size: 0.875rem;
-  }
-
-  :global {
-    .list-group {
-      border-radius: 0;
-
-      .list-group-item {
-        padding-left: 12px;
-        padding-right: 12px;
-        border-right: none;
-        font-size: 0.875rem;
-      }
-    }
-  }
 }
 
 .header {
