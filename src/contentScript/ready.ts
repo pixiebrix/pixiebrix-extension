@@ -32,80 +32,58 @@
  */
 
 import { type Target } from "@/types/messengerTypes";
-import { forbidContext } from "@/utils/expectContext";
-import { executeFunction } from "webext-content-scripts";
+import { isRemoteProcedureCallRequest } from "@/utils/legacyMessengerUtils";
 
-// These two must be synched in `getTargetState`
-const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for("content-script-injected");
-const CONTENT_SCRIPT_READY_SYMBOL = Symbol.for("content-script-ready");
+const CONTENT_SCRIPT_STATE_SYMBOL = Symbol.for("content-script-state");
 
 /** Communicates readiness to `ensureContentScript` */
-export const ENSURE_CONTENT_SCRIPT_READY =
-  "@@pixiebrix/script/ENSURE_CONTENT_SCRIPT_READY";
+export const CONTENT_SCRIPT_READY = "LOADING/CONTENT_SCRIPT_READY";
+export const CONTENT_SCRIPT_RAW_PING = "LOADING/CONTENT_SCRIPT_RAW_PING";
+
+type ContentScriptState = "unset" | "installed" | "ready";
 
 declare global {
   interface Window {
-    [CONTENT_SCRIPT_INJECTED_SYMBOL]?: true;
-    [CONTENT_SCRIPT_READY_SYMBOL]?: true;
+    [CONTENT_SCRIPT_STATE_SYMBOL]?: ContentScriptState;
   }
 }
 
-interface TargetState {
-  url: string;
-  installed: boolean;
-  ready: boolean;
+export function getContentScriptState(): ContentScriptState {
+  return window[CONTENT_SCRIPT_STATE_SYMBOL] ?? "unset";
 }
 
-/**
- * Returns true iff the content script has been injected in the content script Javascript VM for the window.
- */
-export function isContentScriptInstalled(): boolean {
-  return CONTENT_SCRIPT_INJECTED_SYMBOL in window;
+export function setContentScriptState(state: "installed" | "ready"): void {
+  window[CONTENT_SCRIPT_STATE_SYMBOL] = state;
 }
 
-/**
- * Mark that the content script has been injected in content script Javascript VM for the window.
- */
-export function setContentScriptInstalled(): void {
-  // eslint-disable-next-line security/detect-object-injection -- symbol
-  window[CONTENT_SCRIPT_INJECTED_SYMBOL] = true;
+// Do not use the Messenger, it cannot appear in this bundle
+export async function isTargetReady(target: Target): Promise<boolean> {
+  const response = (await browser.tabs.sendMessage(
+    target.tabId,
+    {
+      type: CONTENT_SCRIPT_RAW_PING,
+    },
+    { frameId: target.frameId },
+  )) as true | undefined;
+  return response ?? false;
 }
 
-export function isContentScriptReady(): boolean {
-  return CONTENT_SCRIPT_READY_SYMBOL in window;
+// eslint-disable-next-line @typescript-eslint/promise-function-async -- Message handlers must return undefined to "pass through", not Promise<undefined>
+function onMessage(message: unknown): Promise<true> | undefined {
+  if (
+    isRemoteProcedureCallRequest(message) &&
+    message.type === CONTENT_SCRIPT_RAW_PING
+  ) {
+    // Do not return an unpromised `true` because `webextension-polyfill` handles it differently
+    return Promise.resolve(true);
+  }
 }
 
-export function setContentScriptReady(): void {
-  // eslint-disable-next-line security/detect-object-injection -- symbol
-  window[CONTENT_SCRIPT_READY_SYMBOL] = true;
+export function initContentScriptPingListener(): void {
+  browser.runtime.onMessage.addListener(onMessage);
 }
 
-/**
- * Fetches the URL and content script state from tab/frame
- * @throws Error if background page doesn't have permission to access the tab
- */
-export async function getTargetState(target: Target): Promise<TargetState> {
-  forbidContext(
-    "web",
-    "chrome.tabs is only available in chrome-extension:// pages",
-  );
-
-  return executeFunction(target, () => {
-    // This function does not have access to globals, the outside scope, nor `import()`
-    // These two symbols must be repeated inline
-    const CONTENT_SCRIPT_INJECTED_SYMBOL = Symbol.for(
-      "content-script-injected",
-    );
-
-    const CONTENT_SCRIPT_READY_SYMBOL = Symbol.for("content-script-ready");
-    return {
-      url: location.href,
-      installed: CONTENT_SCRIPT_INJECTED_SYMBOL in globalThis,
-      ready: CONTENT_SCRIPT_READY_SYMBOL in globalThis,
-    };
-  });
-}
-
+// TODO: Move out of contentScript/ready.ts, it's unrelated logic
 let reloadOnNextNavigate = false;
 
 /**

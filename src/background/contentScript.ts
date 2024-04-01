@@ -20,10 +20,7 @@ import { isRemoteProcedureCallRequest } from "@/utils/legacyMessengerUtils";
 import { expectContext } from "@/utils/expectContext";
 import pTimeout from "p-timeout";
 import type { Target } from "@/types/messengerTypes";
-import {
-  ENSURE_CONTENT_SCRIPT_READY,
-  getTargetState,
-} from "@/contentScript/ready";
+import { CONTENT_SCRIPT_READY, isTargetReady } from "@/contentScript/ready";
 import { memoizeUntilSettled } from "@/utils/promiseUtils";
 import { type Runtime } from "webextension-polyfill";
 
@@ -58,7 +55,7 @@ function onMessage(
     return; // Don't handle message
   }
 
-  if (message.type === ENSURE_CONTENT_SCRIPT_READY) {
+  if (message.type === CONTENT_SCRIPT_READY) {
     const key = makeSenderKey(sender);
 
     try {
@@ -148,21 +145,11 @@ async function ensureContentScriptWithoutTimeout(
   // Start waiting for the notification as early as possible. Browser might have already injected the content script
   const readyNotificationPromise = onReadyNotification(target, signal);
 
-  const state = await getTargetState(target); // It will throw if we don't have permissions
-
-  if (state.ready) {
-    debug("already exists and is ready", target);
-    return;
-  }
-
-  if (state.installed) {
-    debug("already exists but isn't ready", target);
-
+  const isReady = await isTargetReady(target);
+  if (!isReady) {
+    // It did not immediately answer, so we just await its READY ping
     await readyNotificationPromise;
-    return;
   }
-
-  await readyNotificationPromise;
 }
 
 export function initContentScriptReadyListener() {

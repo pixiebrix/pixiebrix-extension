@@ -20,10 +20,7 @@ import {
   initContentScriptReadyListener,
   makeSenderKey,
 } from "@/background/contentScript";
-import {
-  ENSURE_CONTENT_SCRIPT_READY,
-  getTargetState,
-} from "@/contentScript/ready";
+import { CONTENT_SCRIPT_READY, isTargetReady } from "@/contentScript/ready";
 import { injectContentScript } from "webext-content-scripts";
 import { queryAdditionalPermissions } from "webext-permissions";
 import pDefer from "p-defer";
@@ -35,7 +32,7 @@ jest.mock("@/contentScript/ready", () => {
   const actual = jest.requireActual("@/contentScript/ready");
   return {
     ...actual,
-    getTargetState: jest.fn().mockRejectedValue(new Error("Not Implemented")),
+    isTargetReady: jest.fn().mockRejectedValue(new Error("Not Implemented")),
   };
 });
 
@@ -53,7 +50,7 @@ let messageListener: any;
 
 const addListenerMock = jest.mocked(browser.runtime.onMessage.addListener);
 const queryAdditionalPermissionsMock = jest.mocked(queryAdditionalPermissions);
-const getTargetStateMock = jest.mocked(getTargetState);
+const isTargetReadyMock = jest.mocked(isTargetReady);
 const injectContentScriptMock = jest.mocked(injectContentScript);
 
 const RUNTIME_ID = "abc123";
@@ -84,11 +81,7 @@ describe("ensureContentScript", () => {
   });
 
   it("contentScript already ready", async () => {
-    getTargetStateMock.mockResolvedValue({
-      url: "https://www.example.com",
-      installed: true,
-      ready: true,
-    });
+    isTargetReadyMock.mockResolvedValue(true);
 
     const injectPromise = pDefer<void>();
     injectContentScriptMock.mockReturnValue(injectPromise.promise);
@@ -103,11 +96,7 @@ describe("ensureContentScript", () => {
   });
 
   it("inject script into new page", async () => {
-    getTargetStateMock.mockResolvedValue({
-      url: "https://www.example.com",
-      installed: false,
-      ready: false,
-    });
+    isTargetReadyMock.mockResolvedValue(false);
 
     queryAdditionalPermissionsMock.mockResolvedValue({
       origins: [],
@@ -124,25 +113,21 @@ describe("ensureContentScript", () => {
     injectPromise.resolve();
 
     messageListener(
-      { type: ENSURE_CONTENT_SCRIPT_READY },
+      { type: CONTENT_SCRIPT_READY },
       { id: RUNTIME_ID, tab: { id: 1 }, frameId: 0 },
     );
     await Promise.all([first, second]);
   });
 
   it("wait for script to be ready in page", async () => {
-    getTargetStateMock.mockResolvedValue({
-      url: "https://www.example.com",
-      installed: true,
-      ready: false,
-    });
+    isTargetReadyMock.mockResolvedValue(false);
 
     const first = ensureContentScript({ tabId: 1, frameId: 0 });
     const second = ensureContentScript({ tabId: 1, frameId: 0 });
     expect(first).toBe(second);
 
     messageListener(
-      { type: ENSURE_CONTENT_SCRIPT_READY },
+      { type: CONTENT_SCRIPT_READY },
       { id: RUNTIME_ID, tab: { id: 1 }, frameId: 0 },
     );
     await Promise.all([first, second]);
@@ -151,11 +136,7 @@ describe("ensureContentScript", () => {
   });
 
   it("should not inject if site is in additionalPermissions", async () => {
-    getTargetStateMock.mockResolvedValue({
-      url: "https://www.example.com",
-      installed: false,
-      ready: false,
-    });
+    isTargetReadyMock.mockResolvedValue(false);
 
     queryAdditionalPermissionsMock.mockResolvedValue({
       origins: ["https://www.example.com/*"],
@@ -167,7 +148,7 @@ describe("ensureContentScript", () => {
     expect(first).toBe(second);
 
     messageListener(
-      { type: ENSURE_CONTENT_SCRIPT_READY },
+      { type: CONTENT_SCRIPT_READY },
       { id: RUNTIME_ID, tab: { id: 1 }, frameId: 0 },
     );
     await Promise.all([first, second]);
